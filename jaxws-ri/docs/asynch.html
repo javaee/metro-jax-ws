@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+
+  <title>Java(tm) API for XML-based RPC 2.0 Asynchronous Clients</title>
+  <meta name="CREATED" content="20050329;17163443">
+  <meta name="CHANGED" content="20050403;17063046">
+</head>
+
+<body lang="en-US" dir="ltr">
+  <h1>JAX-RPC 2.0 Early Access<br>
+  Asynchronous Clients</h1>
+  <hr>
+
+  <p>Last Modified: 04/04/2005</p>
+
+  <p>This document describes how a client application can invoke a remote web service asynchronously. It can do so either by generating a static stub or using the Dispatch API.</p>
+
+  <h2>1. Asynchronous Invocation Using Static Stub</h2>
+
+  <p>Client application should apply <code>jaxrpc:enableAsyncMapping</code>binding declaration to the WSDL file to generate asynchronous method in the service endpoint interface. Please refer to <a href="customizations.html#2.3_Asynchrony">async customization</a> for details on how this can be applied to the WSDL file.</p>
+
+  <p>Lets look at the following WSDL excerpt:</p>
+  <pre>
+&lt;portType name="AddNumbersImpl"&gt;
+    &lt;operation name="addNumbers"&gt;
+      &lt;input message="tns:addNumbers"/&gt;
+      &lt;output message="tns:addNumbersResponse"/&gt;
+    &lt;/operation&gt;
+&lt;/portType&gt;
+&lt;binding name="AddNumbersImplBinding" type="tns:AddNumbersImpl"&gt;
+    &lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/&gt;
+    &lt;operation name="addNumbers"&gt;
+      &lt;soap:operation soapAction=""/&gt;
+      &lt;input&gt;
+        &lt;soap:body use="literal"/&gt;&lt;/input&gt;
+      &lt;output&gt;
+        &lt;soap:body use="literal"/&gt;
+      &lt;/output&gt;
+    &lt;/operation&gt;
+&lt;/binding&gt;
+</pre>
+
+  <p>In order to generate a service endpoint interface with asynchronous methods the following binding declaration file will be passed to <code>wscompile</code>:</p>
+  <pre>
+&lt;bindings
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    wsdlLocation="http://localhost:8080/jaxrpc-async/addnumbers?WSDL"
+    xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    &lt;bindings node="wsdl:definitions"&gt;
+        &lt;package name="async.client"/&gt;
+        &lt;enableAsyncMapping&gt;true&lt;/enableAsyncMapping&gt;
+    &lt;/bindings&gt;
+&lt;/bindings&gt;
+</pre>
+
+  <p>It produces the following service endpoint interface (annotations are removed from the synchronous method for better readability):</p>
+  <pre>
+    //synchronous method
+    public int addNumbers(int number1, int number2) throws java.rmi.RemoteException;
+    //async polling Method
+    public Response&lt;AddNumbersResponse&gt; addNumbers(int number1, int number2);
+    //async callback Method
+    public Future&lt;?&gt; addNumbers(int number1, int number2, AsyncHandler&lt;AddNumbersResponse&gt;);
+</pre>
+
+  <h3>1.1 Async Polling</h3>
+  <pre>
+    //async polling Method
+    public Response&lt;AddNumbersResponse&gt; addNumbers(int number1, int number2);
+</pre>
+
+  <p>Typically a client application will invoke the async polling operation on the stub and check for a response on the returned <code>Response</code> object. The response is available when <code>Response.isDone</code> returns true.</p>
+  <pre>
+        javax.xml.ws.Response&lt;AddNumbersResponse&gt; resp = port.addNumbersAsync(10, 20);
+        while(!resp.isDone()){
+           //do something
+        }
+        System.out.println("The sum is: " + resp.get().getReturn());
+        ...
+</pre>
+
+  <h3>1.2 Async Callback</h3>
+  <pre>
+    //async callback Method
+    public Future&lt;?&gt; addNumbers(int number1, int number2, AsyncHandler&lt;AddNumbersResponse&gt;);
+</pre>
+
+  <p>Here the client application provides an <code>AsyncHandler</code> by implementing the <code>javax.xml.ws.AsyncHandler&lt;T&gt;</code> interface.</p>
+  <pre>
+    /**
+     *
+     * Async callback handler
+     */
+    class AddNumbersCallbackHandler implements AsyncHandler&lt;AddNumbersResponse&gt; {
+        private AddNumbersResponse output;
+        /*
+         *
+         * @see javax.xml.ws.AsyncHandler#handleResponse(javax.xml.ws.Response)
+         */
+        public void handleResponse(Response&lt;AddNumbersResponse&gt; response) {
+            try {
+                output = response.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        AddNumbersResponse getResponse(){
+            return output;
+        }
+    }
+</pre>
+
+  <p>The async handler is then passed as the last parameter of the async callback method:</p>
+  <pre>
+    //instantiates the callback handler
+    AddNumbersCallbackHandler callbackHandler = new AddNumbersCallbackHandler();
+
+    //invoke the async callback method
+    Future&lt;?&gt; resp = port.addNumbersAsync(number1, number2, callbackHandler);
+    while(!resp.isDone()){
+           //do something
+    }
+    System.out.println("The sum is: " + callbackHandler .getResponse().getReturn());
+</pre>
+
+  <h2>2. Asynchronous Invocation Using Dispatch</h2>
+
+  <h2><span style="font-weight: medium"><font size="3">For information on the Dispatch API and asynchronous invocations see</font> <a href="dispatch.html"><font size="3">Dispatch and Asynchronous Invocations</font></a></span></h2>
+  <hr>
+
+  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>

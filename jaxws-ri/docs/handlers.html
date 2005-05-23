@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+
+  <title>Java(tm) API for XML-based RPC 2.0 Handler Framework</title>
+  <meta name="CREATED" content="20050401;13114464">
+  <meta name="CHANGED" content="20050401;13120495">
+</head>
+
+<body lang="en-US" bgcolor="#FFFFFF" dir="ltr">
+  <h1>JAX-RPC 2.0 Early Access<br>
+  Handler Framework</h1>
+  <hr>
+
+  <p>Last Modified: 04/04/05</p>
+
+  <h2>Handler Types</h2>
+
+  <p>JAX-RPC 2.0 defines two new handler interfaces, <code>LogicalHandler</code> and <code>SOAPHandler</code>. Both interfaces extend <code>AbstractHandler</code>, which replaces <code>handleRequest</code> and <code>handleResponse</code> with a common <code>handleMessage(C context)</code> method, where <code>C</code> extends <code>MessageContext</code>. A property in the <code>MessageContext</code> object is used to determine what type of message is being processed. For backwards compatibilty, JAX-RPC 1.1 <code>Handler</code> objects are still supported. Together with <code>SOAPHandler</code>, these are known as protocol handlers, and they have access to the full soap message including headers. Logical handlers are independent of protocol and have access to the payload of the message.</p>
+
+  <p>The new handler types can now be written without casting the message context object that is passed to them. For instance:</p>
+  <pre>
+public class MyLogicalHandler implements LogicalHandler&lt;LogicalMessageContext&gt; {
+    public boolean handleMessage(LogicalMessageContext messageContext) {
+        LogicalMessage msg = messageContext.getLogicalMessage();
+        return true;
+    }
+    // other methods
+}
+
+public class MySOAPHandler implements SOAPHandler&lt;SOAPMessageContext&gt; {
+
+    public boolean handleMessage(SOAPMessageContext messageContext) {
+        SOAPMessage msg = messageContext.getSOAPMessage();
+        return true;
+    }
+    // other methods
+}
+</pre>
+
+  <p>Similarly, the new handlers define a <code>handleFault(C context)</code> method that is used for fault-specific handling. Besides the standard lifecycle methods and new handle methods, a <code>close(C context)</code> method has been added that is called on the handlers at the conclusion of a message exchange pattern. This allows handlers to clean up any resources that were used for the processing of a request-only or request/response exchange.</p>
+
+  <h2>MessageContext</h2>
+
+  <p>In the examples above, the <code>LogicalMessage</code> object allows a handler to get and set the message payload either as a JAXB object or as a <code>javax.xml.transform.Source</code>. The <code>SOAPMessage</code> object is the same as in JAX-RPC 1.1, and allows access to headers and the SOAP body of the message.</p>
+
+  <p>Both context objects extend <code>MessageContext</code>, which holds properties that the handlers can use to communicate with each other. A standard property <code>MessageContext.MESSAGE_OUTBOUND_PROPERTY</code> holds a <code>Boolean</code> that is used to determine the direction of a message. For example, during a request, the property would be <code>Boolean.TRUE</code> when seen by a client handler and <code>Boolean.FALSE</code> when seen by a server handler.</p>
+
+  <p>The message context object can also hold properties set by the client or provider. For instance, stubs and dispatch objects both extend <code>BindingProvider</code>. A <code>JAXRPCContext</code> object can be obtained from both to represent the request or response context. Properties set in the request context can be read by the handlers, and properties set by the handler will be available in the response context. On the server end, a context object is passed into the <code>invoke</code> method of a <code>Provider</code>.</p>
+
+  <h2>Handler Chain Configuration</h2>
+
+  <h3>Static Case</h3>
+
+  <p>Starting from a WSDL file, handler chain configuration is similar to the configuration used in JAX-RPC 1.1. A <code>&lt;handlerChains&gt;</code> element is added to the customization file. The following is a simple handler chain with one handler on the server side:</p>
+  <pre>
+&lt;handlerChains xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config"&gt;
+    &lt;chain runAt="server"&gt;
+        &lt;handler className="fromwsdlhandler.common.LoggingHandler"/&gt;
+    &lt;/chain&gt;
+&lt;/handlerChains&gt;
+</pre>
+
+  <p>Next is a more complete example with multiple handlers. The example service has two ports. Note that one handler is set on only one port. Thus, it will be invoked only when a message is sent to that port in the service. The last handler is specific to the SOAP protocol binding. Thus, it will invoked on any SOAP request. If neither port nor protocol is specified, the handler is included in any handler chain for the service. This example shows how to include roles and understood headers as well:</p>
+  <pre>
+&lt;handlerChains xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config"&gt;
+    &lt;chain runAt="server"
+            roles="http://example.com/role1 http://example.com/role2"&gt;
+        &lt;handler className="com.example.MyLogicalHandler"
+                port="ns2:Port1" xmlns:ns2="urn:myservice"&gt;
+            &lt;property name="initProp" value="initPropValue"/&gt;
+        &lt;/handler&gt;
+        &lt;handler className="com.example.MySOAPHandler"/&gt;
+        &lt;handler className="com.example.AnotherSOAPHandler"
+                headers="ns3:testheader1 ns3:testheader2"
+                xmlns:ns3="http://example.com/someheader"/&gt;
+        &lt;handler className="com.example.MySOAPHandler"
+                protocolBinding="http://schemas.xmlsoap.org/wsdl/soap/http"&gt;
+        &lt;/handler&gt;
+    &lt;/chain&gt;
+&lt;/handlerChains&gt;
+</pre>
+
+  <p>The <code>&lt;chain&gt;</code> element can contain a mix of handler types with some specific to a port, protocol, or the service itself. When the handler chain is created for a given binding, the order will be changed to:</p>
+
+  <ol>
+    <li>Per-service logical handlers</li>
+
+    <li>Per-port logical handlers</li>
+
+    <li>Per-protocol binding logical handlers</li>
+
+    <li>Per-service protocol handlers</li>
+
+    <li>Per-port protocol handlers</li>
+
+    <li>Per-protocol binding protocol handlers</li>
+  </ol>
+
+  <p>For the client, the same format is used as for the server. The <code>runAt</code> attribute of the <code>&lt;chain&gt;</code> element is set to <code>client</code> instead.</p>
+
+  <p>Starting from a Java class, annotations are used to describe the handler chain. The following example uses the <code>@HandlerChain</code> annotation to refer to a file describing the chain:</p>
+  <pre>
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
+
+@WebService
+@HandlerChain( file="handlers.xml", name="Chain1")
+public class MyServiceImpl {
+    // implementation of class
+}
+</pre>
+
+  <p>An example <code>handlers.xml</code> file is shown below:</p>
+  <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;jws:handler-config xmlns:jws="http://www.bea.com/xml/ns/jws"&gt;
+    &lt;jws:handler-chain&gt;
+        &lt;jws:handler-chain-name&gt;Chain1&lt;/jws:handler-chain-name&gt;
+        &lt;jws:handler&gt;
+            &lt;jws:handler-name&gt;com.example.MySOAPHandler&lt;/jws:handler-name&gt;
+            &lt;jws:handler-class&gt;com.example.MySOAPHandler&lt;/jws:handler-class&gt;
+        &lt;/jws:handler&gt;
+    &lt;/jws:handler-chain&gt;
+&lt;/jws:handler-config&gt;
+</pre>
+
+  <p>For full details on handler annotations, see the <a href="http://jcp.org/en/jsr/detail?id=181">JSR 181</a> specification. For the JAX-RPC 2.0 release, the <code>handlers.xml</code> file must be in the classpath when <code>apt</code> is invoked to create the service. When packaging the service with <code>wsdeploy</code>, the file must again be in the classpath within the WAR file, either directly under <code>WEB-INF/classes</code> or further down in the same package as the service class file.</p>
+
+  <h3>Programmatic Case</h3>
+
+  <p>Handler chains may be configured on the client side at runtime either by using the <code>HandlerRegistry</code> or by setting a chain directly on a <code>BindingProvider</code> (e.g., a <code>Dispatch</code> object or a statically generated <code>Stub</code>.) The registry object can be obtained directly from a JAX-RPC service. The handler registry has methods for getting and setting <code>java.util.List</code>s of <code>HandlerInfo</code> objects which decribe the handlers. Handlers may be set on a per-port, per-protocol binding, or per-service basis. This example shows how to add a chain with one handler to a service:</p>
+  <pre>
+    Service myService = // create service
+    service.createPort(...); // needed to create Dispatch
+
+    HandlerRegistry registry = service.getHandlerRegistry();
+    List&lt;HandlerInfo&gt; handlerList = new ArrayList&lt;HandlerInfo&gt;();
+    HandlerInfo hInfo = new HandlerInfo();
+    hInfo.setHandlerClass(MyHandler.class);
+    handlerList.add(hInfo);
+    registry.setHandlerChain(handlerList);
+
+    Dispatch myDispatch = service.createDispatch(...);
+    Stub myStub = service.getPort(...);
+</pre>
+
+  <p>For the <code>Dispatch</code> and <code>Stub</code> objects obtained above, a snapshot of the applicable handler chain is set on the objects. Further changes to the registry do not affect existing binding providers.</p>
+
+  <p>With an existing binding provider, a <code>Binding</code> object can be obtained with <code>getBinding</code>. The binding object has a <code>setHandlerChain</code> method that takes a list of handler info objects that can be used to set a new handler chain on the client. When the SOAP protocol is being used, the binding can be cast to a <code>SOAPBinding</code> object that can be used to programmatically set the SOAP roles for the binding.</p>
+
+  <h2>Handler Samples</h2>
+
+  <p>The <code>fromjavahandler</code> and <code>fromwsdlhandler</code> samples set a <code>SOAPHandler</code> on the client and server. This handler simply outputs the contents of the SOAP message and can be used to see the requests and responses being passed back and forth. See the sample documentation for information on running the samples.</p>
+  <hr>
+
+  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>

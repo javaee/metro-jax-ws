@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<project name="IStack On Sun Java System App Server 8.1" default="help" basedir=".">
+	<property name="as.home" value="${ant.home}/../.."/>
+	<property name="as.lib.home" value="${as.home}/lib"/>
+	<property name="domain" value="domain1"/>
+	<property name="istack" value="${as.home}/.istack"/>
+
+	<target name="init">
+		<condition property="isNotWindows">
+			<not>
+				<os family="windows" />
+			</not>
+		</condition>
+
+		<condition property="isWindows">
+			<os family="windows" />
+		</condition>
+		<mkdir dir="${istack}"/>
+	</target>
+	
+	<target name="update-scripts" depends="init">
+		<antcall target="update-shell-scripts"/>
+		<antcall target="update-batch-scripts"/>
+	</target>
+	
+	<target name="update-shell-scripts" if="isNotWindows">
+		<copy toDir="${istack}" overwrite="true">
+			<fileset dir="${as.home}/bin">
+				<include name="wscompile, wsdeploy"/>
+			</fileset>
+		</copy>
+
+		<!-- Remove existing references to jaxrpc related jars -->
+		<replace
+			file='${as.home}/bin/wscompile'
+			token='"$AS_WEBSERVICES_LIB"/jaxrpc-api.jar:"$AS_WEBSERVICES_LIB"/jax-qname.jar:"$AS_WEBSERVICES_LIB"/jaxrpc-impl.jar:'
+			value=''/>
+		<replace
+			file='${as.home}/bin/wscompile'
+			token='"$AS_WEBSERVICES_LIB"/saaj-api.jar:'
+			value=''/>
+		<!-- Change the classpath in wscompile script -->
+		<replace file="${as.home}/bin/wscompile" >
+			<replacetoken><![CDATA["$AS_WEBSERVICES_LIB"/endorsed]]></replacetoken>
+			<replacevalue><![CDATA["$AS_WEBSERVICES_LIB"/endorsed
+JAXRPC_IMPL_JARS=$AS_WEBSERVICES_LIB/jaxrpc-api.jar:$AS_WEBSERVICES_LIB/jaxrpc-impl.jar:$AS_WEBSERVICES_LIB/jaxrpc-spi.jar:$AS_WEBSERVICES_LIB/pept.jar:$AS_WEBSERVICES_LIB/jsr173_api.jar:$AS_WEBSERVICES_LIB/jsr181-api.jar:$AS_WEBSERVICES_LIB/sjsxp.jar:
+JAXB_IMPL_JARS=$AS_WEBSERVICES_LIB/jaxb-api.jar:$AS_WEBSERVICES_LIB/jaxb-impl.jar:$AS_WEBSERVICES_LIB/jaxb-libs.jar:$AS_WEBSERVICES_LIB/jaxb-xjc.jar:$AS_WEBSERVICES_LIB/istackp.jar
+SAAJ_IMPL_JARS=$AS_WEBSERVICES_LIB/saaj-api.jar:$AS_WEBSERVICES_LIB/saaj-impl.jar:
+]]></replacevalue>
+		</replace>
+		<replace
+			file="${as.home}/bin/wscompile"
+			token="CLASSPATH="
+			value='CLASSPATH="$JAXB_IMPL_JARS":"$JAXRPC_IMPL_JARS":"$SAAJ_IMPL_JARS":'/>
+
+		<!-- Remove existing references to jaxrpc related jars -->
+		<replace
+			file='${as.home}/bin/wsdeploy'
+			token='"$AS_WEBSERVICES_LIB"/jaxrpc-api.jar:"$AS_WEBSERVICES_LIB"/jax-qname.jar:"$AS_WEBSERVICES_LIB"/jaxrpc-impl.jar:'
+			value=''/>
+		<replace
+			file='${as.home}/bin/wsdeploy'
+			token='"$AS_WEBSERVICES_LIB"/saaj-api.jar:'
+			value=''/>
+		<!-- Change the classpath in wsdeploy script -->
+		<replace file="${as.home}/bin/wsdeploy" >
+			<replacetoken><![CDATA["$AS_WEBSERVICES_LIB"/endorsed]]></replacetoken>
+			<replacevalue><![CDATA["$AS_WEBSERVICES_LIB"/endorsed
+JAXRPC_IMPL_JARS=$AS_WEBSERVICES_LIB/jaxrpc-api.jar:$AS_WEBSERVICES_LIB/jaxrpc-impl.jar:$AS_WEBSERVICES_LIB/jaxrpc-spi.jar:$AS_WEBSERVICES_LIB/pept.jar:$AS_WEBSERVICES_LIB/jsr173_api.jar:$AS_WEBSERVICES_LIB/jsr181-api.jar:$AS_WEBSERVICES_LIB/sjsxp.jar:
+JAXB_IMPL_JARS=$AS_WEBSERVICES_LIB/jaxb-api.jar:$AS_WEBSERVICES_LIB/jaxb-impl.jar:$AS_WEBSERVICES_LIB/jaxb-libs.jar:$AS_WEBSERVICES_LIB/jaxb-xjc.jar:$AS_WEBSERVICES_LIB/istackp.jar
+SAAJ_IMPL_JARS=$AS_WEBSERVICES_LIB/saaj-api.jar:$AS_WEBSERVICES_LIB/saaj-impl.jar:
+	]]></replacevalue>
+		</replace>
+		<replace
+			file="${as.home}/bin/wsdeploy"
+			token="CLASSPATH="
+			value='CLASSPATH="$JAXB_IMPL_JARS":"$JAXRPC_IMPL_JARS":"$SAAJ_IMPL_JARS":'/>
+                 <chmod perm="+x">
+                    <fileset dir="${as.home}/bin" includes="wscompile, wsdeploy"/>
+                 </chmod>
+		
+	</target>
+	
+	<target name="update-batch-scripts" if="isWindows">
+		<copy toDir="${istack}" overwrite="true">
+			<fileset dir="${as.home}/bin">
+				<include name="wscompile.bat, wsdeploy.bat"/>
+			</fileset>
+		</copy>
+
+		<!-- Remove existing references to jaxrpc related jars -->
+		<replace
+			file="${as.home}/bin/wscompile.bat"
+			token="%AS_WEBSERVICES_LIB%\jaxrpc-api.jar;%AS_WEBSERVICES_LIB%\jax-qname.jar;%AS_WEBSERVICES_LIB%\jaxrpc-impl.jar;"
+			value=""/>
+		<replace
+			file='${as.home}/bin/wscompile.bat'
+			token='%AS_WEBSERVICES_LIB%\saaj-api.jar;'
+			value=''/>
+		<!-- Change the classpath in wscompile.bat script -->
+		<replace file="${as.home}/bin/wscompile.bat" >
+			<replacetoken><![CDATA[%AS_INSTALL%\lib\xercesImpl.jar]]></replacetoken>
+			<replacevalue><![CDATA[%AS_INSTALL%\lib\xercesImpl.jar
+set JAXRPC_IMPL_JARS=%AS_WEBSERVICES_LIB%\jaxrpc-api.jar;%AS_WEBSERVICES_LIB%\jaxrpc-impl.jar;%AS_WEBSERVICES_LIB%\jaxrpc-spi.jar;%AS_WEBSERVICES_LIB%\pept.jar;%AS_WEBSERVICES_LIB%\jsr173_api.jar;%AS_WEBSERVICES_LIB%\jsr181-api.jar;%AS_WEBSERVICES_LIB%\sjsxp.jar;
+set JAXB_IMPL_JARS=%AS_WEBSERVICES_LIB%\jaxb-api.jar;%AS_WEBSERVICES_LIB%\jaxb-impl.jar;%AS_WEBSERVICES_LIB%\jaxb-libs.jar;%AS_WEBSERVICES_LIB%\jaxb-xjc.jar;%AS_WEBSERVICES_LIB%\istackp.jar
+set SAAJ_IMPL_JARS=%AS_WEBSERVICES_LIB%\saaj-api.jar;%AS_WEBSERVICES_LIB%\saaj-impl.jar;
+]]></replacevalue>
+		</replace>
+		<replace
+			file="${as.home}/bin/wscompile.bat"
+			token="set CLASSPATH="
+			value="set CLASSPATH=%JAXB_IMPL_JARS%;%JAXRPC_IMPL_JARS%;%SAAJ_IMPL_JARS%;"/>
+
+		<!-- Remove existing references to jaxrpc related jars -->
+		<replace
+			file="${as.home}/bin/wsdeploy.bat"
+			token="%AS_WEBSERVICES_LIB%\jaxrpc-api.jar;%AS_WEBSERVICES_LIB%\jax-qname.jar;%AS_WEBSERVICES_LIB%\jaxrpc-impl.jar;"
+			value=""/>
+		<replace
+			file='${as.home}/bin/wsdeploy.bat'
+			token='%AS_WEBSERVICES_LIB%\saaj-api.jar;'
+			value=''/>
+		<!-- Change the classpath in wsdeploy.bat script -->
+		<replace file="${as.home}/bin/wsdeploy.bat" >
+			<replacetoken><![CDATA[%AS_INSTALL%\lib\xercesImpl.jar]]></replacetoken>
+			<replacevalue><![CDATA[%AS_INSTALL%\lib\xercesImpl.jar
+set JAXRPC_IMPL_JARS=%AS_WEBSERVICES_LIB%\jaxrpc-api.jar;%AS_WEBSERVICES_LIB%\jaxrpc-impl.jar;%AS_WEBSERVICES_LIB%\jaxrpc-spi.jar;%AS_WEBSERVICES_LIB%\pept.jar;%AS_WEBSERVICES_LIB%\jsr173_api.jar;%AS_WEBSERVICES_LIB%\jsr181-api.jar;%AS_WEBSERVICES_LIB%\sjsxp.jar;
+set JAXB_IMPL_JARS=%AS_WEBSERVICES_LIB%\jaxb-api.jar;%AS_WEBSERVICES_LIB%\jaxb-impl.jar;%AS_WEBSERVICES_LIB%\jaxb-libs.jar;%AS_WEBSERVICES_LIB%\jaxb-xjc.jar;%AS_WEBSERVICES_LIB%\istackp.jar
+set SAAJ_IMPL_JARS=%AS_WEBSERVICES_LIB%\saaj-api.jar;%AS_WEBSERVICES_LIB%\saaj-impl.jar;
+]]></replacevalue>
+		</replace>
+		<replace
+			file="${as.home}/bin/wsdeploy.bat"
+			token="set CLASSPATH="
+			value="set CLASSPATH=%JAXB_IMPL_JARS%;%JAXRPC_IMPL_JARS%;%SAAJ_IMPL_JARS%;"/>
+	</target>
+
+	<target name="install">
+		<echo message="Installing integrated stack on ${as.home} ..." />
+		<copy toDir="${istack}">
+			<fileset dir="lib">
+				<include name="jaxrpc-*.jar"/>
+				<include name="saaj-*.jar"/>
+			</fileset>
+		</copy>
+		<copy toDir="${as.lib.home}" overwrite="true">
+			<fileset dir="lib">
+				<include name="*.jar"/>
+				<exclude name="mail.jar, activation, xsdlib.jar, relaxngDatatype.jar, xercesImpl.jar, xalan.jar"/>
+			</fileset>
+		</copy>
+
+		<!-- Add the JAX-RPC 2.0 and JAXB 2.0 jars to classpath-prefix -->
+		<copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${istack}/${domain}-domain.xml"/>
+		<replace file="${as.home}/domains/${domain}/config/domain.xml" >
+			<replacetoken><![CDATA[classpath-suffix="$]]></replacetoken>
+			<replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/jaxrpc-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxrpc-spi.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxrpc-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-libs.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-api.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar" classpath-suffix="$]]></replacevalue>
+		</replace>
+			
+		<antcall target="update-scripts"/>
+
+		<echo message="... done."/>
+	</target>
+        
+        <target name="help">
+            <echo message="install:    Installs the JAX-RPC 2.0 EA on Application Server"/>
+            <echo message="            Usage: AS_HOME/bin/asant install"/>
+        </target>
+</project>

@@ -1,0 +1,1902 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+
+  <title>Java(TM) API for XML-based RPC (JAX-RPC) 2.0 Tools</title>
+  <meta name="CREATED" content="20050329;10375410">
+  <meta name="CHANGED" content="20050401;8213207">
+</head>
+
+<body lang="en-US" dir="ltr">
+  <h1>JAX-RPC 2.0 Early Access Tools</h1>
+  <hr>
+
+  <p>Last Modified: 04/04/05</p>
+
+  <h1>Contents</h1>
+
+  <ul>
+    <li>
+      <a href="#commandline">Command-line tools</a>&nbsp;
+
+      <ul>
+        <li><a href="#apttool">apt</a></li>
+
+        <li><a href="#wscompiletool">wscompile</a></li>
+
+        <li><a href="#wsdeploytool">wsdeploy</a></li>
+
+        <li><a href="#how">How do I pick a tool ?</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="#anttask">Ant Tasks</a>
+
+      <ul>
+        <li><a href="#apttask">apt</a></li>
+
+        <li><a href="#wscompiletask">wscompile</a></li>
+
+        <li><a href="#wsdeploytask">wsdeploy</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2><a name="commandline" id="commandline"></a>Command-line Tools</h2>
+
+  <h2><a name="apttool" id="apttool"></a><code>apt</code></h2>
+
+  <p>The <code>apt</code> tool provides a facility for programmatically processing the annotations added to Java by <a href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</a>, <i>Metadata Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming Language</i>. In brief, JSR 175 allows programmers to declare new kinds of structured modifiers that can be associated with program elements, fields, methods, classes, etc.</p>
+
+  <p>The <code>apt</code> tool generates the portable artifacts (WSDL file, schema files, JavaBeans) used in JAX-RPC services.&nbsp;</p>
+
+  <h3>Syntax</h3>
+  <pre>
+apt &lt;apt and javac options&gt; &lt;source files&gt;
+</pre>
+
+  <p>The following table lists the <code>apt</code> options.</p>
+
+  <p align="center">Table 1-1 apt Options</p>
+
+  <table width="847" border="1" cellpadding="2" cellspacing="3">
+    <col width="220">
+    <col width="608">
+
+    <tbody>
+      <tr>
+        <th width="220">
+          <p align="center">Option</p>
+        </th>
+
+        <th width="608">
+          <p align="center">Description</p>
+        </th>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-classpath &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Specifies where to find user class files and annotation processor factories</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-cp &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Same as <code>-classpath &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-d &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Specifies where to place processor and <code>javac</code> generated class files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p><code>-s &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p>Specifies where to place processor generated source files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-source &lt;release&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Provide source compatibility with the specified release</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p><code>-version</code></p>
+        </td>
+
+        <td width="608">
+          <p>Version information</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-help</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Print a synopsis of standard options; use <code>javac -help</code> for more options</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-X</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Print a synopsis of non-standard options</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-J&lt;flag&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Pass &lt;flag&gt; directly to the runtime system</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-A[key[=value]]</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Options to pass to annotation processors</p>
+
+          <p align="left">JAX-RPC uses <code>-And=&lt;directory&gt;</code> to specify the directory to generate the WSDL and schema files</p>
+
+          <p align="left">JAX-RPC uses <code>-Averbose=true</code> to dump verbose messages from its <code>AnnotationProcessor</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-nocompile</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Do not compile source files to class files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-print</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Print out a textual representation of the specified types</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p><code>-factorypath &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p>Specify where to find annotation processor factories</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-factory &lt;class&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Name of <code>AnnotationProcessorFactory</code> to use; bypasses default discovery process</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-g</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Generate all debugging info</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-g:none</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Generate no debugging info</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-g:{lines,vars,source}</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Generate only some debugging info</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-nowarn</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Generate no warnings</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-verbose</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Output messages about what <code>apt</code> and <code>javac</code> are doing</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-deprecation</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Output source locations where deprecated APIs are used</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-sourcepath &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Specify where to find input source files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-bootclasspath &lt;path&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Override location of bootstrap class files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-endorseddirs &lt;dirs&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Override location of endorsed standards path</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-encoding &lt;encoding&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Specify character encoding used by source files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="220">
+          <p align="left"><code>-target &lt;release&gt;</code></p>
+        </td>
+
+        <td width="608">
+          <p align="left">Generate class files for a specific virtual machine version</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>It is important when using <code>apt</code> with JAX-RPC to specify all of the JAR files in the distributed JAX-RPC bundle in the classpath passed to <code>apt</code>. The <code>-sourcepath &lt;path&gt;</code> option must also be provided so that <code>apt</code> and the JAX-RPC annotation processor can find all types referenced by a web service endpoint implementation class.</p>
+
+  <p>For more information on apt please refer to the <code>apt</code> documentation <a href="http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html">here</a>.</p>
+
+  <h2><a name="wscompiletool" id="wscompiletool"></a>wscompile</h2>
+
+  <p>The <code>wscompile</code> tool generates JAX-RPC portable (service endpoint interface, Service, etc.) and non-portable artifacts (stubs, ties, etc.), JAXB artifacts, and WSDL files used in JAX-RPC clients and services. The tool reads a WSDL or a web service endpoint class and generates all the required artifacts for web service development, deployment, and invocation.</p>
+
+  <h3>Syntax</h3>
+  <pre>
+wscompile [options] &lt;wsdl&gt; | &lt;SEI class&gt;
+</pre>
+
+  <p>The following table lists the <code>wscompile</code> options. Note that exactly one of the <code>-import</code>, <code>-define</code>, or <code>-gen</code> options must be specified.</p>
+
+  <p align="center">Table 1-2 wscompile Options</p>
+
+  <table border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <th>
+          <p align="center">Option</p>
+        </th>
+
+        <th>
+          <p align="center">Description</p>
+        </th>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-classpath &lt;path&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify where to find input class files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-cp &lt;path&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Same as <code>-classpath &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-d &lt;directory&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify where to place generated output files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p><code>-b &lt;path&gt;</code></p>
+        </td>
+
+        <td>
+          <p>Specify external JAX-RPC or JAXB binding files (Each <code>&lt;file&gt;</code> must have its own <code>-b</code>)</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-define</code></p>
+        </td>
+
+        <td>
+          <p align="left">Read the service endpoint interface, define a service</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p><code>-extension</code></p>
+        </td>
+
+        <td>
+          <p>Do not strictly follow the JAX-RPC 2.0 specification</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-f:&lt;features&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Enable the given features (See the below below table for a list of features. When specifying multiple features, separate them with commas.)</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-features:&lt;features&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Same as <code>-f:&lt;features&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-g</code></p>
+        </td>
+
+        <td>
+          <p align="left">Generate debugging info</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-gen</code></p>
+        </td>
+
+        <td>
+          <p align="left">Same as <code>-gen:client</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-gen:client</code></p>
+        </td>
+
+        <td>
+          <p align="left">Generate client artifacts (stubs, etc.)</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-gen:server</code></p>
+        </td>
+
+        <td>
+          <p align="left">Generate server artifacts (ties, etc.) and the WSDL file. (If you are using <code>wsdeploy</code> you do not specify this option.)</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p><code>-help</code></p>
+        </td>
+
+        <td>
+          <p>Display help</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-httpproxy:&lt;host&gt;:&lt;port&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify an HTTP proxy server (port defaults to 8080)</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-import</code></p>
+        </td>
+
+        <td>
+          <p align="left">Read a WSDL file, generate the service endpoint interface, and a template of the class that implements the interface</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-keep</code></p>
+        </td>
+
+        <td>
+          <p align="left">Keep generated files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-model &lt;file&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Write the internal model to the given file</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-nd &lt;directory&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify where to place non-class generated files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-s &lt;directory&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify where to place generated source files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-source &lt;version&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Generate code for the specified JAX-RPC SI version.</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-verbose</code></p>
+        </td>
+
+        <td>
+          <p align="left">Output messages about what the compiler is doing</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-version</code></p>
+        </td>
+
+        <td>
+          <p align="left">Print version information</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The features currently shown by <code>wscompile</code> tool are for future use. <code>wscompile -source 1.1.2 -help</code> gives the help message for JAX-RPC 1.1.</p>
+
+  <p>Multiple JAX-RPC and JAXB binding files can be specified using <code>-b</code> option and they can be used to customize various things like package names, bean names, etc. More information on JAX-RPC and JAXB binding files can be found in the <a href="customizations.html">customization documentation</a>.</p>
+
+  <h2><a name="wsdeploytool" id="wsdeploytool"></a>wsdeploy</h2>
+
+  <p>The <code>wsdeploy</code> tool reads a WAR file and the <code>jaxrpc-ri.xml</code> file and then generates another WAR file that is ready for deployment. Behind the scenes, <code>wsdeploy</code> runs <code>wscompile</code> with the <code>-gen:server</code> option. The <code>wscompile</code> command generates classes, modifies the deployment descriptors that <code>wsdeploy</code> includes in the generated WAR file.</p>
+
+  <h3>Syntax</h3>
+
+  <p>The syntax for <code>wsdeploy</code> is as follows:</p>
+  <pre>
+wsdeploy -o &lt;output-war-file&gt; &lt;input-war-file&gt; &lt;options&gt;
+</pre>
+
+  <p>The following table lists the tool's options. Note that the <code>-o</code> option is required.</p>
+
+  <p align="center">Table 1-3 <code>wsdeploy</code> Options</p>
+
+  <table border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <th>
+          <p align="center">Option</p>
+        </th>
+
+        <th>
+          <p align="center">Description</p>
+        </th>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-classpath &lt;path&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify an optional classpath</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-keep</code></p>
+        </td>
+
+        <td>
+          <p align="left">Keep temporary files</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-o &lt;output WAR file&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify where to place the generated WAR file</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-source &lt;version&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Generate code for the specified JAX-RPC SI version. Supported versions are: 1.0.1, 1.0.3, 1.1, and 2.0 (default).</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-tmpdir &lt;directory&gt;</code></p>
+        </td>
+
+        <td>
+          <p align="left">Specify the temporary directory to use</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-verbose</code></p>
+        </td>
+
+        <td>
+          <p align="left">Output messages about what the compiler is doing</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p align="left"><code>-version</code></p>
+        </td>
+
+        <td>
+          <p align="left">Print version information</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>The Input WAR File</h4>
+
+  <p>Typically, one creates the input WAR file with a GUI development tool or with the <code>ant</code> <code>war</code> task from the generated artifacts from <code>wscompileor</code> apt tools.</p>
+
+  <p>For example, a sample input WAR file starting from a WSDL file will generate:<br></p>
+  <pre>
+WEB-INF/classes/hello/HelloIF.class          SEI
+WEB-INF/classes/hello/HelloImpl.class        Endpoint
+WEB-INF/jaxrpc-ri.xml                        JAX-RPC deployment descriptor
+WEB-INF/web.xml                              Web deployment descriptor
+WEB-INF/HelloService.wsdl                    WSDL
+schema.xsd                                   WSDL imports this Schema
+WEB-INF/model-hello.xml.gz                   wscompile generated JAX-RPC model file
+</pre>
+
+  <p>The model file is not required in the WAR when the web service is developed from Java.</p>
+
+  <h4>The <code>jaxrpc-ri.xml</code> File</h4>
+
+  <p>The following shows a <code>jaxrpc-ri.xml</code> file for a simple <code>HelloWorld</code> service.</p>
+  <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;webServices
+       xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/dd"
+       version="1.0"
+       targetNamespaceBase="http://com.test/wsdl"
+       typeNamespaceBase="http://com.test/types"
+       urlPatternBase="/ws"&gt;
+       &lt;endpoint
+           name="MyHello"
+           displayName="HelloWorld Service"
+           description="A simple web service"
+           wsdl="/WEB-INF/HelloService.wsdl"
+           model="/<code>WEB-INF/model-hello.xml.gz"
+           interface="hello.HelloIF"
+           implementation="hello.HelloImpl"/&gt;
+       &lt;endpointMapping
+           endpointName="MyHello"
+           urlPattern="/hello"/&gt;
+&lt;/webServices&gt;
+</code>
+</pre>
+
+  <p>Remember these requirements when building an input WAR:</p>
+
+  <ul>
+    <li>When a web service is developed from Java, <code>model</code> is not required in the WAR, and in <code>jaxrpc-ri.xml</code></li>
+
+    <li>If the endpoint doesn't have a service endpoint interface, the <code>interfacevalue needs to be the endpoint class itself.</code></li>
+
+    <li>Copy the WSDL imported schema documents with the correct directory structure in the WAR, so that it is accessible from the client.</li>
+  </ul>
+
+  <p>The <code>&lt;webServices&gt;</code> element must contain one or more <code>&lt;endpoint&gt;</code> elements. In this example, note that the interface and implementation attributes of <code>&lt;endpoint&gt;</code> specify the service's interface and implementation class. The <code>&lt;endpointMapping&gt;</code> element associates the service name with a URL.</p>
+
+  <h2><a name="how" id="how"></a>How do I pick a tool?</h2>
+
+  <p>The following lists the process to create a web service starting from Java sources, classes, and a WSDL file (server side):</p>
+
+  <ol>
+    <li>Starting from Java sources:
+
+      <ol>
+        <li>Use <code>apt</code> to generate the artifacts: a WSDL file, schema documents, and other Java artifacts.</li>
+
+        <li>Package the WSDL file, schema documents, <code>web.xml</code>, <code>jaxrpc-ri.xml</code>, service endpoint interface and implementation class, value types, and generated classes, if any, into a WAR file, called a raw WAR.</li>
+
+        <li>Feed the raw WAR file to <code>wsdeploy</code> to generate a cooked WAR.</li>
+
+        <li>Deploy the cooked WAR to a web container.</li>
+      </ol>
+    </li>
+
+    <li>Starting from Java classes:
+
+      <ol>
+        <li>Use <code>wscompile</code> to generate portable artifacts: the WSDL file, schema documents, and other artifacts.</li>
+
+        <li>Package the WSDL, schema documents, <code>web.xml</code>, <code>jaxrpc-ri.xml</code>, service endpoint interface and implementation class, value types, and generated classes, if any, into a WAR file, called a raw WAR.</li>
+
+        <li>Feed the raw WAR file to <code>wsdeploy</code> to generate a cooked WAR.</li>
+
+        <li>Deploy the cooked WAR to a web container.</li>
+      </ol>
+    </li>
+
+    <li>Starting from a WSDL file:
+
+      <ol>
+        <li>Use <code>wscompile</code> to generate portable artifacts: the WSDL file, schema documents, and other artifacts.</li>
+
+        <li>Implement the service endpoint.</li>
+
+        <li>Package the WSDL file, schema documents, <code>web.xml</code>, <code>jaxrpc-ri.xml</code>, service endpoint interface and implementation class, model file, value types, and generated classes, if any, into a WAR file, called a raw WAR.</li>
+
+        <li>Feed the raw WAR file to <code>wsdeploy</code> to generate a cooked WAR.</li>
+
+        <li>Deploy the cooked WAR to a web container.</li>
+      </ol>
+    </li>
+  </ol>
+
+  <p>The following lists the process to invoke a web service (client side):</p>
+
+  <ol>
+    <li>Starting from deployed web service's WSDL
+
+      <ol>
+        <li>Use <code>wscompile</code> to generate the client-side artifacts.</li>
+
+        <li>Implement the client to invoke the web service.</li>
+      </ol>
+    </li>
+  </ol>
+
+  <h1><a name="anttask" id="anttask"></a>Ant Tasks</h1>
+
+  <h2><a name="apttask" id="apttask"></a>apt</h2>
+
+  <p>An Ant task for the <code>apt</code> tool is provided with JAX-RPC 2.0 EA. The attributes and elements supported by the Ant task are listed below:</p>
+  <pre>
+&lt;apt
+    fork="true|false"
+    verbose="true|false"
+    classpath="classpath"
+    base="directory for generated class files"
+    sourceBase="directory for generated source files"
+    noCompile="true|false"
+    print="true|false"
+    factoryPath="&lt;path&gt;"
+    factory="name of AnnotationProcessorFactory to use"
+    xListAnnotationTypes="true|false"
+    xListDeclarations="true|false"
+    xPrintAptRounds="true|false"
+    xPrintFactoryInfo="true|false"
+    xClassesAsDecls="true|false"
+    debug="true|false"
+    debugLevel="lines|vars|source"
+    nowarn="true|false"
+    deprecation="true|false"
+    bootclasspath="&lt;path&gt;"
+    extdirs="&lt;path&gt;"
+    endorseddirs="&lt;path&gt;"
+    sourcePath="&lt;path&gt;"
+    encoding="specify character encoding used by source files"
+    target="generate class files for specific virtual machine version"&gt;
+    &lt;source ... &gt; ... &lt;/source&gt;
+    &lt;classpath ... &gt; ... &lt;/classpath&gt;
+&lt;/apt&gt;
+</pre>
+
+  <table width="90%" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td width="20%" bgcolor="#FFFFCC">
+          <p>Attribute</p>
+        </td>
+
+        <td width="60%" bgcolor="#FFFFCC">
+          <p>Description</p>
+        </td>
+
+        <td width="20%" bgcolor="#FFFFCC">
+          <p>Command line</p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>fork</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Forks the <code>wscompile</code> process into another virtual machine</p>
+        </td>
+
+        <td width="15%">
+          <p>n/a</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>verbose</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Output messages about what the compiler is doing</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-verbose</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>classpath</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify where to find user class files and annotation processor factories</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-classpath</code> or <code>-cp</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>base</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify where to place processor and <code>javac</code> generated class files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-d &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>sourceBase</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify where to place processor generated source files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-s &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>noCompile</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Do not compile source files to class files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-nocompile</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>print</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Print out a textual representation of the specified types</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-print</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>factoryPath</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify where to find annotation processor factories</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-factorypath &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>factory</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Name of the <code>AnnotationProcessorFactory</code> to use; bypasses default discovery process</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-factory &lt;class&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>xListAnnotationTypes</code></p>
+        </td>
+
+        <td width="60%">
+          <p>List the found annotation types</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-XListAnnotationTypes</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>xListDeclarations</code></p>
+        </td>
+
+        <td width="60%">
+          <p>List specified and included declarations</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-XListDeclarations</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>xPrintAptRounds</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Print information about initial and recursive <code>apt</code> rounds</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-XPrintAptRounds</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>xPrintFactoryInfo</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Print information about which annotations a factory is asked to process</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-XPrintFactoryInfo</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>xClassesAsDecls</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Treat both class and source files as declarations to process</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-XclassesAsDecls</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>debug</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Generate all debugging info</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-g</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>debugLevel</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Debug level: lines, vars, sources</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-g:{lines,vars,source}</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>nowarn</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Generate no warnings</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-nowarn</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>deprecation</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Output source locations where deprecated APIs are used</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-deprecation</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>bootclasspath</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Override location of bootstrap class files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-bootclasspath &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>extdirs</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Override location of installed extensions</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-extdirs &lt;dirs&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>endorseddirs</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Override location of endorsed standards path</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-endorseddirs &lt;dirs&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>sourcePath</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify where to find input source files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-sourcepath &lt;path&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>encoding</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Specify character encoding used by source files</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-encoding &lt;encoding&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr>
+        <td width="20%">
+          <p><code>target</code></p>
+        </td>
+
+        <td width="60%">
+          <p>Generate class files for a specific virtual machine version</p>
+        </td>
+
+        <td width="20%">
+          <p><code>-target &lt;release&gt;</code></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The list of source files to be processed are specified via a nested <code>&lt;source&gt;</code> element. That is, a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a>. The classpath attribute is a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> and can also be set via nested <code>&lt;classpath&gt;</code> elements. Before this task can be used, a <code>&lt;taskdef&gt;</code> element needs to be added to the project as given below:</p>
+  <pre>
+&lt;taskdef name="wscompile" classname="com.sun.xml.rpc.tools.ant.Apt"&gt;
+
+ &lt;classpath refid="jaxrpc.classpath"/&gt;
+
+&lt;/taskdef&gt;
+</pre>
+
+  <p>where <code>jaxrpc.classpath</code> is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a>, defined elsewhere in the build environment, and contains the list of classes required by the JAX-RPC runtime.</p>
+
+  <h3>Examples</h3>
+  <pre>
+&lt;apt
+    base="${build.classes.home}"
+    sourceBase="${build.classes.home}"
+    sourcePath="${basedir}/src"&gt;
+    &lt;classpath refid="jaxrpc.classpath"/&gt;
+    &lt;source dir="${basedir}/src" includes="*.java"/&gt;
+    &lt;/source&gt;
+&lt;/apt&gt;
+</pre>
+
+  <p>The above example processes the Java source files in the <code>${basedir}/src</code> directory and generates the source and class files in <code>${build.classes.home}</code>. <code>${basedir}/src</code> is directory used to search for source files for multiple <code>apt</code> rounds. The classpath is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> <code>jaxrpc.classpath</code>, defined elsewhere in the build environment.</p>
+  <pre>
+&lt;apt
+    fork="true"
+    debug="true"
+    verbose="true"
+    base="${build.classes.home}"
+    sourceBase="${build.classes.home}"
+    sourcePath="${basedir}/src"&gt;
+    &lt;classpath refid="jaxrpc.classpath"/&gt;
+    &lt;option key="nd" value="${build.home}"/&gt;
+    &lt;option key="verbose" value="${verbose}"/&gt;
+    &lt;source dir="${basedir}/src"&gt;
+      &lt;include name="**/server/*.java"/&gt;
+    &lt;/source&gt;
+&lt;/apt&gt;
+</pre>
+
+  <p>The above example processes the Java source files in <code>${basedir}/src/**/server</code>, generates the source and class files in <code>${build.classes.home}</code>, compiles with debug information on, prints a message about what the compiler is doing, and passes the <code>-Dnd=${build.home}</code> and <code>-Dverbose=${verbose}</code> options to the annotation processor(s). <code>${basedir}/src</code> is the directory used to search for source files for multiple <code>apt</code> rounds. The classpath is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> <code>jaxrpc.classpath</code>, defined elsewhere in the build environment. This will also fork off the <code>apt</code> process using the default <code>java</code> executable.</p>
+
+  <h2><a name="wscompiletask" id="wscompiletask"></a>wscompile</h2>
+
+  <p>An Ant task for the <code>wscompile</code> tool is provided along with the tool. Currently it has both version 1.1 and 2.0 options. The 1.1 options are shown in a different color in the table. The attributes and elements supported by the Ant task are listed below:</p>
+  <pre>
+  &lt;wscompile
+      fork= "true|false"
+      jvmargs="..."
+      wsdlFile="..."
+      endpointImplementationClass="..."
+      base="directory for generated class files"
+      classpath="classpath" | cp="classpath"
+      extension="true|false"
+      define="true|false"
+      import="true|false" | gen="true|false" | client="true|false" | server="true|false"
+      features="wscompile-features"
+      HTTPProxy="proxy host and port"
+      model="model file name"
+      source="1.0.1"|"1.0.3"|"1.1"|"2.0"(default)
+      nonClassDir="directory for non-class generated files"
+      sourceBase="directory for generated source files"
+      optimize="true|false"
+      debug="true|false"
+      keep="true|false"
+      verbose="true|false"
+      version="true|false"
+      config="configuration file"&gt;
+      &lt;binding dir="..." includes="..." /&gt;
+      &lt;classpath refid="..."/&gt;
+  &lt;/wscompile&gt;
+
+
+</pre>
+
+  <table width="90%" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr valign="top">
+        <td width="15%" bgcolor="#FFFFBD">
+          <p><b>Attribute</b></p>
+        </td>
+
+        <td width="70%" bgcolor="#FFFFBD">
+          <p><b>Description</b></p>
+        </td>
+
+        <td width="15%" bgcolor="#FFFFBD">
+          <p><b>Command line</b></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>fork</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Forks the <code>wscompile</code> process into another virtual machine</p>
+        </td>
+
+        <td width="15%">
+          <p>n/a</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <p><code>jvmargs</code></p>
+        </td>
+
+        <td>
+          <p>Arguments to pass to the forked virtual machine</p>
+        </td>
+
+        <td>
+          <p>n/a</p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>wsdlFile</code></p>
+        </td>
+
+        <td width="70%">
+          <p>WSDL file</p>
+        </td>
+
+        <td width="15%">
+          <p>WSDL</p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>endpointImplementationClass</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Service endpoint implementation class</p>
+        </td>
+
+        <td width="15%">
+          <p>SEI class</p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>base</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify where to place output generated classes</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-d</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>classpath</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify where to find input class files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-classpath</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>cp</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Same as <code>-classpath</code></p>
+        </td>
+
+        <td width="15%">
+          <p><code>-cp</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>extension</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Do not strictly follow the JAX-RPC 2.0 specification</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-extension</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>define</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Define a service</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-define</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>import</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Generate portable artifacts only</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-import</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>gen</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Generate client-side artifacts</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-gen</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>client</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Generate client-side artifacts</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-gen:client</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>server</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Senerate server-side artifacts</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-gen:server</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>features</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Comma seperated list of features</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-features</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>f</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Same as <code>-features</code></p>
+        </td>
+
+        <td width="15%">
+          <p><code>-f</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>HTTPProxy</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify an HTTP proxy server (port defaults to 8080)</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-httpproxy</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>model</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Write the internal model file to a given file</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-model</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>source</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Generate code for the specified JAX-RPC SI version. Supported versions are: 1.0.1, 1.0.3, 1.1, and 2.0 (default)</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-source</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>nonClassDir</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify where to place non-class generated files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-nd</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>sourceBase</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify where to place generated source files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-s</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%" bgcolor="#CCCCCC">
+          <p><code>optimize</code></p>
+        </td>
+
+        <td width="70%" bgcolor="#CCCCCC">
+          <p>Optimize generated code</p>
+        </td>
+
+        <td width="15%" bgcolor="#CCCCCC">
+          <p><code>-O</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>debug</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Generate debugging info</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-g</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>keep</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Keep generated files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-keep</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>verbose</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Output messages about what the compiler is doing</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-verbose</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>binding</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify external JAX-RPC or JAXB binding files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-b</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%" bgcolor="#CCCCCC">
+          <p><code>config</code></p>
+        </td>
+
+        <td width="70%" bgcolor="#CCCCCC">
+          <p>Configuration file</p>
+        </td>
+
+        <td width="15%" bgcolor="#CCCCCC">
+          <p>configuration file</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The <code>classpath</code> and <code>binding</code> attributes are a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> and can also be set via nested <code>&lt;classpath&gt;</code> and <code>&lt;binding&gt;</code> elements, respectively. Before this task can be used, a <code>&lt;taskdef&gt;</code> element needs to be added to the project as given below:</p>
+  <pre>
+  &lt;taskdef name="wscompile" classname="com.sun.xml.rpc.tools.ant.Wscompile"&gt;
+      &lt;classpath path="jaxrpc.classpath"/&gt;
+  &lt;/taskdef&gt;
+
+
+</pre>
+
+  <p>where <code>jaxrpc.classpath</code> is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a>, defined elsewhere in the build environment, and contains the list of classes required by the JAX-RPC runtime.</p>
+
+  <h3>Examples</h3>
+  <pre>
+  &lt;wscompile
+      gen="true"
+      base="${build.classes.home}"
+      classpath="xyz.jar"
+      debug="true"
+      wsdlFile="AddNumbers.wsdl"
+      binding="custom.xml"&gt;
+
+
+</pre>
+
+  <p>The above example generates client-side artifacts for <code>AddNumbers.wsdl</code>, stores <code>.class</code> files in the <code>${build.classes.home}</code> directory using the <code>custom.xml</code> customization file. The classpath used is <code>xyz.jar</code> and compiles with debug information on.</p>
+  <pre>
+  &lt;wscompile
+      import="true"
+      keep="true"
+      sourceBase="${source.dir}"
+      base="${build.classes.home}"
+      model="model.xml.gz"
+      wsdlFile="AddNumbers.wsdl"&gt;
+      &lt;classpath refid="jaxrpc.classpath"/&gt;
+      &lt;binding dir="${basedir}/etc" includes="custom.xml"/&gt;
+  &lt;/wscompile&gt;
+
+
+</pre>
+
+  <p>The above example generates portable artifacts for <code>AddNumbers.wsdl</code>, stores <code>.java</code> files in the <code>${source.dir}</code> directory, stores <code>.class</code> files in the <code>${build.classes.home}</code> directory, and generates the model file <code>model.xml.gz</code> in the current directory. The classpath is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> <code>jaxrpc.classpath</code>, defined elsewhere in the build environment.</p>
+  <pre>
+  &lt;wscompile
+      fork="true"
+      define="true"
+      nonClassDir="${wsdl.dir}"
+      endpointImplementationClass="fromjava.server.AddNumbersImpl"/&gt;
+
+
+</pre>
+
+  <p>The above example generates a WSDL in the <code>${wsdl.dir}</code> directory for the <code>fromjava.server.AddNumbersImpl</code> service endpoint implementation class. This will fork off the <code>wscompile</code> process using the default <code>java</code> executable.</p>
+  <pre>
+  &lt;wscompile
+      define="true"
+      source="1.1"
+      features="documentliteral, useonewayoperations"
+      config="config.xml"/&gt;
+
+
+</pre>
+
+  <p>The above example uses JAX-RPC 1.1 to generate a document/literal WSDL in for the service endpoint interface and implementation specified in <code>config.xml</code>, and maps methods with a <code>void</code> return type as one-way operations.</p>
+
+  <h2><a name="wsdeploytask" id="wsdeploytask"></a>wsdeploy</h2>
+
+  <p>An Ant task for the <code>wsdeploy</code> tool is provided along with the tool. The attributes and elements supported by the Ant task are listed below:</p>
+  <pre>
+  &lt;wsdeploy
+      fork= "true|false"
+      classpath="classpath" | cp="classpath"
+      outWarFile="output WAR file name"
+      keep="true|false"
+      tmpDir="temporary directory name"
+      verbose="true|false"
+      inWarFile="input WAR file name"&gt;
+  &lt;/wsdeploy&gt;
+
+
+</pre>
+
+  <table width="90%" border="0" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr valign="top">
+        <td width="15%" bgcolor="#FFFFBD">
+          <p><b>Attribute</b></p>
+        </td>
+
+        <td width="70%" bgcolor="#FFFFBD">
+          <p><b>Description</b></p>
+        </td>
+
+        <td width="15%" bgcolor="#FFFFBD">
+          <p><b>Command line</b></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>fork</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Forks the <code>wsdeploy</code> process into another virtual machine</p>
+        </td>
+
+        <td width="15%">
+          <p>n/a</p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>classpath</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Specify where to find input class files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-classpath</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>keep</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Keep generated files</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-keep</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>outWarFile</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Output cooked WAR file name</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-o</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>inWarFile</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Input raw WAR file name</p>
+        </td>
+
+        <td width="15%">
+          <p><code>&lt;WAR file&gt;</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>tmpDir</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Temporary directory to use</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-tmpdir</code></p>
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td width="15%">
+          <p><code>verbose</code></p>
+        </td>
+
+        <td width="70%">
+          <p>Output messages about what the compiler is doing</p>
+        </td>
+
+        <td width="15%">
+          <p><code>-verbose</code></p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The classpath attribute is a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> and can also be set via nested <code>&lt;classpath&gt;</code> elements. Before this task can be used, a <code>&lt;taskdef&gt;</code> element needs to be added to the project as given below:</p>
+  <pre>
+  &lt;taskdef name="wsdeploy" classname="com.sun.xml.rpc.tools.ant.Wsdeploy"&gt;
+      &lt;classpath path="jaxrpc.classpath"/&gt;
+  &lt;/taskdef&gt;
+
+
+</pre>
+
+  <p>where <code>jaxrpc.classpath</code> is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a>, defined elsewhere in the build environment, and contains the list of classes required by the JAX-RPC runtime.</p>
+
+  <h3>Examples</h3>
+  <pre>
+  &lt;wsdeploy
+      classpath="xyz.jar"
+      tmpdir="${tmp}"
+      outWarFile="stock.war"
+      inWarFile="stock-raw.war"/&gt;
+
+
+</pre>
+
+  <p>This example processes a raw WAR file named <code>stock-raw.war</code> and generates a cooked WAR file named <code>stock.war</code>. The classpath includes <code>xyz.jar</code>, and the temporary directory used is <code>${tmp}</code>.</p>
+  <pre>
+  &lt;wsdeploy
+      keep="true"
+      outWarFile="stock.war"
+      inWarFile="stock-raw.war"&gt;
+      &lt;classpath refid="compile.classpath"/&gt;
+  &lt;/wsdeploy&gt;
+
+
+</pre>
+
+  <p>This example processes a raw WAR file named <code>stock-raw.war</code> and generates a cooked WAR file named <code>stock.war</code>. The classpath is a reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like structure</a> <code>compile.classpath</code>, defined elsewhere in the build environment, and the cooked WAR file contains server-side artifact source code.</p>
+  <pre>
+  &lt;wsdeploy
+      fork="true"
+      source="1.0.3"
+      outWarFile="stock.war"
+      inWarFile="stock-raw.war"&gt;
+  &lt;/wsdeploy&gt;
+
+
+</pre>
+
+  <p>This example processes a raw WAR file named <code>stock-raw.war</code> and generates a cooked WAR file named <code>stock.war</code> compatible with JAX-RPC version 1.0.3. This will fork off the <code>wsdeploy</code> process using default <code>java</code> executable.</p>
+  <hr>
+
+  <p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>

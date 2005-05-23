@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <!--Do not use Project Properties customizer when editing this file manually.-->
+            <name>JAXWS-RI</name>
+            <properties>
+                <property-file>nbproject/project.properties</property-file>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>rt/src</label>
+                    <type>java</type>
+                    <location>rt/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/src</label>
+                    <type>java</type>
+                    <location>tools/wscompile/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>test/src</label>
+                    <type>java</type>
+                    <location>test/src</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>main</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
+                </action>
+                <action name="rebuild">
+                    <target>clean</target>
+                    <target>main</target>
+                </action>
+                <action name="compile.single">
+                    <target>tools-compile</target>
+                </action>
+            </ide-actions>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxws-rt.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxws-tools.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>rt/src</label>
+                        <location>rt/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/src</label>
+                        <location>tools/wscompile/src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>test/src</label>
+                        <location>test/src</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="rebuild"/>
+                    <separator/>
+                    <action>
+                        <label>Debug Wscompile</label>
+                        <target>debug-wscompile</target>
+                        <property name="args">${wscompile.args}</property>
+                    </action>
+                    <action>
+                        <label>Debug WsGen</label>
+                        <target>debug-wsgen</target>
+                        <property name="args">${wsgen.args}</property>
+                    </action>
+                    <action>
+                        <label>Debug Test Client</label>
+                        <target>run-client-server-main</target>
+                        <property name="classname">${test.classname}</property>
+                    </action>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
+            <compilation-unit>
+                <package-root>tools/wscompile/src</package-root>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
+                <built-to>build/lib/jaxws-rt.jar</built-to>
+                <built-to>build/lib/jaxws-tools.jar</built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>rt/src</package-root>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>test/src</package-root>
+                <unit-tests/>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:test/lib/jaxwsTestUtil.jar</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>

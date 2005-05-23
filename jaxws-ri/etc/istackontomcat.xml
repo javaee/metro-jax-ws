@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved.
+-->
+
+<project name="IStack On Tomcat" default="help" basedir=".">
+	<target name="install">
+		<property environment="env" />
+		<echo message="Installing integrated stack on ${env.TOMCAT_HOME} ..." />
+		
+		<copy toDir="${env.TOMCAT_HOME}/shared/lib" overwrite="true">
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+
+		<echo message="... done."/>
+	</target>
+
+    <target name="help">
+        <echo message="install:    Installs the JAX-RPC 2.0 EA on Tomcat 5.5.x"/>
+        <echo message="            Usage: ANT_HOME/bin/ant install"/>
+        <echo message="                   Make sure TOMCAT_HOME is set correctly."/>
+    </target>
+</project>

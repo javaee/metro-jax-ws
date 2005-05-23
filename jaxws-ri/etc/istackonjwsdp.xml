@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<project name="IStack On Java Web Services Developer Pack 1.5" default="help" basedir=".">
+	<property name="istack" value="${jwsdp.home}/.istack"/>
+
+	<target name="install">
+		<echo message="Installing integrated stack on ${jwsdp.home} ..." />
+		<copy toDir="${istack}">
+			<fileset dir="${jwsdp.home}">
+				<include name="jaxrpc/lib/*.jar"/>
+				<include name="saaj/lib/*.jar"/>
+				<include name="jaxb/lib/*.jar"/>
+				<include name="sjsxp/lib/sjsxp.jar"/>
+				<include name="jwsdp-shared/lib/mail.jar"/>
+				<include name="jwsdp-shared/lib/activation.jar"/>
+				<include name="jwsdp-shared/lib/relaxngDatatype.jar"/>
+				<include name="jwsdp-shared/lib/xsdlib.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy toDir="${jwsdp.home}/jaxrpc/lib" overwrite="true">
+			<fileset dir="lib">
+				<include name="jaxrpc-*.jar"/>
+				<include name="jsr181-api.jar"/>
+				<include name="pept.jar"/>
+				<include name="istackp.jar"/>
+			</fileset>
+		</copy>
+		<copy toDir="${jwsdp.home}/jaxb/lib" overwrite="true">
+			<fileset dir="lib" includes="jaxb-*.jar"/>
+		</copy>
+		<copy toDir="${jwsdp.home}/saaj/lib" overwrite="true">
+			<fileset dir="lib" includes="saaj-*.jar"/>
+		</copy>
+		<copy toDir="${jwsdp.home}/sjsxp/lib" overwrite="true">
+			<fileset dir="lib" includes="sjsxp.jar"/>
+		</copy>
+		<copy toDir="${jwsdp.home}/jwsdp-shared/lib" overwrite="true">
+			<fileset dir="lib" includes="mail.jar, activation.jar, relaxngDatatype.jar, xsdlib.jar"/>
+		</copy>
+
+		<echo message="... done."/>
+	</target>
+
+    <target name="help">
+        <echo message="install:    Installs the JAX-RPC 2.0 EA on JWSDP 1.5"/>
+        <echo message="            Usage: JWSDP_HOME/apache-ant/bin/ant install"/>
+    </target>
+</project>
