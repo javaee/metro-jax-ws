@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+
+<project name="JAXWS-RI Runtime"  default="compile"  basedir=".">
+
+    <!-- Should Java compilations set the 'debug' compiler option? -->
+    <property name="compile.debug" value="true"/>
+
+    <!-- Should Java compilations set the 'deprecation' compiler option? -->
+    <property name="compile.deprecation" value="false"/>
+
+    <!-- Should Java compilations set the 'optimize' compiler option? -->
+    <property name="compile.optimize" value="true"/>
+  
+  <property name="build.dir" value="${basedir}/build"/>
+  
+  <target name="prepare">
+    <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}/classes/META-INF/"/>
+    <mkdir dir="${build.dir}/classes/META-INF/services"/>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <javac srcdir="src"
+        destdir="${basedir}/build/classes"
+        debug="${compile.debug}"
+        deprecation="${compile.deprecation}"
+        optimize="${compile.optimize}"
+        source="1.5">
+      <classpath refid="tools.compile.classpath"/>
+    </javac>
+
+    <!-- Copy AnnotationProcessor factory info -->
+        <copy todir="${build.dir}/classes/META-INF/services">
+        <fileset dir="${basedir}/../etc/" includes="com.sun.*"/>
+    </copy> 
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+</project> 
