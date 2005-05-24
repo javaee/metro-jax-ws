@@ -1,8 +1,9 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.1 2005-05-23 22:26:38 bbissett Exp $
- *
- * Copyright (c) 2005 Sun Microsystems, Inc.
- * All rights reserved.
+ * $Id: SOAPXMLDecoder.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
+ */
+
+/*
+ * Copyright (c) 2005 Your Corporation. All Rights Reserved.
  */
 package com.sun.xml.ws.client;
 
@@ -134,6 +135,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         XMLReader reader = null;
         try {
             InternalMessage response = new InternalMessage();
+            processAttachments(messageInfo, response, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
             reader = factory.createXMLReader(source, true);
             reader.nextElementContent();
@@ -156,6 +158,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         // TODO handle exceptions, attachments
         XMLReader reader = null;
         try {
+            processAttachments(messageInfo, response, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
             reader = factory.createXMLReader(source, true);
             reader.nextElementContent();

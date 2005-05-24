@@ -1,5 +1,5 @@
 /**
- * $Id: JAXRPCAttachmentUnmarshaller.java,v 1.1 2005-05-23 22:36:14 bbissett Exp $
+ * $Id: JAXRPCAttachmentUnmarshaller.java,v 1.2 2005-05-24 17:48:14 vivekp Exp $
  */
 
 /*
@@ -8,17 +8,16 @@
  */
 package com.sun.xml.ws.encoding;
 
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.util.ASCIIUtility;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -26,15 +25,11 @@ import javax.xml.bind.attachment.AttachmentUnmarshaller;
  * AttachmentUnmarshaller, will be called by jaxb unmarshaller to process xop package.
  */
 public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
-    
+
     /**
      *
-     * @param im
-     * @param isXOP
      */
-    public JAXRPCAttachmentUnmarshaller(InternalMessage im, boolean isXOP){
-        this.im = im;
-        this.isXOP = isXOP;
+    public JAXRPCAttachmentUnmarshaller(){
     }
 
     /**
@@ -43,11 +38,12 @@ public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
      * @return
      */
     public DataHandler getAttachmentAsDataHandler(String cid) {
-        DataHandler dh = im.getAttachment(decodeCid(cid));
+        AttachmentBlock block = attachments.get(decodeCid(cid));
         //TODO localize exception message
-        if(dh == null)
+        if(block == null)
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-        return dh;
+
+        return new DataHandler(new ByteArrayDataSource(block.getValue(),  block.getType()));
     }
 
     /**
@@ -56,24 +52,14 @@ public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
      * @return
      */
     public byte[] getAttachmentAsByteArray(String cid) {
-        DataHandler dh = im.getAttachment(decodeCid(cid));
-        //TODO localize exception message
-        if(dh == null)
+        AttachmentBlock block = attachments.get(decodeCid(cid));
+        if(block == null)
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-        if(dh != null){
-            try {
-                InputStream is = dh.getInputStream();
-                if(is != null){
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    while(is.read() != -1){
-                        baos.write(is.read());
-                    }
-                    baos.toByteArray();                                
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+
+        try {
+            return ASCIIUtility.getBytes(block.getValue());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;
     }
@@ -87,11 +73,19 @@ public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
     }
 
     /**
-     *
+     * set the XOP package if the incoming SOAP envelope is a XOP package
      * @param isXOP
      */
     public void setXOPPackage(boolean isXOP){
         this.isXOP = isXOP;
+    }
+
+    /**
+     * Must be called before marshalling any data.
+     * @param attachments Reference to Map from InternalMessage
+     */
+    public void setAttachments(Map<String, AttachmentBlock> attachments){
+        this.attachments = attachments;
     }
 
     /**
@@ -101,10 +95,10 @@ public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
      */
     private String decodeCid(String cid){
         if(cid.startsWith("cid:"))
-            cid = cid.substring(4, cid.length()-1);   
+            cid = cid.substring(4, cid.length());
         return cid;
     }
-    
-    private InternalMessage im;
+
+    private Map<String, AttachmentBlock> attachments;
     private boolean isXOP;
 }

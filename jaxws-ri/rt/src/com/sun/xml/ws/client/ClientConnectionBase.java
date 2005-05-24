@@ -1,5 +1,5 @@
 /*
- * $Id: ClientConnectionBase.java,v 1.1 2005-05-23 22:26:34 bbissett Exp $
+ * $Id: ClientConnectionBase.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -138,26 +138,25 @@ public class ClientConnectionBase extends SOAPConnectionBase implements Connecti
     }
 
     public SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
-        Connection connection = messageInfo.getConnection();
-        ByteBuffer responseBuffer = connection.readUntilEnd();
-        ByteInputStream inputStream = new ByteInputStream(responseBuffer.array(),
-            responseBuffer.array().length);
+        return messageContext.getMessage();
+//        Connection connection = messageInfo.getConnection();
+//        ByteBuffer responseBuffer = connection.readUntilEnd();
+//        ByteInputStream inputStream = new ByteInputStream(responseBuffer.array(),
+//                responseBuffer.array().length);
+//
+//        MimeHeaders mh = new MimeHeaders();
+////        if (messageContext.getProperty("FAST_ENCODING") != null) {
+////            mh.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
+////        } else {
+//            mh.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
+////        }
+//        SOAPMessage message = null;
+//        try {
+//            message = messageContext.createMessage(mh, inputStream);
+//        } catch (IOException e) {
+//            throw new SOAPMsgCreateException("soap.msg.create.err",
+//                    new Object[]{e});
 
-        MimeHeaders mh = new MimeHeaders();
-//        if (messageContext.getProperty("FAST_ENCODING") != null) {
-//            mh.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
-//        } else {
-        mh.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
-//        }
-        SOAPMessage message = null;
-        try {
-            message = messageContext.createMessage(mh, inputStream);
-        } catch (IOException e) {
-            throw new SOAPMsgCreateException("soap.msg.create.err",
-                new Object[]{e});
-        }
-
-        return message;
     }
 
 }

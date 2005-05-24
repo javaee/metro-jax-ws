@@ -1,5 +1,5 @@
 /*
- * $Id: InternalMessage.java,v 1.1 2005-05-23 22:30:16 bbissett Exp $
+ * $Id: InternalMessage.java,v 1.2 2005-05-24 17:48:12 vivekp Exp $
  */
 
 
@@ -22,7 +22,7 @@ public class InternalMessage {
     private List<HeaderBlock> headers;
     private Set<QName> headerSet;
     private BodyBlock body;
-    private Map<String, DataHandler> attachments = new HashMap<String, DataHandler>();
+    private Map<String, AttachmentBlock> attachments = new HashMap<String, AttachmentBlock>();
 
     /**
      * @return
@@ -64,18 +64,18 @@ public class InternalMessage {
         this.body = body;
     }
 
-    public void addAttachment(String contentId, DataHandler attachment){
+    public void addAttachment(String contentId, AttachmentBlock attachment){
         attachments.put(contentId, attachment);
     }
 
-    public DataHandler getAttachment(String contentId){
+    public AttachmentBlock getAttachment(String contentId){
         return attachments.get(contentId);
     }
 
     /**
      * @return
      */
-    public Map<String, DataHandler> getAttachments() {
+    public Map<String, AttachmentBlock> getAttachments() {
         return attachments;
     }
 

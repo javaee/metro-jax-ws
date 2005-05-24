@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.1 2005-05-23 22:50:25 bbissett Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.2 2005-05-24 17:48:15 vivekp Exp $
  */
 
 /*
@@ -12,7 +12,9 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLWriter;
+import com.sun.xml.ws.util.MessageInfoUtil;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     /*
@@ -33,7 +35,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
     }
 
-    /* 
+    /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startHeader(com.sun.xml.rpc.streaming.XMLWriter)
      */
     @Override
@@ -55,9 +57,12 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      * @see com.sun.xml.rpc.rt.server.SOAPXMLEncoder#getContentType()
      */
     @Override
-    protected String getContentType() {
+    protected String getContentType(MessageInfo messageInfo) {
+        JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)MessageInfoUtil.getRuntimeContext(messageInfo).getBridgeContext().getAttachmentMarshaller();
+        if(am.isXopped())
+            return "application/xop+xml;type=\"text/xml\"";
         return "application/soap+xml";
     }
-    
-    
+
+
 }

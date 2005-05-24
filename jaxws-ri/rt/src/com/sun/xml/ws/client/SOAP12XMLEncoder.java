@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.1 2005-05-23 22:26:37 bbissett Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
  */
 
 /*
@@ -10,7 +10,10 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLWriter;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.pept.ept.MessageInfo;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
 
@@ -46,7 +49,10 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      * @see com.sun.xml.rpc.rt.client.SOAPXMLEncoder#getContentType()
      */
     @Override
-        protected String getContentType() {
+    protected String getContentType(MessageInfo messageInfo){
+        JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)MessageInfoUtil.getRuntimeContext(messageInfo).getBridgeContext().getAttachmentMarshaller();
+        if(am.isXopped())
+            return "application/xop+xml;type=\"text/xml\"";
         return "application/soap+xml";
     }
 }

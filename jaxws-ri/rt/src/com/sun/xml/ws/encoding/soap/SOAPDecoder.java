@@ -1,27 +1,21 @@
 /*
- * $Id: SOAPDecoder.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ * $Id: SOAPDecoder.java,v 1.2 2005-05-24 17:48:13 vivekp Exp $
  */
 
 /*
 * Copyright (c) 2004 Sun Microsystems, Inc.
-* All rights reserved. 
+* All rights reserved.
 */
 package com.sun.xml.ws.encoding.soap;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.Source;
 
 import com.sun.pept.encoding.Decoder;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
+import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
+import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
+import com.sun.xml.ws.encoding.JAXRPCAttachmentUnmarshaller;
+import com.sun.xml.ws.encoding.jaxb.*;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -33,6 +27,18 @@ import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLReaderFactory;
 import com.sun.xml.ws.streaming.XMLReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.transform.Source;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -58,12 +64,12 @@ public abstract class SOAPDecoder implements Decoder {
 			MessageInfo messageInfo) {
 		return null;
 	}
-    
+
     /**
      * Parses and binds headers from SOAPMessage.
      * @param soapMessage
-     * @param internalMesage 
-     * 
+     * @param internalMesage
+     *
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
             InternalMessage internalMessage, MessageInfo messageInfo) {
@@ -75,16 +81,16 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) { }
-    
+
     protected QName getEnvelopeTag(){
         return SOAPConstants.QNAME_SOAP_ENVELOPE;
     }
-    
-    
+
+
     protected QName getBodyTag(){
         return SOAPConstants.QNAME_SOAP_BODY;
     }
-    
+
     protected QName getHeaderTag(){
         return SOAPConstants.QNAME_SOAP_HEADER;
     }
@@ -95,7 +101,7 @@ public abstract class SOAPDecoder implements Decoder {
         reader.skipElement();                     // Moves to </Body>
         reader.nextElementContent();
     }
-    
+
     /*
      * skipBody is true, the body is skipped during parsing.
      */
@@ -115,7 +121,7 @@ public abstract class SOAPDecoder implements Decoder {
         reader.nextElementContent();
         XMLReaderUtil.verifyReaderState(reader, XMLReader.EOF);
     }
-    
+
     protected void decodeHeader(XMLReader reader, MessageInfo messageInfo,
         InternalMessage request) {
         XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
@@ -135,7 +141,7 @@ public abstract class SOAPDecoder implements Decoder {
         XMLReaderUtil.verifyTag(reader, getHeaderTag());
         reader.nextElementContent();
     }
-    
+
     /*
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
@@ -159,10 +165,10 @@ public abstract class SOAPDecoder implements Decoder {
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
                 JAXBTypeSerializer.getInstance().deserialize(reader, bridgeInfo, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock(bridgeInfo);
-                
+
                 //TODO remove after JAXB provides QName access thru Bridge
                 headerBlock.setName(name);
-                
+
                 msg.addHeader(headerBlock);
             }
         } else {
@@ -170,7 +176,7 @@ public abstract class SOAPDecoder implements Decoder {
             reader.nextElementContent();
         }
     }
-    
+
     protected void decodeBody(XMLReader reader, InternalMessage response, MessageInfo messageInfo) {
         XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
         XMLReaderUtil.verifyTag(reader, getBodyTag());
@@ -180,7 +186,7 @@ public abstract class SOAPDecoder implements Decoder {
         XMLReaderUtil.verifyTag(reader, getBodyTag());
         reader.nextElementContent();
     }
-    
+
     protected void decodeBodyContent(XMLReader reader, InternalMessage response, MessageInfo messageInfo) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
@@ -208,17 +214,17 @@ public abstract class SOAPDecoder implements Decoder {
             }
         }
     }
-    
+
     public void decodeDispatchMethod(XMLReader reader, InternalMessage request, MessageInfo messageInfo) {
 
     }
-    
+
     protected SOAPFaultInfo decodeFault(XMLReader reader, InternalMessage internalMessage,
         MessageInfo messageInfo) {
         return null;
     }
-    
-    
+
+
     /*
     *
     */
@@ -242,14 +248,66 @@ public abstract class SOAPDecoder implements Decoder {
            }
        }
    }
-       
+
+    /**
+     *
+     * @param mi
+     * @param im
+     * @param message
+     * @throws SOAPException
+     * @throws ParseException
+     */
+    protected void processAttachments(MessageInfo mi, InternalMessage im, SOAPMessage message) throws SOAPException, ParseException, IOException {
+        Iterator iter = message.getAttachments();
+        if(iter.hasNext()){
+            JAXRPCAttachmentUnmarshaller au = (JAXRPCAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
+            au.setXOPPackage(isXOPPackage(message));
+            au.setXOPPackage(true);
+            au.setAttachments(im.getAttachments());
+        }
+
+        while(iter.hasNext()){
+            AttachmentPart ap = (AttachmentPart) iter.next();
+            InputStream content = ap.getRawContent();
+            String id = ap.getContentId();
+            im.addAttachment(id, new AttachmentBlock(id, content, ap.getContentType()));
+        }
+    }
+
+    /**
+     * From the SOAP message header find out if its a XOP package.
+     * @param sm
+     * @return
+     * @throws ParseException
+     */
+    private boolean isXOPPackage(SOAPMessage sm) throws ParseException {
+        String ct = getContentType(sm.getMimeHeaders());
+        ContentType contentType = new ContentType(ct);
+        String primary = contentType.getPrimaryType();
+        String sub = contentType.getSubType();
+        if(primary.equalsIgnoreCase("application") && sub.equalsIgnoreCase("xop+xml")){
+            String type = contentType.getParameter("type");
+            if(type.toLowerCase().startsWith("text/xml") || type.toLowerCase().startsWith("application/soap+xml"))
+                return true;
+        }
+        return false;
+    }
+
+    private String getContentType(MimeHeaders headers) {
+        String[] values = headers.getHeader("Content-Type");
+        if (values == null)
+            return null;
+        else
+            return values[0];
+    }
+
     /*
      * @throws ServerRtException using this any known error is thrown
      */
     private void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(faultCode, faultString, null, null);
     }
-    
+
     private static final XMLReaderFactory factory = XMLReaderFactory.newInstance();
 
     private final static String DUPLICATE_HEADER =

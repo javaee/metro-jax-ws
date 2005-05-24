@@ -1,9 +1,9 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.1 2005-05-23 23:02:26 bbissett Exp $
+ * $Id: LocalClientTransport20.java,v 1.2 2005-05-24 17:48:16 vivekp Exp $
  */
 
 /*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
@@ -35,8 +35,8 @@ public class LocalClientTransport20 implements ClientTransport {
     private RuntimeEndpointInfo endpointInfo;
     private OutputStream logStream;
     private Tie tie = new Tie();
-    
-    
+
+
     //this class is used primarily for debugging purposes
     public LocalClientTransport20(RuntimeEndpointInfo endpointInfo) {
         this(endpointInfo, null);
@@ -50,6 +50,9 @@ public class LocalClientTransport20 implements ClientTransport {
 
     public void invoke(String endpoint, SOAPMessageContext context) {
         try {
+            setSOAPMessageFromSAAJ(context);
+
+            //now display it as its like message reached on the server side
             if (logStream != null) {
                 String s = "\n******************\nRequest\n";
                 logStream.write(s.getBytes());
@@ -58,8 +61,9 @@ public class LocalClientTransport20 implements ClientTransport {
                 logStream.write("\n".getBytes());
             }
 
-            setSOAPMessageFromSAAJ(context);
-            
+
+
+
             JaxrpcConnection con = new LocalConnectionImpl(context, null);
             tie.handle(con, endpointInfo);
 
@@ -148,6 +152,4 @@ public class LocalClientTransport20 implements ClientTransport {
             }
         }
     }
-
-
 }

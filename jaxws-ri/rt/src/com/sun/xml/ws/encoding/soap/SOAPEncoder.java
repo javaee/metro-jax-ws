@@ -1,28 +1,33 @@
 /*
- * $Id: SOAPEncoder.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ * $Id: SOAPEncoder.java,v 1.2 2005-05-24 17:48:13 vivekp Exp $
  */
 
 /*
 * Copyright (c) 2004 Sun Microsystems, Inc.
-* All rights reserved. 
+* All rights reserved.
 */
 package com.sun.xml.ws.encoding.soap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
+import javax.activation.DataHandler;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -38,8 +43,10 @@ import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.Attributes;
@@ -49,6 +56,7 @@ import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLWriterFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.client.BindingProviderProperties;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -69,7 +77,7 @@ public abstract class SOAPEncoder implements Encoder {
     public InternalMessage toInternalMessage(MessageInfo messageInfo) {
         return null;
     }
-    
+
     public DOMSource toDOMSource(JAXBBridgeInfo bridgeInfo, MessageInfo messageInfo) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
@@ -78,7 +86,7 @@ public abstract class SOAPEncoder implements Encoder {
             domResult.getNode());
         return new DOMSource(domResult.getNode());
     }
-    
+
     public DOMSource toDOMSource(RpcLitPayload rpcLitPayload, MessageInfo messageInfo) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -94,7 +102,7 @@ public abstract class SOAPEncoder implements Encoder {
             throw new WebServiceException(te);
         }
     }
-    
+
     public DOMSource toDOMSource(SOAPFaultInfo faultInfo, MessageInfo messageInfo) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -118,20 +126,20 @@ public abstract class SOAPEncoder implements Encoder {
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, writer);
     }
-    
+
     protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, XMLWriter writer) {
         JAXBTypeSerializer.getInstance().serialize(
                 beanInfo.getBean(), writer, beanInfo.getJAXBContext());
     }
-    
+
     /*
     protected void writeJAXBTypeInfo(JAXBTypeInfo typeInfo, XMLWriter writer) {
         QName name = typeInfo.getName();
         Object value = typeInfo.getType();
         writeJAXBTypeInfo(name, value, writer);
     }
-     
-    
+
+
     protected void writeJAXBTypeInfo(QName name, Object value, XMLWriter writer) {
         JAXBContext jaxbContext = encoderDecoderUtil.getJAXBContext();
         Map<QName, Class> typeMapping = encoderDecoderUtil.getTypeMapping();
@@ -140,18 +148,18 @@ public abstract class SOAPEncoder implements Encoder {
                 writer, jaxbContext);
     }
      */
-    
+
     protected void writeJAXBBridgeInfo(JAXBBridgeInfo bridgeInfo,
         MessageInfo messageInfo, XMLWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
     }
-    
+
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage, MessageInfo messageInfo) {
         return null;
     }
-    
+
     /*
      * Replace the body in SOAPMessage with the BodyBlock of InternalMessage
      */
@@ -182,7 +190,7 @@ public abstract class SOAPEncoder implements Encoder {
             throw new ServerRtException("soapencoder.err", new Object[]{e});
         }
     }
-    
+
     protected void serializeReader(XMLReader reader, XMLWriter writer) {
         int state = XMLReader.BOF;
         do {
@@ -193,11 +201,11 @@ public abstract class SOAPEncoder implements Encoder {
                     String localPart = elementName.getLocalPart();
                     String namespaceURI = elementName.getNamespaceURI();
                     String prefix = elementName.getPrefix();
-                    
+
                     //System.out.println("Localpart = " + localPart);
                     //System.out.println("namespaceURI = " + namespaceURI);
                     //System.out.println("Prefix = |" + prefix+"|");
-                    
+
                     writer.startElement(localPart, namespaceURI, prefix);
                     // Write namespace declarations
                     Iterator it = reader.getPrefixes();
@@ -218,13 +226,13 @@ public abstract class SOAPEncoder implements Encoder {
                         //System.out.println("Attr name " + attrs.getName(i));
                         //System.out.println("Attr value --- " + attrs.getValue(i));
                         //System.out.println("Attr local " + attrs.getLocalName(i));
-                        
+
                         if (!attrs.isNamespaceDeclaration(i)) {
                             writer.writeAttribute(attrs.getName(i), attrs.getValue(i));
                         } else {
                             // Taking care of default NS
                             if (attrs.getPrefix(i) == null) {
-                                writer.writeNamespaceDeclaration("", attrs.getValue(i));   
+                                writer.writeNamespaceDeclaration("", attrs.getValue(i));
                             }
                         }
                     }
@@ -237,13 +245,13 @@ public abstract class SOAPEncoder implements Encoder {
             }
         } while (state != XMLReader.EOF);
     }
-    
+
     protected void serializeSource(Source source, XMLWriter writer) {
         XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(source, true);
         serializeReader(reader, writer);
         reader.close();
     }
-    
+
     /*
      * writes start tag of envelope: <env:Envelope>
      */
@@ -253,7 +261,7 @@ public abstract class SOAPEncoder implements Encoder {
                 SOAPNamespaceConstants.ENVELOPE,
                 SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
     }
-    
+
     /*
      * writes start tag of Body: <env:Body>
      */
@@ -263,7 +271,7 @@ public abstract class SOAPEncoder implements Encoder {
                 SOAPNamespaceConstants.ENVELOPE,
                 SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
     }
-    
+
     /*
      * writes start tag of Header: <env:Header>
      */
@@ -272,7 +280,7 @@ public abstract class SOAPEncoder implements Encoder {
                 SOAPNamespaceConstants.ENVELOPE,
                 SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE); // <env:Header>
     }
-    
+
     /*
      * writes multiple header elements in <env:Header> ... </env:Header>
      */
@@ -296,7 +304,7 @@ public abstract class SOAPEncoder implements Encoder {
         }
         writer.endElement();                                // </env:Header>
     }
-    
+
     /*
      * writes <env:Body> ... </env:Body>
      */
@@ -324,16 +332,49 @@ public abstract class SOAPEncoder implements Encoder {
         }
         writer.endElement();                // </env:body>
     }
-    
+
+    /**
+     * Pass reference of attachments Map from InternalMessage to JAXRPCAttachmentMarshaller.
+     *
+     * @param mi
+     * @param im
+     */
+    protected void setAttachmentsMap(MessageInfo mi, InternalMessage im){
+        Object rtc = mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        if(rtc != null){
+            JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            am.setAttachments(im.getAttachments());
+        }
+    }
+
+
+    /**
+     * Add all the attachments in the InternalMessage to the SOAPMessage
+     * @param im
+     * @param msg
+     */
+    protected void processAttachments(InternalMessage im, SOAPMessage msg) throws SOAPException {
+        Map<String, AttachmentBlock> attachments = im.getAttachments();
+        for(String id : attachments.keySet()){
+            AttachmentBlock block = attachments.get(id);
+            if(block == null)
+                continue;
+            AttachmentPart ap = msg.createAttachmentPart();
+            ap.setRawContent(block.getValue(), block.getType());
+            ap.setContentId(id);
+            msg.addAttachmentPart(ap);
+        }
+    }
+
     /*
      * writes end tag of envelope: </env:Envelope>
      */
     protected void endEnvelope(XMLWriter writer) {
         writer.endElement();
     }
-    
+
     protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLWriter writer) {
         throw new UnsupportedOperationException();
     }
-    
+
 }

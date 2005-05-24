@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.1 2005-05-23 22:26:37 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
  */
 
 /*
@@ -163,25 +163,46 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             throw sfe;
         }
 
+
         // TODO Check for null context in Dispatch and then uncomment
         // TODO the if/else for inbound handlers infrastructure
+//        HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
+//        if (caller.hasHandlers()) {
+//            callHandlersOnResponse(handlerContext);
+//            updateResponseContext(messageInfo, handlerContext);
+//            // handlerContext.toJAXBBean(util.getJAXBContext());
+//            InternalMessage im = handlerContext.getInternalMessage();
+//            if (im == null) {
+//                im = decoder.toInternalMessage(sm, messageInfo);
+//            } else {
+//                im = decoder.toInternalMessage(sm, im, messageInfo);
+//            }
+//            decoder.toMessageInfo(im, messageInfo);
+//        } else {
+//            decoder.receiveAndDecode(messageInfo);
+//            postReceiveAndDecodeHook(messageInfo);
+//        }
+
+
         HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
         if (caller.hasHandlers()) {
             callHandlersOnResponse(handlerContext);
             updateResponseContext(messageInfo, handlerContext);
-            // handlerContext.toJAXBBean(util.getJAXBContext());
-            InternalMessage im = handlerContext.getInternalMessage();
-            if (im == null) {
-                im = decoder.toInternalMessage(sm, messageInfo);
-            } else {
-                im = decoder.toInternalMessage(sm, im, messageInfo);
-            }
-            decoder.toMessageInfo(im, messageInfo);
-        } else {
-            decoder.receiveAndDecode(messageInfo);
-            postReceiveAndDecodeHook(messageInfo);
         }
 
+        InternalMessage im = handlerContext.getInternalMessage();
+        if (im == null) {
+            im = decoder.toInternalMessage(sm, messageInfo);
+        } else {
+            im = decoder.toInternalMessage(sm, im, messageInfo);
+        }
+        decoder.toMessageInfo(im, messageInfo);
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
+                Service.Mode.MESSAGE) {
+            sm = decoder.toSOAPMessage(messageInfo);
+            messageInfo.setResponse(sm);
+            postReceiveAndDecodeHook(messageInfo);
+        }
     }
 
     private HandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {

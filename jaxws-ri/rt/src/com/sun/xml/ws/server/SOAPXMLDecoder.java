@@ -1,9 +1,9 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.1 2005-05-23 22:50:25 bbissett Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.2 2005-05-24 17:48:15 vivekp Exp $
  */
 
 /*
- * Copyright (c) 2005 Sun Microsystems, Inc.
+ * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.server;
@@ -32,9 +32,9 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     private static final XMLReaderFactory factory = XMLReaderFactory.newInstance();
 
     public SOAPXMLDecoder() {
-        
+
     }
-    
+
     /*
      *
      * @throws ServerRtException
@@ -45,6 +45,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         XMLReader reader = null;
         try {
             InternalMessage request = new InternalMessage();
+            processAttachments(messageInfo, request, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
             reader = factory.createXMLReader(source, true);
             reader.nextElementContent();
@@ -58,7 +59,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             }
         }
     }
-    
+
     /*
      * Headers from SOAPMesssage are mapped to HeaderBlocks in InternalMessage
      * Body from SOAPMessage is skipped
@@ -69,10 +70,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
             InternalMessage request, MessageInfo messageInfo) {
-        
+
         // TODO handle exceptions, attachments
         XMLReader reader = null;
         try {
+            processAttachments(messageInfo, request, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
             reader = factory.createXMLReader(source, true);
             reader.nextElementContent();
@@ -89,7 +91,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     /*
-     * 
+     *
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
      */
     public void decode(MessageInfo messageInfo) {
@@ -97,13 +99,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     /*
-     * 
+     *
      * @see com.sun.pept.encoding.Decoder#receiveAndDecode(com.sun.pept.ept.MessageInfo)
      */
     public void receiveAndDecode(MessageInfo messageInfo) {
         throw new UnsupportedOperationException();
     }
-    
+
     public void decodeDispatchMethod(XMLReader reader, InternalMessage request, MessageInfo messageInfo) {
         // Operation's QName. takes care of <body/>
         QName name = (reader.getState() == XMLReader.START) ? reader.getName() : null;
@@ -114,18 +116,18 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         }
         messageInfo.setMethod(method);
     }
-    
+
     protected SOAPFaultInfo decodeFault(XMLReader reader, InternalMessage internalMessage,
         MessageInfo messageInfo) {
         raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Server cannot handle fault message");
         return null;
     }
-    
+
     /*
      * @throws ServerRtException using this any known error is thrown
      */
     private void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(faultCode, faultString, null, null);
     }
-    
+
 }

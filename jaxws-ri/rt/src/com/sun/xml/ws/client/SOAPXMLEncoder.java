@@ -1,12 +1,13 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.1 2005-05-23 22:26:38 bbissett Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
  */
 
 /*
-* Copyright (c) 2005 Sun Microsystems, Inc.
+* Copyright (c) 2004 Sun Microsystems, Inc.
 * All rights reserved.
 */
 package com.sun.xml.ws.client;
+
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -17,6 +18,7 @@ import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
+import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLWriterFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
@@ -24,6 +26,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPException;
 import javax.xml.ws.BindingProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -95,9 +98,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     }
 
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
-                                     MessageInfo messageInfo) {
-        InternalMessage request = internalMessage;
-
+        MessageInfo messageInfo) {
+        setAttachmentsMap(messageInfo, internalMessage);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLWriterFactory factory = XMLWriterFactory.newInstance();
         XMLWriter writer = factory.createXMLWriter(baos);
@@ -105,8 +107,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         SOAPMessage message = null;
         try {
             startEnvelope(writer);
-            writeHeaders(writer, request, messageInfo);
-            writeBody(writer, request, messageInfo);
+            writeHeaders(writer, internalMessage, messageInfo);
+            writeBody(writer, internalMessage, messageInfo);
             endEnvelope(writer);
             writer.close();
 
@@ -115,10 +117,13 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
             // TODO: Copy the mime headers from messageInfo.METADATA
             MimeHeaders mh = new MimeHeaders();
-            mh.addHeader("Content-Type", getContentType());
+            mh.addHeader("Content-Type", getContentType(messageInfo));
             message = new SOAPMessageContext().createMessage(mh, bis);
+            processAttachments(internalMessage, message);
         } catch (IOException e) {
             throw new SenderException("sender.request.messageNotReady", new LocalizableExceptionAdapter(e));
+        } catch (SOAPException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
         }
 
         return message;
@@ -163,7 +168,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                         if (encoding.equals(FAST_ENCODING_VALUE)) {
                             mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
                         } else {
-                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType());
+                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType(messageInfo));
                         }
                     } else { // default is XML encoding
                         mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
@@ -203,12 +208,17 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         if (clientTransportFactory == null)
             clientTransportFactory = new HttpClientTransportFactory();
 
-        messageInfo.setConnection(new ClientConnectionBase((String) properties
-            .get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransportFactory.create(),
+        messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransportFactory.create(),
             messageContext));
     }
 
-    protected String getContentType() {
+    protected String getContentType(MessageInfo messageInfo){
+        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        if(rtc != null){
+            JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((com.sun.xml.ws.server.RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            if(am.isXopped())
+                return "application/xop+xml;type=\"text/xml\"";
+        }
         return XML_CONTENT_TYPE_VALUE;
     }
 }
