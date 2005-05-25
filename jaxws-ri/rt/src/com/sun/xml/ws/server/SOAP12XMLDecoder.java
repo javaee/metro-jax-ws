@@ -1,14 +1,14 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.1 2005-05-23 22:50:24 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.2 2005-05-25 19:05:50 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
 
-/*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.sun.xml.ws.server;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
@@ -17,14 +17,11 @@ import com.sun.xml.ws.streaming.XMLReader;
 
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 
-    
-    
-
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
      */
     @Override
-    protected void decodeHeader(XMLReader reader, MessageInfo messageInfo, InternalMessage request) {
+    protected void decodeHeader(XMLStreamReader reader, MessageInfo messageInfo, InternalMessage request) {
         // TODO Auto-generated method stub
         super.decodeHeader(reader, messageInfo, request);
     }

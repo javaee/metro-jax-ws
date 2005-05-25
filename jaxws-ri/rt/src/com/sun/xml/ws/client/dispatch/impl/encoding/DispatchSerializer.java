@@ -1,53 +1,51 @@
 /*
- * $Id: DispatchSerializer.java,v 1.1 2005-05-23 22:13:11 bbissett Exp $
+ * $Id: DispatchSerializer.java,v 1.2 2005-05-25 19:05:48 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
-package com.sun.xml.ws.client.dispatch.impl.encoding;
 
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.soap.DeserializationException;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.streaming.*;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+package com.sun.xml.ws.client.dispatch.impl.encoding;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
 
-import static com.sun.xml.ws.streaming.XMLReader.BOF;
-import static com.sun.xml.ws.streaming.XMLReader.CHARS;
-import static com.sun.xml.ws.streaming.XMLReader.END;
-import static com.sun.xml.ws.streaming.XMLReader.EOF;
-import static com.sun.xml.ws.streaming.XMLReader.START;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.encoding.soap.DeserializationException;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.XMLWriter;
+import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
+import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  * @author JAX-RPC RI Development Team
  */
 
 public class DispatchSerializer {
-
+    
     private static final Logger logger =
-        Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
+            Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
     private final static int MAX_BUFFER_SIZE = 50;
-
-
-    private JAXBTypeSerializer jaxbSerializer =
-        new JAXBTypeSerializer();
-
+    
+    private JAXBTypeSerializer jaxbSerializer = new JAXBTypeSerializer();
+    
     public DispatchSerializer() {
-
     }
-
+    
     public void serialize(Object obj, XMLWriter writer, JAXBContext context) {
-
         if (obj instanceof Source)
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
@@ -57,37 +55,34 @@ public class DispatchSerializer {
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
         //should not happen
     }
-
-    public Object deserialize(XMLReader reader, JAXBContext context) {
-
+    
+    public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         if (context != null)
             return jaxbSerializer.deserialize(reader, context);
         else
             return deserializeSource(reader, context);
     }
-
-    private Object deserializeSource(XMLReader reader, JAXBContext context) {
-
-        ByteArrayOutputStream baos =
-            new ByteArrayOutputStream();
+    
+    private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLWriterFactory factory = XMLWriterFactory.newInstance();
         try {
             XMLWriter writer = factory.createXMLWriter(baos);
-
-            int state = START;
+            
+            int state = START_ELEMENT;
             do {
                 switch (state) {
-                    case START:
+                    case START_ELEMENT:
                         QName elementName = reader.getName();
                         String localPart = elementName.getLocalPart();
                         String namespaceURI = elementName.getNamespaceURI();
                         String prefix = elementName.getPrefix();
-
+                        
                         writer.startElement(localPart,
-                            namespaceURI,
-                            prefix);
-
-                        Attributes atts = reader.getAttributes();
+                                namespaceURI,
+                                prefix);
+                        
+                        Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
@@ -98,55 +93,52 @@ public class DispatchSerializer {
                                 writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                             }
                         }
-
+                        
                         break;
-                    case END:
+                    case END_ELEMENT:
                         writer.endElement();
                         break;
-                    case CHARS:
-                        writer.writeChars(reader.getValue());
+                    case CHARACTERS:
+                        writer.writeChars(reader.getText());
                 }
-                state = reader.next();
-
+                state = XMLStreamReaderUtil.next(reader);
+                
                 if (SOAPNamespaceConstants.TAG_BODY.equals(reader.getLocalName())
-                    && (SOAPNamespaceConstants.ENVELOPE.equals(reader.getURI())))
+                && (SOAPNamespaceConstants.ENVELOPE.equals(reader.getNamespaceURI())))
                     break;
-
-            } while (state != EOF);
-
+                
+            } while (state != END_DOCUMENT);
+            
             writer.close();
-
+            
         } catch (Exception e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(e));
         }
-
+        
         ByteArrayInputStream istream =
-            new ByteArrayInputStream(baos.toByteArray());
-
+                new ByteArrayInputStream(baos.toByteArray());
+        
         return new StreamSource(istream);
-
     }
-
+    
     private void serializeSource(Object source, XMLWriter writer) {
-
-        XMLReader reader =
-            XMLReaderFactory.newInstance().createXMLReader((Source) source, true);
-
-        int state = BOF;
+        XMLStreamReader reader = SourceReaderFactory.createSourceReader((Source) source, true);
+        
+        int state = START_DOCUMENT;
         do {
-            state = reader.next();
+            state = XMLStreamReaderUtil.next(reader);
             switch (state) {
-                case START:
+                case START_ELEMENT:
                     QName elementName = reader.getName();
                     String localPart = elementName.getLocalPart();
                     String namespaceURI = elementName.getNamespaceURI();
                     String prefix = elementName.getPrefix();
-
+                    
                     writer.startElement(localPart,
                         namespaceURI,
                         prefix);
 
-                    Attributes atts = reader.getAttributes();
+                    Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
@@ -159,12 +151,12 @@ public class DispatchSerializer {
                     }
                     //writeAttributes(reader.getAttributes(), namespaceURI, prefix, writer);
                     break;
-                case END:
+                case END_ELEMENT:
                     writer.endElement();
                     break;
-                case CHARS:
-                    writer.writeChars(reader.getValue());
+                case CHARACTERS:
+                    writer.writeChars(reader.getText());
             }
-        } while (state != EOF);
+        } while (state != END_DOCUMENT);
     }
 }

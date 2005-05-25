@@ -1,10 +1,8 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.1 2005-05-23 22:59:37 bbissett Exp $
- */
-
-/*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * $Id: XMLStreamReaderUtil.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
 
 package com.sun.xml.ws.streaming;
@@ -20,6 +18,8 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 
+import static javax.xml.stream.XMLStreamConstants.*;
+
 /**
  * <p> XMLStreamReaderUtil provides some utility methods intended to be used
  * in conjunction with a StAX XMLStreamReader. </p>
@@ -31,17 +31,26 @@ public class XMLStreamReaderUtil {
     private XMLStreamReaderUtil() {
     }
 
+    public static void close(XMLStreamReader reader) {
+        try {
+            reader.close();
+        }
+        catch (XMLStreamException e) {
+            throw wrapException(e);            
+        }
+    }
+    
     public static int next(XMLStreamReader reader) {
         try {
             int readerEvent = reader.next();
             
-            while (readerEvent != XMLStreamConstants.END_DOCUMENT) {            
+            while (readerEvent != END_DOCUMENT) {            
                 switch (readerEvent) {
-                    case XMLStreamConstants.START_ELEMENT:
-                    case XMLStreamConstants.END_ELEMENT:
-                    case XMLStreamConstants.CDATA:
-                    case XMLStreamConstants.CHARACTERS:
-                    case XMLStreamConstants.PROCESSING_INSTRUCTION:
+                    case START_ELEMENT:
+                    case END_ELEMENT:
+                    case CDATA:
+                    case CHARACTERS:
+                    case PROCESSING_INSTRUCTION:
                         return readerEvent;
                     default:
                         // falls through ignoring event
@@ -58,7 +67,7 @@ public class XMLStreamReaderUtil {
 
     public static int nextElementContent(XMLStreamReader reader) {
         int state = nextContent(reader);
-        if (state == XMLStreamConstants.CHARACTERS) {
+        if (state == CHARACTERS) {
             throw new XMLStreamReaderException(
                 "xmlreader.unexpectedCharacterContent", reader.getText());
         }
@@ -69,13 +78,13 @@ public class XMLStreamReaderUtil {
         for (;;) {
             int state = next(reader);
             switch (state) {
-                case XMLStreamConstants.START_ELEMENT:
-                case XMLStreamConstants.END_ELEMENT:
-                case XMLStreamConstants.END_DOCUMENT:
+                case START_ELEMENT:
+                case END_ELEMENT:
+                case END_DOCUMENT:
                     return state;
-                case XMLStreamConstants.CHARACTERS:
+                case CHARACTERS:
                     if (!reader.isWhiteSpace()) {
-                        return XMLStreamConstants.CHARACTERS;
+                        return CHARACTERS;
                     }
             }
         }
@@ -84,14 +93,32 @@ public class XMLStreamReaderUtil {
     public static void skipElement(XMLStreamReader reader) {
         try {
             int state = reader.next();
-            while (state != XMLStreamConstants.END_DOCUMENT && 
-                    state != XMLStreamConstants.END_ELEMENT) {
+            while (state != END_DOCUMENT && 
+                    state != END_ELEMENT) {
                 state = reader.next();
             }
         }
         catch (XMLStreamException e) {
             throw wrapException(e);
         }        
+    }
+    
+    public static void skipSiblings(XMLStreamReader reader) {
+        try {
+            int state, openTags = 0;
+            while ((state = reader.next()) != END_DOCUMENT) {
+                if (state == START_ELEMENT) {
+                    openTags++;     // new sibling
+                }
+                else if (state == END_ELEMENT) {
+                    if (openTags == 0) return;
+                    openTags--;     // end sibling
+                }
+            }
+        }
+        catch (XMLStreamException e) {
+            throw wrapException(e);
+        }
     }
     
     /*
@@ -140,35 +167,35 @@ public class XMLStreamReaderUtil {
     
     public static String getStateName(int state) {
         switch (state) {
-            case XMLStreamConstants.ATTRIBUTE:
+            case ATTRIBUTE:
                 return "ATTRIBUTE";
-            case XMLStreamConstants.CDATA:
+            case CDATA:
                 return "CDATA";
-            case XMLStreamConstants.CHARACTERS:
+            case CHARACTERS:
                 return "CHARACTERS";
-            case XMLStreamConstants.COMMENT:
+            case COMMENT:
                 return "COMMENT";
-            case XMLStreamConstants.DTD:
+            case DTD:
                 return "DTD";
-            case XMLStreamConstants.END_DOCUMENT:
+            case END_DOCUMENT:
                 return "END_DOCUMENT";
-            case XMLStreamConstants.END_ELEMENT:
+            case END_ELEMENT:
                 return "END_ELEMENT";
-            case XMLStreamConstants.ENTITY_DECLARATION:
+            case ENTITY_DECLARATION:
                 return "ENTITY_DECLARATION";
-            case XMLStreamConstants.ENTITY_REFERENCE:
+            case ENTITY_REFERENCE:
                 return "ENTITY_REFERENCE";
-            case XMLStreamConstants.NAMESPACE:
+            case NAMESPACE:
                 return "NAMESPACE";
-            case XMLStreamConstants.NOTATION_DECLARATION:
+            case NOTATION_DECLARATION:
                 return "NOTATION_DECLARATION";
-            case XMLStreamConstants.PROCESSING_INSTRUCTION:
+            case PROCESSING_INSTRUCTION:
                 return "PROCESSING_INSTRUCTION";
-            case XMLStreamConstants.SPACE:
+            case SPACE:
                 return "SPACE";
-            case XMLStreamConstants.START_DOCUMENT:
+            case START_DOCUMENT:
                 return "START_DOCUMENT";
-            case XMLStreamConstants.START_ELEMENT:
+            case START_ELEMENT:
                 return "START_ELEMENT";
             default :
                 return "UNKNOWN";

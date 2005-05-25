@@ -1,35 +1,37 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.1 2005-05-23 22:28:41 bbissett Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.2 2005-05-25 19:05:49 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
-/*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved. SUN
- * PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
+
 package com.sun.xml.ws.encoding.jaxb;
 
 import com.sun.xml.bind.api.BridgeContext;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
-import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLWriter;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 public class RpcLitPayloadSerializer {
     
-    public static RpcLitPayload deserialize(RpcLitPayload payload, XMLReader reader,
+    public static RpcLitPayload deserialize(RpcLitPayload payload, XMLStreamReader reader,
             JAXBContext context) {
         try {
             List<RpcLitParameter> params = payload.getParameters();
             QName operation = reader.getName(); // Operation name
             // get down to part accessor
-            if(params.size() > 0)                
-                reader.nextElementContent();
+            if (params.size() > 0)                
+                XMLStreamReaderUtil.nextElementContent(reader);
             for (RpcLitParameter parameter: params) {
                 //throw exception if the part accessor name is not what we expect
                 QName partName = reader.getName();
@@ -41,16 +43,18 @@ public class RpcLitPayloadSerializer {
                         reader, context);
                 parameter.setValue(value);
             }
-            reader.nextElementContent();
+            XMLStreamReaderUtil.nextElementContent(reader);
             
             //to take care of empty operation, e.g. <ans:Operation></ans:operation>
-            if(reader.getState() == XMLReader.END && reader.getName().equals(operation))
-            	reader.nextElementContent();
+            if (reader.getEventType() == XMLStreamConstants.END_ELEMENT && 
+                    reader.getName().equals(operation)) {
+                XMLStreamReaderUtil.nextElementContent(reader);
+            }
             
             // reader could be left on CHARS token rather than </body>
-            if (reader.getState() == XMLReader.CHARS &&
-                    reader.getValue().trim().length() == 0) {
-                reader.nextContent();
+            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
+                    reader.isWhiteSpace()) {
+                XMLStreamReaderUtil.nextContent(reader);
             }
             return payload;
         } catch (DeserializationException e) {
@@ -83,10 +87,10 @@ public class RpcLitPayloadSerializer {
      * the operation element, and then it deserializes each parameter. If the
      * expected parameter is not found, it throws an exception
      */
-    public static void deserialize(XMLReader reader, RpcLitPayload payload,
-        BridgeContext bridgeContext) {
-
-        reader.nextElementContent();            // </operation> or <partName>
+    public static void deserialize(XMLStreamReader reader, RpcLitPayload payload,
+        BridgeContext bridgeContext) 
+    {
+        XMLStreamReaderUtil.nextElementContent(reader);     // </operation> or <partName>
         for (JAXBBridgeInfo param: payload.getBridgeParameters()) {
             // throw exception if the part accessor name is not what we expect
             QName partName = reader.getName();
@@ -98,11 +102,11 @@ public class RpcLitPayloadSerializer {
                 bridgeContext);
             
             // reader could be left on CHARS token rather than <partName>
-            if (reader.getState() == XMLReader.CHARS &&
-                    reader.getValue().trim().length() == 0) {
-                reader.nextContent();
+            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
+                    reader.isWhiteSpace()) {
+                XMLStreamReaderUtil.nextContent(reader);
             }
         }
-        reader.nextElementContent();            // </env:body>
+        XMLStreamReaderUtil.nextElementContent(reader);     // </env:body>
     }
 }

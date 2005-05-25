@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterFactory.java,v 1.1 2005-05-23 22:59:37 bbissett Exp $
+ * $Id: XMLStreamWriterFactory.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
  */
 
 /*
@@ -117,17 +117,14 @@ public class XMLStreamWriterFactory {
         }
         
         try {
-            Object sds;
-            
             if (fiStreamWriter == null) {
-                // Do not use StAX pluggable layer for FI
                 fiStreamWriter = new ThreadLocal();
+            }
+            
+            Object sds = fiStreamWriter.get();           
+            if (sds == null) {
                 fiStreamWriter.set(sds = fiStAXDocumentSerializer_new.newInstance((Class) null));
             }
-            else {
-                sds = fiStreamWriter.get();
-            }
-            
             fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
             fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
             return (XMLStreamWriter) sds;

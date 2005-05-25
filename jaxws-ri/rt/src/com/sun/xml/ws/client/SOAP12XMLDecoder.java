@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.1 2005-05-23 22:26:37 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.2 2005-05-25 19:05:47 spericas Exp $
  */
 
 /*
@@ -7,6 +7,8 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.client;
+
+import javax.xml.stream.XMLStreamReader;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
@@ -23,62 +25,61 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.SOAPConnection;
-import com.sun.xml.ws.streaming.XMLReader;
-import com.sun.xml.ws.streaming.XMLReaderUtil;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
+import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
 import java.lang.reflect.Method;
 import java.util.Set;
-
+import org.xml.sax.XMLReader;
 
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 
     /*
      * TODO need to add more logic and processing
-     * @see com.sun.xml.rpc.rt.client.SOAPXMLDecoder#decodeFault(com.sun.xml.rpc.streaming.XMLReader, com.sun.xml.rpc.soap.internal.InternalMessage, com.sun.pept.ept.MessageInfo)
+     * @see com.sun.xml.rpc.rt.client.SOAPXMLDecoder#decodeFault(com.sun.xml.rpc.streaming.XMLStreamReader, com.sun.xml.rpc.soap.internal.InternalMessage, com.sun.pept.ept.MessageInfo)
      */
     @Override
-        protected SOAPFaultInfo decodeFault(XMLReader reader, InternalMessage internalMessage, MessageInfo messageInfo) {
+    protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage, MessageInfo messageInfo) {
         RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
 
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
-        XMLReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_FAULT);
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_FAULT);
         Method methodName = messageInfo.getMethod();
 
         // env:Code
-        reader.nextElementContent();
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
-        XMLReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_CODE);
-
-
+        XMLStreamReaderUtil.nextElementContent(reader);
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_CODE);
+        
         //env:Value
-        reader.nextElementContent();
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
-        XMLReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_VALUE);
+        XMLStreamReaderUtil.nextElementContent(reader);
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_VALUE);
 
-        reader.nextContent();
-
+        XMLStreamReaderUtil.nextContent(reader);
+        
         QName faultcode = null;
-        String tokens = reader.getValue();
+        String tokens = reader.getText();
         String uri = "";
         tokens = EncoderUtils.collapseWhitespace(tokens);
         String prefix = XmlUtil.getPrefix(tokens);
         if (prefix != null) {
-            uri = reader.getURI(prefix);
+            uri = reader.getNamespaceURI(prefix);
             if (uri == null) {
                 throw new DeserializationException("xsd.unknownPrefix", prefix);
             }
         }
         String localPart = XmlUtil.getLocalPart(tokens);
         faultcode = new QName(uri, localPart);
-        reader.next();
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.END);
-
+        XMLStreamReaderUtil.next(reader);
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        
         //TODO: process env:Subcode
-        XMLReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_CODE);
+        XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_FAULT_CODE);
 
         //TODO: env:Reason
         //TODO: one or more env:Text
@@ -91,48 +92,48 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
 
         // reader could be left on CHARS token rather than </fault>
-        if (reader.getState() == XMLReader.CHARS &&
-            reader.getValue().trim().length() == 0) {
-            reader.nextContent();
+        if (reader.getEventType() == CHARACTERS && reader.isWhiteSpace()) {
+            XMLStreamReaderUtil.nextContent(reader);
         }
 
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.END);
-        XMLReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT);
-        reader.nextElementContent();
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT);
+        XMLStreamReaderUtil.nextElementContent(reader);
 
         return soapFaultInfo;
     }
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
+     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLStreamReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
      */
     @Override
-        protected void decodeHeader(XMLReader reader, MessageInfo messageInfo, InternalMessage request) {
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
+    protected void decodeHeader(XMLStreamReader reader, MessageInfo messageInfo, InternalMessage request) {
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
             return;
         }
-        XMLReaderUtil.verifyTag(reader, getHeaderTag());
-        reader.nextElementContent();
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
         while (true) {
-            if (reader.getState() == XMLReader.START) {
+            if (reader.getEventType() == START_ELEMENT) {
                 decodeHeaderElement(reader, messageInfo, request);
             } else {
                 break;
             }
         }
-        XMLReaderUtil.verifyReaderState(reader, XMLReader.END);
-        XMLReaderUtil.verifyTag(reader, getHeaderTag());
-        reader.nextElementContent();
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
     }
 
     /*
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
      */
-    private void decodeHeaderElement(XMLReader reader, MessageInfo messageInfo,
-                                     InternalMessage msg) {
+    private void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
+        InternalMessage msg) 
+    {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         Set<QName> knownHeaders = ((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders();
@@ -157,8 +158,8 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
                 msg.addHeader(headerBlock);
             }
         } else {
-            reader.skipElement();                 // Moves to END state
-            reader.nextElementContent();
+            XMLStreamReaderUtil.skipElement(reader);                 // Moves to END state
+            XMLStreamReaderUtil.nextElementContent(reader);
         }
     }
 
@@ -166,7 +167,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getBodyTag()
      */
     @Override
-        protected QName getBodyTag() {
+    protected QName getBodyTag() {
         return SOAP12Constants.QNAME_SOAP_BODY;
     }
 
@@ -174,7 +175,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getEnvelopeTag()
      */
     @Override
-        protected QName getEnvelopeTag() {
+    protected QName getEnvelopeTag() {
         return SOAP12Constants.QNAME_SOAP_ENVELOPE;
     }
 
@@ -182,7 +183,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * @see com.sun.xml.rpc.rt.client.SOAPXMLDecoder#toSOAPMessage(com.sun.pept.ept.MessageInfo)
      */
     @Override
-        public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
+    public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
         SOAPConnection connection = (SOAPConnection) messageInfo.getConnection();
         SOAPMessage sm = connection.getSOAPMessage(messageInfo);
 
@@ -193,9 +194,8 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getHeaderTag()
      */
     @Override
-        protected QName getHeaderTag() {
+    protected QName getHeaderTag() {
         return SOAP12Constants.QNAME_SOAP_HEADER;
     }
-
 
 }

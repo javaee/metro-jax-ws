@@ -1,9 +1,10 @@
 /*
- * $Id: PortInfoBase.java,v 1.1 2005-05-23 22:17:54 bbissett Exp $
+ * $Id: PortInfoBase.java,v 1.2 2005-05-25 19:05:47 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
+
 package com.sun.xml.ws.client;
 
 import javax.xml.namespace.QName;

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.1 2005-05-23 22:59:37 bbissett Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
  */
 
 /*
@@ -127,17 +127,15 @@ public class XMLStreamReaderFactory {
         }
         
         try {
-            Object sdp;
-            
             if (fiStreamReader == null) {
-                // Do not use StAX pluggable layer for FI
                 fiStreamReader = new ThreadLocal();
-                fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance((Class) null));
-            } 
-            else {
-                sdp = fiStreamReader.get();
             }
             
+            Object sdp = fiStreamReader.get();
+            if (sdp == null) {
+                // Do not use StAX pluggable layer for FI
+                fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance((Class) null));
+            } 
             fiStAXDocumentParser_setInputStream.invoke(sdp, in);
             return (XMLStreamReader) sdp;
         } 

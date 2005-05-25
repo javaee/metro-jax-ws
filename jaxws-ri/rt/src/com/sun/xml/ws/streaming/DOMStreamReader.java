@@ -1,10 +1,8 @@
 /*
- * $Id: DOMStreamReader.java,v 1.1 2005-05-23 22:59:34 bbissett Exp $
- */
-
-/*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * $Id: DOMStreamReader.java,v 1.2 2005-05-25 19:05:51 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
 
 package com.sun.xml.ws.streaming;
@@ -237,8 +235,45 @@ public class DOMStreamReader implements XMLStreamReader {
         throw new IllegalStateException("DOMStreamReader: getNamespaceURI(int) called in illegal state");
     }
     
-    public String getNamespaceURI(String str) {
-        throw new RuntimeException("DOMStreamReader: getNamespaceURI(String) not implemented");
+    /**
+     * This method is not particularly fast, but shouldn't be called very 
+     * often. If we start to use it more, we should keep track of the 
+     * NS declarations using a NamespaceContext implementation instead.
+     */
+    public String getNamespaceURI(String prefix) {
+        if (prefix == null) {
+            throw new IllegalArgumentException("DOMStreamReader: getNamespaceURI(String) call with a null prefix");
+        }
+        else if (prefix.equals("xml")) {
+            return "http://www.w3.org/XML/1998/namespace";
+        }
+        else if (prefix.equals("xmlns")) {    
+            return "http://www.w3.org/2000/xmlns/";
+        }
+        else {
+            int type;
+            
+            // Find nearest element node
+            Node node = _current;
+            while ((type = node.getNodeType()) != DOCUMENT_NODE 
+                    && type != ELEMENT_NODE) {
+                node = node.getParentNode();
+            }
+
+            boolean isDefault = (prefix.length() == 0);
+            
+            while (node.getNodeType() != DOCUMENT_NODE) {
+                // Is ns declaration on this element?
+                NamedNodeMap namedNodeMap = node.getAttributes();
+                Attr attr = isDefault ? (Attr) namedNodeMap.getNamedItem("xmlns") :
+                                        (Attr) namedNodeMap.getNamedItem("xmlns:" + prefix);
+                if (attr != null) {
+                    return attr.getValue();                    
+                }
+                node = node.getParentNode();
+            }            
+            return null;
+        }
     }
     
     public String getPIData() {
@@ -392,6 +427,12 @@ public class DOMStreamReader implements XMLStreamReader {
                     return (_state = mapNodeTypeToState(_current.getNodeType()));
                 }
             case START_ELEMENT:
+                /*
+                 * SAAJ tree may contain multiple adjacent text nodes.  Normalization 
+                 * is very expensive, so we should think about changing SAAJ instead!
+                 */
+                _current.normalize();
+                                
                 child = _current.getFirstChild();
                 if (child == null) {
                     return (_state = END_ELEMENT);

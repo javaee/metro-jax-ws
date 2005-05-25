@@ -1,10 +1,10 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.1 2005-05-23 22:28:40 bbissett Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.2 2005-05-25 19:05:49 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
-/*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved. SUN
- * PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
+
 package com.sun.xml.ws.encoding.jaxb;
 
 import com.sun.xml.bind.api.Bridge;
@@ -20,12 +20,14 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamConstants;
 
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.StAXReader;
 import com.sun.xml.ws.streaming.StAXWriter;
-import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -37,7 +39,7 @@ import org.w3c.dom.Node;
 public class JAXBTypeSerializer {
     private static final JAXBTypeSerializer serializer = new JAXBTypeSerializer();
 
-    public static JAXBTypeSerializer getInstance(){
+    public static JAXBTypeSerializer getInstance() {
         return serializer;
     }    
         
@@ -114,22 +116,20 @@ public class JAXBTypeSerializer {
     /*
      * TODO: change reader param to take StAXReader or XMLStreamReader?
      *
-     * @see com.sun.xml.rpc.encoding.jaxb.JAXBTypeSerializerIf#deserialize(com.sun.xml.rpc.streaming.XMLReader,
+     * @see com.sun.xml.rpc.encoding.jaxb.JAXBTypeSerializerIf#deserialize(com.sun.xml.rpc.streaming.XMLStreamReader,
      *      javax.xml.bind.JAXBContext)
      */
-    public Object deserialize(XMLReader reader, JAXBContext context) {
+    public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         Object obj = null;
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            if(reader.getState() == XMLReader.START)
-                obj = unmarshaller.unmarshal(
-                    ((StAXReader) reader).getXMLStreamReader());
-                ((StAXReader) reader).synchronizeReader();
+            if (reader.getEventType() == XMLStreamConstants.START_ELEMENT)
+                obj = unmarshaller.unmarshal(reader);
             
             // reader could be left on CHARS token rather than </body>
-            if (reader.getState() == XMLReader.CHARS &&
-                    reader.getValue().trim().length() == 0) {
-                reader.nextContent();
+            if (reader.getEventType() == XMLStreamConstants.CHARACTERS 
+                    && reader.isWhiteSpace()) {
+                XMLStreamReaderUtil.nextContent(reader);
             }
             return obj;
             
@@ -144,9 +144,9 @@ public class JAXBTypeSerializer {
     }
     
     /*
-     * Unmarshalls arbitrary type object with any tag name
+     * Unmarshalls arbitrary type object with any tag name. 
      */
-    public Object deserialize(Class type, XMLReader reader, JAXBContext context) {
+    public Object deserialize(Class type, XMLStreamReader reader, JAXBContext context) {
         Object value = null;
         try {          
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -157,9 +157,9 @@ public class JAXBTypeSerializer {
             ((StAXReader) reader).synchronizeReader();
             
             // reader could be left on CHARS token rather than </body>
-            if (reader.getState() == XMLReader.CHARS &&
-                    reader.getValue().trim().length() == 0) {
-                reader.nextContent();
+            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
+                    reader.isWhiteSpace()) {
+                XMLStreamReaderUtil.next(reader);
            }
             return value;            
         } catch (DeserializationException e) {
@@ -171,7 +171,7 @@ public class JAXBTypeSerializer {
                     e));
         }
     }
-    
+        
     /*
      * convert JAXB bean as a Source 
      *
@@ -236,27 +236,24 @@ public class JAXBTypeSerializer {
         }
     }
     
-    
     /*
      * JAXB object is deserialized and is set in JAXBBridgeInfo. Note that
      * the BridgeContext is cached per thread, and JAXBBridgeInfo should contain
      * correct BridgeContext for the current thread.
      */
-    public void deserialize(XMLReader reader, JAXBBridgeInfo bridgeInfo,
-        BridgeContext bridgeContext) {
+    public void deserialize(XMLStreamReader reader, JAXBBridgeInfo bridgeInfo,
+        BridgeContext bridgeContext) 
+    {
         Object obj = null;
         try {
             Bridge bridge = bridgeInfo.getBridge();
-            XMLStreamReader streamReader = 
-                    ((StAXReader)reader).getXMLStreamReader();
-            Object value = bridge.unmarshal(bridgeContext, streamReader);
+            Object value = bridge.unmarshal(bridgeContext, reader);
             bridgeInfo.setValue(value);
-            ((StAXReader) reader).synchronizeReader();
             
             // reader could be left on CHARS token rather than </body>
-            if (reader.getState() == XMLReader.CHARS &&
-                    reader.getValue().trim().length() == 0) {
-                reader.nextContent();
+            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
+                    reader.isWhiteSpace()) {
+                XMLStreamReaderUtil.nextContent(reader);
             }
         } catch (JAXBException e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(

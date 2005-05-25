@@ -1,11 +1,10 @@
 /**
- * $Id: SourceReaderFactory.java,v 1.1 2005-05-23 22:59:35 bbissett Exp $
+ * $Id: SourceReaderFactory.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
+ *
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved.
  */
 
-/*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.sun.xml.ws.streaming;
 
 import java.io.Reader;
@@ -25,6 +24,11 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
  */
 public class SourceReaderFactory {
        
+    /**
+     * Thread variable used to store DOMStreamReader for current thread.
+     */
+    static ThreadLocal<DOMStreamReader> domStreamReader = null;
+    
     /**
      * FI FastInfosetSource class.
      */
@@ -81,8 +85,21 @@ public class SourceReaderFactory {
             }
         }
         else if (source instanceof DOMSource) {
-            // TODO: use a DOMStreamReader
-            throw new RuntimeException("DOMSource not yet supported");
+            try {
+                if (domStreamReader == null) {
+                    domStreamReader = new ThreadLocal();
+                }
+                
+                DOMStreamReader dsr = domStreamReader.get();
+                if (dsr == null) {
+                    domStreamReader.set(dsr = new DOMStreamReader());
+                } 
+                dsr.setCurrentNode(((DOMSource) source).getNode());
+                return dsr;
+            } 
+            catch (Exception e) {
+                throw new XMLReaderException(new LocalizableExceptionAdapter(e));
+            }
         }
         else if (source instanceof SAXSource) {
             // TODO: need SAX to StAX adapter here 
