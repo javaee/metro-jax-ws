@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.2 2005-05-25 18:22:17 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.3 2005-05-25 21:20:45 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -215,26 +215,26 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     protected String getNamespace(String packageName) {
-        StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
+        StringTokenizer tokenizer = new StringTokenizer(packageName, PD);
         String[] tokens;
         if (tokenizer.countTokens() == 0) {
-            tokens = new String[] {"example", "com"};
+            tokens = new String[0];
         } else {
             tokens = new String[tokenizer.countTokens()];
             for (int i=tokenizer.countTokens()-1; i >= 0; i--) {
                 tokens[i] = tokenizer.nextToken();
             }
         }
-        String namespace = "http://";
+        String namespace = HTTP_PREFIX;
         String dot = "";
         for (int i=0; i<tokens.length; i++) {
             if (i==1)
-                dot = ".";
+                dot = PD;
             namespace += dot+tokens[i];
         }
         if (tokens.length > 0)
             namespace += "/";
-        return namespace + "jaxws";
+        return namespace + JAXWS;
     }
 
 
@@ -251,7 +251,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     protected boolean hasWebMethods(ClassDeclaration d) {
-        if (d.getQualifiedName().equals("java.lang.Object"))
+        if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return false;
         boolean hasWebMethods = false;
         for (MethodDeclaration methodDecl : d.getMethods()) {
@@ -262,7 +262,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     protected void processMethods(TypeDeclaration d) {
-        if (d.getQualifiedName().equals("java.lang.Object"))
+        if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return;
         for (MethodDeclaration methodDecl : d.getMethods()) {
             methodDecl.accept((DeclarationVisitor)this);

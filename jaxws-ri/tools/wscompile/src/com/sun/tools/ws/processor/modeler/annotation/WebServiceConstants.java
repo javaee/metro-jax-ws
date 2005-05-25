@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceConstants.java,v 1.1 2005-05-23 23:23:51 bbissett Exp $
+ * $Id: WebServiceConstants.java,v 1.2 2005-05-25 21:20:45 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -20,13 +20,17 @@ public interface WebServiceConstants extends RmiConstants {
     public static final String RETURN_VALUE                 = "_return";
     public static final String SERVICE                      = "Service";
     public static final String RUNTIME_EXCEPTION_CLASSNAME  = "java.lang.RuntimeException";
-    public static final String JAXRPC_PACKAGE               = "jaxrpc";
-    public static final String PD_JAXRPC_PACKAGE_PD         = ".jaxrpc.";
+    public static final String PD                           = ".";
+    public static final String JAXWS                        = "jaxws";
+    public static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
+    public static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
     public static final String BEAN                         = "Bean";
     public static final String GET_PREFIX                   = "get";
     public static final String IS_PREFIX                    = "is";
     public static final String FAULT_INFO                   = "faultInfo";
     public static final String GET_FAULT_INFO               = "getFaultInfo";
+    public static final String HTTP_PREFIX                  = "http://";
+    public static final String JAVA_LANG_OBJECT             = "java.lang.Object";
 
     // 181 constants
     public static final String WEBSERVICE_NAMESPACE         = "http://www.bea.com/xml/ns/jws";

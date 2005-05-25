@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.2 2005-05-25 20:44:14 kohlert Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.3 2005-05-25 21:20:45 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -43,7 +43,8 @@ public class RuntimeAnnotationProcessor {
     private String targetNamespace;
     private boolean isWrapped = true;
     private boolean usesWebMethod = false;
-    public static final String PD_JAXRPC_PACKAGE_PD = ".jaxrpc.";
+    public static final String PD_JAXWS_PACKAGE_PD  = ".jaxws.";
+    public static final String JAXWS_PACKAGE_PD        = "jaxws.";
     public static final String RESPONSE             = "Response";
     public static final String RETURN               = "return";
     public static final String BEAN                 = "Bean";
@@ -253,7 +254,9 @@ public class RuntimeAnnotationProcessor {
         //WebWrapper webWrapper = method.getAnnotation(WebWrapper.class);
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
-        String beanPackage = packageName + PD_JAXRPC_PACKAGE_PD;
+        String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
+        if (packageName.length() == 0)
+            beanPackage = JAXWS_PACKAGE_PD;
         //String requestClassName = beanPackage + capitalize(method.getName());
         String requestClassName = null;
         if(reqWrapper != null && reqWrapper.type().length()>0){
@@ -456,7 +459,9 @@ public class RuntimeAnnotationProcessor {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
 //System.out.println("processing Method: "+method.getName());
         // processParameters(method);
-        String beanPackage = packageName + PD_JAXRPC_PACKAGE_PD;
+        String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
+        if (packageName.length() == 0)
+            beanPackage = JAXWS_PACKAGE_PD;
         QName reqElementName = new QName(targetNamespace, operationName);
         QName resElementName = null;
         if (!isOneway) {
@@ -586,7 +591,9 @@ public class RuntimeAnnotationProcessor {
             String name = ((Class)exception).getSimpleName();
             if (faultInfoMethod == null)  {
                 String packageName = ((Class)exception).getPackage().getName();
-                String beanPackage = packageName + PD_JAXRPC_PACKAGE_PD;
+                String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
+                if (packageName.length() == 0)
+                    beanPackage = JAXWS_PACKAGE_PD;
                 String className = beanPackage+ name + BEAN;
                 exceptionBean = getClass(className);
                 exceptionType = ExceptionType.UserDefined;
