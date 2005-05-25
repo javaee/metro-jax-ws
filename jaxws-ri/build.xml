@@ -137,6 +137,9 @@
   <!-- for now, this gets everything built -->
   <target name="image">
     <antcall target="tools-build"/>
+    <copy todir="${build.home}">
+        <fileset dir="." includes="*.txt" />
+    </copy>
   </target>
 
   <target name="main" depends="image"/>
@@ -293,8 +296,8 @@
     </copy>
 
     <!-- add a copy of the license and README files to the top level -->
-    <!-- copy todir="${dist20.home}"
-          file="LICENSE.html" / -->
+    <copy todir="${dist20.home}"
+          file="jrl.txt" />
     <copy todir="${dist20.home}"
           file="README" />
   </target>
