@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.3 2005-05-25 20:44:10 kohlert Exp $
+ * $Id: DispatchBase.java,v 1.4 2005-05-25 20:52:03 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -44,7 +44,7 @@ import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CL
  * interface acts as a factory for the creation of <code>Dispatch</code>
  * instances.
  *
- * @author JAXRPC Development Team
+ * @author JAXWS Development Team
  * @version 1.0
  */
 

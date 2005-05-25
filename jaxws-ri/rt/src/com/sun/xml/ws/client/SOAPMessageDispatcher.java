@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.3 2005-05-25 18:22:08 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.4 2005-05-25 20:52:02 kohlert Exp $
  */
 
 /*
@@ -414,7 +414,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     JAXBException jbe = null;
                     if (soapFaultInfo.getString().contains("javax.xml.bind")) {
                         jbe = new JAXBException(soapFaultInfo.getString());
-                        // do I need to put this in a jaxrpc exception
+                        // do I need to put this in a jaxws exception
                     }
                     SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getCode(),
                         soapFaultInfo.getString(), soapFaultInfo.getActor(),
@@ -438,7 +438,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             default:
                 // this is mostlikey and exception
 
-                // todo:may need to throw jaxrpcexceptionhere
+                // todo:may need to throw jaxwsexceptionhere
         }
     }
 

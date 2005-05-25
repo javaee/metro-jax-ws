@@ -1,5 +1,5 @@
 /*
- * $Id: ResponseImpl.java,v 1.1 2005-05-23 22:14:08 bbissett Exp $
+ * $Id: ResponseImpl.java,v 1.2 2005-05-25 20:52:04 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * For asynchronous operation invocations it provides additional methods to
  * check the status of the request.
  *
- * @author JAXRPC Development Team
+ * @author JAXWS Development Team
  * @version 1.0
  */
 

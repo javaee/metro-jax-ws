@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.1 2005-05-23 22:26:46 bbissett Exp $
+ * $Id: WebService.java,v 1.2 2005-05-25 20:52:02 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -229,7 +229,7 @@ public class WebService
 
 
     public SecurityConfiguration getSecurityConfiguration() {
-        throw new UnsupportedOperationException("Security is not implemented for JAXRPC 2.0 Early Access.");
+        throw new UnsupportedOperationException("Security is not implemented for JAXWS 2.0 Early Access.");
         // return null;
     }
 

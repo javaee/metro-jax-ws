@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.2 2005-05-25 18:22:07 kohlert Exp $
+ * $Id: ContextMap.java,v 1.3 2005-05-25 20:52:02 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -52,7 +52,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
         _allowedValues.put(SESSION_MAINTAIN_PROPERTY, ALLOWED_SESSION_MAINTAINED);
         _allowedValues.put(SOAPACTION_USE_PROPERTY, ALLOWED_SOAPACTION_USE);
 
-        //JAXRPC 2.0 defined
+        //JAXWS 2.0 defined
         _allowedClass = new HashMap<String, Class>();
         _allowedClass.put(USERNAME_PROPERTY, java.lang.String.class);
         _allowedClass.put(PASSWORD_PROPERTY, java.lang.String.class);
@@ -61,11 +61,11 @@ public abstract class ContextMap extends HashMap<Object, Object>
         _allowedClass.put(SOAPACTION_USE_PROPERTY, java.lang.Boolean.class);
         _allowedClass.put(SOAPACTION_URI_PROPERTY, java.lang.String.class);
 
-        //now defined in jaxrpccontext
+        //now defined in jaxwscontext
         _allowedClass.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, JAXBContext.class);
 
         List<java.lang.String> temp = new ArrayList<java.lang.String>();
-        //JAXRPC 2.0 defined
+        //JAXWS 2.0 defined
         temp.add(USERNAME_PROPERTY);
         temp.add(PASSWORD_PROPERTY);
         temp.add(ENDPOINT_ADDRESS_PROPERTY);
