@@ -24,7 +24,7 @@
   <property name="docs.home" value="${basedir}/docs"/>
   <!-- The base directory for distribution targets -->
   <property name="dist.home" value="${basedir}/dist"/>
-  <property name="dist20.home" value="${dist.home}/jaxws-2.0ea"/>
+  <property name="dist20.home" value="${dist.home}/jaxws-2.0ea2"/>
   
 <!-- ************ Per user local properties ******************************* -->
 
@@ -304,41 +304,6 @@
     <zip file="${build.home}/jaxws-ri.zip">
       <fileset dir="${dist.home}" />
     </zip>
-  </target>
-  
-  <target name="java-re-build" depends="integrate-jaxb, generate-binary-bundle"/>  
-  
-  <target name="generate-binary-bundle" depends="dist.zip"
-          description="generate the binary distribution installer with the license click-through">
-
-  	<copy file="${build.home}/jaxws-ri.zip" tofile="${build.home}/jaxws20ea2.zip"/>
-  	
-    <!-- generate the class -->
-  	<installerBuilder
-  		classFile="${build.home}/jaxws20ea2.jar"
-  		licenseFile="${build.home}/jrl.txt"
-  		zipFile="${build.home}/jaxws20ea2.zip"/>
-
-    <delete file="${build.home}/jaxws20ea2.zip"/>
-  </target>
-  
-  <target name="integrate-jaxb">
-    <copy todir="${lib.home}" overwrite="true">
-        <fileset dir="${jaxb.home}/lib" excludes="*.zip, activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar"/>
-    </copy>
-  </target>  
-  
-  <target name="integrate-jaxb-hudson" depends="prepare"
-          description="integrate the last successful JAXB Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
-         dest="${build.home}/jaxb-ri.zip" />
-    <mkdir dir="${build.home}/jaxb" />
-    <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
-    <copy todir="lib">
-      <fileset dir="${build.home}/jaxb/jaxb-ri/lib" includes="*.zip,*.jar" 
-               excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar" />
-    </copy>
-<!--    <delete dir="${build.home}/jaxb" /> -->
   </target>
   
 </project> 
