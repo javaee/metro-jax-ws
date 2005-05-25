@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.2 2005-05-25 18:22:08 kohlert Exp $
+ * $Id: DispatchBase.java,v 1.3 2005-05-25 20:44:10 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -90,7 +90,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      * @throws javax.xml.ws.WebServiceException
      *                                  If an error occurs when using a supplied
      *                                  JAXBContext to marshall msg or unmarshall the response. The cause of
-     *                                  the JAXRPCException is the original JAXBException.
+     *                                  the WebServiceException is the original JAXBException.
      */
     public Object invoke(Object msg)
         throws RemoteException, WebServiceException {
@@ -126,7 +126,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      * @throws javax.xml.ws.WebServiceException
      *          If an error occurs when using a supplied
      *          JAXBContext to marshall msg. The cause of
-     *          the JAXRPCException is the original JAXBException.
+     *          the WebServicException is the original JAXBException.
      */
     public Response<Object> invokeAsync(Object msg)
         throws WebServiceException {
@@ -173,7 +173,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      * @throws javax.xml.ws.WebServiceException
      *          If an error occurs when using a supplied
      *          JAXBContext to marshall msg. The cause of
-     *          the JAXRPCException is the original JAXBException.
+     *          the WebServiceException is the original JAXBException.
      */
     public Future<?> invokeAsync(java.lang.Object msg, AsyncHandler handler) {
 
@@ -217,7 +217,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      * @throws javax.xml.ws.WebServiceException
      *          If an error occurs when using a supplied
      *          JAXBContext to marshall msg. The cause of
-     *          the JAXRPCException is the original JAXBException.
+     *          the WebServiceException is the original JAXBException.
      */
 
     public void invokeOneWay(Object msg) {
@@ -290,7 +290,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     JAXBException jbe = null;
                     if (soapFaultInfo.getString().contains("javax.xml.bind")) {
                         jbe = new JAXBException(soapFaultInfo.getString());
-                        //do I need to put this in a jaxrpc exception
+                        //do I need to put this in a webservice exception
                     }
                     SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getCode(), soapFaultInfo.getString(),
                         soapFaultInfo.getActor(), (Detail) soapFaultInfo.getDetail());
@@ -388,14 +388,14 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         setResponseContext(responseContext);
     }
 
-    private void setMetadata(Map jaxrpcContext, Object obj, MessageStruct messageStruct) {
+    private void setMetadata(Map jaxwsContext, Object obj, MessageStruct messageStruct) {
 
-        jaxrpcContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
-        jaxrpcContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
+        jaxwsContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
+        jaxwsContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
         if (_jaxbContext != null)
-            jaxrpcContext.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, _jaxbContext);
+            jaxwsContext.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, _jaxbContext);
         messageStruct.setMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY,
-            jaxrpcContext);
+            jaxwsContext);
 
         messageStruct.setMetaData(DispatchContext.DISPATCH_MESSAGE_MODE, _mode);
         if (_clazz != null)
@@ -430,12 +430,12 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
 
     /**
-     * Get the JAXRPCContext that is used in processing request messages.
+     * Get the jaxwsContext that is used in processing request messages.
      * <p/>
      * Modifications to the request context do not affect asynchronous
      * operations that have already been started.
      *
-     * @return The JAXRPCContext that is used in processing request messages.
+     * @return The jaxwsContext that is used in processing request messages.
      */
     public Map getRequestContext() {
         if (_requestContext == null)
@@ -449,14 +449,14 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     /**
-     * Get the JAXRPCContext that resulted from processing a response message.
+     * Get the jaxwsContext that resulted from processing a response message.
      * <p/>
      * The returned context is for the most recently completed synchronous
      * operation. Subsequent synchronous operation invocations overwrite the
      * response context. Asynchronous operations return their response context
      * via the Response interface.
      *
-     * @return The JAXRPCContext that is used in processing request messages.
+     * @return The jaxwsContext that is used in processing request messages.
      */
     public Map getResponseContext() {
         if (_responseContext == null)

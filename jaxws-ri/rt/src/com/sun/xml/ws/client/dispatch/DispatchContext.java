@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContext.java,v 1.1 2005-05-23 22:14:08 bbissett Exp $
+ * $Id: DispatchContext.java,v 1.2 2005-05-25 20:44:10 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -9,7 +9,7 @@ package com.sun.xml.ws.client.dispatch;
 import java.util.HashMap;
 
 /**
- * $author: JAXRPC Development Team
+ * $author: JAXWS Development Team
  */
 public class DispatchContext {
 

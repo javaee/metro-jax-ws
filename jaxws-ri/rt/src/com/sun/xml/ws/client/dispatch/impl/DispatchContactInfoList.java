@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfoList.java,v 1.1 2005-05-23 22:13:45 bbissett Exp $
+ * $Id: DispatchContactInfoList.java,v 1.2 2005-05-25 20:44:11 kohlert Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -20,7 +20,7 @@ import javax.xml.soap.SOAPMessage;
 import java.util.ArrayList;
 
 /**
- * Author: JAXRPC Development Team
+ * Author: JAXWS Development Team
  */
 public class DispatchContactInfoList implements ContactInfoList {
 

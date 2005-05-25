@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.1 2005-05-23 22:26:45 bbissett Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.2 2005-05-25 20:44:09 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,7 +16,7 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 
 /**
- * $author: JAXRPC Development Team
+ * $author: JAXWS Development Team
  */
 public class ServiceInvocationHandler extends WebService implements InvocationHandler {
 

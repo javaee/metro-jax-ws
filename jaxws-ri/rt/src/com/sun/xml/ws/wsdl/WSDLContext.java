@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.1 2005-05-23 23:07:15 bbissett Exp $
+ * $Id: WSDLContext.java,v 1.2 2005-05-25 20:44:16 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * $author: JAXRPC Development Team
+ * $author: JAXWS Development Team
  */
 public class WSDLContext {
     private URL orgWsdlLocation;

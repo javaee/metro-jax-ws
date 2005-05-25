@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.2 2005-05-25 18:22:10 kohlert Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.3 2005-05-25 20:44:12 kohlert Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -66,7 +66,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
 
         try {
             startEnvelope(writer);
-            //headers will most likely be handled by "JAXRPC handlers"
+            //headers will most likely be handled by "JAXWS handlers"
             //need to overide for now
             writeHeader(writer, request);
             writeBody(writer, request, messageInfo);
@@ -165,7 +165,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
 
         boolean acceptPropertySet = false;
         boolean encodingPropertySet = false;
-        //this needs to be jaxrpccontext
+        //this needs to be jaxwscontext
         ContextMap ocontext =
             (ContextMap) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
         ContextMap context = ((RequestContext) ocontext).copy();

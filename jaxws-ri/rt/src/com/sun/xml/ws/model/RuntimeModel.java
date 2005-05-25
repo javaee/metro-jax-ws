@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.4 2005-05-25 20:16:29 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.5 2005-05-25 20:44:13 kohlert Exp $
  */
 
 /*
@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * $author: JAXRPC Development Team
+ * $author: JAXWS Development Team
  */
 public abstract class RuntimeModel {
 
