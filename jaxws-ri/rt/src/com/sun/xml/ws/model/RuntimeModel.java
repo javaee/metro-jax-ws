@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.2 2005-05-24 17:48:14 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.3 2005-05-25 19:57:20 vivekp Exp $
  */
 
 /*
@@ -8,26 +8,21 @@
  */
 package com.sun.xml.ws.model;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceException;
-
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXRPCAttachmentUnmarshaller;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.Handler;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * $author: JAXRPC Development Team
@@ -55,16 +50,15 @@ public abstract class RuntimeModel {
      * Populate methodToJM and nameToJM maps.
      */
     protected void populateMaps() {
-        for(JavaMethod jm:getJavaMethods()){
+        for (JavaMethod jm : getJavaMethods()) {
             put(jm.getMethod(), jm);
-            for(Parameter p:jm.getRequestParameters()){
+            for (Parameter p : jm.getRequestParameters()) {
                 put(p.getName(), jm);
             }
         }
     }
 
     /**
-     *
      * @return
      */
     public BridgeContext getBridgeContext() {
@@ -82,7 +76,6 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @return
      */
     public JAXBRIContext getJAXBContext() {
@@ -90,7 +83,6 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @param type
      * @return
      */
@@ -103,11 +95,11 @@ public abstract class RuntimeModel {
      * @return
      */
     public Object getDecoderInfo(QName name) {
-        Object obj =  payloadMap.get(name);
-        if(obj instanceof RpcLitPayload){
-            return RpcLitPayload.copy((RpcLitPayload)obj);
-        }else if(obj instanceof JAXBBridgeInfo){
-            return JAXBBridgeInfo.copy((JAXBBridgeInfo)obj);
+        Object obj = payloadMap.get(name);
+        if (obj instanceof RpcLitPayload) {
+            return RpcLitPayload.copy((RpcLitPayload) obj);
+        } else if (obj instanceof JAXBBridgeInfo) {
+            return JAXBBridgeInfo.copy((JAXBBridgeInfo) obj);
         }
         return null;
     }
@@ -153,12 +145,12 @@ public abstract class RuntimeModel {
     }
 
     private void fillFaultDetailTypes(JavaMethod m, List<TypeReference> types) {
-        for(CheckedException ce:m.getCheckedExceptions()){
+        for (CheckedException ce : m.getCheckedExceptions()) {
             types.add(ce.getDetailType());
         }
     }
 
-    protected void filleTypes(JavaMethod m, List<TypeReference> types){
+    protected void filleTypes(JavaMethod m, List<TypeReference> types) {
         addTypes(m.getRequestParameters(), types);
         addTypes(m.getResponseParameters(), types);
     }
@@ -177,13 +169,12 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @param qname
      * @return
      */
     public Method getDispatchMethod(QName qname) {
         //handle the empty body
-        if(qname == null)
+        if (qname == null)
             qname = emptyBodyName;
         JavaMethod jm = getJavaMethod(qname);
         if (jm != null) {
@@ -199,8 +190,8 @@ public abstract class RuntimeModel {
      */
     public boolean isKnownFault(QName name, Method method) {
         JavaMethod m = getJavaMethod(method);
-        for(CheckedException ce: m.getCheckedExceptions()){
-            if(ce.getDetailType().tagName.equals(name))
+        for (CheckedException ce : m.getCheckedExceptions()) {
+            if (ce.getDetailType().tagName.equals(name))
                 return true;
         }
         return false;
@@ -211,17 +202,16 @@ public abstract class RuntimeModel {
      * @param ex
      * @return
      */
-    public boolean isCheckedException(Method m, Class ex){
+    public boolean isCheckedException(Method m, Class ex) {
         JavaMethod jm = getJavaMethod(m);
-        for(CheckedException ce: jm.getCheckedExceptions()){
-            if(ce.getExcpetionClass().equals(ex))
+        for (CheckedException ce : jm.getCheckedExceptions()) {
+            if (ce.getExcpetionClass().equals(ex))
                 return true;
         }
         return false;
     }
 
     /**
-     *
      * @param method
      * @return
      */
@@ -230,7 +220,6 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @param name
      * @return
      */
@@ -239,20 +228,18 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @return
      */
     public Collection<JavaMethod> getJavaMethods() {
         return Collections.unmodifiableList(javaMethods);
     }
 
-    public void addJavaMethod(JavaMethod jm){
-        if(jm != null)
+    public void addJavaMethod(JavaMethod jm) {
+        if (jm != null)
             javaMethods.add(jm);
     }
 
     /**
-     *
      * @param name
      * @param jm
      */
@@ -261,7 +248,6 @@ public abstract class RuntimeModel {
     }
 
     /**
-     *
      * @param method
      * @param jm
      */
@@ -273,44 +259,57 @@ public abstract class RuntimeModel {
         return wsdlLocation;
     }
 
-    public void setWSDLLocation(String location){
+    public void setWSDLLocation(String location) {
         wsdlLocation = location;
     }
 
-    public QName getServiceQName(){
+    public QName getServiceQName() {
         return serviceQName;
     }
 
-    public QName getPortQName(){
+    public QName getPortQName() {
         return portQName;
     }
 
-    public void setServiceQName(QName name){
+    public void setServiceQName(QName name) {
         serviceQName = name;
     }
 
-    public void setPortQName(QName name){
-        portQName=name;
+    public void setPortQName(QName name) {
+        portQName = name;
+    }
+
+    /**
+     * Add a Handler. It should be called from RuntimeAnnotationProcessor while parsing @HandlerChain annotation.
+     * @param handler
+     */
+    public void addHandler(Handler handler) {
+        if (handlers == null)
+            handlers = new ArrayList<Handler>();
+        handlers.add(handler);
+    }
+
+    /**
+     * @return null if there are no handlerChain defined thru @HandlerChain annotation. Otherwise returns List of Handlers.
+     */
+    public List<Handler> getHandlers() {
+        if (handlers == null)
+            return null;
+        return Collections.unmodifiableList(handlers);
     }
 
     protected abstract void createDecoderInfo();
 
     private ThreadLocal<BridgeContext> bridgeContext = new ThreadLocal<BridgeContext>();
-
     private JAXBRIContext jaxbContext;
-
     private String wsdlLocation;
     private QName serviceQName;
     private QName portQName;
-
     private Map<Method, JavaMethod> methodToJM = new HashMap<Method, JavaMethod>();
-
     private Map<QName, JavaMethod> nameToJM = new HashMap<QName, JavaMethod>();
-
     private List<JavaMethod> javaMethods = new ArrayList<JavaMethod>();
-
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
-
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
-    protected final QName emptyBodyName = new QName("");
+    private List<Handler> handlers;
+    private final QName emptyBodyName = new QName("");
 }
