@@ -1,5 +1,5 @@
 /**
- * $Id: JAXRPCAttachmentUnmarshaller.java,v 1.2 2005-05-24 17:48:14 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.1 2005-05-25 21:03:23 vivekp Exp $
  */
 
 /*
@@ -24,12 +24,12 @@ import java.util.Map;
  *
  * AttachmentUnmarshaller, will be called by jaxb unmarshaller to process xop package.
  */
-public class JAXRPCAttachmentUnmarshaller extends AttachmentUnmarshaller {
+public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
 
     /**
      *
      */
-    public JAXRPCAttachmentUnmarshaller(){
+    public JAXWSAttachmentUnmarshaller(){
     }
 
     /**

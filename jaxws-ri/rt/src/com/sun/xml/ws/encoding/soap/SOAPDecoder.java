@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.3 2005-05-25 19:05:50 spericas Exp $
+ * $Id: SOAPDecoder.java,v 1.4 2005-05-25 21:03:22 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved. 
@@ -20,7 +20,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
-import com.sun.xml.ws.encoding.JAXRPCAttachmentUnmarshaller;
+import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.*;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
@@ -275,7 +275,7 @@ public abstract class SOAPDecoder implements Decoder {
     protected void processAttachments(MessageInfo mi, InternalMessage im, SOAPMessage message) throws SOAPException, ParseException, IOException {
         Iterator iter = message.getAttachments();
         if(iter.hasNext()){
-            JAXRPCAttachmentUnmarshaller au = (JAXRPCAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
+            JAXWSAttachmentUnmarshaller au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
             au.setXOPPackage(isXOPPackage(message));
             au.setXOPPackage(true);
             au.setAttachments(im.getAttachments());

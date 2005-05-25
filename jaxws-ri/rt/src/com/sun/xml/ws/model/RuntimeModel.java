@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.5 2005-05-25 20:44:13 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.6 2005-05-25 21:03:24 vivekp Exp $
  */
 
 /*
@@ -12,8 +12,8 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
-import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
-import com.sun.xml.ws.encoding.JAXRPCAttachmentUnmarshaller;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 
@@ -68,8 +68,8 @@ public abstract class RuntimeModel {
         if (bc == null) {
             bc = jaxbContext.createBridgeContext();
             //for now, always create XOP package for binary data
-            bc.setAttachmentMarshaller(new JAXRPCAttachmentMarshaller(true));
-            bc.setAttachmentUnmarshaller(new JAXRPCAttachmentUnmarshaller());
+            bc.setAttachmentMarshaller(new JAXWSAttachmentMarshaller(true));
+            bc.setAttachmentUnmarshaller(new JAXWSAttachmentUnmarshaller());
             bridgeContext.set(bc);
         }
         return bc;

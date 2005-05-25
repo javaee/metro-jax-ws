@@ -1,5 +1,5 @@
 /**
- * $Id: JAXRPCAttachmentMarshaller.java,v 1.2 2005-05-24 17:48:14 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.1 2005-05-25 21:03:23 vivekp Exp $
  */
 
 /*
@@ -27,9 +27,9 @@ import java.util.UUID;
  *
  *
  */
-public class JAXRPCAttachmentMarshaller extends AttachmentMarshaller {
+public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
 
-    public JAXRPCAttachmentMarshaller(boolean isXOP){
+    public JAXWSAttachmentMarshaller(boolean isXOP){
         this.isXOP = isXOP;
     }
 

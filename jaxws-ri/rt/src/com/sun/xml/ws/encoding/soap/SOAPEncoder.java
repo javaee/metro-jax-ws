@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.3 2005-05-25 18:22:11 kohlert Exp $
+ * $Id: SOAPEncoder.java,v 1.4 2005-05-25 21:03:22 vivekp Exp $
  */
 
 /*
@@ -46,7 +46,7 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.Attributes;
@@ -334,7 +334,7 @@ public abstract class SOAPEncoder implements Encoder {
     }
 
     /**
-     * Pass reference of attachments Map from InternalMessage to JAXRPCAttachmentMarshaller.
+     * Pass reference of attachments Map from InternalMessage to JAXWSAttachmentMarshaller.
      *
      * @param mi
      * @param im
@@ -342,7 +342,7 @@ public abstract class SOAPEncoder implements Encoder {
     protected void setAttachmentsMap(MessageInfo mi, InternalMessage im){
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
-            JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
             am.setAttachments(im.getAttachments());
         }
     }

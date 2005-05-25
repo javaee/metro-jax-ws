@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.3 2005-05-25 18:22:08 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.4 2005-05-25 21:03:22 vivekp Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
-import com.sun.xml.ws.encoding.JAXRPCAttachmentMarshaller;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLWriterFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
@@ -215,7 +215,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     protected String getContentType(MessageInfo messageInfo){
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
-            JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((com.sun.xml.ws.server.RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((com.sun.xml.ws.server.RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
             if(am.isXopped())
                 return "application/xop+xml;type=\"text/xml\"";
         }
