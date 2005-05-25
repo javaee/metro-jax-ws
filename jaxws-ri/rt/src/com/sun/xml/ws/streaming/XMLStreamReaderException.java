@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderException.java,v 1.1 2005-05-23 22:59:36 bbissett Exp $
+ * $Id: XMLStreamReaderException.java,v 1.2 2005-05-25 20:16:32 kohlert Exp $
  */
 
 /*
@@ -9,18 +9,18 @@
 
 package com.sun.xml.ws.streaming;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * <p> XMLStream ReaderException represents an exception that occurred while reading an
  * XML document. </p>
- *
- * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
- *
+ * 
+ * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * 
  * @author JAX-RPC Development Team
  */
-public class XMLStreamReaderException extends JAXRPCExceptionBase {
+public class XMLStreamReaderException extends JAXWSExceptionBase {
 
     public XMLStreamReaderException(String key) {
         super(key);

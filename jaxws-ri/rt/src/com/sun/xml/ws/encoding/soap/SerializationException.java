@@ -1,5 +1,5 @@
 /*
- * $Id: SerializationException.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ * $Id: SerializationException.java,v 1.2 2005-05-25 20:16:26 kohlert Exp $
  */
 
 /*
@@ -8,18 +8,18 @@
  */
 
 package com.sun.xml.ws.encoding.soap;
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * SerializationException represents an exception that occurred while
  * serializing a Java value as XML.
- *
- * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
- *
+ * 
+ * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * 
  * @author JAX-RPC Development Team
  */
-public class SerializationException extends JAXRPCExceptionBase {
+public class SerializationException extends JAXWSExceptionBase {
 
     public SerializationException(String key) {
         super(key);

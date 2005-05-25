@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.2 2005-05-25 19:05:49 spericas Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.3 2005-05-25 20:16:25 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -19,7 +19,7 @@ import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 public class RpcLitPayloadSerializer {
@@ -59,7 +59,7 @@ public class RpcLitPayloadSerializer {
             return payload;
         } catch (DeserializationException e) {
             throw e;
-        } catch (JAXRPCExceptionBase e) {
+        } catch (JAXWSExceptionBase e) {
             throw new DeserializationException(e);
         } catch (Exception e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(

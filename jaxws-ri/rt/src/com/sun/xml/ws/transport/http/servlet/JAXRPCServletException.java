@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletException.java,v 1.1 2005-05-23 23:01:39 bbissett Exp $
+ * $Id: JAXRPCServletException.java,v 1.2 2005-05-25 20:16:34 kohlert Exp $
  */
 
 /*
@@ -9,7 +9,7 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.server.*;
 
@@ -17,7 +17,7 @@ import com.sun.xml.ws.server.*;
  *
  * @author JAX-RPC Development Team
  */
-public class JAXRPCServletException extends JAXRPCExceptionBase {
+public class JAXRPCServletException extends JAXWSExceptionBase {
 
     public JAXRPCServletException(String key) {
         super(key);

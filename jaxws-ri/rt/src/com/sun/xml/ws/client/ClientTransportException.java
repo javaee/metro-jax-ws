@@ -1,5 +1,5 @@
 /*
- * $Id: ClientTransportException.java,v 1.1 2005-05-23 22:26:34 bbissett Exp $
+ * $Id: ClientTransportException.java,v 1.2 2005-05-25 20:16:24 kohlert Exp $
  */
 
 /*
@@ -9,13 +9,13 @@
 
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * @author JAX-RPC Development Team
  */
-public class ClientTransportException extends JAXRPCExceptionBase {
+public class ClientTransportException extends JAXWSExceptionBase {
     public ClientTransportException(String key) {
         super(key);
     }

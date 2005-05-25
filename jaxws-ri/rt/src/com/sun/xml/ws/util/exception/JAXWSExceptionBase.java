@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCExceptionBase.java,v 1.1 2005-05-23 23:05:05 bbissett Exp $
+ * $Id: JAXWSExceptionBase.java,v 1.1 2005-05-25 20:16:35 kohlert Exp $
  */
 
 /*
@@ -19,35 +19,35 @@ import com.sun.xml.ws.util.localization.LocalizableSupport;
 import com.sun.xml.ws.util.localization.Localizer;
 
 /**
- * JAXRPCExceptionBase
- *
+ * JAXWSExceptionBase
+ * 
  * @author JAX-RPC Development Team
  */
-public abstract class JAXRPCExceptionBase
+public abstract class JAXWSExceptionBase
     extends WebServiceException
     implements Localizable {
     protected LocalizableSupport localizablePart;
     protected NestableExceptionSupport nestablePart;
 
-    public JAXRPCExceptionBase() {
+    public JAXWSExceptionBase() {
         nestablePart = new NestableExceptionSupport();
     }
 
-    public JAXRPCExceptionBase(String key) {
+    public JAXWSExceptionBase(String key) {
         this();
         localizablePart = new LocalizableSupport(key);
     }
 
-    public JAXRPCExceptionBase(String key, String arg) {
+    public JAXWSExceptionBase(String key, String arg) {
         this();
         localizablePart = new LocalizableSupport(key, arg);
     }
 
-    public JAXRPCExceptionBase(String key, Localizable localizable) {
+    public JAXWSExceptionBase(String key, Localizable localizable) {
         this(key, new Object[] { localizable });
     }
 
-    protected JAXRPCExceptionBase(String key, Object[] args) {
+    protected JAXWSExceptionBase(String key, Object[] args) {
         this();
         localizablePart = new LocalizableSupport(key, args);
         if (args != null && nestablePart.getCause() == null) {

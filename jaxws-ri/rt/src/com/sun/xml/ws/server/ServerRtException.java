@@ -1,5 +1,5 @@
 /**
- * $Id: ServerRtException.java,v 1.1 2005-05-23 22:50:26 bbissett Exp $
+ * $Id: ServerRtException.java,v 1.2 2005-05-25 20:16:30 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,12 +7,12 @@
 
 package com.sun.xml.ws.server;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  */
-public class ServerRtException extends JAXRPCExceptionBase {
+public class ServerRtException extends JAXWSExceptionBase {
 
     public ServerRtException(String key) {
         super(key);
@@ -35,7 +35,7 @@ public class ServerRtException extends JAXRPCExceptionBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase#getResourceBundleName()
+     * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase#getResourceBundleName()
      */
     public String getResourceBundleName() {
         return "com.sun.xml.ws.resources.server";

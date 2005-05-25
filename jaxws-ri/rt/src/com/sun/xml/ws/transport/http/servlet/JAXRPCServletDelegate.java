@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.1 2005-05-23 23:01:39 bbissett Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.2 2005-05-25 20:16:33 kohlert Exp $
  */
 
 /*
@@ -36,7 +36,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
@@ -333,7 +333,7 @@ public class JAXRPCServletDelegate implements ServletDelegate {
             JaxrpcConnection connection =
                 new ServletConnectionImpl(request, response);
             tie.handle(connection, targetEndpoint);
-        } catch (JAXRPCExceptionBase e) {
+        } catch (JAXWSExceptionBase e) {
             logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (Throwable e) {

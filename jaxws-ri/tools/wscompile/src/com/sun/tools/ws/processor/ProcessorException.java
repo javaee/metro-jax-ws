@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorException.java,v 1.1 2005-05-24 13:43:49 bbissett Exp $
+ * $Id: ProcessorException.java,v 1.2 2005-05-25 20:16:36 kohlert Exp $
  */
 
 /*
@@ -9,18 +9,18 @@
 
 package com.sun.tools.ws.processor;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * ProcessorException represents an exception that occurred while processing
  * a web service.
- *
- * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
- *
+ * 
+ * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * 
  * @author JAX-RPC Development Team
  */
-public class ProcessorException extends JAXRPCExceptionBase {
+public class ProcessorException extends JAXWSExceptionBase {
 
     public ProcessorException(String key) {
         super(key);

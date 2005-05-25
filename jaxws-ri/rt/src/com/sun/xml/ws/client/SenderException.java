@@ -1,5 +1,5 @@
 /*
- * $Id: SenderException.java,v 1.1 2005-05-23 22:26:38 bbissett Exp $
+ * $Id: SenderException.java,v 1.2 2005-05-25 20:16:24 kohlert Exp $
  */
 
 /*
@@ -9,13 +9,13 @@
 
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * @author JAX-RPC Development Team
  */
-public class SenderException extends JAXRPCExceptionBase {
+public class SenderException extends JAXWSExceptionBase {
 
     public SenderException(String key) {
         super(key);

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMsgCreateException.java,v 1.1 2005-05-23 22:30:17 bbissett Exp $
+ * $Id: SOAPMsgCreateException.java,v 1.2 2005-05-25 20:16:26 kohlert Exp $
  */
 
 /*
@@ -9,12 +9,12 @@
 
 package com.sun.xml.ws.encoding.soap.message;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 
 /**
  * @author JAX-RPC Development Team
  */
-public class SOAPMsgCreateException extends JAXRPCExceptionBase {
+public class SOAPMsgCreateException extends JAXWSExceptionBase {
 
     public SOAPMsgCreateException(String key, Object[] args) {
         super(key, args);

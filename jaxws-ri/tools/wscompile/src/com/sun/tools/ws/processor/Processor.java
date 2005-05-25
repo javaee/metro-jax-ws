@@ -1,5 +1,5 @@
 /*
- * $Id: Processor.java,v 1.1 2005-05-24 13:43:48 bbissett Exp $
+ * $Id: Processor.java,v 1.2 2005-05-25 20:16:35 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.ModelInfo;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
@@ -74,7 +74,7 @@ public class Processor {
 
             _model = modelInfo.buildModel(_options);
 
-        } catch (JAXRPCExceptionBase e) {
+        } catch (JAXWSExceptionBase e) {
             if (_printStackTrace) {
                 _env.printStackTrace(e);
             }
@@ -99,7 +99,7 @@ public class Processor {
                 ProcessorAction action = (ProcessorAction) iter.next();
                 action.perform(_model, _configuration, _options);
             }
-        } catch (JAXRPCExceptionBase e) {
+        } catch (JAXWSExceptionBase e) {
             if (_printStackTrace || _env.verbose()) {
                 _env.printStackTrace(e);
             }

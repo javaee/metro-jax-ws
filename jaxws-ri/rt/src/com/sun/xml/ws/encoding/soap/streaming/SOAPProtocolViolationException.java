@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPProtocolViolationException.java,v 1.1 2005-05-23 22:30:18 bbissett Exp $
+ * $Id: SOAPProtocolViolationException.java,v 1.2 2005-05-25 20:16:27 kohlert Exp $
  */
 
 /*
@@ -9,13 +9,13 @@
 
 package com.sun.xml.ws.encoding.soap.streaming;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * @author JAX-RPC Development Team
  */
-public class SOAPProtocolViolationException extends JAXRPCExceptionBase {
+public class SOAPProtocolViolationException extends JAXWSExceptionBase {
     public SOAPProtocolViolationException(String key) {
         super(key);
     }

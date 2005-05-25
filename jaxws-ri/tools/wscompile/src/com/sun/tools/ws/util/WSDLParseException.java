@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParseException.java,v 1.1 2005-05-24 13:49:45 bbissett Exp $
+ * $Id: WSDLParseException.java,v 1.2 2005-05-25 20:16:36 kohlert Exp $
  */
 
 /*
@@ -9,13 +9,13 @@
 
 package com.sun.tools.ws.util;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
   * @author JAX-RPC Development Team
   */
-public class WSDLParseException extends JAXRPCExceptionBase {
+public class WSDLParseException extends JAXWSExceptionBase {
 
     public WSDLParseException(String key) {
         super(key);

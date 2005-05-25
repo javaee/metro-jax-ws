@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.3 2005-05-25 19:57:20 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.4 2005-05-25 20:16:29 kohlert Exp $
  */
 
 /*
@@ -311,5 +311,5 @@ public abstract class RuntimeModel {
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
     private List<Handler> handlers;
-    private final QName emptyBodyName = new QName("");
+    protected final QName emptyBodyName = new QName("");
 }

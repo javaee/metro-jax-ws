@@ -1,5 +1,5 @@
 /*
- * $Id: ValidationException.java,v 1.1 2005-05-24 14:04:15 bbissett Exp $
+ * $Id: ValidationException.java,v 1.2 2005-05-25 20:16:38 kohlert Exp $
  */
 
 /*
@@ -9,7 +9,7 @@
 
 package com.sun.tools.ws.wsdl.framework;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  *
  * @author JAX-RPC Development Team
  */
-public class ValidationException extends JAXRPCExceptionBase {
+public class ValidationException extends JAXWSExceptionBase {
 
     public ValidationException(String key) {
         super(key);

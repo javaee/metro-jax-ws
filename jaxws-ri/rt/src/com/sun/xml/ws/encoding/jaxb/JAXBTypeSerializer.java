@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.2 2005-05-25 19:05:49 spericas Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.3 2005-05-25 20:16:25 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -29,7 +29,7 @@ import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.StAXReader;
 import com.sun.xml.ws.streaming.StAXWriter;
 import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.w3c.dom.Node;
 
@@ -135,7 +135,7 @@ public class JAXBTypeSerializer {
             
         } catch (DeserializationException e) {
             throw e;
-        } catch (JAXRPCExceptionBase e) {
+        } catch (JAXWSExceptionBase e) {
             throw new DeserializationException(e);
         } catch (Exception e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(
@@ -164,7 +164,7 @@ public class JAXBTypeSerializer {
             return value;            
         } catch (DeserializationException e) {
             throw e;
-       } catch (JAXRPCExceptionBase e) {
+       } catch (JAXWSExceptionBase e) {
             throw new DeserializationException(e);
         } catch (Exception e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(

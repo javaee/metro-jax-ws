@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.1 2005-05-23 22:26:34 bbissett Exp $
+ * $Id: BindingImpl.java,v 1.2 2005-05-25 20:16:24 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -53,7 +53,7 @@ public class BindingImpl implements Binding {
     }
 
     public SecurityConfiguration getSecurityConfiguration() {
-        throw new WebServiceException("Security is not implemented for JAXRPC 2.0 Early Access.");
+        throw new WebServiceException("Security is not implemented for JAXWS 2.0 Early Access.");
         //return null;
     }
 

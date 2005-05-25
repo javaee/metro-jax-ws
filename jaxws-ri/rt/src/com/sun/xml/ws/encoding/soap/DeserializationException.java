@@ -1,5 +1,5 @@
 /*
- * $Id: DeserializationException.java,v 1.1 2005-05-23 22:30:14 bbissett Exp $
+ * $Id: DeserializationException.java,v 1.2 2005-05-25 20:16:25 kohlert Exp $
  */
 
 /*
@@ -9,18 +9,18 @@
 
 package com.sun.xml.ws.encoding.soap;
 
-import com.sun.xml.ws.util.exception.JAXRPCExceptionBase;
+import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * DeserializationException represents an exception that occurred while
  * deserializing a Java value from XML.
- *
- * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
- *
+ * 
+ * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * 
  * @author JAX-RPC Development Team
  */
-public class DeserializationException extends JAXRPCExceptionBase {
+public class DeserializationException extends JAXWSExceptionBase {
 
     public DeserializationException(String key) {
         super(key);
