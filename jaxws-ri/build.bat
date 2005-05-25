@@ -1,7 +1,7 @@
 @echo off  
 
 REM
-REM $Id: build.bat,v 1.1 2005-05-23 22:07:16 bbissett Exp $
+REM $Id: build.bat,v 1.2 2005-05-25 18:33:16 arungupta Exp $
 REM
 REM This script is optional and for convenience only.
 
@@ -15,8 +15,6 @@ echo -------------------
 
 if "%JAVA_HOME%" == "" goto javaerror
 
-if "%JAXWS_HOME%" == "" goto jaxwserror
-
 set CMD_LINE_ARGS=
 :setArgs
 if ""%1""=="""" goto doneSetArgs
@@ -25,7 +23,7 @@ shift
 goto setArgs
 :doneSetArgs
 
-set LOCALCLASSPATH=%JAVA_HOME%\lib\tools.jar;%JAXWS_HOME%\..\lib\ant.jar;%JAXWS_HOME%\..\lib\ant-junit.jar;%JAXWS_HOME%\..\lib\ant-launcher.jar;%JAXWS_HOME%\..\lib\ant-nodeps.jar;%JAXWS_HOME%\..\lib\ant-trax.jar;%ADDITIONALCLASSPATH%
+set LOCALCLASSPATH=%JAVA_HOME%\lib\tools.jar;.\lib\ant.jar;.\lib\ant-junit.jar;.\lib\ant-launcher.jar;.\lib\ant-nodeps.jar;.\lib\ant-trax.jar
 set ANT_HOME=./lib
 
 echo Building with classpath %LOCALCLASSPATH%
@@ -41,14 +39,6 @@ goto end
 echo ERROR: JAVA_HOME not found in your environment.
 echo Please, set the JAVA_HOME variable in your environment to match the
 echo location of the Java Virtual Machine you want to use.
-
-goto end
-
-:jaxwserror
-
-echo ERROR: JAXWS_HOME not found in your environment.
-echo Please, set the JAXWS_HOME variable in your environment to match the
-echo location of jaxws-ri/build directory you want to use.
 
 :end
 

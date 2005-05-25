@@ -16,14 +16,8 @@ echo "Cannot find JAVA_HOME. Please set your JAVA_HOME."
 exit 1
 fi
 
-if [ -z "$JAXWS_HOME" ]
-then
-echo "Cannot find JAXWS_HOME. Please set your JAXWS_HOME."
-exit 1
-fi
-
 JAVACMD=$JAVA_HOME/bin/java
 
-cp=$JAVA_HOME/lib/tools.jar:$JAXWS_HOME/../lib/ant.jar:$JAXWS_HOME/../lib/ant-junit.jar:$JAXWS_HOME/../lib/ant-launcher.jar:$JAXWS_HOME/../lib/ant-nodeps.jar:$JAXWS_HOME/../lib/ant-trax.jar
+cp=$JAVA_HOME/lib/tools.jar:./lib/ant.jar:./lib/ant-junit.jar:./lib/ant-launcher.jar:./lib/ant-nodeps.jar:./lib/ant-trax.jar
 
 $JAVACMD -Dfile.extension=sh -classpath $cp:$CLASSPATH org.apache.tools.ant.Main -emacs "$@"
