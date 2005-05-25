@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.3 2005-05-25 18:22:08 kohlert Exp $
  */
 
 /*
@@ -207,7 +207,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     private HandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {
         HandlerContext handlerContext = (HandlerContext) messageInfo
-            .getMetaData(BindingProviderProperties.JAXRPC_HANDLER_CONTEXT_PROPERTY);
+            .getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY);
         if (handlerContext != null) {
             handlerContext.setSOAPMessage(sm);
             handlerContext.setInternalMessage(null);
@@ -247,7 +247,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     protected Response<Object> sendAsyncReceive(final MessageInfo messageInfo, final SOAPMessage sm) {
 
         final AsyncHandler handler = (AsyncHandler) messageInfo
-            .getMetaData(BindingProviderProperties.JAXRPC_CLIENT_ASYNC_HANDLER);
+            .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
         final boolean callback = (messageInfo.getMEP() == MessageStruct.ASYNC_CALLBACK_MEP) ? true
             : false;
         if (callback && (handler == null))
@@ -308,18 +308,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
         ContextMap context = (ContextMap) ((MessageInfoBase) messageInfo)
-            .getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY);
+            .getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         BindingProvider provider = (BindingProvider) context
-            .get(BindingProviderProperties.JAXRPC_CLIENT_HANDLE_PROPERTY);
+            .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
         BindingImpl binding = (BindingImpl) provider.getBinding();
         return binding.getHandlerChainCaller();
     }
 
     protected void updateMessageContext(MessageInfo messageInfo, HandlerContext context) {
         SOAPMessageContext messageContext = context.createSOAPMessageContext();
-        messageInfo.setMetaData(BindingProviderProperties.JAXRPC_HANDLER_CONTEXT_PROPERTY, context);
+        messageInfo.setMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY, context);
         RequestContext ctxt = (RequestContext) messageInfo
-            .getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY);
+            .getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         Iterator i = ctxt.copy().getPropertyNames();
         while (i.hasNext()) {
             String name = (String) i.next();
@@ -343,7 +343,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         }
 
-        messageInfo.setMetaData(BindingProviderProperties.JAXRPC_RESPONSE_CONTEXT_PROPERTY,
+        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY,
             responseContext.copy());
     }
 
@@ -358,7 +358,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void setResponse(MessageInfo messageInfo, ResponseImpl res) {
         Object result = messageInfo.getResponse();
         ResponseContext context = (ResponseContext) messageInfo
-            .getMetaData(BindingProviderProperties.JAXRPC_RESPONSE_CONTEXT_PROPERTY);
+            .getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
         if (context != null)
             res.setResponseContext(context);
         // need to set responseContext on Response
@@ -474,7 +474,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         // keep set=null if there are no understood headers
         Set<QName> understoodHeaders = null;
-        RuntimeContext rtContext = (RuntimeContext) context.getMessageInfo().getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = (RuntimeContext) context.getMessageInfo().getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if (rtContext != null && rtContext.getModel() != null) {
             understoodHeaders = new HashSet<QName>(((SOAPRuntimeModel) rtContext.getModel()).getKnownHeaders());
         }

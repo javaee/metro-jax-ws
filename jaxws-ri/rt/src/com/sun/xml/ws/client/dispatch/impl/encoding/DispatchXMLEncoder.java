@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.1 2005-05-23 22:13:11 bbissett Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.2 2005-05-25 18:22:10 kohlert Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -33,7 +33,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static java.util.logging.Logger.getLogger;
 
 /**
@@ -167,7 +167,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         boolean encodingPropertySet = false;
         //this needs to be jaxrpccontext
         ContextMap ocontext =
-            (ContextMap) messageInfo.getMetaData(JAXRPC_CONTEXT_PROPERTY);
+            (ContextMap) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
         ContextMap context = ((RequestContext) ocontext).copy();
 
         jc = (JAXBContext)

@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.1 2005-05-23 22:30:14 bbissett Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.2 2005-05-25 18:22:11 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -52,7 +52,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         InternalMessage im = (InternalMessage) intMessage;
         BodyBlock bodyBlock = im.getBody();
         // TODO what if bodyBlock is null, may be use NULL_BODY constant QNAME
-        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         JavaMethod jm = rtContext.getModel().getJavaMethod(mi.getMethod());
         mi.setMEP(jm.getMEP());
 
@@ -183,7 +183,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
      * @see com.sun.xml.rpc.rt.encoding.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
      */
     public Object toInternalMessage(MessageInfo mi) {
-        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         RuntimeModel model = rtContext.getModel();
 
         JavaMethod jm = model.getJavaMethod(mi.getMethod());

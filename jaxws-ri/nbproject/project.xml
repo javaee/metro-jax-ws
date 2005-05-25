@@ -99,20 +99,20 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>tools/wscompile/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
                 <built-to>build/lib/jaxws-rt.jar</built-to>
                 <built-to>build/lib/jaxws-tools.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>rt/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>test/src</package-root>
                 <unit-tests/>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxrpc-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:test/lib/jaxwsTestUtil.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:test/lib/jaxwsTestUtil.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

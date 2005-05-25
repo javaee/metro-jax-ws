@@ -1,5 +1,5 @@
 /*
- * $Id: MessageDispatcherHelper.java,v 1.1 2005-05-23 22:13:27 bbissett Exp $
+ * $Id: MessageDispatcherHelper.java,v 1.2 2005-05-25 18:22:10 kohlert Exp $
  */
 
 /*
@@ -47,9 +47,9 @@ public class MessageDispatcherHelper extends com.sun.xml.ws.client.SOAPMessageDi
 
     protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
         ContextMap context = (ContextMap)
-            messageInfo.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY);
+            messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         BindingProvider provider = (BindingProvider)
-            context.get(BindingProviderProperties.JAXRPC_CLIENT_HANDLE_PROPERTY);
+            context.get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
         BindingImpl binding = (BindingImpl) provider.getBinding();
         return binding.getHandlerChainCaller();
     }

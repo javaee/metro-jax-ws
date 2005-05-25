@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.1 2005-05-23 22:14:07 bbissett Exp $
+ * $Id: DispatchBase.java,v 1.2 2005-05-25 18:22:08 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -179,7 +179,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         MessageStruct messageStruct = setupMessageStruct(msg);
         if (handler != null)
-            messageStruct.setMetaData(BindingProviderProperties.JAXRPC_CLIENT_ASYNC_HANDLER, handler);
+            messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, handler);
         else
             throw new WebServiceException("AsyncHandler argument is null. " +
                 "AsyncHandler is required for asynchronous callback invocations ");
@@ -384,17 +384,17 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
     private void updateResponseContext(MessageStruct messageStruct) {
         ResponseContext responseContext = (ResponseContext)
-            messageStruct.getMetaData(BindingProviderProperties.JAXRPC_RESPONSE_CONTEXT_PROPERTY);
+            messageStruct.getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
         setResponseContext(responseContext);
     }
 
     private void setMetadata(Map jaxrpcContext, Object obj, MessageStruct messageStruct) {
 
-        jaxrpcContext.put(BindingProviderProperties.JAXRPC_CLIENT_HANDLE_PROPERTY, this);
+        jaxrpcContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
         jaxrpcContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
         if (_jaxbContext != null)
             jaxrpcContext.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, _jaxbContext);
-        messageStruct.setMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY,
+        messageStruct.setMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY,
             jaxrpcContext);
 
         messageStruct.setMetaData(DispatchContext.DISPATCH_MESSAGE_MODE, _mode);

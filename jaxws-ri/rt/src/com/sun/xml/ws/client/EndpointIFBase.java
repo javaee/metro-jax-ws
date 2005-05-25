@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: EndpointIFBase.java,v 1.2 2005-05-25 18:22:07 kohlert Exp $
  */
 
 /*
@@ -66,17 +66,17 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     //toDo: have to update generator on PeptStub to getContext
     public void updateResponseContext(MessageInfo messageInfo) {
         ResponseContext responseContext = (ResponseContext)
-            messageInfo.getMetaData(BindingProviderProperties.JAXRPC_RESPONSE_CONTEXT_PROPERTY);
+            messageInfo.getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
         setResponseContext(responseContext);
     }
 
     /**
-     * Get the JAXRPCContext that is used in processing request messages.
+     * Get the JAXWSContext that is used in processing request messages.
      * <p/>
      * Modifications to the request context do not affect asynchronous
      * operations that have already been started.
      *
-     * @return The JAXRPCContext that is used in processing request messages.
+     * @return The JAXWSContext that is used in processing request messages.
      */
     public Map<String, Object> getRequestContext() {
         if (_requestContext == null)
@@ -86,14 +86,14 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     }
 
     /**
-     * Get the JAXRPCContext that resulted from processing a response message.
+     * Get the JAXWSContext that resulted from processing a response message.
      * <p/>
      * The returned context is for the most recently completed synchronous
      * operation. Subsequent synchronous operation invocations overwrite the
      * response context. Asynchronous operations return their response context
      * via the Response interface.
      *
-     * @return The JAXRPCContext that is used in processing request messages.
+     * @return The JAXWSContext that is used in processing request messages.
      */
     public Map<String, Object> getResponseContext() {
         if (_responseContext == null)

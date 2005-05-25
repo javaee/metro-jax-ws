@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.1 2005-05-23 23:23:52 bbissett Exp $
+ * $Id: WebServiceVisitor.java,v 1.2 2005-05-25 18:22:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -232,7 +232,9 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 dot = ".";
             namespace += dot+tokens[i];
         }
-        return namespace + "/jaxrpc";
+        if (tokens.length > 0)
+            namespace += "/";
+        return namespace + "jaxws";
     }
 
 

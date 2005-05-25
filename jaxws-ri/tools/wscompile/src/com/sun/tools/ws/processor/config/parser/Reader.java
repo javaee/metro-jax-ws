@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.1 2005-05-23 23:13:23 bbissett Exp $
+ * $Id: Reader.java,v 1.2 2005-05-25 18:22:16 kohlert Exp $
  */
 
 /*
@@ -42,7 +42,6 @@ public class Reader {
         //reset the input type flags before parsing
         isClassFile = false;
         isWSDLFile = false;;
-        isConfigFile = false;;
 
         InputParser parser = null;
         //now its just the first file. do we expect more than one input files?
@@ -50,11 +49,9 @@ public class Reader {
 
         if(isClassFile){
             parser = new ClassModelParser(_env, _options);
-        }else if(isWSDLFile){
+        } else {
             parser = new CustomizationParser(_env, _options);
-        }else if(isConfigFile){
-            throw new ConfigurationException("configuration.configNotSupport", new Object[] {inputSources.get(0)});
-        }
+        } 
         return parser.parse(inputSources);
     }
 
@@ -70,17 +67,11 @@ public class Reader {
         XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(url.openStream());
 
         reader.next();
-        if (reader.getName().equals(Constants.QNAME_CONFIGURATION)){
-            while(reader.next() != XMLReader.EOF){
-                if(reader.getState() != XMLReader.START)
-                    continue;
-            }
-            isConfigFile = true;
-        }else if(reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
+        if(reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
             isWSDLFile = true;
         }else{
             //we are here, means invalid element
-            ParserUtil.failWithFullName("configuration.invalidElement", reader);
+            ParserUtil.failWithFullName("configuration.invalidElement", file, reader);
         }
     }
 
@@ -97,7 +88,6 @@ public class Reader {
 
     private boolean isClassFile;
     private boolean isWSDLFile;
-    private boolean isConfigFile;
 
     protected ProcessorEnvironment _env;
 

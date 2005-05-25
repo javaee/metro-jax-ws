@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.1 2005-05-23 23:23:52 bbissett Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.2 2005-05-25 18:22:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -132,6 +132,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     private boolean generateWrappers(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         String beanPackage = packageName + PD_JAXRPC_PACKAGE_PD;
+        if (packageName.length() == 0)
+            beanPackage = JAXRPC_PACKAGE;
         String requestClassName = beanPackage + StringUtils.capitalize(method.getSimpleName());
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         if(reqWrapper != null && (reqWrapper.type().length() > 0)){

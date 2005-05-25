@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.1 2005-05-23 22:13:45 bbissett Exp $
+ * $Id: DispatchDelegate.java,v 1.2 2005-05-25 18:22:09 kohlert Exp $
  */
 
 /*
@@ -58,18 +58,18 @@ public class DispatchDelegate extends DelegateBase {
         //Todo: use Map
         //if fast encoding go to next
          if (isFastEncoding((RequestContext)
-                 messageStruct.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY))) {
+                 messageStruct.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY))) {
              if (iterator.hasNext())
                  contactInfo = iterator.next();
              else {
                  if (logger.isLoggable(Level.INFO))     //needs localicalization
                      logger.info("Defaulting to XML Encoding. ");
                  setDefaultEncoding((RequestContext)
-                         messageStruct.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY));
+                         messageStruct.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY));
              }
          } else
              setDefaultEncoding((RequestContext)
-                     messageStruct.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY));
+                     messageStruct.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY));
 
         return contactInfo;
     }

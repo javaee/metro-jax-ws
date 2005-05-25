@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.1 2005-05-23 22:13:11 bbissett Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.2 2005-05-25 18:22:10 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -441,7 +441,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
 
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         if (jc == null) {
-            RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY);
+            RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
             jc = (JAXBContext)
                 requestContext.copy().get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
         }

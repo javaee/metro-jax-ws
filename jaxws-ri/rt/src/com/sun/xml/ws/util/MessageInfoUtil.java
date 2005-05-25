@@ -1,5 +1,5 @@
 /**
- * $Id: MessageInfoUtil.java,v 1.1 2005-05-23 23:06:26 bbissett Exp $
+ * $Id: MessageInfoUtil.java,v 1.2 2005-05-25 18:22:13 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,11 +17,11 @@ public class MessageInfoUtil {
 
     public static void setRuntimeContext(MessageInfo messageInfo,
         RuntimeContext runtimeContext) {
-        messageInfo.setMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT,  runtimeContext);
+        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT,  runtimeContext);
     }
 
     public static RuntimeContext getRuntimeContext(MessageInfo messageInfo) {
-        return (RuntimeContext)messageInfo.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        return (RuntimeContext)messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
     }
 
 }

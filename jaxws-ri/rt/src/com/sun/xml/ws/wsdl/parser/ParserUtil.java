@@ -1,5 +1,5 @@
 /**
- * $Id: ParserUtil.java,v 1.1 2005-05-23 23:07:16 bbissett Exp $
+ * $Id: ParserUtil.java,v 1.2 2005-05-25 18:22:14 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -28,7 +28,7 @@ public class ParserUtil {
         Attributes attributes = reader.getAttributes();
         return attributes.getValue(name);
     }
-
+/*
     public static String getNonEmptyAttribute(XMLReader reader, String name) {
         String value = getAttribute(reader, name);
         if (value != null && value.equals("")) {
@@ -36,7 +36,7 @@ public class ParserUtil {
         }
         return value;
     }
-
+*/
     public static String getMandatoryAttribute(XMLReader reader, String name) {
         String value = getAttribute(reader, name);
         if (value == null) {

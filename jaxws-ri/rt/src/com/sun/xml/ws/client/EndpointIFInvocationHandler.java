@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.2 2005-05-25 18:22:08 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -92,9 +92,9 @@ public class EndpointIFInvocationHandler
 
         messageStruct.setMethod(method);
         messageStruct.setData(parameters);
-        ((BindingProvider) _proxy).getRequestContext().put(JAXRPC_CLIENT_HANDLE_PROPERTY, _proxy);
-        messageStruct.setMetaData(JAXRPC_RUNTIME_CONTEXT, _rtcontext);
-        messageStruct.setMetaData(JAXRPC_CONTEXT_PROPERTY, ((BindingProvider) _proxy).getRequestContext());
+        ((BindingProvider) _proxy).getRequestContext().put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
+        messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
+        messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, ((BindingProvider) _proxy).getRequestContext());
 
 
         messageStruct.setMEP(mmep);

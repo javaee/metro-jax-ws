@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.2 2005-05-24 17:48:13 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.3 2005-05-25 18:22:11 kohlert Exp $
  */
 
 /*
@@ -340,7 +340,7 @@ public abstract class SOAPEncoder implements Encoder {
      * @param im
      */
     protected void setAttachmentsMap(MessageInfo mi, InternalMessage im){
-        Object rtc = mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
             JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
             am.setAttachments(im.getAttachments());

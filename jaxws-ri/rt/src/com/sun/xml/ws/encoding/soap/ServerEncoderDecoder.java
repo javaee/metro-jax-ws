@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.1 2005-05-23 22:30:16 bbissett Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.2 2005-05-25 18:22:11 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -52,7 +52,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
      */
     public void toMessageInfo(Object intMessage, MessageInfo mi) {
         InternalMessage im = (InternalMessage) intMessage;
-        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
 
         BodyBlock bodyBlock = im.getBody();
         JavaMethod jm = rtContext.getModel().getJavaMethod(mi.getMethod());
@@ -95,7 +95,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
      * @see com.sun.xml.rpc.encoding.util.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
      */
     public Object toInternalMessage(MessageInfo mi) {
-        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         // TODO remove, we dont want enc/dec to have any state
         RuntimeModel model = rtContext.getModel();
         JavaMethod jm = model.getJavaMethod(mi.getMethod());

@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.1 2005-05-23 22:26:34 bbissett Exp $
+ * $Id: BindingProviderProperties.java,v 1.2 2005-05-25 18:22:07 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -30,18 +30,18 @@ public interface BindingProviderProperties {
         "com.sun.xml.ws.server.OneWayOperation";
 
 
-    //JAXRPC 2.0
-    public static final String JAXRPC_RUNTIME_CONTEXT =
+    //JAXWS 2.0
+    public static final String JAXWS_RUNTIME_CONTEXT =
         "com.sun.xml.ws.runtime.context";
-    public static final String JAXRPC_CONTEXT_PROPERTY =
+    public static final String JAXWS_CONTEXT_PROPERTY =
         "com.sun.xml.ws.context.request";
-    public static final String JAXRPC_HANDLER_CONTEXT_PROPERTY =
+    public static final String JAXWS_HANDLER_CONTEXT_PROPERTY =
         "com.sun.xml.ws.handler.context";
-    public static final String JAXRPC_RESPONSE_CONTEXT_PROPERTY =
+    public static final String JAXWS_RESPONSE_CONTEXT_PROPERTY =
         "com.sun.xml.ws.context.response";
-    public static final String JAXRPC_CLIENT_ASYNC_HANDLER =
+    public static final String JAXWS_CLIENT_ASYNC_HANDLER =
         "com.sun.xml.ws.client.dispatch.asynchandler";
-    public static final String JAXRPC_CLIENT_HANDLE_PROPERTY =
+    public static final String JAXWS_CLIENT_HANDLE_PROPERTY =
         "com.sun.xml.ws.client.handle";
     public static final String JAXB_CONTEXT_PROPERTY =
         "com.sun.xml.ws.jaxbcontext";

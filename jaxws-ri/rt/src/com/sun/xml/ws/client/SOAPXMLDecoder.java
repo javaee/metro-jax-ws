@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.3 2005-05-25 18:22:08 kohlert Exp $
  */
 
 /*
@@ -104,7 +104,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
     public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
         RuntimeContext rtContext =
-            (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+            (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory();
         InternalEncoder encoder = eptf.getInternalEncoder();
         encoder.toMessageInfo(internalMessage, messageInfo);

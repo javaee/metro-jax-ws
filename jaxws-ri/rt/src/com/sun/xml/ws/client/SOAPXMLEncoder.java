@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.3 2005-05-25 18:22:08 kohlert Exp $
  */
 
 /*
@@ -40,7 +40,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.FAST_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.FAST_CONTENT_TYPE_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.FAST_ENCODING_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP_ACTION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XMLFAST_ENCODING_PROPERTY;
@@ -138,7 +138,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
 
         ContextMap properties = (ContextMap) messageInfo
-            .getMetaData(JAXRPC_CONTEXT_PROPERTY);
+            .getMetaData(JAXWS_CONTEXT_PROPERTY);
 
         if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
             messageContext.put(ONE_WAY_OPERATION, "true");
@@ -213,7 +213,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     }
 
     protected String getContentType(MessageInfo messageInfo){
-        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXRPC_RUNTIME_CONTEXT);
+        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
             JAXRPCAttachmentMarshaller am = (JAXRPCAttachmentMarshaller)((com.sun.xml.ws.server.RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
             if(am.isXopped())

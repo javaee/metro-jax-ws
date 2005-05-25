@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.1 2005-05-23 22:30:16 bbissett Exp $
+ * $Id: DelegateBase.java,v 1.2 2005-05-25 18:22:12 kohlert Exp $
  */
 
 /*
@@ -50,8 +50,8 @@ public class DelegateBase implements Delegate {
    //TODO: use new prop MAP-kw
 
         ContextMap properties = (ContextMap)
-                messageInfo.getMetaData(BindingProviderProperties.JAXRPC_CONTEXT_PROPERTY);
-        BindingProvider stub = (BindingProvider)properties.get(BindingProviderProperties.JAXRPC_CLIENT_HANDLE_PROPERTY);
+                messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        BindingProvider stub = (BindingProvider)properties.get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
         //get handle property(the stub
         ContactInfo contactInfo = null;
         Encoder encoder = null;

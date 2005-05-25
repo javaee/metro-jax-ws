@@ -60,7 +60,7 @@ href="http://jcp.org/en/jsr/detail?id=224">Java<sup>TM</sup>for XML-based RPC
 </ul>
 
 <h2>Installation Instructions</h2>
-<p>Once the JAX-RPC 2.0 EA bundle is extracted, it needs to be installed on the
+<p>Once the JAX-WS 2.0 EA bundle is extracted, it needs to be installed on the
 Application Server. You need to invoke <code>AS_HOME/bin/asant install</code>
 command from the root directory of the extracted bundle to install JAX-RPC 2.0
 binaries on the Application Server, where <code>AS_HOME</code> is the
@@ -68,9 +68,9 @@ installation directory of the Application Server. However this step is required
 if you intend to build and deploy a Web service on the Application Server.</p>
 <p>If you intend to only invoke an already existing Web service, then
 alternatively you can use the <code>wscompile</code> and <code>wsdeploy</code>
-scripts in the <code>bin</code> directory of the JAX-RPC 2.0 EA bundle. To use
-these scripts, you need to set <code>JAXRPC_HOME</code> to the root directory of
-the JAX-RPC 2.0 EA extracted bundle.&nbsp;</p>
+scripts in the <code>bin</code> directory of the JAX-WS 2.0 EA bundle. To use
+these scripts, you need to set <code>JAXWS_HOME</code> to the root directory of
+the JAX-WS 2.0 EA extracted bundle.&nbsp;</p>
 
 <h2>Current Limitations</h2>
 <ul>
@@ -81,7 +81,7 @@ the JAX-RPC 2.0 EA extracted bundle.&nbsp;</p>
     this Early Access release.</p>
   </li>
   <li><p>Use of the following API methods will cause a &#x201c;not supported
-    in JAXRPC 2.0 EA&#x201d; exception to be thrown.</p>
+    in JAXWS 2.0 EA&#x201d; exception to be thrown.</p>
     <p><code><b>javax.xml.rpc.ServiceFactory</b></code>:</p>
     <p><code>public Service createService(URL wsdlLocation, QName
     serviceName) throws ServiceException;</code></p>
@@ -129,7 +129,7 @@ to <a href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a>.</p>
 
 <p>Please use the <a
 href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB 2.0
-and JAXRPC 2.0</a> forum for feedback.</p>
+and JAXWS 2.0</a> forum for feedback.</p>
 <hr>
 
 <p><a href="Copyright.html"><i><font size="2">Copyright &#xa9; 2005 Sun
