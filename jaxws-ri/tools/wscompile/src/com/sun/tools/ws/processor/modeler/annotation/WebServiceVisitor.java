@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.3 2005-05-25 21:20:45 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.4 2005-05-26 01:27:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -209,7 +209,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         }
         return soapBinding;
     }
-
+ 
     protected String getNamespace(PackageDeclaration packageDecl) {
         return getNamespace(packageDecl.getQualifiedName());
     }
