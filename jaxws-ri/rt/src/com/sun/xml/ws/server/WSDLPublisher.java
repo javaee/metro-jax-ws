@@ -1,9 +1,9 @@
 /*
- * $Id: WSDLPublisher.java,v 1.1 2005-05-23 22:50:26 bbissett Exp $
+ * $Id: WSDLPublisher.java,v 1.2 2005-05-26 18:21:16 jitu Exp $
  */
 
 /*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
@@ -26,17 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
-import java.util.List;
 import com.sun.xml.ws.transport.http.servlet.JAXRPCServletException;
+import java.io.PrintWriter;
+import java.util.List;
 
 /**
  *
@@ -44,9 +41,11 @@ import com.sun.xml.ws.transport.http.servlet.JAXRPCServletException;
  */
 public class WSDLPublisher {
 
-    public WSDLPublisher(ServletContext context) {
+    public WSDLPublisher(ServletContext context,
+            List<RuntimeEndpointInfo> endpoints) {
         this.servletContext = context;
-        templatesByEndpointInfo = new HashMap();
+        this.endpoints = endpoints;
+        //templatesByEndpointInfo = new HashMap();
         localizer = new Localizer();
         messageFactory =
             new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
@@ -86,9 +85,7 @@ public class WSDLPublisher {
             fixedUrlPatternEndpoints.put(urlPattern, targetEndpoint);
         }
 
-        response.setContentType("text/xml");
-        response.setStatus(HttpServletResponse.SC_OK);
-        OutputStream outputStream = response.getOutputStream();
+
         String actualAddress =
             request.getScheme()
                 + "://"
@@ -99,6 +96,25 @@ public class WSDLPublisher {
         String baseAddress =
             actualAddress.substring(0, actualAddress.lastIndexOf(urlPattern));
 
+        String inPath = targetEndpoint.getPath(request.getQueryString());
+System.out.println("*** inPath ="+inPath+" *** query= "+request.getQueryString());
+        if (inPath == null) {
+            writeNotFoundErrorPage(response, "Invalid Request");
+            return;
+        }
+        DocInfo in = targetEndpoint.getDocMetadata().get(inPath);
+        if (in == null) {
+            writeNotFoundErrorPage(response, "Invalid Request");
+            return;
+        }
+        response.setContentType("text/xml");
+        response.setStatus(HttpServletResponse.SC_OK);
+        OutputStream outputStream = response.getOutputStream();
+        WSDLPatcher patcher = new WSDLPatcher(inPath, baseAddress,
+                targetEndpoint, endpoints);
+        patcher.patchDoc(in.getDoc(), outputStream);
+        return;
+/*
         Templates templates;
         synchronized (this) {
             templates = (Templates) templatesByEndpointInfo.get(targetEndpoint);
@@ -130,8 +146,31 @@ public class WSDLPublisher {
                 "exception.transformationFailed",
                 e.getMessageAndLocation());
         }
+ */
+    }
+    
+    protected void writeNotFoundErrorPage(
+        HttpServletResponse response,
+        String message)
+        throws IOException {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head><title>");
+        out.println(
+            localizer.localize(
+                messageFactory.getMessage("servlet.html.title")));
+        out.println("</title></head>");
+        out.println("<body>");
+        out.println(
+            localizer.localize(
+                messageFactory.getMessage("servlet.html.notFound", message)));
+        out.println("</body>");
+        out.println("</html>");
     }
 
+    /*
     protected Templates createTemplatesFor(Map patternToPort) {
         try {
             // create the stylesheet
@@ -190,11 +229,13 @@ public class WSDLPublisher {
         }
         ostream.flush();
     }
+     */
 
     private ServletContext servletContext;
+    private List<RuntimeEndpointInfo> endpoints;
     private Localizer localizer;
     private LocalizableMessageFactory messageFactory;
-    private Map templatesByEndpointInfo;
+    //private Map templatesByEndpointInfo;
     private static final Logger logger =
         Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".server.http");

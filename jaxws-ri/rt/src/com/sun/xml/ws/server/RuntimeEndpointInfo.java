@@ -1,9 +1,9 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.1 2005-05-23 22:50:24 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.2 2005-05-26 18:21:16 jitu Exp $
  */
 
 /*
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
@@ -12,13 +12,16 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeAnnotationProcessor;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.Provider;
 import javax.xml.ws.handler.Handler;
 import javax.xml.transform.Source;
-import com.sun.xml.ws.server.*;
+
 
 /**
  * @author JAX-RPC Development Team
@@ -38,6 +41,8 @@ public class RuntimeEndpointInfo
     private Binding binding;
     private RuntimeModel runtimeModel;
     private Object implementor;
+    private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
+    private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
 
     public Exception getException() {
         return exception;
@@ -173,6 +178,49 @@ public class RuntimeEndpointInfo
     
     public void setImplementor(Object implementor) {
         this.implementor = implementor;
+    }
+    
+    public void setMetadata(Map<String, DocInfo> docs) {
+        this.docs = docs;
+        // update uri-->DocInfo map
+        if (query2Doc != null) {
+            query2Doc.clear();
+        } else {
+            query2Doc = new HashMap<String, DocInfo>();
+        }
+        Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();
+        for(Map.Entry<String, DocInfo> entry : entries) {
+            DocInfo docInfo = entry.getValue();
+            query2Doc.put(docInfo.getQueryString(), docInfo);
+        }
+        System.out.println("*** docs ="+docs);
+        System.out.println("*** query2Doc ="+query2Doc);
+    }
+     
+    
+    /*
+     * key - /WEB-INF/wsdl/xxx.wsdl
+     */
+    public Map<String, DocInfo> getDocMetadata() {
+        return docs;
+    }
+    
+    /*
+     * path - /WEB-INF/wsdl/xxx.wsdl
+     * return - xsd=a | wsdl | wsdl=b etc
+     */
+    public String getQueryString(String path) {
+        DocInfo docInfo = docs.get(path);
+        return (docInfo == null) ? null : docInfo.getQueryString();
+    }
+    
+    /*
+     * queryString - xsd=a | wsdl | wsdl=b etc
+     * return - /WEB-INF/wsdl/xxx.wsdl
+     */
+    public String getPath(String queryString) {
+        DocInfo docInfo = query2Doc.get(queryString);
+        return (docInfo == null) ? null : docInfo.getPath();
     }
 
 }

@@ -1,5 +1,6 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.2 2005-05-25 20:16:33 kohlert Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.3 2005-05-26 18:21:17 jitu Exp $
+ *
  */
 
 /*
@@ -117,7 +118,7 @@ public class JAXRPCServletDelegate implements ServletDelegate {
                 ? true
                 : Boolean.valueOf(publishStatusPageParam).booleanValue());
 
-        publisher = new WSDLPublisher(servletContext);
+        publisher = new WSDLPublisher(servletContext, jaxrpcInfo);
 
         if (secondDelegate != null)
             secondDelegate.postInit(servletConfig);
@@ -165,7 +166,9 @@ public class JAXRPCServletDelegate implements ServletDelegate {
 
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
             if (targetEndpoint != null && request.getQueryString() != null) {
-                if (request.getQueryString().equals("WSDL")) {
+                if (request.getQueryString().equals("WSDL") ||
+                    request.getQueryString().startsWith("wsdl") ||
+                    request.getQueryString().startsWith("xsd")) {
                     if (publishWSDL
                         && targetEndpoint.getWSDLFileName() != null) {
                         // return a WSDL document
