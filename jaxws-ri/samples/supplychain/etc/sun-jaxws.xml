@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
+  <endpoint
+    name='fromjava'
+    implementation='supplychain.server.WarehouseImpl'
+    wsdl='/WEB-INF/WarehouseImplService.wsdl'
+    service='{http://server.supplychain/jaxws}WarehouseImplService'
+    port='{http://server.supplychain/jaxws}WarehouseImplPort'
+    urlpattern='/submitpo'/>
+</endpoints>
