@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.3 2005-05-25 21:20:45 kohlert Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.4 2005-05-26 17:12:37 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -63,7 +63,8 @@ public class RuntimeAnnotationProcessor {
         runtimeModel = new SOAPRuntimeModel();
 
         if (!portClass.isAnnotationPresent(javax.jws.WebService.class))
-            throw new WebServiceException("Annotations must be supported for JAXRPC 2.0");
+            throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
+                                       new Object[] {portClass.getCanonicalName()});
 
         Class clazz = portClass;
         WebService webService =
@@ -71,9 +72,8 @@ public class RuntimeAnnotationProcessor {
         if (webService.endpointInterface().length() > 0) {
             clazz = getClass(webService.endpointInterface());
             if (!clazz.isAnnotationPresent(javax.jws.WebService.class)) {
-                // TODO localize
-                throw new WebServiceException("EndpointInterface: "+
-                    webService.endpointInterface()+" does not have WebServcie Annotation");
+                throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
+                                    new Object[] {webService.endpointInterface()});
             }
         }
 
@@ -83,15 +83,11 @@ public class RuntimeAnnotationProcessor {
     }
 
     protected static Class getClass(String className) {
-//        System.out.println("getClass: "+className);
         try {
-            //return Class.forName(className, Thread.currentThread().getContextClassLoader());
             return Thread.currentThread().getContextClassLoader().loadClass(className);
-//            return portInterface.getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            // TODO locallize
-            throw new WebServiceException("class: "+
-                className+" could not be found");
+            throw new RuntimeModelerException("runtime.modeler.class.not.found",
+                                 new Object[] {className});
         }
     }
 
@@ -180,9 +176,8 @@ public class RuntimeAnnotationProcessor {
                     method.getParameterTypes());
                 javaMethod = new JavaMethod(tmpMethod);
             } catch (NoSuchMethodException e) {
-                throw new WebServiceException("method: "+
-                    method.getName()+" could not be found on class: "+
-                    portClass.getName());                
+                throw new RuntimeModelerException("runtime.modeler.method.not.found", 
+                    new Object[] {method.getName(), portClass.getName()});                
             }
         }
         String methodName = method.getName();
@@ -348,14 +343,12 @@ public class RuntimeAnnotationProcessor {
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
-                //TODO: need to handle Holder(s) defined by jaxrpc 1.1 spec
                 if(clazzType.getName().equals(Holder.class.getName())){
                     Type at = ((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0];
                     if(at instanceof ParameterizedType)
                         parameterType = ((ParameterizedType)at).getRawType();
                     else
                         parameterType = at;
-                    //clazzType = (Class)((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0];
                 }
             }
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
@@ -388,8 +381,8 @@ public class RuntimeAnnotationProcessor {
                 Class paramWrapperClass = requestClass;
                 if (paramMode != com.sun.xml.ws.model.Mode.IN) {
                     if (isOneway) {
-                        // TODO localize this
-                        throw new WebServiceException("oneway operation should not have out parameters");
+                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
+                                new Object[] {portClass.getCanonicalName(), methodName});
                     }
                     paramWrapperClass = responseClass;
                 }
@@ -409,8 +402,8 @@ public class RuntimeAnnotationProcessor {
                 }
                 if (!paramMode.equals(com.sun.xml.ws.model.Mode.IN)) {
                     if (isOneway) {
-                        // TODO localize this
-                        throw new WebServiceException("oneway operation should not have out parameters");
+                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
+                                new Object[] {portClass.getCanonicalName(), methodName});
                     }
                     responseWrapper.addWrapperChild(param);
                 }
@@ -569,8 +562,8 @@ public class RuntimeAnnotationProcessor {
                 }
                 if (!paramMode.equals(com.sun.xml.ws.model.Mode.IN)) {
                     if (isOneway) {
-                        // TODO localize this
-                        throw new WebServiceException("oneway operation should not have out parameters");
+                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
+                                new Object[] {portClass.getCanonicalName(), methodName});
                     }
                     responseWrapper.addWrapperChild(param);
                 }
@@ -733,15 +726,15 @@ public class RuntimeAnnotationProcessor {
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
         if (webService == null) {
-            throw new WebServiceException(
-                "Require @WebService annotation on implementation class");
+                throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
+                                    new Object[] {implClass.getCanonicalName()});
         }
         if (webService.endpointInterface().length() > 0) {
             Class seiClass = getClass(webService.endpointInterface());
             webService = (WebService)seiClass.getAnnotation(WebService.class);
             if (webService == null) {
-                throw new WebServiceException(
-                    "Require @WebService annotation on SEI class");
+                throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
+                                    new Object[] {seiClass.getCanonicalName()});
             }
             name = seiClass.getSimpleName();
         }
