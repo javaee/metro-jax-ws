@@ -1,0 +1,145 @@
+<!-- property name="lib.home" value="${basedir}/../lib"/ -->
+<property environment="env"/>
+<property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
+<property name="as.home" value="${ant.home}/../.."/>
+<property name="build.home" value="${basedir}/../build"/>
+<property name="build.classes.home" value="${build.home}/classes"/>
+<property name="build.war.home" value="${build.home}/war"/>
+<property name="domain" value="domain1"/>
+
+<path id="jaxws.classpath">
+    <pathelement location="${java.home}/../lib/tools.jar"/>
+    <fileset dir="${lib.home}" includes="*.jar"/>
+</path>
+
+<taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+    <classpath refid="jaxws.classpath"/>
+</taskdef>
+
+<taskdef name="wsgen" classname="com.sun.tools.ws.ant.WsGen">
+    <classpath refid="jaxws.classpath"/>
+</taskdef>
+
+<taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
+    <classpath refid="jaxws.classpath"/>
+</taskdef>
+
+<target name="setup">
+    <mkdir dir="${build.home}"/>
+    <mkdir dir="${build.classes.home}"/>
+    <mkdir dir="${build.war.home}"/>
+</target>
+
+<target name="build-server-java" depends="setup">
+    <apt
+        fork="true"
+        debug="${debug}"
+    	verbose="${verbose}"
+    	base="${build.classes.home}"
+    	sourceBase="${build.classes.home}"
+    	sourcePath="${basedir}/src">
+	<classpath>
+            <path refid="jaxws.classpath"/>
+	    <pathelement location="${basedir}/src"/>
+	</classpath>
+	<option key="nd" value="${build.home}"/>
+	<option key="verbose" value="${verbose}"/>
+	<source dir="${basedir}/src">
+            <include name="**/server/*.java"/>
+            <include name="**/common/*.java"/>
+	</source>
+    </apt>
+    <!-- copy handlers descriptor file -->
+    <copy todir="${build.classes.home}">
+        <fileset dir="${basedir}/src">
+            <include name="**/server/**/*.xml"/>
+        </fileset>
+    </copy>
+</target>
+
+<target name="build-server-wsdl" depends="setup">
+    <wsimport
+        fork="true"
+        debug="${debug}"
+        verbose="${verbose}"
+        keep="${keep}"
+        import="true"
+        nonClassDir="${build.home}"
+	model="${build.home}/jaxws-${ant.project.name}-model.xml.gz"
+        base="${build.classes.home}"
+        wsdlFile="${server.wsdl}">
+	<classpath refid="jaxws.classpath"/>
+	<binding dir="${basedir}/etc" includes="${server.binding}"/>
+    </wsimport>
+    <javac
+	fork="true"
+	srcdir="${basedir}/src"
+	destdir="${build.classes.home}"
+	includes="**/server/**,**/common/**">
+	<classpath refid="jaxws.classpath"/>
+    </javac>
+</target>
+
+<target name="create-war">
+    <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
+	<webinf dir="${basedir}/etc" includes="*.wsdl, sun-jaxws.xml"/>
+	<webinf dir="${build.home}" includes="*.wsdl, *.xml.gz"/>
+	<fileset dir="${basedir}/etc" includes="*.xsd"/>
+	<fileset dir="${build.home}" includes="*.xsd"/>
+	<classes dir="${build.classes.home}"/>
+    </war>
+</target>
+
+<target name="deploy">
+    <property environment="env" />
+    <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+        todir="${env.TOMCAT_HOME}/webapps"/>
+</target>
+
+<target name="generate-client">
+    <wsimport
+        fork="true"
+        debug="${debug}"
+        verbose="${verbose}"
+        keep="${keep}"
+        base="${build.classes.home}"
+        nonClassDir="${build.home}"
+        wsdlFile="${client.wsdl}">
+	<classpath>
+	    <path refid="jaxws.classpath"/>
+	    <pathelement location="${build.classes.home}"/>
+	</classpath>
+	<binding dir="${basedir}/etc" includes="${client.binding}"/>
+    </wsimport>
+</target>
+
+<target name="client" depends="generate-client">
+    <javac
+	fork="true"
+	srcdir="${basedir}/src"
+	destdir="${build.classes.home}"
+	includes="**/client/**,**/common/**">
+	<classpath refid="jaxws.classpath"/>
+    </javac>
+</target>
+
+<target name="run">
+    <java fork="true" classname="${client}">
+	<classpath>
+            <path refid="jaxws.classpath"/>
+            <pathelement location="${build.classes.home}"/>
+	</classpath>
+    </java>
+</target>
+
+<target name="clean">
+    <delete dir="${build.home}" includeEmptyDirs="true" />
+</target>
+
+<target name="help">
+    <echo message="server:       Builds and deploy the service endpoint WAR"/>
+    <echo message="client:       Builds the client"/>
+    <echo message="run:          Runs the client"/>
+</target>
+
+

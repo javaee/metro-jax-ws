@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
+  <endpoint
+    name='fromjava'
+    implementation='fromjava.server.AddNumbersImpl'
+    wsdl='/WEB-INF/AddNumbersImplService.wsdl'
+    service='{http://server.fromjava/jaxws}AddNumbersImplService'
+    port='{http://server.fromjava/jaxws}AddNumbersImplPort'
+    urlpattern='/addnumbers'/>
+</endpoints>
