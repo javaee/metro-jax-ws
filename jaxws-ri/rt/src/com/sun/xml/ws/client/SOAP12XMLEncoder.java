@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.3 2005-05-25 21:03:22 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.4 2005-05-26 18:48:18 vivekp Exp $
  */
 
 /*
@@ -13,6 +13,8 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.bind.api.BridgeContext;
 import com.sun.pept.ept.MessageInfo;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
@@ -50,9 +52,15 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      */
     @Override
     protected String getContentType(MessageInfo messageInfo){
-        JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)MessageInfoUtil.getRuntimeContext(messageInfo).getBridgeContext().getAttachmentMarshaller();
-        if(am.isXopped())
-            return "application/xop+xml;type=\"text/xml\"";
+        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if(rtc != null){
+            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
+            if(bc != null){
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
+                if(am.isXopped())
+                    return "application/xop+xml;type=\"application/soap+xml\"";
+                }
+        }
         return "application/soap+xml";
     }
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeContext.java,v 1.2 2005-05-25 20:44:15 kohlert Exp $
+ * $Id: RuntimeContext.java,v 1.3 2005-05-26 18:48:19 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -81,7 +81,7 @@ public class RuntimeContext {
     }
     
     public BridgeContext getBridgeContext() {
-        return model.getBridgeContext();
+        return (model != null)?model.getBridgeContext():null;
     }
     
     private RuntimeModel model;   

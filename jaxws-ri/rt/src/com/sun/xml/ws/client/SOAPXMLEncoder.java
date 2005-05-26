@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.4 2005-05-25 21:03:22 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.5 2005-05-26 18:48:18 vivekp Exp $
  */
 
 /*
@@ -23,6 +23,8 @@ import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLWriterFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
@@ -213,11 +215,15 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     }
 
     protected String getContentType(MessageInfo messageInfo){
+
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
-            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((com.sun.xml.ws.server.RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
-            if(am.isXopped())
-                return "application/xop+xml;type=\"text/xml\"";
+            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
+            if(bc != null){
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
+                if(am.isXopped())
+                    return "application/xop+xml;type=\"text/xml\"";
+                }
         }
         return XML_CONTENT_TYPE_VALUE;
     }

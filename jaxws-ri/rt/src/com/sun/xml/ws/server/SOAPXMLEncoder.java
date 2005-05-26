@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.3 2005-05-25 21:03:24 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.4 2005-05-26 18:48:19 vivekp Exp $
  */
 
 /*
@@ -8,17 +8,11 @@
 */
 package com.sun.xml.ws.server;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.soap.Detail;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPMessage;
-
 import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -26,12 +20,18 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLWriterFactory;
 import com.sun.xml.ws.streaming.XmlTreeReader;
-import com.sun.xml.ws.util.MessageInfoUtil;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.soap.Detail;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPMessage;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -77,9 +77,15 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     }
 
     protected String getContentType(MessageInfo messageInfo){
-        JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)MessageInfoUtil.getRuntimeContext(messageInfo).getBridgeContext().getAttachmentMarshaller();
-        if(am.isXopped())
-            return "application/xop+xml;type=\"text/xml\"";
+        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if(rtc != null){
+            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
+            if(bc != null){
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
+                if(am.isXopped())
+                    return "application/xop+xml;type=\"text/xml\"";
+                }
+        }
         return "text/xml";
     }
 
