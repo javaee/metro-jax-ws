@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.1 2005-05-25 21:03:23 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.2 2005-05-26 21:41:14 vivekp Exp $
  */
 
 /*
@@ -69,7 +69,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
      * @see javax.xml.bind.attachment.AttachmentMarshaller#addMtomAttachment(byte[], java.lang.String, java.lang.String)
      */
     public String addMtomAttachment(byte[] data, String elementNamespace, String elementName) {
-        if(!isXOP)
+        if(!isXOP || data == null)
             return null;
         String cid = encodeCid(elementNamespace);
         if(cid != null){
