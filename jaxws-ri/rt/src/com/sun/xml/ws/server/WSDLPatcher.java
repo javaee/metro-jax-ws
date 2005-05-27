@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.1 2005-05-26 18:21:16 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.2 2005-05-27 02:50:30 jitu Exp $
  *
  */
 
@@ -13,6 +13,7 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class WSDLPatcher {
     private String baseAddress;
     private RuntimeEndpointInfo targetEndpoint;
     private List<RuntimeEndpointInfo> endpoints;
+    private DocContext docContext;
     
     /*
      * inPath - /WEB-INF/wsdl/xxx.wsdl
@@ -63,11 +65,12 @@ public class WSDLPatcher {
      */
     public WSDLPatcher(String inPath, String baseAddress,
             RuntimeEndpointInfo targetEndpoint,
-            List<RuntimeEndpointInfo> endpoints) {
+            List<RuntimeEndpointInfo> endpoints, DocContext context) {
         this.inPath = inPath;
         this.baseAddress = baseAddress;
         this.targetEndpoint = targetEndpoint;
         this.endpoints = endpoints;
+        this.docContext = context;
     }
     
     /*
@@ -131,9 +134,7 @@ public class WSDLPatcher {
     }
 
     private String getAbsImportLocation(String relPath) {
-        int lastSlash = inPath.lastIndexOf('/');
-        String path = inPath.substring(0, lastSlash)+"/"+relPath;
-System.out.println("Trying to Query for ** ="+path);
+        String path = docContext.getAbsolutePath(inPath, relPath);    
         return baseAddress+targetEndpoint.getUrlPattern()+"?"+
                 targetEndpoint.getQueryString(path);
     }

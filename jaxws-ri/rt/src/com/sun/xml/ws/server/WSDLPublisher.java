@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.2 2005-05-26 18:21:16 jitu Exp $
+ * $Id: WSDLPublisher.java,v 1.3 2005-05-27 02:50:30 jitu Exp $
  */
 
 /*
@@ -8,14 +8,9 @@
  */
 
 package com.sun.xml.ws.server;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import com.sun.xml.ws.transport.http.servlet.ServletDocContext;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -24,14 +19,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
-import com.sun.xml.ws.transport.http.servlet.JAXRPCServletException;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -110,8 +100,9 @@ System.out.println("*** inPath ="+inPath+" *** query= "+request.getQueryString()
         response.setContentType("text/xml");
         response.setStatus(HttpServletResponse.SC_OK);
         OutputStream outputStream = response.getOutputStream();
+        ServletDocContext docCtxt = new ServletDocContext(servletContext);
         WSDLPatcher patcher = new WSDLPatcher(inPath, baseAddress,
-                targetEndpoint, endpoints);
+                targetEndpoint, endpoints, docCtxt);
         patcher.patchDoc(in.getDoc(), outputStream);
         return;
 /*

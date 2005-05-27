@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.2 2005-05-26 18:21:17 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.3 2005-05-27 02:50:30 jitu Exp $
  */
 
 /*
@@ -24,6 +24,7 @@ import javax.servlet.ServletContextListener;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -97,6 +98,7 @@ public class JAXRPCContextListener
                     String query = null;
                     System.out.println("*** Path ="+docInfo.getPath());
                     String queryValue = docInfo.getPath().substring(14);    // Without /WEB-INF/wsdl
+                    queryValue = URLEncoder.encode(queryValue, "UTF-8");
                     InputStream in = docInfo.getDoc();
                     DOC_TYPE docType = WSDLPatcher.getDocType(docInfo.getDoc());
                     switch(docType) {
