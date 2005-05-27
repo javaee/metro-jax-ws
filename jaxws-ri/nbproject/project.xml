@@ -67,6 +67,7 @@
                     <ide-action name="build"/>
                     <ide-action name="clean"/>
                     <ide-action name="rebuild"/>
+                    <!--
                     <separator/>
                     <action>
                         <label>Debug Wscompile</label>
@@ -83,6 +84,7 @@
                         <target>run-client-server-main</target>
                         <property name="classname">${test.classname}</property>
                     </action>
+                    -->
                 </context-menu>
             </view>
             <subprojects/>
