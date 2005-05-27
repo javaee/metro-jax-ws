@@ -63,7 +63,7 @@
 
   <h2><a name="1._Declaring_customizations_" id="1._Declaring_customizations_"></a>1. Declaring Customizations</h2>
 
-  <p>All the binding declaration elements live in <code>http://java.sun.com/xml/ns/jaxrpc</code> namespace. There are two ways to specify binding declarations. In the first approach, all binding declarations pertaining to a given WSDL document are grouped together in a standalone document, called an <i>external binding file</i>. The second approach consists of embedding binding declarations directly inside a WSDL document. In either case, the <code>jaxrpc:bindings</code> element is used as a container for JAX-RPC binding declarations. The <code>jaxrpc</code> prefix maps to the <code>http://java.sun.com/xml/ns/jaxrpc</code> namespace.</p>
+  <p>All the binding declaration elements live in <code>http://java.sun.com/xml/ns/jaxws</code> namespace. There are two ways to specify binding declarations. In the first approach, all binding declarations pertaining to a given WSDL document are grouped together in a standalone document, called an <i>external binding file</i>. The second approach consists of embedding binding declarations directly inside a WSDL document. In either case, the <code>jaxrpc:bindings</code> element is used as a container for JAX-RPC binding declarations. The <code>jaxrpc</code> prefix maps to the <code>http://java.sun.com/xml/ns/jaxws</code> namespace.</p>
 
   <h3><a name="1.1_External_binding_declaration" id="1.1_External_binding_declaration"></a>1.1 External Binding Declaration</h3>
 
@@ -77,7 +77,7 @@
   <pre>
 &lt;jaxrpc:bindings
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    jaxrpc:xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    jaxrpc:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
 ...
 &lt;/jaxrpc:bindings&gt;
 </pre>
@@ -90,7 +90,7 @@
   <pre>
 &lt;jaxrpc:bindings
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    jaxrpc:xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    jaxrpc:xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
 
     &lt;jaxrpc:bindings node="wsdl:definitions" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"&gt;
         &lt;jaxrpc:package name="external_customize.client"/&gt;
@@ -118,7 +118,7 @@
   <pre>
 &lt;wsdl:portType name="AddNumbersImpl"&gt;
     &lt;!-- wsdl:portType customizations --&gt;
-    &lt;jaxrpc:bindings xmlns:jaxrpc="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    &lt;jaxrpc:bindings xmlns:jaxrpc="http://java.sun.com/xml/ns/jaxws"&gt;
         &lt;!-- rename the generated SEI from AddNumbersImpl to MathUtil --&gt;
         &lt;jaxrpc:class name="MathUtil"/&gt;
         ...
@@ -144,7 +144,7 @@
 &lt;bindings
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
     &lt;bindings node="wsdl:definitions"&gt;
         &lt;package name="external_customize.client"/&gt;
 ...
@@ -169,7 +169,7 @@
 &lt;bindings
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
     &lt;bindings node="wsdl:definitions"&gt;
         &lt;enableWrapperStyle&gt;true&lt;/enableWrapperStyle&gt;
 
@@ -201,7 +201,7 @@
 &lt;bindings
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
     &lt;bindings node="wsdl:definitions"&gt;
         &lt;enableAsyncMapping&gt;false&lt;/enableAsyncMapping&gt;
 
@@ -246,7 +246,7 @@
 &lt;bindings
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxrpc-external-customize/addnumbers?WSDL"
-    xmlns="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
     &lt;bindings node="wsdl:definitions"&gt;
         &lt;enableAdditionalSOAPHeaderMapping&gt;false&lt;/enableAdditionalSOAPHeaderMapping&gt;
 ...
@@ -364,7 +364,7 @@
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxrpc-fromwsdlhandler/addnumbers?WSDL"
-    xmlns:jaxrpc="http://java.sun.com/xml/ns/jaxrpc"&gt;
+    xmlns:jaxrpc="http://java.sun.com/xml/ns/jaxws"&gt;
 
     &lt;jaxrpc:bindings node="wsdl:definitions"&gt;
          &lt;handlerChains xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config"&gt;
