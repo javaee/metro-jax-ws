@@ -27,17 +27,17 @@ public class WarehouseImpl {
         shipmentNotice.setOrderNumber(po.getOrderNumber());
         shipmentNotice.setCustomerNumber(po.getCustomerNumber());
         shipmentNotice.setShipmentNumber("shipment#");
-        Item[] itemList = new Item[po.getItemList().length];
-        for (int i=0; i< po.getItemList().length; i++) {
-            itemList[i] = po.getItemList()[i];
-            System.out.printf("Getting %d item: %d, %f, %d\n", i, po.getItemList()[i].getItemID(), po.getItemList()[i].getPrice(), po.getItemList()[i].getQuantity());
-            System.out.printf("Setting %d item: %d, %f, %d\n", i, itemList[i].getItemID(), itemList[i].getPrice(), itemList[i].getQuantity());
-        }
-        shipmentNotice.setItemList(itemList);
-        
-//        for (Item item : po.getItemList()) {
-//            itemList.add(item);
+        List<Item> itemList = shipmentNotice.getItemList();
+//        for (int i=0; i< po.getItemList().length; i++) {
+//            itemList[i] = po.getItemList()[i];
+//            System.out.printf("Getting %d item: %d, %f, %d\n", i, po.getItemList()[i].getItemID(), po.getItemList()[i].getPrice(), po.getItemList()[i].getQuantity());
+//            System.out.printf("Setting %d item: %d, %f, %d\n", i, itemList[i].getItemID(), itemList[i].getPrice(), itemList[i].getQuantity());
 //        }
+//        shipmentNotice.setItemList(itemList);
+        
+        for (Item item : po.getItemList()) {
+            itemList.add(item);
+        }
         
 	return shipmentNotice;
     }

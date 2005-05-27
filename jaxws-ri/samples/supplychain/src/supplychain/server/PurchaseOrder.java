@@ -5,12 +5,16 @@
  
 package supplychain.server;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import java.util.List;
+import java.util.ArrayList;
 
 public class PurchaseOrder {
     String orderNumber;
     String customerNumber;
-    Item[] itemList;
+    @XmlElement(nillable = true)
+    List<Item> itemList;
     
     public String getOrderNumber() { return orderNumber; }
     public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
@@ -18,6 +22,10 @@ public class PurchaseOrder {
     public String getCustomerNumber() { return customerNumber; }
     public void setCustomerNumber(String customerNumber) { this.customerNumber = customerNumber; }
     
-    public Item[] getItemList() { return itemList; }
-    public void setItemList(Item[] itemList) { this.itemList = itemList; }
+    public List<Item> getItemList() {
+        if (itemList == null)
+            itemList = new ArrayList<Item>();
+            
+        return itemList;
+    }
 }
