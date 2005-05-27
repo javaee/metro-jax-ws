@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.2 2005-05-26 18:21:16 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.3 2005-05-27 17:50:58 vivekp Exp $
  */
 
 /*
@@ -43,6 +43,7 @@ public class RuntimeEndpointInfo
     private Object implementor;
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
+    private boolean enableMtom;
 
     public Exception getException() {
         return exception;
@@ -66,6 +67,14 @@ public class RuntimeEndpointInfo
 
     public void setWSDLFileName(String s) {
         wsdlFileName = s;
+    }
+
+    /**
+     * Enable Mtom processing
+     * @param enable
+     */
+    public void setMtomEnabled(boolean enable){
+        this.enableMtom = enable;
     }
 
     public boolean isDeployed() {
@@ -112,6 +121,9 @@ public class RuntimeEndpointInfo
             RuntimeAnnotationProcessor rap = new RuntimeAnnotationProcessor(null,
                 getImplementor().getClass());
             runtimeModel = rap.buildRuntimeModel();
+            
+            //set Tmomt processing
+            runtimeModel.enableMtom(enableMtom);
         }
         deployed = true;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.2 2005-05-25 18:22:08 kohlert Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.3 2005-05-27 17:50:56 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,6 +15,7 @@ import com.sun.xml.ws.wsdl.WSDLContext;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -98,6 +99,15 @@ public class EndpointIFInvocationHandler
 
 
         messageStruct.setMEP(mmep);
+
+        //set mtom processing
+        if(_rtcontext != null && _rtcontext.getModel() != null){
+            SOAPBindingImpl sb = (binding instanceof SOAPBindingImpl)?(SOAPBindingImpl)binding:null;
+            if(sb != null){
+                _rtcontext.getModel().enableMtom(sb.isMtomEnabled());
+            }
+        }
+
         _delegate.send(messageStruct);
         switch (messageStruct.getResponseType()) {
             case MessageStruct.NORMAL_RESPONSE:

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.1 2005-05-23 23:01:39 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.2 2005-05-27 17:50:59 vivekp Exp $
  */
 
 /*
@@ -80,6 +80,11 @@ public class JAXRPCRuntimeInfoParser {
                 rei.setWSDLFileName(getAttribute(attrs, ATTR_WSDL));
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
                 rei.setPortName(getQNameAttribute(attrs, ATTR_PORT));
+
+                //get enable-mtom attribute value
+                String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);                
+                rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
+
                 rei.setUrlPattern(
                     getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN));
                 setHandlersAndRoles(rei, reader);
@@ -361,6 +366,7 @@ public class JAXRPCRuntimeInfoParser {
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_PORT = "port";
     public static final String ATTR_URL_PATTERN = "urlpattern";
+    public static final String ATTR_ENABLE_MTOM = "enable-mtom";
 
     public static final String ATTRVALUE_VERSION_1_0 = "2.0";
     private static final Logger logger =

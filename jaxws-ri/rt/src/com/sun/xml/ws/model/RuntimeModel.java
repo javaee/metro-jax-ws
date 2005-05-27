@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.6 2005-05-25 21:03:24 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.7 2005-05-27 17:50:57 vivekp Exp $
  */
 
 /*
@@ -67,8 +67,7 @@ public abstract class RuntimeModel {
         BridgeContext bc = bridgeContext.get();
         if (bc == null) {
             bc = jaxbContext.createBridgeContext();
-            //for now, always create XOP package for binary data
-            bc.setAttachmentMarshaller(new JAXWSAttachmentMarshaller(true));
+            bc.setAttachmentMarshaller(new JAXWSAttachmentMarshaller(enableMtom));
             bc.setAttachmentUnmarshaller(new JAXWSAttachmentUnmarshaller());
             bridgeContext.set(bc);
         }
@@ -298,8 +297,18 @@ public abstract class RuntimeModel {
         return Collections.unmodifiableList(handlers);
     }
 
+
+    /**
+     * Mtom processing is disabled by default. To enable it the RuntimeModel creator must call it to enable it.
+     * @param enableMtom
+     */
+    public void enableMtom(boolean enableMtom){
+        this.enableMtom = enableMtom;
+    }
+
     protected abstract void createDecoderInfo();
 
+    private boolean enableMtom = false;
     private ThreadLocal<BridgeContext> bridgeContext = new ThreadLocal<BridgeContext>();
     private JAXBRIContext jaxbContext;
     private String wsdlLocation;

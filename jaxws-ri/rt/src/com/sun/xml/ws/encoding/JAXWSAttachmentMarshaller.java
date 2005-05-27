@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.2 2005-05-26 21:41:14 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.3 2005-05-27 17:50:56 vivekp Exp $
  */
 
 /*
@@ -71,6 +71,11 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     public String addMtomAttachment(byte[] data, String elementNamespace, String elementName) {
         if(!isXOP || data == null)
             return null;
+
+        //TODO: With performance results we need to find out what length would need optimization
+        if(data.length < 1000)
+            return null;
+
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             cid = "<"+cid+">";

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.1 2005-05-23 22:26:37 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.2 2005-05-27 17:50:56 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -30,6 +30,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     private static URI ROLE_ULTIMATE_RECEIVER;
 
     private Set<URI> roles;
+    private boolean enableMtom = false;
 
     // called by DispatchImpl
     SOAPBindingImpl() {
@@ -88,6 +89,22 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         this.roles = roles;
         addRequiredRoles();
         setRolesOnHandlerChain();
+    }
+
+    /**
+     * Client application can set if the Mtom optimization should be enabled
+     * @param enable
+     */
+    public void setMtomEnabled(boolean enable){
+        enableMtom = enable;
+    }
+
+    /**
+     *  Used typically by the runtime to enable/disable Mtom optimization
+     * @return  true or false
+     */
+    public boolean isMtomEnabled(){
+        return enableMtom;
     }
 
     private void setRolesOnHandlerChain() {
