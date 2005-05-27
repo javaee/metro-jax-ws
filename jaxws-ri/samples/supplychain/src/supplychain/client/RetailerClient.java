@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 2005 Sun Microsystems, Inc.
-* All rights reserved. 
-*/
+ * Copyright (c) 2005 Sun Microsystems, Inc.
+ * All rights reserved. 
+ */
 package supplychain.client;
 
 import java.util.List;
