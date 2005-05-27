@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBindingsConstants.java,v 1.1 2005-05-24 13:53:27 bbissett Exp $
+ * $Id: JAXRPCBindingsConstants.java,v 1.2 2005-05-27 18:14:05 vivekp Exp $
  */
 
 /*
@@ -19,7 +19,7 @@ import com.sun.tools.ws.wsdl.parser.Constants;
  */
 public interface JAXRPCBindingsConstants {
 
-    public static String NS_JAXRPC_BINDINGS = "http://java.sun.com/xml/ns/jaxrpc";
+    public static String NS_JAXRPC_BINDINGS = "http://java.sun.com/xml/ns/jaxws";
     public static String NS_JAXB_BINDINGS = "http://java.sun.com/xml/ns/jaxb";
 
     /**

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser.java,v 1.1 2005-05-24 14:07:31 bbissett Exp $
+ * $Id: WSDLParser.java,v 1.2 2005-05-27 18:14:06 vivekp Exp $
  */
 
 /*
@@ -449,7 +449,7 @@ public class WSDLParser {
                 // that will be needed to create jaxb model
                 addSchemaElements(e2);
 
-                definitions.setTypes(parseTypes(context, definitions, e2));
+                //definitions.setTypes(parseTypes(context, definitions, e2));
             } else if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_MESSAGE)) {
                 Message message = parseMessage(context, definitions, e2);
                 definitions.add(message);
