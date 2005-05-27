@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.2 2005-05-27 17:50:59 vivekp Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.3 2005-05-27 22:24:00 bbissett Exp $
  */
 
 /*
@@ -168,28 +168,41 @@ public class JAXRPCRuntimeInfoParser {
         List<Handler> handlerChain = new ArrayList<Handler>();
         Set<String> roles = new HashSet<String>();
 
-        // process handler chain name (currently ignored)
+        // ignore name for now. use commented code to get name if wanted
         XMLStreamReaderUtil.nextElementContent(reader);
-        ensureProperName(reader, QNAME_HANDLER_CHAIN_NAME);
-        String handlerChainName = XMLStreamReaderUtil.getElementText(reader);
+        //ensureProperName(reader, QNAME_HANDLER_CHAIN_NAME);
+        //String handlerChainName = XMLStreamReaderUtil.getElementText(reader);
+        //XMLStreamReaderUtil.nextElementContent(reader);
+        if (reader.getName().equals(QNAME_HANDLER_CHAIN_NAME)) {
+            // remove this block if uncommenting code above
+            XMLStreamReaderUtil.nextContent(reader);
+            XMLStreamReaderUtil.nextElementContent(reader);
+            XMLStreamReaderUtil.nextElementContent(reader);
+        }
 
         // process all <handler> elements
-        XMLStreamReaderUtil.nextElementContent(reader);
         while (reader.getName().equals(QNAME_HANDLER)) {
             Handler handler = null;
             Map<String, String> initParams = new HashMap<String, String>();
             Set<QName> headers = new HashSet<QName>();
 
-            // handler name
+            // ignore name if not present (see comments on chain name above)
             XMLStreamReaderUtil.nextContent(reader);
-            ensureProperName(reader, QNAME_HANDLER_NAME);
-            String handlerName = XMLStreamReaderUtil.getElementText(reader);
+            //ensureProperName(reader, QNAME_HANDLER_NAME);
+            //String handlerName = XMLStreamReaderUtil.getElementText(reader);
+            //XMLStreamReaderUtil.nextElementContent(reader);
+            if (reader.getName().equals(QNAME_HANDLER_NAME)) {
+                // remove this block if uncommenting code above
+                XMLStreamReaderUtil.nextContent(reader);
+                XMLStreamReaderUtil.nextElementContent(reader);
+                XMLStreamReaderUtil.nextElementContent(reader);
+            }
 
             // handler class
-            XMLStreamReaderUtil.nextContent(reader);
             ensureProperName(reader, QNAME_HANDLER_CLASS);
             try {
-                handler = (Handler) Class.forName(XMLStreamReaderUtil.getElementText(reader)).newInstance();
+                handler = (Handler) Class.forName(
+                    XMLStreamReaderUtil.getElementText(reader)).newInstance();
             } catch (ClassNotFoundException cnfe) {
                 throw new RuntimeException(cnfe);
             } catch (InstantiationException ie){
@@ -197,7 +210,6 @@ public class JAXRPCRuntimeInfoParser {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-
             XMLStreamReaderUtil.nextContent(reader);
 
             // init params
@@ -215,6 +227,13 @@ public class JAXRPCRuntimeInfoParser {
                 XMLStreamReaderUtil.nextContent(reader); // past init-param
             }
 
+            // headers (ignored)
+            while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
+                XMLStreamReaderUtil.nextContent(reader);
+                XMLStreamReaderUtil.nextElementContent(reader);
+                XMLStreamReaderUtil.nextElementContent(reader);
+            }
+            
             // roles (not stored per handler)
             while (reader.getName().equals(QNAME_HANDLER_ROLE)) {
                 roles.add(XMLStreamReaderUtil.getElementText(reader));
