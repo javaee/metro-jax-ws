@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.3 2005-05-27 22:24:00 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.4 2005-05-27 23:20:37 jitu Exp $
  */
 
 /*
@@ -201,10 +201,8 @@ public class JAXRPCRuntimeInfoParser {
             // handler class
             ensureProperName(reader, QNAME_HANDLER_CLASS);
             try {
-                handler = (Handler) Class.forName(
+                handler = (Handler) loadClass(
                     XMLStreamReaderUtil.getElementText(reader)).newInstance();
-            } catch (ClassNotFoundException cnfe) {
-                throw new RuntimeException(cnfe);
             } catch (InstantiationException ie){
                 throw new RuntimeException(ie);
             } catch (IllegalAccessException e) {
