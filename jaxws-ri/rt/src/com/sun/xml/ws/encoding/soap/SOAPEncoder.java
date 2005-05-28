@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.5 2005-05-26 18:48:18 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.6 2005-05-28 01:04:39 vivekp Exp $
  */
 
 /*
@@ -362,8 +362,14 @@ public abstract class SOAPEncoder implements Encoder {
             AttachmentBlock block = attachments.get(id);
             if(block == null)
                 continue;
+            if(block.getValue() == null)
+                continue;
+            Object value = block.getValue();
             AttachmentPart ap = msg.createAttachmentPart();
-            ap.setRawContent(block.getValue(), block.getType());
+            if(value instanceof DataHandler)
+                ap.setDataHandler((DataHandler)value);
+            else if(value instanceof InputStream)
+                ap.setRawContent((InputStream)value, block.getType());
             ap.setContentId(id);
             msg.addAttachmentPart(ap);
         }

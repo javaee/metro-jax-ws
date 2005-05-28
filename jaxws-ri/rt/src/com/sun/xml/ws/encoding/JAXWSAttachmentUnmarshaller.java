@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.1 2005-05-25 21:03:23 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.2 2005-05-28 01:04:41 vivekp Exp $
  */
 
 /*
@@ -42,8 +42,8 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
         //TODO localize exception message
         if(block == null)
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-
-        return new DataHandler(new ByteArrayDataSource(block.getValue(),  block.getType()));
+        Object value = block.getValue();
+        return new DataHandler(new ByteArrayDataSource((InputStream)block.getValue(),  block.getType()));
     }
 
     /**
@@ -57,7 +57,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
 
         try {
-            return ASCIIUtility.getBytes(block.getValue());
+            return ASCIIUtility.getBytes((InputStream)block.getValue());
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

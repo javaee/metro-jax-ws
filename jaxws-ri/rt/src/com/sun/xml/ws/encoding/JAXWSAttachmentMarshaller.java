@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.3 2005-05-27 17:50:56 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.4 2005-05-28 01:04:40 vivekp Exp $
  */
 
 /*
@@ -53,12 +53,8 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
             return null;
         String cid = encodeCid(elementNamespace);
         if(cid != null){
-            try {
-                cid = "<"+cid+">";
-                attachments.put(cid, new AttachmentBlock(cid, data.getInputStream(), data.getContentType()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            cid = "<"+cid+">";
+            attachments.put(cid, new AttachmentBlock(cid, data, data.getContentType()));
             isXopped = true;
             cid = "cid:"+cid;
         }
@@ -92,12 +88,8 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     public String addSwaRefAttachment(DataHandler data) {
         String cid = encodeCid(null);
         if(cid != null){
-            try {
-                cid = "<"+cid+">";
-                attachments.put(cid, new AttachmentBlock(cid, data.getInputStream(), data.getContentType()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            cid = "<"+cid+">";
+            attachments.put(cid, new AttachmentBlock(cid, data, data.getContentType()));
             isXopped = true;
             cid = "cid:"+cid;
         }

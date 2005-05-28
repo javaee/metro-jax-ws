@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.4 2005-05-25 21:03:22 vivekp Exp $
+ * $Id: SOAPDecoder.java,v 1.5 2005-05-28 01:04:39 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved. 
@@ -11,7 +11,6 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamReader;
 
@@ -39,9 +38,7 @@ import static javax.xml.stream.XMLStreamReader.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
@@ -277,7 +274,6 @@ public abstract class SOAPDecoder implements Decoder {
         if(iter.hasNext()){
             JAXWSAttachmentUnmarshaller au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
             au.setXOPPackage(isXOPPackage(message));
-            au.setXOPPackage(true);
             au.setAttachments(im.getAttachments());
         }
 
@@ -296,7 +292,7 @@ public abstract class SOAPDecoder implements Decoder {
      * @throws ParseException
      */
     private boolean isXOPPackage(SOAPMessage sm) throws ParseException {
-        String ct = getContentType(sm.getMimeHeaders());
+        String ct = getContentType(sm.getSOAPPart());
         ContentType contentType = new ContentType(ct);
         String primary = contentType.getPrimaryType();
         String sub = contentType.getSubType();
@@ -308,8 +304,8 @@ public abstract class SOAPDecoder implements Decoder {
         return false;
     }
 
-    private String getContentType(MimeHeaders headers) {
-        String[] values = headers.getHeader("Content-Type");
+    private String getContentType(SOAPPart part) {
+        String[] values = part.getMimeHeader("Content-Type");
         if (values == null)
             return null;
         else

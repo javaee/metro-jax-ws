@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.2 2005-05-24 17:48:12 vivekp Exp $
+ * $Id: AttachmentBlock.java,v 1.3 2005-05-28 01:04:38 vivekp Exp $
  */
 
 /*
@@ -15,10 +15,10 @@ import java.io.InputStream;
  */
 public class AttachmentBlock {
     private String id;
-    private InputStream value;
+    private Object value;
     private String type;
 
-    public AttachmentBlock(String id, InputStream value, String type) {
+    public AttachmentBlock(String id, Object value, String type) {
         this.id = id;
         this.value = value;
         this.type = type;
@@ -32,7 +32,7 @@ public class AttachmentBlock {
         this.id = id;
     }
 
-    public InputStream getValue() {
+    public Object getValue() {
         return value;
     }
 
