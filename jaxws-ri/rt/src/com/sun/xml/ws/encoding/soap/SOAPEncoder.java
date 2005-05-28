@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.7 2005-05-28 01:10:12 spericas Exp $
+ * $Id: SOAPEncoder.java,v 1.8 2005-05-28 01:23:15 vivekp Exp $
  */
 
 /*
@@ -10,6 +10,7 @@ package com.sun.xml.ws.encoding.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
+import javax.activation.DataHandler;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
