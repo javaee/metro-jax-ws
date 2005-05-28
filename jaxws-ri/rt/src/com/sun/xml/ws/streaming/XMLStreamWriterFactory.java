@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterFactory.java,v 1.4 2005-05-28 01:00:33 spericas Exp $
+ * $Id: XMLStreamWriterFactory.java,v 1.5 2005-05-28 01:10:13 spericas Exp $
  */
 
 /*
@@ -132,7 +132,7 @@ public class XMLStreamWriterFactory {
             return (XMLStreamWriter) sds;
         } 
         catch (Exception e) {
-            throw new XMLReaderException(new LocalizableExceptionAdapter(e));
+            throw new XMLStreamWriterException(new LocalizableExceptionAdapter(e));
         }        
     }
     

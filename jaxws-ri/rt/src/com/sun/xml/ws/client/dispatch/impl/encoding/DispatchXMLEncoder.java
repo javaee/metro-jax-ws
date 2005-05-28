@@ -1,11 +1,13 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.3 2005-05-25 20:44:12 kohlert Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.4 2005-05-28 01:10:10 spericas Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
 package com.sun.xml.ws.client.dispatch.impl.encoding;
+
+import javax.xml.stream.XMLStreamWriter;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.transport.Connection;
@@ -18,8 +20,7 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -61,8 +62,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         Connection connection = messageInfo.getConnection();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLWriterFactory factory = XMLWriterFactory.newInstance();
-        XMLWriter writer = factory.createXMLWriter(baos);
+        XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
         try {
             startEnvelope(writer);
@@ -71,7 +71,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
             writeHeader(writer, request);
             writeBody(writer, request, messageInfo);
             endEnvelope(writer);
-
+            writer.writeEndDocument();
             writer.close();
 
             // sending the request over the wire
@@ -88,13 +88,13 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         }
     }
 
-    protected void writeHeaders(XMLWriter writer, InternalMessage response,
+    protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
                                 MessageInfo messageInfo) {
 
     }
 
     //dispatch will need to overide for now till handlers figured out
-    protected void writeHeader(XMLWriter writer, InternalMessage request) {
+    protected void writeHeader(XMLStreamWriter writer, InternalMessage request) {
         List<HeaderBlock> headerBlocks = request.getHeaders();
 
         if (headerBlocks == null) {
@@ -102,7 +102,7 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         }
     }
     //use super - leave for now
-    /* protected void writeBody(XMLWriter writer, InternalMessage request) {
+    /* protected void writeBody(XMLStreamWriter writer, InternalMessage request) {
          BodyBlock bodyBlock = request.getBody();
 
          if (bodyBlock == null) {

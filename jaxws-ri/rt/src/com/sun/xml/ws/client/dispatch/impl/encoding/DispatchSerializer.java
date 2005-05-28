@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.2 2005-05-25 19:05:48 spericas Exp $
+ * $Id: DispatchSerializer.java,v 1.3 2005-05-28 01:10:10 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,14 +16,16 @@ import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -45,7 +47,7 @@ public class DispatchSerializer {
     public DispatchSerializer() {
     }
     
-    public void serialize(Object obj, XMLWriter writer, JAXBContext context) {
+    public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
         if (obj instanceof Source)
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
@@ -65,9 +67,8 @@ public class DispatchSerializer {
     
     private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLWriterFactory factory = XMLWriterFactory.newInstance();
         try {
-            XMLWriter writer = factory.createXMLWriter(baos);
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             
             int state = START_ELEMENT;
             do {
@@ -78,17 +79,19 @@ public class DispatchSerializer {
                         String namespaceURI = elementName.getNamespaceURI();
                         String prefix = elementName.getPrefix();
                         
-                        writer.startElement(localPart,
-                                namespaceURI,
-                                prefix);
+                        writer.writeStartElement(prefix, localPart, namespaceURI);
                         
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
                                 // namespace declaration for the element is written during previous writeElement
-                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart()))
-                                    writer.writeNamespaceDeclaration(atts.getName(i).getLocalPart(), atts.getValue(i));
+                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart())) {
+                                    String value = atts.getValue(i);
+                                    String localName = atts.getName(i).getLocalPart();
+                                    writer.setPrefix(localName, value);
+                                    writer.writeNamespace(localName, value);
+                                }
                             } else {
                                 writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                             }
@@ -96,10 +99,10 @@ public class DispatchSerializer {
                         
                         break;
                     case END_ELEMENT:
-                        writer.endElement();
+                        writer.writeEndElement();
                         break;
                     case CHARACTERS:
-                        writer.writeChars(reader.getText());
+                        writer.writeCharacters(reader.getText());
                 }
                 state = XMLStreamReaderUtil.next(reader);
                 
@@ -109,6 +112,7 @@ public class DispatchSerializer {
                 
             } while (state != END_DOCUMENT);
             
+            writer.writeEndDocument();
             writer.close();
             
         } catch (Exception e) {
@@ -121,42 +125,49 @@ public class DispatchSerializer {
         return new StreamSource(istream);
     }
     
-    private void serializeSource(Object source, XMLWriter writer) {
-        XMLStreamReader reader = SourceReaderFactory.createSourceReader((Source) source, true);
-        
-        int state = START_DOCUMENT;
-        do {
-            state = XMLStreamReaderUtil.next(reader);
-            switch (state) {
-                case START_ELEMENT:
-                    QName elementName = reader.getName();
-                    String localPart = elementName.getLocalPart();
-                    String namespaceURI = elementName.getNamespaceURI();
-                    String prefix = elementName.getPrefix();
-                    
-                    writer.startElement(localPart,
-                        namespaceURI,
-                        prefix);
+    private void serializeSource(Object source, XMLStreamWriter writer) {
+        try {
+            XMLStreamReader reader = SourceReaderFactory.createSourceReader((Source) source, true);
 
-                    Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
-                    writer.flush();
-                    for (int i = 0; i < atts.getLength(); i++) {
-                        if (atts.isNamespaceDeclaration(i)) {
-                            // namespace declaration for the element is written during previous writeElement
-                            if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart()))
-                                writer.writeNamespaceDeclaration(atts.getName(i).getLocalPart(), atts.getValue(i));
-                        } else {
-                            writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+            int state = START_DOCUMENT;
+            do {
+                state = XMLStreamReaderUtil.next(reader);
+                switch (state) {
+                    case START_ELEMENT:
+                        QName elementName = reader.getName();
+                        String localPart = elementName.getLocalPart();
+                        String namespaceURI = elementName.getNamespaceURI();
+                        String prefix = elementName.getPrefix();
+
+                        writer.writeStartElement(prefix, localPart, namespaceURI);
+
+                        Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
+                        writer.flush();
+                        for (int i = 0; i < atts.getLength(); i++) {
+                            if (atts.isNamespaceDeclaration(i)) {
+                                // namespace declaration for the element is written during previous writeElement
+                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart())) {
+                                    String value = atts.getValue(i);
+                                    String localName = atts.getName(i).getLocalPart();
+                                    writer.setPrefix(localName, value);
+                                    writer.writeNamespace(localName, value);
+                                }
+                            } else {
+                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                            }
                         }
-                    }
-                    //writeAttributes(reader.getAttributes(), namespaceURI, prefix, writer);
-                    break;
-                case END_ELEMENT:
-                    writer.endElement();
-                    break;
-                case CHARACTERS:
-                    writer.writeChars(reader.getText());
-            }
-        } while (state != END_DOCUMENT);
+                        //writeAttributes(reader.getAttributes(), namespaceURI, prefix, writer);
+                        break;
+                    case END_ELEMENT:
+                        writer.writeEndElement();
+                        break;
+                    case CHARACTERS:
+                        writer.writeCharacters(reader.getText());
+                }
+            } while (state != END_DOCUMENT);
+        }
+        catch (XMLStreamException e) {
+            throw new SerializationException(new LocalizableExceptionAdapter(e));           
+        }
     }
 }

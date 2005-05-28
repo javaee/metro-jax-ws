@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.5 2005-05-26 18:48:18 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.6 2005-05-28 01:10:10 spericas Exp $
  */
 
 /*
@@ -8,6 +8,8 @@
 */
 package com.sun.xml.ws.client;
 
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -19,8 +21,7 @@ import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -48,6 +49,8 @@ import static com.sun.xml.ws.client.BindingProviderProperties.SOAP_ACTION_PROPER
 import static com.sun.xml.ws.client.BindingProviderProperties.XMLFAST_ENCODING_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.ws.WebServiceException;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -61,19 +64,24 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      * @see com.sun.pept.encoding.Encoder#encode(com.sun.pept.ept.MessageInfo)
      */
     public ByteBuffer encode(MessageInfo messageInfo) {
-        InternalMessage request = toInternalMessage(messageInfo);
+        try {
+            InternalMessage request = toInternalMessage(messageInfo);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLWriterFactory factory = XMLWriterFactory.newInstance();
-        XMLWriter writer = factory.createXMLWriter(baos);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
-        startEnvelope(writer);
-        writeHeaders(writer, request, messageInfo);
-        writeBody(writer, request, messageInfo);
-        endEnvelope(writer);
-        writer.close();
-
-        return ByteBuffer.wrap(baos.toByteArray());
+            startEnvelope(writer);
+            writeHeaders(writer, request, messageInfo);
+            writeBody(writer, request, messageInfo);
+            endEnvelope(writer);
+            writer.writeEndDocument();
+            writer.close();
+            
+            return ByteBuffer.wrap(baos.toByteArray());
+        }
+        catch (XMLStreamException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        } 
     }
 
     /* (non-Javadoc)
@@ -103,8 +111,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         MessageInfo messageInfo) {
         setAttachmentsMap(messageInfo, internalMessage);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLWriterFactory factory = XMLWriterFactory.newInstance();
-        XMLWriter writer = factory.createXMLWriter(baos);
+        XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
         SOAPMessage message = null;
         try {
@@ -112,6 +119,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             writeHeaders(writer, internalMessage, messageInfo);
             writeBody(writer, internalMessage, messageInfo);
             endEnvelope(writer);
+            writer.writeEndDocument();
             writer.close();
 
             byte[] buf = baos.toByteArray();
@@ -125,6 +133,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         } catch (IOException e) {
             throw new SenderException("sender.request.messageNotReady", new LocalizableExceptionAdapter(e));
         } catch (SOAPException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        } catch (XMLStreamException e) {
             throw new SenderException(new LocalizableExceptionAdapter(e));
         }
 

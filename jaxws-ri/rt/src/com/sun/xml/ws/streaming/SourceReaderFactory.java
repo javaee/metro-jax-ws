@@ -1,5 +1,5 @@
 /**
- * $Id: SourceReaderFactory.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
+ * $Id: SourceReaderFactory.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -102,8 +102,20 @@ public class SourceReaderFactory {
             }
         }
         else if (source instanceof SAXSource) {
-            // TODO: need SAX to StAX adapter here 
-            throw new RuntimeException("SAXSource not yet supported");
+            try { 
+                // TODO: need SAX to StAX adapter here -- Use transformer for now
+                javax.xml.transform.Transformer tx = 
+                    javax.xml.transform.TransformerFactory.newInstance().newTransformer();
+                javax.xml.transform.dom.DOMResult domResult = 
+                    new javax.xml.transform.dom.DOMResult();
+                tx.transform(source, domResult);
+                return createSourceReader(
+                    new javax.xml.transform.dom.DOMSource(domResult.getNode()),
+                    rejectDTDs);
+            }
+            catch (Exception e) {
+                throw new XMLReaderException(new LocalizableExceptionAdapter(e));
+            }        
         }
         else {
             throw new XMLReaderException("sourceReader.invalidSource", 

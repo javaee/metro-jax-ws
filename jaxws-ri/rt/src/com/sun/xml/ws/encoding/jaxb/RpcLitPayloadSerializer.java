@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.3 2005-05-25 20:16:25 kohlert Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.4 2005-05-28 01:10:11 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,13 +11,14 @@ import com.sun.xml.bind.api.BridgeContext;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
-import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -72,14 +73,25 @@ public class RpcLitPayloadSerializer {
      * the operation, and then it serializes each parameter
      */
     public static void serialize(RpcLitPayload obj, BridgeContext bridgeContext,
-        XMLWriter writer) {
-        QName op = obj.getOperation();
-        writer.startElement(op.getLocalPart(), op.getNamespaceURI(), "ans");
-        for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
-            JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
-                writer);
+        XMLStreamWriter writer) 
+    {
+        try {
+            QName op = obj.getOperation();
+            String opURI = op.getNamespaceURI();
+            
+            writer.writeStartElement("ans", op.getLocalPart(), opURI);
+            writer.setPrefix("ans", opURI);
+            writer.writeNamespace("ans", opURI);
+            
+            for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
+                JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
+                    writer);
+            }
+            writer.writeEndElement();            // </ans:operation>
         }
-        writer.endElement();            // </ans:operation>
+        catch (XMLStreamException e) {
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
+        }
     }
     
     /*

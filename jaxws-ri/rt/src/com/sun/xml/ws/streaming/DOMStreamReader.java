@@ -1,5 +1,5 @@
 /*
- * $Id: DOMStreamReader.java,v 1.2 2005-05-25 19:05:51 spericas Exp $
+ * $Id: DOMStreamReader.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -18,6 +18,10 @@ import javax.xml.stream.XMLStreamException;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
+ *
+ * Create an XMLStreamReader on top of a DOM level 2 tree. It a DOM level
+ * 1 tree is passed, each method will attempt to return the correct value
+ * by using <code>getNodeName()</code>.
  *
  * @author Santiago.PericasGeertsen@sun.com
  */
@@ -64,11 +68,13 @@ public class DOMStreamReader implements XMLStreamReader {
     
     public void setCurrentNode(Node node) {
         _current = node;
-        _state = START_DOCUMENT;
+        _state = START_DOCUMENT;        
+        // verifyDOMIntegrity(node);
     }
     
     public void close() throws javax.xml.stream.XMLStreamException {
     }
+    
     
     private void splitAttributes() {
         if (!_needAttributesSplit) return;
@@ -102,20 +108,38 @@ public class DOMStreamReader implements XMLStreamReader {
         throw new IllegalStateException("DOMStreamReader: getAttributeCount() called in illegal state");
     }
     
+    /**
+     * Return an attribute's local name. Handle the case of DOM level 1 nodes.
+     */
     public String getAttributeLocalName(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            return _currentAttributes.get(index).getLocalName();
+            
+            String localName = _currentAttributes.get(index).getLocalName();
+            return (localName != null) ? localName :
+                QName.valueOf(_currentAttributes.get(index).getNodeName()).getLocalPart();
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeLocalName() called in illegal state");
     }
-    
+
+    /**
+     * Return an attribute's qname. Handle the case of DOM level 1 nodes.
+     */
     public QName getAttributeName(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
+            
             Node attr = _currentAttributes.get(index);
-            return new QName(attr.getNamespaceURI(), attr.getPrefix(),
-                    attr.getLocalName());
+            String localName = attr.getLocalName();
+            if (localName != null) {
+                String prefix = attr.getPrefix();
+                String uri = attr.getNamespaceURI();            
+                return new QName(uri != null ? uri : "", localName, 
+                    prefix != null ? prefix : "");
+            }
+            else {
+                return QName.valueOf(attr.getNodeName());
+            }
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeName() called in illegal state");
     }
@@ -123,7 +147,8 @@ public class DOMStreamReader implements XMLStreamReader {
     public String getAttributeNamespace(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            return _currentAttributes.get(index).getNamespaceURI();
+            String uri = _currentAttributes.get(index).getNamespaceURI();
+            return uri != null ? uri : "";
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeNamespace() called in illegal state");
     }
@@ -131,7 +156,8 @@ public class DOMStreamReader implements XMLStreamReader {
     public String getAttributePrefix(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            return _currentAttributes.get(index).getPrefix();
+            String prefix = _currentAttributes.get(index).getPrefix();
+            return prefix != null ? prefix : "";
         }
         throw new IllegalStateException("DOMStreamReader: getAttributePrefix() called in illegal state");
     }
@@ -175,10 +201,16 @@ public class DOMStreamReader implements XMLStreamReader {
         return _state;
     }
     
+    /**
+     * Return an element's local name. Handle the case of DOM level 1 nodes.
+     */
     public String getLocalName() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
-            return _current.getLocalName();
-        } else if (_state == ENTITY_REFERENCE) {
+            String localName = _current.getLocalName();
+            return localName != null ? localName : 
+                QName.valueOf(_current.getNodeName()).getLocalPart();
+        } 
+        else if (_state == ENTITY_REFERENCE) {
             return _current.getNodeName();
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeValue() called in illegal state");
@@ -188,14 +220,21 @@ public class DOMStreamReader implements XMLStreamReader {
         throw new RuntimeException("DOMStreamReader: getLocation() not implemented");
     }
     
+    /**
+     * Return an element's qname. Handle the case of DOM level 1 nodes.
+     */
     public javax.xml.namespace.QName getName() {
-        if (_state == START_ELEMENT || _state == END_ELEMENT) {
-            String uri = _current.getNamespaceURI();
+        if (_state == START_ELEMENT || _state == END_ELEMENT) {            
             String localName = _current.getLocalName();
-            String prefix = _current.getPrefix();
-            return new QName(uri != null ? uri : "",
-                             localName != null ? localName : "",
-                             prefix != null ? prefix : "");
+            if (localName != null) {
+                String prefix = _current.getPrefix();
+                String uri = _current.getNamespaceURI();            
+                return new QName(uri != null ? uri : "", localName, 
+                    prefix != null ? prefix : "");
+            }
+            else {
+                return QName.valueOf(_current.getNodeName());
+            }
         }
         throw new IllegalStateException("DOMStreamReader: getName() called in illegal state");
     }
@@ -215,14 +254,21 @@ public class DOMStreamReader implements XMLStreamReader {
     public String getNamespacePrefix(int index) {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             splitAttributes();
-            return _currentNamespaces.get(index).getLocalName();        // Is this correct?
+            
+            Attr attr = _currentNamespaces.get(index);
+            String result = attr.getLocalName();
+            if (result == null) {
+                result = QName.valueOf(attr.getNodeName()).getLocalPart();
+            }
+            return result.equals("xmlns") ? null : result;
         }
         throw new IllegalStateException("DOMStreamReader: getNamespacePrefix() called in illegal state");
     }
     
     public String getNamespaceURI() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
-            return _current.getNamespaceURI();
+            String uri = _current.getNamespaceURI();
+            return uri != null ? uri : "";
         }
         return null;
     }
@@ -230,7 +276,7 @@ public class DOMStreamReader implements XMLStreamReader {
     public String getNamespaceURI(int index) {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             splitAttributes();
-            return _currentNamespaces.get(index).getValue();        // Is this correct?
+            return _currentNamespaces.get(index).getValue();
         }
         throw new IllegalStateException("DOMStreamReader: getNamespaceURI(int) called in illegal state");
     }
@@ -292,7 +338,8 @@ public class DOMStreamReader implements XMLStreamReader {
     
     public String getPrefix() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
-            return _current.getPrefix();
+            String prefix = _current.getPrefix();
+            return prefix != null ? prefix : "";
         }
         return null;
     }
@@ -432,7 +479,7 @@ public class DOMStreamReader implements XMLStreamReader {
                  * is very expensive, so we should think about changing SAAJ instead!
                  */
                 _current.normalize();
-                                
+                              
                 child = _current.getFirstChild();
                 if (child == null) {
                     return (_state = END_ELEMENT);
@@ -500,8 +547,36 @@ public class DOMStreamReader implements XMLStreamReader {
         return true;
     }    
     
+    private static void verifyDOMIntegrity(Node node) {
+        switch (node.getNodeType()) {
+            case ELEMENT_NODE:
+            case ATTRIBUTE_NODE:
+                
+                // DOM level 1?
+                if (node.getLocalName() == null) {
+                    System.out.println("WARNING: DOM level 1 node found");
+                    System.out.println(" -> node.getNodeName() = " + node.getNodeName());
+                    System.out.println(" -> node.getNamespaceURI() = " + node.getNamespaceURI());
+                    System.out.println(" -> node.getLocalName() = " + node.getLocalName());
+                    System.out.println(" -> node.getPrefix() = " + node.getPrefix());
+                }
+                
+                if (node.getNodeType() == ATTRIBUTE_NODE) return;
+                
+                NamedNodeMap attrs = ((Element) node).getAttributes();
+                for (int i = 0; i < attrs.getLength(); i++) {
+                    verifyDOMIntegrity(attrs.item(i));
+                }
+            case DOCUMENT_NODE:
+                NodeList children = node.getChildNodes();
+                for (int i = 0; i < children.getLength(); i++) {
+                    verifyDOMIntegrity(children.item(i));
+                }
+        }        
+    }
+    
     static public void main(String[] args) throws Exception {
-        String sample = "<root attr1='a' xmlns:p='http://ppp' xmlns='http://bbb'><elem1><elem2>bla</elem2></elem1></root>";
+        String sample = "<root attr1='a' xmlns:p='http://ppp'><elem1 xmlns='http://bbb'><elem2>bla</elem2></elem1></root>";
         javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();

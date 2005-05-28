@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.3 2005-05-25 19:05:48 spericas Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.4 2005-05-28 01:10:10 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+import javax.xml.stream.XMLStreamException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
@@ -35,7 +36,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.stream.XMLStreamReader;
-
+import javax.xml.stream.XMLStreamWriter;
 import org.w3c.dom.Document;
 
 import com.sun.pept.ept.MessageInfo;
@@ -57,8 +58,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -410,34 +410,37 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
             
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             
-            XMLWriter writer = XMLWriterFactory.newInstance().createXMLWriter(baos);
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             
-            writer.startElement(SOAPConstants.QNAME_SOAP_FAULT_DETAIL.getLocalPart());
+            writer.writeStartElement(SOAPConstants.QNAME_SOAP_FAULT_DETAIL.getLocalPart());
             while (!((reader.getEventType() == END_ELEMENT) && reader.getName().equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL))) {
                 if (reader.getEventType() == START_ELEMENT) {
                     QName name = reader.getName();
-                    writer.startElement(name.getLocalPart(), name.getNamespaceURI(), name.getPrefix());
+                    writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
                     Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
                             // namespace declaration for the element is written during previous writeElement
-                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart()))
-                                writer.writeNamespaceDeclaration(atts.getName(i).getLocalPart(), atts.getValue(i));
+                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart())) {
+                                String value = atts.getValue(i);
+                                String localName = atts.getName(i).getLocalPart();
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
+                            }
                         } else {
                             writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                         }
                     }
                 } else if (reader.getEventType() == END_ELEMENT) {
-                    writer.endElement();
+                    writer.writeEndElement();
                 } else if (reader.getEventType() == CHARACTERS) {
-                    writer.writeChars(reader.getText());
+                    writer.writeCharacters(reader.getText());
                 }
                 XMLStreamReaderUtil.next(reader);
             }
-            writer.endElement();    // detail
-            
-            writer.flush();
+            writer.writeEndElement();    // detail
+            writer.writeEndDocument();
             writer.close();
             
             DOMResult dom = new DOMResult();
@@ -462,6 +465,8 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         } catch (TransformerException e) {
             throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         } catch (TransformerFactoryConfigurationError e) {
+            throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+        } catch (XMLStreamException e) {
             throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         }
         

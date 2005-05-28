@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.4 2005-05-26 18:48:19 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.5 2005-05-28 01:10:12 spericas Exp $
  */
 
 /*
@@ -8,11 +8,13 @@
 */
 package com.sun.xml.ws.server;
 
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
+
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -20,10 +22,10 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.streaming.XMLReader;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
-import com.sun.xml.ws.streaming.XmlTreeReader;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.streaming.DOMStreamReader;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -38,23 +40,20 @@ import java.nio.ByteBuffer;
  */
 public class SOAPXMLEncoder extends SOAPEncoder {
 
-    protected static final QName FAULTCODE_QNAME = new QName("", "faultcode");
-    protected static final QName FAULTSTRING_QNAME =
-        new QName("", "faultstring");
-    protected static final QName FAULTACTOR_QNAME = new QName("", "faultactor");
-    protected static final QName DETAIL_QNAME = new QName("", "detail");
-    private static final XMLWriterFactory factory = XMLWriterFactory.newInstance();
-
+    protected static final String FAULTCODE_NAME   = "faultcode";
+    protected static final String FAULTSTRING_NAME = "faultstring";
+    protected static final String FAULTACTOR_NAME  = "faultactor";
+    protected static final String DETAIL_NAME      = "detail";
+    
     public SOAPXMLEncoder() {
-
     }
 
     public SOAPMessage toSOAPMessage(InternalMessage response, MessageInfo messageInfo) {
-        XMLWriter writer = null;
+        XMLStreamWriter writer = null;
         try {
             setAttachmentsMap(messageInfo, response);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            writer = factory.createXMLWriter(baos);
+            writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             startEnvelope(writer);
             writeHeaders(writer, response, messageInfo);
             writeBody(writer, response, messageInfo);
@@ -71,7 +70,13 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             throw new ServerRtException("soapencoder.err", new Object[]{e});
         } finally {
             if (writer != null) {
-                writer.close();
+                try {
+                    writer.writeEndDocument();                    
+                    writer.close();
+                }
+                catch (XMLStreamException e) {
+                    throw new ServerRtException(new LocalizableExceptionAdapter(e));            
+                }
             }
         }
     }
@@ -105,58 +110,65 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      * in the <detail> for service specific exceptions. We serialize protocol
      * specific exceptions ourselves
      */
-    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLWriter writer) {
-        writer.startElement(SOAPConstants.QNAME_SOAP_FAULT,
-                SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
+    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
+        try {
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPConstants.QNAME_SOAP_FAULT.getLocalPart(),
+                SOAPConstants.QNAME_SOAP_FAULT.getNamespaceURI());
 
-        writer.startElement(FAULTCODE_QNAME);   // <faultcode>
-        String prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
-        QName faultCode = instance.getCode();
-        String nsURI = faultCode.getNamespaceURI();
-        if (!nsURI.equals(SOAPNamespaceConstants.ENVELOPE)) {
-        	// Need to add namespace declaration for this custom fault code
-            if (nsURI.equals(XMLConstants.NULL_NS_URI)) {
-                prefix = XMLConstants.DEFAULT_NS_PREFIX;
-            } else {
-                prefix = faultCode.getPrefix();
-                if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
-                    prefix = "ans";
+            writer.writeStartElement(FAULTCODE_NAME);   // <faultcode>
+            String prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
+            QName faultCode = instance.getCode();
+            String nsURI = faultCode.getNamespaceURI();
+            if (!nsURI.equals(SOAPNamespaceConstants.ENVELOPE)) {
+                    // Need to add namespace declaration for this custom fault code
+                if (nsURI.equals(XMLConstants.NULL_NS_URI)) {
+                    prefix = XMLConstants.DEFAULT_NS_PREFIX;
+                } else {
+                    prefix = faultCode.getPrefix();
+                    if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+                        prefix = "ans";
+                    }
+                    writer.setPrefix(prefix, nsURI);
+                    writer.writeNamespace(prefix, nsURI);
                 }
-                writer.writeNamespaceDeclaration(prefix, nsURI);
             }
-        }
-        if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
-            writer.writeCharsUnquoted(instance.getCode().getLocalPart());
-        } else {
-        	writer.writeCharsUnquoted(prefix+":"+instance.getCode().getLocalPart());
-        }
-        writer.endElement();                    // </faultcode>
-
-        writer.startElement(FAULTSTRING_QNAME);
-        writer.writeChars(instance.getString());
-        writer.endElement();
-
-        if (instance.getActor() != null) {
-            writer.startElement(FAULTACTOR_QNAME);
-            writer.writeChars(instance.getActor());
-            writer.endElement();
-        }
-
-        Object detail = instance.getDetail();
-        if (detail != null) {
-            // Not RuntimeException, Not header fault
-            if (detail instanceof Detail) {
-                // SOAPFaultException
-                encodeDetail((Detail)detail, writer);
-            } else if (detail instanceof JAXBBridgeInfo) {
-                // Service specific exception
-                writer.startElement(DETAIL_QNAME);
-                writeJAXBBridgeInfo((JAXBBridgeInfo)detail, messageInfo, writer);
-                writer.endElement();        // </detail>
+            if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+                writer.writeCharacters(instance.getCode().getLocalPart());
+            } else {
+                    writer.writeCharacters(prefix+":"+instance.getCode().getLocalPart());
             }
-        }
+            writer.writeEndElement();                    // </faultcode>
 
-        writer.endElement();                // </env:Fault>
+            writer.writeStartElement(FAULTSTRING_NAME);
+            writer.writeCharacters(instance.getString());
+            writer.writeEndElement();
+
+            if (instance.getActor() != null) {
+                writer.writeStartElement(FAULTACTOR_NAME);
+                writer.writeCharacters(instance.getActor());
+                writer.writeEndElement();
+            }
+
+            Object detail = instance.getDetail();
+            if (detail != null) {
+                // Not RuntimeException, Not header fault
+                if (detail instanceof Detail) {
+                    // SOAPFaultException
+                    encodeDetail((Detail)detail, writer);
+                } else if (detail instanceof JAXBBridgeInfo) {
+                    // Service specific exception
+                    writer.writeStartElement(DETAIL_NAME);
+                    writeJAXBBridgeInfo((JAXBBridgeInfo)detail, messageInfo, writer);
+                    writer.writeEndElement();        // </detail>
+                }
+            }
+
+            writer.writeEndElement();                // </env:Fault>
+        }
+        catch (XMLStreamException e) {
+            throw new ServerRtException(new LocalizableExceptionAdapter(e));
+        }
     }
 
     /*
@@ -164,10 +176,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      * XmlTreeReader is used to traverse the SOAPElement/DOM Node and serializes
      * the XML.
      */
-    protected void encodeDetail(Detail detail, XMLWriter writer) {
-        XMLReader reader = new XmlTreeReader(detail);
-        serializeReader(reader, writer);
-        reader.close();
+    protected void encodeDetail(Detail detail, XMLStreamWriter writer) {
+        serializeReader(new DOMStreamReader(detail), writer);
     }
 
 }

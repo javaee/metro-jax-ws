@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.3 2005-05-25 20:16:25 kohlert Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.4 2005-05-28 01:10:11 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -21,6 +21,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamConstants;
 
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
@@ -28,7 +29,6 @@ import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.StAXReader;
 import com.sun.xml.ws.streaming.StAXWriter;
-import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.w3c.dom.Node;
@@ -47,14 +47,13 @@ public class JAXBTypeSerializer {
      * 
      * 
      * @see com.sun.xml.rpc.encoding.jaxb.JAXBTypeSerializerIf#serialize(java.lang.Object,
-     *      com.sun.xml.rpc.streaming.XMLWriter, javax.xml.bind.JAXBContext)
+     *      com.sun.xml.rpc.streaming.XMLStreamWriter, javax.xml.bind.JAXBContext)
      */
-    public void serialize(Object obj, XMLWriter writer, JAXBContext context) {
+    public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            marshaller.marshal(obj,
-                (XMLStreamWriter) ((StAXWriter) writer).getXMLStreamWriter());
+            marshaller.marshal(obj, writer);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -66,13 +65,12 @@ public class JAXBTypeSerializer {
      * Marshalls arbitrary type object with the given tag name
      */
     public void serialize(QName name, Class T, Object value,
-            XMLWriter writer, JAXBContext context) {
+            XMLStreamWriter writer, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             JAXBElement elem = new JAXBElement(name, T, null, value);
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            XMLStreamWriter stream = ((StAXWriter) writer).getXMLStreamWriter();
-            marshaller.marshal(elem, stream);
+            marshaller.marshal(elem, writer);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -154,7 +152,6 @@ public class JAXBTypeSerializer {
             XMLStreamReader stream = ((StAXReader) reader).getXMLStreamReader();
             JAXBElement objElem = (JAXBElement)unmarshaller.unmarshal(stream);
             value = objElem.getValue();
-            ((StAXReader) reader).synchronizeReader();
             
             // reader could be left on CHARS token rather than </body>
             if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
@@ -210,13 +207,11 @@ public class JAXBTypeSerializer {
      * current thread.
      */
     public void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
-        XMLWriter writer) {
+        XMLStreamWriter writer) {
         try {
-            XMLStreamWriter streamWriter = 
-                    (XMLStreamWriter)((StAXWriter)writer).getXMLStreamWriter();
             Bridge bridge = bridgeInfo.getBridge();
             Object value = bridgeInfo.getValue();
-            bridge.marshal(bridgeContext, value, streamWriter);
+            bridge.marshal(bridgeContext, value, writer);
         } catch (JAXBException e) {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }

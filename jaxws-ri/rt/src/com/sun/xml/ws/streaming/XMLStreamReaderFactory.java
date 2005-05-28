@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
  */
 
 /*
@@ -140,7 +140,7 @@ public class XMLStreamReaderFactory {
             return (XMLStreamReader) sdp;
         } 
         catch (Exception e) {
-            throw new XMLReaderException(new LocalizableExceptionAdapter(e));
+            throw new XMLStreamReaderException(new LocalizableExceptionAdapter(e));
         }
     }
     

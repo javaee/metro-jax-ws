@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.4 2005-05-26 18:48:18 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.5 2005-05-28 01:10:09 spericas Exp $
  */
 
 /*
@@ -8,45 +8,65 @@
  */
 package com.sun.xml.ws.client;
 
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
+
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.streaming.XMLWriter;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.pept.ept.MessageInfo;
 
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
-
+    
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLWriter)
+     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
     @Override
-        protected void startEnvelope(XMLWriter writer) {
-        writer.startElement(SOAPNamespaceConstants.TAG_ENVELOPE, SOAP12NamespaceConstants.ENVELOPE,
-            SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
+        protected void startEnvelope(XMLStreamWriter writer) {
+        try {
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPNamespaceConstants.TAG_ENVELOPE, SOAP12NamespaceConstants.ENVELOPE);
+            writer.setPrefix(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                             SOAP12NamespaceConstants.ENVELOPE);
+            writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                                  SOAP12NamespaceConstants.ENVELOPE);                
+        } catch (XMLStreamException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        }
     }
-
+    
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startBody(com.sun.xml.rpc.streaming.XMLWriter)
+     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startBody(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
     @Override
-        protected void startBody(XMLWriter writer) {
-        writer.startElement(SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE,
-            SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
+        protected void startBody(XMLStreamWriter writer) {
+        try {
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE);
+        } catch (XMLStreamException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        }        
     }
-
+    
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startHeader(com.sun.xml.rpc.streaming.XMLWriter)
+     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startHeader(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
     @Override
-        protected void startHeader(XMLWriter writer) {
-        writer.startElement(SOAPNamespaceConstants.TAG_HEADER,
-            SOAP12NamespaceConstants.ENVELOPE,
-            SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE); // <env:Header>
+        protected void startHeader(XMLStreamWriter writer) {
+        try {
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPNamespaceConstants.TAG_HEADER,
+                SOAP12NamespaceConstants.ENVELOPE);     // <env:Header>
+        } catch (XMLStreamException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        }                
     }
-
+    
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.client.SOAPXMLEncoder#getContentType()
      */

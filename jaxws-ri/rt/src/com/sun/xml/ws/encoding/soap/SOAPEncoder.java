@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.6 2005-05-28 01:04:39 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.7 2005-05-28 01:10:12 spericas Exp $
  */
 
 /*
@@ -7,15 +7,17 @@
 * All rights reserved.
 */
 package com.sun.xml.ws.encoding.soap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.ws.WebServiceException;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPMessage;
@@ -27,7 +29,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-import javax.activation.DataHandler;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -49,11 +50,8 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.XMLReader;
-import com.sun.xml.ws.streaming.XMLReaderFactory;
-import com.sun.xml.ws.streaming.XMLWriter;
-import com.sun.xml.ws.streaming.XMLWriterFactory;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
@@ -62,7 +60,6 @@ import com.sun.xml.ws.client.BindingProviderProperties;
  * @author JAX-RPC RI Development Team
  */
 public abstract class SOAPEncoder implements Encoder {
-    private static final XMLWriterFactory factory = XMLWriterFactory.newInstance();
 
     /*
      * @see com.sun.pept.encoding.Encoder#encodeAndSend(com.sun.pept.ept.MessageInfo)
@@ -90,7 +87,7 @@ public abstract class SOAPEncoder implements Encoder {
     public DOMSource toDOMSource(RpcLitPayload rpcLitPayload, MessageInfo messageInfo) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            XMLWriter writer = factory.createXMLWriter(baos);
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             writeRpcLitPayload(rpcLitPayload, messageInfo, writer);
             byte[] buf = baos.toByteArray();
             Transformer transformer = XmlUtil.newTransformer();
@@ -106,41 +103,45 @@ public abstract class SOAPEncoder implements Encoder {
     public DOMSource toDOMSource(SOAPFaultInfo faultInfo, MessageInfo messageInfo) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            XMLWriter writer = factory.createXMLWriter(baos);
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             writeFault(faultInfo, messageInfo, writer);
-            writer.close();
+            writer.writeEndDocument();
             byte[] buf = baos.toByteArray();
             Transformer transformer = XmlUtil.newTransformer();
             StreamSource source = new StreamSource(new ByteArrayInputStream(buf));
             DOMResult domResult = new DOMResult();
             transformer.transform(source, domResult);
             return new DOMSource(domResult.getNode());
-        } catch(TransformerException te) {
+        } 
+        catch (TransformerException te) {
             throw new WebServiceException(te);
+        }
+        catch (XMLStreamException xe) {
+            throw new WebServiceException(xe);
         }
     }
 
     protected void writeRpcLitPayload(RpcLitPayload rpcLitPayload, MessageInfo messageInfo,
-        XMLWriter writer) {
+        XMLStreamWriter writer) {        
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, writer);
     }
 
-    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, XMLWriter writer) {
+    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, XMLStreamWriter writer) {
         JAXBTypeSerializer.getInstance().serialize(
                 beanInfo.getBean(), writer, beanInfo.getJAXBContext());
     }
 
     /*
-    protected void writeJAXBTypeInfo(JAXBTypeInfo typeInfo, XMLWriter writer) {
+    protected void writeJAXBTypeInfo(JAXBTypeInfo typeInfo, XMLStreamWriter writer) {
         QName name = typeInfo.getName();
         Object value = typeInfo.getType();
         writeJAXBTypeInfo(name, value, writer);
     }
 
 
-    protected void writeJAXBTypeInfo(QName name, Object value, XMLWriter writer) {
+    protected void writeJAXBTypeInfo(QName name, Object value, XMLStreamWriter writer) {
         JAXBContext jaxbContext = encoderDecoderUtil.getJAXBContext();
         Map<QName, Class> typeMapping = encoderDecoderUtil.getTypeMapping();
         Class type = typeMapping.get(name);
@@ -150,7 +151,7 @@ public abstract class SOAPEncoder implements Encoder {
      */
 
     protected void writeJAXBBridgeInfo(JAXBBridgeInfo bridgeInfo,
-        MessageInfo messageInfo, XMLWriter writer) {
+        MessageInfo messageInfo, XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
@@ -191,146 +192,184 @@ public abstract class SOAPEncoder implements Encoder {
         }
     }
 
-    protected void serializeReader(XMLReader reader, XMLWriter writer) {
-        int state = XMLReader.BOF;
-        do {
-            state = reader.next();
-            switch (state) {
-                case XMLReader.START:
-                    QName elementName = reader.getName();
-                    String localPart = elementName.getLocalPart();
-                    String namespaceURI = elementName.getNamespaceURI();
-                    String prefix = elementName.getPrefix();
-
-                    //System.out.println("Localpart = " + localPart);
-                    //System.out.println("namespaceURI = " + namespaceURI);
-                    //System.out.println("Prefix = |" + prefix+"|");
-
-                    writer.startElement(localPart, namespaceURI, prefix);
-                    // Write namespace declarations
-                    Iterator it = reader.getPrefixes();
-                    while (it.hasNext()) {
-                        String nsLocal = (String)it.next();
-                        String writerURI = writer.getURI(nsLocal);
-                        String readerURI = reader.getURI(nsLocal);
-                        if (writerURI == null || !writerURI.equals(readerURI)) {
-                            writer.writeNamespaceDeclaration(nsLocal, reader.getURI(nsLocal));
-                        }
-                    }
-
-                    // Write rest of the attributes
-                    Attributes attrs = reader.getAttributes();
-                    for(int i=0; i < attrs.getLength(); i++) {
-                        //System.out.println("Attr prefix " + attrs.getPrefix(i));
-                        //System.out.println("Attr URI " + attrs.getURI(i));
-                        //System.out.println("Attr name " + attrs.getName(i));
-                        //System.out.println("Attr value --- " + attrs.getValue(i));
-                        //System.out.println("Attr local " + attrs.getLocalName(i));
-
-                        if (!attrs.isNamespaceDeclaration(i)) {
-                            writer.writeAttribute(attrs.getName(i), attrs.getValue(i));
-                        } else {
-                            // Taking care of default NS
-                            if (attrs.getPrefix(i) == null) {
-                                writer.writeNamespaceDeclaration("", attrs.getValue(i));
+    protected void serializeReader(XMLStreamReader reader, XMLStreamWriter writer) {
+        try {
+            int state = XMLStreamConstants.START_DOCUMENT;
+            do {
+                state = reader.next();
+                switch (state) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        String prefix = reader.getPrefix();
+                        String localName = reader.getLocalName();
+                        
+                        // Reading stream from a DOM level 1 tree?
+                        if (localName == null) {
+                            javax.xml.namespace.QName name = reader.getName();
+                            localName = name.getLocalPart();
+                            prefix = name.getPrefix();
+                            
+                            if (prefix.length() > 0) {
+                                writer.writeStartElement(prefix + ":" + localName);
+                            }
+                            else {
+                                writer.writeStartElement(localName);
                             }
                         }
-                    }
-                    break;
-                case XMLReader.END:
-                    writer.endElement();
-                    break;
-                case XMLReader.CHARS:
-                    writer.writeChars(reader.getValue());
-            }
-        } while (state != XMLReader.EOF);
+                        else {
+                            writer.writeStartElement(prefix, reader.getLocalName(), 
+                                reader.getNamespaceURI());
+                        }
+
+                        // Write namespace declarations
+                        int n = reader.getNamespaceCount();
+                        for (int i = 0; i < n; i++) {
+                            prefix = reader.getNamespacePrefix(i);                             
+                            if (prefix == null) prefix = "";    // StAX returns null for default ns
+                            String writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
+                            String readerURI = reader.getNamespaceURI(i);
+                            
+                            if (writerURI == null || !writerURI.equals(readerURI)) {                                
+                                writer.setPrefix(prefix, readerURI);
+                                writer.writeNamespace(prefix, readerURI);
+                            }
+                        }
+
+                        // Write attributes
+                        n = reader.getAttributeCount();
+                        for (int i = 0; i < n; i++) {
+                            writer.writeAttribute(reader.getAttributePrefix(i), 
+                                reader.getAttributeLocalName(i), reader.getAttributeNamespace(i));
+                        }                        
+                        break;
+                    case XMLStreamConstants.END_ELEMENT:
+                        writer.writeEndElement();
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        writer.writeCharacters(reader.getText());
+                }
+            } while (state != XMLStreamConstants.END_DOCUMENT);
+        }
+        catch (XMLStreamException e) {            
+            throw new WebServiceException(e);
+        }
     }
 
-    protected void serializeSource(Source source, XMLWriter writer) {
-        XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(source, true);
-        serializeReader(reader, writer);
-        reader.close();
+    protected void serializeSource(Source source, XMLStreamWriter writer) {
+        try {
+            XMLStreamReader reader = SourceReaderFactory.createSourceReader(source, true);
+            serializeReader(reader, writer);
+            reader.close();
+        }
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /*
      * writes start tag of envelope: <env:Envelope>
      */
-    protected void startEnvelope(XMLWriter writer) {
-        //write SOAP Envelope
-        writer.startElement(SOAPNamespaceConstants.TAG_ENVELOPE,
-                SOAPNamespaceConstants.ENVELOPE,
-                SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
+    protected void startEnvelope(XMLStreamWriter writer) {
+        try {
+            //write SOAP Envelope
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPNamespaceConstants.TAG_ENVELOPE, SOAPNamespaceConstants.ENVELOPE);
+            writer.setPrefix(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                             SOAPNamespaceConstants.ENVELOPE);
+            writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                                  SOAPNamespaceConstants.ENVELOPE);                
+        }
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /*
      * writes start tag of Body: <env:Body>
      */
-    protected void startBody(XMLWriter writer) {
-        //write SOAP Body
-        writer.startElement(SOAPNamespaceConstants.TAG_BODY,
-                SOAPNamespaceConstants.ENVELOPE,
-                SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
+    protected void startBody(XMLStreamWriter writer) {
+        try {
+            //write SOAP Body
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                SOAPNamespaceConstants.TAG_BODY, SOAPNamespaceConstants.ENVELOPE);
+        }
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /*
      * writes start tag of Header: <env:Header>
      */
-    protected void startHeader(XMLWriter writer){
-        writer.startElement(SOAPNamespaceConstants.TAG_HEADER,
-                SOAPNamespaceConstants.ENVELOPE,
-                SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE); // <env:Header>
+    protected void startHeader(XMLStreamWriter writer) {
+        try {      
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE, 
+                SOAPNamespaceConstants.TAG_HEADER, SOAPNamespaceConstants.ENVELOPE); // <env:Header>
+        }
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /*
      * writes multiple header elements in <env:Header> ... </env:Header>
      */
-    protected void writeHeaders(XMLWriter writer, InternalMessage response,
-        MessageInfo messageInfo) {
-
-        List<HeaderBlock> headerBlocks = response.getHeaders();
-        if (headerBlocks == null || headerBlocks.isEmpty()) {
-            return;
-        }
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
-        BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        startHeader(writer); // <env:Header>
-        for (HeaderBlock headerBlock: headerBlocks) {
-            Object value = headerBlock.getValue();
-            if (value instanceof JAXBBridgeInfo) {
-                writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
-            } else {
-                System.out.println("Unknown object in BodyBlock:"+value.getClass());
+    protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
+        MessageInfo messageInfo) 
+    {
+        try {
+            List<HeaderBlock> headerBlocks = response.getHeaders();
+            if (headerBlocks == null || headerBlocks.isEmpty()) {
+                return;
             }
+            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+            BridgeContext bridgeContext = rtCtxt.getBridgeContext();
+            startHeader(writer); // <env:Header>
+            for (HeaderBlock headerBlock: headerBlocks) {
+                Object value = headerBlock.getValue();
+                if (value instanceof JAXBBridgeInfo) {
+                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                } else {
+                    System.out.println("Unknown object in BodyBlock:"+value.getClass());
+                }
+            }
+            writer.writeEndElement();                                // </env:Header>
         }
-        writer.endElement();                                // </env:Header>
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /*
      * writes <env:Body> ... </env:Body>
      */
-    protected void writeBody(XMLWriter writer, InternalMessage response,
-        MessageInfo messageInfo) {
-
-        startBody(writer);
-        BodyBlock bodyBlock = response.getBody();
-        // BodyBlock can be null if there is no part in wsdl:message
-        if (bodyBlock != null) {
-            Object value = bodyBlock.getValue();
-            if (value instanceof Source) {
-                serializeSource((Source)value, writer);
-            } else if (value instanceof SOAPFaultInfo) {
-                writeFault((SOAPFaultInfo)value, messageInfo, writer);
-            } else if (value instanceof RpcLitPayload) {
-                writeRpcLitPayload((RpcLitPayload)value, messageInfo, writer);
-            } else if (value instanceof JAXBBeanInfo) {
-                writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
-            } else if (value instanceof JAXBBridgeInfo) {
-                writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
-            } else {
-                System.out.println("Unknown object in BodyBlock:"+value.getClass());
+    protected void writeBody(XMLStreamWriter writer, InternalMessage response,
+        MessageInfo messageInfo) 
+    {
+        try {
+            startBody(writer);
+            BodyBlock bodyBlock = response.getBody();
+            // BodyBlock can be null if there is no part in wsdl:message
+            if (bodyBlock != null) {
+                Object value = bodyBlock.getValue();
+                if (value instanceof Source) {
+                    serializeSource((Source)value, writer);
+                } else if (value instanceof SOAPFaultInfo) {
+                    writeFault((SOAPFaultInfo)value, messageInfo, writer);
+                } else if (value instanceof RpcLitPayload) {
+                    writeRpcLitPayload((RpcLitPayload)value, messageInfo, writer);
+                } else if (value instanceof JAXBBeanInfo) {
+                    writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
+                } else if (value instanceof JAXBBridgeInfo) {
+                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                } else {
+                    System.out.println("Unknown object in BodyBlock:"+value.getClass());
+                }
             }
+            writer.writeEndElement();                // </env:body>
         }
-        writer.endElement();                // </env:body>
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /**
@@ -378,11 +417,16 @@ public abstract class SOAPEncoder implements Encoder {
     /*
      * writes end tag of envelope: </env:Envelope>
      */
-    protected void endEnvelope(XMLWriter writer) {
-        writer.endElement();
+    protected void endEnvelope(XMLStreamWriter writer) {
+        try {
+            writer.writeEndElement();
+        }
+        catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
-    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLWriter writer) {
+    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
         throw new UnsupportedOperationException();
     }
 
