@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.4 2005-05-26 17:12:37 kohlert Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.5 2005-05-31 17:25:22 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
 public class RuntimeAnnotationProcessor {
     private QName portQName;
     private Class portClass;
+    private boolean ignoreHandlers;
     private RuntimeModel runtimeModel;
     private com.sun.xml.ws.model.soap.SOAPBinding defaultBinding;
     private String packageName;
@@ -52,9 +53,13 @@ public class RuntimeAnnotationProcessor {
     public static final Class REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class RPC_LIT_PAYLOAD_CLASS = com.sun.xml.ws.encoding.jaxb.RpcLitPayload.class;
 
-    public RuntimeAnnotationProcessor(QName portName, Class portClass) {
+    // handler annotations are ignored if already specified in sun-jaxws.xml
+    public RuntimeAnnotationProcessor(QName portName, Class portClass,
+        boolean ignoreHandlers) {
+        
         this.portQName = portName;
         this.portClass = portClass;
+        this.ignoreHandlers = ignoreHandlers;
     }
 
     //currently has many local vars which will be eliminated after debugging issues

@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.2 2005-05-25 20:52:02 kohlert Exp $
+ * $Id: WebService.java,v 1.3 2005-05-31 17:25:20 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -110,7 +110,7 @@ public class WebService
 
         if (rtContext == null) {
             RuntimeAnnotationProcessor processor =
-                new RuntimeAnnotationProcessor(portName, portInterface);
+                new RuntimeAnnotationProcessor(portName, portInterface, false);
 
             RuntimeModel model = processor.buildRuntimeModel();
             if (wsdlLocation == null)

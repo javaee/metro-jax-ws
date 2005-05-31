@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.7 2005-05-27 17:50:57 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.8 2005-05-31 17:25:21 bbissett Exp $
  */
 
 /*
@@ -16,6 +16,7 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.handler.HandlerChainCaller;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -279,22 +280,20 @@ public abstract class RuntimeModel {
     }
 
     /**
-     * Add a Handler. It should be called from RuntimeAnnotationProcessor while parsing @HandlerChain annotation.
-     * @param handler
+     * Set the HandlerChainCaller. It should be called from
+     * RuntimeAnnotationProcessor while parsing @HandlerChain annotation.
+     * @param caller
      */
-    public void addHandler(Handler handler) {
-        if (handlers == null)
-            handlers = new ArrayList<Handler>();
-        handlers.add(handler);
+    public void setHandlerChainCaller(HandlerChainCaller caller) {
+        handlerChainCaller = caller;
     }
 
     /**
-     * @return null if there are no handlerChain defined thru @HandlerChain annotation. Otherwise returns List of Handlers.
+     * @return null if there are no handlerChain defined thru @HandlerChain
+     * annotation. Otherwise returns HandlerChainCaller.
      */
-    public List<Handler> getHandlers() {
-        if (handlers == null)
-            return null;
-        return Collections.unmodifiableList(handlers);
+    public HandlerChainCaller getHandlerChainCaller() {
+        return handlerChainCaller;
     }
 
 
@@ -319,6 +318,6 @@ public abstract class RuntimeModel {
     private List<JavaMethod> javaMethods = new ArrayList<JavaMethod>();
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
-    private List<Handler> handlers;
+    private HandlerChainCaller handlerChainCaller;
     protected final QName emptyBodyName = new QName("");
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.3 2005-05-27 17:50:58 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.4 2005-05-31 17:25:23 bbissett Exp $
  */
 
 /*
@@ -118,9 +118,17 @@ public class RuntimeEndpointInfo
                     }
                 }
             }
+            
+            // check model for handlers only if not already specified
+            boolean hasHandlers = (getHandlerChain() != null);
+                
             RuntimeAnnotationProcessor rap = new RuntimeAnnotationProcessor(null,
-                getImplementor().getClass());
+                getImplementor().getClass(), hasHandlers);
             runtimeModel = rap.buildRuntimeModel();
+            
+            if (!hasHandlers) {
+                setHandlerChainCaller(runtimeModel.getHandlerChainCaller());
+            }
             
             //set Tmomt processing
             runtimeModel.enableMtom(enableMtom);
@@ -173,7 +181,14 @@ public class RuntimeEndpointInfo
     public void setHandlerChain(List<Handler> chain) {
         if (chain != null) {
             handlerChainCaller = new HandlerChainCaller(chain);
+        } else {
+            handlerChainCaller = null;
         }
+    }
+    
+    // used internally in deploy() method. may be set to null
+    private void setHandlerChainCaller(HandlerChainCaller caller) {
+        handlerChainCaller = caller;
     }
     
     public HandlerChainCaller getHandlerChainCaller() {
