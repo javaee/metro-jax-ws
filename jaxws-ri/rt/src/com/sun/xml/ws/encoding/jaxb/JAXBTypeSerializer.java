@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.4 2005-05-28 01:10:11 spericas Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.5 2005-05-31 19:26:25 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -42,13 +42,7 @@ public class JAXBTypeSerializer {
     public static JAXBTypeSerializer getInstance() {
         return serializer;
     }    
-        
-    /*
-     * 
-     * 
-     * @see com.sun.xml.rpc.encoding.jaxb.JAXBTypeSerializerIf#serialize(java.lang.Object,
-     *      com.sun.xml.rpc.streaming.XMLStreamWriter, javax.xml.bind.JAXBContext)
-     */
+       
     public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
@@ -57,40 +51,6 @@ public class JAXBTypeSerializer {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
-        }
-    }
-    
-    /*
-     * Marshalls arbitrary type object with the given tag name
-     */
-    public void serialize(QName name, Class T, Object value,
-            XMLStreamWriter writer, JAXBContext context) {
-        try {
-            Marshaller marshaller = context.createMarshaller();
-            JAXBElement elem = new JAXBElement(name, T, null, value);
-            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            marshaller.marshal(elem, writer);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
-        }
-    }
-    
-    /*
-     * Marshalls arbitrary type object with the given tag name
-     */
-    public DOMSource serialize(QName name, Class T, Object value,
-            JAXBContext context) {
-        try {
-            Marshaller marshaller = context.createMarshaller();
-            JAXBElement elem = new JAXBElement(name, T, null, value);
-            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            DOMResult domResult = new DOMResult();
-            marshaller.marshal(elem, domResult);
-            return new DOMSource(domResult.getNode());
-        } catch (JAXBException e) {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
     }
@@ -134,34 +94,6 @@ public class JAXBTypeSerializer {
         } catch (DeserializationException e) {
             throw e;
         } catch (JAXWSExceptionBase e) {
-            throw new DeserializationException(e);
-        } catch (Exception e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
-        }
-    }
-    
-    /*
-     * Unmarshalls arbitrary type object with any tag name. 
-     */
-    public Object deserialize(Class type, XMLStreamReader reader, JAXBContext context) {
-        Object value = null;
-        try {          
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setProperty( "com.sun.xml.bind.expectedType", type);
-            XMLStreamReader stream = ((StAXReader) reader).getXMLStreamReader();
-            JAXBElement objElem = (JAXBElement)unmarshaller.unmarshal(stream);
-            value = objElem.getValue();
-            
-            // reader could be left on CHARS token rather than </body>
-            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
-                    reader.isWhiteSpace()) {
-                XMLStreamReaderUtil.next(reader);
-           }
-            return value;            
-        } catch (DeserializationException e) {
-            throw e;
-       } catch (JAXWSExceptionBase e) {
             throw new DeserializationException(e);
         } catch (Exception e) {
             throw new DeserializationException(new LocalizableExceptionAdapter(

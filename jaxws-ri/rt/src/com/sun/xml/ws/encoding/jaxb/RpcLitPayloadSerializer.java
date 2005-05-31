@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.4 2005-05-28 01:10:11 spericas Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.5 2005-05-31 19:26:26 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -24,49 +24,6 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 public class RpcLitPayloadSerializer {
-    
-    public static RpcLitPayload deserialize(RpcLitPayload payload, XMLStreamReader reader,
-            JAXBContext context) {
-        try {
-            List<RpcLitParameter> params = payload.getParameters();
-            QName operation = reader.getName(); // Operation name
-            // get down to part accessor
-            if (params.size() > 0)                
-                XMLStreamReaderUtil.nextElementContent(reader);
-            for (RpcLitParameter parameter: params) {
-                //throw exception if the part accessor name is not what we expect
-                QName partName = reader.getName();
-                if(!partName.equals(parameter.getName()))
-                    throw new DeserializationException("xsd.unexpectedElementName", new Object[]{parameter.getName(), partName});
-                
-                Class type = parameter.getType();                
-                Object value = JAXBTypeSerializer.getInstance().deserialize(type,
-                        reader, context);
-                parameter.setValue(value);
-            }
-            XMLStreamReaderUtil.nextElementContent(reader);
-            
-            //to take care of empty operation, e.g. <ans:Operation></ans:operation>
-            if (reader.getEventType() == XMLStreamConstants.END_ELEMENT && 
-                    reader.getName().equals(operation)) {
-                XMLStreamReaderUtil.nextElementContent(reader);
-            }
-            
-            // reader could be left on CHARS token rather than </body>
-            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
-                    reader.isWhiteSpace()) {
-                XMLStreamReaderUtil.nextContent(reader);
-            }
-            return payload;
-        } catch (DeserializationException e) {
-            throw e;
-        } catch (JAXWSExceptionBase e) {
-            throw new DeserializationException(e);
-        } catch (Exception e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
-        }
-    }
     
     /*
      * Uses BridgeContext to serialize the rpc/lit payload. First it writes

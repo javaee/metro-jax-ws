@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.4 2005-05-28 01:10:10 spericas Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.5 2005-05-31 19:26:25 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -260,11 +260,6 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                 BodyBlock responseBody = new BodyBlock(soapFaultInfo);
                 response.setBody(responseBody);
             } else {
-                if (rpcLitPayload != null) {
-                    RpcLitPayloadSerializer.deserialize(rpcLitPayload, reader, jaxbContext);
-                    BodyBlock responseBody = new BodyBlock(rpcLitPayload);
-                    response.setBody(responseBody);
-                }
                 //jaxb will leave reader on ending </body> element
                 Object jaxbBean = JAXBTypeSerializer.getInstance().deserialize(reader, jaxbContext);
                 BodyBlock responseBody = new BodyBlock(new JAXBBeanInfo(jaxbBean, jaxbContext));
