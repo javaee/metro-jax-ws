@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.5 2005-05-31 17:25:22 bbissett Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.6 2005-05-31 21:58:32 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,6 +8,7 @@ package com.sun.xml.ws.modeler;
 
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.TypeReference;
+import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.RequestWrapper;
 import com.sun.xml.ws.ResponseWrapper;
 import com.sun.xml.ws.SOAPBinding;
@@ -340,7 +341,6 @@ public class RuntimeAnnotationProcessor {
         int pos = 0;
         QName paramQName = null;
         for (Class clazzType : parameterTypes) {
-            Type parameterType = clazzType;
             Parameter param = null;
             String paramName = "";
             String paramNamespace = targetNamespace;
@@ -349,11 +349,7 @@ public class RuntimeAnnotationProcessor {
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
                 if(clazzType.getName().equals(Holder.class.getName())){
-                    Type at = ((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0];
-                    if(at instanceof ParameterizedType)
-                        parameterType = ((ParameterizedType)at).getRawType();
-                    else
-                        parameterType = at;
+                    clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
                 }
             }
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
@@ -395,7 +391,7 @@ public class RuntimeAnnotationProcessor {
             }
 //            System.out.println("paramName: "+ paramQName);
             typeRef =
-                new TypeReference(paramQName, parameterType, pannotations[pos]);
+                new TypeReference(paramQName, clazzType, pannotations[pos]);
             param = new Parameter(typeRef, paramMode, pos++);
             if (isHeader) {
                 param.setBinding(SOAPBlock.HEADER);
@@ -518,9 +514,8 @@ public class RuntimeAnnotationProcessor {
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
-                //TODO: need to handle Holder(s) defined by jaxrpc 1.1 spec
                 if (clazzType.getName().equals(Holder.class.getName()))
-                    clazzType = (Class)((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0];
+                    clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
             }
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
                 com.sun.xml.ws.model.Mode.INOUT :
@@ -675,7 +670,7 @@ public class RuntimeAnnotationProcessor {
             if (isHolder) {
                 //TODO: need to handle Holder(s) defined by jaxrpc 1.1 spec
                 if (clazzType.getName().equals(Holder.class.getName()))
-                    clazzType = (Class)((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0];
+                    clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
             }
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
                 com.sun.xml.ws.model.Mode.INOUT :
