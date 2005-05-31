@@ -1,5 +1,5 @@
 /*
- *$Id: SOAPVersion.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ *$Id: SOAPVersion.java,v 1.2 2005-05-31 22:54:11 vivekp Exp $
  */
 
 /*
@@ -8,6 +8,9 @@
  */
 
 package com.sun.xml.ws.encoding.soap;
+
+import javax.xml.ws.soap.SOAPBinding;
+
 
 /**
  * @author JAX-RPC Development Team
@@ -29,6 +32,6 @@ public class SOAPVersion {
         return version.equals(strVersion);
     }
 
-    public static final SOAPVersion SOAP_11 = new SOAPVersion("soap1.1");
-    public static final SOAPVersion SOAP_12 = new SOAPVersion("soap1.2");
+    public static final SOAPVersion SOAP_11 = new SOAPVersion(SOAPBinding.SOAP11HTTP_BINDING);
+    public static final SOAPVersion SOAP_12 = new SOAPVersion(SOAPBinding.SOAP11HTTP_BINDING);
 }
