@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.2 2005-05-28 01:04:41 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.3 2005-05-31 22:38:06 vivekp Exp $
  */
 
 /*
@@ -96,7 +96,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     private String decodeCid(String cid){
         if(cid.startsWith("cid:"))
             cid = cid.substring(4, cid.length());
-        return cid;
+        return "<"+cid+">";
     }
 
     private Map<String, AttachmentBlock> attachments;
