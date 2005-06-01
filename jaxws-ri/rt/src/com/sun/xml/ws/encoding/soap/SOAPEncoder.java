@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.8 2005-05-28 01:23:15 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.9 2005-06-01 18:34:38 spericas Exp $
  */
 
 /*
@@ -200,39 +200,43 @@ public abstract class SOAPEncoder implements Encoder {
             do {
                 state = reader.next();
                 switch (state) {
-                    case XMLStreamConstants.START_ELEMENT:
+                    case XMLStreamConstants.START_ELEMENT:                        
+                        /*
+                         * TODO: Is this necessary, shouldn't zephyr return "" instead of 
+                         * null for getNamespaceURI() and getPrefix()?
+                         */
+                        String uri = reader.getNamespaceURI();
                         String prefix = reader.getPrefix();
                         String localName = reader.getLocalName();
-                        
-                        // Reading stream from a DOM level 1 tree?
-                        if (localName == null) {
-                            javax.xml.namespace.QName name = reader.getName();
-                            localName = name.getLocalPart();
-                            prefix = name.getPrefix();
-                            
-                            if (prefix.length() > 0) {
-                                writer.writeStartElement(prefix + ":" + localName);
+
+                        if (prefix == null) {
+                            if (uri == null) {
+                                writer.writeStartElement(localName);                                
                             }
                             else {
-                                writer.writeStartElement(localName);
+                                writer.writeStartElement(uri, localName);
                             }
                         }
                         else {
-                            writer.writeStartElement(prefix, reader.getLocalName(), 
-                                reader.getNamespaceURI());
+                            assert uri != null;
+                            // [1] When writing an element with an unseen prefix,
+                            // Zephyr calls setPrefix(prefix, uri). Is this OK?
+                            writer.writeStartElement(prefix, localName, uri);
                         }
 
                         // Write namespace declarations
                         int n = reader.getNamespaceCount();
                         for (int i = 0; i < n; i++) {
-                            prefix = reader.getNamespacePrefix(i);                             
-                            if (prefix == null) prefix = "";    // StAX returns null for default ns
-                            String writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
-                            String readerURI = reader.getNamespaceURI(i);
+                            String nsPrefix = reader.getNamespacePrefix(i);                             
+                            if (nsPrefix == null) nsPrefix = "";    // StAX returns null for default ns
+                            String writerURI = writer.getNamespaceContext().getNamespaceURI(nsPrefix);
                             
-                            if (writerURI == null || !writerURI.equals(readerURI)) {                                
-                                writer.setPrefix(prefix, readerURI);
-                                writer.writeNamespace(prefix, readerURI);
+                            // Zephyr: Why is this returning null?
+                            // Compare nsPrefix with prefix because of [1] (above)
+                            String readerURI = reader.getNamespaceURI(i);
+                            if (writerURI == null || nsPrefix.equals(prefix) || !writerURI.equals(readerURI)) {                                
+                                writer.setPrefix(nsPrefix, readerURI != null ? readerURI : "");
+                                writer.writeNamespace(nsPrefix, readerURI != null ? readerURI : "");
                             }
                         }
 
