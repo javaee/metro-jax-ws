@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.4 2005-06-01 22:34:28 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.5 2005-06-01 22:47:14 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -59,6 +59,7 @@ public class WSDLGenerator {
     private RuntimeModel model;
     private Definitions definitions;
     private Types types;
+    public static final String DOT_WSDL         = ".wsdl";
     public static final String RESPONSE         = "Response";
     public static final String PARAMETERS       = "parameters";
     public static final String RESULT           = "result";
@@ -89,7 +90,7 @@ public class WSDLGenerator {
 //        File file = new File("test.wsdl");
 //        FileOutputStream fileOutputStream = new FileOutputStream(file);
         OutputStream outputStream = null;
-        Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart());
+        Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         if (result instanceof StreamResult) {
             outputStream = ((StreamResult)result).getOutputStream();           
         } else {
