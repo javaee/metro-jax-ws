@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.3 2005-05-31 17:25:20 bbissett Exp $
+ * $Id: WebService.java,v 1.4 2005-06-01 00:12:37 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -113,6 +113,7 @@ public class WebService
                 new RuntimeAnnotationProcessor(portName, portInterface, false);
 
             RuntimeModel model = processor.buildRuntimeModel();
+            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(model);
             if (wsdlLocation == null)
                 wsdlLocation = new URL(model.getWSDLLocation());
             rtContext = new RuntimeContext(model);

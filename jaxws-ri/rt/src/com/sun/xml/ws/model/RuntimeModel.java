@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.8 2005-05-31 17:25:21 bbissett Exp $
+ * $Id: RuntimeModel.java,v 1.9 2005-06-01 00:12:38 kohlert Exp $
  */
 
 /*
@@ -123,7 +123,7 @@ public abstract class RuntimeModel {
             cls[i++] = (Class) type.type;
         }
         try {
-            jaxbContext = JAXBRIContext.newInstance(cls, types, "");
+            jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace);
             createBridgeMap(types);
         } catch (JAXBException e) {
             throw new WebServiceException(e.getMessage(), e);
@@ -134,11 +134,11 @@ public abstract class RuntimeModel {
     /**
      * @return returns non-null list of TypeReference
      */
-    private List<TypeReference> getAllTypeReferences() {
+    public List<TypeReference> getAllTypeReferences() {
         List<TypeReference> types = new ArrayList<TypeReference>();
         Collection<JavaMethod> methods = methodToJM.values();
         for (JavaMethod m : methods) {
-            filleTypes(m, types);
+            fillTypes(m, types);
             fillFaultDetailTypes(m, types);
         }
         return types;
@@ -147,10 +147,11 @@ public abstract class RuntimeModel {
     private void fillFaultDetailTypes(JavaMethod m, List<TypeReference> types) {
         for (CheckedException ce : m.getCheckedExceptions()) {
             types.add(ce.getDetailType());
+//            addGlobalType(ce.getDetailType());
         }
     }
 
-    protected void filleTypes(JavaMethod m, List<TypeReference> types) {
+    protected void fillTypes(JavaMethod m, List<TypeReference> types) {
         addTypes(m.getRequestParameters(), types);
         addTypes(m.getResponseParameters(), types);
     }
@@ -278,7 +279,16 @@ public abstract class RuntimeModel {
     public void setPortQName(QName name) {
         portQName = name;
     }
+    
+    public void setTargetNamespace(String namespace) {
+        targetNamespace = namespace;
+    }
 
+    public String getTargetNamespace() {
+        return targetNamespace;
+    }
+    
+    
     /**
      * Set the HandlerChainCaller. It should be called from
      * RuntimeAnnotationProcessor while parsing @HandlerChain annotation.
@@ -296,7 +306,25 @@ public abstract class RuntimeModel {
         return handlerChainCaller;
     }
 
+    /**
+     * Add a global type.  Global types will be used to generate global
+     * elements in the generated schema's
+     * @param typeReference
+     */
+/*    public void addGlobalType(TypeReference typeReference) {
+        
+    }*/
 
+    /**
+     * Add a global type.  Global types will be used to generate global
+     * elements in the generated schema's
+     * @return 
+     */
+/*    public Collection<TypeReference> getGlobalTypes() {
+        return globalTypes;
+    }*/
+    
+    
     /**
      * Mtom processing is disabled by default. To enable it the RuntimeModel creator must call it to enable it.
      * @param enableMtom
@@ -320,4 +348,6 @@ public abstract class RuntimeModel {
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
     private HandlerChainCaller handlerChainCaller;
     protected final QName emptyBodyName = new QName("");
+    private String targetNamespace = "";
+//    protected Collection<TypeReference> globalTypes = new ArrayList<TypeReference>();
 }

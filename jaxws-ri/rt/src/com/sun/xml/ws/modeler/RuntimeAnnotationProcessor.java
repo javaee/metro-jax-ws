@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.6 2005-05-31 21:58:32 vivekp Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.7 2005-06-01 00:12:40 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -46,10 +46,11 @@ public class RuntimeAnnotationProcessor {
     private boolean isWrapped = true;
     private boolean usesWebMethod = false;
     public static final String PD_JAXWS_PACKAGE_PD  = ".jaxws.";
-    public static final String JAXWS_PACKAGE_PD        = "jaxws.";
+    public static final String JAXWS_PACKAGE_PD     = "jaxws.";
     public static final String RESPONSE             = "Response";
     public static final String RETURN               = "return";
     public static final String BEAN                 = "Bean";
+    public static final String SERVICE              = "Service";
     public static final Class HOLDER_CLASS = Holder.class;
     public static final Class REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class RPC_LIT_PAYLOAD_CLASS = com.sun.xml.ws.encoding.jaxb.RpcLitPayload.class;
@@ -108,8 +109,14 @@ public class RuntimeAnnotationProcessor {
         packageName = clazz.getPackage().getName();
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
+        runtimeModel.setTargetNamespace(targetNamespace);
         QName name = new QName(portName, targetNamespace);
+        runtimeModel.setPortQName(name);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
+        String serviceName = clazz.getSimpleName()+SERVICE;
+        serviceName = webService.serviceName().length() > 0 ?
+                        webService.serviceName() : serviceName;
+        
 
 
         javax.jws.soap.SOAPBinding soapBinding =
@@ -212,7 +219,7 @@ public class RuntimeAnnotationProcessor {
                 webMethod.operationName() :
                 operationName;
         }
-
+        javaMethod.setOperationName(operationName);
         com.sun.xml.ws.SOAPBinding methodBinding =
             method.getAnnotation(com.sun.xml.ws.SOAPBinding.class);
         SOAPBinding.MySOAPBinding myMethodBinding = null;

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.1 2005-05-23 22:42:09 bbissett Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.2 2005-06-01 00:12:39 kohlert Exp $
  */
 
 /*
@@ -105,22 +105,21 @@ public class SOAPRuntimeModel extends RuntimeModel {
 
 
     /* 
-     * @see com.sun.xml.rpc.rt.RuntimeModel#filleTypes(com.sun.xml.rpc.rt.model.JavaMethod, java.util.List)
+     * @see com.sun.xml.rpc.rt.RuntimeModel#fillTypes(com.sun.xml.rpc.rt.model.JavaMethod, java.util.List)
      */
     @Override
-    protected void filleTypes(JavaMethod m, List<TypeReference> types) {
+    protected void fillTypes(JavaMethod m, List<TypeReference> types) {
         if(!(m.getBinding() instanceof SOAPBinding)){
             //TODO throws exception
             System.out.println("Error: Wrong Binding!");
             return;
         }
         if(((SOAPBinding)m.getBinding()).isDocLit()){
-            super.filleTypes(m, types);
+            super.fillTypes(m, types);
             return;
         }
         
         //else is rpclit
-        List<Parameter> rParams = m.getRequestParameters();   
         addTypes(m.getRequestParameters(), types);
         addTypes(m.getResponseParameters(), types);
     }
