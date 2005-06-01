@@ -1,25 +1,23 @@
 /**
- * $Id: WebServiceConstants.java,v 1.2 2005-05-25 21:20:45 kohlert Exp $
+ * $Id: WebServiceConstants.java,v 1.3 2005-06-01 00:38:30 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.tools.ws.processor.modeler.rmi.RmiConstants;
-import com.sun.tools.ws.processor.modeler.annotation.*;
 
+import javax.xml.ws.Holder;
 /**
  *
  * @author  dkohlert
  */
-public interface WebServiceConstants extends RmiConstants {
+public interface WebServiceConstants { //extends RmiConstants {
 
     public static final String RETURN                       = "return";
     public static final String RETURN_CAPPED                = "Return";
     public static final String RETURN_VALUE                 = "_return";
     public static final String SERVICE                      = "Service";
-    public static final String RUNTIME_EXCEPTION_CLASSNAME  = "java.lang.RuntimeException";
     public static final String PD                           = ".";
     public static final String JAXWS                        = "jaxws";
     public static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
@@ -31,6 +29,32 @@ public interface WebServiceConstants extends RmiConstants {
     public static final String GET_FAULT_INFO               = "getFaultInfo";
     public static final String HTTP_PREFIX                  = "http://";
     public static final String JAVA_LANG_OBJECT             = "java.lang.Object";
+    
+
+    public static final char SIGC_INNERCLASS  = '$';
+    public static final char SIGC_UNDERSCORE  = '_';
+    
+    public static final String DOT = ".";    
+    public static final String PORT = "Port";
+    public static final String BINDING = "Binding";
+    public static final String RESPONSE = "Response";
+    
+    /*
+     * Identifiers potentially useful for all Generators
+     */
+    public static final String EXCEPTION_CLASSNAME =
+        java.lang.Exception.class.getName();
+    public static final String REMOTE_CLASSNAME =
+        java.rmi.Remote.class.getName();
+    public static final String REMOTE_EXCEPTION_CLASSNAME =
+        java.rmi.RemoteException.class.getName();
+    public static final String RUNTIME_EXCEPTION_CLASSNAME =
+        java.lang.RuntimeException.class.getName();
+    public static final String SERIALIZABLE_CLASSNAME =
+        java.io.Serializable.class.getName();
+    public static final String HOLDER_CLASSNAME =
+        javax.xml.ws.Holder.class.getName();
+    
 
     // 181 constants
     public static final String WEBSERVICE_NAMESPACE         = "http://www.bea.com/xml/ns/jws";

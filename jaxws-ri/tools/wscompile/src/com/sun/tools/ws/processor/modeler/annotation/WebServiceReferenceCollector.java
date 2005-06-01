@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.1 2005-05-23 23:23:51 bbissett Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.2 2005-06-01 00:38:30 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-//import com.sun.xml.rpc.processor.generator.GeneratorBase20;
 import com.sun.tools.ws.processor.generator.GeneratorConstants;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;

@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorConstants.java,v 1.1 2005-05-23 23:14:48 bbissett Exp $
+ * $Id: GeneratorConstants.java,v 1.2 2005-06-01 00:38:28 kohlert Exp $
  */
 
 /*
@@ -34,6 +34,9 @@ public interface GeneratorConstants extends ModelerConstants {
     public static final String ID_DELEGATE_BASE = "com.sun.xml.rpc.soap.internal.DelegateBase";
 
 
+    public static final char DOTC = '.';
+    public static final String SIG_INNERCLASS = "$";
+    
     public static final String UNDERSCORE = "_";
     public static final String STUB_SUFFIX = "_Stub";
 

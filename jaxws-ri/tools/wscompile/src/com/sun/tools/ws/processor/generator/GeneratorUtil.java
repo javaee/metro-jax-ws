@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorUtil.java,v 1.1 2005-05-23 23:14:48 bbissett Exp $
+ * $Id: GeneratorUtil.java,v 1.2 2005-06-01 00:38:28 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,6 @@ import com.sun.tools.ws.processor.model.Block;
 import com.sun.tools.ws.processor.model.Fault;
 import com.sun.tools.ws.processor.model.Operation;
 import com.sun.tools.ws.processor.model.java.JavaStructureType;
-import com.sun.tools.ws.processor.modeler.rmi.RmiUtils;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
@@ -34,7 +33,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
  *
  * @author JAX-RPC Development Team
  */
-public class GeneratorUtil {
+public class GeneratorUtil implements GeneratorConstants {
 
     private static QName QNAME_SOAP_FAULT = null;
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
@@ -107,7 +106,7 @@ public class GeneratorUtil {
         String className) {
         try {
             // Takes care of inner classes.
-            String name = RmiUtils.getLoadableClassName(className,
+            String name = getLoadableClassName(className,
                 env.getClassLoader());
             return true;
         } catch(ClassNotFoundException ce) {
@@ -115,6 +114,25 @@ public class GeneratorUtil {
         return false;
     }
 
+    public static String getLoadableClassName(
+        String className,
+        ClassLoader classLoader)
+        throws ClassNotFoundException {
+
+        try {
+            Class seiClass = Class.forName(className, true, classLoader);
+        } catch (ClassNotFoundException e) {
+            int idx = className.lastIndexOf(DOTC);
+            if (idx > -1) {
+                String tmp = className.substring(0, idx) + SIG_INNERCLASS;
+                tmp += className.substring(idx + 1);
+                return getLoadableClassName(tmp, classLoader);
+            }
+            throw e;
+        }
+        return className;
+    }    
+    
     public static Hashtable ht = null;
     static {
         /* the primitive types have been preloaded */
