@@ -1,5 +1,5 @@
 /*
- *$Id: SOAPVersion.java,v 1.2 2005-05-31 22:54:11 vivekp Exp $
+ *$Id: SOAPVersion.java,v 1.3 2005-06-01 00:15:32 vivekp Exp $
  */
 
 /*
@@ -33,5 +33,5 @@ public class SOAPVersion {
     }
 
     public static final SOAPVersion SOAP_11 = new SOAPVersion(SOAPBinding.SOAP11HTTP_BINDING);
-    public static final SOAPVersion SOAP_12 = new SOAPVersion(SOAPBinding.SOAP11HTTP_BINDING);
+    public static final SOAPVersion SOAP_12 = new SOAPVersion(SOAPBinding.SOAP12HTTP_BINDING);
 }
