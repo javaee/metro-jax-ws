@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.7 2005-06-01 19:24:43 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.8 2005-06-01 22:34:27 kohlert Exp $
  */
 
 /*
@@ -129,7 +129,7 @@ public class RuntimeEndpointInfo
                 getImplementor().getClass());
             runtimeModel = rap.buildRuntimeModel();
             // TODO remove this; this is for developement only
-            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel);
+//            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel);
             
             if (!hasHandlers) {
                 HandlerAnnotationInfo chainInfo =

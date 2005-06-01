@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.3 2005-06-01 20:36:03 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.4 2005-06-01 22:34:28 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,6 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.SchemaOutputResolver;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.xml.transform.Result;
@@ -46,6 +45,7 @@ import javax.xml.namespace.QName;
 
 import java.util.Set;
 import java.util.HashSet;
+import javax.xml.ws.WebServiceException;
 
 
 /**
@@ -55,6 +55,7 @@ import java.util.HashSet;
  */
 public class WSDLGenerator {
     private JAXWSOutputSchemaResolver resolver;
+    private WSDLOutputResolver wsdlResolver = null;
     private RuntimeModel model;
     private Definitions definitions;
     private Types types;
@@ -77,36 +78,34 @@ public class WSDLGenerator {
     public static final String REPLACE_WITH_ACTUAL_URL = "REPLACE_WITH_ACTUAL_URL";
     private Set<QName> processedExceptions = new HashSet<QName>();
 
-    public WSDLGenerator() {
-        resolver = new JAXWSOutputSchemaResolver();        
-    }
 
-    public WSDLGenerator(RuntimeModel model) {
+    public WSDLGenerator(RuntimeModel model, WSDLOutputResolver wsdlResolver) {
         this.model = model;
         resolver = new JAXWSOutputSchemaResolver();
-        
-        try {
-            Definitions def = doGeneration();
-            def.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
+        this.wsdlResolver = wsdlResolver;
+    }
+    
+    public void doGeneration() throws Exception {
+//        File file = new File("test.wsdl");
+//        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        OutputStream outputStream = null;
+        Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart());
+        if (result instanceof StreamResult) {
+            outputStream = ((StreamResult)result).getOutputStream();           
+        } else {
+            // TODO throw an exception
+            throw new WebServiceException("unsupported result");
         }
+        generateDocument(outputStream);
     }
     
-    public Definitions doGeneration() throws Exception {
-        File file = new File("test.wsdl");
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        return generateDocument(fileOutputStream);
-    }
-    
-    private Definitions generateDocument(OutputStream stream) throws Exception {
+    private void generateDocument(OutputStream stream) throws Exception {
         definitions = TXW.create(Definitions.class, new StreamSerializer(stream));
         definitions._namespace(WSDL_NAMESPACE, WSDL_PREFIX);
         definitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
         definitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
         
-        if (model.getServiceQName() != null)
-            definitions.name(model.getServiceQName().getLocalPart());
+        definitions.name(model.getServiceQName().getLocalPart());
         if (model.getTargetNamespace() != null) {
             definitions.targetNamespace(model.getTargetNamespace());
             definitions._namespace(model.getTargetNamespace(), TNS_PREFIX);
@@ -117,8 +116,6 @@ public class WSDLGenerator {
         generatePortType();
         generateBinding();
         generateService();
-
-        return definitions;
     }    
     
     
@@ -281,49 +278,14 @@ public class WSDLGenerator {
     }
     
     public Result createOutputFile(String namespaceUri, String suggestedFileName) throws IOException {
-        File schemaFile;
+//        File schemaFile;
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
-        _import.schemaLocation(suggestedFileName);
-/*
-        SchemaElement importElement = new SchemaElement(SchemaConstants.QNAME_IMPORT);
-        if (namespaceUri.length() > 0) {
-            importElement.addAttribute(
-                            com.sun.tools.ws.wsdl.parser.Constants.ATTR_NAMESPACE,
-                            namespaceUri);
-        } else {
-//            System.out.println("import namespaceURI: "+namespaceUri);
-            warn("generator.schema.import.namespaces.should.not.be.empty");
-        }
-        importElement.addAttribute(
-            com
-                .sun
-                .tools.ws
-                .wsdl
-                .parser
-                .Constants
-                .ATTR_SCHEMA_LOCATION,
-                suggestedFileName);
+//        _import.schemaLocation(suggestedFileName);
 
-        SchemaElement schemaContent;
-        Schema schema =
-            (Schema) nsSchemaMap.get(namespaceUri);
-
-        if (schema == null) {
-            schema = new Schema(wsdlDocument);
-            schemaContent =
-                new SchemaElement(SchemaConstants.QNAME_SCHEMA);
-            schema.setContent(schemaContent);
-            definitions.getTypes().addExtension(schema);
-            nsSchemaMap.put(namespaceUri, schema);
-        }
-        schemaContent = schema.getContent();
-        schemaContent.insertChildAtTop(importElement);
-*/
-        StreamResult result;
-        File outputFile;
-        schemaFile = new File(suggestedFileName);
-        result = new StreamResult(schemaFile);
-
+        Result result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
+        _import.schemaLocation(result.getSystemId());
+//        schemaFile = new File(suggestedFileName);
+//        result = new StreamResult(schemaFile);
         return result;
     }
     
