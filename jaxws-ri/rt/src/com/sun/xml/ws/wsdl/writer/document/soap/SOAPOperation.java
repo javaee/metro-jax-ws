@@ -5,16 +5,16 @@ import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.annotation.XmlAttribute;
 import com.sun.xml.txw2.annotation.XmlElement;
 
-@XmlElement("binding")
-public interface Binding
+@XmlElement("operation")
+public interface SOAPOperation
     extends TypedXmlWriter
 {
 
 
     @XmlAttribute
-    public com.sun.xml.ws.wsdl.writer.document.soap.Binding transport(String value);
+    public com.sun.xml.ws.wsdl.writer.document.soap.SOAPOperation soapAction(String value);
 
     @XmlAttribute
-    public com.sun.xml.ws.wsdl.writer.document.soap.Binding style(String value);
+    public com.sun.xml.ws.wsdl.writer.document.soap.SOAPOperation style(String value);
 
 }
