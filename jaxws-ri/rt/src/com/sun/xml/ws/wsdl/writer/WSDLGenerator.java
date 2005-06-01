@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.2 2005-06-01 19:19:02 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.3 2005-06-01 20:36:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -34,8 +34,11 @@ import com.sun.xml.ws.wsdl.writer.document.FaultType;
 import com.sun.xml.ws.wsdl.writer.document.Message;
 import com.sun.xml.ws.wsdl.writer.document.Operation;
 import com.sun.xml.ws.wsdl.writer.document.ParamType;
+import com.sun.xml.ws.wsdl.writer.document.Port;
 import com.sun.xml.ws.wsdl.writer.document.PortType;
+import com.sun.xml.ws.wsdl.writer.document.Service;
 import com.sun.xml.ws.wsdl.writer.document.Types;
+import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.Body;
 import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
@@ -70,6 +73,8 @@ public class WSDLGenerator {
     public static final String DOCUMENT         = "document";
     public static final String RPC              = "rpc";
     public static final String LITERAL          = "literal";
+    public static final String PORT             = "Port";
+    public static final String REPLACE_WITH_ACTUAL_URL = "REPLACE_WITH_ACTUAL_URL";
     private Set<QName> processedExceptions = new HashSet<QName>();
 
     public WSDLGenerator() {
@@ -255,7 +260,14 @@ public class WSDLGenerator {
     }
     
     protected void generateService() throws Exception {
-        
+        Service service = definitions.service().name(model.getServiceQName().getLocalPart());
+        QName portQName = model.getPortQName();
+        Port port = service.port().name(portQName.getLocalPart()+PORT);
+        port.binding(new QName(portQName.getNamespaceURI(), portQName.getLocalPart()+BINDING));
+        if (model.getJavaMethods().iterator().next().getBinding() instanceof SOAPBinding) {
+            SOAPAddress address = port._element(SOAPAddress.class);
+            address.location(REPLACE_WITH_ACTUAL_URL);
+        }
     }
     
     protected void generateInputMessage(Operation operation, JavaMethod method) {

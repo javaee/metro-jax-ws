@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.1 2005-06-01 19:25:31 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.2 2005-06-01 20:36:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -112,8 +112,9 @@ public class RuntimeModeler {
         serviceName = webService.serviceName().length() > 0 ?
                         webService.serviceName() : serviceName;
         
-
-
+        QName serviceQName = new QName(targetNamespace, serviceName);
+        runtimeModel.setServiceQName(serviceQName);
+        
         javax.jws.soap.SOAPBinding soapBinding =
             (javax.jws.soap.SOAPBinding) clazz.getAnnotation(javax.jws.soap.SOAPBinding.class);
         if (soapBinding != null) {
