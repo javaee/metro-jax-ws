@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.1 2005-05-23 22:50:23 bbissett Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.2 2005-06-01 00:52:42 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -93,8 +93,6 @@ public abstract class EPTFactoryFactoryBase {
     public static EPTFactory getEPTFactory(MessageInfo mi) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-        // Create new TargetFinder every time since servant is different
-        TargetFinder targetFinder = null;    
         if (endpointInfo.getImplementor() instanceof Provider) {
             return providerSoap11;
         } else {
