@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeAnnotationProcessor.java,v 1.7 2005-06-01 00:12:40 kohlert Exp $
+ * $Id: RuntimeAnnotationProcessor.java,v 1.8 2005-06-01 18:02:39 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -110,7 +110,7 @@ public class RuntimeAnnotationProcessor {
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
-        QName name = new QName(portName, targetNamespace);
+        QName name = new QName(targetNamespace, portName);
         runtimeModel.setPortQName(name);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
         String serviceName = clazz.getSimpleName()+SERVICE;
@@ -151,9 +151,6 @@ public class RuntimeAnnotationProcessor {
             Style.DOCUMENT : Style.RPC;
         rtSOAPBinding.setStyle(style);
         return rtSOAPBinding;
-//        Binding binding =
-//            new Binding<com.sun.xml.rpc.rt.model.soap.SOAPBinding>(rtSOAPBinding);
-//        return binding;
     }
 
     protected String getNamespace(String packageName) {
@@ -227,16 +224,12 @@ public class RuntimeAnnotationProcessor {
         Style style = defaultBinding.getStyle();
         if (methodBinding != null) {
             myMethodBinding = new SOAPBinding.MySOAPBinding(methodBinding);
-            //Binding binding = createBinding(myMethodBinding);
             com.sun.xml.ws.model.soap.SOAPBinding mySOAPBinding = createBinding(myMethodBinding);
-//            com.sun.xml.rpc.rt.model.soap.SOAPBinding mySOAPBinding =
-//                (com.sun.xml.rpc.rt.model.soap.SOAPBinding)binding.getBindingType();
             style = mySOAPBinding.getStyle();
             if (action != null)
                 mySOAPBinding.setSOAPAction(action);
             methodIsWrapped = myMethodBinding.parameterStyle().equals(
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
-            //javaMethod.setBinding(binding);
             javaMethod.setBinding(mySOAPBinding);
         } else {
             javaMethod.setBinding(defaultBinding);
@@ -274,8 +267,6 @@ public class RuntimeAnnotationProcessor {
         }
             
 
-//        String responseClassName = beanPackage+
-//            capitalize(method.getName()) + RESPONSE;
         String responseClassName = null;
         if(resWrapper != null && resWrapper.type().length()>0){
             responseClassName = resWrapper.type();
