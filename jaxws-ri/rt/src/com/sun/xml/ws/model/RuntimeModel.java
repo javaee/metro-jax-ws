@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.9 2005-06-01 00:12:38 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.10 2005-06-01 19:06:24 bbissett Exp $
  */
 
 /*
@@ -16,12 +16,10 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.handler.HandlerChainCaller;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.Handler;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -288,24 +286,6 @@ public abstract class RuntimeModel {
         return targetNamespace;
     }
     
-    
-    /**
-     * Set the HandlerChainCaller. It should be called from
-     * RuntimeAnnotationProcessor while parsing @HandlerChain annotation.
-     * @param caller
-     */
-    public void setHandlerChainCaller(HandlerChainCaller caller) {
-        handlerChainCaller = caller;
-    }
-
-    /**
-     * @return null if there are no handlerChain defined thru @HandlerChain
-     * annotation. Otherwise returns HandlerChainCaller.
-     */
-    public HandlerChainCaller getHandlerChainCaller() {
-        return handlerChainCaller;
-    }
-
     /**
      * Add a global type.  Global types will be used to generate global
      * elements in the generated schema's
@@ -346,7 +326,6 @@ public abstract class RuntimeModel {
     private List<JavaMethod> javaMethods = new ArrayList<JavaMethod>();
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
-    private HandlerChainCaller handlerChainCaller;
     protected final QName emptyBodyName = new QName("");
     private String targetNamespace = "";
 //    protected Collection<TypeReference> globalTypes = new ArrayList<TypeReference>();

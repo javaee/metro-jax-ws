@@ -1,9 +1,9 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.5 2005-06-01 00:12:41 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.6 2005-06-01 19:06:26 bbissett Exp $
  */
 
 /*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
@@ -12,6 +12,9 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeAnnotationProcessor;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,13 +126,18 @@ public class RuntimeEndpointInfo
             boolean hasHandlers = (getHandlerChain() != null);
                 
             RuntimeAnnotationProcessor rap = new RuntimeAnnotationProcessor(null,
-                getImplementor().getClass(), hasHandlers);
+                getImplementor().getClass());
             runtimeModel = rap.buildRuntimeModel();
             // TODO remove this; this is for developement only
             com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel);
             
             if (!hasHandlers) {
-                setHandlerChainCaller(runtimeModel.getHandlerChainCaller());
+                HandlerAnnotationInfo chainInfo =
+                    HandlerAnnotationProcessor.buildHandlerInfo(
+                        getImplementor().getClass());
+                if (chainInfo != null) {
+                    setHandlerChainCaller(new HandlerChainCaller(chainInfo));
+                }
             }
             
             //set Tmomt processing

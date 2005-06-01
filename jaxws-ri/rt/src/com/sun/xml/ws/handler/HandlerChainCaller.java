@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.1 2005-05-23 22:37:25 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.2 2005-06-01 19:06:24 bbissett Exp $
  */
 
 /*
@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
@@ -77,6 +78,14 @@ public class HandlerChainCaller {
         soapHandlers = new ArrayList<SOAPHandler>();
         understoodHeaders = new HashSet<QName>();
         sortHandlers();
+    }
+    
+    /*
+     * Used when creating directly from an annotated class.
+     */
+    public HandlerChainCaller(HandlerAnnotationInfo info) {
+        this(info.getHandlers());
+        setRoles(info.getRoles());
     }
 
     public List<Handler> getHandlerChain() {
