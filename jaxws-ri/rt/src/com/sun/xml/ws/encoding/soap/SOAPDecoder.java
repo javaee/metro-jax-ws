@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.5 2005-05-28 01:04:39 vivekp Exp $
+ * $Id: SOAPDecoder.java,v 1.6 2005-06-01 00:51:33 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved. 
@@ -174,10 +174,6 @@ public abstract class SOAPDecoder implements Decoder {
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
                 JAXBTypeSerializer.getInstance().deserialize(reader, bridgeInfo, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock(bridgeInfo);
-
-                //TODO remove after JAXB provides QName access thru Bridge
-                headerBlock.setName(name);
-
                 msg.addHeader(headerBlock);
             }
         } else {

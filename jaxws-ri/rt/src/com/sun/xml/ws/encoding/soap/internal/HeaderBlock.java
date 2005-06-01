@@ -1,5 +1,5 @@
 /*
- * $Id: HeaderBlock.java,v 1.1 2005-05-23 22:30:16 bbissett Exp $
+ * $Id: HeaderBlock.java,v 1.2 2005-06-01 00:51:34 jitu Exp $
  */
 
 /*
@@ -14,30 +14,19 @@ import javax.xml.namespace.QName;
 /**
  * @author JAX-RPC RI Development Team
  */
-public class HeaderBlock extends MessageBlock {
+public class HeaderBlock {
     
-    /*
-     * @deprecated
-     */
-    public HeaderBlock(QName name, Object value) {
-        super(name, value);
-    }
-    
-    /*
-     * @deprecated
-     */
-    public HeaderBlock(QName name) {
-        super(name);
-    }
-    
-    /*
-     * @deprecated
-     */
-    public HeaderBlock() {
-        super();
-    }
+    private JAXBBridgeInfo value;
     
     public HeaderBlock(JAXBBridgeInfo bridgeInfo) {
-        this._value = bridgeInfo;
+        this.value = bridgeInfo;
+    }
+    
+    public Object getValue() {
+        return value;
+    }
+    
+    public QName getName() {
+        return value.getName();
     }
 }

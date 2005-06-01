@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.2 2005-05-25 19:05:47 spericas Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.3 2005-06-01 00:51:33 jitu Exp $
  */
 
 /*
@@ -151,10 +151,6 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
                 JAXBTypeSerializer.getInstance().deserialize(reader, bridgeInfo, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock(bridgeInfo);
-
-                //TODO remove after JAXB provides QName access thru Bridge
-                headerBlock.setName(name);
-
                 msg.addHeader(headerBlock);
             }
         } else {
