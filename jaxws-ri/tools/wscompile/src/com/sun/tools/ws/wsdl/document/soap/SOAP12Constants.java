@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12Constants.java,v 1.1 2005-05-24 13:58:16 bbissett Exp $
+ * $Id: SOAP12Constants.java,v 1.2 2005-06-01 00:16:20 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -22,7 +22,7 @@ public interface SOAP12Constants {
 
     // other URIs
     public static String URI_SOAP_TRANSPORT_HTTP =
-        "http://schemas.xmlsoap.org/wsdl/http/";
+        "http://www.w3.org/2003/05/soap/bindings/HTTP/";
     ;
 
     // QNames
