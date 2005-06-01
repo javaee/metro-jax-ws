@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.6 2005-06-01 19:06:26 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.7 2005-06-01 19:24:43 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.modeler.RuntimeAnnotationProcessor;
+import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 
@@ -125,7 +125,7 @@ public class RuntimeEndpointInfo
             // check model for handlers only if not already specified
             boolean hasHandlers = (getHandlerChain() != null);
                 
-            RuntimeAnnotationProcessor rap = new RuntimeAnnotationProcessor(null,
+            RuntimeModeler rap = new RuntimeModeler(null,
                 getImplementor().getClass());
             runtimeModel = rap.buildRuntimeModel();
             // TODO remove this; this is for developement only

@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.5 2005-06-01 19:06:24 bbissett Exp $
+ * $Id: WebService.java,v 1.6 2005-06-01 19:24:42 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,7 +8,7 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.modeler.RuntimeAnnotationProcessor;
+import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import com.sun.xml.ws.wsdl.parser.WSDLParser;
@@ -109,8 +109,8 @@ public class WebService
     private void preProcess(QName portName, Class portInterface) throws WebServiceException, MalformedURLException {
 
         if (rtContext == null) {
-            RuntimeAnnotationProcessor processor =
-                new RuntimeAnnotationProcessor(portName, portInterface);
+            RuntimeModeler processor =
+                new RuntimeModeler(portName, portInterface);
 
             RuntimeModel model = processor.buildRuntimeModel();
             com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(model);
