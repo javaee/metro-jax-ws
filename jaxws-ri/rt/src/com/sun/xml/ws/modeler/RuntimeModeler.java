@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.2 2005-06-01 20:36:03 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.3 2005-06-02 17:53:13 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,6 +12,7 @@ import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.RequestWrapper;
 import com.sun.xml.ws.ResponseWrapper;
 import com.sun.xml.ws.SOAPBinding;
+import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
@@ -36,7 +37,7 @@ import java.util.StringTokenizer;
  * $author: JAXWS Development Team
  */
 public class RuntimeModeler {
-    private QName portQName;
+    private String bindingId;
     private Class portClass;
     private RuntimeModel runtimeModel;
     private com.sun.xml.ws.model.soap.SOAPBinding defaultBinding;
@@ -54,9 +55,9 @@ public class RuntimeModeler {
     public static final Class REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class RPC_LIT_PAYLOAD_CLASS = com.sun.xml.ws.encoding.jaxb.RpcLitPayload.class;
 
-    public RuntimeModeler(QName portName, Class portClass) {
-        this.portQName = portName;
+    public RuntimeModeler(Class portClass, String bindingId) {
         this.portClass = portClass;
+        this.bindingId = bindingId;
     }
 
     //currently has many local vars which will be eliminated after debugging issues
@@ -146,6 +147,9 @@ public class RuntimeModeler {
             soapBinding.style().equals(javax.jws.soap.SOAPBinding.Style.DOCUMENT)) ?
             Style.DOCUMENT : Style.RPC;
         rtSOAPBinding.setStyle(style);
+        //default soap version is 1.1, change it to soap 1.2 if the binding id says so
+        if(bindingId.equals(SOAPVersion.SOAP_12))
+            rtSOAPBinding.setSOAPVersion(SOAPVersion.SOAP_12);
         return rtSOAPBinding;
     }
 

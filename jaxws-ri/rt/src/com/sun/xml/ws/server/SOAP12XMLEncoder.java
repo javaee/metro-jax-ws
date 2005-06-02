@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.5 2005-05-28 01:10:12 spericas Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.6 2005-06-02 17:53:14 vivekp Exp $
  */
 
 /*
@@ -10,6 +10,7 @@ package com.sun.xml.ws.server;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
@@ -29,6 +30,10 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
         try {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_ENVELOPE, SOAP12NamespaceConstants.ENVELOPE);
+            writer.setPrefix(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                             SOAP12NamespaceConstants.ENVELOPE);
+            writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                                  SOAP12NamespaceConstants.ENVELOPE);
         }
         catch (XMLStreamException e) {
             throw new ServerRtException(new LocalizableExceptionAdapter(e));           
@@ -88,5 +93,11 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
         return "application/soap+xml";                
     }
 
-
+    /**
+     * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
+     * @return
+     */
+    protected String getBindingId(){
+        return SOAPBinding.SOAP12HTTP_BINDING;
+    }
 }

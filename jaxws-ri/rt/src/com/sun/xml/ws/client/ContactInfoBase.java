@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoBase.java,v 1.1 2005-05-23 22:26:35 bbissett Exp $
+ * $Id: ContactInfoBase.java,v 1.2 2005-06-02 17:53:09 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -23,6 +23,8 @@ import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.server.LogicalEncoderImpl;
 
+import javax.xml.ws.soap.SOAPBinding;
+
 /**
  * @author JAX-RPC RI Development Team
  */
@@ -32,15 +34,17 @@ public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
     protected MessageDispatcher _messageDispatcher;
     protected Encoder _encoder;
     protected Decoder _decoder;
+    private String bindingId;
 
     public ContactInfoBase(Connection connection,
                            MessageDispatcher messageDispatcher,
                            Encoder encoder,
-                           Decoder decoder) {
+                           Decoder decoder, String bindingId) {
         _connection = connection;
         _messageDispatcher = messageDispatcher;
         _encoder = encoder;
         _decoder = decoder;
+        this.bindingId = bindingId;
     }
 
     public ContactInfoBase() {
@@ -114,5 +118,11 @@ public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
 
     public InternalEncoder getInternalEncoder() {
         return new ClientEncoderDecoder();
+    }
+
+    public String getBindingId(){
+        if(bindingId == null)
+            return SOAPBinding.SOAP11HTTP_BINDING;
+        return bindingId;
     }
 }

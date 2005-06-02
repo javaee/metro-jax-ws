@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.6 2005-05-28 01:10:10 spericas Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.7 2005-06-02 17:53:10 vivekp Exp $
  */
 
 /*
@@ -51,6 +51,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -128,7 +129,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             // TODO: Copy the mime headers from messageInfo.METADATA
             MimeHeaders mh = new MimeHeaders();
             mh.addHeader("Content-Type", getContentType(messageInfo));
-            message = new SOAPMessageContext().createMessage(mh, bis);
+            message = new SOAPMessageContext().createMessage(mh, bis, getBindingId());
             processAttachments(internalMessage, message);
         } catch (IOException e) {
             throw new SenderException("sender.request.messageNotReady", new LocalizableExceptionAdapter(e));
@@ -146,7 +147,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      */
     protected void processProperties(MessageInfo messageInfo) {
         SOAPMessageContext messageContext = new SOAPMessageContext();
-        SOAPMessage soapMessage = messageContext.createMessage();
+        SOAPMessage soapMessage = messageContext.createMessage(getBindingId());
         MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
 
         ContextMap properties = (ContextMap) messageInfo
@@ -236,5 +237,13 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 }
         }
         return XML_CONTENT_TYPE_VALUE;
+    }
+
+    /**
+     * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
+     * @return
+     */
+    protected String getBindingId(){
+        return SOAPBinding.SOAP11HTTP_BINDING;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.1 2005-05-23 22:50:25 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.2 2005-06-02 17:53:14 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -187,7 +187,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      */
     private SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
         JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
-        return SOAPConnectionUtil.getSOAPMessage(con);
+        return SOAPConnectionUtil.getSOAPMessage(con, messageInfo);
     }
     
     /*

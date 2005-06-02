@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.12 2005-06-02 14:32:47 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.13 2005-06-02 17:53:14 vivekp Exp $
  */
 
 /*
@@ -15,6 +15,7 @@ import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
+import com.sun.xml.ws.client.BindingImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.Provider;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.Handler;
 import javax.xml.transform.Source;
 
@@ -106,9 +108,14 @@ public class RuntimeEndpointInfo
                 }
             }
         } else {
-            // Create runtime model for non Provider endpoints
-            RuntimeModeler rap = new RuntimeModeler(null,
-                getImplementor().getClass());
+            String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+
+            //how will j2ee pass the binding id
+            if(binding != null && binding instanceof BindingImpl)
+                bindingId = ((BindingImpl)binding).getBindingId();
+
+            // Create runtime model for non Provider endpoints            
+            RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(), bindingId);
             runtimeModel = rap.buildRuntimeModel();
             
             if (getWSDLFileName() == null) {
@@ -179,7 +186,11 @@ System.out.println("Port QName="+runtimeModel.getPortQName());
     public void setUrlPattern(String s) {
         urlPattern = s;
     }
-    
+
+    public void setBinding(Binding binding){
+        this.binding = binding;
+    }
+
     public Binding getBinding() {
         return binding;
     }

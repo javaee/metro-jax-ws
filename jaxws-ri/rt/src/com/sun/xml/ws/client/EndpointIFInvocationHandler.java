@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.3 2005-05-27 17:50:56 vivekp Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.4 2005-06-02 17:53:10 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -44,6 +44,7 @@ public class EndpointIFInvocationHandler
         _portInterface = pi;
         _rtcontext = context;
         _wsdlContext = wscontext;
+        _bindingId = wscontext.getBindingID();
         if (wscontext.getEndpoint() != null)   //temp workaround for local transport kw
             getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, wscontext.getEndpoint());
 
@@ -96,6 +97,7 @@ public class EndpointIFInvocationHandler
         ((BindingProvider) _proxy).getRequestContext().put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, ((BindingProvider) _proxy).getRequestContext());
+
 
 
         messageStruct.setMEP(mmep);

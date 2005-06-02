@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.2 2005-05-27 17:50:56 vivekp Exp $
+ * $Id: SOAPBindingImpl.java,v 1.3 2005-06-02 17:53:10 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -33,14 +33,14 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     private boolean enableMtom = false;
 
     // called by DispatchImpl
-    SOAPBindingImpl() {
-        super();
+    public SOAPBindingImpl(String bindingId) {
+        super(bindingId);
         setup();
     }
 
     // created by HandlerRegistryImpl
-    SOAPBindingImpl(List<Handler> handlerChain) {
-        super(handlerChain);
+    SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
+        super(handlerChain, bindingId);
         setup();
     }
 

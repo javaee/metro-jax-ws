@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.1 2005-05-23 22:30:17 bbissett Exp $
+ * $Id: SOAPMessageContext.java,v 1.2 2005-06-02 17:53:11 vivekp Exp $
  */
 
 /*
@@ -21,11 +21,9 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.*;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.handler.MessageContextImpl;
@@ -88,9 +86,64 @@ public class SOAPMessageContext extends MessageContextImpl
         return currentHandler;
     }
 
+//    public SOAPMessage createMessage() {
+//        try {
+//            return getMessageFactory().createMessage();
+//        } catch (SOAPException e) {
+//            throw new SOAPMsgCreateException(
+//                    "soap.msg.create.err",
+//                    new Object[] { e });
+//        }
+//    }
+//
+//    public SOAPMessage createMessage(MimeHeaders headers, InputStream in)
+//        throws IOException {
+//        try {
+//            return getMessageFactory().createMessage(headers, in);
+//        } catch (SOAPException e) {
+//            throw new SOAPMsgCreateException(
+//                    "soap.msg.create.err",
+//                    new Object[] { e });
+//        }
+//    }
+
     public SOAPMessage createMessage() {
+        return createMessage(SOAPBinding.SOAP11HTTP_BINDING);
+    }
+
+    /**
+     *
+     * @param binding
+     * @return
+     */
+    public static SOAPMessage createMessage(String binding) {
         try {
-            return getMessageFactory().createMessage();
+            String protocol = SOAPConstants.SOAP_1_1_PROTOCOL;
+            if(binding.equals(SOAPBinding.SOAP12HTTP_BINDING))
+                protocol = SOAPConstants.SOAP_1_2_PROTOCOL;
+            return getMessageFactory(protocol).createMessage();
+        } catch (SOAPException e) {
+            throw new SOAPMsgCreateException(
+                    "soap.msg.create.err",
+                    new Object[] { e });
+        }
+    }
+
+    /**
+     *
+     * @param binding
+     * @param headers
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static SOAPMessage createMessage(MimeHeaders headers, InputStream in, String binding)
+        throws IOException {
+        try {
+            String protocol = SOAPConstants.SOAP_1_1_PROTOCOL;
+            if(binding.equals(SOAPBinding.SOAP12HTTP_BINDING))
+                protocol = SOAPConstants.SOAP_1_2_PROTOCOL;
+            return getMessageFactory(protocol).createMessage(headers, in);
         } catch (SOAPException e) {
             throw new SOAPMsgCreateException(
                     "soap.msg.create.err",
@@ -100,13 +153,7 @@ public class SOAPMessageContext extends MessageContextImpl
 
     public SOAPMessage createMessage(MimeHeaders headers, InputStream in)
         throws IOException {
-        try {
-            return getMessageFactory().createMessage(headers, in);
-        } catch (SOAPException e) {
-            throw new SOAPMsgCreateException(
-                    "soap.msg.create.err",
-                    new Object[] { e });
-        }
+        return createMessage(headers, in, SOAPBinding.SOAP11HTTP_BINDING);
     }
 
     public void writeInternalServerErrorResponse() {
@@ -148,10 +195,23 @@ public class SOAPMessageContext extends MessageContextImpl
         }
     }
 
-    private static MessageFactory getMessageFactory() {
+//    private static MessageFactory getMessageFactory() {
+//        try {
+//            if (_messageFactory == null) {
+//                _messageFactory = MessageFactory.newInstance();
+//            }
+//        } catch(SOAPException e) {
+//            throw new SOAPMsgFactoryCreateException(
+//                "soap.msg.factory.create.err",
+//                new Object[] { e });
+//        }
+//        return _messageFactory;
+//    }
+
+    private static MessageFactory getMessageFactory(String soapProtocol) {
         try {
             if (_messageFactory == null) {
-                _messageFactory = MessageFactory.newInstance();
+                _messageFactory = MessageFactory.newInstance(soapProtocol);
             }
         } catch(SOAPException e) {
             throw new SOAPMsgFactoryCreateException(

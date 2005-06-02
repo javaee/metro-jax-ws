@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.1 2005-05-23 22:50:25 bbissett Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.2 2005-06-02 17:53:14 vivekp Exp $
  */
 
 /*
@@ -29,6 +29,9 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.client.BindingImpl;
+import com.sun.pept.ept.MessageInfo;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -37,7 +40,7 @@ public class SOAPConnectionUtil {
     
     public static final SOAPMessageContext ctxt = new SOAPMessageContext();
     
-    public static SOAPMessage getSOAPMessage(JaxrpcConnection con) {
+    public static SOAPMessage getSOAPMessage(JaxrpcConnection con, MessageInfo mi) {
         if (con instanceof SOAPConnection) {
             return ((SOAPConnection)con).getSOAPMessage();
         }
@@ -53,8 +56,11 @@ public class SOAPConnectionUtil {
                     mh.addHeader(name, value);
                 }
             }
+            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
+            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
             SOAPMessage soapMessage =  (new SOAPMessageContext()).createMessage(
-                mh, bis);
+                mh, bis, bindingId);
             return soapMessage;
         } catch(Exception e) {
             throw new WebServiceException(e);

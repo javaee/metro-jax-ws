@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.2 2005-06-02 17:53:10 vivekp Exp $
  */
 
 /*
@@ -17,6 +17,7 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerRegistry;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.http.HTTPBinding;
 import java.net.URI;
 import java.util.*;
 
@@ -151,11 +152,15 @@ public class HandlerRegistryImpl implements HandlerRegistry {
 
         // create binding
         logicalThenProtocolHandlers.addAll(protocolHandlers);
-        if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING)) {
-            return new SOAPBindingImpl(logicalThenProtocolHandlers);
-        } else {
-            return new BindingImpl(logicalThenProtocolHandlers);
+        if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
+                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            return new SOAPBindingImpl(logicalThenProtocolHandlers, bindingId.toString());
+        }else if(bindingId.toString().equals(HTTPBinding.HTTP_BINDING)){
+            //TODO: HTTPBindingImpl()
         }
+
+        //we dont support any other binding so return null???
+        return null;
     }
 
     /*
@@ -202,7 +207,8 @@ public class HandlerRegistryImpl implements HandlerRegistry {
 
     // so far only supporting one binding
     private void checkBindingId(URI bindingId) {
-        if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+        if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
+                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             return;
         }
 

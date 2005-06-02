@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.2 2005-05-25 20:16:24 kohlert Exp $
+ * $Id: BindingImpl.java,v 1.3 2005-06-02 17:53:09 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -22,18 +22,26 @@ import java.util.List;
  * caller class actually creates and manages the handlers.
  */
 
-public class BindingImpl implements Binding {
+/**
+ * This class is made abstract as we dont see a situation when a BindingImpl has much meaning without binding id.
+ * IOw, for a specific binding there will be a class extending BindingImpl, for example SOAPBindingImpl.
+ */
+public abstract class BindingImpl implements Binding {
 
     HandlerChainCaller chainCaller;
+    private String bindingId;
+
 
     // called by DispatchImpl
-    public BindingImpl() {
+    public BindingImpl(String bindingId) {
         chainCaller = new HandlerChainCaller(new ArrayList());
+        this.bindingId = bindingId;
     }
 
     // created by HandlerRegistryImpl
-    BindingImpl(List<Handler> handlerChain) {
+    BindingImpl(List<Handler> handlerChain, String bindingId) {
         chainCaller = new HandlerChainCaller(handlerChain);
+        this.bindingId = bindingId;
     }
 
     /*
@@ -60,6 +68,10 @@ public class BindingImpl implements Binding {
     // used by runtime before invoking handlers
     public HandlerChainCaller getHandlerChainCaller() {
         return chainCaller;
+    }
+
+    public String getBindingId(){
+        return bindingId;
     }
 
 }

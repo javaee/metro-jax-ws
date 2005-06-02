@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.1 2005-05-23 23:07:16 bbissett Exp $
+ * $Id: WSDLParser.java,v 1.2 2005-06-02 17:53:16 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -14,6 +14,8 @@ import com.sun.xml.ws.wsdl.WSDLContext;
 import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.jws.WebService;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -301,18 +303,22 @@ public class WSDLParser {
 
         if (WSDLConstants.QNAME_BINDING.equals(reader.getName())) {
             reader.nextElementContent();
-
-            int state = reader.getState();
             do {
                 switch (reader.getState()) {
                     case START:
                         QName name = reader.getName();
+
                         //System.out.println("This is the current name " + name.toString());
                         if (WSDLConstants.NS_SOAP_BINDING.equals(reader.getName())) {
-                            wsdlcontext.setBindingID(ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_TRANSPORT));
+                            //wsdlcontext.setBindingID(ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_TRANSPORT));
+                            wsdlcontext.setBindingID(SOAPBinding.SOAP11HTTP_BINDING);
                             reader.next();
                             reader.nextElementContent();
-                        } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(name)) {
+                        } else if(WSDLConstants.NS_SOAP12_BINDING.equals(name)){
+                            wsdlcontext.setBindingID(SOAPBinding.SOAP12HTTP_BINDING);
+                            reader.next();
+                            reader.nextElementContent();
+                        }else if (WSDLConstants.QNAME_DOCUMENTATION.equals(name)) {
                             //parseWSDLBinding(reader, wsdlcontext);
                             reader.skipElement();
                             reader.nextElementContent();
@@ -406,7 +412,8 @@ public class WSDLParser {
                     case START:
                         QName name = reader.getName();
                         //System.out.println("This is the current name " + name.toString());
-                        if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName())) {
+                        if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName()) ||
+                                WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
                             String endpoint = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_LOCATION);
                             wsdlcontext.addPort(new QName("", portName), endpoint);
                             locationDone = true;
@@ -442,6 +449,20 @@ public class WSDLParser {
 
     }
 
+    /**
+     * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
+     * @param sei
+     * @return
+     */
+    public static URL getWSDLLocation(Class sei) throws MalformedURLException {
+        WebService ws = (WebService) sei.getAnnotation(WebService.class);
+        if(ws == null)
+            return null;
+        String wsdlLocation = ws.wsdlLocation();
+        if(wsdlLocation == null)
+            return null;
+        return new URL(wsdlLocation);
+    }
 
     /*{
     if (location != null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.5 2005-06-02 14:32:47 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.6 2005-06-02 17:53:15 vivekp Exp $
  */
 
 /*
@@ -27,7 +27,10 @@ import javax.xml.namespace.QName;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.client.SOAPBindingImpl;
+
 import javax.xml.ws.handler.Handler;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -83,6 +86,17 @@ public class JAXRPCRuntimeInfoParser {
 
                 //get enable-mtom attribute value
                 String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);                
+                rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
+
+                //get bindingId
+                String bindingId = getAttribute(attrs, ATTR_BINDING);
+                //if bindingId is null default to SOAP 1.1
+                if(bindingId == null){
+                    rei.setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
+                }else if(bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
+                        bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)){
+                    rei.setBinding(new SOAPBindingImpl(bindingId));
+                }
                 rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
 
                 rei.setUrlPattern(
@@ -385,6 +399,7 @@ public class JAXRPCRuntimeInfoParser {
     public static final String ATTR_PORT = "port";
     public static final String ATTR_URL_PATTERN = "urlpattern";
     public static final String ATTR_ENABLE_MTOM = "enable-mtom";
+    public static final String ATTR_BINDING = "binding";
 
     public static final String ATTRVALUE_VERSION_1_0 = "2.0";
     private static final Logger logger =

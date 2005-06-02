@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.2 2005-05-25 18:22:07 kohlert Exp $
+ * $Id: EndpointIFBase.java,v 1.3 2005-06-02 17:53:10 vivekp Exp $
  */
 
 /*
@@ -114,17 +114,26 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
         _setTransportFactory((ClientTransportFactory) f);
     }
 
-    // default for now is soap binding
-    public URI _getBindingId() {
-        if (_bindingId == null) {
-            try {
-                // this is a known string and should not cause error
-                _bindingId = new URI(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
-            } catch (java.net.URISyntaxException e) {
-                // should never happen, but just in case
-                throw new RuntimeException(e);
-            }
-        }
+    /**
+     * returns binding id from BindingImpl
+     * @return
+     */
+    public URI _getBindingId(){
         return _bindingId;
     }
+
+//    // default for now is soap binding
+//    public URI _getBindingId() {
+//
+//        if (_bindingId == null) {
+//            try {
+//                // this is a known string and should not cause error
+//                _bindingId = new URI(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
+//            } catch (java.net.URISyntaxException e) {
+//                // should never happen, but just in case
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        return _bindingId;
+//    }
 }

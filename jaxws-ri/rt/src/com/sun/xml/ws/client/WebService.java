@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.7 2005-06-01 22:53:02 kohlert Exp $
+ * $Id: WebService.java,v 1.8 2005-06-02 17:53:10 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -107,23 +107,31 @@ public class WebService
     }
 
     private void preProcess(QName portName, Class portInterface) throws WebServiceException, MalformedURLException {
+        //if the wsdlLocation not already there try to get it from SEI @WebService annotation
+        if (wsdlLocation == null) {
+            wsdlLocation = WSDLParser.getWSDLLocation(portInterface);
+            if(wsdlLocation == null)
+                noWsdlException();
+        }
+
+        wsdlContext = parseWSDL(wsdlLocation);
 
         if (rtContext == null) {
             RuntimeModeler processor =
-                new RuntimeModeler(portName, portInterface);
+                new RuntimeModeler(portInterface, wsdlContext.getBindingID().toString());
 
             RuntimeModel model = processor.buildRuntimeModel();
-            if (wsdlLocation == null)
-                wsdlLocation = new URL(model.getWSDLLocation());
+//            if (wsdlLocation == null)
+//                wsdlLocation = new URL(model.getWSDLLocation());
             rtContext = new RuntimeContext(model);
         }
 
-        //todo: if changed reprocess wsdl- track this
-        if (wsdlLocation != null) {
-            wsdlContext = parseWSDL(wsdlLocation);
-        } else {
-            noWsdlException();
-        }
+//        //todo: if changed reprocess wsdl- track this
+//        if (wsdlLocation != null) {
+//            wsdlContext = parseWSDL(wsdlLocation);
+//        } else {
+//            noWsdlException();
+//        }
 
     }
 

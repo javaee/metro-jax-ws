@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.5 2005-05-28 01:10:12 spericas Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.6 2005-06-02 17:53:14 vivekp Exp $
  */
 
 /*
@@ -28,6 +28,7 @@ import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.XMLConstants;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
 import javax.xml.soap.MimeHeaders;
@@ -180,4 +181,11 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         serializeReader(new DOMStreamReader(detail), writer);
     }
 
+    /**
+     * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
+     * @return
+     */
+    protected String getBindingId(){
+        return SOAPBinding.SOAP11HTTP_BINDING;
+    }
 }
