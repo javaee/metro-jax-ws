@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.2 2005-05-25 19:05:52 spericas Exp $
+ * $Id: XMLStreamReaderUtil.java,v 1.3 2005-06-02 20:27:53 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -143,11 +143,12 @@ public class XMLStreamReaderUtil {
     }
         
     public static void verifyReaderState(XMLStreamReader reader, int expectedState) {
-        if (reader.getEventType() != expectedState) {
+        int state = reader.getEventType();
+        if (state != expectedState) {
             throw new XMLStreamReaderException(
                 "xmlreader.unexpectedState",
                 new Object[] {
-                    getStateName(expectedState) });
+                    getStateName(expectedState), getStateName(state) });
         }
     }
 
