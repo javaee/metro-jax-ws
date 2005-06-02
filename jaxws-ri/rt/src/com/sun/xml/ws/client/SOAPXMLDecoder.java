@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.5 2005-05-28 01:10:09 spericas Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.6 2005-06-02 19:50:23 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -265,7 +265,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     faultactor = reader.getText();
                     XMLStreamReaderUtil.next(reader);
                 }
-                XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
+                XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
                 XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_ACTOR);
                 XMLStreamReaderUtil.nextElementContent(reader);
                 elementName = reader.getName();
