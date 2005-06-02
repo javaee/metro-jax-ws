@@ -1,5 +1,5 @@
 /*
- * $Id: DOMStreamReader.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
+ * $Id: DOMStreamReader.java,v 1.4 2005-06-02 21:16:48 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import org.w3c.dom.*;
 import static org.w3c.dom.Node.*;
 import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import static javax.xml.stream.XMLStreamConstants.*;
@@ -58,6 +59,27 @@ public class DOMStreamReader implements XMLStreamReader {
      * XMLStreamConstants class.
      */
     int _state;
+    
+    /**
+     * Dummy Location instance returned in <code>getLocation</code>.
+     */
+    private static Location dummyLocation = new Location() {
+        public int getCharacterOffset() {
+            return -1;
+        }
+        public int getColumnNumber() {
+            return -1;
+        }
+        public int getLineNumber() {
+            return -1;
+        }
+        public String getPublicId() {
+            return null;
+        }
+        public String getSystemId() {
+            return null;
+        }        
+    };
     
     public DOMStreamReader() {
     }
@@ -217,7 +239,7 @@ public class DOMStreamReader implements XMLStreamReader {
     }
     
     public javax.xml.stream.Location getLocation() {
-        throw new RuntimeException("DOMStreamReader: getLocation() not implemented");
+        return dummyLocation;
     }
     
     /**
