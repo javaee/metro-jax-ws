@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.8 2005-06-02 01:18:49 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.9 2005-06-02 17:56:19 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,6 +16,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
 import com.sun.xml.txw2.TXW;
+import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.StreamSerializer;
 import com.sun.xml.ws.model.CheckedException;
 import com.sun.xml.ws.model.JavaMethod;
@@ -23,6 +24,7 @@ import com.sun.xml.ws.model.Parameter;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
+import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.model.soap.Use;
 import com.sun.xml.ws.wsdl.writer.document.Binding;
@@ -40,11 +42,14 @@ import com.sun.xml.ws.wsdl.writer.document.Types;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.Body;
 import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
+import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
+import java.util.ArrayList;
 import javax.xml.namespace.QName;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 import javax.xml.ws.WebServiceException;
 
 
@@ -86,7 +91,7 @@ public class WSDLGenerator {
         this.wsdlResolver = wsdlResolver;
     }
     
-    public void doGeneration() throws Exception {
+    public void doGeneration() {
         OutputStream outputStream = null;
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         if (result instanceof StreamResult) {
@@ -98,7 +103,7 @@ public class WSDLGenerator {
         generateDocument(outputStream);
     }
     
-    private void generateDocument(OutputStream stream) throws Exception {
+    private void generateDocument(OutputStream stream) {
         definitions = TXW.create(Definitions.class, new StreamSerializer(stream));
         definitions._namespace(WSDL_NAMESPACE, WSDL_PREFIX);
         definitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
@@ -120,15 +125,20 @@ public class WSDLGenerator {
     
     
     
-    protected void generateTypes() throws Exception {
+    protected void generateTypes() {
         types = definitions.types();
         if (model.getJAXBContext() != null) {
-            model.getJAXBContext().generateSchema(resolver);
+            try {
+                model.getJAXBContext().generateSchema(resolver);
+            } catch (IOException e) {
+                // TODO locallize and wrap this
+                e.printStackTrace();
+                throw new WebServiceException(e.getMessage());
+            }
         }
     }
     
-    protected void generateMessages()
-        throws Exception {
+    protected void generateMessages() {
         for (JavaMethod method : model.getJavaMethods()) {
             if (method.getBinding() instanceof SOAPBinding)
                 generateSOAPMessages(method, (SOAPBinding)method.getBinding());
@@ -183,7 +193,7 @@ public class WSDLGenerator {
         }
     }
     
-    protected void generatePortType() throws Exception {
+    protected void generatePortType() {
         
         PortType portType = definitions.portType().name(model.getPortQName().getLocalPart());
         for (JavaMethod method : model.getJavaMethods()) {
@@ -209,7 +219,7 @@ public class WSDLGenerator {
         }
     }    
     
-    protected void generateBinding() throws Exception {
+    protected void generateBinding() {
         Binding binding = definitions.binding().name(model.getPortQName().getLocalPart()+BINDING);
         binding.type(model.getPortQName());
         boolean first = true;
@@ -232,25 +242,60 @@ public class WSDLGenerator {
     
     protected void generateBindingOperation(JavaMethod method, Binding binding) {
         BindingOperationType operation = binding.operation().name(method.getOperationName());
+        String targetNamespace = model.getTargetNamespace();
+        QName requestMessage = new QName(targetNamespace, method.getOperationName());
+        QName responseMessage = new QName(targetNamespace, method.getOperationName()+RESPONSE);
         if (method.getBinding() instanceof SOAPBinding) {
+            List<Parameter> bodyParams = new ArrayList<Parameter>();
+            List<Parameter> headerParams = new ArrayList<Parameter>();
+            splitParameters(bodyParams, headerParams, method.getRequestParameters());
             SOAPBinding soapBinding = (SOAPBinding)method.getBinding();
             operation.soapOperation().soapAction(soapBinding.getSOAPAction());
             // input
-            BodyType body = operation.input()._element(Body.class);
+            TypedXmlWriter input = operation.input();
+            BodyType body = input._element(Body.class);
             if (soapBinding.getUse().equals(Use.LITERAL)) {
                 body.use(LITERAL);
                 if (soapBinding.getStyle().equals(Style.RPC)) {
                     
+                } else if (headerParams.size() > 0) {
+                    Parameter param = bodyParams.iterator().next();
+                    if (param.isWrapperStyle()) {
+                        body.parts(PARAMETERS);
+                    } else {
+                        body.parts(param.getName().getLocalPart());
+                    }
+                    generateSOAPHeaders(input, headerParams, requestMessage);
+/*                    for (Parameter headerParam : headerParams) {
+                        Header header = input._element(Header.class);
+                        header.message(requestMessage);
+                        header.parts(headerParam.getName().getLocalPart());
+                        header.use(LITERAL);
+                    }*/
                 }                
             } else {
-                // TODO throw an error, we don't do encoded
+                // TODO localize this
+                throw new WebServiceException("encoded use is not supported");
             }
             // output
-            body = operation.output()._element(Body.class);
+            bodyParams.clear();
+            headerParams.clear();
+            splitParameters(bodyParams, headerParams, method.getResponseParameters());
+            TypedXmlWriter output = operation.output();
+            body = output._element(Body.class);
             body.use(LITERAL);
             if (soapBinding.getStyle().equals(Style.RPC)) {
-                   
+
+            } else if (headerParams.size() > 0) {
+                Parameter param = bodyParams.iterator().next();
+                if (param.isWrapperStyle()) {
+                    body.parts(RESULT);
+                } else {
+                    body.parts(param.getName().getLocalPart());
+                }
+                generateSOAPHeaders(output, headerParams, responseMessage);
             }                
+            
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
                 Fault fault = operation.fault().name(tagName.getLocalPart());
@@ -260,7 +305,28 @@ public class WSDLGenerator {
         }
     }
     
-    protected void generateService() throws Exception {
+    protected void splitParameters(List<Parameter> bodyParams, List<Parameter>headerParams, List<Parameter>params) {
+        for (Parameter parameter : params) {
+            SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+            if (paramBinding.isBody()) {
+                bodyParams.add(parameter);
+            } else {
+                headerParams.add(parameter);
+            }
+        }        
+    }
+
+    protected void generateSOAPHeaders(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
+        
+        for (Parameter headerParam : parameters) {
+            Header header = writer._element(Header.class);
+            header.message(message);
+            header.parts(headerParam.getName().getLocalPart());
+            header.use(LITERAL);
+        }        
+    }
+    
+    protected void generateService() {
         Service service = definitions.service().name(model.getServiceQName().getLocalPart());
         QName portQName = model.getPortQName();
 //        Port port = service.port().name(portQName.getLocalPart()+PORT);
