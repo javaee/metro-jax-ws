@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.11 2005-06-02 19:27:23 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.12 2005-06-02 21:05:51 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.ws.WebServiceException;
 
@@ -219,18 +220,30 @@ public class WSDLGenerator {
         }
     }    
     
-
+    protected boolean isWrapperStyle(JavaMethod method) {
+        if (method.getRequestParameters().size() > 0) {
+            Parameter param = method.getRequestParameters().iterator().next();
+            return param.isWrapperStyle();
+        }        
+        return false;
+    }
+            
     protected void generateParameterOrder(Operation operation, JavaMethod method) {
+        if (method.getMEP() == MessageStruct.ONE_WAY_MEP)
+            return;
         String partName = "";
         String paramOrder = "";
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
+//        for (Parameter param : sortedParams) 
+//            System.out.printf("%s: %d\n", param.getName().getLocalPart(), param.getIndex());
+        boolean isWrapperStyle = isWrapperStyle(method);
         int i = 0;
 //        log("operation: "+operation.getName());
         for (Parameter parameter : sortedParams) {
             if (parameter.getIndex() < 0)
                 continue;
-            if (parameter.isWrapperStyle() && isBodyParameter(parameter)) {
+            if (isWrapperStyle && isBodyParameter(parameter)) {
                 if (method.getRequestParameters().contains(parameter))
                     partName = PARAMETERS;
                 else
@@ -253,21 +266,25 @@ public class WSDLGenerator {
     }
     
     protected List<Parameter> sortMethodParameters(JavaMethod method) {
+//        System.out.println("Sorting params for method: "+method.getOperationName());
+        Set<Parameter> paramSet = new HashSet<Parameter>();
+        paramSet.addAll(method.getRequestParameters());
+        paramSet.addAll(method.getResponseParameters());
         List<Parameter> sortedParams = new ArrayList<Parameter>();
-        int pos = -1;
-        for (Parameter inParam : method.getRequestParameters()) {
-            for (Parameter outParam : method.getRequestParameters()) {
-                if (outParam.getIndex() <= pos)
-                    continue;
-                if (inParam.getIndex() < outParam.getIndex()) {
-                    pos = inParam.getIndex();
-                    sortedParams.add(inParam);
+        Iterator<Parameter>params = paramSet.iterator();
+        if (paramSet.size() == 0)
+            return sortedParams;
+        Parameter param = params.next();
+        sortedParams.add(param);
+        int pos;
+        for (int i=1; i<paramSet.size();i++) {
+            param = params.next();
+            for (pos=0; pos<i; pos++) {
+                if (param.getIndex() < sortedParams.get(pos).getIndex()) {
                     break;
-                } else {
-                    pos = outParam.getIndex();
-                    sortedParams.add(outParam);
                 }
-            }
+            }            
+            sortedParams.add(pos, param);
         }
         return sortedParams;
     }
