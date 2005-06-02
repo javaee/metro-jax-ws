@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.10 2005-06-02 01:19:49 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.11 2005-06-02 02:48:47 jitu Exp $
  */
 
 /*
@@ -12,8 +12,9 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
-import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
+import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,8 +107,26 @@ public class RuntimeEndpointInfo
             }
         } else {
             // Create runtime model for non Provider endpoints
+            RuntimeModeler rap = new RuntimeModeler(null,
+                getImplementor().getClass());
+            runtimeModel = rap.buildRuntimeModel();
+            
             if (getWSDLFileName() == null) {
-                // TODO throw exception
+                // Generate WSDL and schema documents using runtime model
+                WSDLGenResolver wsdlResolver = new WSDLGenResolver();
+                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver);
+                try {
+                    wsdlGen.doGeneration();
+                } catch(Exception e) {
+                    // TODO
+                    e.printStackTrace();
+                }
+                setMetadata(wsdlResolver.getDocs());
+                setWSDLFileName(wsdlResolver.getWSDLFile());
+System.out.println("Service QName="+runtimeModel.getServiceQName());                
+                setServiceName(runtimeModel.getServiceQName());
+System.out.println("Port QName="+runtimeModel.getPortQName());                
+                setPortName(runtimeModel.getPortQName());
             } else {
                 if (serviceName == null) {
                     // If WSDL has only one service, then it is okay
@@ -124,33 +143,6 @@ public class RuntimeEndpointInfo
             
             // check model for handlers only if not already specified
             boolean hasHandlers = (getHandlerChain() != null);
-                
-            RuntimeModeler rap = new RuntimeModeler(null,
-                getImplementor().getClass());
-            runtimeModel = rap.buildRuntimeModel();
-            // TODO remove this; this is for developement only
-/*            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel,
-                    new com.sun.xml.ws.wsdl.writer.WSDLOutputResolver() {
-                        public javax.xml.transform.Result getSchemaOutput(String namespaceUri, String suggestedFileName) {
-                            try {
-                                java.io.File file = new java.io.File(suggestedFileName);
-                                javax.xml.transform.stream.StreamResult r = new javax.xml.transform.stream.StreamResult(
-                                        new java.io.FileOutputStream(file));
-                       
-                                r.setSystemId(suggestedFileName);
-                                return r;
-                            } catch (Exception e){e.printStackTrace();}
-                            return null;
-                        }
-                        public javax.xml.transform.Result getWSDLOutput(String suggestedFileName) {
-                            return getSchemaOutput(null, suggestedFileName);
-                        }
-                    }
-            );
-            try {
-                wsdlGen.doGeneration();
-            } catch (Exception e) {e.printStackTrace();}
-*/
             if (!hasHandlers) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
