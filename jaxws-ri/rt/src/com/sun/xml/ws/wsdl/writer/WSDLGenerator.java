@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.6 2005-06-02 00:13:06 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.7 2005-06-02 00:31:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -195,7 +195,7 @@ public class WSDLGenerator {
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
                 QName messageName = new QName(model.getTargetNamespace(), tagName.getLocalPart());
-                FaultType paramType = operation.fault().message(messageName);
+                FaultType paramType = operation.fault().name(tagName.getLocalPart()).message(messageName);
             }
         }
     }    
