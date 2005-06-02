@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.9 2005-06-02 01:18:49 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.10 2005-06-02 01:19:49 kohlert Exp $
  */
 
 /*
@@ -129,7 +129,7 @@ public class RuntimeEndpointInfo
                 getImplementor().getClass());
             runtimeModel = rap.buildRuntimeModel();
             // TODO remove this; this is for developement only
-            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel,
+/*            com.sun.xml.ws.wsdl.writer.WSDLGenerator wsdlGen = new com.sun.xml.ws.wsdl.writer.WSDLGenerator(runtimeModel,
                     new com.sun.xml.ws.wsdl.writer.WSDLOutputResolver() {
                         public javax.xml.transform.Result getSchemaOutput(String namespaceUri, String suggestedFileName) {
                             try {
@@ -150,7 +150,7 @@ public class RuntimeEndpointInfo
             try {
                 wsdlGen.doGeneration();
             } catch (Exception e) {e.printStackTrace();}
-            
+*/
             if (!hasHandlers) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
