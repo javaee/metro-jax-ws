@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.9 2005-06-02 17:56:19 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.10 2005-06-02 18:05:41 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -321,7 +321,7 @@ public class WSDLGenerator {
         for (Parameter headerParam : parameters) {
             Header header = writer._element(Header.class);
             header.message(message);
-            header.parts(headerParam.getName().getLocalPart());
+            header.part(headerParam.getName().getLocalPart());
             header.use(LITERAL);
         }        
     }

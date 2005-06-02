@@ -20,4 +20,7 @@ public interface Header
     @XmlElement
     public HeaderFault headerFault();
 
+    @XmlAttribute
+    public com.sun.xml.ws.wsdl.writer.document.soap.BodyType part(String value);
+    
 }
