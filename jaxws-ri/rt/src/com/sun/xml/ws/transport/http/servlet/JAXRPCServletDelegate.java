@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.3 2005-05-26 18:21:17 jitu Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.4 2005-06-02 18:45:22 jitu Exp $
  *
  */
 
@@ -269,7 +269,7 @@ public class JAXRPCServletDelegate implements ServletDelegate {
                             out.println(
                                 localizer.localize(
                                     messageFactory.getMessage(
-                                        "servlet2.html.information.table",
+                                        "servlet.html.information.table",
                                         new Object[] {
                                             endpointAddress,
                                             info.getPortName(),
