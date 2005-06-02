@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationInfo.java,v 1.1 2005-06-01 19:06:28 bbissett Exp $
+ * $Id: HandlerAnnotationInfo.java,v 1.2 2005-06-02 14:32:48 bbissett Exp $
  */
 
 /*
@@ -16,6 +16,8 @@ import javax.xml.ws.handler.Handler;
 /**
  * Used to hold a list of handlers and a set of roles from an
  * annotated endpoint.
+ *
+ * @author JAX-WS Development Team
  */
 public class HandlerAnnotationInfo {
     

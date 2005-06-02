@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.11 2005-06-02 02:48:47 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.12 2005-06-02 14:32:47 bbissett Exp $
  */
 
 /*
@@ -141,9 +141,7 @@ System.out.println("Port QName="+runtimeModel.getPortQName());
                 }
             }
             
-            // check model for handlers only if not already specified
-            boolean hasHandlers = (getHandlerChain() != null);
-            if (!hasHandlers) {
+            if (getHandlerChain() == null) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
                         getImplementor().getClass());

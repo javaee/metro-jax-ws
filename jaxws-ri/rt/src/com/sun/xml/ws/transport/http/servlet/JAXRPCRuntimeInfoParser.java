@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.4 2005-05-27 23:20:37 jitu Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.5 2005-06-02 14:32:47 bbissett Exp $
  */
 
 /*
@@ -153,6 +153,8 @@ public class JAXRPCRuntimeInfoParser {
     /*
      * Parses the handler and role information and sets it
      * on the RuntimeEndpointInfo.
+     *
+     * todo: use code in HandlerAnnotationProcessor for this
      */
     protected void setHandlersAndRoles(RuntimeEndpointInfo rei,
         XMLStreamReader reader) {
@@ -253,7 +255,6 @@ public class JAXRPCRuntimeInfoParser {
 
             // move past </handler>
             XMLStreamReaderUtil.nextContent(reader);
-            int dummy = 0;
         }
 
         rei.setHandlerChain(handlerChain);
