@@ -36,4 +36,6 @@ public interface Operation
     @XmlAttribute
     public com.sun.xml.ws.wsdl.writer.document.Operation name(String value);
 
+    @XmlAttribute
+    public com.sun.xml.ws.wsdl.writer.document.Operation parameterOrder(String value);
 }

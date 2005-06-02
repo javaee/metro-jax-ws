@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.10 2005-06-02 18:05:41 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.11 2005-06-02 19:27:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -198,7 +198,7 @@ public class WSDLGenerator {
         PortType portType = definitions.portType().name(model.getPortQName().getLocalPart());
         for (JavaMethod method : model.getJavaMethods()) {
             Operation operation = portType.operation().name(method.getOperationName());
-
+            generateParameterOrder(operation, method);
             switch (method.getMEP()) {
                 case MessageStruct.REQUEST_RESPONSE_MEP: 
                     // input message
@@ -218,6 +218,75 @@ public class WSDLGenerator {
             }
         }
     }    
+    
+
+    protected void generateParameterOrder(Operation operation, JavaMethod method) {
+        String partName = "";
+        String paramOrder = "";
+        Set<String> partNames = new HashSet<String>();
+        List<Parameter> sortedParams = sortMethodParameters(method);
+        int i = 0;
+//        log("operation: "+operation.getName());
+        for (Parameter parameter : sortedParams) {
+            if (parameter.getIndex() < 0)
+                continue;
+            if (parameter.isWrapperStyle() && isBodyParameter(parameter)) {
+                if (method.getRequestParameters().contains(parameter))
+                    partName = PARAMETERS;
+                else
+                    partName = RESPONSE;
+            } else {
+               partName = parameter.getName().getLocalPart();
+            }
+//            log("partName: "+partName);
+            if (!partNames.contains(partName)) {
+                if (i++ > 0)
+                    paramOrder += " ";
+                paramOrder += partName;
+//                log("paramOrder: "+paramOrder);
+                partNames.add(partName);
+            }
+        }
+        if (i>1) {
+            operation.parameterOrder(paramOrder);
+        }
+    }
+    
+    protected List<Parameter> sortMethodParameters(JavaMethod method) {
+        List<Parameter> sortedParams = new ArrayList<Parameter>();
+        int pos = -1;
+        for (Parameter inParam : method.getRequestParameters()) {
+            for (Parameter outParam : method.getRequestParameters()) {
+                if (outParam.getIndex() <= pos)
+                    continue;
+                if (inParam.getIndex() < outParam.getIndex()) {
+                    pos = inParam.getIndex();
+                    sortedParams.add(inParam);
+                    break;
+                } else {
+                    pos = outParam.getIndex();
+                    sortedParams.add(outParam);
+                }
+            }
+        }
+        return sortedParams;
+    }
+    
+    protected boolean isBodyParameter(Parameter parameter) {
+        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        return paramBinding.isBody();
+    }
+
+    protected boolean isHeaderParameter(Parameter parameter) {
+        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        return paramBinding.isHeader();
+    }
+    
+    protected boolean isAttachmentParameter(Parameter parameter) {
+        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        return paramBinding.isAttachment();
+    }
+    
     
     protected void generateBinding() {
         Binding binding = definitions.binding().name(model.getPortQName().getLocalPart()+BINDING);
@@ -307,14 +376,15 @@ public class WSDLGenerator {
     
     protected void splitParameters(List<Parameter> bodyParams, List<Parameter>headerParams, List<Parameter>params) {
         for (Parameter parameter : params) {
-            SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
-            if (paramBinding.isBody()) {
+            if (isBodyParameter(parameter)) {
                 bodyParams.add(parameter);
             } else {
                 headerParams.add(parameter);
             }
         }        
     }
+    
+   
 
     protected void generateSOAPHeaders(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
         
