@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.2 2005-06-02 14:32:49 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.3 2005-06-02 18:41:20 bbissett Exp $
  */
 
 /*
@@ -101,14 +101,13 @@ public class HandlerAnnotationProcessor {
         List<Handler> handlerChain = new ArrayList<Handler>();
         Set<String> roles = new HashSet<String>();
         
-        // skip <handler-config>
-        if (reader.getLocalName().equals("handler-config")) {
+        // skip <handler-config> and <handler-chain>
+        String elementName = reader.getLocalName();
+        while (elementName.equals("handler-config") ||
+            elementName.equals("handler-chain")) {
+            
             XMLStreamReaderUtil.nextElementContent(reader);
-        }
-        
-        // skip <handler-chain>
-        if (reader.getLocalName().equals("handler-chain")) {
-            XMLStreamReaderUtil.nextElementContent(reader);
+            elementName = reader.getLocalName();
         }
 
         // skip <handler-chain-name>
@@ -118,14 +117,20 @@ public class HandlerAnnotationProcessor {
 
         // process all <handler> elements
         while (reader.getLocalName().equals("handler")) {
+            XMLStreamReaderUtil.nextContent(reader);
             Handler handler = null;
             Map<String, String> initParams = new HashMap<String, String>();
-
-            XMLStreamReaderUtil.nextContent(reader);
             
-            // skip handler-name
-            if (reader.getLocalName().equals("handler-name")) {
+            // skip some elements that we don't use
+            elementName = reader.getLocalName();
+            while (elementName.equals("description") ||
+                elementName.equals("display-name") ||
+                elementName.equals("small-icon") ||
+                elementName.equals("large-icon") ||
+                elementName.equals("handler-name")) {
+                
                 skipTextElement(reader);
+                elementName = reader.getLocalName();
             }
 
             // handler class
@@ -141,8 +146,6 @@ public class HandlerAnnotationProcessor {
             XMLStreamReaderUtil.nextElementContent(reader);
 
             while (!reader.getLocalName().equals("handler")) {
-                
-                // init params
                 if (reader.getLocalName().equals("init-param")) {
                     XMLStreamReaderUtil.nextContent(reader);
                     ensureProperName(reader, "param-name");
@@ -154,18 +157,20 @@ public class HandlerAnnotationProcessor {
                     initParams.put(paramName, paramValue);
 
                     XMLStreamReaderUtil.nextContent(reader); // past param-value
+                    
+                    // skip <description> if present
+                    if (reader.getLocalName().equals("description")) {
+                        skipTextElement(reader);
+                    }
                     XMLStreamReaderUtil.nextContent(reader); // past init-param
-                }
-
-                // headers (ignored)
-                if (reader.getLocalName().equals("soap-header")) {
+                } else if (reader.getLocalName().equals("soap-header")) {
                     skipTextElement(reader);
-                }
-                
-                // roles (not stored per handler)
-                if (reader.getName().equals("soap-role")) {
+                } else if (reader.getLocalName().equals("soap-role")) {
                     roles.add(XMLStreamReaderUtil.getElementText(reader));
                     XMLStreamReaderUtil.nextContent(reader);
+                } else {
+                    failWithLocalName("util.parser.wrong.element", reader,
+                        "</handler>");
                 }
             }
             
