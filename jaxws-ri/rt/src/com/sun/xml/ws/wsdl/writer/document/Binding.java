@@ -23,7 +23,7 @@ public interface Binding
     @XmlElement
     public BindingOperationType operation();
 
-    @XmlElement(value="soapBinding",ns="http://schemas.xmlsoap.org/wsdl/soap/")
+    @XmlElement(value="binding",ns="http://schemas.xmlsoap.org/wsdl/soap/")
     public SOAPBinding soapBinding();
 
 }

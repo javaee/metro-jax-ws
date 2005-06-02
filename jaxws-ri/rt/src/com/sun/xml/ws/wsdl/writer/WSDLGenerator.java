@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.7 2005-06-02 00:31:12 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.8 2005-06-02 01:18:49 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,9 +8,8 @@ package com.sun.xml.ws.wsdl.writer;
 
 
 import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.SchemaOutputResolver;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.xml.transform.Result;
@@ -22,6 +21,7 @@ import com.sun.xml.ws.model.CheckedException;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.model.Parameter;
 import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.model.soap.Use;
@@ -147,6 +147,15 @@ public class WSDLGenerator {
                 } else {
                     part = message.part().name(param.getName().getLocalPart());
                     part.element(param.getName());
+                }
+            } else {
+                if (param.isWrapperStyle()) {
+                    for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
+                        part = message.part().name(childParam.getName().getLocalPart());
+                        Bridge bridge = model.getBridge(childParam.getTypeReference());
+//                        bridge.
+                        part.type(childParam.getTypeReference().tagName);
+                    }
                 }
             }
         }                
