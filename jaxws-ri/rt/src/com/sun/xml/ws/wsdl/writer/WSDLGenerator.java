@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.5 2005-06-01 22:47:14 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.6 2005-06-02 00:13:06 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -75,7 +75,7 @@ public class WSDLGenerator {
     public static final String DOCUMENT         = "document";
     public static final String RPC              = "rpc";
     public static final String LITERAL          = "literal";
-    public static final String PORT             = "Port";
+//    public static final String PORT             = "Port";
     public static final String REPLACE_WITH_ACTUAL_URL = "REPLACE_WITH_ACTUAL_URL";
     private Set<QName> processedExceptions = new HashSet<QName>();
 
@@ -87,8 +87,6 @@ public class WSDLGenerator {
     }
     
     public void doGeneration() throws Exception {
-//        File file = new File("test.wsdl");
-//        FileOutputStream fileOutputStream = new FileOutputStream(file);
         OutputStream outputStream = null;
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         if (result instanceof StreamResult) {
@@ -117,20 +115,16 @@ public class WSDLGenerator {
         generatePortType();
         generateBinding();
         generateService();
+        definitions.commit();
     }    
     
     
     
-    protected void generateTypes()
-        throws Exception {
+    protected void generateTypes() throws Exception {
         types = definitions.types();
         if (model.getJAXBContext() != null) {
             model.getJAXBContext().generateSchema(resolver);
         }
-//        JAXBModel jaxbModel = model.getJAXBModel();
-//        if (jaxbModel != null) {
-//            jaxbModel.getJ2SJAXBModel().generateSchema(resolver, new JAXBErrorListener());
-//        }
     }
     
     protected void generateMessages()
@@ -260,7 +254,8 @@ public class WSDLGenerator {
     protected void generateService() throws Exception {
         Service service = definitions.service().name(model.getServiceQName().getLocalPart());
         QName portQName = model.getPortQName();
-        Port port = service.port().name(portQName.getLocalPart()+PORT);
+//        Port port = service.port().name(portQName.getLocalPart()+PORT);
+        Port port = service.port().name(portQName.getLocalPart());
         port.binding(new QName(portQName.getNamespaceURI(), portQName.getLocalPart()+BINDING));
         if (model.getJavaMethods().iterator().next().getBinding() instanceof SOAPBinding) {
             SOAPAddress address = port._element(SOAPAddress.class);
