@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.8 2005-06-02 17:53:10 vivekp Exp $
+ * $Id: WebService.java,v 1.9 2005-06-03 17:14:27 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -10,6 +10,8 @@ import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import com.sun.xml.ws.wsdl.parser.WSDLParser;
 
@@ -124,6 +126,19 @@ public class WebService
 //            if (wsdlLocation == null)
 //                wsdlLocation = new URL(model.getWSDLLocation());
             rtContext = new RuntimeContext(model);
+            
+            // get handler information
+            HandlerAnnotationInfo chainInfo =
+                HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
+                if (chainInfo != null) {
+                    HandlerRegistryImpl registry = getHandlerRegistry();
+                    registry.setHandlerChain(chainInfo.getHandlers());
+                    
+                    // todo: need a place to store role information to
+                    // place in binding
+                    //chainInfo.getRoles();
+                }
+            
         }
 
 //        //todo: if changed reprocess wsdl- track this
