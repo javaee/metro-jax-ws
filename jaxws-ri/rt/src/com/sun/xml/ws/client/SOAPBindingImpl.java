@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.3 2005-06-02 17:53:10 vivekp Exp $
+ * $Id: SOAPBindingImpl.java,v 1.4 2005-06-03 20:16:26 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -24,31 +24,37 @@ import java.util.Set;
  */
 public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
-    private static URI ROLE_NEXT_1_1;
-    private static URI ROLE_NEXT_1_2;
     private static URI ROLE_NONE;
-    private static URI ROLE_ULTIMATE_RECEIVER;
 
+    private Set<URI> requiredRoles;
     private Set<URI> roles;
     private boolean enableMtom = false;
 
     // called by DispatchImpl
     public SOAPBindingImpl(String bindingId) {
         super(bindingId);
-        setup();
+        setup(bindingId);
     }
 
     // created by HandlerRegistryImpl
     SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
-        setup();
+        setup(bindingId);
     }
 
-    private void setup() {
-        ROLE_NEXT_1_1 = makeURI("http://schemas.xmlsoap.org/soap/actor/next");
-        ROLE_NEXT_1_2 = makeURI("http://www.w3.org/2003/05/soap-envelope/role/next");
+    // if the binding id is unknown, no roles are added
+    private void setup(String bindingId) {
+        requiredRoles = new HashSet<URI>();
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+            requiredRoles.add(makeURI(
+                "http://schemas.xmlsoap.org/soap/actor/next"));
+        } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            requiredRoles.add(makeURI(
+                "http://www.w3.org/2003/05/soap-envelope/role/next"));
+            requiredRoles.add(makeURI(
+                "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver"));
+        }
         ROLE_NONE = makeURI("http://www.w3.org/2003/05/soap-envelope/role/none");
-        ROLE_ULTIMATE_RECEIVER = makeURI("http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver");
         roles = new HashSet<URI>();
         addRequiredRoles();
         setRolesOnHandlerChain();
@@ -64,9 +70,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     }
 
     private void addRequiredRoles() {
-        roles.add(ROLE_NEXT_1_1);
-        roles.add(ROLE_NEXT_1_2);
-        roles.add(ROLE_ULTIMATE_RECEIVER);
+        roles.addAll(requiredRoles);
     }
 
     public java.util.Set<URI> getRoles() {
