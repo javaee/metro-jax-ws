@@ -1,0 +1,4 @@
+Use "ant" to build. If using NetBeans 4.1, a project directory has been
+created under jaxws-ri. (If you are using NetBeans 4.0, there is a 4.0
+version of project.xml in the Documents and Files section of the
+jax-ws-sources site.)
