@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.13 2005-06-03 01:32:39 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.14 2005-06-03 22:25:41 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -107,9 +107,10 @@ public class WSDLGenerator {
     
     private void generateDocument(OutputStream stream) {
         definitions = TXW.create(Definitions.class, new StreamSerializer(stream));
-        definitions._namespace(WSDL_NAMESPACE, WSDL_PREFIX);
+        definitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
         definitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
         definitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
+//        definitions._namespace(WSDL_NAMESPACE, false);
         
         definitions.name(model.getServiceQName().getLocalPart());
         if (model.getTargetNamespace() != null) {
@@ -529,9 +530,9 @@ public class WSDLGenerator {
         Result result;
         if (namespaceUri.equals("")) {
             // TODO this isn't allowed, do something about it.
-            result = new StreamResult(new ByteArrayOutputStream());
-            result.setSystemId("");
-            return result;
+//            result = new StreamResult(new ByteArrayOutputStream());
+//            result.setSystemId("");
+            return null;
         }
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
 //        _import.schemaLocation(suggestedFileName);

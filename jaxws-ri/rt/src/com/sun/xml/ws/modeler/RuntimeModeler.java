@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.3 2005-06-02 17:53:13 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.4 2005-06-03 22:25:40 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -171,7 +171,7 @@ public class RuntimeModeler {
                 dot = ".";
             namespace += dot+tokens[i];
         }
-        return namespace + "/jaxrpc";
+        return namespace + "/jaxws";
     }
 
     protected void processMethod(Method method, WebService webService) {
@@ -449,8 +449,6 @@ public class RuntimeModeler {
     protected void processRpcMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
-//System.out.println("processing Method: "+method.getName());
-        // processParameters(method);
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName.length() == 0)
             beanPackage = JAXWS_PACKAGE_PD;
