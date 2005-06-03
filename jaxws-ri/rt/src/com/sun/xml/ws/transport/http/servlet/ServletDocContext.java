@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocContext.java,v 1.1 2005-05-27 02:50:30 jitu Exp $
+ * $Id: ServletDocContext.java,v 1.2 2005-06-03 20:48:36 jitu Exp $
  *
  */
 
@@ -37,7 +37,7 @@ public class ServletDocContext implements DocContext {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return path;
+        return "/WEB-INF/wsdl/"+rel;
     }
     
 }

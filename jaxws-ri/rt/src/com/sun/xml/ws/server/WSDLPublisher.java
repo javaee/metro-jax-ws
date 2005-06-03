@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.3 2005-05-27 02:50:30 jitu Exp $
+ * $Id: WSDLPublisher.java,v 1.4 2005-06-03 20:48:35 jitu Exp $
  */
 
 /*
@@ -100,9 +100,8 @@ System.out.println("*** inPath ="+inPath+" *** query= "+request.getQueryString()
         response.setContentType("text/xml");
         response.setStatus(HttpServletResponse.SC_OK);
         OutputStream outputStream = response.getOutputStream();
-        ServletDocContext docCtxt = new ServletDocContext(servletContext);
         WSDLPatcher patcher = new WSDLPatcher(inPath, baseAddress,
-                targetEndpoint, endpoints, docCtxt);
+                targetEndpoint, endpoints, in.getDocContext());
         patcher.patchDoc(in.getDoc(), outputStream);
         return;
 /*

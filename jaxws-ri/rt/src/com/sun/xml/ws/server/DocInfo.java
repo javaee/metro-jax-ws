@@ -1,5 +1,5 @@
 /*
- * $Id: DocInfo.java,v 1.1 2005-05-26 18:21:16 jitu Exp $
+ * $Id: DocInfo.java,v 1.2 2005-06-03 20:48:35 jitu Exp $
  *
  */
 
@@ -27,5 +27,10 @@ public interface DocInfo {
      * @return /WEB-INF/wsdl/xxx.wsdl
      */
     public String getPath();
+
+    /*
+     * Used to resolve relative doc locations
+     */
+    public DocContext getDocContext();
     
 }

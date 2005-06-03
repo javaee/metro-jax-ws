@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocInfo.java,v 1.1 2005-05-26 18:21:17 jitu Exp $
+ * $Id: ServletDocInfo.java,v 1.2 2005-06-03 20:48:36 jitu Exp $
  *
  */
 
@@ -9,6 +9,7 @@
  */
 package com.sun.xml.ws.transport.http.servlet;
 
+import com.sun.xml.ws.server.DocContext;
 import com.sun.xml.ws.server.DocInfo;
 import java.io.InputStream;
 import javax.servlet.ServletContext;
@@ -17,10 +18,12 @@ public class ServletDocInfo implements DocInfo {
     private ServletContext context;
     private String resource;
     private String queryString;
+    private DocContext docContext;
 
     public ServletDocInfo(ServletContext context, String resource) {
         this.context = context;
         this.resource = resource;
+        this.docContext = new ServletDocContext(context);
     }
     
     public InputStream getDoc() {
@@ -37,6 +40,10 @@ public class ServletDocInfo implements DocInfo {
     
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+    }
+    
+    public DocContext getDocContext() {
+        return docContext;
     }
     
 }

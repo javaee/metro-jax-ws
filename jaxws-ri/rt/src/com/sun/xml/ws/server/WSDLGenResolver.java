@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.1 2005-06-02 02:48:47 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.2 2005-06-03 20:48:35 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -90,11 +90,25 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         public String getQueryString() {
             return queryString;
         }
+        
+        public DocContext getDocContext() {
+            return new GenDocContext();
+        }
 
         public void setQueryString(String queryString) {
             this.queryString = queryString;
         }
 
     }
+    
+    public static class GenDocContext implements DocContext {
+    
+        public String getAbsolutePath(String abs, String rel) {
+            int index = abs.lastIndexOf("/");       
+            return abs.substring(0, index+1)+rel;
+        }
+    
+    }
+
 
 }
