@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.12 2005-06-02 21:05:51 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.13 2005-06-03 01:32:39 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,7 +8,7 @@ package com.sun.xml.ws.wsdl.writer;
 
 
 import com.sun.pept.presentation.MessageStruct;
-import com.sun.xml.bind.api.Bridge;
+import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.SchemaOutputResolver;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,6 +44,7 @@ import com.sun.xml.ws.wsdl.writer.document.soap.Body;
 import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
 import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 
@@ -150,6 +151,7 @@ public class WSDLGenerator {
         boolean isDoclit = binding.isDocLit();
         Message message = definitions.message().name(method.getOperationName());
         com.sun.xml.ws.wsdl.writer.document.Part part;
+        JAXBRIContext jaxbContext = model.getJAXBContext();
         for (Parameter param : method.getRequestParameters()) {
             if (isDoclit) {
                 if (param.isWrapperStyle()) {
@@ -163,10 +165,11 @@ public class WSDLGenerator {
                 if (param.isWrapperStyle()) {
                     for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
                         part = message.part().name(childParam.getName().getLocalPart());
-                        Bridge bridge = model.getBridge(childParam.getTypeReference());
-//                        bridge.
-                        part.type(childParam.getTypeReference().tagName);
+                        part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
                     }
+                } else {
+                    part = message.part().name(param.getName().getLocalPart());
+                    part.element(param.getName());
                 }
             }
         }                
@@ -180,6 +183,16 @@ public class WSDLGenerator {
                 } else {
                     part = message.part().name(param.getName().getLocalPart());
                     part.element(param.getName());                    
+                }
+            } else {
+                if (param.isWrapperStyle()) {
+                    for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
+                        part = message.part().name(childParam.getName().getLocalPart());
+                        part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
+                    }
+                } else {
+                    part = message.part().name(param.getName().getLocalPart());
+                    part.element(param.getName());
                 }
             }
         }                
@@ -228,18 +241,65 @@ public class WSDLGenerator {
         return false;
     }
             
+    protected boolean isRpcLit(JavaMethod method) {
+        if (method.getBinding() instanceof SOAPBinding) {
+            if (((SOAPBinding)method.getBinding()).getStyle().equals(Style.RPC))
+                return true;
+        }
+        return false;
+    }
+    
     protected void generateParameterOrder(Operation operation, JavaMethod method) {
         if (method.getMEP() == MessageStruct.ONE_WAY_MEP)
             return;
+        if (isRpcLit(method))
+            generateRpcParameterOrder(operation, method);
+        else
+            generateDocumentParameterOrder(operation, method);
+    }
+
+    protected void generateRpcParameterOrder(Operation operation, JavaMethod method) {
         String partName = "";
         String paramOrder = "";
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
-//        for (Parameter param : sortedParams) 
-//            System.out.printf("%s: %d\n", param.getName().getLocalPart(), param.getIndex());
+        int i = 0;
+        for (Parameter parameter : sortedParams) {
+//            if (parameter.getIndex() < 0)
+//                continue;
+/*            if (isBodyParameter(parameter)) {
+                for (Parameter childParam : ((WrapperParameter)parameter).getWrapperChildren()) {
+                    if (childParam.getIndex() < 0)
+                        continue;
+                    partName = childParam.getName().getLocalPart();                    
+                    if (!partNames.contains(partName)) {
+                        if (i++ > 0)
+                            paramOrder += " ";
+                        paramOrder += partName;
+                        partNames.add(partName);
+                    }
+                }
+            } else */if (parameter.getIndex() >= 0) {
+               partName = parameter.getName().getLocalPart();
+                if (!partNames.contains(partName)) {
+                    if (i++ > 0)
+                        paramOrder += " ";
+                    paramOrder += partName;
+                    partNames.add(partName);
+                }
+            }
+        }
+        operation.parameterOrder(paramOrder);
+    }
+    
+    
+    protected void generateDocumentParameterOrder(Operation operation, JavaMethod method) {
+        String partName = "";
+        String paramOrder = "";
+        Set<String> partNames = new HashSet<String>();
+        List<Parameter> sortedParams = sortMethodParameters(method);
         boolean isWrapperStyle = isWrapperStyle(method);
         int i = 0;
-//        log("operation: "+operation.getName());
         for (Parameter parameter : sortedParams) {
             if (parameter.getIndex() < 0)
                 continue;
@@ -251,12 +311,10 @@ public class WSDLGenerator {
             } else {
                partName = parameter.getName().getLocalPart();
             }
-//            log("partName: "+partName);
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
                     paramOrder += " ";
                 paramOrder += partName;
-//                log("paramOrder: "+paramOrder);
                 partNames.add(partName);
             }
         }
@@ -266,11 +324,27 @@ public class WSDLGenerator {
     }
     
     protected List<Parameter> sortMethodParameters(JavaMethod method) {
-//        System.out.println("Sorting params for method: "+method.getOperationName());
         Set<Parameter> paramSet = new HashSet<Parameter>();
-        paramSet.addAll(method.getRequestParameters());
-        paramSet.addAll(method.getResponseParameters());
         List<Parameter> sortedParams = new ArrayList<Parameter>();
+        if (isRpcLit(method)) {
+            for (Parameter param : method.getRequestParameters()) {
+                if (param instanceof WrapperParameter) {
+                    paramSet.addAll(((WrapperParameter)param).getWrapperChildren());
+                } else {
+                    paramSet.add(param);
+                }
+            }
+            for (Parameter param : method.getResponseParameters()) {
+                if (param instanceof WrapperParameter) {
+                    paramSet.addAll(((WrapperParameter)param).getWrapperChildren());
+                } else {
+                    paramSet.add(param);
+                }
+            }            
+        } else  {
+            paramSet.addAll(method.getRequestParameters());
+            paramSet.addAll(method.getResponseParameters());            
+        }
         Iterator<Parameter>params = paramSet.iterator();
         if (paramSet.size() == 0)
             return sortedParams;
@@ -340,25 +414,30 @@ public class WSDLGenerator {
             // input
             TypedXmlWriter input = operation.input();
             BodyType body = input._element(Body.class);
+            boolean isRpc = soapBinding.getStyle().equals(Style.RPC);
             if (soapBinding.getUse().equals(Use.LITERAL)) {
                 body.use(LITERAL);
-                if (soapBinding.getStyle().equals(Style.RPC)) {
-                    
-                } else if (headerParams.size() > 0) {
+                if (headerParams.size() > 0) {
                     Parameter param = bodyParams.iterator().next();
-                    if (param.isWrapperStyle()) {
+                    if (isRpc) {
+                        String parts = "";
+                        int i=0;
+                        for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                            if (i++>0)
+                                parts += " ";
+                            parts += parameter.getName().getLocalPart();
+                        }
+                        body.parts(parts);
+                    } else if (param.isWrapperStyle()) {
                         body.parts(PARAMETERS);
                     } else {
-                        body.parts(param.getName().getLocalPart());
+                       body.parts(param.getName().getLocalPart());
                     }
                     generateSOAPHeaders(input, headerParams, requestMessage);
-/*                    for (Parameter headerParam : headerParams) {
-                        Header header = input._element(Header.class);
-                        header.message(requestMessage);
-                        header.parts(headerParam.getName().getLocalPart());
-                        header.use(LITERAL);
-                    }*/
-                }                
+                }    
+                if (isRpc) {
+                    body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+                }                  
             } else {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
@@ -370,17 +449,27 @@ public class WSDLGenerator {
             TypedXmlWriter output = operation.output();
             body = output._element(Body.class);
             body.use(LITERAL);
-            if (soapBinding.getStyle().equals(Style.RPC)) {
-
-            } else if (headerParams.size() > 0) {
+            if (headerParams.size() > 0) {
                 Parameter param = bodyParams.iterator().next();
-                if (param.isWrapperStyle()) {
+                if (isRpc) {
+                    String parts = "";
+                    int i=0;
+                    for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                        if (i++>0)
+                            parts += " ";
+                        parts += parameter.getName().getLocalPart();
+                    }
+                    body.parts(parts);
+                } else if (param.isWrapperStyle()) {
                     body.parts(RESULT);
                 } else {
                     body.parts(param.getName().getLocalPart());
                 }
                 generateSOAPHeaders(output, headerParams, responseMessage);
             }                
+            if (isRpc) {
+                body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+            }                  
             
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
@@ -437,10 +526,17 @@ public class WSDLGenerator {
     
     public Result createOutputFile(String namespaceUri, String suggestedFileName) throws IOException {
 //        File schemaFile;
+        Result result;
+        if (namespaceUri.equals("")) {
+            // TODO this isn't allowed, do something about it.
+            result = new StreamResult(new ByteArrayOutputStream());
+            result.setSystemId("");
+            return result;
+        }
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
 //        _import.schemaLocation(suggestedFileName);
 
-        Result result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
+        result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
         _import.schemaLocation(result.getSystemId());
 //        schemaFile = new File(suggestedFileName);
 //        result = new StreamResult(schemaFile);
