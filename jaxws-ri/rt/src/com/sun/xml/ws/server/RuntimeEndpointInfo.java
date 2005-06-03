@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.13 2005-06-02 17:53:14 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.14 2005-06-03 20:45:39 jitu Exp $
  */
 
 /*
@@ -87,6 +87,19 @@ public class RuntimeEndpointInfo
         return deployed;
     }
     
+    public void createModel() {
+        String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+
+        //how will j2ee pass the binding id
+        if(binding != null && binding instanceof BindingImpl) {
+            bindingId = ((BindingImpl)binding).getBindingId();
+        }
+
+        // Create runtime model for non Provider endpoints            
+        RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(), bindingId);
+        runtimeModel = rap.buildRuntimeModel();
+    }
+    
     public void deploy() {
         if (implementor == null) {
             // TODO throw exception
@@ -108,16 +121,8 @@ public class RuntimeEndpointInfo
                 }
             }
         } else {
-            String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-
-            //how will j2ee pass the binding id
-            if(binding != null && binding instanceof BindingImpl)
-                bindingId = ((BindingImpl)binding).getBindingId();
-
-            // Create runtime model for non Provider endpoints            
-            RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(), bindingId);
-            runtimeModel = rap.buildRuntimeModel();
-            
+            // Create runtime model for non Provider endpoints    
+            createModel();
             if (getWSDLFileName() == null) {
                 // Generate WSDL and schema documents using runtime model
                 WSDLGenResolver wsdlResolver = new WSDLGenResolver();
