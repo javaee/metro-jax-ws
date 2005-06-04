@@ -1,5 +1,5 @@
 /*
- * $Id: BodyBlock.java,v 1.2 2005-06-01 00:51:34 jitu Exp $
+ * $Id: BodyBlock.java,v 1.3 2005-06-04 01:48:11 vivekp Exp $
  */
 
 /*
@@ -15,6 +15,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -42,7 +43,11 @@ public class BodyBlock {
     public BodyBlock(SOAPFaultInfo faultInfo) {
     	setFaultInfo(faultInfo);
     }
-    
+
+    public BodyBlock(SOAP12FaultInfo faultInfo) {
+    	value = faultInfo;
+    }
+
     public BodyBlock(RpcLitPayload rpcLoad) {
         this.value = rpcLoad;
     }
@@ -54,7 +59,14 @@ public class BodyBlock {
     public void setFaultInfo(SOAPFaultInfo faultInfo) {
         this.value = faultInfo;
     }
-    
+
+    /**
+     * There is no need to have so many setter to set to an Object. Just setValue is all that we need?
+     * @param value
+     */
+    public void setValue(Object value){
+        this.value = value;
+    }
     public Object getValue() {
         return value;
     }

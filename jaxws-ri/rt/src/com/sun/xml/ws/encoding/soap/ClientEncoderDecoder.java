@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.3 2005-06-01 00:51:33 jitu Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.4 2005-06-04 01:48:10 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -25,6 +25,9 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
+import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultException;
 import com.sun.xml.ws.model.CheckedException;
 import com.sun.xml.ws.model.ExceptionType;
 import com.sun.xml.ws.model.JavaMethod;
@@ -78,6 +81,44 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             mi.setResponse(ex);
             return;
         }
+
+        if(bodyValue instanceof SOAP12FaultInfo){
+            SOAP12FaultInfo sfi = (SOAP12FaultInfo)bodyValue;
+            List details = sfi.getDetail();
+            Object detail = null;
+            if(details.size() > 0)
+                detail = details.get(0);
+            if(detail == null || detail instanceof javax.xml.soap.Detail) {
+                javax.xml.soap.Detail sfeDetail = null;
+                if(detail != null)
+                    sfeDetail = (javax.xml.soap.Detail)detail;
+                String reason = null;
+                FaultReasonText[] frt = sfi.getReasons().getFaultReasonTexts();
+
+                //for now we pickup onkly the first Reason Text
+                if(frt != null && frt.length > 0)
+                    reason = frt[0].getValue();
+
+                RemoteException rex = new RemoteException(reason, new SOAP12FaultException(sfi.getCode(),
+                        sfi.getReasons(), sfi.getNode(), sfi.getRole(), sfi.getDetail()));
+                mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
+                mi.setResponse(rex);
+                return;
+            }
+            JAXBBridgeInfo bi = (JAXBBridgeInfo)detail;
+            CheckedException ce = jm.getCheckedException(bi.getType());
+            String reason = null;
+            FaultReasonText[] frt = sfi.getReasons().getFaultReasonTexts();
+            //for now we pickup onkly the first Reason Text
+            if(frt != null && frt.length > 0)
+                reason = frt[0].getValue();
+            Exception ex = createCheckedException(reason, ce, bi.getValue());
+            mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
+            mi.setResponse(ex);
+            return;
+        }
+
+
         // process body/headers/attachments
         List<HeaderBlock> headers = im.getHeaders();
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();

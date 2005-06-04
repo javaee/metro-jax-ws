@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.6 2005-06-01 00:51:33 jitu Exp $
+ * $Id: SOAPDecoder.java,v 1.7 2005-06-04 01:48:10 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved. 
@@ -27,6 +27,7 @@ import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
@@ -202,11 +203,14 @@ public abstract class SOAPDecoder implements Decoder {
         decodeDispatchMethod(reader, response, messageInfo);
         if (reader.getEventType() == START_ELEMENT) {
             QName name = reader.getName(); // Operation name
-            if (name.getNamespaceURI().equals(getEnvelopeTag().getNamespaceURI()) &&
-                name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
+            if(name.getNamespaceURI().equals(SOAPNamespaceConstants.ENVELOPE) &&
+                    name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)){
                 SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
                 BodyBlock responseBody = new BodyBlock(soapFaultInfo);
                 response.setBody(responseBody);
+            }else if(name.getNamespaceURI().equals(SOAP12NamespaceConstants.ENVELOPE) &&
+                    name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)){
+                decodeFault(reader, response, messageInfo);
             } else {
                 Object decoderInfo = rtCtxt.getDecoderInfo(name);
                 if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {

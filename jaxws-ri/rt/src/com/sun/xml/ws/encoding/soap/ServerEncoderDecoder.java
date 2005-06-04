@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.3 2005-06-01 00:51:33 jitu Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.4 2005-06-04 01:48:10 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.ws.Holder;
 
@@ -102,11 +103,15 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         Object[] data = mi.getData();
         Object result = mi.getResponse();
         InternalMessage im = new InternalMessage();
+        SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
 
         switch (mi.getResponseType()) {
             case MessageStruct.CHECKED_EXCEPTION_RESPONSE:
                 if (result instanceof java.rmi.RemoteException) {
+                    if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
                     SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
+                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
+                    SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, null, im);
                     return im;
                 }
                 if(!(result instanceof java.lang.Exception)){
@@ -122,16 +127,26 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                 Object detail = getDetail(jm.getCheckedException(result.getClass()), result);
                 JAXBBridgeInfo di = new JAXBBridgeInfo(model.getBridge(ce.getDetailType()), detail);
                 if(ce.isHeaderFault())
+                    //TODO: handle SOAP 12 headerfault
                     SOAPRuntimeModel.createHeaderFault(result, null, di, im);
-                else
-                    SOAPRuntimeModel.createFaultInBody(result, null, di, im);
+                else {
+                    if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
+                        SOAPRuntimeModel.createFaultInBody(result, null, di, im);
+                    else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
+                            List details = new ArrayList();
+                            details.add(di);
+                            SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, details, im);
+                    }
+                }
                 return im;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
-                SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
+                if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
+                    SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
+                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
+                    SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, null, im);
                 return im;
         }
 
-        SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         while (iter.hasNext()) {
             Parameter param = iter.next();
@@ -237,5 +252,9 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         //its BARE
         if (!param.isResponse() && param.isOUT())
             data[param.getIndex()] = new Holder();
+    }
+
+    private void createSOAPFaultInBody(){
+
     }
 }

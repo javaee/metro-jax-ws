@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.6 2005-06-02 17:53:14 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.7 2005-06-04 01:48:12 vivekp Exp $
  */
 
 /*
@@ -11,12 +11,19 @@ package com.sun.xml.ws.server;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
+import javax.xml.soap.Detail;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.soap.SOAPConstants;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.bind.api.BridgeContext;
@@ -73,7 +80,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      */
     @Override
     protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
     }
 
     /* (non-Javadoc)

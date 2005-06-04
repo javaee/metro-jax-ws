@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.4 2005-06-03 22:25:40 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.5 2005-06-04 01:48:12 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -148,7 +148,7 @@ public class RuntimeModeler {
             Style.DOCUMENT : Style.RPC;
         rtSOAPBinding.setStyle(style);
         //default soap version is 1.1, change it to soap 1.2 if the binding id says so
-        if(bindingId.equals(SOAPVersion.SOAP_12))
+        if(SOAPVersion.SOAP_12.equals(bindingId))
             rtSOAPBinding.setSOAPVersion(SOAPVersion.SOAP_12);
         return rtSOAPBinding;
     }

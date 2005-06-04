@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.9 2005-06-01 18:34:38 spericas Exp $
+ * $Id: SOAPEncoder.java,v 1.10 2005-06-04 01:48:10 vivekp Exp $
  */
 
 /*
@@ -48,6 +48,7 @@ import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -367,6 +368,8 @@ public abstract class SOAPEncoder implements Encoder {
                     writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
                 } else if (value instanceof JAXBBridgeInfo) {
                     writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                } else if (value instanceof SOAP12FaultInfo){
+                    ((SOAP12FaultInfo)value).write(writer, messageInfo);
                 } else {
                     System.out.println("Unknown object in BodyBlock:"+value.getClass());
                 }

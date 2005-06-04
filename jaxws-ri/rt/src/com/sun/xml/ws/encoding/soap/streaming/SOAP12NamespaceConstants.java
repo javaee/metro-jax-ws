@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12NamespaceConstants.java,v 1.1 2005-05-23 22:30:18 bbissett Exp $
+ * $Id: SOAP12NamespaceConstants.java,v 1.2 2005-06-04 01:48:11 vivekp Exp $
  */
 
 /*
@@ -13,6 +13,7 @@ package com.sun.xml.ws.encoding.soap.streaming;
  * @author JAX-RPC Development Team
  */
 public class SOAP12NamespaceConstants {
+    public static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
     public static final String ENVELOPE =
         "http://www.w3.org/2003/05/soap-envelope";
     public static final String ENCODING =
