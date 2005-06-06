@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.4 2005-06-06 17:29:43 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.5 2005-06-06 23:23:34 jitu Exp $
  */
 
 /*
@@ -24,6 +24,8 @@ import javax.servlet.ServletContextListener;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,45 +82,18 @@ public class JAXRPCContextListener
         try {
             // Get all the WSDL & schema documents under WEB-INF/wsdl directory
             Map<String, DocInfo> docs = new HashMap<String, DocInfo>();
-            collectDocs(context, "/WEB-INF/wsdl", docs);
+            collectDocs(context, JAXWS_WSDL_DIR, docs);
+            logger.fine("war metadata="+docs);
 
-            
+            // Parse the descriptor file and build endpoint infos
             JAXRPCRuntimeInfoParser parser =
                 new JAXRPCRuntimeInfoParser(classLoader);
             InputStream is = context.getResourceAsStream(JAXRPC_RI_RUNTIME);
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
             context.setAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO, endpoints);
-            for(RuntimeEndpointInfo endpoint : endpoints) {
-                
-                // Set queryString for the document
-                Set<Entry<String, DocInfo>> entries = docs.entrySet();
-                for(Entry<String, DocInfo> entry : entries) {
-                    ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
-                    String path = docInfo.getPath();
-                    String query = null;
-                    String queryValue = docInfo.getPath().substring(14);    // Without /WEB-INF/wsdl
-                    queryValue = URLEncoder.encode(queryValue, "UTF-8");
-                    InputStream in = docInfo.getDoc();
-                    DOC_TYPE docType = WSDLPatcher.getDocType(docInfo.getDoc());
-                    switch(docType) {
-                        case WSDL :
-                            if (path.equals(endpoint.getWSDLFileName())) {
-                                query = "wsdl";
-                            } else {
-                                query = "wsdl=" + queryValue;
-                            }
-                            break;
-                        case SCHEMA : 
-                            query = "xsd=" + queryValue;
-                            break;
-                    }
-                    docInfo.setQueryString(query);
-                    in.close();
-                }
-                
-                endpoint.setMetadata(docs);
-                endpoint.deploy();
-            }
+            
+            // Creates WSDL & schema metadata and runtime model
+            createModelAndMetadata(endpoints, docs);
             
         } catch (JAXRPCServletException e) {
             logger.log(
@@ -137,6 +112,9 @@ public class JAXRPCContextListener
         }
     }
     
+    /*
+     * Get all the WSDL & schema documents under WEB-INF/wsdl directory
+     */
     private static void collectDocs(ServletContext context, String dirPath,
             Map<String, DocInfo> docs) {
         Set paths = context.getResourcePaths(dirPath);
@@ -152,14 +130,58 @@ public class JAXRPCContextListener
             }
         }
     }
+    
+    /*
+     * updates metadata with query string and builds runtime model for each
+     * endpoint
+     */
+    private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints,
+            Map<String, DocInfo> docs)  throws UnsupportedEncodingException {
+        
+        for(RuntimeEndpointInfo endpoint : endpoints) {
+            // Set queryString for the document
+            Set<Entry<String, DocInfo>> entries = docs.entrySet();
+            for(Entry<String, DocInfo> entry : entries) {
+                ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
+                String path = docInfo.getPath();
+                String query = null;
+                String queryValue = docInfo.getPath().substring(JAXWS_WSDL_DIR.length()+1);    // Without /WEB-INF/wsdl
+                queryValue = URLEncoder.encode(queryValue, "UTF-8");
+                InputStream in = docInfo.getDoc();
+                DOC_TYPE docType = null;    // is WSDL or schema ??
+                try {
+                    docType = WSDLPatcher.getDocType(docInfo.getDoc());
+                } catch (Exception e) {
+                    continue;           // Not XML ?? Ignore this document
+                } finally {
+                    try { in.close(); } catch(IOException ie) {};
+                }
+                switch(docType) {
+                    case WSDL :                   
+                        query = path.equals(endpoint.getWSDLFileName())
+                            ? "wsdl" : "wsdl="+queryValue;
+                        break;
+                    case SCHEMA : 
+                        query = "xsd="+queryValue;
+                        break;
+                    case OTHER :
+                        logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
+                }
+                docInfo.setQueryString(query);
+            }
+
+            endpoint.setMetadata(docs);
+            endpoint.deploy();
+        }
+    }
 
     private Localizer localizer;
     private LocalizableMessageFactory messageFactory;
     private ServletContext context;
     private ClassLoader classLoader;
 
-    private static final String JAXRPC_RI_RUNTIME =
-        "/WEB-INF/sun-jaxws.xml";
+    private static final String JAXRPC_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
+    private static final String JAXWS_WSDL_DIR = "/WEB-INF/wsdl";
 
     private static final Logger logger =
         Logger.getLogger(
