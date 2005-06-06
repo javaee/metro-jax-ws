@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.3 2005-05-27 02:50:30 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.4 2005-06-06 17:29:43 jitu Exp $
  */
 
 /*
@@ -96,7 +96,6 @@ public class JAXRPCContextListener
                     ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
                     String path = docInfo.getPath();
                     String query = null;
-                    System.out.println("*** Path ="+docInfo.getPath());
                     String queryValue = docInfo.getPath().substring(14);    // Without /WEB-INF/wsdl
                     queryValue = URLEncoder.encode(queryValue, "UTF-8");
                     InputStream in = docInfo.getDoc();

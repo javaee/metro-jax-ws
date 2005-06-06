@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.3 2005-05-27 19:35:36 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.4 2005-06-06 17:29:42 jitu Exp $
  *
  */
 
@@ -216,7 +216,6 @@ public class WSDLPatcher {
                 if (value == null) {
                     return startElement;        // Not patching  
                 }
-System.out.println("Patching service="+service+" port="+port+" with "+value);
                 Attribute newAttr = eventFactory.createAttribute(
                         WSDL_LOCATION_QNAME, value);
                 newAttrs.add(newAttr);

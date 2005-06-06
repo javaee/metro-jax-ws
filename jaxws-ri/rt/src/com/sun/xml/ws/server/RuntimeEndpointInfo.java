@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.15 2005-06-03 22:25:41 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.16 2005-06-06 17:29:42 jitu Exp $
  */
 
 /*
@@ -134,10 +134,8 @@ public class RuntimeEndpointInfo
                     e.printStackTrace();
                 }
                 setMetadata(wsdlResolver.getDocs());
-                setWSDLFileName(wsdlResolver.getWSDLFile());
-System.out.println("Service QName="+runtimeModel.getServiceQName());                
-                setServiceName(runtimeModel.getServiceQName());
-System.out.println("Port QName="+runtimeModel.getPortQName());                
+                setWSDLFileName(wsdlResolver.getWSDLFile());      
+                setServiceName(runtimeModel.getServiceQName());       
                 setPortName(runtimeModel.getPortQName());
             } else {
                 if (serviceName == null) {
@@ -256,8 +254,6 @@ System.out.println("Port QName="+runtimeModel.getPortQName());
             DocInfo docInfo = entry.getValue();
             query2Doc.put(docInfo.getQueryString(), docInfo);
         }
-        System.out.println("*** docs ="+docs);
-        System.out.println("*** query2Doc ="+query2Doc);
     }
      
     

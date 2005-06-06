@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.1 2005-05-23 23:01:37 bbissett Exp $
+ * $Id: HttpClientTransport.java,v 1.2 2005-06-06 17:29:42 jitu Exp $
  */
 
 /*
@@ -72,6 +72,7 @@ public class HttpClientTransport
     public void invoke(String endpoint, SOAPMessageContext context)
             throws ClientTransportException {
 
+System.out.println("******* endpoint ***"+endpoint);        
         if (isOneWayOperation(context)) {
             invokeOneWay(endpoint, context);
             return;
