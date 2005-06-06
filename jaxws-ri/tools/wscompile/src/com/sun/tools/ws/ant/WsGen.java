@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.1 2005-05-23 23:11:23 bbissett Exp $
+ * $Id: WsGen.java,v 1.2 2005-06-06 23:03:23 kohlert Exp $
  */
 
 /*
@@ -236,6 +236,32 @@ public class WsGen extends MatchingTask {
      public void setDebug(boolean debug) {
          this.debug = debug;
      }
+     
+     /*************************  -wsdl option *************************/
+     private boolean genWsdl = false;
+
+     /** Gets the genWsdl flag. **/
+     public boolean getgenWsdl() {
+         return genWsdl;
+     }
+
+     /** Sets the genWsdl flag. **/
+     public void setgenWsdl(boolean genWsdl) {
+         this.genWsdl = genWsdl;
+     }
+     
+     /*************  protocol option used only with -wsdl option*****************/
+     private String protocol = "";
+
+     /** Gets the protocol. **/
+     public String getProtocol() {
+         return protocol;
+     }
+
+     /** Sets the protocol. **/
+     public void setProtocol(String protocol) {
+         this.protocol = protocol;
+     }     
 
     /***********************  include ant runtime **********************/
     /** not sure if these methods are needed */
@@ -278,7 +304,7 @@ public class WsGen extends MatchingTask {
 
     private String endpointImplementationClass;
     /**
-     * @return Returns the wsdlFile.
+     * @return Returns the endpointImplementationClass.
      */
     public String getEndpointImplementationClass() {
         return endpointImplementationClass;
@@ -338,6 +364,13 @@ public class WsGen extends MatchingTask {
             cmd.createArgument().setValue("-keep");
         }
 
+        if (getgenWsdl()) {
+            String tmp = "-wsdl";
+            if (protocol.length() > 0)
+                tmp += ":"+protocol;
+            cmd.createArgument().setValue(tmp);
+        }
+        
         // nd option
         if (null != getNonClassDir() && !getNonClassDir().equals("")) {
             cmd.createArgument().setValue("-nd");

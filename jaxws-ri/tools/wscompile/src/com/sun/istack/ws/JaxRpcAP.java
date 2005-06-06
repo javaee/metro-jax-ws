@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcAP.java,v 1.1 2005-05-23 23:10:14 bbissett Exp $
+ * $Id: JaxRpcAP.java,v 1.2 2005-06-06 23:03:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -85,7 +85,7 @@ public class JaxRpcAP extends WebServiceAP {
     }
     
     private void registerGenerators(Processor processor) {
-        processor.add(new WSDLGenerator());
+//        processor.add(new WSDLGenerator());
     }    
     
     public void onError(Localizable msg) {

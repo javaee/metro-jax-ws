@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.1 2005-05-24 13:51:45 bbissett Exp $
+ * $Id: CompileTool.java,v 1.2 2005-06-06 23:03:25 kohlert Exp $
  */
 
 /*
@@ -8,11 +8,11 @@
  */
 package com.sun.tools.ws.wscompile;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.AnnotationProcessorFactory;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.tools.apt.Main;
+import com.sun.mirror.apt.*;
+import com.sun.mirror.declaration.*;
+
+import com.sun.xml.ws.wsdl.writer.*;
+
 import com.sun.tools.ws.processor.*;
 import com.sun.tools.ws.processor.config.ClassModelInfo;
 import com.sun.tools.ws.processor.config.Configuration;
@@ -20,21 +20,29 @@ import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.config.parser.Reader;
 import com.sun.tools.ws.processor.generator.CustomExceptionGenerator;
 import com.sun.tools.ws.processor.generator.RemoteInterfaceGenerator;
-import com.sun.tools.ws.processor.generator.WSDLGenerator;
+//import com.sun.tools.ws.processor.generator.WSDLGenerator;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
 import com.sun.tools.ws.processor.util.ClientProcessorEnvironment;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.processor.util.ProcessorEnvironmentBase;
 import com.sun.tools.ws.util.JAXRPCUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
+import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.localization.Localizable;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -56,10 +64,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else if (args[i].equals("-g")) {
                 compilerDebug = true;
                 args[i] = null;
-            } else if (args[i].equals("-O")) {
+            } /*else if (args[i].equals("-O")) {
                 compilerOptimize = true;
                 args[i] = null;
-            } else if (args[i].equals("-verbose")) {
+            }*/ else if (args[i].equals("-verbose")) {
                 verbose = true;
                 args[i] = null;
             } else if (args[i].equals("-extension")) {
@@ -173,6 +181,30 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     System.setProperty("proxyPort", value.substring(index + 1));
                 }
                 args[i] = null;
+            } else if (args[i].startsWith("-wsdl")) {
+                if (program.equals("wsimport")) 
+                    continue;
+                genWsdl = true;
+                String value = args[i].substring(5);
+                int index = value.indexOf(':');
+                if (index == 0) {
+                    value = value.substring(1);
+                    index = value.indexOf('/');
+                    if (index == -1) {
+                        protocol = value;
+                        transport = HTTP;
+                    } else {
+                        protocol = value.substring(0, index);
+                        transport = value.substring(index + 1);
+                    }
+                    if (!isValidProtocol(protocol)) {
+                        onError(getMessage("wsgen.invalid.protocol", protocol, VALID_PROTOCOLS));
+                    }
+                    if (!isValidTransport(transport)) {
+                        onError(getMessage("wsgen.invalid.transport", transport, VALID_TRANSPORTS));
+                    }               
+                }
+                args[i] = null;
             } else if (args[i].startsWith("-help")) {
                 help();
                 return false;
@@ -190,8 +222,14 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 // the input source could be a local file or a URL,get the
                 // abolutized URL string
                 String fileName = args[i];
-                if (!isClass(fileName))
+                if (program.equals("wsgen")) {
+                    if (!isClass(fileName)) {
+                        onError(getMessage("wsgen.class.not.found", fileName));
+                        return false;
+                    }
+                } else {
                     fileName = JAXRPCUtils.absolutize(JAXRPCUtils.getFileOrURLName(args[i]));
+                }
                 inputFiles.add(fileName);
             }
         }
@@ -206,6 +244,15 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         return true;
     }
 
+    static public boolean isValidProtocol(String protocol) {
+        return (protocol.equals(SOAP11) ||   
+                protocol.equals(SOAP12));
+    }
+    
+    static public boolean isValidTransport(String transport) {
+        return (transport.equals(HTTP));
+    }
+    
     public Localizable getVersion() {
         return getMessage("wscompile.version", Version.PRODUCT_NAME, Version.VERSION_NUMBER,
                 Version.BUILD_NUMBER);
@@ -264,7 +311,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 new CustomExceptionGenerator());
         actions.put(ActionConstants.ACTION_JAXB_TYPE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.JAXBTypeGenerator());
-        actions.put(ActionConstants.ACTION_WSDL_GENERATOR, new WSDLGenerator());
+//        actions.put(ActionConstants.ACTION_WSDL_GENERATOR, new WSDLGenerator());
     }
 
     public void removeGeneratedFiles() {
@@ -282,17 +329,64 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         args[0] = "-d";
         args[1] = destDir.getAbsolutePath();
         args[2] = "-classpath";
-        args[3] = classpath; // classpathString;
+        args[3] = classpath; 
         args[4] = "-s";
         args[5] = sourceDir.getAbsolutePath();
         args[6] = "-XclassesAsDecls";
         args[7] = endpoint;
 
-        com.sun.tools.apt.Main main = new com.sun.tools.apt.Main();
-        int result = Main.process(this, args);
-        if (result != 0)
-            // TODO throw some exception
+//        com.sun.tools.apt.Main main = new com.sun.tools.apt.Main();
+        int result = com.sun.tools.apt.Main.process(this, args);
+        if (result != 0) {
             environment.error(getMessage("wscompile.compilationFailed"));
+            return;
+        }
+        if (genWsdl) {
+            String tmpPath = destDir.getAbsolutePath()+File.pathSeparator+classpath;
+            ClassLoader classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath));
+            Class endpointClass = null;
+            try {
+                endpointClass = classLoader.loadClass(endpoint);
+            } catch (ClassNotFoundException e) {
+                // this should never happen
+                environment.error(getMessage("wsgen.class.not.found", endpoint));
+            }
+            String bindingID = getBindingID(protocol);
+            com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
+                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);
+            rtModeler.setClassLoader(classLoader);
+            com.sun.xml.ws.model.RuntimeModel rtModel = rtModeler.buildRuntimeModel();
+            WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
+                    new com.sun.xml.ws.wsdl.writer.WSDLOutputResolver() {
+                        public Result getWSDLOutput(String suggestedFilename) {
+                            File wsdlFile =
+                                new File(nonclassDestDir, suggestedFilename);
+                            
+                            Result result = new StreamResult();
+                            try {
+                                result = new StreamResult(new FileOutputStream(wsdlFile));
+                                result.setSystemId(wsdlFile.toString().replace('\\', '/'));                            
+                            } catch (FileNotFoundException e) {
+                                environment.error(getMessage("wsgen.could.not.create.file", wsdlFile.toString()));                                
+                            }
+                            return result;
+                        }
+                        public Result getSchemaOutput(String namespace, String suggestedFilename) {
+                            if (namespace.equals(""))
+                                return null;
+                            return getWSDLOutput(suggestedFilename);
+                        }                        
+                    }, bindingID);
+            wsdlGenerator.doGeneration();        
+        }
+    }
+    
+    static public String getBindingID(String protocol) {
+        if (protocol.equals(SOAP11))
+            return SOAP11_ID;
+        if (protocol.equals(SOAP12))
+            return SOAP12_ID;
+        return null;
     }
 
     public void runProcessorActions() {
@@ -380,11 +474,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         boolean genInterface = false;
         //boolean genInterfaceTemplate = false;
         boolean genCustomClasses = false;
-        boolean genWsdl = false;
 
-        if (configuration.getModelInfo() instanceof ClassModelInfo) {
-            genWsdl = true;
-        } else if (configuration.getModelInfo() instanceof WSDLModelInfo) {
+        if (configuration.getModelInfo() instanceof WSDLModelInfo) {
             genInterface = true;
             //genInterfaceTemplate = true;
             genServiceInterface = true;
@@ -402,9 +493,9 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         if (genCustomClasses) {
             processor.add(getAction(ActionConstants.ACTION_JAXB_TYPE_GENERATOR));
         }
-        if (genWsdl) {
-            processor.add(getAction(ActionConstants.ACTION_WSDL_GENERATOR));
-        }
+//        if (genWsdl) {
+//            processor.add(getAction(ActionConstants.ACTION_WSDL_GENERATOR));
+//        }
     }
 
     public String getVersionString() {
@@ -439,7 +530,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         properties.setProperty(ProcessorOptions.EXTENSION, (extension ? "true" : "false"));
         properties.setProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY,
                 (verbose ? TRUE : FALSE));
-
+        properties.setProperty(ProcessorOptions.PROTOCOL, protocol);
+        properties.setProperty(ProcessorOptions.TRANSPORT, transport);
     }
 
     protected String getGenericErrorMessage() {
@@ -551,4 +643,14 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected boolean extension = false;
     protected String userClasspath = null;
     protected Set<String> bindingFiles = new HashSet<String>();
+    protected boolean genWsdl = false;
+    protected String protocol = SOAP11;
+    protected String transport = HTTP;
+    protected static final String SOAP11 = "soap11";
+    protected static final String SOAP12 = "soap12";
+    protected static final String HTTP   = "http";    
+    protected static final String SOAP11_ID = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
+    protected static final String SOAP12_ID = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
+    protected static final String VALID_PROTOCOLS = "soap11, soap12";
+    protected static final String VALID_TRANSPORTS = "http";
 }

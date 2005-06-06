@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorOptions.java,v 1.1 2005-05-24 13:43:49 bbissett Exp $
+ * $Id: ProcessorOptions.java,v 1.2 2005-06-06 23:03:24 kohlert Exp $
  */
 
 /*
@@ -54,4 +54,6 @@ public class ProcessorOptions {
         "dontGenerateWrapperClasses";
     public final static String BINDING_FILES = "bindingFiles";
     public final static String EXTENSION = "extension";
+    public final static String PROTOCOL = "protocol";
+    public final static String TRANSPORT = "transport";
 }
