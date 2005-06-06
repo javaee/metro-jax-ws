@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12NamespaceConstants.java,v 1.2 2005-06-04 01:48:11 vivekp Exp $
+ * $Id: SOAP12NamespaceConstants.java,v 1.3 2005-06-06 17:32:56 vivekp Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ public class SOAP12NamespaceConstants {
     public static final String XSI =
         "http://www.w3.org/2001/XMLSchema-instance";
     public static final String TRANSPORT_HTTP =
-        "http://www.w3.org/2002/06/soap/bindings/HTTP/";
+        "http://www.w3.org/2003/05/soap/bindings/HTTP/";
     
     public static final String ACTOR_NEXT = "http://www.w3.org/2003/05/soap-envelope/role/next";
         
