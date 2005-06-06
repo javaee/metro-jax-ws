@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.1 2005-05-23 23:23:51 bbissett Exp $
+ * $Id: WebServiceAP.java,v 1.2 2005-06-06 16:34:42 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -259,10 +259,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         context.incrementRound();
     }
 
-/*    public URL findResource(String resourceName) {
-        return env.getClassLoader().findResource(resourceName);
-    }
-*/
     public boolean checkAndSetProcessed(TypeDeclaration typeDecl) {
         if (!processedTypeDecls.contains(typeDecl)) {
             processedTypeDecls.add(typeDecl);
@@ -332,33 +328,13 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         port.addOperation(operation);
     }
 
-/*    public Properties getOptions() {
-        if (options == null)
-            options = new Properties();
-        return options;
-    }*/
-
     public void setWrapperGenerated(boolean wrapperGenerated) {
         this.wrapperGenerated = wrapperGenerated;
     }
 
-/*    public DeclaredType getDeclaredType(TypeDeclaration typeDecl) {
-        return types.getDeclaredType(typeDecl, new TypeMirror[]{});
-    }*/
-
     public TypeDeclaration getTypeDeclaration(String typeName) {
         return apEnv.getTypeDeclaration(typeName);
     }
-/*
-    public TypeMirror getTypeMirror(String typeName) {
-        int idx = typeName.lastIndexOf("[]");
-        if (idx > 0) {
-            TypeMirror arrayType = getTypeMirror(typeName.substring(0, idx));
-            return types.getArrayType(arrayType);
-        }
-        return getDeclaredType(getTypeDeclaration(typeName));
-    }
-*/
 
     private void buildModel() {
         WebService webService;
@@ -485,14 +461,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return sig + ")";
     }
 
-/*    public String getWsdlNamespaceURI() {
-        return wsdlUri;
-    }
-
-    public void setWsdlNamespaceURI(String namespaceUri) {
-        wsdlUri = namespaceUri;
-    }*/
-
     public String getOperationName(String messageName) {
         return messageName;
     }
@@ -510,31 +478,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return !((donotOverride && GeneratorUtil.classExists(env, className)));
     }
 
-    /**
-      * Generate a readable string representing the given type suitable
-      * for embedding within a Java identifier.
-      */
-/*    public String getParamName(TypeMirror type, int pos) {
-        String paramName;
-        if (type instanceof PrimitiveType) {
-            paramName = type.toString();
-        } else if (type instanceof ArrayType) {
-            paramName = ARRAY_OF
-                    + getParamName(((ArrayType)type).getComponentType(), -1);
-        } else  { //if (type instanceof ReferenceType) {
-            TypeMirror holderValueType = getHolderValueType(type);
-            if (holderValueType != null) {
-                return getParamName(holderValueType, pos);
-            }
-            String tmp = ClassNameInfo.getName(type.toString());
-            paramName =  ClassNameInfo.replaceInnerClassSym(tmp);
-        }
-        if (pos == -1)
-            return paramName;
-        else
-            return paramName + UNDERSCORE + pos;
-    }*/
-
     public void log(String msg) {
         if (env != null && env.verbose()) {
             System.out.println("[" + msg + "]");
@@ -545,7 +488,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return javaName;
     }
 
-    // these methods added so that the RMI modeler can pick the names
+    // these methods added so that the WebService modeler can pick the names
     // it wants for the WSDL artifacts associated with ports and operations
 
     public QName getWSDLPortName(String portName) {
@@ -559,18 +502,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     public QName getWSDLPortTypeName(String portName) {
         return new QName(wsdlUri, getXMLName(portName));
     }
-/*
-    public QName getWSDLInputMessageName(String operationName) {
-        return new QName(wsdlUri, getXMLName(operationName));
-    }
-
-    public QName getWSDLOutputMessageName(String operationName) {
-        return new QName(wsdlUri, getXMLName(operationName + RESPONSE));
-    }
-
-    public QName getWSDLFaultMessageName(String faultName) {
-        return new QName(wsdlUri, getXMLName(faultName));
-    }*/
 }
 
 
