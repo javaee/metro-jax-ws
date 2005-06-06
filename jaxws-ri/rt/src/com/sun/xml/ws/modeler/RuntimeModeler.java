@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.5 2005-06-04 01:48:12 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.6 2005-06-06 20:24:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -85,12 +85,16 @@ public class RuntimeModeler {
         return runtimeModel;
     }
 
-    protected static Class getClass(String className) {
+    protected Class getClass(String className) {
         try {
             return Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeModelerException("runtime.modeler.class.not.found",
+            try {
+                return portClass.getClassLoader().loadClass(className);
+            } catch (ClassNotFoundException e2) {
+                throw new RuntimeModelerException("runtime.modeler.class.not.found",
                                  new Object[] {className});
+            }
         }
     }
 
@@ -717,7 +721,7 @@ public class RuntimeModeler {
     /*
      * Return service QName
      */
-    public static QName getServiceName(Class implClass) {
+    public QName getServiceName(Class implClass) {
         String name = implClass.getSimpleName();
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
