@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.3 2005-06-06 19:43:50 jitu Exp $
+ * $Id: HttpClientTransport.java,v 1.4 2005-06-06 22:01:13 vivekp Exp $
  */
 
 /*
@@ -25,6 +25,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.xml.soap.*;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,12 +57,16 @@ public class HttpClientTransport
     private static int redirectCount = START_REDIRECT_COUNT;
 
     public HttpClientTransport() {
-        this(null);
+        this(null, SOAPBinding.SOAP11HTTP_BINDING);
     }
 
-    public HttpClientTransport(OutputStream logStream) {
+    public HttpClientTransport(OutputStream logStream, String bindingId) {
         try {
-            _messageFactory = MessageFactory.newInstance();
+            if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
+                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+            else
+                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+
             _logStream = logStream;
             //_logStream = System.out;
         } catch (Exception e) {

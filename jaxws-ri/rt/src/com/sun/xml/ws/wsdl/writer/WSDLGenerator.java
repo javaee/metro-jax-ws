@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.15 2005-06-06 20:27:34 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.16 2005-06-06 22:01:17 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -44,6 +44,8 @@ import com.sun.xml.ws.wsdl.writer.document.soap.Body;
 import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
 import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
+import com.sun.xml.ws.encoding.soap.SOAPVersion;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
@@ -75,22 +77,27 @@ public class WSDLGenerator {
     public static final String XSD_NAMESPACE    = "http://www.w3.org/2001/XMLSchema";
     public static final String XSD_PREFIX       = "xsd";
     public static final String SOAP11_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/soap/";
+    public static final String SOAP12_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/soap12/";
     public static final String SOAP_PREFIX      = "soap";
+    public static final String SOAP12_PREFIX      = "soap12";
     public static final String TNS_PREFIX       = "tns";
     public static final String BINDING          = "Binding";
     public static final String SOAP_HTTP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
+    public static final String SOAP12_HTTP_TRANSPORT = "http://www.w3.org/2003/05/soap/bindings/HTTP/";
     public static final String DOCUMENT         = "document";
     public static final String RPC              = "rpc";
     public static final String LITERAL          = "literal";
 //    public static final String PORT             = "Port";
     public static final String REPLACE_WITH_ACTUAL_URL = "REPLACE_WITH_ACTUAL_URL";
     private Set<QName> processedExceptions = new HashSet<QName>();
+    private String bindingId;
 
 
-    public WSDLGenerator(RuntimeModel model, WSDLOutputResolver wsdlResolver) {
+    public WSDLGenerator(RuntimeModel model, WSDLOutputResolver wsdlResolver, String bindingId) {
         this.model = model;
         resolver = new JAXWSOutputSchemaResolver();
         this.wsdlResolver = wsdlResolver;
+        this.bindingId = bindingId;
     }
     
     public void doGeneration() {
@@ -109,7 +116,11 @@ public class WSDLGenerator {
         definitions = TXW.create(Definitions.class, new StreamSerializer(stream));
         definitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
         definitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
-        definitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
+        if(bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
+            definitions._namespace(SOAP12_NAMESPACE, SOAP12_PREFIX);
+        else
+            definitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
+
 //        definitions._namespace(WSDL_NAMESPACE, false);
         
         definitions.name(model.getServiceQName().getLocalPart());
@@ -374,16 +385,30 @@ public class WSDLGenerator {
             if (first) {
                 if (method.getBinding() instanceof SOAPBinding) {
                     SOAPBinding sBinding = (SOAPBinding)method.getBinding();
-                    com.sun.xml.ws.wsdl.writer.document.soap.SOAPBinding soapBinding = binding.soapBinding();
-                    soapBinding.transport(SOAP_HTTP_TRANSPORT);
-                    if (sBinding.getStyle().equals(Style.DOCUMENT)) 
-                        soapBinding.style(DOCUMENT);
-                    else
-                        soapBinding.style(RPC);
+                    SOAPVersion soapVersion = sBinding.getSOAPVersion();
+
+                    if(soapVersion.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
+                        com.sun.xml.ws.wsdl.writer.document.soap12.SOAPBinding soapBinding = binding.soap12Binding();
+                        soapBinding.transport(SOAP12_HTTP_TRANSPORT);
+                        if (sBinding.getStyle().equals(Style.DOCUMENT))
+                            soapBinding.style(DOCUMENT);
+                        else
+                            soapBinding.style(RPC);
+                    }else{
+                        com.sun.xml.ws.wsdl.writer.document.soap.SOAPBinding soapBinding = binding.soapBinding();
+                        soapBinding.transport(SOAP_HTTP_TRANSPORT);
+                        if (sBinding.getStyle().equals(Style.DOCUMENT))
+                            soapBinding.style(DOCUMENT);
+                        else
+                            soapBinding.style(RPC);
+                    }
                 }
                 first = false;
             }
-            generateBindingOperation(method, binding);
+            if(bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
+                generateSOAP12BindingOperation(method, binding);
+            else
+                generateBindingOperation(method, binding);
         }
     }    
     
@@ -398,6 +423,7 @@ public class WSDLGenerator {
             splitParameters(bodyParams, headerParams, method.getRequestParameters());
             SOAPBinding soapBinding = (SOAPBinding)method.getBinding();
             operation.soapOperation().soapAction(soapBinding.getSOAPAction());
+
             // input
             TypedXmlWriter input = operation.input();
             BodyType body = input._element(Body.class);
@@ -466,7 +492,89 @@ public class WSDLGenerator {
             }
         }
     }
-    
+
+    protected void generateSOAP12BindingOperation(JavaMethod method, Binding binding) {
+        BindingOperationType operation = binding.operation().name(method.getOperationName());
+        String targetNamespace = model.getTargetNamespace();
+        QName requestMessage = new QName(targetNamespace, method.getOperationName());
+        QName responseMessage = new QName(targetNamespace, method.getOperationName()+RESPONSE);
+        if (method.getBinding() instanceof SOAPBinding) {
+            List<Parameter> bodyParams = new ArrayList<Parameter>();
+            List<Parameter> headerParams = new ArrayList<Parameter>();
+            splitParameters(bodyParams, headerParams, method.getRequestParameters());
+            SOAPBinding soapBinding = (SOAPBinding)method.getBinding();
+            operation.soap12Operation().soapAction(soapBinding.getSOAPAction());
+
+            // input
+            TypedXmlWriter input = operation.input();
+
+            com.sun.xml.ws.wsdl.writer.document.soap12.BodyType body = input._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
+            boolean isRpc = soapBinding.getStyle().equals(Style.RPC);
+            if (soapBinding.getUse().equals(Use.LITERAL)) {
+                body.use(LITERAL);
+                if (headerParams.size() > 0) {
+                    Parameter param = bodyParams.iterator().next();
+                    if (isRpc) {
+                        String parts = "";
+                        int i=0;
+                        for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                            if (i++>0)
+                                parts += " ";
+                            parts += parameter.getName().getLocalPart();
+                        }
+                        body.parts(parts);
+                    } else if (param.isWrapperStyle()) {
+                        body.parts(PARAMETERS);
+                    } else {
+                       body.parts(param.getName().getLocalPart());
+                    }
+                    generateSOAP12Headers(input, headerParams, requestMessage);
+                }
+                if (isRpc) {
+                    body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+                }
+            } else {
+                // TODO localize this
+                throw new WebServiceException("encoded use is not supported");
+            }
+            // output
+            bodyParams.clear();
+            headerParams.clear();
+            splitParameters(bodyParams, headerParams, method.getResponseParameters());
+            TypedXmlWriter output = operation.output();
+            body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
+            body.use(LITERAL);
+            if (headerParams.size() > 0) {
+                Parameter param = bodyParams.iterator().next();
+                if (isRpc) {
+                    String parts = "";
+                    int i=0;
+                    for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                        if (i++>0)
+                            parts += " ";
+                        parts += parameter.getName().getLocalPart();
+                    }
+                    body.parts(parts);
+                } else if (param.isWrapperStyle()) {
+                    body.parts(RESULT);
+                } else {
+                    body.parts(param.getName().getLocalPart());
+                }
+                generateSOAP12Headers(output, headerParams, responseMessage);
+            }
+            if (isRpc) {
+                body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+            }
+
+            for (CheckedException exception : method.getCheckedExceptions()) {
+                QName tagName = exception.getDetailType().tagName;
+                Fault fault = operation.fault().name(tagName.getLocalPart());
+                com.sun.xml.ws.wsdl.writer.document.soap12.SOAPFault soapFault = fault._element(com.sun.xml.ws.wsdl.writer.document.soap12.SOAPFault.class).name(tagName.getLocalPart());
+                soapFault.use(LITERAL);
+            }
+        }
+    }
+
     protected void splitParameters(List<Parameter> bodyParams, List<Parameter>headerParams, List<Parameter>params) {
         for (Parameter parameter : params) {
             if (isBodyParameter(parameter)) {
@@ -486,7 +594,17 @@ public class WSDLGenerator {
             header.use(LITERAL);
         }        
     }
-    
+
+    protected void generateSOAP12Headers(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
+
+        for (Parameter headerParam : parameters) {
+            com.sun.xml.ws.wsdl.writer.document.soap12.Header header = writer._element(com.sun.xml.ws.wsdl.writer.document.soap12.Header.class);
+            header.message(message);
+            header.part(headerParam.getName().getLocalPart());
+            header.use(LITERAL);
+        }
+    }
+
     protected void generateService() {
         Service service = definitions.service().name(model.getServiceQName().getLocalPart());
         QName portQName = model.getPortQName();
@@ -494,8 +612,13 @@ public class WSDLGenerator {
         Port port = service.port().name(portQName.getLocalPart());
         port.binding(new QName(portQName.getNamespaceURI(), portQName.getLocalPart()+BINDING));
         if (model.getJavaMethods().iterator().next().getBinding() instanceof SOAPBinding) {
-            SOAPAddress address = port._element(SOAPAddress.class);
-            address.location(REPLACE_WITH_ACTUAL_URL);
+            if(bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
+                com.sun.xml.ws.wsdl.writer.document.soap12.SOAPAddress address = port._element(com.sun.xml.ws.wsdl.writer.document.soap12.SOAPAddress.class);
+                address.location(REPLACE_WITH_ACTUAL_URL);
+            }else{
+                SOAPAddress address = port._element(SOAPAddress.class);
+                address.location(REPLACE_WITH_ACTUAL_URL);
+            }
         }
     }
     

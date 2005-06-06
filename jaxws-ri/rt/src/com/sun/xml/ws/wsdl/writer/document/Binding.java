@@ -26,4 +26,7 @@ public interface Binding
     @XmlElement(value="binding",ns="http://schemas.xmlsoap.org/wsdl/soap/")
     public SOAPBinding soapBinding();
 
+    @XmlElement(value="binding",ns="http://schemas.xmlsoap.org/wsdl/soap12/")
+    public com.sun.xml.ws.wsdl.writer.document.soap12.SOAPBinding soap12Binding();
+
 }

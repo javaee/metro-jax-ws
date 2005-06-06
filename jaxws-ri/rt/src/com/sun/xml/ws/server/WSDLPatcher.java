@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.6 2005-06-06 21:11:30 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.7 2005-06-06 22:01:13 vivekp Exp $
  *
  */
 
@@ -103,7 +103,8 @@ public class WSDLPatcher {
                         event = handleSchemaImport(start);
                     } else if (name.equals(WSDLConstants.QNAME_IMPORT)) {
                         event = handleWSDLImport(start);
-                    } else if (name.equals(WSDLConstants.NS_SOAP_BINDING_ADDRESS)) {
+                    } else if (name.equals(WSDLConstants.NS_SOAP_BINDING_ADDRESS) ||
+                            name.equals(WSDLConstants.NS_SOAP12_BINDING_ADDRESS)) {
                         event = handleSoapAddress(serviceName, portName, start);
                     } else if (name.equals(WSDLConstants.QNAME_DEFINITIONS)) {
                         Attribute attr = start.getAttributeByName(ATTR_TARGETNS_QNAME);

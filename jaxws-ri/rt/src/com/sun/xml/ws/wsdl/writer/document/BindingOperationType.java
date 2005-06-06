@@ -19,6 +19,9 @@ public interface BindingOperationType
     @XmlElement(value="operation",ns="http://schemas.xmlsoap.org/wsdl/soap/")
     public SOAPOperation soapOperation();
 
+    @XmlElement(value="operation",ns="http://schemas.xmlsoap.org/wsdl/soap12/")
+    public com.sun.xml.ws.wsdl.writer.document.soap12.SOAPOperation soap12Operation();
+
     @XmlElement
     public Fault fault();
 

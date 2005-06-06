@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.16 2005-06-06 17:29:42 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.17 2005-06-06 22:01:12 vivekp Exp $
  */
 
 /*
@@ -50,6 +50,7 @@ public class RuntimeEndpointInfo
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
     private boolean enableMtom;
+    private String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
 
     public Exception getException() {
         return exception;
@@ -88,9 +89,7 @@ public class RuntimeEndpointInfo
     }
     
     public void createModel() {
-        String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-
-        //how will j2ee pass the binding id
+        //how will j2ee pass the binding id?
         if(binding != null && binding instanceof BindingImpl) {
             bindingId = ((BindingImpl)binding).getBindingId();
         }
@@ -126,7 +125,7 @@ public class RuntimeEndpointInfo
             if (getWSDLFileName() == null) {
                 // Generate WSDL and schema documents using runtime model
                 WSDLGenResolver wsdlResolver = new WSDLGenResolver();
-                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver);
+                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver, bindingId);
                 try {
                     wsdlGen.doGeneration();
                 } catch(Exception e) {
