@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.14 2005-06-03 22:25:41 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.15 2005-06-06 20:27:34 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -266,21 +266,7 @@ public class WSDLGenerator {
         List<Parameter> sortedParams = sortMethodParameters(method);
         int i = 0;
         for (Parameter parameter : sortedParams) {
-//            if (parameter.getIndex() < 0)
-//                continue;
-/*            if (isBodyParameter(parameter)) {
-                for (Parameter childParam : ((WrapperParameter)parameter).getWrapperChildren()) {
-                    if (childParam.getIndex() < 0)
-                        continue;
-                    partName = childParam.getName().getLocalPart();                    
-                    if (!partNames.contains(partName)) {
-                        if (i++ > 0)
-                            paramOrder += " ";
-                        paramOrder += partName;
-                        partNames.add(partName);
-                    }
-                }
-            } else */if (parameter.getIndex() >= 0) {
+            if (parameter.getIndex() >= 0) {
                partName = parameter.getName().getLocalPart();
                 if (!partNames.contains(partName)) {
                     if (i++ > 0)
@@ -490,8 +476,6 @@ public class WSDLGenerator {
             }
         }        
     }
-    
-   
 
     protected void generateSOAPHeaders(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
         
@@ -526,21 +510,14 @@ public class WSDLGenerator {
     }
     
     public Result createOutputFile(String namespaceUri, String suggestedFileName) throws IOException {
-//        File schemaFile;
         Result result;
         if (namespaceUri.equals("")) {
-            // TODO this isn't allowed, do something about it.
-//            result = new StreamResult(new ByteArrayOutputStream());
-//            result.setSystemId("");
             return null;
         }
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
-//        _import.schemaLocation(suggestedFileName);
 
         result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
         _import.schemaLocation(result.getSystemId());
-//        schemaFile = new File(suggestedFileName);
-//        result = new StreamResult(schemaFile);
         return result;
     }
     
