@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.6 2005-06-06 20:24:59 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.7 2005-06-06 23:31:43 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -45,6 +45,7 @@ public class RuntimeModeler {
     private String targetNamespace;
     private boolean isWrapped = true;
     private boolean usesWebMethod = false;
+    private ClassLoader classLoader = null;
     public static final String PD_JAXWS_PACKAGE_PD  = ".jaxws.";
     public static final String JAXWS_PACKAGE_PD     = "jaxws.";
     public static final String RESPONSE             = "Response";
@@ -60,6 +61,10 @@ public class RuntimeModeler {
         this.bindingId = bindingId;
     }
 
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+    
     //currently has many local vars which will be eliminated after debugging issues
     //first draft
     public RuntimeModel buildRuntimeModel() {
@@ -87,14 +92,17 @@ public class RuntimeModeler {
 
     protected Class getClass(String className) {
         try {
-            return Thread.currentThread().getContextClassLoader().loadClass(className);
+            if (classLoader == null)
+                return Thread.currentThread().getContextClassLoader().loadClass(className);
+            else 
+                return classLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            try {
-                return portClass.getClassLoader().loadClass(className);
-            } catch (ClassNotFoundException e2) {
+//            try {
+//                return portClass.getClassLoader().loadClass(className);
+//            } catch (ClassNotFoundException e2) {
                 throw new RuntimeModelerException("runtime.modeler.class.not.found",
                                  new Object[] {className});
-            }
+//            }
         }
     }
 
