@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.5 2005-06-06 17:29:42 jitu Exp $
+ * $Id: WSDLPublisher.java,v 1.6 2005-06-06 21:11:30 jitu Exp $
  */
 
 /*
@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -100,7 +101,12 @@ public class WSDLPublisher {
         OutputStream outputStream = response.getOutputStream();
         WSDLPatcher patcher = new WSDLPatcher(inPath, baseAddress,
                 targetEndpoint, endpoints, in.getDocContext());
-        patcher.patchDoc(in.getDoc(), outputStream);
+        InputStream is = in.getDoc();
+        try {
+            patcher.patchDoc(is, outputStream);
+        } finally {
+            is.close();
+        }
         return;
     }
     

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.5 2005-06-06 19:37:57 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.6 2005-06-06 21:11:30 jitu Exp $
  *
  */
 
@@ -12,6 +12,7 @@ package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,11 +80,14 @@ public class WSDLPatcher {
     
     /*
      * import, include, soap:address locations are patched
+     * caller needs to take care of closing of the streams
      */
     public void patchDoc(InputStream in, OutputStream out) {
+        XMLEventReader reader = null;
+        XMLEventWriter writer = null;
         try {
-            XMLEventReader reader = inputFactory.createXMLEventReader(in);
-            XMLEventWriter writer = outputFactory.createXMLEventWriter(out);
+            reader = inputFactory.createXMLEventReader(in);
+            writer = outputFactory.createXMLEventWriter(out);
             StartElement start = null;
             QName serviceName = null;
             QName portName = null;
@@ -122,10 +126,24 @@ public class WSDLPatcher {
                 }
                 writer.add(event);
             }
-            reader.close();
-            writer.close();
         } catch (XMLStreamException e) {
-            e.printStackTrace();
+            throw new ServerRtException("runtime.wsdl.patcher",
+                new LocalizableExceptionAdapter(e));
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch(XMLStreamException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch(XMLStreamException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
   
