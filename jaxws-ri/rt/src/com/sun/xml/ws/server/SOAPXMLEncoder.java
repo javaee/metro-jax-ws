@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.6 2005-06-02 17:53:14 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.7 2005-06-06 23:08:08 vivekp Exp $
  */
 
 /*
@@ -64,7 +64,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
             MimeHeaders mh = new MimeHeaders();
             mh.addHeader("Content-Type", getContentType(messageInfo));
-            SOAPMessage msg = new SOAPMessageContext().createMessage(mh, bis);
+            SOAPMessage msg = new SOAPMessageContext().createMessage(mh, bis, getBindingId());
             processAttachments(response, msg);
             return msg;
         } catch(Exception e) {

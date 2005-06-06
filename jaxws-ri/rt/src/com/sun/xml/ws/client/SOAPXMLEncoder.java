@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.8 2005-06-06 22:01:12 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.9 2005-06-06 23:08:07 vivekp Exp $
  */
 
 /*

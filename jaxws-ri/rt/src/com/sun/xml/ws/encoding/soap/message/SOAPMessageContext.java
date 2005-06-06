@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.2 2005-06-02 17:53:11 vivekp Exp $
+ * $Id: SOAPMessageContext.java,v 1.3 2005-06-06 23:08:07 vivekp Exp $
  */
 
 /*
@@ -118,10 +118,7 @@ public class SOAPMessageContext extends MessageContextImpl
      */
     public static SOAPMessage createMessage(String binding) {
         try {
-            String protocol = SOAPConstants.SOAP_1_1_PROTOCOL;
-            if(binding.equals(SOAPBinding.SOAP12HTTP_BINDING))
-                protocol = SOAPConstants.SOAP_1_2_PROTOCOL;
-            return getMessageFactory(protocol).createMessage();
+            return getMessageFactory(binding).createMessage();
         } catch (SOAPException e) {
             throw new SOAPMsgCreateException(
                     "soap.msg.create.err",
@@ -140,10 +137,7 @@ public class SOAPMessageContext extends MessageContextImpl
     public static SOAPMessage createMessage(MimeHeaders headers, InputStream in, String binding)
         throws IOException {
         try {
-            String protocol = SOAPConstants.SOAP_1_1_PROTOCOL;
-            if(binding.equals(SOAPBinding.SOAP12HTTP_BINDING))
-                protocol = SOAPConstants.SOAP_1_2_PROTOCOL;
-            return getMessageFactory(protocol).createMessage(headers, in);
+            return getMessageFactory(binding).createMessage(headers, in);
         } catch (SOAPException e) {
             throw new SOAPMsgCreateException(
                     "soap.msg.create.err",
@@ -208,23 +202,31 @@ public class SOAPMessageContext extends MessageContextImpl
 //        return _messageFactory;
 //    }
 
-    private static MessageFactory getMessageFactory(String soapProtocol) {
+    private static MessageFactory getMessageFactory(String binding) {
+        if(binding.equals(SOAPBinding.SOAP11HTTP_BINDING))
+            return _soap11messageFactory;
+        else if(binding.equals(SOAPBinding.SOAP12HTTP_BINDING))
+            return _soap12messageFactory;
+        return _soap11messageFactory;
+    }
+
+    private static MessageFactory createMessageFactory(String bindingId) {
         try {
-            if (_messageFactory == null) {
-                _messageFactory = MessageFactory.newInstance(soapProtocol);
-            }
+            return MessageFactory.newInstance(bindingId);
         } catch(SOAPException e) {
             throw new SOAPMsgFactoryCreateException(
                 "soap.msg.factory.create.err",
                 new Object[] { e });
         }
-        return _messageFactory;
     }
+
 
     private SOAPMessage _message;
     private boolean _failure;
     private Set<URI> roles;
-    private static MessageFactory _messageFactory;
+    private static final MessageFactory _soap11messageFactory = createMessageFactory(SOAPConstants.SOAP_1_1_PROTOCOL);
+    private static final MessageFactory _soap12messageFactory = createMessageFactory(SOAPConstants.SOAP_1_2_PROTOCOL);;
+
     private final static String DEFAULT_SERVER_ERROR_ENVELOPE =
                 "<?xml version='1.0' encoding='UTF-8'?>"
                 + "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">"
