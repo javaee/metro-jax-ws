@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.1 2005-05-24 13:31:29 bbissett Exp $
+ * $Id: WSDLModeler20.java,v 1.2 2005-06-06 20:42:07 vivekp Exp $
  */
 
 /*
@@ -72,16 +72,7 @@ import com.sun.tools.ws.wsdl.document.WSDLDocument;
 import com.sun.tools.ws.wsdl.document.jaxrpc.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBinding;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
-import com.sun.tools.ws.wsdl.document.soap.SOAPAddress;
-import com.sun.tools.ws.wsdl.document.soap.SOAPBinding;
-import com.sun.tools.ws.wsdl.document.soap.SOAPBody;
-import com.sun.tools.ws.wsdl.document.soap.SOAPConstants;
-import com.sun.tools.ws.wsdl.document.soap.SOAPFault;
-import com.sun.tools.ws.wsdl.document.soap.SOAPHeader;
-import com.sun.tools.ws.wsdl.document.soap.SOAPHeaderFault;
-import com.sun.tools.ws.wsdl.document.soap.SOAPOperation;
-import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
+import com.sun.tools.ws.wsdl.document.soap.*;
 import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.Extensible;
 import com.sun.tools.ws.wsdl.framework.Extension;
@@ -345,8 +336,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
 
                 if (soapBinding.getTransport() == null
-                    || !soapBinding.getTransport().equals(
-                        SOAPConstants.URI_SOAP_TRANSPORT_HTTP)) {
+                    || (!soapBinding.getTransport().equals(
+                        SOAPConstants.URI_SOAP_TRANSPORT_HTTP) && !soapBinding.getTransport().equals(
+                        SOAP12Constants.URI_SOAP_TRANSPORT_HTTP))) {
                     // cannot deal with non-HTTP ports
                     warn(
                         "wsdlmodeler.warning.ignoringSOAPBinding.nonHTTPTransport",
