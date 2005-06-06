@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.4 2005-06-06 17:29:42 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.5 2005-06-06 19:37:57 jitu Exp $
  *
  */
 
@@ -13,12 +13,12 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -52,6 +52,10 @@ public class WSDLPatcher {
             XMLInputFactory.newInstance();
     
     public static enum DOC_TYPE { WSDL, SCHEMA, OTHER };
+    
+    private static final Logger logger =
+        Logger.getLogger(
+            com.sun.xml.ws.util.Constants.LoggingDomain + ".wsdl.patcher");
     
     private String inPath;
     private String baseAddress;
@@ -133,9 +137,14 @@ public class WSDLPatcher {
     }
 
     private String getAbsImportLocation(String relPath) {
-        String path = docContext.getAbsolutePath(inPath, relPath);    
-        return baseAddress+targetEndpoint.getUrlPattern()+"?"+
-                targetEndpoint.getQueryString(path);
+        String path = docContext.getAbsolutePath(inPath, relPath);
+        String query = targetEndpoint.getQueryString(path);
+        if (query == null) {
+            return null;
+        }
+        String abs = baseAddress+targetEndpoint.getUrlPattern()+"?"+query;
+
+        return abs;
     }
 
     private XMLEvent patchImport(StartElement startElement, QName location)
@@ -151,11 +160,17 @@ public class WSDLPatcher {
             Attribute attr = (Attribute)i.next();
             String file = attr.getValue();
             if (attr.getName().equals(location)) {
-                String value = attr.getValue();
-                if (isPatchable(value)) {
-                    value = getAbsImportLocation(value);
+                String relPath = attr.getValue();
+                if (isPatchable(relPath)) {
+                    String absPath = getAbsImportLocation(relPath);
+                    if (absPath == null) {
+                        logger.warning("Couldn't fix the relative location:"+relPath);
+                        return startElement;        // Not patching
+                    }
+                    logger.info("Fixing the relative location:"+relPath
+                            +" with absolute location:"+absPath);
                     Attribute newAttr = eventFactory.createAttribute(
-                        location, value);
+                        location, absPath);
                     newAttrs.add(newAttr);
                     continue;
                 }
@@ -216,6 +231,8 @@ public class WSDLPatcher {
                 if (value == null) {
                     return startElement;        // Not patching  
                 }
+                logger.info("Fixing service:"+service+ " port:"+port
+                        + " address with "+value);
                 Attribute newAttr = eventFactory.createAttribute(
                         WSDL_LOCATION_QNAME, value);
                 newAttrs.add(newAttr);
