@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.4 2005-06-03 20:16:26 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.5 2005-06-06 17:11:55 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,8 +16,8 @@ import javax.xml.ws.soap.SOAPBinding;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -95,20 +95,21 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         setRolesOnHandlerChain();
     }
 
-    /**
-     * Client application can set if the Mtom optimization should be enabled
-     * @param enable
-     */
-    public void setMtomEnabled(boolean enable){
-        enableMtom = enable;
-    }
 
     /**
      *  Used typically by the runtime to enable/disable Mtom optimization
      * @return  true or false
      */
-    public boolean isMtomEnabled(){
+    public boolean isMTOMEnabled() {
         return enableMtom;
+    }
+
+    /**
+     * Client application can set if the Mtom optimization should be enabled
+     * @param b
+     */
+    public void setMTOMEnabled(boolean b) {
+        this.enableMtom = b;
     }
 
     private void setRolesOnHandlerChain() {

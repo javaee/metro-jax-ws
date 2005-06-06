@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.4 2005-06-02 17:53:10 vivekp Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.5 2005-06-06 17:11:55 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -104,9 +104,9 @@ public class EndpointIFInvocationHandler
 
         //set mtom processing
         if(_rtcontext != null && _rtcontext.getModel() != null){
-            SOAPBindingImpl sb = (binding instanceof SOAPBindingImpl)?(SOAPBindingImpl)binding:null;
+            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding)?(javax.xml.ws.soap.SOAPBinding)binding:null;
             if(sb != null){
-                _rtcontext.getModel().enableMtom(sb.isMtomEnabled());
+                _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
             }
         }
 
