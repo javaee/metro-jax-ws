@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.2 2005-05-24 17:48:16 vivekp Exp $
+ * $Id: LocalClientTransport20.java,v 1.3 2005-06-07 01:54:43 vivekp Exp $
  */
 
 /*
@@ -16,6 +16,8 @@ import java.util.Iterator;
 
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.ws.client.ClientTransport;
 import com.sun.xml.ws.client.ClientTransportException;
@@ -109,10 +111,19 @@ public class LocalClientTransport20 implements ClientTransport {
             context.getMessage().writeTo(os);
 
             ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+            MimeHeaders headers = context.getMessage().getMimeHeaders();
+            String [] header = headers.getHeader("Content-Type");
+            String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+            if(headers != null && header.length > 0){
+                String ct = header[0];
+                if(ct.equals("application/soap+xml; charset=utf-8") || ct.equals("application/xop+xml;type=\"application/soap+xml\" charset=utf-8"))
+                    bindingId = SOAPBinding.SOAP12HTTP_BINDING;
+            }
+
 
             SOAPMessage message =
                     context.createMessage(context.getMessage().getMimeHeaders(),
-                            is);
+                            is, bindingId);
             context.setMessage(message);
         }
     }
