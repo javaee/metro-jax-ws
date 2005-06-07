@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.6 2005-06-02 17:53:15 vivekp Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.7 2005-06-07 21:35:15 jitu Exp $
  */
 
 /*
@@ -80,7 +80,15 @@ public class JAXRPCRuntimeInfoParser {
                 String implementationName =
                     getMandatoryNonEmptyAttribute(reader, attrs, ATTR_IMPLEMENTATION);
                 rei.setImplementor(getImplementor(implementationName));
-                rei.setWSDLFileName(getAttribute(attrs, ATTR_WSDL));
+                String wsdlFile = getAttribute(attrs, ATTR_WSDL);
+                if (wsdlFile != null &&
+                        !wsdlFile.startsWith(JAXRPCContextListener.JAXWS_WSDL_DIR)) {
+                    logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
+                            +JAXRPCContextListener.JAXWS_WSDL_DIR
+                            +". Going to generate and publish a new WSDL.");
+                    wsdlFile = null;
+                }
+                rei.setWSDLFileName(wsdlFile);
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
                 rei.setPortName(getQNameAttribute(attrs, ATTR_PORT));
 

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.5 2005-06-06 23:23:34 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.6 2005-06-07 21:35:15 jitu Exp $
  */
 
 /*
@@ -181,7 +181,7 @@ public class JAXRPCContextListener
     private ClassLoader classLoader;
 
     private static final String JAXRPC_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
-    private static final String JAXWS_WSDL_DIR = "/WEB-INF/wsdl";
+    public static final String JAXWS_WSDL_DIR = "/WEB-INF/wsdl";
 
     private static final Logger logger =
         Logger.getLogger(
