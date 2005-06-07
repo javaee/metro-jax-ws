@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceGenerator.java,v 1.1 2005-05-23 23:14:49 bbissett Exp $
+ * $Id: RemoteInterfaceGenerator.java,v 1.2 2005-06-07 03:39:06 vivekp Exp $
  */
 
 /*
@@ -50,7 +50,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
     protected boolean isWrapped;
     protected String SOAPBINDING_PKG = "com.sun.xml.ws";
     private String wsdlLocation;
-    private WSDLModelInfo wsdlModelInfo;   
+    private WSDLModelInfo wsdlModelInfo;
 
     public RemoteInterfaceGenerator() {
         super();
@@ -62,7 +62,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         Properties properties) {
         super(model, config, properties);
         this.wsdlLocation = ((WSDLModelInfo)config.getModelInfo()).getLocation();
-        this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();        
+        this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();
     }
 
     public GeneratorBase20 getGenerator(
@@ -79,7 +79,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         SOAPVersion ver) {
         return new RemoteInterfaceGenerator(model, config, properties);
     }
-    
+
     protected void doGeneration() {
         String modelerName =
             (String) model.getProperty(
@@ -253,13 +253,13 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
 
         if (!canAnnotate)
             return;
-        
+
         String serviceName = Names.stripQualifier(env.getNames()
             .customJavaTypeClassName(service.getJavaInterface()));
         String name = Names.stripQualifier(env.getNames()
             .customJavaTypeClassName(port.getJavaInterface()));
-        String targetNamespace = service.getName().getNamespaceURI();        
-        
+        String targetNamespace = service.getName().getNamespaceURI();
+
         p.plnI("@javax.jws.WebService(");
         p.pln("name=\""+name+"\",");
         p.pln("serviceName=\""+serviceName+"\",");
@@ -292,11 +292,11 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         String name = Names.stripQualifier(fullName);
         return name+"_handler.xml";
     }
-    
+
     private void generateHandlerChainFile(Element hc, String name) {
         String hcName = getHandlerConfigFileName(name);
-                     
-        File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir, env);        
+
+        File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir, env);
         File hcFile = new File(packageDir, hcName);
 
         /* adding the file name and its type */
@@ -310,7 +310,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
                 new IndentingWriter(
                     new OutputStreamWriter(new FileOutputStream(hcFile)));
             Transformer it = TransformerFactory.newInstance().newTransformer();
-            
+
             it.setOutputProperty(OutputKeys.METHOD, "xml");
             it.setOutputProperty(OutputKeys.INDENT, "yes");
             it.setOutputProperty(
@@ -382,15 +382,20 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         boolean isWrapped = operation.isWrapped() || !isDocStyle;
         boolean sameStyle = operation.getStyle().equals(port.getStyle());
         boolean sameWrapped = isWrapped == port.isWrapped();
-        
+
         JavaMethod method = operation.getJavaMethod();
         String requestWrapper = getMessageWrapper(operation.getRequest());
         String responseWrapper = null;
         Response response = operation.getResponse();
-        
+
         if (response != null)
             responseWrapper = getMessageWrapper(response);
-        p.p("@javax.jws.WebMethod(operationName=\""+operation.getName()+"\"");
+
+        String operationName = (operation instanceof AsyncOperation)?
+                ((AsyncOperation)operation).getNormalOperation().getName().getLocalPart():
+                operation.getName().getLocalPart();
+        p.p("@javax.jws.WebMethod(operationName=\""+operationName+"\"");
+
         if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0)
             p.pln(", action=\""+operation.getSOAPAction()+"\")");
         else
@@ -413,14 +418,16 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
                     }
                 }
             }
-            p.p("@javax.jws.WebResult(name=\""+resultName+"\"");
-            if (operation.getStyle().equals(SOAPStyle.DOCUMENT)) {
-                p.p(", targetNamespace=\""+nsURI+"\"");
+            if(!(operation instanceof AsyncOperation)){
+                p.p("@javax.jws.WebResult(name=\""+resultName+"\"");
+                if (operation.getStyle().equals(SOAPStyle.DOCUMENT)) {
+                    p.p(", targetNamespace=\""+nsURI+"\"");
+                }
+                p.pln(")");
             }
-            p.pln(")");
         }
 
-        
+
         if (!sameStyle || (!sameWrapped && isDocStyle)) {
             String style = SOAPBINDING_PKG+".SOAPBinding.Style.";
 //            String use = "SOAPBinding.Use.";
@@ -449,7 +456,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         if (operation.isWrapped() && operation.getStyle().equals(SOAPStyle.DOCUMENT)) {
             //String reqWrapper;
             //String resWrapper;
-            //reqWrapper = ((Block)operation.getRequest().getBodyBlocks().next()).getType().getJavaType().getName();            
+            //reqWrapper = ((Block)operation.getRequest().getBodyBlocks().next()).getType().getJavaType().getName();
             //p.p("@com.sun.xml.ws.WebWrapper(requestWrapper=\""+reqWrapper+"\"");
             Block reqBlock = operation.getRequest().getBodyBlocks().next();
             p.plnI("@com.sun.xml.ws.RequestWrapper(");
@@ -465,7 +472,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
                 p.pln("type=\""+resBlock.getType().getJavaType().getName()+"\"");
                 p.pOln(")");
             }
-            
+
 //            if (response != null ) {
 //                resWrapper = ((Block)response.getBodyBlocks().next()).getType().getJavaType().getName();
 //                p.plnI(",");
@@ -476,13 +483,14 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
 //            }
         }
     }
-    
+
     /**
      * @param operation
      * @return
      */
     private boolean canAnnotate(Operation operation) {
-        return !(operation instanceof AsyncOperation);
+        return true;
+        //return !(operation instanceof AsyncOperation);
     }
 
     private String getMessageWrapper(Message message){
@@ -496,7 +504,7 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
                 return structType.getName().getLocalPart();
         }
         return null;
-    }    
+    }
 
     protected void writeWebParam(IndentingWriter p,
                                JavaParameter javaParameter,
@@ -521,12 +529,12 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         } else {*/
 //            name = param.getName();
 //        }
-        
+
         if((param.getBlock().getLocation() == Block.HEADER) || (isDocStyle && !isWrapped))
             name = param.getBlock().getName().getLocalPart();
-        else 
+        else
             name = param.getName();
-        
+
         if (param.getLinkedParameter() != null)
             mode += "INOUT";
         else if (res != null && (isMessageParam(param, res) || isHeaderParam(param, res)))

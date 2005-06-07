@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.7 2005-06-06 23:31:43 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.8 2005-06-07 03:38:32 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,14 +23,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.ParameterIndex;
-import javax.xml.ws.WebFault;
-import javax.xml.ws.Holder;
+import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
+import java.util.concurrent.Future;
 
 
 /**
@@ -206,11 +204,9 @@ public class RuntimeModeler {
         int modifier = method.getModifiers();
         //use for checking
 
-        if (method.isAnnotationPresent(Oneway.class)) {
-//            System.out.println("method is oneway");
-            javaMethod.setMEP(MessageStruct.ONE_WAY_MEP);
-        } else
-            javaMethod.setMEP(MessageStruct.REQUEST_RESPONSE_MEP);
+         //set MEP -oneway, async, req/resp
+        int mep = getMEP(method);
+        javaMethod.setMEP(mep);
 
 
         WebMethod webMethod = method.getAnnotation(WebMethod.class);
@@ -257,6 +253,18 @@ public class RuntimeModeler {
                 method, webService);
         }
         runtimeModel.addJavaMethod(javaMethod);
+    }
+
+    private int getMEP(Method m){
+        if (m.isAnnotationPresent(Oneway.class)) {
+            return MessageStruct.ONE_WAY_MEP;
+        }
+        if(Response.class.isAssignableFrom(m.getReturnType())){
+            return MessageStruct.ASYNC_POLL_MEP;
+        }else if(Future.class.isAssignableFrom(m.getReturnType())){
+            return MessageStruct.ASYNC_CALLBACK_MEP;
+        }
+        return MessageStruct.REQUEST_RESPONSE_MEP;
     }
 
     protected void processDocWrappedMethod(JavaMethod javaMethod, String methodName,
@@ -645,7 +653,25 @@ public class RuntimeModeler {
         }
 
         Class returnType = method.getReturnType();
-        Type genericReturnType = method.getGenericReturnType();
+
+        if(javaMethod.isAsync()){
+            if(Response.class.isAssignableFrom(returnType)){
+                Type ret = method.getGenericReturnType();
+                returnType = Navigator.REFLECTION.erasure(((ParameterizedType)ret).getActualTypeArguments()[0]);
+            }else{
+                Type[] types = method.getGenericParameterTypes();
+                Class[] params = method.getParameterTypes();
+                int i = 0;
+                for(Class cls : params){
+                    if(AsyncHandler.class.isAssignableFrom(cls)){
+                        returnType = Navigator.REFLECTION.erasure(((ParameterizedType)types[i]).getActualTypeArguments()[0]);
+                        break;
+                    }
+                    i++;
+                }
+            }
+        }
+
         QName responseQName = null;
         if ((returnType != null) && (!returnType.getName().equals("void"))) {
             Class returnClazz = returnType;
@@ -672,14 +698,25 @@ public class RuntimeModeler {
             String paramName = method.getName();
             String targetNamespace = webService.targetNamespace();
             boolean isHeader = false;
+
+            //async
+            if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
+                continue;
+                //clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
+            }
+
+
 //            com.sun.xml.rpc.rt.model.Mode paramMode = com.sun.xml.rpc.rt.model.Mode.IN;
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
-                //TODO: need to handle Holder(s) defined by jaxrpc 1.1 spec
                 if (clazzType.getName().equals(Holder.class.getName()))
                     clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
             }
+
+
+
+
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
                 com.sun.xml.ws.model.Mode.INOUT :
                 com.sun.xml.ws.model.Mode.IN;

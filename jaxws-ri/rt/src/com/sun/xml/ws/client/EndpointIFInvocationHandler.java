@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.5 2005-06-06 17:11:55 vivekp Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.6 2005-06-07 03:38:31 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,6 +15,7 @@ import com.sun.xml.ws.wsdl.WSDLContext;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.AsyncHandler;
 import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -90,6 +91,14 @@ public class EndpointIFInvocationHandler
                 MessageStruct.REQUEST_RESPONSE_MEP : (mep == MessageStruct.ONE_WAY_MEP) ?
                 MessageStruct.ONE_WAY_MEP : ((mep == MessageStruct.ASYNC_POLL_MEP) ?
                 MessageStruct.ASYNC_POLL_MEP : MessageStruct.ASYNC_CALLBACK_MEP);
+        }
+
+        if(mmep == MessageStruct.ASYNC_CALLBACK_MEP){
+            for(Object param : parameters){
+                if(AsyncHandler.class.isAssignableFrom(param.getClass())){
+                    messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, param);
+                }
+            }
         }
 
         messageStruct.setMethod(method);

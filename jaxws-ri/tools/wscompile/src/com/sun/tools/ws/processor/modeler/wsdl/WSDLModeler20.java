@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.2 2005-06-06 20:42:07 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.3 2005-06-07 03:39:06 vivekp Exp $
  */
 
 /*
@@ -1102,7 +1102,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
             operation.setUniqueName(info.operation.getUniqueName()+"_async_polling");
 
         operation.setAsyncType(asyncType);
-
+        operation.setSOAPAction(info.operation.getSOAPAction());
+        boolean unwrappable = info.operation.isWrapped();
+        operation.setWrapped(unwrappable);
         SOAPBody soapRequestBody = getSOAPRequestBody();
 
         Message inputMessage = getInputMessage();
@@ -1126,7 +1128,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
         List<Parameter> inParameters = null;
         List<Parameter> outParameters = null;
-        boolean unwrappable = isUnwrappable();
+        //boolean unwrappable = isUnwrappable();
 
 
         if(isOperationDocumentLiteral(styleAndUse)){
@@ -2764,7 +2766,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
     protected enum StyleAndUse  {RPC_LITERAL, DOC_LITERAL};
     private ModelerUtils _modelerUtils;
-    private JAXBModelBuilder _jaxbModelBuilder;    
+    private JAXBModelBuilder _jaxbModelBuilder;
 
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#validWSDLBindingStyle(com.sun.xml.rpc.wsdl.document.Binding)
