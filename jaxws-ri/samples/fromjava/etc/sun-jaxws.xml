@@ -9,8 +9,5 @@
   <endpoint
     name='fromjava'
     implementation='fromjava.server.AddNumbersImpl'
-    wsdl='/WEB-INF/AddNumbersImplService.wsdl'
-    service='{http://server.fromjava/jaxws}AddNumbersImplService'
-    port='{http://server.fromjava/jaxws}AddNumbersImplPort'
     urlpattern='/addnumbers'/>
 </endpoints>

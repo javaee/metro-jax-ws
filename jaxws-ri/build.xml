@@ -51,6 +51,7 @@
     <mkdir dir="${build.home}"/>
     <mkdir dir="${build.home}/lib"/>
     <mkdir dir="${build.home}/bin"/>  
+    <mkdir dir="${build.home}/samples"/>  
   </target>
 
   <target name="runtime-compile" depends="prepare">
@@ -130,6 +131,7 @@
 
   <target name="clean">
     <delete dir="${build.home}"/>
+    <delete dir="${dist.home}"/>
     <ant dir="${basedir}/rt" target="clean"/>
     <ant dir="${basedir}/tools/wscompile" target="clean"/>
   </target>
@@ -272,10 +274,11 @@
     <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackonsjsas.xml"/>
     <copy    todir="${dist20.home}/bin">
       <fileset dir="${build.home}/bin"
-          includes="wscompile.*"/>
+          includes="wsimport.*, wsgen.*"/>
     </copy>
 
-    <chmod perm="+x" file="${dist20.home}/bin/wscompile.sh"/>
+    <chmod perm="+x" file="${dist20.home}/bin/wsimport.sh"/>
+    <chmod perm="+x" file="${dist20.home}/bin/wsgen.sh"/>
 
     <copy    todir="${dist20.home}/lib">
 	<fileset
@@ -286,11 +289,11 @@
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
     </copy>
-<!--  	
-    <copy todir="${dist20.home}/samples">
-  	<fileset dir="${build.home}/samples"/>
-    </copy>
--->
+  	
+  	<copy todir="${dist20.home}/samples">
+        <fileset dir="samples" includes="etc/**, fromjava/**, supplychain/**" excludes="**/CVS/**" />
+	</copy>
+  	
     <copy todir="${dist20.home}">
   	<fileset dir="${build.home}" includes="*.txt"/>
     </copy>

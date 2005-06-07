@@ -15,7 +15,7 @@ public class RetailerClient {
         try {
             ServiceFactory serviceFactory = ServiceFactory.newInstance();
             WarehouseImplService service = (WarehouseImplService)serviceFactory.createService((java.net.URL)null, WarehouseImplService.class);
-            WarehouseImpl port = service.getWarehouseImplPort();
+            WarehouseImpl port = service.getWarehouseImpl();
 			
             int number1 = 10;
             int number2 = 20;

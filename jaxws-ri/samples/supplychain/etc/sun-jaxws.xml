@@ -9,8 +9,5 @@
   <endpoint
     name='fromjava'
     implementation='supplychain.server.WarehouseImpl'
-    wsdl='/WEB-INF/WarehouseImplService.wsdl'
-    service='{http://server.supplychain/jaxws}WarehouseImplService'
-    port='{http://server.supplychain/jaxws}WarehouseImplPort'
     urlpattern='/submitpo'/>
 </endpoints>

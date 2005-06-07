@@ -13,7 +13,7 @@ public class AddNumbersClient {
         try {
             ServiceFactory serviceFactory = ServiceFactory.newInstance();
             AddNumbersImplService service = (AddNumbersImplService)serviceFactory.createService((java.net.URL)null, AddNumbersImplService.class);
-            AddNumbersImpl port = service.getAddNumbersImplPort();
+            AddNumbersImpl port = service.getAddNumbersImpl();
 			
             int number1 = 10;
             int number2 = 20;

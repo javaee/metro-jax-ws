@@ -65,27 +65,25 @@
         keep="${keep}"
         import="true"
         nonClassDir="${build.home}"
-	model="${build.home}/jaxws-${ant.project.name}-model.xml.gz"
+		model="${build.home}/jaxws-${ant.project.name}-model.xml.gz"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
-	<classpath refid="jaxws.classpath"/>
-	<binding dir="${basedir}/etc" includes="${server.binding}"/>
+		<classpath refid="jaxws.classpath"/>
+		<binding dir="${basedir}/etc" includes="${server.binding}"/>
     </wsimport>
     <javac
-	fork="true"
-	srcdir="${basedir}/src"
-	destdir="${build.classes.home}"
-	includes="**/server/**,**/common/**">
-	<classpath refid="jaxws.classpath"/>
+		fork="true"
+		srcdir="${basedir}/src"
+		destdir="${build.classes.home}"
+		includes="**/server/**,**/common/**">
+		<classpath refid="jaxws.classpath"/>
     </javac>
 </target>
 
 <target name="create-war">
     <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
 	<webinf dir="${basedir}/etc" includes="*.wsdl, sun-jaxws.xml"/>
-	<webinf dir="${build.home}" includes="*.wsdl, *.xml.gz"/>
 	<fileset dir="${basedir}/etc" includes="*.xsd"/>
-	<fileset dir="${build.home}" includes="*.xsd"/>
 	<classes dir="${build.classes.home}"/>
     </war>
 </target>
@@ -93,7 +91,7 @@
 <target name="deploy">
     <property environment="env" />
     <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
-        todir="${env.TOMCAT_HOME}/webapps"/>
+        todir="${env.AS_HOME}/domains/${domain}/autodeploy"/>
 </target>
 
 <target name="generate-client">
@@ -104,6 +102,7 @@
         keep="${keep}"
         base="${build.classes.home}"
         nonClassDir="${build.home}"
+        httpProxy="webcache.sfbay.sun.com:8080"
         wsdlFile="${client.wsdl}">
 	<classpath>
 	    <path refid="jaxws.classpath"/>
@@ -129,6 +128,8 @@
             <path refid="jaxws.classpath"/>
             <pathelement location="${build.classes.home}"/>
 	</classpath>
+        <jvmarg value="-Dhttp.proxyHost=webcache.sfbay.sun.com"/>
+        <jvmarg value="-Dhttp.proxyPort=8080"/>
     </java>
 </target>
 
