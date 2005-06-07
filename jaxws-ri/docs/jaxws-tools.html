@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+  <title>Java(TM) API for XML Web Services (JAX-WS) 2.0 Tools</title>
+  <meta name="CREATED" content="20050329;10375410">
+  <meta name="CHANGED" content="20050401;8213207">
+</head>
+<body dir="ltr" lang="en-US">
+<h1><a class="mozTocH1" name="mozTocId420008"></a>JAX-WS 2.0 Early
+Access 2 - Tools</h1>
+<hr>
+<p>Last Modified: 06/07/05</p>
+<h1><a class="mozTocH1" name="mozTocId951109"></a>Contents</h1>
+<ol id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId420008">JAX-WS
+2.0 Early Access 2 - Tools</a></li>
+  <li><a href="#mozTocId951109">Contents</a>
+    <ol>
+      <li><a href="#mozTocId531996">apt</a></li>
+      <li><a href="#mozTocId497292">wsimport</a></li>
+      <li><a href="#mozTocId18364">wsgen</a></li>
+      <li><a href="#mozTocId344067">How do I pick a tool?</a></li>
+    </ol>
+  </li>
+</ol>
+<ul>
+</ul>
+<h2><a class="mozTocH2" name="mozTocId531996"></a><a name="apttool"
+ id="apttool"></a><code>apt</code></h2>
+<p>The <code>apt</code> tool provides a facility for programmatically
+processing the annotations added to Java by <a
+ href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</a>, <i>Metadata
+Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming
+Language</i>. In brief, JSR 175 allows programmers to declare new kinds
+of structured modifiers that can be associated with program elements,
+fields, methods, classes, etc.</p>
+<p>The <code>apt</code> tool generates the portable artifacts (WSDL
+file, schema files, JavaBeans) used in JAX-RPC services. <br>
+</p>
+<p>For more information on this tool please see: <a href="apt.html">apt
+tool</a>.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId497292"></a><a
+ name="wscompiletool" id="wscompiletool"></a>wsimport</h2>
+<p>The <code>wscompile</code> tool generates JAX-RPC portable (service
+endpoint interface, Service, etc.) and non-portable artifacts (stubs,
+ties, etc.), JAXB artifacts, and WSDL files used in JAX-RPC clients and
+services. The tool reads a WSDL or a web service endpoint class and
+generates all the required artifacts for web service development,
+deployment, and invocation.<br>
+</p>
+<p>For more information on this tool please see: <a
+ href="wsimport.html">wsimport
+tool</a>.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId18364"></a><a name="wsdeploytool"
+ id="wsdeploytool"></a>wsgen</h2>
+<p>The <code>wsdeploy</code> tool reads a WAR file and the <code>jaxrpc-ri.xml</code>
+file and then generates another WAR file that is ready for deployment.
+Behind the scenes, <code>wsdeploy</code> runs <code>wscompile</code>
+with the <code>-gen:server</code> option. The <code>wscompile</code>
+command generates classes, modifies the deployment descriptors that <code>wsdeploy</code>
+includes in the generated WAR file.</p>
+<p>For more information on this tool please see: <a href="wsgen.html">wsgen
+tool</a>.<br>
+</p>
+<h2><a class="mozTocH2" name="mozTocId344067"></a><a name="how" id="how"></a>How
+do I pick a tool?</h2>
+<p>The following lists the process to create a web service starting
+from Java sources, classes, and a WSDL file (server side):</p>
+<ol>
+  <li>Starting from Java sources:
+    <ol>
+      <li>Use <code>apt</code> to generate the artifacts: a WSDL file,
+schema documents, and other Java artifacts.</li>
+      <li>Package the <code>web.xml</code>, <code>sun-jaxws.xml</code>,
+service endpoint interface and
+implementation class, value types, and generated classes, if any, into
+a WAR file,<br>
+      </li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+  <li>Starting from Java classes:
+    <ol>
+      <li>Use <code>wsgen</code> to generate portable artifacts.</li>
+      <li>Package the <code>web.xml</code>, <code>sun-jaxws.xml</code>,
+service endpoint interface and
+implementation class, value types, and generated classes, if any, into
+a WAR file,<br>
+      </li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+  <li>Starting from a WSDL file:
+    <ol>
+      <li>Use <code>wsimport</code> to generate portable artifacts.</li>
+      <li>Implement the service endpoint.</li>
+      <li>Package the WSDL file, schema documents, <code>web.xml</code>,
+        <code>sun-jaxws.xml</code>, service endpoint interface and
+implementation class, value types, and generated classes,
+if any, into a WAR file.</li>
+      <li>Deploy the WAR to a web container.</li>
+    </ol>
+  </li>
+</ol>
+<p>The following lists the process to invoke a web service (client
+side):</p>
+<ol>
+  <li>Starting from deployed web service's WSDL
+    <ol>
+      <li>Use <code>wsimport</code> to generate the client-side
+artifacts.</li>
+      <li>Implement the client to invoke the web service.</li>
+    </ol>
+  </li>
+</ol>
+<hr>
+<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
+2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>

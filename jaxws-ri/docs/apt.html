@@ -1,0 +1,599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+  <title>Java(TM) API for XML-based RPC (JAX-RPC) 2.0 Tools</title>
+  <meta name="CREATED" content="20050329;10375410">
+  <meta name="CHANGED" content="20050401;8213207">
+</head>
+<body dir="ltr" lang="en-US">
+<h1><a class="mozTocH1" name="mozTocId872588"></a>JAX-WS 2.0 Early
+Access - APT</h1>
+<hr>
+<p>Last Modified: 06/07/05<br>
+<br>
+</p>
+<h1><a class="mozTocH1" name="mozTocId642262"></a><code>apt<br>
+</code></h1>
+<p>The <code>apt</code> tool provides a facility for programmatically
+processing the annotations added to Java by <a
+ href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</a>, <i>Metadata
+Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming
+Language</i>. In brief, JSR 175 allows programmers to declare new kinds
+of structured modifiers that can be associated with program elements,
+fields, methods, classes, etc.</p>
+<p>The <code>apt</code> tool generates the portable artifacts (WSDL
+file, schema files, JavaBeans) used in JAX-RPC services. <br>
+</p>
+<h3><a class="mozTocH3" name="mozTocId798307"></a>Command-line<br>
+</h3>
+<h3><a class="mozTocH3" name="mozTocId408933"></a>Syntax</h3>
+<pre>apt &lt;apt and javac options&gt; &lt;source files&gt;<br></pre>
+<p>The following table lists the <code>apt</code> options.</p>
+<p align="center">Table 1-1 apt Options</p>
+<table border="1" cellpadding="2" cellspacing="3" width="847">
+  <col width="220"> <col width="608"> <tbody>
+    <tr>
+      <th width="220">
+      <p align="center">Option</p>
+      </th>
+      <th width="608">
+      <p align="center">Description</p>
+      </th>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-classpath &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Specifies where to find user class files and
+annotation processor factories</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-cp &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Same as <code>-classpath &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-d &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Specifies where to place processor and <code>javac</code>
+generated class files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p><code>-s &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p>Specifies where to place processor generated source files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-source &lt;release&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Provide source compatibility with the specified
+release</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p><code>-version</code></p>
+      </td>
+      <td width="608">
+      <p>Version information</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-help</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Print a synopsis of standard options; use <code>javac
+-help</code> for more options</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-X</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Print a synopsis of non-standard options</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-J&lt;flag&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Pass &lt;flag&gt; directly to the runtime system</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-A[key[=value]]</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Options to pass to annotation processors</p>
+      <p align="left">JAX-RPC uses <code>-And=&lt;directory&gt;</code>
+to specify the directory to generate the WSDL and schema files</p>
+      <p align="left">JAX-RPC uses <code>-Averbose=true</code> to dump
+verbose messages from its <code>AnnotationProcessor</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-nocompile</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Do not compile source files to class files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-print</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Print out a textual representation of the
+specified types</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p><code>-factorypath &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p>Specify where to find annotation processor factories</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-factory &lt;class&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Name of <code>AnnotationProcessorFactory</code>
+to use; bypasses default discovery process</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-g</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Generate all debugging info</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-g:none</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Generate no debugging info</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-g:{lines,vars,source}</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Generate only some debugging info</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-nowarn</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Generate no warnings</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-verbose</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Output messages about what <code>apt</code> and <code>javac</code>
+are doing</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-deprecation</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Output source locations where deprecated APIs are
+used</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-sourcepath &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Specify where to find input source files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-bootclasspath &lt;path&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Override location of bootstrap class files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-endorseddirs &lt;dirs&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Override location of endorsed standards path</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-encoding &lt;encoding&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Specify character encoding used by source files</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="220">
+      <p align="left"><code>-target &lt;release&gt;</code></p>
+      </td>
+      <td width="608">
+      <p align="left">Generate class files for a specific virtual
+machine version</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>It is important when using <code>apt</code> with JAX-RPC to specify
+all of the JAR files in the distributed JAX-RPC bundle in the classpath
+passed to <code>apt</code>. The <code>-sourcepath &lt;path&gt;</code>
+option must also be provided so that <code>apt</code> and the JAX-RPC
+annotation processor can find all types referenced by a web service
+endpoint implementation class.</p>
+<p>For more information on apt please refer to the <code>apt</code>
+documentation <a
+ href="http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html">here</a>.</p>
+<h2></h2>
+<h2><a name="apttask" id="apttask"></a>Ant task<br>
+</h2>
+<p>An Ant task for the <code>apt</code> tool is provided with JAX-RPC
+2.0 EA. The attributes and elements supported by the Ant task are
+listed below:</p>
+<pre>&lt;apt<br>    fork="true|false"<br>    verbose="true|false"<br>    classpath="classpath"<br>    base="directory for generated class files"<br>    sourceBase="directory for generated source files"<br>    noCompile="true|false"<br>    print="true|false"<br>    factoryPath="&lt;path&gt;"<br>    factory="name of AnnotationProcessorFactory to use"<br>    xListAnnotationTypes="true|false"<br>    xListDeclarations="true|false"<br>    xPrintAptRounds="true|false"<br>    xPrintFactoryInfo="true|false"<br>    xClassesAsDecls="true|false"<br>    debug="true|false"<br>    debugLevel="lines|vars|source"<br>    nowarn="true|false"<br>    deprecation="true|false"<br>    bootclasspath="&lt;path&gt;"<br>    extdirs="&lt;path&gt;"<br>    endorseddirs="&lt;path&gt;"<br>    sourcePath="&lt;path&gt;"<br>    encoding="specify character encoding used by source files"<br>    target="generate class files for specific virtual machine version"&gt;<br>    &lt;source ... &gt; ... &lt;/source&gt;<br>    &lt;classpath ... &gt; ... &lt;/classpath&gt;<br>&lt;/apt&gt;<br></pre>
+<table border="0" cellpadding="2" cellspacing="2" width="90%">
+  <tbody>
+    <tr>
+      <td bgcolor="#ffffcc" width="20%">
+      <p>Attribute</p>
+      </td>
+      <td bgcolor="#ffffcc" width="60%">
+      <p>Description</p>
+      </td>
+      <td bgcolor="#ffffcc" width="20%">
+      <p>Command line</p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+      <p><code>fork</code></p>
+      </td>
+      <td width="70%">
+      <p>Forks the <code>wscompile</code> process into another virtual
+machine</p>
+      </td>
+      <td width="15%">
+      <p>n/a</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>verbose</code></p>
+      </td>
+      <td width="60%">
+      <p>Output messages about what the compiler is doing</p>
+      </td>
+      <td width="20%">
+      <p><code>-verbose</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>classpath</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify where to find user class files and annotation
+processor factories</p>
+      </td>
+      <td width="20%">
+      <p><code>-classpath</code> or <code>-cp</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>base</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify where to place processor and <code>javac</code>
+generated class files</p>
+      </td>
+      <td width="20%">
+      <p><code>-d &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>sourceBase</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify where to place processor generated source files</p>
+      </td>
+      <td width="20%">
+      <p><code>-s &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>noCompile</code></p>
+      </td>
+      <td width="60%">
+      <p>Do not compile source files to class files</p>
+      </td>
+      <td width="20%">
+      <p><code>-nocompile</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>print</code></p>
+      </td>
+      <td width="60%">
+      <p>Print out a textual representation of the specified types</p>
+      </td>
+      <td width="20%">
+      <p><code>-print</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>factoryPath</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify where to find annotation processor factories</p>
+      </td>
+      <td width="20%">
+      <p><code>-factorypath &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>factory</code></p>
+      </td>
+      <td width="60%">
+      <p>Name of the <code>AnnotationProcessorFactory</code> to use;
+bypasses default discovery process</p>
+      </td>
+      <td width="20%">
+      <p><code>-factory &lt;class&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>xListAnnotationTypes</code></p>
+      </td>
+      <td width="60%">
+      <p>List the found annotation types</p>
+      </td>
+      <td width="20%">
+      <p><code>-XListAnnotationTypes</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>xListDeclarations</code></p>
+      </td>
+      <td width="60%">
+      <p>List specified and included declarations</p>
+      </td>
+      <td width="20%">
+      <p><code>-XListDeclarations</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>xPrintAptRounds</code></p>
+      </td>
+      <td width="60%">
+      <p>Print information about initial and recursive <code>apt</code>
+rounds</p>
+      </td>
+      <td width="20%">
+      <p><code>-XPrintAptRounds</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>xPrintFactoryInfo</code></p>
+      </td>
+      <td width="60%">
+      <p>Print information about which annotations a factory is asked
+to process</p>
+      </td>
+      <td width="20%">
+      <p><code>-XPrintFactoryInfo</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>xClassesAsDecls</code></p>
+      </td>
+      <td width="60%">
+      <p>Treat both class and source files as declarations to process</p>
+      </td>
+      <td width="20%">
+      <p><code>-XclassesAsDecls</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>debug</code></p>
+      </td>
+      <td width="60%">
+      <p>Generate all debugging info</p>
+      </td>
+      <td width="20%">
+      <p><code>-g</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>debugLevel</code></p>
+      </td>
+      <td width="60%">
+      <p>Debug level: lines, vars, sources</p>
+      </td>
+      <td width="20%">
+      <p><code>-g:{lines,vars,source}</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>nowarn</code></p>
+      </td>
+      <td width="60%">
+      <p>Generate no warnings</p>
+      </td>
+      <td width="20%">
+      <p><code>-nowarn</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>deprecation</code></p>
+      </td>
+      <td width="60%">
+      <p>Output source locations where deprecated APIs are used</p>
+      </td>
+      <td width="20%">
+      <p><code>-deprecation</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>bootclasspath</code></p>
+      </td>
+      <td width="60%">
+      <p>Override location of bootstrap class files</p>
+      </td>
+      <td width="20%">
+      <p><code>-bootclasspath &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>extdirs</code></p>
+      </td>
+      <td width="60%">
+      <p>Override location of installed extensions</p>
+      </td>
+      <td width="20%">
+      <p><code>-extdirs &lt;dirs&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>endorseddirs</code></p>
+      </td>
+      <td width="60%">
+      <p>Override location of endorsed standards path</p>
+      </td>
+      <td width="20%">
+      <p><code>-endorseddirs &lt;dirs&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>sourcePath</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify where to find input source files</p>
+      </td>
+      <td width="20%">
+      <p><code>-sourcepath &lt;path&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>encoding</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify character encoding used by source files</p>
+      </td>
+      <td width="20%">
+      <p><code>-encoding &lt;encoding&gt;</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="20%">
+      <p><code>target</code></p>
+      </td>
+      <td width="60%">
+      <p>Generate class files for a specific virtual machine version</p>
+      </td>
+      <td width="20%">
+      <p><code>-target &lt;release&gt;</code></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>The list of source files to be processed are specified via a nested <code>&lt;source&gt;</code>
+element. That is, a <a
+ href="http://ant.apache.org/manual/using.html#path">path-like structure</a>.
+The classpath attribute is a <a
+ href="http://ant.apache.org/manual/using.html#path">path-like structure</a>
+and can also be set via nested <code>&lt;classpath&gt;</code>
+elements. Before this task can be used, a <code>&lt;taskdef&gt;</code>
+element needs to be added to the project as given below:</p>
+<pre>&lt;taskdef name="wscompile" classname="com.sun.xml.rpc.tools.ant.Apt"&gt;<br><br> &lt;classpath refid="jaxrpc.classpath"/&gt;<br><br>&lt;/taskdef&gt;<br></pre>
+<p>where <code>jaxrpc.classpath</code> is a reference to a <a
+ href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
+defined elsewhere in the build environment, and contains the list of
+classes required by the JAX-RPC runtime.</p>
+<h3>Examples</h3>
+<pre>&lt;apt<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxrpc.classpath"/&gt;<br>    &lt;source dir="${basedir}/src" includes="*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<p>The above example processes the Java source files in the <code>${basedir}/src</code>
+directory and generates the source and class files in <code>${build.classes.home}</code>.
+<code>${basedir}/src</code> is directory used to search for source
+files for multiple <code>apt</code> rounds. The classpath is a
+reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like
+structure</a> <code>jaxrpc.classpath</code>, defined elsewhere in the
+build environment.</p>
+<pre>&lt;apt<br>    fork="true"<br>    debug="true"<br>    verbose="true"<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxrpc.classpath"/&gt;<br>    &lt;option key="nd" value="${build.home}"/&gt;<br>    &lt;option key="verbose" value="${verbose}"/&gt;<br>    &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<p>The above example processes the Java source files in <code>${basedir}/src/**/server</code>,
+generates the source and class files in <code>${build.classes.home}</code>,
+compiles with debug information on, prints a message about what the
+compiler is doing, and passes the <code>-Dnd=${build.home}</code> and <code>-Dverbose=${verbose}</code>
+options to the annotation processor(s). <code>${basedir}/src</code> is
+the directory used to search for source files for multiple <code>apt</code>
+rounds. The classpath is a reference to a <a
+ href="http://ant.apache.org/manual/using.html#path">path-like structure</a>
+<code>jaxrpc.classpath</code>, defined elsewhere in the build
+environment. This will also fork off the <code>apt</code> process
+using the default <code>java</code> executable.</p>
+<hr>
+<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
+2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>
