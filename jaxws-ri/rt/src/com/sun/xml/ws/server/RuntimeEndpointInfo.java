@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.17 2005-06-06 22:01:12 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.18 2005-06-07 00:06:21 jitu Exp $
  */
 
 /*
@@ -86,6 +86,10 @@ public class RuntimeEndpointInfo
 
     public boolean isDeployed() {
         return deployed;
+    }
+    
+    public String getBindingId() {
+        return bindingId;
     }
     
     public void createModel() {
