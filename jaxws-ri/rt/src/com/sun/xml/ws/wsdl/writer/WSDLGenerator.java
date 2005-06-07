@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.16 2005-06-06 22:01:17 vivekp Exp $
+ * $Id: WSDLGenerator.java,v 1.17 2005-06-07 15:39:08 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,6 +10,7 @@ package com.sun.xml.ws.wsdl.writer;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.SchemaOutputResolver;
+import com.sun.tools.jxc.XmlSchemaGenerator;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.xml.transform.Result;
@@ -55,6 +56,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.ws.WebServiceException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import static com.sun.tools.jxc.util.Util.*;
 
 
 /**
@@ -91,6 +95,7 @@ public class WSDLGenerator {
     public static final String REPLACE_WITH_ACTUAL_URL = "REPLACE_WITH_ACTUAL_URL";
     private Set<QName> processedExceptions = new HashSet<QName>();
     private String bindingId;
+    private String wsdlLocation;
 
 
     public WSDLGenerator(RuntimeModel model, WSDLOutputResolver wsdlResolver, String bindingId) {
@@ -103,6 +108,7 @@ public class WSDLGenerator {
     public void doGeneration() {
         OutputStream outputStream = null;
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
+        wsdlLocation = result.getSystemId();
         if (result instanceof StreamResult) {
             outputStream = ((StreamResult)result).getOutputStream();           
         } else {
@@ -640,8 +646,80 @@ public class WSDLGenerator {
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
 
         result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
-        _import.schemaLocation(result.getSystemId());
+        String schemaLoc = relativize(result.getSystemId(), wsdlLocation);
+        _import.schemaLocation(schemaLoc);
         return result;
+    }
+    
+   /**
+     * Relativizes a URI by using another URI (base URI.)
+     *
+     * <p>
+     * For example, {@code relative("http://www.sun.com/abc/def","http://www.sun.com/pqr/stu") => "../abc/def"}
+     *
+     * <p>
+     * This method only works on hierarchical URI's, not opaque URI's (refer to the
+     * <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/net/URI.html">java.net.URI</a>
+     * javadoc for complete definitions of these terms.
+     *
+     * <p>
+     * This method will not normalize the relative URI.
+     *
+     * @return the relative URI or the original URI if a relative one could not be computed
+     */
+    protected static String relativize(String uri, String baseUri) {
+        try {
+            assert uri!=null;
+
+            if(baseUri==null)   return uri;
+
+            URI theUri = new URI(escapeURI(uri));
+            URI theBaseUri = new URI(escapeURI(baseUri));
+
+            if (theUri.isOpaque() || theBaseUri.isOpaque())
+                return uri;
+
+            if (!equalsIgnoreCase(theUri.getScheme(), theBaseUri.getScheme()) ||
+                    !equal(theUri.getAuthority(), theBaseUri.getAuthority()))
+                return uri;
+
+            String uriPath = theUri.getPath();
+            String basePath = theBaseUri.getPath();
+
+            // normalize base path
+            if (!basePath.endsWith("/")) {
+                basePath = normalizeUriPath(basePath);
+            }
+
+            if( uriPath.equals(basePath))
+                return ".";
+
+            String relPath = calculateRelativePath(uriPath, basePath);
+
+            if (relPath == null)
+                return uri; // recursion found no commonality in the two uris at all
+            StringBuffer relUri = new StringBuffer();
+            relUri.append(relPath);
+            if (theUri.getQuery() != null)
+                relUri.append('?' + theUri.getQuery());
+            if (theUri.getFragment() != null)
+                relUri.append('#' + theUri.getFragment());
+
+            return relUri.toString();
+        } catch (URISyntaxException e) {
+            throw new InternalError("Error escaping one of these uris:\n\t"+uri+"\n\t"+baseUri);
+        }
+    }
+
+    private static String calculateRelativePath(String uri, String base) {
+        if (base == null) {
+            return null;
+        }
+        if (uri.startsWith(base)) {
+            return uri.substring(base.length());
+        } else {
+            return "../" + calculateRelativePath(uri, getParentUriPath(base));
+        }
     }
     
     
