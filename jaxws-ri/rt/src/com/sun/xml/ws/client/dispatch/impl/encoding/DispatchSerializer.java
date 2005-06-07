@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.3 2005-05-28 01:10:10 spericas Exp $
+ * $Id: DispatchSerializer.java,v 1.4 2005-06-07 20:18:00 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -85,15 +85,13 @@ public class DispatchSerializer {
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
-                                // namespace declaration for the element is written during previous writeElement
-                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart())) {
-                                    String value = atts.getValue(i);
-                                    String localName = atts.getName(i).getLocalPart();
-                                    writer.setPrefix(localName, value);
-                                    writer.writeNamespace(localName, value);
-                                }
+                                String value = atts.getValue(i);
+                                String localName = atts.getName(i).getLocalPart();
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
                             } else {
-                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), 
+                                    atts.getLocalName(i), atts.getValue(i));
                             }
                         }
                         
@@ -145,18 +143,15 @@ public class DispatchSerializer {
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
-                                // namespace declaration for the element is written during previous writeElement
-                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart())) {
-                                    String value = atts.getValue(i);
-                                    String localName = atts.getName(i).getLocalPart();
-                                    writer.setPrefix(localName, value);
-                                    writer.writeNamespace(localName, value);
-                                }
+                                String value = atts.getValue(i);
+                                String localName = atts.getName(i).getLocalPart();
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
                             } else {
-                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), 
+                                    atts.getLocalName(i), atts.getValue(i));
                             }
                         }
-                        //writeAttributes(reader.getAttributes(), namespaceURI, prefix, writer);
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
