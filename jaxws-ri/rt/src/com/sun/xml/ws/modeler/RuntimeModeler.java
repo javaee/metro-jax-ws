@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.8 2005-06-07 03:38:32 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.9 2005-06-07 18:01:34 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -95,12 +95,8 @@ public class RuntimeModeler {
             else 
                 return classLoader.loadClass(className);
         } catch (ClassNotFoundException e) {
-//            try {
-//                return portClass.getClassLoader().loadClass(className);
-//            } catch (ClassNotFoundException e2) {
-                throw new RuntimeModelerException("runtime.modeler.class.not.found",
-                                 new Object[] {className});
-//            }
+            throw new RuntimeModelerException("runtime.modeler.class.not.found",
+                             new Object[] {className});
         }
     }
 
@@ -133,10 +129,19 @@ public class RuntimeModeler {
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
         }
         defaultBinding = createBinding(soapBinding);
-        for (Method method : clazz.getMethods()) {
-            if (method.isAnnotationPresent(WebMethod.class)) {
-                usesWebMethod = true;
-                break;
+        /*
+         * if clazz != portClass then there is an SEI.  If there is an 
+         * SEI, then all methods should be processed.  However, if there is
+         * no SEI, and the implementation class uses at least one
+         * WebMethod annotation, then only methods with this annotation
+         * will be processed.
+         */
+        if (clazz == portClass) {
+            for (Method method : clazz.getMethods()) {
+                if (method.isAnnotationPresent(WebMethod.class)) {
+                    usesWebMethod = true;
+                    break;
+                }
             }
         }
 
