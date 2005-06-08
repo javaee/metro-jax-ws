@@ -38,16 +38,16 @@
     	base="${build.classes.home}"
     	sourceBase="${build.classes.home}"
     	sourcePath="${basedir}/src">
-	<classpath>
-            <path refid="jaxws.classpath"/>
-	    <pathelement location="${basedir}/src"/>
-	</classpath>
-	<option key="nd" value="${build.home}"/>
-	<option key="verbose" value="${verbose}"/>
-	<source dir="${basedir}/src">
+		<classpath>
+	        <path refid="jaxws.classpath"/>
+		    <pathelement location="${basedir}/src"/>
+		</classpath>
+		<option key="nd" value="${build.home}"/>
+		<option key="verbose" value="${verbose}"/>
+		<source dir="${basedir}/src">
             <include name="**/server/*.java"/>
             <include name="**/common/*.java"/>
-	</source>
+		</source>
     </apt>
     <!-- copy handlers descriptor file -->
     <copy todir="${build.classes.home}">
@@ -63,7 +63,6 @@
         debug="${debug}"
         verbose="${verbose}"
         keep="${keep}"
-        nonClassDir="${build.home}"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
 		<classpath refid="jaxws.classpath"/>
@@ -102,33 +101,32 @@
         verbose="${verbose}"
         keep="${keep}"
         base="${build.classes.home}"
-        nonClassDir="${build.home}"
         httpProxy="webcache.sfbay.sun.com:8080"
         wsdlFile="${client.wsdl}">
-	<classpath>
-	    <path refid="jaxws.classpath"/>
-	    <pathelement location="${build.classes.home}"/>
-	</classpath>
-	<binding dir="${basedir}/etc" includes="${client.binding}"/>
+		<classpath>
+		    <path refid="jaxws.classpath"/>
+		    <pathelement location="${build.classes.home}"/>
+		</classpath>
+		<binding dir="${basedir}/etc" includes="${client.binding}"/>
     </wsimport>
 </target>
 
 <target name="client" depends="generate-client">
     <javac
-	fork="true"
-	srcdir="${basedir}/src"
-	destdir="${build.classes.home}"
-	includes="**/client/**,**/common/**">
-	<classpath refid="jaxws.classpath"/>
+		fork="true"
+		srcdir="${basedir}/src"
+		destdir="${build.classes.home}"
+		includes="**/client/**,**/common/**">
+		<classpath refid="jaxws.classpath"/>
     </javac>
 </target>
 
 <target name="run">
     <java fork="true" classname="${client}">
-	<classpath>
-            <path refid="jaxws.classpath"/>
-            <pathelement location="${build.classes.home}"/>
-	</classpath>
+		<classpath>
+	        <path refid="jaxws.classpath"/>
+	        <pathelement location="${build.classes.home}"/>
+		</classpath>
         <jvmarg value="-Dhttp.proxyHost=webcache.sfbay.sun.com"/>
         <jvmarg value="-Dhttp.proxyPort=8080"/>
     </java>
