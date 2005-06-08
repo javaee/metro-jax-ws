@@ -65,6 +65,20 @@
         target="compile-mustang"
         inheritrefs="true"/>
   </target>
+
+  <target name="javadocs-spi" depends="image">
+    <javadoc packagenames="com.sun.xml.ws.spi.*"
+         sourcepath="${basedir}/rt/src"
+         destdir="${build.home}/javadocs"
+         author="false"
+         version="false"
+         windowtitle="${Name} Generated Documentation"
+         doctitle="${Name}"
+         bottom="Copyright &#169; 2001 Sun Microsystems, Inc. All Rights Reserved.">
+        <classpath refid="runtime.compile.classpath"/>
+    </javadoc>
+  </target>
+
     
   <target name="runtime-build" depends="runtime-compile">
     <!-- Copy resource files etc -->
