@@ -305,7 +305,7 @@
     </copy>
   	
   	<copy todir="${dist20.home}/samples">
-        <fileset dir="samples" includes="etc/**, fromjava/**, supplychain/**" excludes="**/CVS/**" />
+        <fileset dir="samples" includes="**" excludes="**/CVS/**" />
 	</copy>
   	
     <copy todir="${dist20.home}">
