@@ -63,9 +63,7 @@
         debug="${debug}"
         verbose="${verbose}"
         keep="${keep}"
-        import="true"
         nonClassDir="${build.home}"
-		model="${build.home}/jaxws-${ant.project.name}-model.xml.gz"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
 		<classpath refid="jaxws.classpath"/>
@@ -82,8 +80,11 @@
 
 <target name="create-war">
     <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
-	<webinf dir="${basedir}/etc" includes="*.wsdl, sun-jaxws.xml"/>
-	<fileset dir="${basedir}/etc" includes="*.xsd"/>
+	<webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
+	<zipfileset
+		dir="${basedir}/etc"
+		includes="*.wsdl, *.xsd"
+		prefix="/WEB-INF/wsdl"/>
 	<classes dir="${build.classes.home}"/>
     </war>
 </target>
