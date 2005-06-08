@@ -6,18 +6,19 @@
 -->
 
 <project name="JAX-WS 2.0 EA2 On Sun Java System App Server 8.1" default="help" basedir=".">
-	<property name="as.home" value="${ant.home}/../.."/>
+	<property environment="env"/>
+	<property name="as.home" value="${env.AS_HOME}"/>
 	<property name="as.lib.home" value="${as.home}/lib"/>
 	<property name="domain" value="domain1"/>
-	<property name="istack" value="${as.home}/.jaxws20ea2"/>
+	<property name="backup.dir" value="${as.home}/.jaxws20ea2"/>
 
 	<target name="init">
-		<mkdir dir="${istack}"/>
+		<mkdir dir="${backup.dir}"/>
 	</target>
 	
 	<target name="install">
 		<echo message="Installing JAX-WS 2.0 on ${as.home} ..." />
-		<copy toDir="${istack}">
+		<copy toDir="${backup.dir}">
 			<fileset dir="lib">
 				<include name="saaj-*.jar"/>
 			</fileset>
@@ -30,7 +31,7 @@
 		</copy>
 
 		<!-- Add the JAX-WS 2.0 and JAXB 2.0 jars to classpath-prefix -->
-		<copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${istack}/${domain}-domain.xml"/>
+		<copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
 		<replace file="${as.home}/domains/${domain}/config/domain.xml" >
 			<replacetoken><![CDATA[classpath-suffix="$]]></replacetoken>
 			<replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/jaxws-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-libs.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-api.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar" classpath-suffix="$]]></replacevalue>

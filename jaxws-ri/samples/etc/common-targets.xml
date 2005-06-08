@@ -1,7 +1,8 @@
 <!-- property name="lib.home" value="${basedir}/../lib"/ -->
 <property environment="env"/>
 <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
-<property name="as.home" value="${ant.home}/../.."/>
+<property name="as.home" value="${env.AS_HOME}"/>
+
 <property name="build.home" value="${basedir}/../build"/>
 <property name="build.classes.home" value="${build.home}/classes"/>
 <property name="build.war.home" value="${build.home}/war"/>
@@ -89,9 +90,8 @@
 </target>
 
 <target name="deploy">
-    <property environment="env" />
     <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
-        todir="${env.AS_HOME}/domains/${domain}/autodeploy"/>
+        todir="${as.home}/domains/${domain}/autodeploy"/>
 </target>
 
 <target name="generate-client">
