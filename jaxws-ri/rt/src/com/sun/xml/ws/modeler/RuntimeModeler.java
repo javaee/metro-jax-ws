@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.9 2005-06-07 18:01:34 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.10 2005-06-08 05:21:27 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -343,8 +343,10 @@ public class RuntimeModeler {
             resultQName = getParamElementName(-1, responseClass);
         }
 
+        if(javaMethod.isAsync()){
+            returnType = getAsyncReturnType(method, returnType);
+        }
 
-        Type genericReturnType = method.getGenericReturnType();
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             Class returnClazz = returnType;
             Annotation[] rann = method.getAnnotations();
@@ -368,6 +370,11 @@ public class RuntimeModeler {
             String paramName = "";
             String paramNamespace = targetNamespace;
             boolean isHeader = false;
+
+            if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
+                continue;
+            }
+
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
@@ -497,6 +504,8 @@ public class RuntimeModeler {
             javaMethod.addParameter(responseWrapper);
         }
 
+        Class returnType = method.getReturnType();
+
         String resultName = null;
         String resultTNS = null;
         QName resultQName = null;
@@ -505,12 +514,14 @@ public class RuntimeModeler {
         if (webResult != null) {
             resultName = webResult.name();
             resultQName = new QName(resultName);
-        } else if (!isOneway) {
+        } else if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             resultQName = new QName(RETURN);
         }
 
-        Class returnType = method.getReturnType();
-        Type genericReturnType = method.getGenericReturnType();
+        if(javaMethod.isAsync()){
+            returnType = getAsyncReturnType(method, returnType);
+        }
+
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             Class returnClazz = returnType;
             Annotation[] rann = method.getAnnotations();
@@ -532,6 +543,11 @@ public class RuntimeModeler {
             String paramName = "";
             String paramNamespace = "";
             boolean isHeader = false;
+
+            if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
+                continue;
+            }
+
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
@@ -660,21 +676,7 @@ public class RuntimeModeler {
         Class returnType = method.getReturnType();
 
         if(javaMethod.isAsync()){
-            if(Response.class.isAssignableFrom(returnType)){
-                Type ret = method.getGenericReturnType();
-                returnType = Navigator.REFLECTION.erasure(((ParameterizedType)ret).getActualTypeArguments()[0]);
-            }else{
-                Type[] types = method.getGenericParameterTypes();
-                Class[] params = method.getParameterTypes();
-                int i = 0;
-                for(Class cls : params){
-                    if(AsyncHandler.class.isAssignableFrom(cls)){
-                        returnType = Navigator.REFLECTION.erasure(((ParameterizedType)types[i]).getActualTypeArguments()[0]);
-                        break;
-                    }
-                    i++;
-                }
-            }
+            returnType = getAsyncReturnType(method, returnType);
         }
 
         QName responseQName = null;
@@ -707,7 +709,6 @@ public class RuntimeModeler {
             //async
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
                 continue;
-                //clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
             }
 
 
@@ -757,6 +758,24 @@ public class RuntimeModeler {
         }
 
         processExceptions(javaMethod, method);
+    }
+
+    private Class getAsyncReturnType(Method method, Class returnType) {
+        if(Response.class.isAssignableFrom(returnType)){
+            Type ret = method.getGenericReturnType();
+            return Navigator.REFLECTION.erasure(((ParameterizedType)ret).getActualTypeArguments()[0]);
+        }else{
+            Type[] types = method.getGenericParameterTypes();
+            Class[] params = method.getParameterTypes();
+            int i = 0;
+            for(Class cls : params){
+                if(AsyncHandler.class.isAssignableFrom(cls)){
+                    return Navigator.REFLECTION.erasure(((ParameterizedType)types[i]).getActualTypeArguments()[0]);
+                }
+                i++;
+            }
+        }
+        return returnType;
     }
 
     public static String capitalize(String name) {

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.3 2005-06-04 01:48:12 vivekp Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.4 2005-06-08 05:21:27 vivekp Exp $
  */
 
 /*
@@ -45,6 +45,8 @@ public class SOAPRuntimeModel extends RuntimeModel {
     protected void createDecoderInfo() {
         Collection<JavaMethod> methods = getJavaMethods();
         for (JavaMethod m : methods) {
+            if(m.isAsync())
+                continue;
             List<Parameter> params = new ArrayList<Parameter>();
             params.addAll(m.getRequestParameters());
             params.addAll(m.getResponseParameters());

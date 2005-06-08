@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.4 2005-06-04 01:48:10 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.5 2005-06-08 05:21:26 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -16,11 +16,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.namespace.QName;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -28,11 +30,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultException;
-import com.sun.xml.ws.model.CheckedException;
-import com.sun.xml.ws.model.ExceptionType;
-import com.sun.xml.ws.model.JavaMethod;
-import com.sun.xml.ws.model.Parameter;
-import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -118,12 +116,75 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             return;
         }
 
-
         // process body/headers/attachments
         List<HeaderBlock> headers = im.getHeaders();
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         Object[] data = mi.getData();
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
+
+        //what happens when client receives unsolicited headers?
+        int bBlocks = (bodyValue != null)?1:0;
+        int hBlocks = (im.getHeaders() != null)?im.getHeaders().size():0;
+
+        boolean isResponseAsynWrapper = ((bBlocks+hBlocks) > 1)?true:false;
+
+        //for rpclit there could be more than one parts but only one bodyblock
+        // so we use different rule for rpclit
+        if((bodyValue instanceof RpcLitPayload) && !isResponseAsynWrapper){
+            isResponseAsynWrapper = (((RpcLitPayload)bodyValue).getBridgeParameters().size() > 1);
+        }
+
+        if(jm.isAsync() && isResponseAsynWrapper){
+            Object asyncWrapper = createAsyncResponseClass(jm.getResponseParameters().get(0));
+            if(bodyValue instanceof RpcLitPayload){
+                RpcLitPayload payload = (RpcLitPayload)bodyValue;
+                for(JAXBBridgeInfo bi : payload.getBridgeParameters()){
+                    setAsyncResponseWrapperValue(rtContext, asyncWrapper, bi.getValue(), bi.getType().tagName);
+                }
+            }else {
+                JAXBBridgeInfo value = (JAXBBridgeInfo)bodyValue;
+                setAsyncResponseWrapperValue(rtContext, asyncWrapper, value.getValue(), value.getType().tagName);
+            }
+
+            if(im.getHeaders() != null) {
+                for(HeaderBlock hb : im.getHeaders()){
+                    JAXBBridgeInfo value = (JAXBBridgeInfo)hb.getValue();
+                    setAsyncResponseWrapperValue(rtContext, asyncWrapper, value.getValue(), value.getType().tagName);
+                }
+            }
+            mi.setResponse(asyncWrapper);
+            return;
+        }else if(jm.isAsync() && ((bBlocks+hBlocks) == 1)){
+            //there is only 1 response part
+            Object resp = createAsyncResponseClass(iter.next());
+            Object value = null;
+            if(bodyValue instanceof RpcLitPayload){
+                RpcLitPayload payload = (RpcLitPayload)bodyValue;
+                for(JAXBBridgeInfo bi:payload.getBridgeParameters()){
+                    value = bi.getValue();
+                    break;
+                }
+            }else{
+                value = ((JAXBBridgeInfo)bodyValue).getValue();
+            }
+
+            if(value != null && resp.getClass().isAssignableFrom(value.getClass())){
+                resp = value;
+                mi.setResponse(resp);
+                return;
+            }
+
+            for(HeaderBlock hb : im.getHeaders()){
+                value = ((JAXBBridgeInfo)hb.getValue()).getValue();
+                if(value != null && resp.getClass().isAssignableFrom(value.getClass())){
+                    resp = value;
+                    mi.setResponse(resp);
+                    return;
+                }
+            }
+        }
+
+
         while (iter.hasNext()) {
             Parameter param = iter.next();
             Object obj = null;
@@ -136,9 +197,36 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 obj = (header != null)?header.getValue():null;
             }
             Object resp = fillData(rtContext, param, obj, data, soapBinding);
-            if(param.isResponse())
-                mi.setResponse(resp);
+            if(param.isResponse()){
+                    mi.setResponse(resp);
+            }
         }
+    }
+
+    private void setAsyncResponseWrapperValue(RuntimeContext rtContext, Object bean, Object value, QName tag){
+        if(value != null){
+            setWrapperChildValue(rtContext, bean, value, tag.getNamespaceURI(), tag.getLocalPart());
+        }
+    }
+
+    private Object createAsyncResponseClass(Parameter parameter) {
+        Class asyncWrapper = (Class)parameter.getTypeReference().type;
+        if(RpcLitPayload.class.isAssignableFrom(asyncWrapper)){
+            WrapperParameter wp = (WrapperParameter)parameter;
+            if(wp.getWrapperChildren().size() > 0){
+                Parameter p = wp.getWrapperChildren().get(0);
+                asyncWrapper = (Class) p.getTypeReference().type;
+            }
+        }
+
+        try {
+            return asyncWrapper.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     private Exception createCheckedException(String message, CheckedException ce, Object detail) {
