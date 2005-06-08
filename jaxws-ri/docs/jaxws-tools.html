@@ -36,18 +36,17 @@ Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming
 Language</i>. In brief, JSR 175 allows programmers to declare new kinds
 of structured modifiers that can be associated with program elements,
 fields, methods, classes, etc.</p>
-<p>The <code>apt</code> tool generates the portable artifacts (WSDL
-file, schema files, JavaBeans) used in JAX-RPC services. <br>
+<p>The <code>apt</code> tool generates the portable artifacts used in
+JAX-WS services. <br>
 </p>
 <p>For more information on this tool please see: <a href="apt.html">apt
 tool</a>.<br>
 </p>
 <h2><a class="mozTocH2" name="mozTocId497292"></a><a
  name="wscompiletool" id="wscompiletool"></a>wsimport</h2>
-<p>The <code>wscompile</code> tool generates JAX-RPC portable (service
-endpoint interface, Service, etc.) and non-portable artifacts (stubs,
-ties, etc.), JAXB artifacts, and WSDL files used in JAX-RPC clients and
-services. The tool reads a WSDL or a web service endpoint class and
+<p>The <code>wsimport</code> tool generates JAX-WS portable
+artifacts&nbsp; used in JAX-WS clients and
+services. The tool reads a WSDL and
 generates all the required artifacts for web service development,
 deployment, and invocation.<br>
 </p>
@@ -57,12 +56,9 @@ tool</a>.<br>
 </p>
 <h2><a class="mozTocH2" name="mozTocId18364"></a><a name="wsdeploytool"
  id="wsdeploytool"></a>wsgen</h2>
-<p>The <code>wsdeploy</code> tool reads a WAR file and the <code>jaxrpc-ri.xml</code>
-file and then generates another WAR file that is ready for deployment.
-Behind the scenes, <code>wsdeploy</code> runs <code>wscompile</code>
-with the <code>-gen:server</code> option. The <code>wscompile</code>
-command generates classes, modifies the deployment descriptors that <code>wsdeploy</code>
-includes in the generated WAR file.</p>
+<p>The <code>wsgen</code> tool reads a <code></code><code></code><code></code><code></code><code></code><code></code>service
+endpoint implementation class and generates all of the portable
+artifacts for a JAX-WS web service..</p>
 <p>For more information on this tool please see: <a href="wsgen.html">wsgen
 tool</a>.<br>
 </p>

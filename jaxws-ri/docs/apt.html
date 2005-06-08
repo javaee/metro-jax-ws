@@ -23,8 +23,8 @@ Facility for the Java</i><font size="2"><sup>TM</sup></font><i>Programming
 Language</i>. In brief, JSR 175 allows programmers to declare new kinds
 of structured modifiers that can be associated with program elements,
 fields, methods, classes, etc.</p>
-<p>The <code>apt</code> tool generates the portable artifacts (WSDL
-file, schema files, JavaBeans) used in JAX-RPC services. <br>
+<p>The <code>apt</code> tool generates the portable artifacts used in
+JAX-WS services. <br>
 </p>
 <h3><a class="mozTocH3" name="mozTocId798307"></a>Command-line<br>
 </h3>
@@ -124,9 +124,9 @@ release</p>
       </td>
       <td width="608">
       <p align="left">Options to pass to annotation processors</p>
-      <p align="left">JAX-RPC uses <code>-And=&lt;directory&gt;</code>
+      <p align="left">JAX-WS uses <code>-And=&lt;directory&gt;</code>
 to specify the directory to generate the WSDL and schema files</p>
-      <p align="left">JAX-RPC uses <code>-Averbose=true</code> to dump
+      <p align="left">JAX-WS uses <code>-Averbose=true</code> to dump
 verbose messages from its <code>AnnotationProcessor</code></p>
       </td>
     </tr>
@@ -257,10 +257,10 @@ machine version</p>
     </tr>
   </tbody>
 </table>
-<p>It is important when using <code>apt</code> with JAX-RPC to specify
-all of the JAR files in the distributed JAX-RPC bundle in the classpath
+<p>It is important when using <code>apt</code> with JAX-WSto specify
+all of the JAR files in the distributed JAX-WS bundle in the classpath
 passed to <code>apt</code>. The <code>-sourcepath &lt;path&gt;</code>
-option must also be provided so that <code>apt</code> and the JAX-RPC
+option must also be provided so that <code>apt</code> and the JAX-WS
 annotation processor can find all types referenced by a web service
 endpoint implementation class.</p>
 <p>For more information on apt please refer to the <code>apt</code>
@@ -269,7 +269,7 @@ documentation <a
 <h2></h2>
 <h2><a name="apttask" id="apttask"></a>Ant task<br>
 </h2>
-<p>An Ant task for the <code>apt</code> tool is provided with JAX-RPC
+<p>An Ant task for the <code>apt</code> tool is provided with JAX-WS
 2.0 EA. The attributes and elements supported by the Ant task are
 listed below:</p>
 <pre>&lt;apt<br>    fork="true|false"<br>    verbose="true|false"<br>    classpath="classpath"<br>    base="directory for generated class files"<br>    sourceBase="directory for generated source files"<br>    noCompile="true|false"<br>    print="true|false"<br>    factoryPath="&lt;path&gt;"<br>    factory="name of AnnotationProcessorFactory to use"<br>    xListAnnotationTypes="true|false"<br>    xListDeclarations="true|false"<br>    xPrintAptRounds="true|false"<br>    xPrintFactoryInfo="true|false"<br>    xClassesAsDecls="true|false"<br>    debug="true|false"<br>    debugLevel="lines|vars|source"<br>    nowarn="true|false"<br>    deprecation="true|false"<br>    bootclasspath="&lt;path&gt;"<br>    extdirs="&lt;path&gt;"<br>    endorseddirs="&lt;path&gt;"<br>    sourcePath="&lt;path&gt;"<br>    encoding="specify character encoding used by source files"<br>    target="generate class files for specific virtual machine version"&gt;<br>    &lt;source ... &gt; ... &lt;/source&gt;<br>    &lt;classpath ... &gt; ... &lt;/classpath&gt;<br>&lt;/apt&gt;<br></pre>
@@ -291,7 +291,7 @@ listed below:</p>
       <p><code>fork</code></p>
       </td>
       <td width="70%">
-      <p>Forks the <code>wscompile</code> process into another virtual
+      <p>Forks the <code>wsimport</code> process into another virtual
 machine</p>
       </td>
       <td width="15%">
@@ -566,21 +566,21 @@ The classpath attribute is a <a
 and can also be set via nested <code>&lt;classpath&gt;</code>
 elements. Before this task can be used, a <code>&lt;taskdef&gt;</code>
 element needs to be added to the project as given below:</p>
-<pre>&lt;taskdef name="wscompile" classname="com.sun.xml.rpc.tools.ant.Apt"&gt;<br><br> &lt;classpath refid="jaxrpc.classpath"/&gt;<br><br>&lt;/taskdef&gt;<br></pre>
-<p>where <code>jaxrpc.classpath</code> is a reference to a <a
+<pre>&lt;taskdef name="apt" classname="com.sun.tools.ws.ant.Apt"&gt;<br><br> &lt;classpath refid="jaxws.classpath"/&gt;<br><br>&lt;/taskdef&gt;<br></pre>
+<p>where <code>jaxws.classpath</code> is a reference to a <a
  href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
 defined elsewhere in the build environment, and contains the list of
-classes required by the JAX-RPC runtime.</p>
+classes required by the JAX-WS tools.</p>
 <h3>Examples</h3>
-<pre>&lt;apt<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxrpc.classpath"/&gt;<br>    &lt;source dir="${basedir}/src" includes="*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<pre>&lt;apt<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxws.classpath"/&gt;<br>    &lt;source dir="${basedir}/src" includes="*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
 <p>The above example processes the Java source files in the <code>${basedir}/src</code>
 directory and generates the source and class files in <code>${build.classes.home}</code>.
 <code>${basedir}/src</code> is directory used to search for source
 files for multiple <code>apt</code> rounds. The classpath is a
 reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like
-structure</a> <code>jaxrpc.classpath</code>, defined elsewhere in the
+structure</a> <code>jaxws.classpath</code>, defined elsewhere in the
 build environment.</p>
-<pre>&lt;apt<br>    fork="true"<br>    debug="true"<br>    verbose="true"<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxrpc.classpath"/&gt;<br>    &lt;option key="nd" value="${build.home}"/&gt;<br>    &lt;option key="verbose" value="${verbose}"/&gt;<br>    &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<pre>&lt;apt<br>    fork="true"<br>    debug="true"<br>    verbose="true"<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxws.classpath"/&gt;<br>    &lt;option key="nd" value="${build.home}"/&gt;<br>    &lt;option key="verbose" value="${verbose}"/&gt;<br>    &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
 <p>The above example processes the Java source files in <code>${basedir}/src/**/server</code>,
 generates the source and class files in <code>${build.classes.home}</code>,
 compiles with debug information on, prints a message about what the
@@ -589,7 +589,7 @@ options to the annotation processor(s). <code>${basedir}/src</code> is
 the directory used to search for source files for multiple <code>apt</code>
 rounds. The classpath is a reference to a <a
  href="http://ant.apache.org/manual/using.html#path">path-like structure</a>
-<code>jaxrpc.classpath</code>, defined elsewhere in the build
+<code>jaxws.classpath</code>, defined elsewhere in the build
 environment. This will also fork off the <code>apt</code> process
 using the default <code>java</code> executable.</p>
 <hr>
