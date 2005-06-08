@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.1 2005-05-23 23:14:50 bbissett Exp $
+ * $Id: WSDLGenerator.java,v 1.2 2005-06-08 20:00:53 arungupta Exp $
  */
 
 /*
@@ -962,7 +962,7 @@ public class WSDLGenerator extends GeneratorBase20 implements Constants, Process
 
     protected static final String PART_NAME_LITERAL_REQUEST_WRAPPER =
         "parameters";
-    protected static final String PART_NAME_LITERAL_RESPONSE_WRAPPER = "result";
+    protected static final String PART_NAME_LITERAL_RESPONSE_WRAPPER = "parameters";
     
     protected class JAXWSOutputSchemaResolver extends SchemaOutputResolver {
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
