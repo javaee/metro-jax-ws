@@ -5,10 +5,14 @@
 package supplychain.server;
  
 public class Item {
+    String name;
     int itemID;
     int quantity;
     float price;
 
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
     public int getItemID() { return itemID; }
     public void setItemID(int itemID) { this.itemID = itemID; }
 

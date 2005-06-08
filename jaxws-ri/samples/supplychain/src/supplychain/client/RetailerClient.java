@@ -21,17 +21,19 @@ public class RetailerClient {
             int number2 = 20;
 
             PurchaseOrder po = new PurchaseOrder();
-            po.setCustomerNumber("cust#");
-            po.setOrderNumber("order#");
+            po.setCustomerNumber("Duke");
+            po.setOrderNumber("1001");
             List<Item> itemList = po.getItemList();
             
             Item item = new Item();
+            item.setName("item1");
             item.setItemID(1);
             item.setPrice((float)100.00);
             item.setQuantity(10);
             itemList.add(item);
             
             Item item2 = new Item();
+            item2.setName("item2");
             item2.setItemID(2);
             item2.setPrice((float)200.00);
             item2.setQuantity(15);
@@ -42,7 +44,7 @@ public class RetailerClient {
             System.out.printf("Got: %s, %s, %s\n", sn.getCustomerNumber(), sn.getOrderNumber(), sn.getShipmentNumber());
             System.out.printf("Item list\n");
             for (Item responseItem : sn.getItemList()) {
-                System.out.printf("\t %d, %f, %d\n", responseItem.getItemID(), responseItem.getPrice(), responseItem.getQuantity());
+                System.out.printf("\t %s, %d, %f, %d\n", responseItem.getName(), responseItem.getItemID(), responseItem.getPrice(), responseItem.getQuantity());
             }
 	} catch (RemoteException ex) {
             ex.printStackTrace();
