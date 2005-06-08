@@ -3,136 +3,121 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>Java(tm) API for XML-based RPC Release Notes</title>
+  <title>Java(tm) API for XML Web Services - Release Notes</title>
   <meta name="CREATED" content="20050329;10192585">
   <meta name="CHANGED" content="20050401;7572193">
 </head>
-
-<body lang="en-US" bgcolor="#FFFFFF" dir="ltr">
-<h1>JAX-RPC 2.0 Early Access<br>
+<body bgcolor="#ffffff" dir="ltr" lang="en-US">
+<h1>JAX-WS 2.0 Early Access 2<br>
 Release Notes</h1>
 <hr>
-
-<p>Last Modified: 04/04/05</p>
-
+<p>Last Modified: 06/07/05</p>
 <h2>Online Documentation</h2>
-
-<p>The documentation for JAX-RPC 2.0 as well as the sample applications will
+<p>The documentation for JAX-WS 2.0 as well as the sample applications
+will
 be periodically updated in the JAX-RPC project on Java.net.</p>
-
-<p>Please go to <a
-href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a> for the
+<p>Please go to <a href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a>
+for the
 latest documentation and samples.</p>
-
 <h2>Required Software</h2>
 <ul>
-  <li><p>Requires <a href="http://java.sun.com/j2se/1.5.0/download.jsp">JDK
-    5.0 Update 2</a> or greater</p>
+  <li>
+    <p>Requires <a href="http://java.sun.com/j2se/1.5.0/download.jsp">JDK
+5.0 Update 2</a> or greater</p>
   </li>
-  <li><p>Requires <a href="http://java.sun.com/j2ee/1.4/download.html#sdk">Sun
-    Java System Application Server 8.1 UR1</a> (Application Server) or greater
-    (if you intend to deploy Web service endpoints)</p>
+  <li>
+    <p>Requires <a
+ href="http://java.sun.com/j2ee/1.4/download.html#sdk">Sun Java System
+Application Server 8.1 UR1</a> (Application Server) or greater (if you
+intend to deploy Web service endpoints)</p>
   </li>
 </ul>
-
 <h2>What This Release Includes</h2>
-
 <p>This release implements the <a
-href="http://jcp.org/en/jsr/detail?id=224">Java<sup>TM</sup>for XML-based RPC
+ href="http://jcp.org/en/jsr/detail?id=224">Java<sup>TM</sup>for XML
+Web Services
 2.0 Specification</a>.</p>
-
 <h2>What's New in This Release</h2>
 <ul>
-  <li><p>JAXB 2.0 for XML schema binding</p>
-  </li>
-  <li><p>Annotations</p>
-  </li>
-  <li><p>WSDL customization</p>
-  </li>
-  <li><p>Improved handler framework</p>
-  </li>
-  <li><p>Provider interface</p>
-  </li>
-  <li><p>Dispatch</p>
-  </li>
-  <li><p>Asynchronous invocation</p>
+  <li>Implemenation of JAX-WS 2.0 APIs instead of JAX-RPC 2.0 APIs<br>
   </li>
 </ul>
-
+<></>
+<ul>
+  <li><>MTOM &amp; Swaref</></li>
+</ul>
+<ul>
+  <li><>purely dynamic runtime<br>
+    </> </li>
+  <li>
+    <p>removal of wsdeploy and wscompile<br>
+    </p>
+  </li>
+  <li>
+    <p>introduction of wsimport and wsgen<br>
+    </p>
+  </li>
+  <li>
+    <p>new deployment descriptor<br>
+    </p>
+  </li>
+</ul>
 <h2>Installation Instructions</h2>
-<p>Once the JAX-WS 2.0 EA bundle is extracted, it needs to be installed on the
+<p>Once the JAX-WS 2.0 EA bundle is extracted, it needs to be installed
+on the
 Application Server. You need to invoke <code>AS_HOME/bin/asant install</code>
-command from the root directory of the extracted bundle to install JAX-RPC 2.0
+command from the root directory of the extracted bundle to install
+JAX-WS 2.0
 binaries on the Application Server, where <code>AS_HOME</code> is the
-installation directory of the Application Server. However this step is required
-if you intend to build and deploy a Web service on the Application Server.</p>
+installation directory of the Application Server. However this step is
+required
+if you intend to build and deploy a Web service on the Application
+Server.</p>
 <p>If you intend to only invoke an already existing Web service, then
-alternatively you can use the <code>wscompile</code> and <code>wsdeploy</code>
-scripts in the <code>bin</code> directory of the JAX-WS 2.0 EA bundle. To use
-these scripts, you need to set <code>JAXWS_HOME</code> to the root directory of
+alternatively you can use the <code>wsimport</code> and <code>wsgen</code>
+scripts in the <code>bin</code> directory of the JAX-WS 2.0 EA bundle.
+To use
+these scripts, you need to set <code>JAXWS_HOME</code> to the root
+directory of
 the JAX-WS 2.0 EA extracted bundle.&nbsp;</p>
-
 <h2>Current Limitations</h2>
 <ul>
-  <li><p>Web Services Security is not supported in this Early Access
-    release.</p>
+  <li>
+    <p>Web Services Security is not supported in this Early Access
+release.</p>
   </li>
-  <li><p>The client APIs for Dynamic Proxy and the Call are not supported in
-    this Early Access release.</p>
-  </li>
-  <li><p>Use of the following API methods will cause a &#x201c;not supported
-    in JAXWS 2.0 EA&#x201d; exception to be thrown.</p>
+  <li>
+    <p>Use of the following API methods will cause a &#8220;not supported in
+JAX-WS 2.0 EA&#8221; exception to be thrown.</p>
     <p><code><b>javax.xml.rpc.ServiceFactory</b></code>:</p>
     <p><code>public Service createService(URL wsdlLocation, QName
-    serviceName) throws ServiceException;</code></p>
+serviceName) throws ServiceException;</code></p>
     <p><code><b>javax.xml.Service</b></code>:</p>
-
-    <div style="margin-left: 2em">
-    <p><code>public Call[] getCalls(QName portName) throws
-    ServiceException;</code></p>
-    <p><code>public Call createCall(QName portName) throws
-    ServiceException;</code></p>
-    <p><code>public Call createCall(QName portName, QName operationName)
-    throws ServiceException;</code></p>
-    <p><code>public Call createCall(QName portName, String operationName)
-    throws ServiceException;</code></p>
-    <p><code>public Call createCall() throws ServiceException;</code></p>
+    <div style="margin-left: 2em;">
     <p><code>public java.rmi.Remote getPort(QName portName, Class
-    serviceEndpointInterface) throws ServiceException;</code></p>
-    <p><code>public java.rmi.Remote getPort(Class serviceEndpointInterface)
-    throws ServiceException;</code></p>
+serviceEndpointInterface) throws ServiceException;</code></p>
+    <p><code>public java.rmi.Remote getPort(Class
+serviceEndpointInterface) throws ServiceException;</code></p>
     <p><code>public Iterator getPorts() throws ServiceException;</code></p>
     <p><code>public java.net.URL getWSDLDocumentLocation();</code></p>
     <p><code>public TypeMappingRegistry getTypeMappingRegistry();</code></p>
-    <p><code>public SecurityConfiguration
-    getSecurityConfiguration();</code></p>
+    <p><code>public SecurityConfiguration getSecurityConfiguration();</code></p>
     </div>
-    <p><code><b>javax.xml.rpc.Call</b></code>:</p>
-    <p>All methods</p>
   </li>
 </ul>
-
 <h2>Known Bugs/Issues</h2>
 <ul>
-  <li><<code>TargetNamespace</code> and <code>typeNamespaceBase</code> from
-    the <code>jaxrpc-ri.xml</code> deployment descriptor are not used.
-  </li>
-  <li>When using the <code>apt</code>, <code>wscompile</code>, and <code>wsdeploy</code>
-    ant tasks, always set the <code>fork</code> attribute to <code>true</code>.
-  </li>
 </ul>
-
 <h2>For More Information</h2>
-
-<p>For white papers and the latest JAX-RPC technology and documentation, go
+<p>For white papers and the latest JAX-WS technology and documentation,
+go
 to <a href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a>.</p>
-
 <p>Please use the <a
-href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB 2.0
-and JAXWS 2.0</a> forum for feedback.</p>
+ href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
+2.0
+and JAXRPC 2.0</a> forum for feedback.</p>
 <hr>
-
-<p><a href="Copyright.html"><i><font size="2">Copyright &#xa9; 2005 Sun
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>
