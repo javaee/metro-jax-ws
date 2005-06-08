@@ -1,124 +1,68 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-
   <title>Java(tm) API for XML-based RPC 2.0 Provider</title>
   <meta name="CREATED" content="20050329;17163443">
   <meta name="CHANGED" content="20050401;8215806">
 </head>
-
 <body lang="en-US">
-  <h1>JAX-RPC 2.0 Early Access<br>
-  Provider</h1>
-  <hr>
-
-  <p>Last Modified: 04/04/05</p>
-
-  <p>Web service endpoints may choose to work at the XML messasge level by implementing the <code>Provider</code> interface. This is achieved by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>. The endpoint accesses the message or message payload using this low-level, generic API. The <code>@ServiceMode</code> annontation is used to convey whether the endpoint wants to access the message (<code>Service.Mode.MESSAGE</code>) or payload (<code>Service.Mode.PAYLOAD</code>). If there is no <code>@ServiceMode</code> annotation on the endpoint, payload is the default value. The endpoint communicates with handlers using the properties set in the <code>JAXRPCContext</code> parameter. All the provider endpoints start from a WSDL file and <code>&lt;provider&gt;</code> WSDL customization can be used to mark a port as a provider.</p>
-
-  <h2><code>Provider&lt;Source&gt;</code> and <code>PAYLOAD</code></h2>
-
-  <p>An endpoint can access only the payload of a request using <code>Service.Mode.PAYLOAD</code> in the<code>@ServiceMode</code> annotation. This is the default behaviour, if the annotation is missing.</p>
-
-  <p>For example:</p>
-  <pre>
-  public class ProviderImpl implements Provider&lt;Source&gt; {
-      public Source invoke(Source source, JAXRPCContext context) throws RemoteException {
-              // do request processing
-              Source response = ...;
-              return response;
-      }
-  }
-
-
-</pre>
-
-  <h2><code>Provider&lt;SOAPMessage&gt;</code> and <code>MESSAGE</code></h2>
-
-  <p>An endpoint can access an entire SOAP request as a <code>SOAPMessage</code>. <code>Service.Mode.MESSAGE</code> in the <code>@ServiceMode</code> annotation is used to convey the intent.</p>
-
-  <p>For example:</p>
-  <pre>
-  @ServiceMode(value=Service.Mode.MESSAGE)
-  public class ProviderImpl implements Provider&lt;SOAPMessage&gt; {
-      public SOAPMessage invoke(SOAPMessage msg, JAXRPCContext ctxt) throws RemoteException {
-              // do request processing
-              SOAPMessage response = ...;
-              return response;
-      }
-  }
-
-
-</pre>
-
-  <h2><code>Provider&lt;Source&gt;</code> and <code>MESSAGE</code></h2>
-
-  <p>An endpoint can access a request as a <code>Source</code>. If the request is a <code>SOAPMessage</code>, only the <code>SOAPPart</code> (no attachments) of the message is passed as <code>Source</code> to the <code>invoke</code> method. If the returned response is null, it is considered a one way MEP.</p>
-
-  <p>For example:</p>
-  <pre>
-  @ServiceMode(value=Service.Mode.MESSAGE)
-  public class ProviderImpl implements Provider&lt;Source&gt; {
-      public Source invoke(Source source, JAXRPCContext context) throws RemoteException {
-              // Use JAXRPCContext to access properties set by handler
-              String foo = (String)context.getProperty("foo");
-
-              // do request processing using source
-              // return null to indicate oneway
-              return null;
-      }
-  }
-
-
-</pre>
-
-  <h2>WSDL Customization</h2>
-
-  <p>The provider endpoint starts with a WSDL file. A port can be customized to a provider endpoint using the <code>&lt;provider&gt;</code> customization.</p>
-
-  <p>For example:</p>
-  <pre>
-  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
-  &lt;bindings
-  ...
-          wsdlLocation="AddNumbers.wsdl"
-          xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
-          &lt;bindings node="wsdl:definitions" &gt;
-          &lt;package name="provider.server"/&gt;
-          &lt;provider&gt;true&lt;/provider&gt;
-          &lt;/bindings&gt;
-  &lt;/bindings&gt;
-
-
-</pre>
-
-  <h2>The <code>jaxrpc-ri.xml</code> file</h2>
-
-  <p><code>wsdeploy</code> uses <code>jaxrpc-ri.xml</code> to read configuration information and generate implementation-specific artifacts like <code>_Tie.class</code> for a provider endpoint. The <code>interface</code> attribute should point to <code>javax.xml.rpc.Provider</code> in <code>jaxrpc-ri.xml</code>.</p>&gt;
-
-  <p>For example:</p>
-  <pre>
-  &lt;webServices ... &gt;
-          &lt;endpoint
-          name="provider"
-          displayName="Provider From WSDL"
-          interface="javax.xml.rpc.Provider"
-          implementation="provider.server.AddNumbersImpl"
-          wsdl="/WEB-INF/AddNumbers.wsdl"
-          model="/WEB-INF/jaxrpc-provider-model.xml.gz"/&gt;
-          ...
-  &lt;/webServices&gt;
-
-
-</pre>
-  <hr>
-
-  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
-
-  <p><br>
-  <br></p>
+<h1>JAX-RPC 2.0 Early Access<br>
+Provider</h1>
+<hr>
+<p>Last Modified: 06/07/05</p>
+<p>Web service endpoints may choose to work at the XML messasge level
+by implementing the <code>Provider</code> interface. This is achieved
+by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>.
+The endpoint accesses the message or message payload using this
+low-level, generic API. The <code>@ServiceMode</code> annontation is
+used to convey whether the endpoint wants to access the message (<code>Service.Mode.MESSAGE</code>)
+or payload (<code>Service.Mode.PAYLOAD</code>). If there is no <code>@ServiceMode</code>
+annotation on the endpoint, payload is the default value. The endpoint
+communicates with handlers using the property bag <code>Map&lt;String,
+Object&gt;</code> parameter. All the provider endpoints start from a
+WSDL file and <code>&lt;provider&gt;</code> WSDL customization can be
+used to mark a port as a provider.</p>
+<h2><code>Provider&lt;Source&gt;</code> and <code>PAYLOAD</code></h2>
+<p>An endpoint can access only the payload of a request using <code>Service.Mode.PAYLOAD</code>
+in the<code> @ServiceMode</code> annotation. This is the default
+behaviour, if the annotation is missing.</p>
+<p>For example:</p>
+<pre>  public class ProviderImpl implements Provider&lt;Source&gt; {<br>      public Source invoke(Source source, Map&lt;String, Object&gt; context) throws RemoteException {<br>          // do request processing<br>          Source response = ...;<br>          return response;<br>      }<br>  }<br></pre>
+<h2><code>Provider&lt;SOAPMessage&gt;</code> and <code>MESSAGE</code></h2>
+<p>An endpoint can access an entire SOAP request as a <code>SOAPMessage</code>.
+<code>Service.Mode.MESSAGE</code> in the <code>@ServiceMode</code>
+annotation is used to convey the intent.</p>
+<p>For example:</p>
+<pre>  @ServiceMode(value=Service.Mode.MESSAGE)<br>  public class ProviderImpl implements Provider&lt;SOAPMessage&gt; {<br>      public SOAPMessage invoke(SOAPMessage msg, Map&lt;String, Object&gt; ctxt) throws RemoteException {<br>          // do request processing<br>          SOAPMessage response = ...;<br>          return response;<br>      }<br>  }<br></pre>
+<h2><code>Provider&lt;Source&gt;</code> and <code>MESSAGE</code></h2>
+<p>An endpoint can access a request as a <code>Source</code>. If the
+request is a <code>SOAPMessage</code>, only the <code>SOAPPart</code>
+(no attachments) of the message is passed as <code>Source</code> to
+the <code>invoke</code> method. If the returned response is null, it
+is considered a one way MEP.</p>
+<p>For example:</p>
+<pre>  @ServiceMode(value=Service.Mode.MESSAGE)<br>  public class ProviderImpl implements Provider&lt;Source&gt; {<br>      public Source invoke(Source source, Map&lt;String, Object&gt; context) throws RemoteException {<br>          // Use JAXRPCContext to access properties set by handler<br>          String foo = (String)context.getProperty("foo");<br><br>          // do request processing using source<br>          // return null to indicate oneway<br>          return null;<br>      }<br>  }<br></pre>
+<h2>WSDL Customization</h2>
+<p>The provider endpoint starts with a WSDL file. A port can be
+customized to a provider endpoint using the <code>&lt;provider&gt;</code>
+customization. wsgen won't generate any artifacts for that.<br>
+</p>
+<p>For example:</p>
+<pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    &lt;provider&gt;true&lt;/provider&gt;<br>  &lt;/bindings&gt;<br></pre>
+<h2>The <code>sun-jaxws.xml</code> file</h2>
+<span style="font-family: monospace;"></span>The provider endpoint
+require all the attributes: name, implementation, wsdl, service, port,
+urlpattern.
+<p>For example:<br>
+</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+<hr>
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
+Microsystems, Inc. All rights reserved.</font></i></a></p>
+<p><br>
+<br>
+</p>
 </body>
 </html>
