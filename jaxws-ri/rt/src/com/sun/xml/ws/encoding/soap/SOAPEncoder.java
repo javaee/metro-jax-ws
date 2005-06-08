@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.10 2005-06-04 01:48:10 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.11 2005-06-08 19:04:51 spericas Exp $
  */
 
 /*
@@ -244,8 +244,13 @@ public abstract class SOAPEncoder implements Encoder {
                         // Write attributes
                         n = reader.getAttributeCount();
                         for (int i = 0; i < n; i++) {
-                            writer.writeAttribute(reader.getAttributePrefix(i), 
-                                reader.getAttributeLocalName(i), reader.getAttributeNamespace(i));
+                            String attrPrefix = reader.getAttributePrefix(i);
+                            String attrURI = reader.getAttributeNamespace(i);
+                            
+                            writer.writeAttribute(attrPrefix != null ? attrPrefix : "", 
+                                attrURI != null ? attrURI : "",
+                                reader.getAttributeLocalName(i), 
+                                reader.getAttributeValue(i)); 
                         }                        
                         break;
                     case XMLStreamConstants.END_ELEMENT:
