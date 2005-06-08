@@ -1,5 +1,5 @@
 /*
- * $Id: DOMStreamReader.java,v 1.4 2005-06-02 21:16:48 spericas Exp $
+ * $Id: DOMStreamReader.java,v 1.5 2005-06-08 19:09:41 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -92,6 +92,7 @@ public class DOMStreamReader implements XMLStreamReader {
         _current = node;
         _state = START_DOCUMENT;        
         // verifyDOMIntegrity(node);
+        // displayDOM(node, System.out);
     }
     
     public void close() throws javax.xml.stream.XMLStreamException {
@@ -487,6 +488,11 @@ public class DOMStreamReader implements XMLStreamReader {
             case END_DOCUMENT:
                 throw new IllegalStateException("DOMStreamReader: Calling next() at END_DOCUMENT");
             case START_DOCUMENT:
+                // Don't skip document element if this is a fragment
+                if (_current.getNodeType() == ELEMENT_NODE) {
+                    return (_state = START_ELEMENT);
+                }
+                
                 child = _current.getFirstChild();
                 if (child == null) {
                     return (_state = END_DOCUMENT);
@@ -519,7 +525,8 @@ public class DOMStreamReader implements XMLStreamReader {
                 Node sibling = _current.getNextSibling();
                 if (sibling == null) {
                     _current = _current.getParentNode();
-                    _state = (_current.getNodeType() == DOCUMENT_NODE) ? 
+                    // getParentNode() returns null for fragments
+                    _state = (_current == null || _current.getNodeType() == DOCUMENT_NODE) ? 
                              END_DOCUMENT : END_ELEMENT;
                     return _state;
                 } 
@@ -569,6 +576,21 @@ public class DOMStreamReader implements XMLStreamReader {
         return true;
     }    
     
+    // -- Debugging ------------------------------------------------------
+    
+    private static void displayDOM(Node node, java.io.OutputStream ostream) {
+        try {
+            System.out.println("\n====\n");
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(
+                new javax.xml.transform.dom.DOMSource(node), 
+                new javax.xml.transform.stream.StreamResult(ostream));
+            System.out.println("\n====\n");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     private static void verifyDOMIntegrity(Node node) {
         switch (node.getNodeType()) {
             case ELEMENT_NODE:
@@ -598,7 +620,7 @@ public class DOMStreamReader implements XMLStreamReader {
     }
     
     static public void main(String[] args) throws Exception {
-        String sample = "<root attr1='a' xmlns:p='http://ppp'><elem1 xmlns='http://bbb'><elem2>bla</elem2></elem1></root>";
+        String sample = "<?xml version='1.0' encoding='UTF-8'?><env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'><env:Body><env:Fault><faultcode>env:Server</faultcode><faultstring>Internal server error</faultstring></env:Fault></env:Body></env:Envelope>";
         javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
