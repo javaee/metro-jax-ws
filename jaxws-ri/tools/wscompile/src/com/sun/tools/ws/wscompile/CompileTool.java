@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.2 2005-06-06 23:03:25 kohlert Exp $
+ * $Id: CompileTool.java,v 1.3 2005-06-08 06:13:21 vivekp Exp $
  */
 
 /*
@@ -70,10 +70,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             }*/ else if (args[i].equals("-verbose")) {
                 verbose = true;
                 args[i] = null;
-            } else if (args[i].equals("-extension")) {
-                extension = true;
-                args[i] = null;
-            } else if (args[i].equals("-b")) {
+            }else if (args[i].equals("-b")) {
                 if(program.equals("wsgen"))
                     continue;
                 if ((i + 1) < args.length) {
@@ -111,6 +108,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     return false;
                 }
             } else if (args[i].equals("-nd")) {
+                if (program.equals("wsimport"))
+                    continue;
                 if ((i + 1) < args.length) {
                     if (nonclassDestDir != null) {
                         onError(getMessage("wscompile.duplicateOption", "-nd"));
@@ -150,7 +149,9 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     usage();
                     return false;
                 }
-            } else if (args[i].equals("-classpath") || args[i].equals("-cp")) {               
+            } else if (args[i].equals("-classpath") || args[i].equals("-cp")) {
+                if (program.equals("wsimport"))
+                    continue;
                 if ((i + 1) < args.length) {
                     if (userClasspath != null) {
                         onError(getMessage("wscompile.duplicateOption", args[i]));

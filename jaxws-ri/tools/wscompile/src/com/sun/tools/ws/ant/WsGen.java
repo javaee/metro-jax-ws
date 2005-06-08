@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.2 2005-06-06 23:03:23 kohlert Exp $
+ * $Id: WsGen.java,v 1.3 2005-06-08 06:13:20 vivekp Exp $
  */
 
 /*
@@ -102,21 +102,6 @@ public class WsGen extends MatchingTask {
     /** Sets the base directory to output generated class. **/
     public void setBase(File base) {
         this.baseDir = base;
-    }
-
-    /************* -extension ****************/
-    private boolean extension = false;
-    /**
-     * @return Returns the extension.
-     */
-    public boolean getExtension() {
-        return extension;
-    }
-    /**
-     * @param extension The extension to set.
-     */
-    public void setExtension(boolean extension) {
-        this.extension = extension;
     }
 
     /********************  -jvmargs option **********************/
@@ -347,11 +332,6 @@ public class WsGen extends MatchingTask {
         if (null != getBase() && !getBase().equals("")) {
             cmd.createArgument().setValue("-d");
             cmd.createArgument().setFile(getBase());
-        }
-
-        // -extension option
-        if (getExtension()) {
-            cmd.createArgument().setValue("-extension");
         }
 
         // g option

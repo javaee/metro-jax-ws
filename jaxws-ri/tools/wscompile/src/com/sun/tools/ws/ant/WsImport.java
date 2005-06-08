@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.1 2005-05-23 23:11:24 bbissett Exp $
+ * $Id: WsImport.java,v 1.2 2005-06-08 06:13:21 vivekp Exp $
  */
 
 /*
@@ -102,21 +102,6 @@ public class WsImport extends MatchingTask {
     /** Sets the base directory to output generated class. **/
     public void setBase(File base) {
         this.baseDir = base;
-    }
-
-    /************* -extension ****************/
-    private boolean extension = false;
-    /**
-     * @return Returns the extension.
-     */
-    public boolean getExtension() {
-        return extension;
-    }
-    /**
-     * @param extension The extension to set.
-     */
-    public void setExtension(boolean extension) {
-        this.extension = extension;
     }
 
     /********************  -httpproxy option **********************/
@@ -385,11 +370,6 @@ public class WsImport extends MatchingTask {
         if (null != getBase() && !getBase().equals("")) {
             cmd.createArgument().setValue("-d");
             cmd.createArgument().setFile(getBase());
-        }
-
-        // -extension option
-        if (getExtension()) {
-            cmd.createArgument().setValue("-extension");
         }
 
         // g option
