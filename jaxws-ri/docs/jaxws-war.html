@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+  <title>Java(TM) API for XML-based RPC (JAX-RPC) 2.0 Tools</title>
+  <meta name="CREATED" content="20050329;10375410">
+  <meta name="CHANGED" content="20050401;8213207">
+</head>
+<body lang="en-US" dir="ltr">
+<br>
+<p><br>
+<span style="font-weight: bold;"></span></p>
+<h2><a name="wsdeploytool" id="wsdeploytool"></a>WAR file<br>
+</h2>
+<h4>The WAR Contents<br>
+</h4>
+<p>Typically, one creates the&nbsp; WAR file with a GUI development
+tool or with the <code>ant</code> <code>war</code> task from the
+generated artifacts from <code>wsimport, </code><code>wsgen, or </code><code>apt</code>
+tools.</p>
+<p>For example, a sample WAR file starting from a WSDL file:<br>
+</p>
+<pre>WEB-INF/classes/hello/HelloIF.class          SEI<br>WEB-INF/classes/hello/HelloImpl.class        Endpoint<br>WEB-INF/sun-jaxws.xml                        JAX-WS RI deployment descriptor<br>WEB-INF/web.xml                              Web deployment descriptor<br>WEB-INF/wsdl/HelloService.wsdl               WSDL<br>WEB-INF/wsdl/schema.xsd                      WSDL imports this Schema</pre>
+<h4>The <code>sun-jaxws.xml</code> File</h4>
+<p>The <code>&lt;endpoints&gt;</code> element contain one or more <code>&lt;endpoint&gt;</code>
+elements. Each endpoint represents a port in the WSDL and it contains
+all information about implementation class, servlet urlpattern,
+binding, WSDL, service, port QNames.&nbsp; The following shows a <code>sun-jaxws.xml</code>
+file for a simple <code>HelloWorld</code> service.</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>  xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>  version="2.0"&gt;<br>  &lt;endpoint<br>    name="MyHello"<br><code>    implementation="hello.HelloImpl"</code><br>    urlpattern="/<code>hello"/&gt;<br>&lt;/endpoints&gt;<br><br></code></pre>
+<ul>
+  <li>
+    <pre>endpoint can have the following attributes</pre>
+  </li>
+  <li>
+    <table style="text-align: left; width: 756px; height: 139px;"
+ border="1" cellspacing="2" cellpadding="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">Attribute</td>
+          <td style="vertical-align: top;">Optional<br>
+          </td>
+          <td style="vertical-align: top;">Use<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>name</pre>
+          </td>
+          <td style="vertical-align: top;">N<br>
+          </td>
+          <td style="vertical-align: top;">Name of the endpoint<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>wsdl</pre>
+          </td>
+          <td style="vertical-align: top;">Y<br>
+          </td>
+          <td style="vertical-align: top;">Primary wsdl file location
+in the WAR file. For e.g. /WEB-INF/wsdl/HelloService.wsdl. If this
+isn't specified, JAX-WS will create and publish a new WSDL. When the
+service is developed from java, it is recommended to omit this
+attribute.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>service</pre>
+          </td>
+          <td style="vertical-align: top;">Y<br>
+          </td>
+          <td style="vertical-align: top;">QName of WSDL service. For
+e.g. {http://example.org/}HelloService. When the service is developed
+from java, it is recommended to omit this attribute.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>port</pre>
+          </td>
+          <td style="vertical-align: top;">Y<br>
+          </td>
+          <td style="vertical-align: top;">QName of WSDL port. For e.g.
+{http://example.org/}HelloPort. When the service is developed from
+java, it is recommended to omit this attribute.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>implementation</pre>
+          </td>
+          <td style="vertical-align: top;">N<br>
+          </td>
+          <td style="vertical-align: top;">Endpoint implementation
+class name. For e.g: hello.HelloImpl. The class should have @WebService
+annotation. Provider based implementation class doesn't have to have
+this annotation.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>urlpattern</pre>
+          </td>
+          <td style="vertical-align: top;">N<br>
+          </td>
+          <td style="vertical-align: top;">Should match
+&lt;url-pattern&gt; in web.xml<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>binding</pre>
+          </td>
+          <td style="vertical-align: top;">Y<br>
+          </td>
+          <td style="vertical-align: top;">Binding id defined in the
+JAX-WS API. The possible values are:<br>
+          <pre>"http://schemas.xmlsoap.org/wsdl/soap/http",<br>"http://www.w3.org/2003/05/soap/bindings/HTTP/",<br>"http://www.w3.org/2004/08/wsdl/http"</pre>
+If omitted, it is considered SOAP1.1 binding.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">
+          <pre>enable-mtom</pre>
+          </td>
+          <td style="vertical-align: top;">Y<br>
+          </td>
+          <td style="vertical-align: top;">Enables MTOM optimization<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><br>
+  </li>
+  <li>endpont can have a optional handler-chain element</li>
+</ul>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints ..."&gt;<br>  &lt;endpoint ...<code>&gt;<br></code>&nbsp;&nbsp;&nbsp; &lt;handler-chain&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-chain-name&gt;somename&lt;/handler-chain-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-class&gt;hello.MyHandler&lt;/handler-class&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/handler&gt;<br>&nbsp;&nbsp;&nbsp; &lt;/handler-chain&gt;<br><code>  &lt;/endpoint&gt;<br>&lt;/endpoints&gt;</code></pre>
+<h4>The<span style="font-family: monospace;"> </span><code>web.xml</code>
+File</h4>
+<p>The following shows a <code>web.xml</code> file for a simple <code>HelloWorld</code>
+service. It specifies JAX-WS RI specific listener, servlet classes.<br>
+</p>
+<code></code>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd"&gt;<br><br>&lt;web-app&gt;<br>  &lt;listener&gt;<br>    &lt;listener-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCContextListener&lt;/listener-class&gt;<br>  &lt;/listener&gt;<br>  &lt;servlet&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;servlet-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCServlet&lt;/servlet-class&gt;<br>    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;<br>  &lt;/servlet&gt;<br>  &lt;servlet-mapping&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;<br>  &lt;/servlet-mapping&gt;<br>  &lt;session-config&gt;<br>    &lt;session-timeout&gt;60&lt;/session-timeout&gt;<br>  &lt;/session-config&gt;<br>&lt;/web-app&gt;<code></code><br></pre>
+<p>Remember these requirements when building a WAR:</p>
+<ul>
+  <li>WSDL and auxiliary WSDL, Schema files should be packaged under
+/WEB-INF/wsdl dir. It is recommended that they need not be packaged
+when the service is started from j<br>
+  </li>
+  <li>WebService implementation class should contain @WebService
+annotation. Provider based endpoints need not have @WebService
+annotation.<br>
+  </li>
+</ul>
+<p><br>
+</p>
+<hr>
+<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
+2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+</body>
+</html>
