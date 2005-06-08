@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.5 2005-05-31 19:26:25 jitu Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.6 2005-06-08 19:03:25 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -416,15 +416,13 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
-                            // namespace declaration for the element is written during previous writeElement
-                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart())) {
-                                String value = atts.getValue(i);
-                                String localName = atts.getName(i).getLocalPart();
-                                writer.setPrefix(localName, value);
-                                writer.writeNamespace(localName, value);
-                            }
+                            String value = atts.getValue(i);
+                            String localName = atts.getName(i).getLocalPart();
+                            writer.setPrefix(localName, value);
+                            writer.writeNamespace(localName, value);
                         } else {
-                            writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                            writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i), 
+                                atts.getValue(i));
                         }
                     }
                 } else if (reader.getEventType() == END_ELEMENT) {
