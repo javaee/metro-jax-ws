@@ -31,6 +31,14 @@
 				</sequence>
 			</complexType>
 			<element name="addNumbers" type="tns:addNumbers"/>
+
+			<element name="AddNumbersFault" type="tns:AddNumbersFault" />
+			<complexType name="AddNumbersFault">
+				<sequence>
+					<element name="faultInfo" type="xsd:string" />
+					<element name="message" type="xsd:string" />
+				</sequence>
+			</complexType>
 		</xsd:schema>
 	</types>
 	<message name="addNumbers">
@@ -39,10 +47,14 @@
 	<message name="addNumbersResponse">
 		<part name="result" element="tns:addNumbersResponse" />
 	</message>
+	<message name="addNumbersFault">
+		<part name="AddNumbersFault" element="tns:AddNumbersFault" />
+	</message>
 	<portType name="AddNumbersPortType">
 		<operation name="addNumbers">
 			<input message="tns:addNumbers" />
 			<output message="tns:addNumbersResponse" />
+			<fault name="addNumbersFault" message="tns:addNumbersFault"/>
 		</operation>
 	</portType>
 	<binding name="AddNumbersBinding" type="tns:AddNumbersPortType">
@@ -55,6 +67,9 @@
 			<output>
 				<soap:body use="literal" />
 			</output>
+			<fault name="addNumbersFault">
+				<soap:fault name="addNumbersFault" use="literal" />
+			</fault>
 		</operation>
 	</binding>
 	<service name="AddNumbersService">

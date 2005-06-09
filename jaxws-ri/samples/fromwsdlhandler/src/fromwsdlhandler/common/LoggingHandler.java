@@ -5,18 +5,14 @@
 package fromwsdlhandler.common;
 
 import java.io.PrintStream;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-
+import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPException;
 
 /*
  * This simple SOAPHandler will output the contents of incoming
