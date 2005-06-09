@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.18 2005-06-07 00:06:21 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.19 2005-06-09 20:30:33 jitu Exp $
  */
 
 /*
@@ -16,6 +16,7 @@ import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.client.BindingImpl;
+import com.sun.xml.ws.client.SOAPBindingImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,6 @@ public class RuntimeEndpointInfo
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
     private boolean enableMtom;
-    private String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
 
     public Exception getException() {
         return exception;
@@ -88,24 +88,21 @@ public class RuntimeEndpointInfo
         return deployed;
     }
     
-    public String getBindingId() {
-        return bindingId;
-    }
-    
     public void createModel() {
-        //how will j2ee pass the binding id?
-        if(binding != null && binding instanceof BindingImpl) {
-            bindingId = ((BindingImpl)binding).getBindingId();
-        }
-
         // Create runtime model for non Provider endpoints            
-        RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(), bindingId);
+        RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(),
+                ((BindingImpl)binding).getBindingId());
         runtimeModel = rap.buildRuntimeModel();     
     }
     
     public void deploy() {
         if (implementor == null) {
             // TODO throw exception
+        }
+        
+        // setting a default binding
+        if (binding == null) {
+            setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
         }
         
         if (implementor instanceof Provider) {
@@ -129,7 +126,8 @@ public class RuntimeEndpointInfo
             if (getWSDLFileName() == null) {
                 // Generate WSDL and schema documents using runtime model
                 WSDLGenResolver wsdlResolver = new WSDLGenResolver();
-                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver, bindingId);
+                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver,
+                        ((BindingImpl)binding).getBindingId());
                 try {
                     wsdlGen.doGeneration();
                 } catch(Exception e) {
