@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcRtObjectFactory.java,v 1.2 2005-06-09 19:11:14 jitu Exp $
+ * $Id: JaxRpcRtObjectFactory.java,v 1.3 2005-06-09 19:55:20 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,6 +9,7 @@ package com.sun.xml.ws.spi.runtime;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.sun.xml.ws.util.JaxRpcRtObjectFactoryImpl;
 
 
 /**
@@ -17,9 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class JaxRpcRtObjectFactory {
 
     private static JaxRpcRtObjectFactory factory;
-
-    private static String DEFAULT_JAXRPC_OBJECT_FACTORY =
-        "com.sun.xml.rpc.util.JaxRpc20ObjectFactoryImpl";
 
     public JaxRpcRtObjectFactory() {
     }
@@ -35,8 +33,7 @@ public abstract class JaxRpcRtObjectFactory {
         if (factory == null) {
             //XXX FIXME Make it configurable by property
             try {
-                Class klass = Class.forName(DEFAULT_JAXRPC_OBJECT_FACTORY);
-                factory = (JaxRpcRtObjectFactory) klass.newInstance();
+                factory = new JaxRpcRtObjectFactoryImpl();
             } catch (Exception e) {
                 //XXX FIXME  i18n.  Better Handling of the Error
                 e.printStackTrace();
