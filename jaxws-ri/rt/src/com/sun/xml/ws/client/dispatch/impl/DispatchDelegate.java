@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.2 2005-05-25 18:22:09 kohlert Exp $
+ * $Id: DispatchDelegate.java,v 1.3 2005-06-09 15:51:32 kwalsh Exp $
  */
 
 /*
@@ -15,9 +15,9 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
-import com.sun.xml.ws.client.RequestContext;
-import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.*;
 
+import javax.xml.ws.BindingProvider;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -39,9 +39,17 @@ public class DispatchDelegate extends DelegateBase {
     public void send(MessageStruct messageStruct) {
         MessageInfo messageInfo = (MessageInfo) messageStruct;
 
-        ContactInfoListIterator iterator = contactInfoList.iterator();
-        ContactInfo contactInfo = getContactInfo(iterator, messageStruct);
+        ContextMap properties = (ContextMap)
+                messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        BindingProvider dispatch = (BindingProvider)properties.get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
 
+        if (!contactInfoList.iterator().hasNext())
+            throw new RuntimeException("can't pickup message encoder/decoder, no ContactInfo!");
+
+
+        BindingImpl bi = (BindingImpl)dispatch.getBinding();
+        String bindingId = bi.getBindingId();
+        ContactInfo contactInfo = getContactInfo(contactInfoList, bindingId);
         messageInfo.setEPTFactory(contactInfo);
         messageInfo.setConnection(contactInfo.getConnection(messageInfo));
 
@@ -50,7 +58,17 @@ public class DispatchDelegate extends DelegateBase {
         messageDispatcher.send(messageInfo);
     }
 
-    private ContactInfo getContactInfo(ContactInfoListIterator iterator, MessageStruct messageStruct) {
+     private ContactInfo getContactInfo(ContactInfoList cil, String bindingId){
+        ContactInfoListIterator iter = cil.iterator();
+        while(iter.hasNext()){
+            ContactInfoBase cib = (ContactInfoBase)iter.next();
+            if(cib.getBindingId().equals(bindingId))
+                return cib;
+        }
+        //return the first one
+        return cil.iterator().next();
+    }
+    /*private ContactInfo getContactInfo(ContactInfoListIterator iterator, MessageStruct messageStruct) {
         if (!iterator.hasNext())
             throw new RuntimeException("no next");
 
@@ -73,7 +91,7 @@ public class DispatchDelegate extends DelegateBase {
 
         return contactInfo;
     }
-
+ */
     //TODO: kw-map
 
      private boolean isFastEncoding(RequestContext requestContext) {

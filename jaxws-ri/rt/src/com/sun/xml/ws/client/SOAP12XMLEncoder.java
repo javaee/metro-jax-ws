@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.6 2005-06-02 17:53:10 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.7 2005-06-09 15:51:31 kwalsh Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
-    
+
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
@@ -40,7 +40,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             throw new SenderException(new LocalizableExceptionAdapter(e));
         }
     }
-    
+
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startBody(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
@@ -51,9 +51,9 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE);
         } catch (XMLStreamException e) {
             throw new SenderException(new LocalizableExceptionAdapter(e));
-        }        
+        }
     }
-    
+
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startHeader(com.sun.xml.rpc.streaming.XMLStreamWriter)
      */
@@ -65,9 +65,9 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAP12NamespaceConstants.ENVELOPE);     // <env:Header>
         } catch (XMLStreamException e) {
             throw new SenderException(new LocalizableExceptionAdapter(e));
-        }                
+        }
     }
-    
+
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.client.SOAPXMLEncoder#getContentType()
      */

@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.4 2005-05-25 20:52:03 kohlert Exp $
+ * $Id: DispatchBase.java,v 1.5 2005-06-09 15:51:31 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -18,12 +18,10 @@ import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.Detail;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.ws.*;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.net.URI;
 import java.rmi.RemoteException;
@@ -266,7 +264,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     public void _setTransportFactory(ClientTransportFactory f) {
-         getRequestContext().put(ClientTransportFactory.class.getName(), f);
+        getRequestContext().put(ClientTransportFactory.class.getName(), f);
         _transportFactory = f;
     }
 
@@ -361,9 +359,15 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         if (msg != null) {
             Class objClass = msg.getClass();
             //Object data = null;
+            MessageFactory factory = null;
             if ((msg instanceof Source) && _mode == Service.Mode.MESSAGE) {
                 try {
-                    MessageFactory factory = MessageFactory.newInstance();
+
+                    if (_getBindingId().toString().equals(SOAPBinding.SOAP12HTTP_BINDING))
+                        factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+                    else
+                        factory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+
                     SOAPMessage message = factory.createMessage();
                     message.getSOAPPart().setContent((Source) msg);
                     message.saveChanges();
@@ -415,7 +419,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
     // default for now is soap binding
     public URI _getBindingId() {
-        // _bindingId = _portInfo.getBindingId();
+        _bindingId = _portInfo.getBindingId();
         if (_bindingId == null) {
             try {
                 // this is a known string and should not cause error
@@ -439,7 +443,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      */
     public Map getRequestContext() {
         if (_requestContext == null)
-        _requestContext = new RequestContext(this);
+            _requestContext = new RequestContext(this);
 
         return _requestContext;
     }
@@ -460,7 +464,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      */
     public Map getResponseContext() {
         if (_responseContext == null)
-        _responseContext = new ResponseContext(this);
+            _responseContext = new ResponseContext(this);
         return _responseContext;
     }
 
@@ -490,9 +494,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                 else if (mode == Service.Mode.MESSAGE)
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_MESSAGE);
             } else if (_clazz.isAssignableFrom(SOAPMessage.class)) {
-                if (mode == Service.Mode.PAYLOAD){
+                if (mode == Service.Mode.PAYLOAD) {
                     throw new WebServiceException("SOAPMessages must be Service.Mode.MESSAGE. ");
-                }   else if (mode == Service.Mode.MESSAGE)
+                } else if (mode == Service.Mode.MESSAGE)
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOAPMESSAGE_MESSAGE);
             }
         } else if (hasJAXBContext(obj, null)) {

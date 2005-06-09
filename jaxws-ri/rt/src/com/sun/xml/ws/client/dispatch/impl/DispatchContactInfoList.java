@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfoList.java,v 1.2 2005-05-25 20:44:11 kohlert Exp $
+ * $Id: DispatchContactInfoList.java,v 1.3 2005-06-09 15:51:32 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,12 +11,15 @@ package com.sun.xml.ws.client.dispatch.impl;
 import com.sun.pept.ept.ContactInfoList;
 import com.sun.pept.ept.ContactInfoListIterator;
 import com.sun.xml.ws.client.ContactInfoListIteratorBase;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchXMLDecoder;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSOAP12XMLDecoder;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSOAP12XMLEncoder;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchXMLEncoder;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchXMLDecoder;
 import com.sun.xml.ws.client.dispatch.impl.protocol.MessageDispatcherHelper;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 
 import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.soap.SOAPBinding;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +38,11 @@ public class DispatchContactInfoList implements ContactInfoList {
         arrayList.add(new DispatchContactInfo(null,
             new MessageDispatcherHelper(),
             new DispatchXMLEncoder(),
-            new DispatchXMLDecoder()));
+            new DispatchXMLDecoder(),SOAPBinding.SOAP11HTTP_BINDING));
+        arrayList.add(new DispatchContactInfo(null,
+            new MessageDispatcherHelper(),
+            new DispatchSOAP12XMLEncoder(),
+            new DispatchSOAP12XMLDecoder(), SOAPBinding.SOAP12HTTP_BINDING));
         /*arrayList.add(new DispatchContactInfo(null,
                 new MessageDispatcherHelper(new DispatchEncoderDecoderUtil()),
                 new SOAPFastEncoder(new DispatchEncoderDecoderUtil()),

@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.4 2005-05-28 01:10:10 spericas Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.5 2005-06-09 15:51:32 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -45,7 +45,8 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
 
     private static final Logger logger =
         getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch.util").toString());
-    private static JAXBContext jc = null;
+    //jaxbcontext can not be static
+    private JAXBContext jc = null;
 
     public DispatchXMLEncoder() {
         super();

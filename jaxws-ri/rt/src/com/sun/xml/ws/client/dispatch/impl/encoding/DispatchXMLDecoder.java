@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.6 2005-06-08 19:03:25 spericas Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.7 2005-06-09 15:51:32 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -90,27 +90,28 @@ import static javax.xml.stream.XMLStreamConstants.*;
 public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-    private DispatchSerializer dispatchSerializer;
-    private static JAXBContext jc;
-    
+    private static DispatchSerializer dispatchSerializer;
+    //jaxbcontext can not be static
+    private JAXBContext jc;
+
     public DispatchXMLDecoder() {
-        dispatchSerializer = new DispatchSerializer();
+        dispatchSerializer = DispatchSerializer.getInstance();
     }
-    
+
     protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
         int state = XMLStreamReaderUtil.nextElementContent(reader);
-        
+
         // if Body is not empty, then deserialize the Body
         if (state != END_ELEMENT) {
             BodyBlock responseBody = null;
-            
+
             QName responseBodyName = reader.getName();   // Operation name
             if (responseBodyName.getNamespaceURI().equals(SOAPNamespaceConstants.ENVELOPE) &&
                 responseBodyName.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
                 SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
-                
+
                 responseBody = new BodyBlock(soapFaultInfo);
             } else {
                 JAXBContext jaxbContext = getJAXBContext(messageInfo);
@@ -123,7 +124,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
             }
             response.setBody(responseBody);
         }
-        
+
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
         XMLStreamReaderUtil.nextElementContent(reader);
@@ -153,7 +154,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.skipElement(reader);                     // Moves to </Body>
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
+
     /*
      * skipBody is true, the body is skipped during parsing.
      */
@@ -173,7 +174,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
     }
-    
+
     protected void decodeHeader(XMLStreamReader reader, InternalMessage request) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
@@ -192,7 +193,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_HEADER);
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
+
     /*
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
@@ -247,9 +248,9 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
           reader.nextElementContent();
       }
       */
-    
+
     protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
-        decodeDispatchMethod(reader, response, messageInfo);
+        //kw-decodeDispatchMethod(reader, response, messageInfo);
         if (reader.getEventType() == START_ELEMENT) {
             QName name = reader.getName(); // Operation name
             JAXBContext jaxbContext = getJAXBContext(messageInfo);
@@ -267,11 +268,11 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
             }
         }
     }
-    
+
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
             MessageInfo messageInfo) {
         Method methodName = messageInfo.getMethod();
-        
+
         // faultcode
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
@@ -293,7 +294,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.next(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_CODE);
-        
+
         // faultstring
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
@@ -303,7 +304,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.next(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_STRING);
-        
+
         String faultactor = null;
         Object faultdetail = null;
         QName faultName = null;
@@ -322,23 +323,23 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                 XMLStreamReaderUtil.nextElementContent(reader);
                 elementName = reader.getName();
             }
-            
+
             // faultdetail
             if (elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
                 XMLStreamReaderUtil.nextContent(reader);
                 faultName = reader.getName();
-                
+
                 if (isKnownFault(faultName, methodName)) {
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
-                    
+
                     //faultdetail = JAXBTypeSerializer.getInstance().deserialize(reader, jaxbContext);
                     Map<QName, Class> typeMapping = null;//getTypeMapping();
                     faultdetail = JAXBTypeSerializer.getInstance().deserialize(reader, jaxbContext);
-                    
+
                     // all the siblings are assigned the same elementID, though
                     // not at the same time. the parent is assigned elementID
                     // one less than the child.
-                    
+
                     // this will skip the subsequent detail entries
                     // and position the reader at </detail>
                     elementName = reader.getName();
@@ -360,7 +361,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                             faultdetail = new JAXBBeanInfo(obj, getJAXBContext(messageInfo));
                         }
                     }
-                    
+
                     // if not a header fault, then it is a protocol exception with no detail
                     if (!isHeaderFault) {
                         faultdetail = null;
@@ -380,33 +381,33 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                 }
             }
         }
-        
+
         //SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
         SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
-        
+
         // reader could be left on CHARS token rather than </fault>
         if (reader.getEventType() == XMLStreamReader.CHARACTERS &&
                 reader.getText().trim().length() == 0) {
             XMLStreamReaderUtil.nextContent(reader);
         }
-        
+
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT);
         XMLStreamReaderUtil.nextElementContent(reader);
         return soapFaultInfo;
     }
-    
+
     private Detail decodeFaultDetail(XMLStreamReader reader) {
         Detail detail = null;
-        
+
         try {
             SOAPFactory soapFactory = SOAPFactory.newInstance();
             detail = soapFactory.createDetail();
-            
+
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            
+
             XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-            
+
             writer.writeStartElement(SOAPConstants.QNAME_SOAP_FAULT_DETAIL.getLocalPart());
             while (!((reader.getEventType() == END_ELEMENT) && reader.getName().equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL))) {
                 if (reader.getEventType() == START_ELEMENT) {
@@ -416,13 +417,15 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
-                            String value = atts.getValue(i);
-                            String localName = atts.getName(i).getLocalPart();
-                            writer.setPrefix(localName, value);
-                            writer.writeNamespace(localName, value);
+                            // namespace declaration for the element is written during previous writeElement
+                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart())) {
+                                String value = atts.getValue(i);
+                                String localName = atts.getName(i).getLocalPart();
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
+                            }
                         } else {
-                            writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i), 
-                                atts.getValue(i));
+                            writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                         }
                     }
                 } else if (reader.getEventType() == END_ELEMENT) {
@@ -435,21 +438,21 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
             writer.writeEndElement();    // detail
             writer.writeEndDocument();
             writer.close();
-            
+
             DOMResult dom = new DOMResult();
             Transformer trans = TransformerFactory.newInstance().newTransformer();
             Properties oprops = new Properties();
             oprops.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
             trans.setOutputProperties(oprops);
             trans.transform(new StreamSource(new ByteArrayInputStream(baos.toString().getBytes())), dom);
-            
+
             MessageFactory messageFactory = MessageFactory.newInstance();
             SOAPMessage soapMessage = messageFactory.createMessage();
             SOAPBody soapBody = soapMessage.getSOAPBody();
             soapBody.addDocument((Document) dom.getNode());
             SOAPElement soapElement = (SOAPElement) soapBody.getFirstChild();
             soapBody.removeContents();
-            
+
             SOAPFault fault = soapBody.addFault();
             detail = fault.addDetail();
             detail.addChildElement(soapElement);
@@ -462,10 +465,10 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         } catch (XMLStreamException e) {
             throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         }
-        
+
         return detail;
     }
-    
+
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         if (jc == null) {
             RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
@@ -474,19 +477,19 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         }
         return jc;
     }
-    
-    
+
+
     public boolean isKnownFault(QName name, Method methodName) {
         return false;               // TODO
     }
-    
+
     public Set<QName> getKnownHeaders() {
         return null;               // TODO
     }
-    
+
     public String getActor() {
         return null;               // TODO
     }
-    
+
 }
 

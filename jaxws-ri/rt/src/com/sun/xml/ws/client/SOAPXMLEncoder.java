@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.9 2005-06-06 23:08:07 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.10 2005-06-09 15:51:31 kwalsh Exp $
  */
 
 /*
@@ -77,12 +77,12 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             endEnvelope(writer);
             writer.writeEndDocument();
             writer.close();
-            
+
             return ByteBuffer.wrap(baos.toByteArray());
         }
         catch (XMLStreamException e) {
             throw new SenderException(new LocalizableExceptionAdapter(e));
-        } 
+        }
     }
 
     /* (non-Javadoc)
@@ -240,8 +240,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 if(am.isXopped())
                     return "application/xop+xml;type=\"text/xml\"";
                 }
-        }
-        return XML_CONTENT_TYPE_VALUE;
+        }                                                                                                                                                                                                                                                                                                                                                     return XML_CONTENT_TYPE_VALUE;
     }
 
     /**

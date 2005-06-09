@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.4 2005-06-04 01:48:10 vivekp Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.5 2005-06-09 15:51:31 kwalsh Exp $
  */
 
 /*
@@ -245,7 +245,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * Otherwise, just ignore the header
      */
     private void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
-        InternalMessage msg) 
+        InternalMessage msg)
     {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();

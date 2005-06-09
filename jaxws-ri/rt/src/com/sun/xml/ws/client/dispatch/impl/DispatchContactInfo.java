@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfo.java,v 1.2 2005-06-02 17:53:09 vivekp Exp $
+ * $Id: DispatchContactInfo.java,v 1.3 2005-06-09 15:51:31 kwalsh Exp $
  */
 
 /*
@@ -22,9 +22,9 @@ public class DispatchContactInfo extends ContactInfoBase {
     public DispatchContactInfo(Connection connection,
                                MessageDispatcher messageDispatcher,
                                Encoder encoder,
-                               Decoder decoder) {
-        super(connection, messageDispatcher, encoder, decoder,null);
-
+                               Decoder decoder,
+                               String bindingId) {
+        super(connection, messageDispatcher, encoder, decoder, bindingId);
     }
 
     public DispatchContactInfo() {
