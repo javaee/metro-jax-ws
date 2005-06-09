@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.17 2005-06-07 15:39:08 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.18 2005-06-09 18:54:48 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -75,7 +75,7 @@ public class WSDLGenerator {
     public static final String DOT_WSDL         = ".wsdl";
     public static final String RESPONSE         = "Response";
     public static final String PARAMETERS       = "parameters";
-    public static final String RESULT           = "result";
+    public static final String RESULT           = "parameters";
     public static final String WSDL_NAMESPACE   = "http://schemas.xmlsoap.org/wsdl/";
     public static final String WSDL_PREFIX      = "wsdl";
     public static final String XSD_NAMESPACE    = "http://www.w3.org/2001/XMLSchema";
