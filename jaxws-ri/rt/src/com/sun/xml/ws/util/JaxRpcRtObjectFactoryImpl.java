@@ -1,5 +1,5 @@
 /*
- * $Id: JaxRpcRtObjectFactoryImpl.java,v 1.1 2005-05-23 23:06:25 bbissett Exp $
+ * $Id: JaxRpcRtObjectFactoryImpl.java,v 1.2 2005-06-09 19:11:14 jitu Exp $
  */
 
 /*
@@ -10,16 +10,16 @@ package com.sun.xml.ws.util;
 
 import java.io.OutputStream;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import com.sun.xml.ws.client.ClientTransportFactory;
-import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.transport.http.servlet.JAXRPCServletDelegate;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 
 import com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes;
+import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.transport.http.servlet.ServletConnectionImpl;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Singleton factory class to instantiate concrete objects.
@@ -49,6 +49,14 @@ public class JaxRpcRtObjectFactoryImpl
     
     public com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo createRuntimeEndpointInfo() {
         return new RuntimeEndpointInfo();
+    }
+    
+    /**
+     * Creates a connection for servlet transport
+     */
+    public JaxrpcConnection createJaxrpcConnection(HttpServletRequest req,
+            HttpServletResponse res) {
+        return new ServletConnectionImpl(req, res);
     }
     
     public com.sun.xml.ws.spi.runtime.SOAPMessageContext createSOAPMessageContext() {

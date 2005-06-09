@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcRtObjectFactory.java,v 1.1 2005-05-23 22:54:49 bbissett Exp $
+ * $Id: JaxRpcRtObjectFactory.java,v 1.2 2005-06-09 19:11:14 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,9 +7,8 @@
 package com.sun.xml.ws.spi.runtime;
 
 import java.io.OutputStream;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -56,6 +55,13 @@ public abstract class JaxRpcRtObjectFactory {
      * Creates an object with all endpoint info
      */
     public abstract RuntimeEndpointInfo createRuntimeEndpointInfo();
+    
+    /**
+     * Creates a connection for servlet transport
+     */
+    public abstract JaxrpcConnection createJaxrpcConnection(
+            HttpServletRequest req, HttpServletResponse res);
+
 
     /**
      * @param type The type of ClientTransportFactory
