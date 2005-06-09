@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    wsdlLocation="http://localhost:8080/jaxws-dispatch/addnumbers?wsdl"
+    xmlns="http://java.sun.com/xml/ns/jaxws">
+    <bindings node="wsdl:definitions">
+        <package name="dispatch.client"/>
+    </bindings>
+    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.org']">
+        <jaxb:schemaBindings>
+            <jaxb:package name="dispatch.client"/>
+        </jaxb:schemaBindings>
+    </bindings>
+</bindings>
+
