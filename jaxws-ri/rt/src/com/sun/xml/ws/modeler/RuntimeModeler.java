@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.12 2005-06-09 15:20:24 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.13 2005-06-09 15:29:10 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -638,7 +638,6 @@ public class RuntimeModeler {
                 name = webFault.name();
             }
             QName faultName = new QName(namespace, name);
-            System.out.println("faultname: "+faultName);
             TypeReference typeRef = new TypeReference(faultName, exceptionBean,
                 anns);
             CheckedException checkedException =
