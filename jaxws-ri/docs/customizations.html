@@ -10,7 +10,7 @@
 <body dir="ltr" lang="en-US">
 <h1>JAX-WS 2.0 Early Access - Customizations</h1>
 <hr>
-<p>Last Modified: 06/07/2005</p>
+<p>Last Modified: 06/09/2005</p>
 <h2>Contents</h2>
 <p><a href="#1._Declaring_customizations_">1. Declaring Customizations</a><br>
 &nbsp;&nbsp;&nbsp; <a href="#1.1_External_binding_declaration">1.1
@@ -329,13 +329,25 @@ details.</p>
 <h3><a name="2.10_Handler_chain_customization"
  id="2.10_Handler_chain_customization"></a>2.10 Handler Chain
 Customization</h3>
-<p>Handler chain customization is not yet specified by the 2.0
-specification. The JAX-RPC 1.x SI allowed handler chain customization
-using a configuration file. In JAX-WS 2.0 SI the same handler chain
-customizations can be used by wrapping them inside a <code>jaxws:bindings</code>
-element. Below is a sample JAX-WS binding declaration file with handler
-chain configuration:</p>
-<pre>&lt;jaxws:bindings<br>    xmlns:xsd="http://www.w3.org/2001/XMLSchema"<br>    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"<br>    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"<br>    wsdlLocation="http://localhost:8080/jaxrpc-fromwsdlhandler/addnumbers?WSDL"<br>    xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"&gt;<br><br>    &lt;jaxws:bindings node="wsdl:definitions"&gt;<br>         &lt;handlerChains xmlns="http://java.sun.com/xml/ns/jax-ws/ri/config"&gt;<br>             &lt;chain runAt="client"&gt;<br>                 &lt;handler className="fromwsdlhandler.common.LoggingHandler"/&gt;<br>             &lt;/chain&gt;<br>         &lt;/handlerChains&gt;<br>    &lt;/jaxws:bindings&gt;<br>&lt;/jaxws:bindings&gt;<br></pre>
+<p><code>jaxws:bindings</code> customization can be used to customize
+or add
+handlers. All that is needed is to inline a handler chain configuration
+conforming to JSR 181 Handler Chain configuration schema inside <code>jaxws:bindings</code>
+element.<br>
+</p>
+Below is a sample JAX-WS binding declaration file with JSR 181 handler
+chain configuration:
+<pre>&lt;jaxws:bindings<br>    xmlns:xsd="http://www.w3.org/2001/XMLSchema"<br>    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"<br>    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"<br>    wsdlLocation="http://localhost:8080/jaxrpc-fromwsdlhandler/addnumbers?WSDL"<br>    xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"<br>    xmlns:jws=<a
+ class="moz-txt-link-rfc2396E" href="http://www.bea.com/xml/ns/jws">"http://www.bea.com/xml/ns/jws"</a> <br>    xmlns:j2ee=<a
+ class="moz-txt-link-rfc2396E" href="http://java.sun.com/xml/ns/j2ee">"http://java.sun.com/xml/ns/j2ee"</a>&gt;<br><br>    &lt;jaxws:bindings node="wsdl:definitions"&gt;<br>        &lt;jws:handler-chain&gt;<br>    	    &lt;jws:handler-chain-name&gt;LoggingHandlers&lt;/jws:handler-chain-name&gt;        		<br>            &lt;jws:handler&gt;<br>                &lt;j2ee:handler-name&gt;Logger&lt;/j2ee:handler-name&gt;<br>                &lt;j2ee:handler-class&gt;fromwsdlhandler.common.LoggingHandler&lt;/j2ee:handler-class&gt;        	<br>            &lt;/jws:handler&gt;        	      	  <br>    	&lt;/jws:handler-chain&gt;<br>    &lt;/jaxws:bindings&gt;<br>&lt;/jaxws:bindings&gt;<br></pre>
+<br>
+When this customization file is passed on to wsimport tool using -b
+swith togather with the WSDL, wsimport generates all the artifacts
+togather with a handler configuration file which has everything inside <code>jaxws:bindings</code>
+element enclosing the <code>jws:handler-chain</code> element. It also
+add @javax.jws.HandlerChain annotation in the generated SEI class.
+JAXWS runtime uses the @HandlerChain annotation from the SEI to find
+the handlers that has to be added into the handle chain.<br>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>
