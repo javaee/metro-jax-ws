@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.10 2005-06-08 05:21:27 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.11 2005-06-09 01:36:40 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -339,12 +339,13 @@ public class RuntimeModeler {
             if (resultTNS.length() == 0)
                 resultTNS = targetNamespace;
             resultQName = new QName(resultTNS, resultName);
-        } else if (!isOneway && !returnType.getName().equals("void")) {
+        } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
         }
 
         if(javaMethod.isAsync()){
             returnType = getAsyncReturnType(method, returnType);
+            resultQName = new QName(RETURN);
         }
 
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
