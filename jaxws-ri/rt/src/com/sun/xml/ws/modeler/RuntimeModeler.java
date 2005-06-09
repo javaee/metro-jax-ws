@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.11 2005-06-09 01:36:40 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.12 2005-06-09 15:20:24 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -633,10 +633,12 @@ public class RuntimeModeler {
                 WebFault webFault = (WebFault)((Class)exception).getAnnotation(WebFault.class);
                 exceptionBean = faultInfoMethod.getReturnType();
                 anns = faultInfoMethod.getAnnotations();
-                namespace = webFault.targetNamespace();
+                if (webFault.targetNamespace().length() > 0)
+                    namespace = webFault.targetNamespace();
                 name = webFault.name();
             }
             QName faultName = new QName(namespace, name);
+            System.out.println("faultname: "+faultName);
             TypeReference typeRef = new TypeReference(faultName, exceptionBean,
                 anns);
             CheckedException checkedException =
@@ -712,7 +714,6 @@ public class RuntimeModeler {
                 continue;
             }
 
-
 //            com.sun.xml.rpc.rt.model.Mode paramMode = com.sun.xml.rpc.rt.model.Mode.IN;
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
@@ -720,9 +721,6 @@ public class RuntimeModeler {
                 if (clazzType.getName().equals(Holder.class.getName()))
                     clazzType = Navigator.REFLECTION.erasure(((ParameterizedType)genericParameterTypes[pos]).getActualTypeArguments()[0]);
             }
-
-
-
 
             com.sun.xml.ws.model.Mode paramMode = isHolder ?
                 com.sun.xml.ws.model.Mode.INOUT :
