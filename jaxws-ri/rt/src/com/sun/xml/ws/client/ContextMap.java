@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.3 2005-05-25 20:52:02 kohlert Exp $
+ * $Id: ContextMap.java,v 1.4 2005-06-09 18:02:39 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -133,7 +133,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object put(Object name, Object value) {
         if (doValidation()) {
-            //validateProperty((String)name, value, true);
+            validateProperty((String)name, value, true);
             return super.put((Object) name, value);
         }
         return null;
@@ -141,7 +141,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object get(Object name) {
         if (doValidation()) {
-            //validateProperty((String)name, null, false);
+            validateProperty((String)name, null, false);
             return super.get(name);
         }
         return null;
@@ -154,7 +154,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object remove(Object name) {
         if (doValidation()) {
-            //validateProperty((java.lang.String)name, null, false);
+            validateProperty((java.lang.String)name, null, false);
             return super.remove(name);
         }
         return null;
@@ -228,12 +228,12 @@ public abstract class ContextMap extends HashMap<Object, Object>
         }
 
         //is it alreadySet
-        Object currentPropValue = get(name);
-        if (currentPropValue != null) {
-            if (!isDynamic(name))
-                throw new WebServiceException("Property bound to Binding Instance",
-                    new IllegalArgumentException("Cannot overwrite the Static Property"));
-        }
+        //Object currentPropValue = get(name);
+        //if (currentPropValue != null) {
+          //  if (!isDynamic(name))
+          //      throw new WebServiceException("Property bound to Binding Instance",
+          //          new IllegalArgumentException("Cannot overwrite the Static Property"));
+        //}
 
         if (isSetter) {
             if (!isAllowedClass(name, value))
