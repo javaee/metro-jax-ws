@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.2 2005-06-02 17:53:16 vivekp Exp $
+ * $Id: WSDLParser.java,v 1.3 2005-06-09 12:11:16 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -112,47 +112,6 @@ public class WSDLParser {
             throw new Exception("wsdl.xmlReader", e);
         }
     }
-    //todo: wsdl imports
-    /*  public WSDLContext parseWSDL(XMLReader reader) {
-
-           int state = BOF;
-           do {
-               //state = reader.next();
-               switch (state) {
-                   case START:
-                       QName name = reader.getName();
-                       if (WSDLConstants.QNAME_DEFINITIONS.equals(name)) {
-                           reader.nextElementContent();
-
-                       } else if (WSDLConstants.QNAME_BINDING.equals(name)) {
-                           parseWSDLBinding(reader);
-
-                       } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
-                           parseWSDLService(reader);
-                       } else {
-                           reader.skipElement();
-                           reader.nextElementContent();
-                       }
-                       break;
-                   case END:
-                       reader.nextElementContent();
-                       break;
-                       //case CHARS:
-                       //writer.writeChars(reader.getValue());
-               }
-               if (isDone())
-                   break;
-           } while (state != EOF);
-
-
-           while (reader.getState() != XMLReader.EOF)
-               reader.next();
-
-           reader.close();
-
-           return wsdlContext;
-       }
-      */
 
     public WSDLContext parseWSDL(XMLReader reader, WSDLContext wsdlcontext) {
 
@@ -221,7 +180,7 @@ public class WSDLParser {
             try {
 
                 temp = new URI(importLocation);
-                System.out.println("temp " + temp.toString());
+                //System.out.println("temp " + temp.toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.2 2005-05-25 20:44:09 kohlert Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.3 2005-06-09 12:11:15 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,7 +31,7 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
             return method.invoke(this, args);
     }
 
-    public Object invokeSIMethod(Method method, Object[] args) throws WebServiceException {
+    private Object invokeSIMethod(Method method, Object[] args) throws WebServiceException {
         if (!method.isAccessible())
             method.setAccessible(true);
         return getXXXPort(method);
@@ -46,9 +46,11 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
             portName = getPortName(methodName, returnType.getSimpleName());
             if (portName != null)
                 return getPort(returnType, portName);
+            else
+                throw new WebServiceException("port name undefined, must have port name");
         } else
             throw new WebServiceException("No Return type, " + method.getName() + "must have a return Class");
-        return null;
+
     }
 
     private Object getPort(Class returnType, String portName) throws WebServiceException {
@@ -79,29 +81,26 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
         serviceProxy = proxy;
     }
 
-    boolean isSIMethod(Method method, Class si) {
+    private boolean isSIMethod(Method method, Class si) {
         return (si.equals(method.getDeclaringClass())) ? true : false;
     }
 
-    //TODO: bug- will be portName in wsdl not necessarily PORT
-    String getPortName(String mName, String rtName) {
-        String mngName = mName.substring(GET_LEN);
-        if (rtName.indexOf(mName) != 0) {
-            if (mName.startsWith(GET, 0)) {
-                //tbd
-                if (mName.indexOf(PORT) != 0) {
-                    int mLen = mName.length();
-                    if ((mLen - EXCLUDE_LEN) <= rtName.length()) {
-                        //we are looking good here -
-                        String mpName = mName.substring(GET_LEN, mLen - PORT_LEN);
-                        //if (mpName.equals(rtName))
-                        return mpName;
-                    }
-                }
+    //TODO: will require rework
+    private String getPortName(String mName, String rtName) {
+        //can only check to see if method is a getter.
+        //if so the assumption is that rt type name is the portname.
+        //this portname is currently needed when sei proxy is
+        //created as the handler registry requires a known port on creation.
+        //The handler registry is instantiated when sei proxy is generated.
 
+        //assumption rt name is used in method name
+        if (rtName.indexOf(mName) != 0) {
+            //just check to make sure method is a getter
+            if (mName.startsWith(GET, 0)) {
+                return rtName;
             }
         }
-        return null;
+        return rtName;
     }
 
 }

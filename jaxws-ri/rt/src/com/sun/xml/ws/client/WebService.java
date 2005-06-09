@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.9 2005-06-03 17:14:27 bbissett Exp $
+ * $Id: WebService.java,v 1.10 2005-06-09 12:11:15 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -108,6 +108,7 @@ public class WebService
         return null;
     }
 
+    //todo: valid port in wsdl
     private void preProcess(QName portName, Class portInterface) throws WebServiceException, MalformedURLException {
         //if the wsdlLocation not already there try to get it from SEI @WebService annotation
         if (wsdlLocation == null) {
@@ -123,22 +124,21 @@ public class WebService
                 new RuntimeModeler(portInterface, wsdlContext.getBindingID().toString());
 
             RuntimeModel model = processor.buildRuntimeModel();
-//            if (wsdlLocation == null)
-//                wsdlLocation = new URL(model.getWSDLLocation());
+
             rtContext = new RuntimeContext(model);
-            
+
             // get handler information
             HandlerAnnotationInfo chainInfo =
                 HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
                 if (chainInfo != null) {
                     HandlerRegistryImpl registry = getHandlerRegistry();
                     registry.setHandlerChain(chainInfo.getHandlers());
-                    
+
                     // todo: need a place to store role information to
                     // place in binding
                     //chainInfo.getRoles();
                 }
-            
+
         }
 
 //        //todo: if changed reprocess wsdl- track this
@@ -264,41 +264,6 @@ public class WebService
 
         return (HandlerRegistryImpl) handlerRegistry;
     }
-
-
-    /*
-     * Called by generated service subclass in constructor to create
-     * handler registry. This version should be used by 2.X services.
-     */
-    // protected void addHandler20(HandlerInfo info) {
-    //     //getHandlerRegistry().addHandler20(info);
-    // }
-
-    /*
-     * Called by generated service subclass in constructor to create
-     * handler registry.
-     */
-    // public void addHandler(QName portName, HandlerInfo info) {
-    //may be able to take out
-    //getHandlerRegistry().addHandler(portName, info);
-    // }
-
-    /*
-     * Called by generated service subclass in constructor to create
-     * handler registry. The String that is passed in should already
-     * have been validated at generation time, but need the try/catch
-     * even though the exception should never happen. Moved the URI
-     * creation here to keep it out of the generated code.
-     */
-    //public void addHandler(String bindingId, HandlerInfo info) {
-    //    try {
-    //        URI bindingIdURI = new URI(bindingId);
-    //getHandlerRegistry().addHandler(bindingIdURI, info);
-    //  } catch (java.net.URISyntaxException e) {
-    // should not happen
-    //     throw new RuntimeException(e);
-    // }
-    //}
 
     /*
      * Set the binding on the binding provider. Called by the service
