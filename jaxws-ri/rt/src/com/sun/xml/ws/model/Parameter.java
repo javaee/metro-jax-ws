@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.1 2005-05-23 22:42:10 bbissett Exp $
+ * $Id: Parameter.java,v 1.2 2005-06-10 20:28:38 vivekp Exp $
  */
 
 /*
@@ -120,20 +120,12 @@ public class Parameter {
      * Gets the holder value if applicable. To be called for inbound client side
      * message.
      * 
-     * @param value
+     * @param obj
      * @return
      */
     public Object getHolderValue(Object obj) {
-        if (obj instanceof Holder)
+        if (obj != null && obj instanceof Holder)
             return ((Holder) obj).value;
-        else if (obj instanceof Holder) {
-            try {
-                return obj.getClass().getField("value").get(obj);
-            } catch (Exception e) {
-                // TODO dosomething with this.
-                e.printStackTrace();
-            }
-        }
         return obj;
     }
 
