@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceGenerator.java,v 1.2 2005-06-07 03:39:06 vivekp Exp $
+ * $Id: RemoteInterfaceGenerator.java,v 1.3 2005-06-10 17:20:07 vivekp Exp $
  */
 
 /*
@@ -553,7 +553,11 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         p.p("@javax.jws.WebParam(name=\""+name+"\"");
 //        if (isDocStyle && ((responseWrapper == null && response==null) || requestWrapper == null)) {
         if (isDocStyle) { //((responseWrapper == null && response==null) || requestWrapper == null)) {
-            p.p(", targetNamespace=\""+param.getBlock().getName().getNamespaceURI()+"\"");
+            String ns = param.getBlock().getName().getNamespaceURI(); // its bare nsuri
+            if(isWrapped){
+                ns = ((JAXBType)param.getType()).getName().getNamespaceURI();
+            }
+            p.p(", targetNamespace=\""+ns+"\"");            
         }else if(!isDocStyle && header){
             p.p(", targetNamespace=\""+param.getBlock().getName().getNamespaceURI()+"\"");
         }
