@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.13 2005-06-09 15:29:10 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.14 2005-06-10 00:37:39 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -341,6 +341,11 @@ public class RuntimeModeler {
             resultQName = new QName(resultTNS, resultName);
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
+            if(resultQName == null){
+                throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
+                    new Object[] {"-1", responseClass.getName(), method.getName()});
+            }
+
         }
 
         if(javaMethod.isAsync()){
@@ -419,6 +424,10 @@ public class RuntimeModeler {
                     paramWrapperClass = responseClass;
                 }
                 paramQName = getParamElementName(pos, paramWrapperClass);
+                if(paramQName == null){
+                    throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
+                        new Object[] {String.valueOf(pos), responseClass.getName(), method.getName()});
+                }
             }
 //            System.out.println("paramName: "+ paramQName);
             typeRef =
@@ -444,11 +453,17 @@ public class RuntimeModeler {
         processExceptions(javaMethod, method);
     }
 
+    /**
+     * @param paramPos
+     * @param wrapperClass
+     * @return returns the wrapper child element name thats annotated with @ParameterIndex equals to paramPos.
+     *         Returns null if it cant find any.
+     */
     protected QName getParamElementName(int paramPos, Class wrapperClass) {
         QName elementName = null;
         for (Field field : wrapperClass.getDeclaredFields()) {
             ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);
-            if (paramIndex.value() == paramPos) {
+            if ((paramIndex != null) && (paramIndex.value() == paramPos)) {
                 XmlElement xmlElement = field.getAnnotation(XmlElement.class);
                 String namespace = xmlElement.namespace();
                 String name = xmlElement.name();
