@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<!DOCTYPE project [
+<!ENTITY commonTargets SYSTEM "../etc/common-targets.xml">
+]>
+
+<project basedir="." default="gen-utils" name="Sample-Utils">
+
+	&commonTargets;
+
+	<target name="gen-utils" depends="setup">
+    <javac srcdir="src"
+        source="1.5"
+        debug="true"
+        destdir="${build.classes.home}"
+	    includes="**/**">
+        <classpath refid="jaxws.classpath"/>
+    </javac>
+
+    <jar destfile="${basedir}/../lib/jaxwsSampleUtils.jar"
+        basedir="${build.classes.home}"
+        includes="utils/**"
+        update="true"/>
+	</target>
+</project>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="SOAPBuilders-mtom-cr-test" 
+    xmlns:types="http://example.org/mtom/data" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:tns="http://example.org/mtom"
+    targetNamespace="http://example.org/mtom"
+    >
+
+	<wsdl:types>
+		<schema 
+			xmlns="http://www.w3.org/2001/XMLSchema" 
+			targetNamespace="http://example.org/mtom/data" 
+            xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+			elementFormDefault="qualified"
+            xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd">
+        <import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="wsi-swa.xsd"/>
+        <complexType name="DetailType">
+            <sequence>
+                <element name="Photo" type="base64Binary"/>
+                <element name="image" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
+            </sequence>
+        </complexType>
+        <element name="claimForm" type="ref:swaRef"/>
+        <element name="claimFormResponse" type="ref:swaRef"/>
+		<element name="Detail" type="types:DetailType"/>
+		<element name="DetailResponse" type="types:DetailType"/>
+        <element name="data" type="base64Binary"/>
+		</schema>
+
+	</wsdl:types>
+
+    <wsdl:message name="echoDataIn">
+        <wsdl:part name="data" element="types:data"/>
+    </wsdl:message>
+
+    <wsdl:message name="echoDataOut">
+        <wsdl:part name="data" element="types:data"/>
+    </wsdl:message>
+
+
+    <wsdl:message name="HelloIn">
+        <wsdl:part name="data" element="types:Detail"/>
+    </wsdl:message>
+
+    <wsdl:message name="HelloOut">
+        <wsdl:part name="data" element="types:DetailResponse"/>
+    </wsdl:message>
+
+     <wsdl:message name="claimFormIn">
+        <wsdl:part name="data" element="types:claimForm"/>
+    </wsdl:message>
+
+    <wsdl:message name="claimFormOut">
+        <wsdl:part name="data" element="types:claimFormResponse"/>
+    </wsdl:message>
+
+	<wsdl:portType name="Hello">
+        <wsdl:operation name="echoData">
+			<wsdl:input message="tns:echoDataIn"/>
+			<wsdl:output message="tns:echoDataOut"/>
+		</wsdl:operation>
+
+        <!-- mtom test -->
+		<wsdl:operation name="Detail">
+			<wsdl:input message="tns:HelloIn"/>
+			<wsdl:output message="tns:HelloOut"/>
+		</wsdl:operation>
+
+        <!-- swaref test -->
+        <wsdl:operation name="claimForm">
+			<wsdl:input message="tns:claimFormIn"/>
+			<wsdl:output message="tns:claimFormOut"/>
+		</wsdl:operation>
+
+	</wsdl:portType>
+
+	<wsdl:binding name="HelloBinding" type="tns:Hello">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="echoData">
+			<soap12:operation soapAction=""/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="Detail">
+			<soap12:operation soapAction=""/>
+			<wsdl:input>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+        <wsdl:operation name="claimForm">
+            <soap12:operation soapAction=""/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+	</wsdl:binding>
+
+	<wsdl:service name="HelloService">
+  		<wsdl:port name="HelloPort" binding="tns:HelloBinding">
+    			<soap12:address location="http://example/mtom-test-cr"/>
+  		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>	

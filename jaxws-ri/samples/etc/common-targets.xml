@@ -3,6 +3,8 @@
 <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
 <property name="as.home" value="${env.AS_HOME}"/>
 
+<property name="lib.sample.home" value="${basedir}/../lib"/>
+
 <property name="build.home" value="${basedir}/../build"/>
 <property name="build.classes.home" value="${build.home}/classes"/>
 <property name="build.war.home" value="${build.home}/war"/>
@@ -10,6 +12,7 @@
 
 <path id="jaxws.classpath">
     <pathelement location="${java.home}/../lib/tools.jar"/>
+    <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
     <fileset dir="${lib.home}" includes="*.jar"/>
 </path>
 
