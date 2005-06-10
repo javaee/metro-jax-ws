@@ -1,5 +1,5 @@
 /**
- * $Id: JavaMethod.java,v 1.3 2005-06-07 03:38:31 vivekp Exp $
+ * $Id: JavaMethod.java,v 1.4 2005-06-10 22:51:03 jitu Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -82,14 +82,14 @@ public class JavaMethod {
      * @return returns unmodifiable list of request parameters
      */
     public List<Parameter> getRequestParameters() {
-        return Collections.unmodifiableList(requestParams);
+        return unmReqParams;
     }
 
     /**
      * @return returns unmodifiable list of response parameters
      */
     public List<Parameter> getResponseParameters() {
-        return Collections.unmodifiableList(responseParams);
+        return unmResParams;
     }
 
     /**
@@ -200,6 +200,10 @@ public class JavaMethod {
     private Method method;
     private final List<Parameter> requestParams = new ArrayList<Parameter>();
     private final List<Parameter> responseParams = new ArrayList<Parameter>();
+    private final List<Parameter> unmReqParams =
+            Collections.unmodifiableList(requestParams);
+    private final List<Parameter> unmResParams =
+            Collections.unmodifiableList(responseParams);
     private Object binding;
     private int mep;
     private String operationName;
