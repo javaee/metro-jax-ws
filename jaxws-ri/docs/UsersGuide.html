@@ -1,587 +1,527 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-
   <title>Java(tm) API for XML Web Services 2.0 - User's Guild</title>
   <meta name="CREATED" content="20050324;17130448">
   <meta name="CHANGED" content="20050403;16461814">
-<style type="text/css">
+  <style type="text/css">
 
         <!--
 @page { size: 8.5in 11in }
 -->
 
-</style>
+  </style>
 </head>
-
 <body dir="ltr" lang="en-US">
-  <h1>JAX-RPC 2.0 Early Access<br>
-  User's Guide</h1>
-  <hr>
-
-  <p>Last modified: 04/04/2005</p>
-
-  <h2>Contents</h2>
-
-  <p><a href="#1._Introduction">1. Introduction</a><br>
-  &nbsp;&nbsp;&nbsp; <a href="#1.1_Whats_new_in_JAX-RPC_2.0_Early">1.1 What's new in JAX-RPC 2.0 Early Access</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.1_JAXB_2.0">1.1.1 JAXB 2.0</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.2_Annotations">1.1.2 Annotations</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.3_Customizations">1.1.3 Customizations</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.4_Improved_Handler_Framework">1.1.4 Improved Handler Framework</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.5_Provider">1.1.5 Provider</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.6_Dispatch">1.1.6 Dispatch</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#1.1.7_Asynchronous_Client_Operations">1.1.7 Asynchronous Client Operations</a><br>
-  <a href="#2._Programming_Model">2. Programming Model</a><br>
-  &nbsp;&nbsp;&nbsp; <a href="#2.1_Server">2.1 Server</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.1_Starting_from_Java">2.1.1 Starting from Java</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.1.1_Generate_Portable_Artifacts">2.1.1.1 Generate Portable Artifacts</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.1.2_Create_a_raw_WAR_file_to_pass_to">2.1.1.2 Create a Raw WAR File to Pass to <code>wsdeploy</code></a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.1.3_Create_a_deployable_WAR_file">2.1.1.3 Create a Deployable WAR File Using <code>wsdeploy</code></a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.2_Starting_from_WSDL">2.1.2 Starting from a WSDL File</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.2.1_Generate_a_service_endpoint">2.1.2.1 Generate a Service Endpoint Interface</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.2.2_Implement_the_servce_endpoint">2.1.2.2 Implement the Service Endpoint Interface</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.2.3_Create_raw_war_">2.1.2.3 Create Raw WAR</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.1.2.4_Create_a_deployable_war_file">2.1.2.4 Create a Deployable WAR File Using <code>wsdeploy</code></a><br>
-  &nbsp;&nbsp;&nbsp; <a href="#2.2_Client">2.2 Client</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.2.1_Static_Stub">2.2.1 Static Stub</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.2.1.1_Generate_client_artifacts">2.2.1.1 Generate Client Artifacts</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.2.2_Dispatch">2.2.2 Dispatch</a><br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#2.2.3_Dynamic_Proxy">2.2.3 Dynamic Proxy</a><br>
-  <a href="#3._Useful_Information">3. Useful Information</a></p>
-
-  <h2><a name="1._Introduction" id="1._Introduction"></a>1. Introduction</h2>
-
-  <p>This document describes the new features available in the Early Access 1 of the <i>Java API for XML Based RPC (JAX-RPC) 2.0</i> <a href="http://jcp.org/en/jsr/detail?id=224">(JSR 224)</a> Standard Implementation (SI). The main focus of this document is to describe the tools used to develop JAX-RPC 2.0 SI web service endpoints and clients. Readers of this document should be familiar with web services <a href="http://www.w3.org/TR/2000/REC-xml-20001006">XML</a>, <a href="http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/">XML Schema</a>, <a href="http://www.w3.org/TR/2001/NOTE-wsdl-20010315">WSDL</a> and ideally with <a href="http://jcp.org/en/jsr/detail?id=101">JAX-RPC 1.1</a>. Please refer to Section 3. Useful Information for links to more information about web services and JAX-RPC 1.1.</p>
-
-  <h3><a name="1.1_Whats_new_in_JAX-RPC_2.0_Early" id="1.1_Whats_new_in_JAX-RPC_2.0_Early"></a>1.1 What's new in JAX-RPC 2.0 Early Access</h3>
-
-  <p>JAX-RPC 2.0 has a number of significant improvements over version 1.1. Some of these improvements include improved data-binding with JAXB, standard mechanisms for customizing the mapping between WSDL/XML and Java, improved handlers, support for client side asynchronous operations, improved dynamic invocation support via new <code>Dispatch</code> and <code>Provider</code> interfaces/implementations.</p>
-
-  <h4><a name="1.1.1_JAXB_2.0" id="1.1.1_JAXB_2.0"></a>1.1.1 JAXB 2.0</h4>
-
-  <p>The most notable change in JAX-RPC 2.0 is the use of JAXB 2.0 for data-binding between Java and XML. JAX-RPC 1.0 specified a limited mapping between XML and Java, this was mainly due to the fact that JAXB was not going to be done in time for JAX-RPC 1.0. With the completion of JAXB, there is no longer a reason to have two separate sets of mapping rules between XML and Java. JAX-RPC will also support the full set of JAXB binding customizations and optional schema validation.</p>
-
-  <h4><a name="1.1.2_Annotations" id="1.1.2_Annotations"></a>1.1.2 Annotations</h4>
-
-  <p>JAX-RPC 2.0 relies heavily on the use of annotations as provided by <i>A Metadata Facility for the Java Programming Language</i> <a href="http://jcp.org/en/jsr/detail?id=175">(JSR 175)</a> and and <i>Web Services Metadata for the Java Platform</i> <a href="http://jcp.org/en/jsr/detail?id=181.">(JSR 181)</a> as well as additional annotations defined by JAX-RPC 2.0. These annotations are used to customize the mapping from Java to XML schema/WSDL and are used at runtime to alleviate the need for non-portable serializers/deserializers that were generated in JAX-RPC 1.x. You will notice in this EA that the number of non-portable artifacts generated by the SI has been reduced to three classes for each service endpoint interface. By FCS, even these non-portable artifacts will be removed resulting in a completely portable application across JAX-RPC 2.0 implementations.</p>
-
-  <p>Another one of the shortcomings of the JAX-RPC 1.x SI, was the inability to map parameter names to part meaningful part/element names in the WSDL file. JSR 181 provides a WebParam annotation that allows the developer to specify what the WSDL part/element name will be.</p>
-
-  <p>The JAX-RPC SI utilizes a new tool <code>apt</code> (annotation processing tool) that was introduced in J2SDK 5.0. <code>apt</code> allows the SI to process Java source files directly to generate the portable artifacts specified by the JAX-RPC 2.0 specification. <code>apt</code> will be covered in more detail in section 3.1.1.</p>
-
-  <p>For more information on the annotations used by JAX-RPC 2.0 please refer to <a href="annotations.html">JAX-RPC 2.0 annotations</a>.</p>
-
-  <h4><a name="1.1.3_Customizations" id="1.1.3_Customizations"></a>1.1.3 Customizations</h4>
-
-  <p>The JAX-RPC 1.1 specification did not define a standard customization architecture. However JAX-RPC 1.x SI had limited WSDL to Java customization support. It allowed a JAX-RPC 1.x application to:</p>
-
-  <ul>
-    <li>
-      <p>Define a package where Java artifacts mapped from a WSDL file will be generated</p>
-    </li>
-
-    <li>
-      <p>Package customization for value classes mapped from the imported XML schemas by the WSDL document</p>
-    </li>
-
-    <li>
-      <p>Handler chain customization</p>
-    </li>
-  </ul>
-
-  <p>But these customizations were not portable and could not be used across other JAX-RPC implementations.</p>
-
-  <p>JAX-RPC 2.0 specification defines standard XML based customization for a WSDL file to Java mapping and to control certain features. These customizations, or <i>binding declarations,</i> can customize almost all WSDL components that can be mapped to Java, such as the service endpoint interface class, method name, parameter name, exception class, etc. The other important thing you can do with these binding declarations is to control certain features, such as asynchrony, provider, wrapper style, and additional headers. For example, a client application can enable asynchrony for a particular operation in a <code>portType</code>, all operations in a <code>portType</code>, or all <code>portType</code> operations defined in the WSDL file.</p>
-
-  <p>These binding declarations can be inlined in a WSDL file or can live outside as an external file. The binding declarations closely align with the JAXB binding declarations. An application importing a WSDL file can inline JAXB bindings inside JAX-RPC binding declarations to customize the inlined schema declared in the WSDL file. Schema files that are imported from a WSDL file can be customized using JAXB binding files and can be passed to <code>wscompile</code> using the <code>-b</code> option switch.</p>
-
-  <p>These are the main customization features:</p>
-
-  <ul>
-    <li>Scoped binding declarations. An XPath expression is used to specify the target node of the WSDL file on which customization should be applied.</li>
-
-    <li>Close alignment with JAXB bindings. JAXB binding declarations can be inlined in an external JAX-RPC binding file.</li>
-
-    <li>Feature Control. Features such as asynchrony, wrapper style, additional header mapping, and provider interfaces can be enabled or disabled.</li>
-
-    <li>Handler chain customization (not yet specified by the 2.0 specification)</li>
-  </ul>
-
-  <p>The following WSDL component's mapped Java names can be modified:</p>
-
-  <ul>
-    <li>generated service endpoint interface class</li>
-
-    <li>method</li>
-
-    <li>method parameter</li>
-
-    <li>generated exception class (for WSDL fault and header fault exceptions)</li>
-
-    <li>header parameter</li>
-
-    <li>generated service class</li>
-
-    <li>port accessor methods in the generated service class</li>
-  </ul>
-
-  <p>XML Schema Java mapping can be customized using standard JAXB customizations.</p>
-
-  <p>For more information on the customizations used by JAX-RPC 2.0 please refer to <a href="customizations.html">JAX-RPC 2.0 customizations</a>.</p>
-
-  <h4><a name="1.1.4_Improved_Handler_Framework" id="1.1.4_Improved_Handler_Framework"></a>1.1.4 Improved Handler Framework</h4>
-
-  <p>JAX-RPC 2.0 defines two types of handlers: logical and protocol handlers. While protocol handlers (including the JAX-RPC 1.1 handler) have access to an entire message such as a SOAP message, logical handlers deal only with the payload of a message and are independent of the protocol being used. Handler chains can now be configured on a per-port, per-protocol, or per-service basis. A new framework of context objects has been added to allow client code to share information easily with handlers.</p>
-
-  <p>For more information on the handler framework in JAX-RPC 2.0 please refer to <a href="handlers.html">JAX-RPC 2.0 Handler Framework</a>.</p>
-
-  <h4><a name="1.1.5_Provider" id="1.1.5_Provider"></a>1.1.5 Provider</h4>
-
-  <p>Web service endpoints may choose to work at the XML message level by implementing the <code>Provider</code> interface. Here the endpoints access messages or message payloads using this low level, generic API.</p>
-
-  <p>For more information on providers in JAX-RPC 2.0 please refer to <a href="provider.html">JAX-RPC 2.0 Providers</a>.</p>
-
-  <h4><a name="1.1.6_Dispatch" id="1.1.6_Dispatch"></a>1.1.6 Dispatch</h4>
-
-  <p>The Dispatch API is intended for advanced XML developers who prefer to use XML constructs at the <code>java.lang.transform.Source</code> or <code>javax.xml.soap.SOAPMessage</code> level. For added convenience use of the Dispatch API with JAXB data-bound objects is supported. The Dispatch API can be used in both <code>Message</code> and <code>Payload</code> modes.</p>
-
-  <p>For more information on the Dispatch API in JAX-RPC 2.0 please refer to <a href="dispatch.html">JAX-RPC 2.0 Dispatch</a>.</p>
-
-  <h4><a name="1.1.7_Asynchronous_Client_Operations" id="1.1.7_Asynchronous_Client_Operations"></a>1.1.7 Asynchronous Client Operations</h4>
-
-  <p>For more information on asynchronous clients in JAX-RPC 2.0 please refer to <a href="asynch.html">JAX-RPC 2.0 Asynchronous</a>.</p>
-
-  <h2><a name="2._Programming_Model" id="2._Programming_Model"></a>2. Programming Model</h2>
-
-  <p>This section of the documentation will focus on the programming model for both developing and publishing a web service endpoint, and writing a web service client. A web service endpoint is the implementation of a web service. A web service client is an application that accesses a web service.</p>
-
-  <h3><a name="2.1_Server" id="2.1_Server"></a>2.1 Server</h3>
-
-  <p>When developing a web service endpoint, a developer may either start from a Java endpoint implementation class or from a WSDL file. A WSDL (Web Services Description Language) document describes the contract between the web service endpoint and the client. A WSDL document may include and/or import XML schema files used to describe the data types used by the web service. When starting from a Java class, the tools generate the WSDL file and schemas. When starting from a WSDL file and schemas, the tools generate a service endpoint interface and a stubbed out implementation class.</p>
-
-  <p>There is a trade-off when starting from a Java class or from a WSDL file. If you start from a Java class, you can make sure that the endpoint implementation class has the desirable Java data types, but the developer has less control of the generated XML schema. When starting from a WSDL file and schema, the developer has total control over what XML schema is used, but has less control over what the generated service endpoint and the classes it uses will contain.</p>
-
-  <h4><a name="2.1.1_Starting_from_Java" id="2.1.1_Starting_from_Java"></a>2.1.1 Starting from Java</h4>
-
-  <p>The basic process for deploying a web service from a Java class consists of three steps.</p>
-
-  <ol>
-    <li>Generate portable artifacts.</li>
-
-    <li>Create a raw WAR file to pass to <code>wsdeploy</code>.</li>
-
-    <li>Create a deployable WAR file using <code>wsdeploy</code>.</li>
-  </ol>
-
-  <h4><a name="2.1.1.1_Generate_Portable_Artifacts" id="2.1.1.1_Generate_Portable_Artifacts"></a>2.1.1.1 Generate Portable Artifacts</h4>
-
-  <p>Portable artifacts generated by JAX-RPC 2.0 include the WSDL document describing the web service, zero or more XML schema documents that describe the types used by the web service, and zero or more JavaBean classes to aide in the marshaling of method invocations and responses, as well as service-specific exceptions.</p>
-
-  <p>In document/literal wrapped mode, two JavaBeans are generated for each operation in the web service. One bean is for invoking the other for the response. In all modes (rpc/literal and both document/literal modes), one JavaBean is generated for each service-specific exception.</p>
-
-  <p>When starting from Java the developer must provide the JAX-RPC tools with a valid endpoint implementation class. This implementation class is the class that implements the desired web service. JAX-RPC has a number of restrictions on endpoint implementation classes. A valid endpoint implementation class must meet the following requirements:</p>
-
-  <ul>
-    <li>It <em>must</em> carry a <code>javax.jws.WebService</code> annotation (see JSR 181).</li>
-
-    <li>It <em>may</em> extend <code>java.rmi.Remote</code> either directly or indirectly.</li>
-
-    <li>Any of its methods <em>may</em> carry a <code>javax.jws.WebMethod</code> annotation (see 7.5.2).</li>
-
-    <li>All of its methods <em>may</em> throw <code>java.rmi.RemoteException</code> in addition to any service-specific exceptions.</li>
-
-    <li>All method parameters and return types <em>must</em> be compatible with the JAXB 2.0 Java to XML Schema mapping definition.</li>
-
-    <li>A method parameter or return value type <em>must not</em> implement the <code>java.rmi.Remote</code> interface either directly or indirectly.</li>
-  </ul>
-
-  <p>Here is an example of a a simple endpoint implementation class <tt><a href="../samples/fromjava/src/fromjava/server/AddNumbersImpl.java">AddNumbersImpl.java</a></tt> from the <tt>fromjava</tt> sample:</p>
-  <pre style="margin-left: 0.5in;">
-package fromjava.server;
-import javax.jws.WebService;
-@WebService
-public class AddNumbersImpl {
-    /**
-     * @param number1
-     * @param number2
-     * @return The sum
-     * @throws AddNumbersException
-     * if any of the numbers to be added is negative.
-     */
-    public int addNumbers(int number1, int number2) throws AddNumbersException {
-        if (number1 &lt; 0 || number2 &lt; 0) {
-            throw new AddNumbersException("Negative number cant be added!",
-                                          "Numbers: " + number1 + ", " + number2);
-        }
-        return number1 + number2;
-    }
-}
-</pre>
-
-  <p>If you are familiar with JAX-RPC 1.1, you will notice that this implementation class does not implement a service endpoint interface. In JAX-RPC 2.0 a service endpoint interface is no longer required.</p>
-
-  <p>When starting from a Java endpoint implementation class, it is recommended that the portable artifacts be generated from source using <code>apt</code>. This because the JAX-RPC tools will then have full access to the source code and will be able to utilize parameter names that are otherwise not available through the Java reflection APIs. If the source for the endpoint implementation class is not available, the portable artifacts can be generated using <tt>wscompile</tt>. Here is a sample <code>apt</code> Ant task from the samples:</p>
-  <pre style="margin-left: 0.5in;">
-&lt;apt
-   debug="${debug}"
-   verbose="${verbose}"
-   base="${build.classes.home}"
-   sourceBase="${build.classes.home}"
-   sourcePath="${basedir}/src"&gt;
-   &lt;classpath refid="JAX-RPC.classpath"/&gt;
-   &lt;option key="nd" value="${build.home}"/&gt;
-   &lt;option key="verbose" value="${verbose}"/&gt;
-   &lt;source dir="${basedir}/src"&gt;
-      &lt;include name="**/server/*.java"/&gt;
-   &lt;/source&gt;
-&lt;/apt&gt;
-</pre>
-
-  <p>More information about the <code>apt</code> Ant task can be found <a href="jaxrpc-tools.html#ant-apt">here</a>. If this task is run on the fromjava sample, the output would include:</p>
-  <pre style="margin-left: 0.5in;">
-AddNumbersImplService.wsdl
-schema1.xsd
-AddNumbers.class
-AddNumbers.java
-AddNumbersExceptionBean.class
-AddNumbersExceptionBean.java
-AddNumbersResponse.class
-AddNumbersResponse.java
-</pre>
-
-  <p>The AddNumbersImplService.wsdl file describes the web service. The schema1.xsd file is imported by the AddNumbersImplService.wsdl and contains the datatypes used by the web service. The AddNumbers.class/AddNumbers.java files contain the a bean used by a JAXB to marshall/unmarshall the addNumbers request. The AddNumbersExceptionBean.class/AddNumbersExceptionBean.java file is a bean used by JAXB to marshall the contents of the AddNumbersException class. The AddNumbersResponse.class/AddNumbersResponse.java files represent the response bean used by JAXB to marshall/unmarshall the addNumbers response.</p>
-
-  <h4><a name="2.1.1.2_Create_a_raw_WAR_file_to_pass_to" id="2.1.1.2_Create_a_raw_WAR_file_to_pass_to"></a>2.1.1.2 Create a Raw WAR file to Pass to <code>wsdeploy</code></h4>
-
-  <p>Creating a raw WAR file is nothing more than packaging the service endpoint interface (if there is one), service endpoint implementation, Java classes used by the endpoint implementation, the generated WSDL file, the generated schema files, and a deployment descriptor in WAR format. For the fromjava sample the <code>AddNumbersImpl</code> <code>and AddNumbersException</code> classes in the <code>fromjava.server</code> package, AddNumbersImplService.wsdl, <code>the generated schema1.xsd</code> files generated in the previous step, and the deployment descriptor are bundled together to make a raw WAR file. The deployment descriptor used in fromjava sample is given below and can be found <a href="../samples/fromjava/etc/jaxrpc-ri.xml">here</a>:</p>
-  <pre style="margin-left: 0.5in;">
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;webServices
-   xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/dd"
-   version="1.0"
-   targetNamespaceBase="http://echoservice.org/WSDL"
-   typeNamespaceBase="http://echoservice.org/types"
-   urlPatternBase="/ws"&gt;
-
-&lt;endpoint
-   name="fromjava"
-   displayName="From Java"
-   interface="fromjava.server.AddNumbersImpl"
-   implementation="fromjava.server.AddNumbersImpl"
-   WSDL="/WEB-INF/AddNumbersServiceImpl.wsdl"/&gt;
-
-&lt;endpointMapping
-   endpointName="fromjava"
-   urlPattern="/addnumbers"/&gt;
-&lt;/webServices&gt;
-</pre>
-
-  <p>In this release the targetNamespace, typeNamespaceBase, and urlpatternBase is ignored.</p>
-
-  <p>The attributes of the &lt;endpoint&gt; element are described below:</p>
-
-  <ul>
-    <li>
-      <p><code>name</code> is simply an identifier for this endpoint</p>
-    </li>
-
-    <li>
-      <p><code>displayName</code> is used by the JAX-RPC servlet to display the name of this endpoint</p>
-    </li>
-
-    <li>
-      <p><code>interface</code> is used to specify the endpoint interface</p>
-    </li>
-
-    <li>
-      <p><code>implementation</code> is used to specify the endpoint implementation class</p>
-    </li>
-
-    <li>
-      <p><code>WSDL</code> is used to specify the location of the WSDL file for this endpoint.</p>
-    </li>
-  </ul>
-
-  <p>If there is no service endpoint interface, then the value of the interface attribute would be the same value as the implementation attribute (e.g. fromjava.server.AddNumbersImpl).</p>
-
-  <p>The structure of the raw WAR file is shown below:</p>
-  <pre style="margin-left: 0.5in;">
-schema1.xsd
-META-INF/MANIFEST.MF
-WEB-INF/AddNumbersImplService.wsdl
-WEB-INF/JAX-RPC-ri.xml
-WEB-INF/web.xml
-WEB-INF/classes/fromjava/server/AddNumbersException.class
-WEB-INF/classes/fromjava/server/AddNumbersImpl.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbers.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersExceptionBean.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersResponse.class
-</pre>
-
-  <p>The schema1.xsd file must be placed in the context root of the WAR file so that it can be properly imported by applications that are importing the WSDL file. If you specify a urlPattern that is more that one level deep, the schema files will need to be placed in the appropriate sub-directory.</p>
-
-  <h4><a name="2.1.1.3_Create_a_deployable_WAR_file" id="2.1.1.3_Create_a_deployable_WAR_file"></a>2.1.1.3 Create a Deployable WAR File Using <code>wsdeploy</code></h4>
-
-  <p>After creating a raw WAR file the next step is to create a deployable WAR file. This can be accomplished by passing the raw WAR file from the previous step to <code>wsdeploy</code>. Here is an example <code>wsdeploy</code> Ant task from the samples:</p>
-  <pre style="margin-left: 0.49in;">
-&lt;wsdeploy
-   fork="true"
-   keep="${keep}"
-   inWarFile="${build.war.home}/JAX-RPC-${ant.project.name}-raw.war"
-   outWarFile="${build.war.home}/JAX-RPC-${ant.project.name}.war"
-   verbose="${verbose}"&gt;
-   &lt;classpath&gt;
-      &lt;path refid="JAX-RPC.classpath"/&gt;
-   &lt;/classpath&gt;
-&lt;/wsdeploy&gt;
-</pre>
-
-  <p>More information on the <a href="jaxrpc-tools.html#ant-wsdeploy">wsdeploy Ant task</a> can be found here. This is equivalent to the <a href="jaxrpc-tools.html#wp80532">wsdeploy command line</a>:</p>
-  <pre>
-wsdeploy JAX-RPC-fromjava-raw.war -o JAX-RPC-fromjava-raw.war -classpath <i>theClassPath</i>
-</pre>
-
-  <p>where <code>JAX-RPC-fromjava-raw.war</code> is the name of the raw WAR file generated in the previous step. <code>wsdeploy</code> processes the implementation class specified in the deployment descriptor and then generates various implementation-specific artifacts such as the runtime descriptor. In this release of the SI, three other non-portable artifacts are also generated. However, these will not be needed in the final version of JAX-RPC 2.0. The tool then packages all the artifacts into a cooked WAR file, named <code>JAX-RPC-fromjava.war</code>. This cooked WAR file can be deployed in a web container and the endpoint can be accessed at <code>http://&lt;host&gt;:&lt;port&gt;/JAX-RPC-fromjava/&lt;url-pattern&gt;</code> where &lt;<code>url-pattern&gt;</code> matches the <code>endpointMappingType{urlPattern}</code> attribute in <code>JAX-RPC-ri.xml</code> (<code>http://localhost:8080/JAX-RPC-fromjava/example</code> in this case). The structure of the cooked WAR file is shown below:</p>
-  <pre style="margin-left: 0.49in;">
-schema1.xsd
-META-INF/MANIFEST.MF
-WEB-INF/AddNumbersImplService.wsdl
-WEB-INF/JAX-RPC-ri.xml
-WEB-INF/JAX-RPC-ri-runtime.xml
-WEB-INF/web.xml
-WEB-INF/web-before.xml
-WEB-INF/classes/fromjava/server/AddNumbersException.class
-WEB-INF/classes/fromjava/server/AddNumbersImpl.class
-WEB-INF/classes/fromjava/server/AddNumbersImpl__fromjava__Tie.class
-WEB-INF/classes/fromjava/server/AddNumbersImpl_EPTFF.class
-WEB-INF/classes/fromjava/server/AddNumbersIMPL_SED.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbers.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbers.java
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersExceptionBean.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersExceptionBean.java
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersResponse.class
-WEB-INF/classes/fromjava/server/JAX-RPC/AddNumbersResponse.java
-</pre>
-
-  <p><code>wsdeploy</code> processes the deployment descriptor and <code>web.xml</code> bundled with the raw WAR file and generates a new runtime descriptor, <code>JAX-RPC-ri-runtime.xml</code>, and <code>web.xml</code> for the cooked WAR file. It also bundles the original <code>JAX-RPC-ri.xml</code> and <code>web.xml</code> files (provided with the raw WAR file) in the cooked WAR file as <code>JAX-RPC-ri-before.xml</code> and <code>web-before.xml</code>. The new runtime descriptor and <code>web.xml</code> are used by the JAX-RPC runtime for dispatching the request to the appropriate tie/implementation combination. <code>AddNumbersImpl__fromjava__Tie</code>, <code>AddNumbersImpl_EPTFF</code>, and <code>AddNumbersImpl_SED</code> are non-portable artifacts that will not be needed in the final release of JAX-RPC 2.0 SI. The other files are copied over from the raw WAR file.</p>
-
-  <p>A document/ literal WSDL file AddNumbersImplService.wsdl is generated and can be accessed by appending <code>?WSDL</code> to the endpoint address. The name of the WSDL file is derived from the <code>serviceName</code> attribute from the <code>@WebService</code> annotation specified in <code>AddNumbersImpl.java</code>. Since there is no <code>serviceName</code> <code>in this file, the name of the implementation class is used.</code> The default behavior of the JAX-RPC 2.0 tools is to generate document/literal web services. When starting from Java, this can be controlled by adding a <code>@SOAPBinding</code> annotation to the endpoint implementation class. You can refer to the <a href="annotations.html">JAX-RPC 2.0 annotations</a> document for more information on these and other annotations.</p>
-
-  <p>The WAR file created by <code>wsdeploy</code> can now be published on a JAX-RPC 2.0 SI enabled servlet container such as the <a href="http://java.sun.com/j2ee/1.4/download.html">Sun Java System Application Server Platform Edition 8.1</a>.</p>
-
-  <h4><a name="2.1.2_Starting_from_WSDL" id="2.1.2_Starting_from_WSDL"></a>2.1.2 Starting from a WSDL File</h4>
-
-  <p>The basic process for deploying a web service when starting from a WSDL document consists of the following four steps:</p>
-
-  <ol>
-    <li>Generate a service endpoint interface.</li>
-
-    <li>Implement the service endpoint interface.</li>
-
-    <li>Create a raw WAR file to pass to <code>wsdeploy</code>.</li>
-
-    <li>Create a deployable WAR file using <code>wsdeploy</code>.</li>
-  </ol>
-
-  <h4><a name="2.1.2.1_Generate_a_service_endpoint" id="2.1.2.1_Generate_a_service_endpoint"></a>2.1.2.1 Generate a Service Endpoint Interface</h4>
-
-  <p>This step involves compiling or importing the WSDL file to generate a service endpoint interface and value classes mapped from imported XML schemas.</p>
-
-  <p>Below is a sample <code>wscompile</code> Ant target:</p>
-  <pre>
-&lt;wscompile
-  fork="true"
-  debug="${debug}"
-  verbose="${verbose}"
-  keep="${keep}"
-  import="true"
-  nonClassDir="${build.home}"
-  model="${build.home}/JAX-RPC-${ant.project.name}-model.xml.gz"
-  base="${build.classes.home}"
-  wsdlFile="${server.wsdl}"&gt;
-  &lt;classpath refid="JAX-RPC.classpath"/&gt;
-  &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;
-&lt;/wscompile&gt;
-</pre>
-
-  <p>Its commandline equivalent is:</p>
-  <pre>
-wscompile.sh -import -model JAX-RPC-fromwsdl-model.xml.gz etc/AddNumbers.wsdl -b custom-server.xml
-</pre>
-
-  <p>Notice that the <code>import</code> attribute of the <code>wscompile</code> Ant target is set to true. This tells <code>wscompile</code> to only import the WSDL file, generated service endpoint interface, and value classes. This step also generates a model file. The model file captures all the WSDL information together with its Java mapping. It is used during deployment to generate the tie and binding-specific code to assist the JAX-RPC runtime in encoding/decoding SOAP messages to Java parameters and vice-versa. In a future release of the JAX-RPC 2.0 SI the model file, tie, and encoder/decoder classes will not be generated, resulting in a completely portable application across JAX-RPC 2.0 implementations.</p>
-
-  <p>Lets look at the excerpt of <code><a href="../samples/fromwsdl/etc/AddNumbers.wsdl">AddNumbers.wsdl</a></code> from the sample <code>fromwsdl</code>:</p>
-
-  <p>The generated service endpoint interface looks as follows:</p>
-  <pre>
-package fromwsdl.server;
-
-@javax.jws.WebService(
-   name="AddNumbersPortType",
-   serviceName="AddNumbersService",
-   targetNamespace="http://duke.org"
-)
-@javax.jws.soap.SOAPBinding(
-   style=javax.jws.soap.SOAPBinding.Style.DOCUMENT,
-   use=javax.jws.soap.SOAPBinding.Use.LITERAL,
-   parameterStyle=javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED)
-public interface AddNumbersPortType extends java.rmi.Remote {
- @javax.jws.WebMethod(operationName="addNumbers")
- @javax.jws.WebResult(name="return")
- @com.sun.ws.WebWrapper(requestWrapper="fromwsdl.server.AddNumbers",
-                        responseWrapper="fromwsdl.server.AddNumbersResponse")
- public int addNumbers(
-    @javax.jws.WebParam(name="arg0")
-    int arg0,
-    @javax.jws.WebParam(name="arg1")
-    int arg1) throws fromwsdl.server.AddNumbersFault_Exception, java.rmi.RemoteException;
-}
-</pre>
-
-  <p>The generated service endpoint interface has annotations that can be used by the future versions of JAX-RPC 2.0 to do dynamic binding and serialization/deserialization at runtime. Alternatively this service endpoint interface can be used to generate a WSDL and schema file. Please note that round-tripping is not guaranteed in this case. So the generated WSDL file and schema may not be the same as the one the service endpoint interface was generated from.</p>
-
-  <h4><a name="2.1.2.2_Implement_the_servce_endpoint" id="2.1.2.2_Implement_the_servce_endpoint"></a>2.1.2.2 Implement the Service Endpoint Interface</h4>
-
-  <p>The next thing to do will be to provide the implementation of the service endpoint interface generated in the previous step. Let's look at the implementation class <code><a href="../samples/fromwsdl/src/fromwsdl/server/AddNumbersImpl.java">fromwsdl.server.AddNumbersImpl.java</a></code> from the sample application <code>fromwsdl</code>:</p>
-  <pre>
-package fromwsdl.server;
-
-public class AddNumbersImpl implements AddNumbersPortType {
- /**
- * @param number1
- * @param number2
- * @return The sum
- * @throws AddNumbersException
- * if any of the numbers to be added is negative.
- */
-
- public int addNumbers(int number1, int number2)
-   throws AddNumbersFault_Exception {
- ...
- }
-}
-</pre>
-
-  <h4><a name="2.1.2.3_Create_raw_war_" id="2.1.2.3_Create_raw_war_"></a>2.1.2.3 Create a Raw WAR</h4>
-
-  <p>This step is similar to the one described above in <a href="#2.1.1.2_Create_a_raw_WAR_file_to_pass_to">2.1.1.2</a> .</p>
-
-  <p>Here the service endpoint interface implementation class from previous step, together with a configuration file <code>JAX-RPC-ri.xml</code>, and <code>web.xml</code> should be bundled together with the service endpoint interface, value classes, and model file generated in the first step mentioned in <a href="#2.1.2.1_Generate_a_service_endpoint">2.1.2.1</a>.</p>
-
-  <p>Let's look at <code><a href="../samples/fromwsdl/etc/jaxrpc-ri.xml">JAX-RPC-ri.xml</a></code> from the sample application <code>fromwsdl</code>:</p>
-  <pre>
-&lt;webServices
- xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/dd"
- version="1.0"
- targetNamespaceBase="http://echoservice.org/WSDL"
- typeNamespaceBase="http://echoservice.org/types"
- urlPatternBase="/ws"&gt;
- &lt;endpoint
- name="fromwsdl"
- displayName="From WSDL"
- interface="fromwsdl.server.AddNumbersPortType"
- implementation="fromwsdl.server.AddNumbersImpl"
- WSDL="/WEB-INF/AddNumbers.wsdl"
- model="/WEB-INF/JAX-RPC-fromwsdl-model.xml.gz"/&gt;
-
- &lt;endpointMapping
- endpointName="fromwsdl"
- urlPattern="/addnumbers"/&gt;
-
-&lt;/webServices&gt;
-</pre>
-
-  <p>It defines the deployment-related configuration information for the <code>fromwsdl</code> endpoint.</p>
-
-  <h4><a name="2.1.2.4_Create_a_deployable_war_file" id="2.1.2.4_Create_a_deployable_war_file"></a>2.1.2.4 Create a Deployable WAR File Using <code>wsdeploy</code></h4>
-
-  <p>This step is similar to the one described in <a href="#2.1.1.3_Create_a_deployable_WAR_file">2.1.1.3</a>.</p>
-
-  <p>In this step you run <code>wsdeploy</code> to create a deployable JAR and then deploy it to your container. Here is the Ant target which accomplishes this from the sample <code>common-targets.xml</code>:</p>
-  <pre>
-&lt;target name="deploy"&gt;
- &lt;copy file="${build.war.home}/JAX-RPC-${ant.project.name}.war"
- todir="${as.home}/domains/${domain}/autodeploy"/&gt;
-&lt;/target&gt;
-</pre>
-
-  <p>For this release the <code>deploytool</code> utility included with Sun Java System Application Server 8.1 should not be used to deploy the JAX-RPC 2.0 endpoints because <code>deploytool</code> uses the JAX-RPC 1.x version of <code>wsdeploy</code>.</p>
-
-  <h3><a name="2.2_Client" id="2.2_Client"></a>2.2 Client</h3>
-
-  <p>A client application can access a remote web service endpoint in one of three ways: static stub, dispatch, and dynamic proxy.</p>
-
-  <h4><a name="2.2.1_Static_Stub" id="2.2.1_Static_Stub"></a>2.2.1 Static Stub</h4>
-
-  <p>In this approach client side artifacts are generated using the <code>Service</code> instance, the generated stub instance is created, and the remote web service is invoked. The sections below describe this process more detail.</p>
-
-  <h4><a name="2.2.1.1_Generate_client_artifacts" id="2.2.1.1_Generate_client_artifacts"></a>2.2.1.1 Generate Client Artifacts</h4>
-
-  <p>The <code>wscompile</code> tool is used with <code>-gen:client</code> option to generate the service endpoint interface, service, service implementation, stub, and encoder/decoder classes. Below is the sample <code>wscompile</code> Ant target:</p>
-  <pre>
- &lt;wscompile
- fork="true"
- debug="${debug}"
- verbose="${verbose}"
- keep="${keep}"
- client="true"
- base="${build.classes.home}"
- nonClassDir="${build.home}"
- wsdlFile="${client.wsdl}"&gt;
-  &lt;classpath&gt;
-   &lt;path refid="JAX-RPC.classpath"/&gt;
-   &lt;pathelement location="${build.classes.home}"/&gt;
-  &lt;/classpath&gt;
-  &lt;binding dir="${basedir}/etc" includes="${client.binding}"/&gt;
- &lt;/wscompile&gt;
-</pre>
-
-  <p>The command line equivalent of this Ant target is:</p>
-  <pre>
-wscompile.sh -gen:client -classpath client_classpath -d dest_dir -s src_dir -b custom-client.xml http://localhost:8080/JAX-RPC-fromwsdl/addnumbers?WSDL
-</pre>
-
-  <p>For more details see the <code>wscompile</code> <a href="jaxrpc-tools.html#wscompiletool">tool</a> documentation.</p>
-
-  <p>Here is the excerpt from <code><a href="../samples/fromwsdl/src/fromwsdl/client/AddNumbersClient.java">fromwsdl.client.AddNumbersClient.java</a></code> in the <code>fromjava</code> sample application:</p>
-  <pre>
-//create the service factory
-ServiceFactory serviceFactory = ServiceFactory.newInstance();
-
-//load the service implementation class
-AddNumbersService service = (AddNumbersService)serviceFactory.loadService(AddNumbersService.class);
-
-//get instance of generated stub
-AddNumbersPortType port = service.getAddNumbersPort();
-
-//invoke the remote method
-int result = port.addNumbers(10, 20);
-</pre>
-
-  <h4><a name="2.2.2_Dispatch" id="2.2.2_Dispatch"></a>2.2.2 Dispatch</h4>
-
-  <p>The Dispatch API is intended for advanced XML developers who prefer using XML constructs at the <code>java.lang.transform.Source</code> or <code>javax.xml.soap.SOAPMessage</code> level. For added convenience use of Dispatch with JAXB data binding object is supported. The Dispatch APIs can be used in both <code>Message</code> and <code>Payload</code> modes.</p>
-
-  <p>For more information on Dispatch in JAX-RPC 2.0 please refer to <a href="dispatch.html">JAX-RPC 2.0 Dispatch</a>.</p>
-
-  <h4><a name="2.2.3_Dynamic_Proxy" id="2.2.3_Dynamic_Proxy"></a>2.2.3 Dynamic Proxy</h4>
-
-  <p>Dynamic Proxy will be supported in a future version of JAX-RPC 2.0 SI.</p>
-
-  <h2><a name="3._Useful_Information" id="3._Useful_Information"></a>3. Useful Information</h2>
-
-  <p><a href="http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html">Annotation Processing Tool (apt)</a> &ndash; http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html.</p>
-
-  <p>Please use the <a href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB 2.0 and JAXRPC 2.0</a> forum for feedback.</p>
-
-  <p>The JAX-RPC project on Java.net is: <a href="">http://jax-rpc.dev.java.net</a>.</p>
-  <hr>
-
-  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+<h1><a class="mozTocH1" name="mozTocId143593"></a>JAX-WS 2.0 Early
+Access<br>
+User's Guide</h1>
+<hr>
+<p>Last modified: 6/9/2005</p>
+<h2><a class="mozTocH2" name="mozTocId114381"></a>Contents</h2>
+<ol id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId143593">JAX-WS
+2.0 Early Access
+User's Guide</a>
+    <ol>
+      <li><a href="#mozTocId114381">Contents</a></li>
+      <li><a href="#mozTocId604515">1. Introduction</a>
+        <ol>
+          <li><a href="#mozTocId718751">1.1 What's new in JAX-WS
+2.0 Early Access 2</a>
+            <ol>
+              <li><a href="#mozTocId525392">1.1.1 Fully Dynamic Runtime
+                </a></li>
+              <li><a href="#mozTocId40289">1.1.2 MTOM &amp; Swaref</a></li>
+              <li><a href="#mozTocId722803">1.1.3 SOAP 1.2 </a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId103864">2.1 Features introduced in
+Early Access 1 </a>
+            <ol>
+              <li><a href="#mozTocId529808">2.1.1 JAXB 2.0</a></li>
+              <li><a href="#mozTocId898412">2.1.2
+Annotations</a></li>
+              <li><a href="#mozTocId334152">2.1.3
+Customizations</a></li>
+              <li><a href="#mozTocId432206">2.1.4 Improved Handler
+Framework</a></li>
+              <li><a href="#mozTocId948332">2.1.5 Provider</a></li>
+              <li><a href="#mozTocId766113">2.1.6 Dispatch</a></li>
+              <li><a href="#mozTocId167513">2.1.7 Asynchronous
+Client Operations</a></li>
+            </ol>
+          </li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId283128">3.
+Programming Model</a>
+        <ol>
+          <li><a href="#mozTocId341782">3.1 Server</a>
+            <ol>
+              <li><a href="#mozTocId235815">3.1.1
+Starting from Java</a></li>
+              <li><a href="#mozTocId442327">3.1.1.1 Generate Portable
+Artifacts</a></li>
+              <li><a href="#mozTocId234150">3.1.1.2 Create a WAR
+file to deploy</a></li>
+              <li><a href="#mozTocId594226">3.1.2
+Starting from a WSDL File</a></li>
+              <li><a href="#mozTocId303268">3.1.2.1 Generate a
+Service Endpoint Interface</a></li>
+              <li><a href="#mozTocId304280">3.1.2.2 Implement the
+Service Endpoint Interface</a></li>
+              <li><a href="#mozTocId853441">3.1.2.3
+Create a WAR</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId69398">3.2 Client</a>
+            <ol>
+              <li><a href="#mozTocId902975">3.2.1
+Dynamic Proxy </a></li>
+              <li><a href="#mozTocId913387">3.2.1.1 Generate Client
+Artifacts</a></li>
+              <li><a href="#mozTocId109612">3.2.2 Dispatch</a></li>
+            </ol>
+          </li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId887457">4.
+Useful Information</a></li>
+    </ol>
+  </li>
+</ol>
+<h2><a class="mozTocH2" name="mozTocId604515"></a><a
+ name="1._Introduction" id="1._Introduction"></a>1. Introduction</h2>
+<p>This document describes the new features available in the Early
+Access 2 of the <i>Java API for XML Web Services (JAX-WS) 2.0</i> <a
+ href="http://jcp.org/en/jsr/detail?id=224">(JSR 224)</a> Standard
+Implementation (SI). The main focus of this document is to describe the
+tools used to develop JAX-WS 2.0 SI web service endpoints and clients.
+Readers of this document should be familiar with web services <a
+ href="http://www.w3.org/TR/2000/REC-xml-20001006">XML</a>, <a
+ href="http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/">XML Schema</a>,
+<a href="http://www.w3.org/TR/2001/NOTE-wsdl-20010315">WSDL</a> and
+ideally with <a href="http://jcp.org/en/jsr/detail?id=101">JAX-RPC 1.1</a>.
+Please refer to Section 3. Useful Information for links to more
+information about web services and JAX-RPC 1.1.</p>
+<h3><a class="mozTocH3" name="mozTocId718751"></a><a
+ name="1.1_Whats_new_in_JAX-RPC_2.0_Early"
+ id="1.1_Whats_new_in_JAX-RPC_2.0_Early"></a>1.1 What's new in JAX-WS
+2.0 Early Access 2</h3>
+<h4><a class="mozTocH4" name="mozTocId525392"></a>1.1.1 Fully Dynamic
+Runtime<br>
+</h4>
+<h4><a class="mozTocH4" name="mozTocId40289"></a>1.1.2 MTOM &amp; Swaref</h4>
+<h4><a class="mozTocH4" name="mozTocId722803"></a>1.1.3 SOAP 1.2<br>
+</h4>
+<h3><a class="mozTocH3" name="mozTocId103864"></a><a
+ name="1.1_Whats_new_in_JAX-RPC_2.0_Early"
+ id="1.1_Whats_new_in_JAX-RPC_2.0_Early"></a>2.1 Features introduced in
+Early Access 1<br>
+</h3>
+<p>JAX-WS 2.0 has a number of significant improvements over JAX-RPC
+1.1. Some of these improvements include improved data-binding with
+JAXB, standard mechanisms for customizing the mapping between WSDL/XML
+and Java, improved handlers, support for client side asynchronous
+operations, improved dynamic invocation support via new <code>Dispatch</code>
+and <code>Provider</code> interfaces/implementations.</p>
+<h4><a class="mozTocH4" name="mozTocId529808"></a><a
+ name="1.1.1_JAXB_2.0" id="1.1.1_JAXB_2.0"></a>2.1.1 JAXB 2.0</h4>
+<p>The most notable change in JAX-WS 2.0 is the use of JAXB 2.0 for
+data-binding between Java and XML. JAX-RPC 1.0 specified a limited
+mapping between XML and Java, this was mainly due to the fact that JAXB
+was not going to be done in time for JAX-RPC 1.0. With the completion
+of JAXB, there is no longer a reason to have two separate sets of
+mapping rules between XML and Java. JAX-WS will also support the full
+set of JAXB binding customizations and optional schema validation.</p>
+<h4><a class="mozTocH4" name="mozTocId898412"></a><a
+ name="1.1.2_Annotations" id="1.1.2_Annotations"></a>2.1.2
+Annotations</h4>
+<p>JAX-WS 2.0 relies heavily on the use of annotations as provided by <i>A
+Metadata Facility for the Java Programming Language</i> <a
+ href="http://jcp.org/en/jsr/detail?id=175">(JSR 175)</a> and and <i>Web
+Services Metadata for the Java Platform</i> <a
+ href="http://jcp.org/en/jsr/detail?id=181.">(JSR 181)</a> as well as
+additional annotations defined by JAX-WS 2.0. These annotations are
+used to customize the mapping from Java to XML schema/WSDL and are used
+at runtime to alleviate the need for non-portable
+serializers/deserializers that were generated in JAX-RPC 1.x. <br>
+</p>
+<p>Another one of the shortcomings of the JAX-RPC 1.x SI, was the
+inability to map parameter names to part meaningful part/element names
+in the WSDL file. JSR 181 provides a WebParam annotation that allows
+the developer to specify what the WSDL part/element name will be.</p>
+<p>The JAX-WS SI utilizes a new tool <code>apt</code> (annotation
+processing tool) that was introduced in J2SDK 5.0. <code>apt</code>
+allows the SI to process Java source files directly to generate the
+portable artifacts specified by the JAX-WS 2.0 specification. <code>apt</code>
+will be covered in more detail in section 3.1.1.</p>
+<p>For more information on the annotations used by JAX-WS 2.0 please
+refer to <a href="annotations.html">JAX-WS 2.0 annotations</a>.</p>
+<h4><a class="mozTocH4" name="mozTocId334152"></a><a
+ name="1.1.3_Customizations" id="1.1.3_Customizations"></a>2.1.3
+Customizations</h4>
+<p>The JAX-RPC 1.1 specification did not define a standard
+customization architecture. However JAX-RPC 1.x SI had limited WSDL to
+Java customization support. It allowed a JAX-RPC 1.x application to:</p>
+<ul>
+  <li>
+    <p>Define a package where Java artifacts mapped from a WSDL file
+will be generated</p>
+  </li>
+  <li>
+    <p>Package customization for value classes mapped from the imported
+XML schemas by the WSDL document</p>
+  </li>
+  <li>
+    <p>Handler chain customization</p>
+  </li>
+</ul>
+<p>But these customizations were not portable and could not be used
+across other JAX-RPC implementations.</p>
+<p>JAX-WS 2.0 specification defines standard XML based customization
+for a WSDL file to Java mapping and to control certain features. These
+customizations, or <i>binding declarations,</i> can customize almost
+all WSDL components that can be mapped to Java, such as the service
+endpoint interface class, method name, parameter name, exception class,
+etc. The other important thing you can do with these binding
+declarations is to control certain features, such as asynchrony,
+provider, wrapper style, and additional headers. For example, a client
+application can enable asynchrony for a particular operation in a <code>portType</code>,
+all operations in a <code>portType</code>, or all <code>portType</code>
+operations defined in the WSDL file.</p>
+<p>These binding declarations can be inlined in a WSDL file or can live
+outside as an external file. The binding declarations closely align
+with the JAXB binding declarations. An application importing a WSDL
+file can inline JAXB bindings inside JAX-WS binding declarations to
+customize the inlined schema declared in the WSDL file. Schema files
+that are imported from a WSDL file can be customized using JAXB binding
+files and can be passed to <code>wscompile</code> using the <code>-b</code>
+option switch.</p>
+<p>These are the main customization features:</p>
+<ul>
+  <li>Scoped binding declarations. An XPath expression is used to
+specify the target node of the WSDL file on which customization should
+be applied.</li>
+  <li>Close alignment with JAXB bindings. JAXB binding declarations can
+be inlined in an external JAX-WS binding file.</li>
+  <li>Feature Control. Features such as asynchrony, wrapper style,
+additional header mapping, and provider interfaces can be enabled or
+disabled.</li>
+  <li>Handler chain customization (not yet specified by the 2.0
+specification)</li>
+</ul>
+<p>The following WSDL component's mapped Java names can be modified:</p>
+<ul>
+  <li>generated service endpoint interface class</li>
+  <li>method</li>
+  <li>method parameter</li>
+  <li>generated exception class (for WSDL fault and header fault
+exceptions)</li>
+  <li>header parameter</li>
+  <li>generated service class</li>
+  <li>port accessor methods in the generated service class</li>
+</ul>
+<p>XML Schema Java mapping can be customized using standard JAXB
+customizations.</p>
+<p>For more information on the customizations used by JAX-WS 2.0 please
+refer to <a href="customizations.html">JAX-WS 2.0 customizations</a>.</p>
+<h4><a class="mozTocH4" name="mozTocId432206"></a><a
+ name="1.1.4_Improved_Handler_Framework"
+ id="1.1.4_Improved_Handler_Framework"></a>2.1.4 Improved Handler
+Framework</h4>
+<p>JAX-WS 2.0 defines two types of handlers: logical and protocol
+handlers. While protocol handlers have access to an entire message such
+as a SOAP message, logical
+handlers deal only with the payload of a message and are independent of
+the protocol being used. Handler chains can now be configured on a
+per-port, per-protocol, or per-service basis. A new framework of
+context objects has been added to allow client code to share
+information easily with handlers.</p>
+<p>For more information on the handler framework in JAX-WS 2.0 please
+refer to <a href="handlers.html">JAX-WS 2.0 Handler Framework</a>.</p>
+<h4><a class="mozTocH4" name="mozTocId948332"></a><a
+ name="1.1.5_Provider" id="1.1.5_Provider"></a>2.1.5 Provider</h4>
+<p>Web service endpoints may choose to work at the XML message level by
+implementing the <code>Provider</code> interface. Here the endpoints
+access messages or message payloads using this low level, generic API.</p>
+<p>For more information on providers in JAX-WS 2.0 please refer to <a
+ href="provider.html">JAX-WS 2.0 Provider</a>.</p>
+<h4><a class="mozTocH4" name="mozTocId766113"></a><a
+ name="1.1.6_Dispatch" id="1.1.6_Dispatch"></a>2.1.6 Dispatch</h4>
+<p>The Dispatch API is intended for advanced XML developers who prefer
+to use XML constructs at the <code>java.lang.transform.Source</code>
+or <code>javax.xml.soap.SOAPMessage</code> level. For added
+convenience use of the Dispatch API with JAXB data-bound objects is
+supported. The Dispatch API can be used in both <code>Message</code>
+and <code>Payload</code> modes.</p>
+<p>For more information on the Dispatch API in JAX-WS 2.0 please refer
+to <a href="dispatch.html">JAX-WS 2.0 Dispatch</a>.</p>
+<h4><a class="mozTocH4" name="mozTocId167513"></a><a
+ name="1.1.7_Asynchronous_Client_Operations"
+ id="1.1.7_Asynchronous_Client_Operations"></a>2.1.7 Asynchronous
+Client Operations</h4>
+<p>For more information on asynchronous clients in JAX-WS 2.0 please
+refer to <a href="asynch.html">JAX-WS 2.0 Asynchronous</a>.</p>
+<h2><a class="mozTocH2" name="mozTocId283128"></a><a
+ name="2._Programming_Model" id="2._Programming_Model"></a>3.
+Programming Model</h2>
+<p>This section of the documentation will focus on the programming
+model for both developing and publishing a web service endpoint, and
+writing a web service client. A web service endpoint is the
+implementation of a web service. A web service client is an application
+that accesses a web service.</p>
+<h3><a class="mozTocH3" name="mozTocId341782"></a><a name="2.1_Server"
+ id="2.1_Server"></a>3.1 Server</h3>
+<p>When developing a web service endpoint, a developer may either start
+from a Java endpoint implementation class or from a WSDL file. A WSDL
+(Web Services Description Language) document describes the contract
+between the web service endpoint and the client. A WSDL document may
+include and/or import XML schema files used to describe the data types
+used by the web service. When starting from a Java class, the tools
+generate any portable artifacts as mandated by the spec. When starting
+from a WSDL file and schemas, the tools generate a service endpoint
+interface.</p>
+<p>There is a trade-off when starting from a Java class or from a WSDL
+file. If you start from a Java class, you can make sure that the
+endpoint implementation class has the desirable Java data types, but
+the developer has less control of the generated XML schema. When
+starting from a WSDL file and schema, the developer has total control
+over what XML schema is used, but has less control over what the
+generated service endpoint and the classes it uses will contain.</p>
+<h4><a class="mozTocH4" name="mozTocId235815"></a><a
+ name="2.1.1_Starting_from_Java" id="2.1.1_Starting_from_Java"></a>3.1.1
+Starting from Java</h4>
+<p>The basic process for deploying a web service from a Java class
+consists of two steps.</p>
+<ol>
+  <li>Generate portable artifacts.</li>
+  <li>Create a WAR file to deploy <code></code></li>
+</ol>
+<h4><a class="mozTocH4" name="mozTocId442327"></a><a
+ name="2.1.1.1_Generate_Portable_Artifacts"
+ id="2.1.1.1_Generate_Portable_Artifacts"></a>3.1.1.1 Generate Portable
+Artifacts</h4>
+<p>Portable artifacts generated by JAX-WS 2.0 include zero or more
+JavaBean classes to aide in the marshaling of method invocations and
+responses, as well as service-specific exceptions.</p>
+<p>In document/literal wrapped mode, two JavaBeans are generated for
+each operation in the web service. One bean is for invoking the other
+for the response. In all modes (rpc/literal and both document/literal
+modes), one JavaBean is generated for each service-specific exception.</p>
+<p>When starting from Java the developer must provide the JAX-WS tools
+with a valid endpoint implementation class. This implementation class
+is the class that implements the desired web service. JAX-WS has a
+number of restrictions on endpoint implementation classes. A valid
+endpoint implementation class must meet the following requirements:</p>
+<ul>
+  <li>It <em>must</em> carry a <code>javax.jws.WebService</code>
+annotation (see JSR 181).</li>
+  <li>It <em>may</em> extend <code>java.rmi.Remote</code> either
+directly or indirectly.</li>
+  <li>Any of its methods <em>may</em> carry a <code>javax.jws.WebMethod</code>
+annotation (see 7.5.2).</li>
+  <li>All of its methods <em>may</em> throw <code>java.rmi.RemoteException</code>
+in addition to any service-specific exceptions.</li>
+  <li>All method parameters and return types <em>must</em> be
+compatible with the JAXB 2.0 Java to XML Schema mapping definition.</li>
+  <li>A method parameter or return value type <em>must not</em>
+implement the <code>java.rmi.Remote</code> interface either directly
+or indirectly.</li>
+</ul>
+<p>Here is an example of a a simple endpoint implementation class <tt><a
+ href="../samples/fromjava/src/fromjava/server/AddNumbersImpl.java">AddNumbersImpl.java</a></tt>
+from the <tt>fromjava</tt> sample:</p>
+<pre style="margin-left: 0.5in;">package fromjava.server;<br>import javax.jws.WebService;<br>@WebService<br>public class AddNumbersImpl {<br>    /**<br>     * @param number1<br>     * @param number2<br>     * @return The sum<br>     * @throws AddNumbersException<br>     * if any of the numbers to be added is negative.<br>     */<br>    public int addNumbers(int number1, int number2) throws AddNumbersException {<br>        if (number1 &lt; 0 || number2 &lt; 0) {<br>            throw new AddNumbersException("Negative number cant be added!",<br>                                          "Numbers: " + number1 + ", " + number2);<br>        }<br>        return number1 + number2;<br>    }<br>}<br></pre>
+<p>If you are familiar with JAX-RPC 1.1, you will notice that this
+implementation class does not implement a service endpoint interface.
+In JAX-WS 2.0 a service endpoint interface is no longer required.</p>
+<p>When starting from a Java endpoint implementation class, it is
+recommended that the portable artifacts be generated from source using <code>apt</code>.
+This because the JAX-WS tools will then have full access to the source
+code and will be able to utilize parameter names that are otherwise not
+available through the Java reflection APIs. If the source for the
+endpoint implementation class is not available, the portable artifacts
+can be generated using <tt>wscompile</tt>. Here is a sample <code>apt</code>
+Ant task from the samples:</p>
+<pre style="margin-left: 0.5in;">&lt;apt<br>   debug="${debug}"<br>   verbose="${verbose}"<br>   base="${build.classes.home}"<br>   sourceBase="${build.classes.home}"<br>   sourcePath="${basedir}/src"&gt;<br>   &lt;classpath refid="jax-ws.classpath"/&gt;<br>   &lt;option key="nd" value="${build.home}"/&gt;<br>   &lt;option key="verbose" value="${verbose}"/&gt;<br>   &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>   &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<p>More information about the <code>apt</code> Ant task can be found <a
+ href="apt.html">here</a>. If this task is run on the
+fromjava sample, the output would include:</p>
+<pre style="margin-left: 0.5in;">AddNumbers.class<br>AddNumbers.java<br>AddNumbersExceptionBean.class<br>AddNumbersExceptionBean.java<br>AddNumbersResponse.class<br>AddNumbersResponse.java<br></pre>
+<p>The AddNumbersImplService.wsdl file describes the web service. The
+schema1.xsd file is imported by the AddNumbersImplService.wsdl and
+contains the datatypes used by the web service. The
+AddNumbers.class/AddNumbers.java files contain the a bean used by a
+JAXB to marshall/unmarshall the addNumbers request. The
+AddNumbersExceptionBean.class/AddNumbersExceptionBean.java file is a
+bean used by JAXB to marshall the contents of the AddNumbersException
+class. The AddNumbersResponse.class/AddNumbersResponse.java files
+represent the response bean used by JAXB to marshall/unmarshall the
+addNumbers response.</p>
+<h4><a class="mozTocH4" name="mozTocId234150"></a><a
+ name="2.1.1.2_Create_a_raw_WAR_file_to_pass_to"
+ id="2.1.1.2_Create_a_raw_WAR_file_to_pass_to"></a>3.1.1.2 Create a WAR
+file to <span style="font-family: monospace;">deploy</span><code></code></h4>
+<p>Creating a WAR file is nothing more than packaging the service
+endpoint interface (if there is one), service endpoint implementation,
+Java classes used by the endpoint implementation and a deployment
+descriptor in WAR format.&nbsp; For the fromjava sample the <code>AddNumbersImpl</code>
+<code>and AddNumbersException</code> classes in the <code>fromjava.server</code>
+package, <code></code> and the deployment descriptor are bundled
+together to make a raw WAR file. To learn more about creating a WAR
+file and the deployment descriptor, click <a href="jaxws-war.html">here</a>.&nbsp;
+The deployment descriptor used in fromjava sample is given below and
+can be found <a href="../samples/fromjava/etc/sun-jaxws.xml">here:</a></p>
+<pre style="margin-left: 0.5in;">&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='fromjava'<br>    implementation='fromjava.server.AddNumbersImpl'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+<p>The attributes of the &lt;endpoint&gt; element are described below:</p>
+<ul>
+  <li>
+    <p><code>name</code> is simply an identifier for this endpoint</p>
+  </li>
+  <li>
+    <p><code>implementation</code> is used to specify the endpoint
+implementation class</p>
+  </li>
+  <li>
+    <p><code>urlpatter</code> is used to URL pattern used to access
+this endpoint.</p>
+  </li>
+</ul>
+<p>The structure of the raw WAR file is shown below:</p>
+<pre style="margin-left: 0.5in;">META-INF/MANIFEST.MF<br>WEB-INF/sun-jaxws.xml<br>WEB-INF/web.xml<br>WEB-INF/classes/fromjava/server/AddNumbersException.class<br>WEB-INF/classes/fromjava/server/AddNumbersImpl.class<br>WEB-INF/classes/fromjava/server/jaxws/AddNumbers.class<br>WEB-INF/classes/fromjava/server/jaxws/AddNumbersExceptionBean.class<br>WEB-INF/classes/fromjava/server/jaxws/AddNumbersResponse.class<br><br></pre>
+<p>The WAR file created&nbsp;<code></code> can now be published on a
+JAX-WS 2.0 SI enabled servlet container such as the <a
+ href="http://java.sun.com/j2ee/1.4/download.html">Sun Java System
+Application Server Platform Edition 8.1</a></p>
+<h4><a class="mozTocH4" name="mozTocId594226"></a><a
+ name="2.1.2_Starting_from_WSDL" id="2.1.2_Starting_from_WSDL"></a>3.1.2
+Starting from a WSDL File</h4>
+<p>The basic process for deploying a web service when starting from a
+WSDL document consists of the following four steps:</p>
+<ol>
+  <li>Generate a service endpoint interface.</li>
+  <li>Implement the service endpoint interface.</li>
+  <li>Create a WAR file to deploy<code></code>.</li>
+</ol>
+<h4><a class="mozTocH4" name="mozTocId303268"></a><a
+ name="2.1.2.1_Generate_a_service_endpoint"
+ id="2.1.2.1_Generate_a_service_endpoint"></a>3.1.2.1 Generate a
+Service Endpoint Interface</h4>
+<p>This step involves compiling or importing the WSDL file to generate
+a service endpoint interface and value classes mapped from imported XML
+schemas.</p>
+<p>Below is a sample <code>wsimport</code> Ant target:</p>
+<pre style="margin-left: 40px;">&lt;wsimport<br>  fork="true"<br>  debug="${debug}"<br>  verbose="${verbose}"<br>  keep="${keep}"<br>  import="true"<br>  base="${build.classes.home}"<br>  wsdlFile="${server.wsdl}"&gt;<br>  &lt;classpath refid="jax-ws.classpath"/&gt;<br>  &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
+<p>Its commandline equivalent is:</p>
+<pre>wsimport.sh etc/AddNumbers.wsdl -b custom-server.xml<br></pre>
+<p>Lets look at the excerpt of <code><a
+ href="../samples/fromwsdl/etc/AddNumbers.wsdl">AddNumbers.wsdl</a></code>
+from the sample <code>fromwsdl</code>:</p>
+<p>The generated service endpoint interface looks as follows:</p>
+<pre style="margin-left: 40px;">package fromwsdl.server;<br><br>@javax.jws.WebService(<br>   name="AddNumbersPortType",<br>   serviceName="AddNumbersService",<br>   targetNamespace="http://duke.org"<br>)<br>@javax.jws.soap.SOAPBinding(<br>   style=javax.jws.soap.SOAPBinding.Style.DOCUMENT,<br>   use=javax.jws.soap.SOAPBinding.Use.LITERAL,<br>   parameterStyle=javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED)<br>public interface AddNumbersPortType extends java.rmi.Remote {<br> @javax.jws.WebMethod(operationName="addNumbers")<br> @javax.jws.WebResult(name="return")<br> public int addNumbers(<br>    @javax.jws.WebParam(name="arg0")<br>    int arg0,<br>    @javax.jws.WebParam(name="arg1")<br>    int arg1) throws fromwsdl.server.AddNumbersFault_Exception, java.rmi.RemoteException;<br>}<br></pre>
+<p>The generated service endpoint interface has annotations that can be
+used by the future versions of JAX-WS 2.0 to do dynamic binding and
+serialization/deserialization at runtime. Alternatively this service
+endpoint interface can be used to generate a WSDL and schema file.
+Please note that round-tripping is not guaranteed in this case. So the
+generated WSDL file and schema may not be the same as the one the
+service endpoint interface was generated from.</p>
+<h4><a class="mozTocH4" name="mozTocId304280"></a><a
+ name="2.1.2.2_Implement_the_servce_endpoint"
+ id="2.1.2.2_Implement_the_servce_endpoint"></a>3.1.2.2 Implement the
+Service Endpoint Interface</h4>
+<p>The next thing to do will be to provide the implementation of the
+service endpoint interface generated in the previous step. Let's look
+at the implementation class <code><a
+ href="../samples/fromwsdl/src/fromwsdl/server/AddNumbersImpl.java">fromwsdl.server.AddNumbersImpl.java</a></code>
+from the sample application <code>fromwsdl</code>:</p>
+<pre style="margin-left: 40px;">package fromwsdl.server;<br><br>public class AddNumbersImpl implements AddNumbersPortType {<br> /**<br> * @param number1<br> * @param number2<br> * @return The sum<br> * @throws AddNumbersException<br> * if any of the numbers to be added is negative.<br> */<br><br> public int addNumbers(int number1, int number2)<br>   throws AddNumbersFault_Exception {<br> ...<br> }<br>}<br></pre>
+<h4><a class="mozTocH4" name="mozTocId853441"></a><a
+ name="2.1.2.3_Create_raw_war_" id="2.1.2.3_Create_raw_war_"></a>3.1.2.3
+Create a WAR</h4>
+<p>This step is similar to the one described above in <a
+ href="#2.1.1.2_Create_a_raw_WAR_file_to_pass_to">3.1.1.2</a> .</p>
+<p>Here the service endpoint interface implementation class from
+previous step, together with a deployment descriptor file <code>sun-jaxws.xml</code>,
+and <code>web.xml</code> should be bundled together with the service
+endpoint interface, value classes generated in the first step mentioned
+in <a href="#2.1.2.1_Generate_a_service_endpoint">3.1.2.1</a>.</p>
+<p>Let's look at <code><a href="../samples/fromwsdl/etc/sun-jaxwsi.xml">sun-jaxws.xml</a></code>
+from the sample application <code>fromwsdl</code>:</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>   xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>   version="2.0"&gt;<br><br>   &lt;endpoint<br>       name="fromwsdl"<br>       interface="fromwsdl.server.AddNumbersPortType"<br>       implementation="fromwsdl.server.AddNumbersImpl"<br>       wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"<br>       service="{http://duke.org}AddNumbersService"<br>       port="{http://duke.org}AddNumbersPort"<br>       urlpattern="/addnumbers" /&gt;<br><br>&lt;/endpoints&gt;<br><br></pre>
+<p>It defines the deployment-related configuration information for the <code>fromwsdl</code>
+endpoint.&nbsp; You will notice that this deployment descriptor
+contains additional attributes than the deployment<br>
+descriptor described in 3.1.1.2.&nbsp; The interface attribute
+references the service endpoint interface generated in step 1.&nbsp;
+The wsdl attribute also points at the WSDL that was imported by
+wsimport. <br>
+The service attribute references which service in the WSDL this
+endpoint is from and the port is the name of the port in that service
+for this endpoint.<br>
+</p>
+<p>To learn more about creating a WAR file and the deployment
+descriptor, click <a href="jaxws-war.html">here</a>.</p>
+<p>The WAR file created&nbsp;<code></code> can now be published on a
+JAX-WS 2.0 SI enabled servlet container such as the <a
+ href="http://java.sun.com/j2ee/1.4/download.html">Sun Java System
+Application Server Platform Edition 8.1</a></p>
+<h3><a class="mozTocH3" name="mozTocId69398"></a><a name="2.2_Client"
+ id="2.2_Client"></a>3.2 Client</h3>
+<p>A client application can access a remote web service endpoint in one
+of two ways: port and dispatch.</p>
+<h4><a class="mozTocH4" name="mozTocId902975"></a><a
+ name="2.2.1_Static_Stub" id="2.2.1_Static_Stub"></a>3.2.1
+Dynamic Proxy<br>
+</h4>
+<p>In this approach client side invokes Web services via a dynamic
+proxy.&nbsp; The proxies for the Web Service are created from the
+generated <code>Service</code> and service endpont interfaces.&nbsp;
+Once the proxies are created. the client application can invoke methods
+on those proxies just like a standard implmentation of those
+interfaces. The sections below describe this process more detail.</p>
+<h4><a class="mozTocH4" name="mozTocId913387"></a><a
+ name="2.2.1.1_Generate_client_artifacts"
+ id="2.2.1.1_Generate_client_artifacts"></a>3.2.1.1 Generate Client
+Artifacts</h4>
+<p>The <code>wsimport</code> tool is used <code></code>to generate
+the service endpoint interface and the service interface classes. Below
+is the sample <code>wsimport</code> Ant target:</p>
+<pre> &lt;wsimport<br> fork="true"<br> debug="${debug}"<br> verbose="${verbose}"<br> keep="${keep}"<br> client="true"<br> base="${build.classes.home}"<br> wsdlFile="${client.wsdl}"&gt;<br>  &lt;classpath&gt;<br>   &lt;path refid="jax-ws.classpath"/&gt;<br>   &lt;pathelement location="${build.classes.home}"/&gt;<br>  &lt;/classpath&gt;<br>  &lt;binding dir="${basedir}/etc" includes="${client.binding}"/&gt;<br> &lt;/wscompile&gt;<br></pre>
+<p>The command line equivalent of this Ant target is:</p>
+<pre>wsimport.sh -classpath client_classpath -d dest_dir -s src_dir -b custom-client.xml http://localhost:8080/jax-ws-fromwsdl/addnumbers?WSDL<br></pre>
+<p>For more details see the <code>wsimport</code> <a
+ href="wsimport.html">tool</a> documentation.</p>
+<p>Here is the excerpt from <code><a
+ href="../samples/fromwsdl/src/fromwsdl/client/AddNumbersClient.java">fromwsdl.client.AddNumbersClient.java</a></code>
+in the <code>fromjava</code> sample application:</p>
+<pre>//create the service factory<br>ServiceFactory serviceFactory = ServiceFactory.newInstance();<br><br>//load the service implementation class<br>AddNumbersService service = (AddNumbersService)serviceFactory.createService((java.net.URL)null, AddNumbersService.class);<br><br>//get instance of generated stub<br>AddNumbersPortType port = service.getAddNumbersPort();<br><br>//invoke the remote method<br>int result = port.addNumbers(10, 20);<br></pre>
+<h4><a class="mozTocH4" name="mozTocId109612"></a><a
+ name="2.2.2_Dispatch" id="2.2.2_Dispatch"></a>3.2.2 Dispatch</h4>
+<p>The Dispatch API is intended for advanced XML developers who prefer
+using XML constructs at the <code>java.lang.transform.Source</code> or
+<code>javax.xml.soap.SOAPMessage</code> level. For added convenience
+use of Dispatch with JAXB data binding object is supported. The
+Dispatch APIs can be used in both <code>Message</code> and <code>Payload</code>
+modes.</p>
+<p>For more information on Dispatch in JAX-WS 2.0 please refer to <a
+ href="dispatch.html">JAX-WS 2.0 Dispatch</a>.</p>
+<h2><a class="mozTocH2" name="mozTocId887457"></a><a
+ name="3._Useful_Information" id="3._Useful_Information"></a>4.
+Useful Information</h2>
+<p><a href="http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html">Annotation
+Processing Tool (apt)</a> &#8211;
+http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html.</p>
+<p>Please use the <a
+ href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
+2.0 and JAXRPC 2.0</a> forum for feedback.</p>
+<p>The JAX-WS and JAX-RPC project on Java.net is: <a href="">http://jax-rpc.dev.java.net</a>.</p>
+<hr>
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
+Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>
