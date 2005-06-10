@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.18 2005-06-09 18:54:48 arungupta Exp $
+ * $Id: WSDLGenerator.java,v 1.19 2005-06-10 02:18:49 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -76,6 +76,7 @@ public class WSDLGenerator {
     public static final String RESPONSE         = "Response";
     public static final String PARAMETERS       = "parameters";
     public static final String RESULT           = "parameters";
+    public static final String UNWRAPPABLE_RESULT  = "result";
     public static final String WSDL_NAMESPACE   = "http://schemas.xmlsoap.org/wsdl/";
     public static final String WSDL_PREFIX      = "wsdl";
     public static final String XSD_NAMESPACE    = "http://www.w3.org/2001/XMLSchema";
@@ -83,7 +84,7 @@ public class WSDLGenerator {
     public static final String SOAP11_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/soap/";
     public static final String SOAP12_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/soap12/";
     public static final String SOAP_PREFIX      = "soap";
-    public static final String SOAP12_PREFIX      = "soap12";
+    public static final String SOAP12_PREFIX    = "soap12";
     public static final String TNS_PREFIX       = "tns";
     public static final String BINDING          = "Binding";
     public static final String SOAP_HTTP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
@@ -170,8 +171,11 @@ public class WSDLGenerator {
         Message message = definitions.message().name(method.getOperationName());
         com.sun.xml.ws.wsdl.writer.document.Part part;
         JAXBRIContext jaxbContext = model.getJAXBContext();
+        boolean unwrappable = true;
         for (Parameter param : method.getRequestParameters()) {
             if (isDoclit) {
+                if (isHeaderParameter(param))
+                    unwrappable = false;
                 if (param.isWrapperStyle()) {
                     part = message.part().name(PARAMETERS);
                     part.element(param.getName());
@@ -191,12 +195,22 @@ public class WSDLGenerator {
                 }
             }
         }                
-
         message = definitions.message().name(method.getOperationName()+RESPONSE);
+        if (unwrappable) {
+            for (Parameter param : method.getResponseParameters()) {
+               if (isHeaderParameter(param))
+                   unwrappable = false;
+            }
+        }
+
         for (Parameter param : method.getResponseParameters()) {
             if (isDoclit) {
                 if (param.isWrapperStyle()) {
-                    part = message.part().name(RESULT);
+                    // if its not really wrapper style dont use the same name as input message                    
+                    if (unwrappable)
+                        part = message.part().name(RESULT);
+                    else
+                        part = message.part().name(UNWRAPPABLE_RESULT);
                     part.element(param.getName());
                 } else {
                     part = message.part().name(param.getName().getLocalPart());
@@ -305,22 +319,28 @@ public class WSDLGenerator {
         boolean isWrapperStyle = isWrapperStyle(method);
         int i = 0;
         for (Parameter parameter : sortedParams) {
+//            System.out.println("param: "+parameter.getIndex()+" name: "+parameter.getName().getLocalPart());
             if (parameter.getIndex() < 0)
                 continue;
             if (isWrapperStyle && isBodyParameter(parameter)) {
+//                System.out.println("isWrapper and is body");
                 if (method.getRequestParameters().contains(parameter))
                     partName = PARAMETERS;
-                else
+                else {
+                    // really make sure this is a wrapper style wsdl we are creating
                     partName = RESPONSE;
+                }
             } else {
                partName = parameter.getName().getLocalPart();
             }
+//            System.out.println("partName: "+ partName);
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
                     paramOrder += " ";
                 paramOrder += partName;
                 partNames.add(partName);
             }
+//            System.out.println("paramOrder: "+paramOrder);
         }
         if (i>1) {
             operation.parameterOrder(paramOrder);
@@ -354,11 +374,16 @@ public class WSDLGenerator {
             return sortedParams;
         Parameter param = params.next();
         sortedParams.add(param);
+        Parameter sortedParam;
         int pos;
         for (int i=1; i<paramSet.size();i++) {
             param = params.next();
             for (pos=0; pos<i; pos++) {
-                if (param.getIndex() < sortedParams.get(pos).getIndex()) {
+                sortedParam = sortedParams.get(pos);
+                if (param.getIndex() == sortedParam.getIndex() &&
+                    param instanceof WrapperParameter)
+                    break;
+                if (param.getIndex() < sortedParam.getIndex()) {
                     break;
                 }
             }            
@@ -461,10 +486,12 @@ public class WSDLGenerator {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
             }
+            boolean unwrappable = headerParams.size() == 0;
             // output
             bodyParams.clear();
             headerParams.clear();
             splitParameters(bodyParams, headerParams, method.getResponseParameters());
+            unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;
             TypedXmlWriter output = operation.output();
             body = output._element(Body.class);
             body.use(LITERAL);
@@ -480,7 +507,11 @@ public class WSDLGenerator {
                     }
                     body.parts(parts);
                 } else if (param.isWrapperStyle()) {
-                    body.parts(RESULT);
+                    // if its not really wrapper style dont use the same name as input message
+                    if (unwrappable)
+                        body.parts(RESULT);
+                    else
+                        body.parts(UNWRAPPABLE_RESULT);
                 } else {
                     body.parts(param.getName().getLocalPart());
                 }
@@ -543,10 +574,13 @@ public class WSDLGenerator {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
             }
+            boolean unwrappable = headerParams.size() == 0;
+            
             // output
             bodyParams.clear();
             headerParams.clear();
             splitParameters(bodyParams, headerParams, method.getResponseParameters());
+            unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;            
             TypedXmlWriter output = operation.output();
             body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
             body.use(LITERAL);
@@ -562,7 +596,11 @@ public class WSDLGenerator {
                     }
                     body.parts(parts);
                 } else if (param.isWrapperStyle()) {
-                    body.parts(RESULT);
+                    // if its not really wrapper style dont use the same name as input message
+                    if (unwrappable)
+                        body.parts(RESULT);
+                    else
+                        body.parts(UNWRAPPABLE_RESULT);
                 } else {
                     body.parts(param.getName().getLocalPart());
                 }
