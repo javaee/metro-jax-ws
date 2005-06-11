@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.11 2005-06-08 19:04:51 spericas Exp $
+ * $Id: SOAPEncoder.java,v 1.12 2005-06-11 02:30:07 jitu Exp $
  */
 
 /*
@@ -58,6 +58,7 @@ import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.util.DOMUtil;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -81,10 +82,10 @@ public abstract class SOAPEncoder implements Encoder {
     public DOMSource toDOMSource(JAXBBridgeInfo bridgeInfo, MessageInfo messageInfo) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        DOMResult domResult = new DOMResult();
+        Document doc = DOMUtil.createDom();
         JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext,
-            domResult.getNode());
-        return new DOMSource(domResult.getNode());
+            doc);
+        return new DOMSource(doc);
     }
 
     public DOMSource toDOMSource(RpcLitPayload rpcLitPayload, MessageInfo messageInfo) {
