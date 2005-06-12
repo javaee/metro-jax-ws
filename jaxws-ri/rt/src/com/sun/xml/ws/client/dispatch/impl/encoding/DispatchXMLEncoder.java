@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.5 2005-06-09 15:51:32 kwalsh Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.6 2005-06-12 19:07:14 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,11 +7,9 @@
 
 package com.sun.xml.ws.client.dispatch.impl.encoding;
 
-import javax.xml.stream.XMLStreamWriter;
-
 import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.transport.Connection;
 import com.sun.pept.presentation.MessageStruct;
+import com.sun.pept.transport.Connection;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
@@ -25,6 +23,7 @@ import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
@@ -163,10 +162,6 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         SOAPMessage soapMessage = messageContext.createMessage();
         MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
 
-
-        boolean acceptPropertySet = false;
-        boolean encodingPropertySet = false;
-        //this needs to be jaxwscontext
         ContextMap ocontext =
             (ContextMap) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
         ContextMap context = ((RequestContext) ocontext).copy();
@@ -176,104 +171,6 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
 
         if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
             messageContext.put(BindingProviderProperties.ONE_WAY_OPERATION, "true");
-
-        /*
-        // process the properties
-        //todo: properties - ? BindingProvider ? need to set transport
-
-        Object username = context.getProperty(BindingProvider.USERNAME_PROPERTY);
-        if (username != null) {
-            messageContext.setProperty(BindingProvider.USERNAME_PROPERTY, username);
-        }
-        Object password = context.getProperty(BindingProvider.PASSWORD_PROPERTY);
-        if (password != null) {
-            messageContext.setProperty(BindingProvider.PASSWORD_PROPERTY, password);
-        }
-        Object endpoint = context.getProperty(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
-        if (endpoint != null) {
-            messageContext.setProperty(Call.ENDPOINT_ADDRESS_PROPERTY, endpoint);
-        }
-        Object operation = context.getProperty(Call.OPERATION_STYLE_PROPERTY);
-        if (operation != null) {
-            messageContext.setProperty(Call.OPERATION_STYLE_PROPERTY, operation);
-        }
-
-        //this is required properties
-        Boolean isSOAPActionUsed =
-                (Boolean) context.getProperty(BindingProvider.SOAPACTION_USE_PROPERTY);
-        if (isSOAPActionUsed != null) {
-            if (isSOAPActionUsed.booleanValue()) {
-                messageContext.setProperty(HTTP_SOAPACTION_PROPERTY,
-                        context.getProperty(BindingProvider.SOAPACTION_URI_PROPERTY));
-            }
-        }
-
-        Object encoding = context.getProperty(Call.ENCODINGSTYLE_URI_PROPERTY);
-        if (encoding != null) {
-            messageContext.setProperty(Call.ENCODINGSTYLE_URI_PROPERTY, encoding);
-        }
-
-        Object verification = context.getProperty(HOSTNAME_VERIFICATION_PROPERTY);
-        if (verification != null) {
-            messageContext.setProperty(HOSTNAME_VERIFICATION_PROPERTY,
-                    verification);
-        }
-
-        Object maintainSession =
-                context.getProperty(BindingProvider.SESSION_MAINTAIN_PROPERTY);
-        if (maintainSession != null) {
-            messageContext.setProperty(BindingProvider.SESSION_MAINTAIN_PROPERTY,
-                    maintainSession);
-        }
-        if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
-            Object cookieJar =
-                    context.getProperty(BindingProviderProperties.HTTP_COOKIE_JAR);
-            if (cookieJar != null)
-                messageContext.setProperty(BindingProviderProperties.HTTP_COOKIE_JAR,
-                        cookieJar);
-        }
-
-        String encodingProp = (String)
-                context.getProperty(XMLFAST_ENCODING_PROPERTY);
-
-        if (encodingProp != null) {
-            encodingPropertySet = true;
-            if (encodingProp.equals(FAST_ENCODING_VALUE)) {
-                mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
-            } else {
-                mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
-            }
-        } else {    // default is XML encoding
-            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-        }
-
-        String accept = (String) context.getProperty(ACCEPT_ENCODING_PROPERTY);
-        if (accept != null) {
-            acceptPropertySet = true;
-            if (accept.equals(FAST_ENCODING_VALUE))
-                mimeHeaders.addHeader(ACCEPT_PROPERTY, FAST_ACCEPT_VALUE);
-            else
-                mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-        } else {    // default is XML encoding
-            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-        }
-
-        // default Content-Type is XML encoding
-        if (!encodingPropertySet) {
-            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
-        }
-
-        // default Accept is XML encoding
-        if (!acceptPropertySet) {
-            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-        }
-
-        //need to do these as well
-        //(SECURITY_CONTEXT);
-        //
-        //temp.add(CallPropertyConstants.SET_ATTACHMENT_PROPERTY);
-        //temp.add(CallPropertyConstants.GET_ATTACHMENT_PROPERTY);
-        */
         messageContext.setMessage(soapMessage);
         ClientTransportFactory clientTransportFactory = null;
         if (clientTransportFactory == null)

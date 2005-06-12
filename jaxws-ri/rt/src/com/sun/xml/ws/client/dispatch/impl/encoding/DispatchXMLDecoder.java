@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.7 2005-06-09 15:51:32 kwalsh Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.8 2005-06-12 19:07:14 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -37,7 +37,6 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import org.w3c.dom.Document;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -64,6 +63,7 @@ import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
@@ -97,12 +97,22 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
     public DispatchXMLDecoder() {
         dispatchSerializer = DispatchSerializer.getInstance();
     }
-
+     private void displayDOM(org.w3c.dom.Node node, java.io.OutputStream ostream) {
+        try {
+            System.out.println("\n====\n");
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(
+                new javax.xml.transform.dom.DOMSource(node),
+                new javax.xml.transform.stream.StreamResult(ostream));
+            System.out.println("\n====\n");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-        XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
+        XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
         int state = XMLStreamReaderUtil.nextElementContent(reader);
-
         // if Body is not empty, then deserialize the Body
         if (state != END_ELEMENT) {
             BodyBlock responseBody = null;
@@ -468,6 +478,37 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
 
         return detail;
     }
+   /* public InternalMessage toInternalMessage(SOAPMessage soapMessage, MessageInfo messageInfo) {
+        // TODO handle exceptions, attachments
+        XMLStreamReader reader = null;
+        try {
+            InternalMessage response = new InternalMessage();
+            //processAttachments(messageInfo, response, soapMessage);
+            //Source source = soapMessage.getSOAPPart().getContent();
+            SOAPPart sp = soapMessage.getSOAPPart();
+            SOAPEnvelope se = sp.getEnvelope();
+            SOAPBody sb = se.getBody();
+            SOAPHeader sh = se.getHeader();
+            //decodeBody(sb)
+
+            //reader = SourceReaderFactory.createSourceReader(source, true);
+            //XMLStreamReaderUtil.nextElementContent(reader);
+            //decodeEnvelope(reader, response, false, messageInfo);
+            return response;
+        } catch (Exception e) {
+            // TODO
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                XMLStreamReaderUtil.close(reader);
+            }
+        }
+        return null;
+
+    }
+     */
+
+
 
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         if (jc == null) {

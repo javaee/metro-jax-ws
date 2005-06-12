@@ -85,7 +85,7 @@ public class Dispatch12Serializer {
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
                             // namespace declaration for the element is written during previous writeElement
-                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart())) {
+                            if (name.getPrefix().equals(atts.getName(i).getLocalPart())) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
                                 writer.setPrefix(localName, value);
