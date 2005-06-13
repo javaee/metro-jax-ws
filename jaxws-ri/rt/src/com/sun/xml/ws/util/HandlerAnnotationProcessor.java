@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.3 2005-06-02 18:41:20 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.4 2005-06-13 19:10:25 bbissett Exp $
  */
 
 /*
@@ -9,6 +9,8 @@
 package com.sun.xml.ws.util;
 
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,9 +55,7 @@ public class HandlerAnnotationProcessor {
             throw new UtilException(
                 "util.handler.cannot.combine.soapmessagehandlers");
         }
-        String fileName = handlerChain.file();
-        InputStream iStream =
-            clazz.getResourceAsStream(fileName);
+        InputStream iStream = getFileAsStream(clazz, handlerChain);
         XMLStreamReader reader =
             XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
@@ -221,4 +221,23 @@ public class HandlerAnnotationProcessor {
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
+    static InputStream getFileAsStream(Class clazz, HandlerChain chain) {
+        URL url = clazz.getResource(chain.file());
+        if (url == null) {
+            String tmp = clazz.getPackage().toString();
+            tmp = tmp.replace('.', '/');
+            tmp += "/" + chain.file();
+            url = clazz.getResource(tmp);
+        }
+        if (url == null) {
+            throw new UtilException("util.failed.to.find.handlerchain.file",
+                new Object[] {clazz.getName(), chain.file()});
+        }
+        try {
+            return url.openStream();
+        } catch (IOException e) {
+            throw new UtilException("util.failed.to.parse.handlerchain.file",
+                new Object[] {clazz.getName(), chain.file()});
+        }
+    }
 }
