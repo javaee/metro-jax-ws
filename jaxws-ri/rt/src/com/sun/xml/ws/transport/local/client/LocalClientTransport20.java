@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.3 2005-06-07 01:54:43 vivekp Exp $
+ * $Id: LocalClientTransport20.java,v 1.4 2005-06-13 19:25:27 vivekp Exp $
  */
 
 /*
@@ -21,6 +21,7 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.ws.client.ClientTransport;
 import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.client.BindingImpl;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
@@ -113,13 +114,17 @@ public class LocalClientTransport20 implements ClientTransport {
             ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
             MimeHeaders headers = context.getMessage().getMimeHeaders();
             String [] header = headers.getHeader("Content-Type");
-            String bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-            if(headers != null && header.length > 0){
-                String ct = header[0];
-                if(ct.equals("application/soap+xml; charset=utf-8") || ct.equals("application/xop+xml;type=\"application/soap+xml\" charset=utf-8"))
-                    bindingId = SOAPBinding.SOAP12HTTP_BINDING;
-            }
 
+            // We dont have client side binding id, so will get it from the serverside. for now lets assume the
+            // client and server side binding ids are same!
+            //TODO: pass client side binding id
+            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
+//            if(headers != null && header.length > 0){
+//                String ct = header[0];
+//                if(ct.equals("application/soap+xml; charset=utf-8") || ct.equals("application/xop+xml;type=\"application/soap+xml\" charset=utf-8"))
+//                    bindingId = SOAPBinding.SOAP12HTTP_BINDING;
+//            }
+//
 
             SOAPMessage message =
                     context.createMessage(context.getMessage().getMimeHeaders(),

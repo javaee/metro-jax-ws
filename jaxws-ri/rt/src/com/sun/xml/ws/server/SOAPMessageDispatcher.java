@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.2 2005-06-02 17:53:14 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.3 2005-06-13 19:25:26 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -103,10 +103,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 soapMessage = context.getSOAPMessage();
                 if (soapMessage == null) {
                     InternalMessage internalMessage = context.getInternalMessage();
-                    //LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-                    //SOAPEncoder encoder = eptf.getSOAPEncoder();
-                    EPTFactory eptf = messageInfo.getEPTFactory();
-                    SOAPEncoder encoder = (SOAPEncoder)eptf.getEncoder(messageInfo);
+                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEncoder encoder = eptf.getSOAPEncoder();
                     soapMessage = encoder.toSOAPMessage(internalMessage, messageInfo);
                 }
                 sendResponse(messageInfo, soapMessage);
