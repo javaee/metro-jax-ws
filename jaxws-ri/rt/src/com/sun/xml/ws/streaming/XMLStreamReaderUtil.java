@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.3 2005-06-02 20:27:53 jitu Exp $
+ * $Id: XMLStreamReaderUtil.java,v 1.4 2005-06-13 21:01:27 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -90,29 +90,35 @@ public class XMLStreamReaderUtil {
         }
     }    
     
+    /**
+     * Skip current element, leaving the cursor at END_ELEMENT of
+     * current element.
+     */
     public static void skipElement(XMLStreamReader reader) {
-        try {
-            int state = reader.next();
-            while (state != END_DOCUMENT && 
-                    state != END_ELEMENT) {
-                state = reader.next();
-            }
-        }
-        catch (XMLStreamException e) {
-            throw wrapException(e);
-        }        
+        assert reader.getEventType() == START_ELEMENT;
+        skipTags(reader, true);        
+        assert reader.getEventType() == END_ELEMENT;
     }
     
-    public static void skipSiblings(XMLStreamReader reader) {
+    /**
+     * Skip following siblings, leaving cursor at END_ELEMENT of
+     * parent element.
+     */
+    public static void skipSiblings(XMLStreamReader reader, QName parent) {
+        skipTags(reader, reader.getName().equals(parent));        
+        assert reader.getEventType() == END_ELEMENT;
+    }
+    
+    private static void skipTags(XMLStreamReader reader, boolean exitCondition) {
         try {
-            int state, openTags = 0;
+            int state, tags = 0;
             while ((state = reader.next()) != END_DOCUMENT) {
                 if (state == START_ELEMENT) {
-                    openTags++;     // new sibling
+                    tags++;
                 }
                 else if (state == END_ELEMENT) {
-                    if (openTags == 0) return;
-                    openTags--;     // end sibling
+                    if (tags == 0 && exitCondition) return;
+                    tags--;
                 }
             }
         }
@@ -120,7 +126,7 @@ public class XMLStreamReaderUtil {
             throw wrapException(e);
         }
     }
-    
+        
     /*
      * Get the text of an element
      */
