@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.8 2005-06-12 19:07:14 kwalsh Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.9 2005-06-13 21:00:29 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -346,15 +346,11 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                     Map<QName, Class> typeMapping = null;//getTypeMapping();
                     faultdetail = JAXBTypeSerializer.getInstance().deserialize(reader, jaxbContext);
 
-                    // all the siblings are assigned the same elementID, though
-                    // not at the same time. the parent is assigned elementID
-                    // one less than the child.
-
-                    // this will skip the subsequent detail entries
-                    // and position the reader at </detail>
+                    // Position the reader at </detail>
                     elementName = reader.getName();
                     if (!elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
-                        XMLStreamReaderUtil.skipSiblings(reader);
+                        XMLStreamReaderUtil.skipSiblings(reader, 
+                            SOAPConstants.QNAME_SOAP_FAULT_DETAIL);
                     }
                 } else {
                     faultdetail = decodeFaultDetail(reader);

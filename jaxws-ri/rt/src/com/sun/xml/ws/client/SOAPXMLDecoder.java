@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.8 2005-06-09 15:51:31 kwalsh Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.9 2005-06-13 20:59:35 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -285,15 +285,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                         faultdetail = bridgeInfo;
                     }
 
-                    // all the siblings are assigned the same elementID, though
-                    // not at the same time. the parent is assigned elementID
-                    // one less than the child.
-
-                    // this will skip the subsequent detail entries
-                    // and position the reader at </detail>
+                    // Position the reader at </detail>
                     elementName = reader.getName();
                     if (!elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
-                        XMLStreamReaderUtil.skipSiblings(reader);
+                        XMLStreamReaderUtil.skipSiblings(reader, 
+                            SOAPConstants.QNAME_SOAP_FAULT_DETAIL);
                     }
                 } else {
                     faultdetail = decodeFaultDetail(reader);
