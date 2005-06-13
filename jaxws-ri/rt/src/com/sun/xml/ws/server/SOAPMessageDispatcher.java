@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.3 2005-06-13 19:25:26 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.4 2005-06-13 23:19:59 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -390,7 +390,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         SOAPHeader header = message.getSOAPHeader();
         if (header != null) {
             //TODO remove, we dont want enc/dec to have any state
-            rtCtxt.setMethodAndMEP(null, context.getMessageInfo());            
+            //rtCtxt.setMethodAndMEP(null, context.getMessageInfo());            
             checkMustUnderstandHeaders(mi, context, header);
         }
 
@@ -453,7 +453,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         // keep set=null if there are no understood headers
         Set<QName> understoodHeaders = null;
-        if (((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders() != null) {
+        SOAPRuntimeModel model = (SOAPRuntimeModel)rtCtxt.getModel();
+        if (model != null && model.getKnownHeaders() != null) {
             understoodHeaders =
                 new HashSet<QName>(((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders());
         }
