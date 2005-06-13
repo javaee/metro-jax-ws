@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.2 2005-06-02 17:53:14 vivekp Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.3 2005-06-13 20:21:24 jitu Exp $
  */
 
 /*
@@ -45,9 +45,6 @@ public class SOAPConnectionUtil {
             return ((SOAPConnection)con).getSOAPMessage();
         }
         try {
-            ByteBuffer buf = con.readUntilEnd();
-            ByteInputStream bis = new ByteInputStream(buf.array(),
-                buf.array().length);
             Map<String, List<String>> headers = con.getHeaders();
             MimeHeaders mh = new MimeHeaders();
             for(Map.Entry<String, List<String>> entry : headers.entrySet()) {
@@ -60,7 +57,7 @@ public class SOAPConnectionUtil {
             RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
             String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
             SOAPMessage soapMessage =  (new SOAPMessageContext()).createMessage(
-                mh, bis, bindingId);
+                mh, con.getInput(), bindingId);
             return soapMessage;
         } catch(Exception e) {
             throw new WebServiceException(e);
@@ -73,10 +70,7 @@ public class SOAPConnectionUtil {
             return;
         }
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             soapMessage.saveChanges();
-            soapMessage.writeTo(baos);
-            ByteBuffer buf = ByteBuffer.wrap(baos.toByteArray());
 
             Map<String, List<String>> headers = new HashMap<String, List<String>>();
             MimeHeaders mhs = soapMessage.getMimeHeaders();
@@ -91,10 +85,9 @@ public class SOAPConnectionUtil {
                 }
                 values.add(mh.getValue());
             }
-
             con.setStatus(STATUS.OK);
             con.setHeaders(headers);
-            con.write(buf);
+            soapMessage.writeTo(con.getOutput());
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
@@ -112,7 +105,7 @@ public class SOAPConnectionUtil {
         }
         ByteBuffer buf = ByteBuffer.wrap(new byte[0]);
         setStatus(con, STATUS.ONEWAY);
-        con.write(buf);
+        //con.write(buf);
     }
         
     public static void sendResponseError(JaxrpcConnection con) {

@@ -1,5 +1,5 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.1 2005-05-23 23:02:26 bbissett Exp $
+ * $Id: LocalConnectionImpl.java,v 1.2 2005-06-13 20:21:25 jitu Exp $
  */
 
 /*
@@ -31,9 +31,8 @@ import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
 import com.sun.xml.ws.transport.http.server.MessageContextProperties;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -149,6 +148,14 @@ public class LocalConnectionImpl implements JaxrpcConnection, SOAPConnection
                     
     public SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
         throw new UnsupportedOperationException();
+    }
+    
+    public InputStream getInput() {
+        return null;
+    }
+    
+    public OutputStream getOutput() {
+        return null;
     }
 
 }

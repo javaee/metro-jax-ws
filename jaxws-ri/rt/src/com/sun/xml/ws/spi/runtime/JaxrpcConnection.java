@@ -1,5 +1,5 @@
 /**
- * $Id: JaxrpcConnection.java,v 1.1 2005-05-23 22:54:49 bbissett Exp $
+ * $Id: JaxrpcConnection.java,v 1.2 2005-06-13 20:21:25 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,9 +7,11 @@
 package com.sun.xml.ws.spi.runtime;
 
 import com.sun.pept.transport.Connection;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-import com.sun.xml.ws.spi.runtime.*;
+
 
 /**
  * Captures many transports that are used to talk with JAXRPC endpoints.
@@ -48,4 +50,9 @@ public interface JaxrpcConnection extends Connection {
      */
     public void setHeaders(Map<String,List<String>> headers);
     public void setStatus(STATUS status);
+    
+    public InputStream getInput();
+    
+    public OutputStream getOutput();
+
 }

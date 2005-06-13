@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.1 2005-05-23 23:01:40 bbissett Exp $
+ * $Id: ServletConnectionImpl.java,v 1.2 2005-06-13 20:21:25 jitu Exp $
  */
 
 /*
@@ -52,27 +52,7 @@ public class ServletConnectionImpl implements JaxrpcConnection {
     }
 
     public void write(ByteBuffer byteBuffer) {
-        try {
-            // write HTTP status code, and headers
-            response.setStatus(getStatusCode());
-            if (responseHeaders != null) {
-                for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
-                    String name = entry.getKey();
-                    List<String> values = entry.getValue();
-                    for(String value : values) {
-                        response.setHeader(name, value);
-                    }
-                }
-            }
-            // write the content
-            OutputStream os = response.getOutputStream();
-            byte[] data = byteBuffer.array();
-            int offset = byteBuffer.arrayOffset();
-            int length = byteBuffer.limit()-byteBuffer.position();
-            os.write(data, offset, length);
-        } catch(IOException ie) {
-            ie.printStackTrace();
-        }
+
     }
     
     public EPTFactory getEPTFactory() {
@@ -84,32 +64,13 @@ public class ServletConnectionImpl implements JaxrpcConnection {
      * @see com.sun.pept.transport.Connection#readUntilEnd()
      */
     public ByteBuffer readUntilEnd() {
-        try {
-            InputStream is = request.getInputStream();
-            byte[] bytes = readFully(is);
-            int length =
-                request.getContentLength() == -1
-                    ? bytes.length
-                    : request.getContentLength();
-            return ByteBuffer.wrap(bytes, 0, length);
-        } catch (IOException ie) {
-            ie.printStackTrace();
-        }
+
         return null;
     }
 
     protected static byte[] readFully(InputStream istream) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num = 0;
 
-        if (istream != null) {
-            while ((num = istream.read(buf)) != -1) {
-                bout.write(buf, 0, num);
-            }
-        }
-        byte[] ret = bout.toByteArray();
-        return ret;
+        return null;
     }
     
     public Map<String,List<String>> getHeaders() {
@@ -158,6 +119,35 @@ public class ServletConnectionImpl implements JaxrpcConnection {
                 return HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
         return HttpURLConnection.HTTP_OK;
+    }
+    
+    public InputStream getInput() {
+        try {
+            return request.getInputStream();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return null;
+    }
+    
+    public OutputStream getOutput() {
+        // write HTTP status code, and headers
+        response.setStatus(getStatusCode());
+        if (responseHeaders != null) {
+            for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
+                String name = entry.getKey();
+                List<String> values = entry.getValue();
+                for(String value : values) {
+                    response.setHeader(name, value);
+                }
+            }
+        }
+        try {
+            return response.getOutputStream();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return null;
     }
 
 }
