@@ -1,5 +1,5 @@
 /*
- * $Id: UtilException.java,v 1.1 2005-06-02 14:32:49 bbissett Exp $
+ * $Id: UtilException.java,v 1.2 2005-06-13 19:37:56 bbissett Exp $
  */
 
 /*
@@ -43,7 +43,7 @@ public class UtilException extends JAXWSExceptionBase {
     }
 
     public String getResourceBundleName() {
-        return "com.sun.xml.ws.util";
+        return "com.sun.xml.ws.resources.util";
     }
 
 }
