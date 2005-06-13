@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.5 2005-06-08 05:21:26 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.6 2005-06-13 23:59:57 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -156,7 +156,6 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             return;
         }else if(jm.isAsync() && ((bBlocks+hBlocks) == 1)){
             //there is only 1 response part
-            Object resp = createAsyncResponseClass(iter.next());
             Object value = null;
             if(bodyValue instanceof RpcLitPayload){
                 RpcLitPayload payload = (RpcLitPayload)bodyValue;
@@ -168,17 +167,15 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 value = ((JAXBBridgeInfo)bodyValue).getValue();
             }
 
-            if(value != null && resp.getClass().isAssignableFrom(value.getClass())){
-                resp = value;
-                mi.setResponse(resp);
+            if(value != null){
+                mi.setResponse(value);
                 return;
             }
 
             for(HeaderBlock hb : im.getHeaders()){
                 value = ((JAXBBridgeInfo)hb.getValue()).getValue();
-                if(value != null && resp.getClass().isAssignableFrom(value.getClass())){
-                    resp = value;
-                    mi.setResponse(resp);
+                if(value != null){
+                    mi.setResponse(value);
                     return;
                 }
             }
