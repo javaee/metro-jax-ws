@@ -1,8 +1,8 @@
 /*
- * $Id: SOAPDecoder.java,v 1.7 2005-06-04 01:48:10 vivekp Exp $
+ * $Id: SOAPDecoder.java,v 1.8 2005-06-13 22:08:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
- * All rights reserved. 
+ * All rights reserved.
  */
 
 package com.sun.xml.ws.encoding.soap;
@@ -71,7 +71,7 @@ public abstract class SOAPDecoder implements Decoder {
                     MessageInfo messageInfo) {
             return null;
     }
-    
+
     /**
      * Parses and binds headers from SOAPMessage.
      * @param soapMessage
@@ -113,7 +113,7 @@ public abstract class SOAPDecoder implements Decoder {
      * skipBody is true, the body is skipped during parsing.
      */
     protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
-            boolean skipBody, MessageInfo messageInfo) 
+            boolean skipBody, MessageInfo messageInfo)
     {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
@@ -129,9 +129,9 @@ public abstract class SOAPDecoder implements Decoder {
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
     }
-    
+
     protected void decodeHeader(XMLStreamReader reader, MessageInfo messageInfo,
-        InternalMessage request) 
+        InternalMessage request)
     {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
@@ -155,8 +155,8 @@ public abstract class SOAPDecoder implements Decoder {
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
      */
-    private void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
-        InternalMessage msg) 
+    protected void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
+        InternalMessage msg)
     {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
@@ -182,9 +182,9 @@ public abstract class SOAPDecoder implements Decoder {
             XMLStreamReaderUtil.nextElementContent(reader);
         }
     }
-    
-    protected void decodeBody(XMLStreamReader reader, InternalMessage response, 
-            MessageInfo messageInfo) 
+
+    protected void decodeBody(XMLStreamReader reader, InternalMessage response,
+            MessageInfo messageInfo)
     {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
@@ -194,9 +194,9 @@ public abstract class SOAPDecoder implements Decoder {
         XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
-    protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, 
-            MessageInfo messageInfo) 
+
+    protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response,
+            MessageInfo messageInfo)
     {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
@@ -227,10 +227,10 @@ public abstract class SOAPDecoder implements Decoder {
             }
         }
     }
-    
+
     public void decodeDispatchMethod(XMLStreamReader reader, InternalMessage request, MessageInfo messageInfo) {
     }
-    
+
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
         MessageInfo messageInfo) {
         return null;
@@ -318,7 +318,7 @@ public abstract class SOAPDecoder implements Decoder {
     private void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(faultCode, faultString, null, null);
     }
-    
+
     private final static String DUPLICATE_HEADER =
         "Duplicate Header in the message:";
 

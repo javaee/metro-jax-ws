@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.5 2005-06-09 15:51:31 kwalsh Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.6 2005-06-13 22:08:20 kwalsh Exp $
  */
 
 /*
@@ -244,7 +244,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
      */
-    private void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
+    protected void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
         InternalMessage msg)
     {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);

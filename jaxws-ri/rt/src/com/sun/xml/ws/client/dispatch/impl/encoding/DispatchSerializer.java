@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.7 2005-06-13 15:35:18 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.8 2005-06-13 22:08:21 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -83,24 +83,19 @@ public class DispatchSerializer {
                     case START_ELEMENT:
                         QName name = reader.getName();
                         writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
+                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
-                                // namespace declaration for the element is written during previous writeElement
                                 if (!(name.getPrefix().equals(atts.getName(i).getLocalPart()))) {
                                     writer.setPrefix(localName, value);
                                     writer.writeNamespace(localName, value);
-                                } else {
-                                    if (name.getPrefix().equals("")) {
-                                        writer.setPrefix(localName, value);
-                                        writer.writeNamespace(localName, value);
-                                    }
                                 }
                             } else {
-                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getURI(i), atts.getLocalName(i), atts.getValue(i));
                             }
                         }
                         break;

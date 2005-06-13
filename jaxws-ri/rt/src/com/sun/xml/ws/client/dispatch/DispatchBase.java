@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.5 2005-06-09 15:51:31 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.6 2005-06-13 22:08:21 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -302,8 +302,10 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                         ((SOAPFaultException) response).getFaultString(), (Exception) response);
                 } else
                 //before invocation
+                    if (response instanceof Exception)
                     throw new WebServiceException(((Exception) response).getMessage(),
                         (Exception) response);
+                    return response;
             default:
                 if (response != null) //must be some kind of exception
                     throw new WebServiceException("Client side exception - examine cause ", (Exception) response);

@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLDecoder.java,v 1.9 2005-06-13 21:00:29 spericas Exp $
+ * $Id: DispatchXMLDecoder.java,v 1.10 2005-06-13 22:08:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -168,7 +168,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
     /*
      * skipBody is true, the body is skipped during parsing.
      */
-    protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
+  /*  protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
             boolean skipBody, MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_ENVELOPE);
@@ -185,69 +185,13 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
         XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
     }
 
-    protected void decodeHeader(XMLStreamReader reader, InternalMessage request) {
-        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-        if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
-            return;
-        }
-        XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_HEADER);
-        XMLStreamReaderUtil.nextElementContent(reader);
-        while (true) {
-            if (reader.getEventType() == START_ELEMENT) {
-                decodeHeaderElement(reader, request);
-            } else {
-                break;
-            }
-        }
-        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
-        XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_HEADER);
-        XMLStreamReaderUtil.nextElementContent(reader);
-    }
+   */
 
     /*
      * If JAXB can deserialize a header, deserialize it.
      * Otherwise, just ignore the header
      */
-    private void decodeHeaderElement(XMLStreamReader reader, InternalMessage request) {
-        /* Set<QName> knownHeaders = getKnownHeaders();
-         QName requestHeaderName = reader.getName();
-         if (knownHeaders != null && knownHeaders.contains(requestHeaderName)) {
-             QName headerName = reader.getName();
-             if (request.isHeaderPresent(headerName)) {
-                 // More than one instance of header whose QName is mapped to a
-                 // method parameter. Generates a runtime error.
-                 raiseFault(SOAPConstants.FAULT_CODE_CLIENT, DUPLICATE_HEADER+headerName);
-             }
-             JAXBContext jaxbContext = getJAXBContext();
-             // JAXB leaves on </env:Header> or <nextHeaderElement>
- //            Object jaxbBean = JAXBTypeSerializer.getInstance().deserialize(reader,
- //                    jaxbContext);
-             if (reader.getState() == XMLReader.START){
-                 QName name = reader.getName(); // header block name
-                 Map<QName, Class> typeMapping = getTypeMapping();
-                 if (typeMapping != null) {
-                     Class type = typeMapping.get(name);
-                     Object jaxbType = JAXBTypeSerializer.getInstance().deserialize(
-                             type, reader, jaxbContext);
-                     HeaderBlock requestHeader = new HeaderBlock(headerName, jaxbType);
-                     request.addHeader(requestHeader);
-                 } else {
-                     //jaxb will leave reader on ending </body> element
-                     Object jaxbBean = JAXBTypeSerializer.getInstance().deserialize(
-                         reader, jaxbContext);
-                     HeaderBlock requestHeader = new HeaderBlock(headerName, jaxbBean);
-                     request.addHeader(requestHeader);
-                 }
-             }
 
- //            HeaderBlock requestHeader = new HeaderBlock(headerName, jaxbBean);
- //            request.addHeader(requestHeader);
-         } else {
-             reader.skipElement();                 // Moves to END state
-             reader.nextElementContent();
-         }
-         */
-    }
     /*  protected void decodeBody(XMLReader reader, InternalMessage response, MessageInfo messageInfo) {
           XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
           XMLReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
@@ -349,7 +293,7 @@ public class DispatchXMLDecoder extends com.sun.xml.ws.client.SOAPXMLDecoder {
                     // Position the reader at </detail>
                     elementName = reader.getName();
                     if (!elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
-                        XMLStreamReaderUtil.skipSiblings(reader, 
+                        XMLStreamReaderUtil.skipSiblings(reader,
                             SOAPConstants.QNAME_SOAP_FAULT_DETAIL);
                     }
                 } else {
