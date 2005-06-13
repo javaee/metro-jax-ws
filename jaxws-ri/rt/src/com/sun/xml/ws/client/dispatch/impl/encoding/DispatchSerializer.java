@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.6 2005-06-12 19:07:14 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.7 2005-06-13 15:35:18 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -70,35 +70,6 @@ public class DispatchSerializer {
             return jaxbSerializer.deserialize(reader, context);
         else
             return deserializeSource(reader, context);
-    }
-
-    private void displayDOM(Node node, java.io.OutputStream ostream) {
-        try {
-            System.out.println("\n====\n");
-            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(node),
-                new javax.xml.transform.stream.StreamResult(ostream));
-            System.out.println("\n====\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String sourceToXMLString(Source result) {
-        String xmlResult = null;
-        try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            OutputStream out = new ByteArrayOutputStream();
-            StreamResult streamResult = new StreamResult();
-            streamResult.setOutputStream(out);
-            transformer.transform(result, streamResult);
-            xmlResult = streamResult.getOutputStream().toString();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
-        return xmlResult;
     }
 
     private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
@@ -194,4 +165,35 @@ public class DispatchSerializer {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
     }
+
+
+    private void displayDOM(Node node, java.io.OutputStream ostream) {
+        try {
+            System.out.println("\n====\n");
+            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(node),
+                new javax.xml.transform.stream.StreamResult(ostream));
+            System.out.println("\n====\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String sourceToXMLString(Source result) {
+        String xmlResult = null;
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            OutputStream out = new ByteArrayOutputStream();
+            StreamResult streamResult = new StreamResult();
+            streamResult.setOutputStream(out);
+            transformer.transform(result, streamResult);
+            xmlResult = streamResult.getOutputStream().toString();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+        return xmlResult;
+    }
+
 }

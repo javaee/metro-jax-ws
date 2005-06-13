@@ -68,49 +68,55 @@ public class Dispatch12Serializer {
             return deserializeSource(reader, context);
     }
 
-    private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
+   private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-        try {
 
-            writer.writeStartElement(SOAP12Constants.QNAME_SOAP_BODY.getLocalPart());
-            while (!((reader.getEventType() == END_ELEMENT) &&
-                    reader.getName().equals(SOAP12Constants.QNAME_SOAP_BODY)))
-            {
-                if (reader.getEventType() == START_ELEMENT) {
-                    QName name = reader.getName();
-                    writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
-                    Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
-                    writer.flush();
-                    for (int i = 0; i < atts.getLength(); i++) {
-                        if (atts.isNamespaceDeclaration(i)) {
-                            // namespace declaration for the element is written during previous writeElement
-                            if (name.getPrefix().equals(atts.getName(i).getLocalPart())) {
+        try {
+            while (reader.hasNext()) {
+                int state = reader.getEventType();
+                switch (state) {
+                    case START_ELEMENT:
+                        QName name = reader.getName();
+                        writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
+                        Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
+                        writer.flush();
+                        for (int i = 0; i < atts.getLength(); i++) {
+                            if (atts.isNamespaceDeclaration(i)) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
-                                writer.setPrefix(localName, value);
-                                writer.writeNamespace(localName, value);
+                                // namespace declaration for the element is written during previous writeElement
+                                if (!(name.getPrefix().equals(atts.getName(i).getLocalPart()))) {
+                                    writer.setPrefix(localName, value);
+                                    writer.writeNamespace(localName, value);
+                                } else {
+                                    if (name.getPrefix().equals("")) {
+                                        writer.setPrefix(localName, value);
+                                        writer.writeNamespace(localName, value);
+                                    }
+                                }
+                            } else {
+                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                             }
-                        } else {
-                            writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
                         }
-                    }
-                } else if (reader.getEventType() == END_ELEMENT) {
-                    writer.writeEndElement();
-                } else if (reader.getEventType() == CHARACTERS) {
-                    writer.writeCharacters(reader.getText());
+                        break;
+                    case END_ELEMENT:
+                        writer.writeEndElement();
+                        break;
+                    case CHARACTERS:
+                        writer.writeCharacters(reader.getText());
                 }
-                XMLStreamReaderUtil.next(reader);
+                state = XMLStreamReaderUtil.next(reader);
+                if ((reader.getEventType() == END_ELEMENT) && (reader.getName().equals(SOAP12Constants.QNAME_SOAP_BODY)))
+                    break;
             }
-            writer.writeEndElement();    // detail
-        } catch (Exception ex){
+            writer.flush();
+            writer.close();
+        } catch (XMLStreamException ex) {
             ex.printStackTrace();
         }
-
-
         ByteArrayInputStream istream =
-                new ByteArrayInputStream(baos.toByteArray());
-
+            new ByteArrayInputStream(baos.toByteArray());
         return new StreamSource(istream);
     }
 
