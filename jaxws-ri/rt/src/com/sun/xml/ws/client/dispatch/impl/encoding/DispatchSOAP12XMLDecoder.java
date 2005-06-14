@@ -351,17 +351,15 @@ public class DispatchSOAP12XMLDecoder extends com.sun.xml.ws.client.SOAP12XMLDec
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
                         if (atts.isNamespaceDeclaration(i)) {
-                            // namespace declaration for the element is written during previous writeElement
-                            if (!name.getPrefix().equals(atts.getName(i).getLocalPart())) {
-                                String value = atts.getValue(i);
-                                String localName = atts.getName(i).getLocalPart();
-                                writer.setPrefix(localName, value);
-                                writer.writeNamespace(localName, value);
-                            }
+                            String value = atts.getValue(i);
+                            String localName = atts.getName(i).getLocalPart();
+                            writer.setPrefix(localName, value);
+                            writer.writeNamespace(localName, value);
                         } else {
-                            writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                            writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
+                                atts.getValue(i));
                         }
-                    }
+                    }                        
                 } else if (reader.getEventType() == END_ELEMENT) {
                     writer.writeEndElement();
                 } else if (reader.getEventType() == CHARACTERS) {

@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.8 2005-06-13 22:08:21 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.9 2005-06-14 13:28:46 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -85,19 +85,19 @@ public class DispatchSerializer {
                         writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
                         writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
-                        writer.flush();
+                        writer.flush();                        
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
-                                if (!(name.getPrefix().equals(atts.getName(i).getLocalPart()))) {
-                                    writer.setPrefix(localName, value);
-                                    writer.writeNamespace(localName, value);
-                                }
+                                
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
                             } else {
-                                writer.writeAttribute(atts.getURI(i), atts.getLocalName(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
+                                    atts.getValue(i));
                             }
-                        }
+                        }                        
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();

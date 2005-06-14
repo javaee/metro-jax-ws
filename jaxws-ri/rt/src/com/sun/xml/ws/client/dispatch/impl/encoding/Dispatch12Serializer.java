@@ -86,14 +86,14 @@ public class Dispatch12Serializer {
                             if (atts.isNamespaceDeclaration(i)) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
-                                if (!(name.getPrefix().equals(atts.getName(i).getLocalPart()))) {
-                                    writer.setPrefix(localName, value);
-                                    writer.writeNamespace(localName, value);
-                                }
+                                
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
                             } else {
-                                writer.writeAttribute(atts.getURI(i), atts.getLocalName(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
+                                    atts.getValue(i));
                             }
-                        }
+                        }                        
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
@@ -130,23 +130,19 @@ public class Dispatch12Serializer {
                         String prefix = elementName.getPrefix();
 
                         writer.writeStartElement(prefix, localPart, namespaceURI);
-
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
-                                // namespace declaration for the element is written during previous writeElement
-                                if (!elementName.getPrefix().equals(atts.getName(i).getLocalPart())) {
-                                    String value = atts.getValue(i);
-                                    String localName = atts.getName(i).getLocalPart();
-                                    writer.setPrefix(localName, value);
-                                    writer.writeNamespace(localName, value);
-                                }
+                                String value = atts.getValue(i);
+                                String localName = atts.getName(i).getLocalPart();
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
                             } else {
-                                writer.writeAttribute(atts.getLocalName(i), atts.getURI(i), atts.getValue(i));
+                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
+                                    atts.getValue(i));
                             }
-                        }
-                        //writeAttributes(reader.getAttributes(), namespaceURI, prefix, writer);
+                        }                        
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
