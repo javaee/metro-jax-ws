@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.19 2005-06-10 02:18:49 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.20 2005-06-14 15:59:19 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -195,39 +195,41 @@ public class WSDLGenerator {
                 }
             }
         }                
-        message = definitions.message().name(method.getOperationName()+RESPONSE);
-        if (unwrappable) {
-            for (Parameter param : method.getResponseParameters()) {
-               if (isHeaderParameter(param))
-                   unwrappable = false;
-            }
-        }
-
-        for (Parameter param : method.getResponseParameters()) {
-            if (isDoclit) {
-                if (param.isWrapperStyle()) {
-                    // if its not really wrapper style dont use the same name as input message                    
-                    if (unwrappable)
-                        part = message.part().name(RESULT);
-                    else
-                        part = message.part().name(UNWRAPPABLE_RESULT);
-                    part.element(param.getName());
-                } else {
-                    part = message.part().name(param.getName().getLocalPart());
-                    part.element(param.getName());                    
+        if (method.getMEP() != MessageStruct.ONE_WAY_MEP) {
+            message = definitions.message().name(method.getOperationName()+RESPONSE);
+            if (unwrappable) {
+                for (Parameter param : method.getResponseParameters()) {
+                   if (isHeaderParameter(param))
+                       unwrappable = false;
                 }
-            } else {
-                if (param.isWrapperStyle()) {
-                    for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
-                        part = message.part().name(childParam.getName().getLocalPart());
-                        part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
+            }
+
+            for (Parameter param : method.getResponseParameters()) {
+                if (isDoclit) {
+                    if (param.isWrapperStyle()) {
+                        // if its not really wrapper style dont use the same name as input message                    
+                        if (unwrappable)
+                            part = message.part().name(RESULT);
+                        else
+                            part = message.part().name(UNWRAPPABLE_RESULT);
+                        part.element(param.getName());
+                    } else {
+                        part = message.part().name(param.getName().getLocalPart());
+                        part.element(param.getName());                    
                     }
                 } else {
-                    part = message.part().name(param.getName().getLocalPart());
-                    part.element(param.getName());
+                    if (param.isWrapperStyle()) {
+                        for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
+                            part = message.part().name(childParam.getName().getLocalPart());
+                            part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
+                        }
+                    } else {
+                        part = message.part().name(param.getName().getLocalPart());
+                        part.element(param.getName());
+                    }
                 }
-            }
-        }                
+            }                
+        }
         for (CheckedException exception : method.getCheckedExceptions()) {
             QName tagName = exception.getDetailType().tagName;
             if (processedExceptions.contains(tagName))
@@ -486,41 +488,43 @@ public class WSDLGenerator {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
             }
-            boolean unwrappable = headerParams.size() == 0;
-            // output
-            bodyParams.clear();
-            headerParams.clear();
-            splitParameters(bodyParams, headerParams, method.getResponseParameters());
-            unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;
-            TypedXmlWriter output = operation.output();
-            body = output._element(Body.class);
-            body.use(LITERAL);
-            if (headerParams.size() > 0) {
-                Parameter param = bodyParams.iterator().next();
-                if (isRpc) {
-                    String parts = "";
-                    int i=0;
-                    for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
-                        if (i++>0)
-                            parts += " ";
-                        parts += parameter.getName().getLocalPart();
+
+            if (method.getMEP() != MessageStruct.ONE_WAY_MEP) {
+                boolean unwrappable = headerParams.size() == 0;
+                // output
+                bodyParams.clear();
+                headerParams.clear();
+                splitParameters(bodyParams, headerParams, method.getResponseParameters());
+                unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;
+                TypedXmlWriter output = operation.output();
+                body = output._element(Body.class);
+                body.use(LITERAL);
+                if (headerParams.size() > 0) {
+                    Parameter param = bodyParams.iterator().next();
+                    if (isRpc) {
+                        String parts = "";
+                        int i=0;
+                        for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                            if (i++>0)
+                                parts += " ";
+                            parts += parameter.getName().getLocalPart();
+                        }
+                        body.parts(parts);
+                    } else if (param.isWrapperStyle()) {
+                        // if its not really wrapper style dont use the same name as input message
+                        if (unwrappable)
+                            body.parts(RESULT);
+                        else
+                            body.parts(UNWRAPPABLE_RESULT);
+                    } else {
+                        body.parts(param.getName().getLocalPart());
                     }
-                    body.parts(parts);
-                } else if (param.isWrapperStyle()) {
-                    // if its not really wrapper style dont use the same name as input message
-                    if (unwrappable)
-                        body.parts(RESULT);
-                    else
-                        body.parts(UNWRAPPABLE_RESULT);
-                } else {
-                    body.parts(param.getName().getLocalPart());
-                }
-                generateSOAPHeaders(output, headerParams, responseMessage);
-            }                
-            if (isRpc) {
-                body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
-            }                  
-            
+                    generateSOAPHeaders(output, headerParams, responseMessage);
+                }                
+                if (isRpc) {
+                    body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+                }                  
+            }
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
                 Fault fault = operation.fault().name(tagName.getLocalPart());
@@ -574,42 +578,43 @@ public class WSDLGenerator {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
             }
-            boolean unwrappable = headerParams.size() == 0;
             
-            // output
-            bodyParams.clear();
-            headerParams.clear();
-            splitParameters(bodyParams, headerParams, method.getResponseParameters());
-            unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;            
-            TypedXmlWriter output = operation.output();
-            body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
-            body.use(LITERAL);
-            if (headerParams.size() > 0) {
-                Parameter param = bodyParams.iterator().next();
-                if (isRpc) {
-                    String parts = "";
-                    int i=0;
-                    for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
-                        if (i++>0)
-                            parts += " ";
-                        parts += parameter.getName().getLocalPart();
+            if (method.getMEP() != MessageStruct.ONE_WAY_MEP) {
+                // output
+                boolean unwrappable = headerParams.size() == 0;
+                bodyParams.clear();
+                headerParams.clear();
+                splitParameters(bodyParams, headerParams, method.getResponseParameters());
+                unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;            
+                TypedXmlWriter output = operation.output();
+                body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
+                body.use(LITERAL);
+                if (headerParams.size() > 0) {
+                    Parameter param = bodyParams.iterator().next();
+                    if (isRpc) {
+                        String parts = "";
+                        int i=0;
+                        for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
+                            if (i++>0)
+                                parts += " ";
+                            parts += parameter.getName().getLocalPart();
+                        }
+                        body.parts(parts);
+                    } else if (param.isWrapperStyle()) {
+                        // if its not really wrapper style dont use the same name as input message
+                        if (unwrappable)
+                            body.parts(RESULT);
+                        else
+                            body.parts(UNWRAPPABLE_RESULT);
+                    } else {
+                        body.parts(param.getName().getLocalPart());
                     }
-                    body.parts(parts);
-                } else if (param.isWrapperStyle()) {
-                    // if its not really wrapper style dont use the same name as input message
-                    if (unwrappable)
-                        body.parts(RESULT);
-                    else
-                        body.parts(UNWRAPPABLE_RESULT);
-                } else {
-                    body.parts(param.getName().getLocalPart());
+                    generateSOAP12Headers(output, headerParams, responseMessage);
                 }
-                generateSOAP12Headers(output, headerParams, responseMessage);
+                if (isRpc) {
+                    body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
+                }
             }
-            if (isRpc) {
-                body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
-            }
-
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
                 Fault fault = operation.fault().name(tagName.getLocalPart());
