@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.6 2005-06-13 23:59:57 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.7 2005-06-14 01:04:53 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -172,11 +172,13 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 return;
             }
 
-            for(HeaderBlock hb : im.getHeaders()){
-                value = ((JAXBBridgeInfo)hb.getValue()).getValue();
-                if(value != null){
-                    mi.setResponse(value);
-                    return;
+            if(headers != null){
+                for(HeaderBlock hb : headers){
+                    value = ((JAXBBridgeInfo)hb.getValue()).getValue();
+                    if(value != null){
+                        mi.setResponse(value);
+                        return;
+                    }
                 }
             }
         }
@@ -189,7 +191,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             if (paramBinding.equals(SOAPBlock.BODY)) {
                 //TODO: check if the bodyValue qname is the one we expect!
                 obj = bodyValue;
-            } else if (paramBinding.equals(SOAPBlock.HEADER)) {
+            } else if (headers != null && paramBinding.equals(SOAPBlock.HEADER)) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
             }

@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.4 2005-06-04 01:48:10 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.5 2005-06-14 01:05:09 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -74,7 +74,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             Object obj = null;
             if (paramBinding.equals(SOAPBlock.BODY)) {
                 obj = bodyValue;
-            } else if (paramBinding.equals(SOAPBlock.HEADER)) {
+            } else if (headers != null && paramBinding.equals(SOAPBlock.HEADER)) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
             } else if (paramBinding.equals(SOAPBlock.ATTACHMENT)) {
