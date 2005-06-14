@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.7 2005-06-07 21:35:15 jitu Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.8 2005-06-14 20:53:15 bbissett Exp $
  */
 
 /*
@@ -192,16 +192,9 @@ public class JAXRPCRuntimeInfoParser {
         List<Handler> handlerChain = new ArrayList<Handler>();
         Set<String> roles = new HashSet<String>();
 
-        // ignore name for now. use commented code to get name if wanted
         XMLStreamReaderUtil.nextElementContent(reader);
-        //ensureProperName(reader, QNAME_HANDLER_CHAIN_NAME);
-        //String handlerChainName = XMLStreamReaderUtil.getElementText(reader);
-        //XMLStreamReaderUtil.nextElementContent(reader);
         if (reader.getName().equals(QNAME_HANDLER_CHAIN_NAME)) {
-            // remove this block if uncommenting code above
-            XMLStreamReaderUtil.nextContent(reader);
-            XMLStreamReaderUtil.nextElementContent(reader);
-            XMLStreamReaderUtil.nextElementContent(reader);
+            skipTextElement(reader);
         }
 
         // process all <handler> elements
@@ -210,16 +203,9 @@ public class JAXRPCRuntimeInfoParser {
             Map<String, String> initParams = new HashMap<String, String>();
             Set<QName> headers = new HashSet<QName>();
 
-            // ignore name if not present (see comments on chain name above)
             XMLStreamReaderUtil.nextContent(reader);
-            //ensureProperName(reader, QNAME_HANDLER_NAME);
-            //String handlerName = XMLStreamReaderUtil.getElementText(reader);
-            //XMLStreamReaderUtil.nextElementContent(reader);
             if (reader.getName().equals(QNAME_HANDLER_NAME)) {
-                // remove this block if uncommenting code above
-                XMLStreamReaderUtil.nextContent(reader);
-                XMLStreamReaderUtil.nextElementContent(reader);
-                XMLStreamReaderUtil.nextElementContent(reader);
+                skipTextElement(reader);
             }
 
             // handler class
@@ -246,14 +232,17 @@ public class JAXRPCRuntimeInfoParser {
                 initParams.put(paramName, paramValue);
 
                 XMLStreamReaderUtil.nextContent(reader); // past param-value
+                
+                // skip <description> if present
+                if (reader.getLocalName().equals("description")) {
+                    skipTextElement(reader);
+                }
                 XMLStreamReaderUtil.nextContent(reader); // past init-param
             }
 
             // headers (ignored)
             while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
-                XMLStreamReaderUtil.nextContent(reader);
-                XMLStreamReaderUtil.nextElementContent(reader);
-                XMLStreamReaderUtil.nextElementContent(reader);
+                skipTextElement(reader);
             }
             
             // roles (not stored per handler)
@@ -296,6 +285,13 @@ public class JAXRPCRuntimeInfoParser {
         }
     }
 
+    // utility method for setHandlersAndRoles
+    protected static void skipTextElement(XMLStreamReader reader) {
+        XMLStreamReaderUtil.nextContent(reader);
+        XMLStreamReaderUtil.nextElementContent(reader);
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+    
     protected static void ensureNoContent(XMLStreamReader reader) {
         if (reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
             fail("runtime.parser.unexpectedContent", reader);
