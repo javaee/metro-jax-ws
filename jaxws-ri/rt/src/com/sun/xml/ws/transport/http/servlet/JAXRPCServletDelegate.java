@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.4 2005-06-02 18:45:22 jitu Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.5 2005-06-14 18:02:33 jitu Exp $
  *
  */
 
@@ -163,9 +163,10 @@ public class JAXRPCServletDelegate implements ServletDelegate {
                 }
                 return;
             }
-
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
-            if (targetEndpoint != null && request.getQueryString() != null) {
+            if (jaxrpcInfo == null && request.getQueryString() != null) {
+                writeNotFoundErrorPage(localizer, response, "Invalid Context");
+            } else if (targetEndpoint != null && request.getQueryString() != null) {
                 if (request.getQueryString().equals("WSDL") ||
                     request.getQueryString().startsWith("wsdl") ||
                     request.getQueryString().startsWith("xsd")) {
