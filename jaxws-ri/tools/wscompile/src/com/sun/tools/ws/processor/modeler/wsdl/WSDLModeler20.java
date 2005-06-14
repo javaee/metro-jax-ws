@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.3 2005-06-07 03:39:06 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.4 2005-06-14 23:38:11 vivekp Exp $
  */
 
 /*
@@ -1213,7 +1213,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
             }else{
                 //create response bean
-                String nspace = document.getDefinitions().getTargetNamespaceURI()+"?"+info.port.resolveBinding(document).resolvePortType(document).getName()+"?" + info.portTypeOperation.getName();
+                //String nspace = document.getDefinitions().getTargetNamespaceURI()+"?"+info.port.resolveBinding(document).resolvePortType(document).getName()+"?" + info.portTypeOperation.getName();
+                String nspace = "";
                 QName responseBeanName = new QName(nspace,info.operation.getName()+"Response");
                 JAXBType responseBeanType = getJAXBType(responseBeanName);
                 operation.setResponseBean(responseBeanType);

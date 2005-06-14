@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.1 2005-05-24 13:31:29 bbissett Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.2 2005-06-14 23:38:11 vivekp Exp $
  */
 
 /*
@@ -208,7 +208,8 @@ public class PseudoSchemaBuilder {
     private QName getOperationName(PortType portType, String operationName, Extensible binding){
         if(operationName == null)
             return null;
-        String namespaceURI = wsdlDocument.getDefinitions().getTargetNamespaceURI()+"?"+portType.getName()+"?" + operationName;
+//        String namespaceURI = wsdlDocument.getDefinitions().getTargetNamespaceURI()+"?"+portType.getName()+"?" + operationName;
+        String namespaceURI = "";
         return new QName(namespaceURI, operationName+"Response");
     }
 
