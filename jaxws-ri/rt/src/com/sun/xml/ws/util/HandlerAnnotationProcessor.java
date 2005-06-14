@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.4 2005-06-13 19:10:25 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.5 2005-06-14 19:25:33 bbissett Exp $
  */
 
 /*
@@ -224,10 +224,15 @@ public class HandlerAnnotationProcessor {
     static InputStream getFileAsStream(Class clazz, HandlerChain chain) {
         URL url = clazz.getResource(chain.file());
         if (url == null) {
+            url = Thread.currentThread().getContextClassLoader().
+                getResource(chain.file());
+        }
+        if (url == null) {
             String tmp = clazz.getPackage().toString();
             tmp = tmp.replace('.', '/');
             tmp += "/" + chain.file();
-            url = clazz.getResource(tmp);
+            url =
+                Thread.currentThread().getContextClassLoader().getResource(tmp);
         }
         if (url == null) {
             throw new UtilException("util.failed.to.find.handlerchain.file",
