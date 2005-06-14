@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.6 2005-06-07 21:35:15 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.7 2005-06-14 00:04:44 jitu Exp $
  */
 
 /*
@@ -101,6 +101,7 @@ public class JAXRPCContextListener
                 localizer.localize(
                     messageFactory.getMessage("listener.parsingFailed", e)),
                 e);
+            context.removeAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
         } catch (Exception e) {
             logger.log(
                 Level.SEVERE,
@@ -109,6 +110,7 @@ public class JAXRPCContextListener
                         "listener.parsingFailed",
                         e.toString())),
                 e);
+            context.removeAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
         }
     }
     
