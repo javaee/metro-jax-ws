@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchXMLEncoder.java,v 1.6 2005-06-12 19:07:14 kwalsh Exp $
+ * $Id: DispatchXMLEncoder.java,v 1.7 2005-06-14 15:35:15 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -9,29 +9,37 @@ package com.sun.xml.ws.client.dispatch.impl.encoding;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.transport.Connection;
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.logging.Logger;
+import java.util.List;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static java.util.logging.Logger.getLogger;
@@ -55,76 +63,13 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
         return jc;
     }
 
-    public void encodeAndSend(MessageInfo messageInfo) {
-        //processProperties(messageInfo);
-        InternalMessage request = toInternalMessage(messageInfo);
-
-        Connection connection = messageInfo.getConnection();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-
-        try {
-            startEnvelope(writer);
-            //headers will most likely be handled by "JAXWS handlers"
-            //need to overide for now
-            writeHeader(writer, request);
-            writeBody(writer, request, messageInfo);
-            endEnvelope(writer);
-            writer.writeEndDocument();
-            writer.close();
-
-            // sending the request over the wire
-            if (connection != null)
-                connection.write(ByteBuffer.wrap(baos.toByteArray()));
-            else
-                throw new WebServiceException("connection is null");
-
-        } catch (Exception e) {
-            if (e instanceof WebServiceException)
-                throw (WebServiceException) e;
-            else
-                throw new WebServiceException(e.getMessage(), e);
+    private boolean skipHeader(MessageInfo messageInfo) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
+            Service.Mode.PAYLOAD) {
+            return true;
         }
+        return false;
     }
-
-    protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-                                MessageInfo messageInfo) {
-
-    }
-
-    //dispatch will need to overide for now till handlers figured out
-    protected void writeHeader(XMLStreamWriter writer, InternalMessage request) {
-        List<HeaderBlock> headerBlocks = request.getHeaders();
-
-        if (headerBlocks == null) {
-            return;
-        }
-    }
-    //use super - leave for now
-    /* protected void writeBody(XMLStreamWriter writer, InternalMessage request) {
-         BodyBlock bodyBlock = request.getBody();
-
-         if (bodyBlock == null) {
-             throw new SenderException("sender.request.missingBodyInfo");
-         }
-
-         writer.startElement(SOAPNamespaceConstants.TAG_BODY,
-                 SOAPNamespaceConstants.ENVELOPE,
-                 NamespaceConstants.NSPREFIX_SOAP_ENVELOPE);
-
-         DispatchSerializer bodySerializer =
-                 new DispatchSerializer(encoderDecoderUtil);
-
-         bodySerializer.serialize(bodyBlock.getValue(),
-                 writer,
-                 getJAXBContext());
-
-
-         writer.endElement(); // env:BODY
-     }
-     */
-
 
     public InternalMessage toInternalMessage(MessageInfo messageInfo) {
         processProperties(messageInfo);
@@ -154,6 +99,49 @@ public class DispatchXMLEncoder extends com.sun.xml.ws.client.SOAPXMLEncoder {
 
         return internalMessage;
 
+    }
+
+    public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
+                                     MessageInfo messageInfo) {
+        setAttachmentsMap(messageInfo, internalMessage);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+
+        SOAPMessage message = null;
+        try {
+            startEnvelope(writer);
+            writeHeaders(writer, internalMessage, messageInfo);
+            writeBody(writer, internalMessage, messageInfo);
+            endEnvelope(writer);
+            writer.writeEndDocument();
+            writer.close();
+
+            byte[] buf = baos.toByteArray();
+            ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
+
+            // TODO: Copy the mime headers from messageInfo.METADATA
+            MimeHeaders mh = new MimeHeaders();
+            mh.addHeader("Content-Type", getContentType(messageInfo));
+            message = new SOAPMessageContext().createMessage(mh, bis, getBindingId());
+            processAttachments(internalMessage, message);
+        } catch (IOException e) {
+            throw new SenderException("sender.request.messageNotReady", new LocalizableExceptionAdapter(e));
+        } catch (SOAPException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        } catch (XMLStreamException e) {
+            throw new SenderException(new LocalizableExceptionAdapter(e));
+        }
+
+        return message;
+    }
+
+    /*
+     * writes multiple header elements in <env:Header> ... </env:Header>
+     */
+    protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
+        MessageInfo messageInfo)
+    {
+        //just stub it out
     }
 
     public void processProperties(MessageInfo messageInfo) {

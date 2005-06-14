@@ -41,6 +41,7 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.SenderException;
+import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
@@ -70,6 +71,7 @@ import javax.xml.soap.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
@@ -154,16 +156,40 @@ public class DispatchSOAP12XMLDecoder extends com.sun.xml.ws.client.SOAP12XMLDec
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
+    protected void skipHeader(XMLStreamReader reader) {
+
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        if (!SOAP12NamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
+            return;
+        }
+        XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_HEADER);
+        XMLStreamReaderUtil.skipElement(reader);                     // Moves to </Header>
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+
+
+    private boolean skipHeader(MessageInfo messageInfo) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
+            Service.Mode.PAYLOAD) {
+            return true;
+        }
+        return false;
+    }
+
     /*
      * skipBody is true, the body is skipped during parsing.
      */
-   /* protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
+    protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
             boolean skipBody, MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-        //XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_ENVELOPE);
         XMLStreamReaderUtil.verifyTag(reader,SOAP12Constants.QNAME_SOAP_ENVELOPE);
         XMLStreamReaderUtil.nextElementContent(reader);
-        decodeHeader(reader, messageInfo, request);
+
+        if (skipHeader(messageInfo))
+            skipHeader(reader);
+        else
+            decodeHeader(reader, messageInfo, request);
+
         if (skipBody) {
             skipBody(reader);
         } else {
@@ -174,7 +200,7 @@ public class DispatchSOAP12XMLDecoder extends com.sun.xml.ws.client.SOAP12XMLDec
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
     }
-    */
+
 
     /*  protected void decodeBody(XMLReader reader, InternalMessage response, MessageInfo messageInfo) {
           XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
@@ -359,7 +385,7 @@ public class DispatchSOAP12XMLDecoder extends com.sun.xml.ws.client.SOAP12XMLDec
                             writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
                                 atts.getValue(i));
                         }
-                    }                        
+                    }
                 } else if (reader.getEventType() == END_ELEMENT) {
                     writer.writeEndElement();
                 } else if (reader.getEventType() == CHARACTERS) {
