@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.8 2005-06-14 20:53:15 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.9 2005-06-14 21:06:21 bbissett Exp $
  */
 
 /*
@@ -223,6 +223,14 @@ public class JAXRPCRuntimeInfoParser {
             // init params
             while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
                 XMLStreamReaderUtil.nextContent(reader);
+
+                // Skip <description> at either end in case users have
+                // confused which schema we're using (don't want to fail
+                // over this).
+                if (reader.getLocalName().equals("description")) {
+                    skipTextElement(reader);
+                }
+                
                 ensureProperName(reader, QNAME_HANDLER_PARAM_NAME);
                 String paramName = XMLStreamReaderUtil.getElementText(reader);
 
