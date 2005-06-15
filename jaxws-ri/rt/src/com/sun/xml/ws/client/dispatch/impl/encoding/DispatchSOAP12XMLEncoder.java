@@ -18,6 +18,7 @@ import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -25,6 +26,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -273,11 +275,18 @@ public class DispatchSOAP12XMLEncoder extends SOAP12XMLEncoder {
         */
         messageContext.setMessage(soapMessage);
         ClientTransportFactory clientTransportFactory = null;
+        ClientTransport clientTransport = null;
         if (clientTransportFactory == null)
             clientTransportFactory = DispatchBase.getDefaultTransportFactory();
 
+        //set the HTTPClientTransport with appropriate binding
+        if(clientTransportFactory != null && clientTransportFactory instanceof HttpClientTransportFactory){
+            clientTransport = ((HttpClientTransportFactory)clientTransportFactory).create(SOAPBinding.SOAP12HTTP_BINDING);
+        }else{
+            clientTransport = clientTransportFactory.create();
+        }         
         messageInfo.setConnection(new ClientConnectionBase((String) context.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY),
-            clientTransportFactory.create(),
+            clientTransport,
             messageContext));
     }
 
