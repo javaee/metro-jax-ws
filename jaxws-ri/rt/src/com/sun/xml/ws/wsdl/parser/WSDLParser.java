@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.3 2005-06-09 12:11:16 kwalsh Exp $
+ * $Id: WSDLParser.java,v 1.4 2005-06-15 18:48:48 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -13,9 +13,9 @@ import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import org.xml.sax.InputSource;
 
+import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.jws.WebService;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +55,6 @@ public class WSDLParser {
     private boolean serviceDone;
 
     public WSDLParser() {
-        //portsLocationMap = new HashMap<String, QName>();
     }
 
     public WSDLContext getWSDLContext() {
@@ -99,10 +98,9 @@ public class WSDLParser {
 
     public WSDLContext parse(InputStream is, WSDLContext wsdlcontext)
         throws Exception {
-        //wsdlContext = new WSDLContext();
+
         InputSource source = new InputSource(is);
         systemId = source.getSystemId();
-        //System.out.println("Systemid = " + systemId);
 
         try {
             reader =
@@ -115,51 +113,36 @@ public class WSDLParser {
 
     public WSDLContext parseWSDL(XMLReader reader, WSDLContext wsdlcontext) {
 
-        int state = START;
-        state = reader.next();
+        int state = reader.next();
         do {
-
             switch (reader.getState()) {
                 case START:
                     QName name = reader.getName();
-                    //System.out.println("This is the current name " + name.toString());
                     if (WSDLConstants.QNAME_DEFINITIONS.equals(name)) {
-                        //reader.next();
                         reader.nextElementContent();
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     } else if (WSDLConstants.QNAME_IMPORT.equals(name)) {
                         parseWSDLImport(reader, wsdlcontext);
                         reader.next();
                         reader.nextElementContent();
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(name)) {
-                        //parseWSDLBinding(reader, wsdlcontext);
                         reader.skipElement();
                         reader.nextElementContent();
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     } else if (WSDLConstants.QNAME_BINDING.equals(name)) {
                         parseWSDLBinding(reader, wsdlcontext);
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
                         parseWSDLService(reader, wsdlcontext);
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     } else {
                         reader.skipElement();
                         reader.nextElementContent();
-                        //System.out.println("State " + ParserUtil.getStateName(reader));
                     }
                     break;
                 case END:
                     reader.nextElementContent();
-                    //System.out.println("State " + ParserUtil.getStateName(reader));
                     break;
-                    //case CHARS:
-                    //writer.writeChars(reader.getValue());
             }
             if (isDone()) //|| reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS))
                 break;
         } while (reader.getState() != EOF);
-
 
         while (reader.getState() != XMLReader.EOF)
             reader.next();
@@ -178,83 +161,70 @@ public class WSDLParser {
                 ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_LOCATION);
             URI temp = null;
             try {
-
                 temp = new URI(importLocation);
-                //System.out.println("temp " + temp.toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
 
             if (temp.isAbsolute()) {
-                //System.out.println("temp is absolute");
-                //System.out.println("isAbsolute");
                 try {
                     importURL = temp.toURL();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }  else {
+            } else {
 
-            String origWsdlPath = wsdlcontext.getOrigURLPath();
-            //System.out.println("Orig path " + origWsdlPath);
-            int index = origWsdlPath.lastIndexOf("/");
-            String base = origWsdlPath.substring(0, index);
-            //System.out.println("base = " + base);
-            //is orig wsdl a file
-            URI owsdlLoc = null;
+                String origWsdlPath = wsdlcontext.getOrigURLPath();
+                int index = origWsdlPath.lastIndexOf("/");
+                String base = origWsdlPath.substring(0, index);
 
-            String host = null;
-            int port = 0;
-            try {
-                owsdlLoc = new URI(wsdlcontext.getOrigWSDLLocation().toExternalForm());
-                host = owsdlLoc.getHost();
-                port = owsdlLoc.getPort();
+                URI owsdlLoc = null;
+                String host = null;
+                int port = 0;
 
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+                try {
+                    owsdlLoc = new URI(wsdlcontext.getOrigWSDLLocation().toExternalForm());
+                    host = owsdlLoc.getHost();
+                    port = owsdlLoc.getPort();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
 
-            if (owsdlLoc != null) {
-                File file = null;
-                if (owsdlLoc.getScheme().equals("file")) {
-                    String path = owsdlLoc.getPath();
-                    if (path != null) {
-                        file = new File(path);
-                        File parent = file.getParentFile();
-                        if (parent.isDirectory()) {
-                            try {
-
-                                String absPath = parent.getCanonicalPath();
-                                String importString = "file:/" +
-                                    absPath + "/" + importLocation;
-                                System.out.println("This is it");
-                                importURL = new URL(importString);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                if (owsdlLoc != null) {
+                    File file = null;
+                    if (owsdlLoc.getScheme().equals("file")) {
+                        String path = owsdlLoc.getPath();
+                        if (path != null) {
+                            file = new File(path);
+                            File parent = file.getParentFile();
+                            if (parent.isDirectory()) {
+                                try {
+                                    String absPath = parent.getCanonicalPath();
+                                    String importString = "file:/" +
+                                        absPath + "/" + importLocation;
+                                    importURL = new URL(importString);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
-
                         }
-                    }
-                    //todo://needs to be update for http imports
-                } else if (owsdlLoc.getScheme().equals("http"))
-                    try {
-                        importURL = new URL("http://" + host + ":" + port + base + "/" + importLocation);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-            }
+                        //todo://needs to be update for http imports
+                    } else if (owsdlLoc.getScheme().equals("http"))
+                        try {
+                            importURL = new URL("http://" + host + ":" + port + base + "/" + importLocation);
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                }
 
-
-            try {
-                parse(importURL.openStream(), wsdlcontext);
-                isImport = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+                try {
+                    parse(importURL.openStream(), wsdlcontext);
+                    isImport = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-
         return null;
     }
 
@@ -266,48 +236,32 @@ public class WSDLParser {
                 switch (reader.getState()) {
                     case START:
                         QName name = reader.getName();
-
-                        //System.out.println("This is the current name " + name.toString());
                         if (WSDLConstants.NS_SOAP_BINDING.equals(reader.getName())) {
-                            //wsdlcontext.setBindingID(ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_TRANSPORT));
                             wsdlcontext.setBindingID(SOAPBinding.SOAP11HTTP_BINDING);
                             reader.next();
                             reader.nextElementContent();
-                        } else if(WSDLConstants.NS_SOAP12_BINDING.equals(name)){
+                        } else if (WSDLConstants.NS_SOAP12_BINDING.equals(name)) {
                             wsdlcontext.setBindingID(SOAPBinding.SOAP12HTTP_BINDING);
                             reader.next();
                             reader.nextElementContent();
-                        }else if (WSDLConstants.QNAME_DOCUMENTATION.equals(name)) {
-                            //parseWSDLBinding(reader, wsdlcontext);
+                        } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(name)) {
                             reader.skipElement();
                             reader.nextElementContent();
-                            //System.out.println("State " + ParserUtil.getStateName(reader));
-
                         } else if (WSDLConstants.QNAME_OPERATION.equals(name)) {
-                            //parseWSDLService(reader, wsdlcontext);
                             reader.skipElement();
                             reader.nextElementContent();
-                            //System.out.println("State " + ParserUtil.getStateName(reader));
                         } else {
                             reader.skipElement();
                             reader.nextElementContent();
-                            //System.out.println("State " + ParserUtil.getStateName(reader));
                         }
-                        break;
-
-                        //case CHARS:
-                        //writer.writeChars(reader.getValue());
                 }
                 if (reader.getName().equals(WSDLConstants.QNAME_BINDING))
                     break;
             } while (reader.getState() != EOF);
-            //System.out.println("end of import EOF");
-            //System.out.println("State " + ParserUtil.getStateName(reader));
+
             reader.next();
             reader.nextElementContent();
         }
-        //need to take into account http binding
-        // }
     }
 
     protected void parseWSDLService(XMLReader reader, WSDLContext wsdlcontext) {
@@ -316,22 +270,15 @@ public class WSDLParser {
             //wsdlContext.setServiceName(ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_NAME));
             reader.nextElementContent();
 
-            //int state = reader.getState();
             do {
                 switch (reader.getState()) {
                     case START:
                         QName name = reader.getName();
-                        //System.out.println("This is the current name " + name.toString());
-
                         if (WSDLConstants.QNAME_PORT.equals(reader.getName())) {
                             parseWSDLPort(reader, wsdlcontext);
                             reader.next();
-                            //System.out.println(ParserUtil.getStateName(reader));
                             reader.nextElementContent();
-                            //System.out.println(ParserUtil.getStateName(reader));
-                            //System.out.println("reader.getName end of port");
-                            //reader.next(); //skip end of service
-                        } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(reader.getName())){
+                        } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(reader.getName())) {
                             reader.skipElement();
                             reader.nextElementContent();
                         } else {
@@ -339,21 +286,15 @@ public class WSDLParser {
                             reader.nextElementContent();
                         }
                         break;
-                      case END:
+                    case END:
                         reader.nextElementContent();
-                        //case CHARS:
-                        //writer.writeChars(reader.getValue());
                 }
                 //if (reader.getName().equals(WSDLConstants.QNAME_SERVICE))
-               //     break;
+                //     break;
             } while (reader.getState() != EOF);
             serviceDone = true;
-            //System.out.println("end of import EOF");
-            //System.out.println("State " + ParserUtil.getStateName(reader));
             reader.next();
             reader.nextElementContent();
-            //System.out.println("End of Service " + reader.getName());
-            //System.out.println("State at end of servervie" + ParserUtil.getStateName(reader));
             //if (reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS))
             //    return;
         }
@@ -365,28 +306,23 @@ public class WSDLParser {
             String portName = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_NAME);
             reader.nextElementContent();
 
-            //int state = reader.getState();
             do {
                 switch (reader.getState()) {
                     case START:
                         QName name = reader.getName();
-                        //System.out.println("This is the current name " + name.toString());
+
                         if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName()) ||
-                                WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
+                            WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
                             String endpoint = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_LOCATION);
                             wsdlcontext.addPort(new QName("", portName), endpoint);
                             locationDone = true;
                             reader.next();
                             reader.nextElementContent();
-                            //System.out.println(ParserUtil.getStateName(reader));
                             QName ename = reader.getName();
-                            //System.out.println("name in get port" + ename);
-                            //System.out.println("");
                         } else {
                             reader.skipElement();
                             reader.nextElementContent();
                         }
-
                         break;
                     case END:
                         reader.nextElementContent();
@@ -394,64 +330,27 @@ public class WSDLParser {
                 if (reader.getName().equals(WSDLConstants.QNAME_PORT)) {
                     break;
                 }
-
             } while (reader.getState() != EOF);
             portDone = true;
-            //System.out.println("end of import EOF");
-            //System.out.println("State " + ParserUtil.getStateName(reader));
             reader.next();
             reader.nextElementContent();
-            //System.out.println("End of Service " + reader.getName());
-            //System.out.println("State at end of servervie" + ParserUtil.getStateName(reader));
-
         }
-
     }
 
     /**
      * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
+     *
      * @param sei
      * @return
      */
     public static URL getWSDLLocation(Class sei) throws MalformedURLException {
         WebService ws = (WebService) sei.getAnnotation(WebService.class);
-        if(ws == null)
+        if (ws == null)
             return null;
         String wsdlLocation = ws.wsdlLocation();
-        if(wsdlLocation == null)
+        if (wsdlLocation == null)
             return null;
         return new URL(wsdlLocation);
     }
 
-    /*{
-    if (location != null) {
-                // NOTE - here we would really benefit from a URI class!
-                String adjustedLocation =
-                    source.getSystemId() == null
-                        ? (context.getDocument().getSystemId() == null
-                            ? location
-                            : Util.processSystemIdWithBase(
-                                context.getDocument().getSystemId(),
-                                location))
-                        : Util.processSystemIdWithBase(
-                            source.getSystemId(),
-                            location);
-
-                try {
-                    if (!context
-                        .getDocument()
-                        .isImportedDocument(adjustedLocation)) {
-                        context.getDocument().addImportedEntity(
-                            parseDefinitions(
-                                context,
-                                new InputSource(adjustedLocation),
-                                i.getNamespace()));
-                        context.getDocument().addImportedDocument(
-                            adjustedLocation);
-                    }
-                } catch (ParseException e) {
-                    // hardly the cleanest solution, but it should
-                }
-    }
-    */
 }
