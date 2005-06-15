@@ -87,22 +87,8 @@ the JAX-WS 2.0 EA extracted bundle.&nbsp;</p>
 release.</p>
   </li>
   <li>
-    <p>Use of the following API methods will cause a &#8220;not supported in
-JAX-WS 2.0 EA&#8221; exception to be thrown.</p>
-    <p><code><b>javax.xml.rpc.ServiceFactory</b></code>:</p>
-    <p><code>public Service createService(URL wsdlLocation, QName
-serviceName) throws ServiceException;</code></p>
-    <p><code><b>javax.xml.Service</b></code>:</p>
-    <div style="margin-left: 2em;">
-    <p><code>public java.rmi.Remote getPort(QName portName, Class
-serviceEndpointInterface) throws ServiceException;</code></p>
-    <p><code>public java.rmi.Remote getPort(Class
-serviceEndpointInterface) throws ServiceException;</code></p>
-    <p><code>public Iterator getPorts() throws ServiceException;</code></p>
-    <p><code>public java.net.URL getWSDLDocumentLocation();</code></p>
-    <p><code>public TypeMappingRegistry getTypeMappingRegistry();</code></p>
-    <p><code>public SecurityConfiguration getSecurityConfiguration();</code></p>
-    </div>
+    <p>Dispatch attachment support is not supported in this Early Access release</p>
+    <p>SOAP 1.2 use with the Dispatch client has been minimally tested</p>
   </li>
 </ul>
 <h2>Known Bugs/Issues</h2>
