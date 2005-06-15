@@ -48,8 +48,6 @@ Service service = serviceFactory.createService(serviceQName);
 
   <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service instance has a <code>createPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch</code> and Call instances.</p>
 
-  <p><strong>Note</strong>: The <code>Call</code> API is not supported in JAXRPC 2.0 EA.</p>
-
   <p>Those developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint parameters of this method. However, what is this <code>BindingID</code> URI parameter? Currently, the JAXRPC 2.0 Early Draft Specification supports and defines one <code>Binding</code> URI, that of the SOAP/HTTP Binding. In WSDL this corresponds to the following lines. More may be defined in future versions of the JAXRPC 2.0 specification.</p>
   <pre>
 &lt;binding name="BindingName" type="tns:typename"&gt;
