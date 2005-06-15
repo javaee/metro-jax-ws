@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.7 2005-06-14 00:04:44 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.8 2005-06-15 04:36:07 jitu Exp $
  */
 
 /*
@@ -66,19 +66,16 @@ public class JAXRPCContextListener
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        context = event.getServletContext();
-
         if (logger.isLoggable(Level.INFO)) {
             logger.info(
                 localizer.localize(
                     messageFactory.getMessage("listener.info.initialize")));
         }
-
+        context = event.getServletContext();
         classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = getClass().getClassLoader();
         }
-
         try {
             // Get all the WSDL & schema documents under WEB-INF/wsdl directory
             Map<String, DocInfo> docs = new HashMap<String, DocInfo>();
@@ -94,14 +91,7 @@ public class JAXRPCContextListener
             
             // Creates WSDL & schema metadata and runtime model
             createModelAndMetadata(endpoints, docs);
-            
-        } catch (JAXRPCServletException e) {
-            logger.log(
-                Level.SEVERE,
-                localizer.localize(
-                    messageFactory.getMessage("listener.parsingFailed", e)),
-                e);
-            context.removeAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
+
         } catch (Exception e) {
             logger.log(
                 Level.SEVERE,
@@ -111,6 +101,7 @@ public class JAXRPCContextListener
                         e.toString())),
                 e);
             context.removeAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
+            throw new JAXRPCServletException("listener.parsingFailed", new Object[] {e});
         }
     }
     
