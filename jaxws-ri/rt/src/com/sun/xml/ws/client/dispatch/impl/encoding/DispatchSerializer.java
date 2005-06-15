@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.9 2005-06-14 13:28:46 spericas Exp $
+ * $Id: DispatchSerializer.java,v 1.10 2005-06-15 00:13:39 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -83,21 +83,25 @@ public class DispatchSerializer {
                     case START_ELEMENT:
                         QName name = reader.getName();
                         writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
-                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //fix bug 6285034- namespace getting written 2x- it is now just handled below
+                        //with attributes
+                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
-                        writer.flush();                        
+                        writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
+
                                 String value = atts.getValue(i);
+                                System.out.println("attrs value = " + value);
                                 String localName = atts.getName(i).getLocalPart();
-                                
+                                System.out.println("atts localName " + localName);
                                 writer.setPrefix(localName, value);
                                 writer.writeNamespace(localName, value);
                             } else {
                                 writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
                                     atts.getValue(i));
                             }
-                        }                        
+                        }
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
@@ -114,6 +118,9 @@ public class DispatchSerializer {
         } catch (XMLStreamException ex) {
             ex.printStackTrace();
         }
+
+        System.out.println("Result = ");
+        System.out.println(baos.toString());
         ByteArrayInputStream istream =
             new ByteArrayInputStream(baos.toByteArray());
         return new StreamSource(istream);

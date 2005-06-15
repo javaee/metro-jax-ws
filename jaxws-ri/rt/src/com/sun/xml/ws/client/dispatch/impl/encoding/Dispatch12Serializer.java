@@ -79,21 +79,24 @@ public class Dispatch12Serializer {
                     case START_ELEMENT:
                         QName name = reader.getName();
                         writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
-                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //fix bug 6285034- namespace getting written 2x- it is now just handled below
+                        //with attributes
+                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
                                 String value = atts.getValue(i);
                                 String localName = atts.getName(i).getLocalPart();
-                                
+
                                 writer.setPrefix(localName, value);
                                 writer.writeNamespace(localName, value);
                             } else {
                                 writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
                                     atts.getValue(i));
                             }
-                        }                        
+                        }
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
@@ -142,7 +145,7 @@ public class Dispatch12Serializer {
                                 writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
                                     atts.getValue(i));
                             }
-                        }                        
+                        }
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
