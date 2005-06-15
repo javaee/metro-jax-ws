@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.10 2005-06-15 00:13:39 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.11 2005-06-15 11:11:57 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -119,8 +119,6 @@ public class DispatchSerializer {
             ex.printStackTrace();
         }
 
-        System.out.println("Result = ");
-        System.out.println(baos.toString());
         ByteArrayInputStream istream =
             new ByteArrayInputStream(baos.toByteArray());
         return new StreamSource(istream);
