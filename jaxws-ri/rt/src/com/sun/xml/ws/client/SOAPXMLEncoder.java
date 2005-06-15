@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.11 2005-06-15 22:36:02 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.12 2005-06-15 23:31:14 vivekp Exp $
  */
 
 /*
@@ -219,10 +219,11 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
         messageContext.setMessage(soapMessage);
         ClientTransport clientTransport = null;
-        if (clientTransportFactory == null ||
-                (clientTransport != null && clientTransport instanceof HttpClientTransportFactory)){
+        if (clientTransportFactory == null){
             clientTransportFactory = new HttpClientTransportFactory();
-            clientTransport = ((HttpClientTransportFactory)clientTransportFactory).create(getBindingId());
+        }
+        if(clientTransportFactory instanceof HttpClientTransportFactory){
+            clientTransport = ((HttpClientTransportFactory)clientTransportFactory).create(getBindingId());            
         }else{
             //local transport
             clientTransport = clientTransportFactory.create();
