@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.4 2005-06-09 18:02:39 kwalsh Exp $
+ * $Id: ContextMap.java,v 1.5 2005-06-15 00:45:20 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -33,10 +33,10 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     protected java.lang.String[] ALLOWED_ENCODING = {"", SOAPConstants.URI_ENCODING};
     protected java.lang.String[] ALLOWED_OPERATION_STYLE = {"document", "rpc"};
-    protected java.lang.String[] ALLOWED_SESSION_MAINTAINED =
-        {"true", "false"};
-    protected java.lang.String[] ALLOWED_SOAPACTION_USE =
-        {"true", "false"};
+    protected java.lang.Boolean[] ALLOWED_SESSION_MAINTAINED =
+        {Boolean.TRUE, Boolean.FALSE};
+    protected java.lang.Boolean[] ALLOWED_SOAPACTION_USE =
+        {Boolean.TRUE, Boolean.FALSE};
 
 
     protected BindingProvider _owner;
