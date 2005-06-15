@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.2 2005-06-14 23:38:11 vivekp Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.3 2005-06-15 01:35:59 vivekp Exp $
  */
 
 /*
@@ -153,6 +153,7 @@ public class PseudoSchemaBuilder {
         }
     }
 
+    boolean asyncRespBeanBinding = false;
     private void build(QName elementName, List<MessagePart> allParts){
 
         print(
@@ -166,13 +167,16 @@ public class PseudoSchemaBuilder {
 
         writeImports(elementName, allParts);
 
-        print(
-                "<xs:annotation><xs:appinfo>" +
-                "  <jaxb:schemaBindings>" +
-                "    <jaxb:package name=''{0}'' />" +
-                "  </jaxb:schemaBindings>" +
-                "</xs:appinfo></xs:annotation>",
-                wsdlModeler.getJavaPackage() );
+        if(!asyncRespBeanBinding){
+            print(
+                    "<xs:annotation><xs:appinfo>" +
+                    "  <jaxb:schemaBindings>" +
+                    "    <jaxb:package name=''{0}'' />" +
+                    "  </jaxb:schemaBindings>" +
+                    "</xs:appinfo></xs:annotation>",
+                    wsdlModeler.getJavaPackage() );
+            asyncRespBeanBinding = true;
+        }
 
         print("<xs:element name=''{0}''>", elementName.getLocalPart());
         print("<xs:complexType>");
