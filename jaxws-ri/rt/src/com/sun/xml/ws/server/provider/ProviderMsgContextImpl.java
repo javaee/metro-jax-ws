@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMsgContextImpl.java,v 1.1 2005-05-23 22:50:22 bbissett Exp $
+ * $Id: ProviderMsgContextImpl.java,v 1.2 2005-06-15 01:23:11 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -67,7 +67,12 @@ public class ProviderMsgContextImpl implements Map<String, Object> {
     }
 
     public Object put(String str, Object obj) {
-        Scope scope = ctxt.getScope(str);
+        Scope scope = null;
+        try {
+            scope = ctxt.getScope(str);
+        } catch(IllegalArgumentException ie) {
+            // It's okay, MessageContext didn't have this property
+        }
         if (scope != null && scope == Scope.HANDLER) {
             throw new IllegalArgumentException(
                     "Cannot overwrite property in HANDLER scope");
@@ -85,7 +90,12 @@ public class ProviderMsgContextImpl implements Map<String, Object> {
     }
 
     public Object remove(Object key) {
-        Scope scope = ctxt.getScope((String)key);
+        Scope scope = null;
+        try {
+            scope = ctxt.getScope((String)key);
+        } catch(IllegalArgumentException ie) {
+            // It's okay, MessageContext didn't have this property
+        }
         if (scope != null && scope == Scope.HANDLER) {
             throw new IllegalArgumentException(
                     "Cannot remove property in HANDLER scope");
