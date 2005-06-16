@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://java.sun.com/xml/ns/jax-rpc/ri/runtime"
-  targetNamespace="http://java.sun.com/xml/ns/jax-rpc/ri/runtime"
+  xmlns:tns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+  targetNamespace="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
   elementFormDefault="qualified"
   attributeFormDefault="unqualified"
   version="1.0">
@@ -28,8 +28,10 @@
       <xsd:element name="handler-name" type="xsd:string"/>
       <xsd:element name="handler-class" type="xsd:string"/>
       <xsd:element name="init-param" type="tns:param-valueType" minOccurs="0" maxOccurs="unbounded"/>
+<!--
       <xsd:element name="soap-header" type="xsd:QName" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="soap-role" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+-->
     </xsd:sequence>
   </xsd:complexType>
 
@@ -44,13 +46,16 @@
   <xsd:complexType name="endpointType">
     <xsd:annotation>
       <xsd:documentation>
-            An endpoint definition has several attributes:
-                "name" - the endpoint name
-                "implementation" - the name of the endpoint implementation class
-                "wsdl" - the name of a resource corresponding to the WSDL document for the endpoint;
-                "service" - the QName of the WSDL service that owns this endpoint;
-                "port" - the QName of the WSDL port for this endpoint;
-                "urlpattern" - the URL pattern this endpoint is mapped to.
+        An endpoint definition has several attributes:
+           "name" - the endpoint name
+           "implementation" - the name of the endpoint implementation class
+           "wsdl" - the name of a resource corresponding to the WSDL document for the endpoint
+           "service" - the QName of the WSDL service that owns this endpoint;
+           "port" - the QName of the WSDL port for this endpoint;
+           "urlpattern" - the URL pattern this endpoint is mapped to.
+           "binding" - specify binding id for SOAP1.1 or SOAP1.2
+           "enable-mtom" - Enables MTOM optimization
+        "wsdl", "service", "port" attributes are required for provider based endpoints
       </xsd:documentation>
     </xsd:annotation>
 
@@ -64,8 +69,8 @@
     <xsd:attribute name="port" type="xsd:anyURI"/>
     <xsd:attribute name="mtom" type="xsd:boolean"/>
     <xsd:attribute name="urlpattern" type="xsd:anyURI" use="required"/>
-    <xsd:attribute name="binding" type="xsd:string" use="required"/>
-    <xsd:attribute name="enable-mtom" type="xsd:string" use="required"/>
+    <xsd:attribute name="binding" type="xsd:string"/>
+    <xsd:attribute name="enable-mtom" type="xsd:boolean"/>
   </xsd:complexType>
    
 </xsd:schema>
