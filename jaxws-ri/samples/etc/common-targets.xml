@@ -69,7 +69,6 @@
         keep="${keep}"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
-		<classpath refid="jaxws.classpath"/>
 		<binding dir="${basedir}/etc" includes="${server.binding}"/>
     </wsimport>
     <javac
@@ -106,10 +105,6 @@
         base="${build.classes.home}"
         httpProxy="webcache.sfbay.sun.com:8080"
         wsdlFile="${client.wsdl}">
-		<classpath>
-		    <path refid="jaxws.classpath"/>
-		    <pathelement location="${build.classes.home}"/>
-		</classpath>
 		<binding dir="${basedir}/etc" includes="${client.binding}"/>
     </wsimport>
 </target>
