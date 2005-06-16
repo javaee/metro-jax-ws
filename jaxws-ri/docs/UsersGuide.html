@@ -19,7 +19,7 @@
 Access<br>
 User's Guide</h1>
 <hr>
-<p>Last modified: 6/9/2005</p>
+<p>Last modified: 6/15/2005</p>
 <h2><a class="mozTocH2" name="mozTocId114381"></a>Contents</h2>
 <ol id="mozToc">
 <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId143593">JAX-WS
@@ -114,9 +114,36 @@ information about web services and JAX-RPC 1.1.</p>
 <h4><a class="mozTocH4" name="mozTocId525392"></a>1.1.1 Fully Dynamic
 Runtime<br>
 </h4>
-<h4><a class="mozTocH4" name="mozTocId40289"></a>1.1.2 MTOM &amp; Swaref</h4>
-<h4><a class="mozTocH4" name="mozTocId722803"></a>1.1.3 SOAP 1.2<br>
+<h4><a class="mozTocH4" name="mozTocId40289"></a>1.1.2 MTOM &amp; swaRef<br>
 </h4>
+JAXWS 2.0 brings in support for optimized transmission of binary data
+as specified by <a href="http://www.w3.org/TR/soap12-mtom/">MTOM</a>
+(SOAP Message Transmission Optimization Mechanism)/<a
+ href="http://www.w3.org/TR/xop10/">XOP </a>(XML Binary Optimized
+Packagin) and <a
+ href="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef
+</a>(SOAP Attachment Refenreces specified by WS-I Attachment Profile
+1.0). <br>
+<br>
+<ul>
+  <li>MTOM allows optimized transmission of binary data - any
+xs:base64Binary schema type can be send as attachment following rules
+defined by XOP encoding and MTOM specification. </li>
+</ul>
+<ul>
+  <li>In swaRef, an XML element of <a
+ href="http://ws-i.org/profiles/basic/1.1/xsd/">wsi:swaRef</a> type
+(defined by WS-I Attachment Profile 1.0) is send as attachment and a
+refecrenced based on CID URL schema is put in place of the content of
+the element.<br>
+  </li>
+</ul>
+For details on MTOM and swaRef features refer to <a
+ href="mtom-swaref.html">JAXWS 2.0 MTOM and swaRef</a>.<br>
+<h4><a class="mozTocH4" name="mozTocId722803"></a>1.1.3 SOAP 1.2</h4>
+SOAP 1.2 support is added to JAXWS 2.0. Currently the support is
+limited and not tested extensively. For details refer to <a
+ href="soap12.html">JAXWS 2.0 SOAP 1.2.</a><br>
 <h3><a class="mozTocH3" name="mozTocId103864"></a><a
  name="1.1_Whats_new_in_JAX-RPC_2.0_Early"
  id="1.1_Whats_new_in_JAX-RPC_2.0_Early"></a>2.1 Features introduced in
