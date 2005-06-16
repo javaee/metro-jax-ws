@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.2 2005-06-08 06:13:21 vivekp Exp $
+ * $Id: WsImport.java,v 1.3 2005-06-16 01:00:09 jitu Exp $
  */
 
 /*
@@ -30,66 +30,13 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
 import com.sun.tools.ws.wscompile.CompileTool;
-import com.sun.xml.ws.util.VersionUtil;
+import org.apache.tools.ant.AntClassLoader;
 
 /**
  * wscompile task for use with the JAXRPC project.
  *
  */
 public class WsImport extends MatchingTask {
-
-    /*************************  -classpath option *************************/
-    protected Path compileClasspath = null;
-
-    /**
-     * Gets the classpath.
-     */
-    public Path getClasspath() {
-        return compileClasspath;
-    }
-
-    /**
-     * Set the classpath to be used for this compilation.
-     */
-    public void setClasspath(Path classpath) {
-        if (compileClasspath == null) {
-            compileClasspath = classpath;
-        } else {
-            compileClasspath.append(classpath);
-        }
-    }
-
-    /**
-     * Creates a nested classpath element.
-     */
-    public Path createClasspath() {
-        if (compileClasspath == null) {
-            compileClasspath = new Path(project);
-        }
-        return compileClasspath.createPath();
-    }
-
-    /**
-     * Adds a reference to a CLASSPATH defined elsewhere.
-     */
-    public void setClasspathRef(Reference r) {
-        createClasspath().setRefid(r);
-    }
-
-    /*************************  -cp option *************************/
-    /**
-     * Gets the classpath.
-     */
-    public Path getCP() {
-        return getClasspath();
-    }
-
-    /**
-     * Set the classpath to be used for this compilation.
-     */
-    public void setCP(Path classpath) {
-        setClasspath(classpath);
-    }
 
     /*************************  -d option *************************/
     private File baseDir = null;
@@ -339,19 +286,18 @@ public class WsImport extends MatchingTask {
     }
 
     private Commandline setupWsimportCommand() {
-        Commandline cmd = setupWsimportArgs();        
-        Path classpath = getClasspath();
-
-        if (classpath != null && !classpath.toString().equals("")) {
-            cmd.createArgument().setValue("-classpath");
-            cmd.createArgument().setPath(classpath);
-        }
+        Commandline cmd = setupWsimportArgs();
         return cmd;
     }
 
     private Commandline setupWsimportForkCommand() {
         CommandlineJava forkCmd = new CommandlineJava();
-        Path classpath = getClasspath();
+        ClassLoader loader = this.getClass().getClassLoader();
+
+        Path classpath = new Path(project);
+        if (loader instanceof AntClassLoader) {
+           classpath = new Path(project, ((AntClassLoader)loader).getClasspath());
+        }
         forkCmd.createClasspath(getProject()).append(classpath);
         forkCmd.setClassname("com.sun.tools.ws.WsImport");
         if (null != getJvmargs()) {
@@ -463,11 +409,19 @@ public class WsImport extends MatchingTask {
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
 
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                ClassLoader loader = this.getClass().getClassLoader();
+                Thread.currentThread().setContextClassLoader(loader);
+                String sysPath = System.getProperty("java.class.path");
                 try {
                     CompileTool compTool = new CompileTool(logstr, "wsimport");
+                    if (loader instanceof AntClassLoader) {
+                        System.setProperty("java.class.path", ((AntClassLoader)loader).getClasspath());
+                    }
                     ok = compTool.run(cmd.getArguments());
                 } finally {
+                    if (sysPath != null) {
+                        System.setProperty("java.class.path", sysPath);
+                    }
                     Thread.currentThread().setContextClassLoader(old);
                 }
             }
