@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://java.sun.com/xml/ns/jax-rpc/ri/runtime"
+  targetNamespace="http://java.sun.com/xml/ns/jax-rpc/ri/runtime"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"
+  version="1.0">
+
+  <xsd:element name="endpoints">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="endpoint" type="tns:endpointType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="param-valueType">
+    <xsd:sequence>
+      <xsd:element name="param-name" type="xsd:string"/>
+      <xsd:element name="param-value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="port-component_handlerType">
+    <xsd:sequence>
+      <xsd:element name="handler-name" type="xsd:string"/>
+      <xsd:element name="handler-class" type="xsd:string"/>
+      <xsd:element name="init-param" type="tns:param-valueType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="soap-header" type="xsd:QName" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="soap-role" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="handler-chainType">
+    <xsd:sequence>
+      <xsd:element name="handler-chain-name" type="xsd:string"/>
+      <xsd:element name="handler" type="tns:port-component_handlerType"
+						 minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="endpointType">
+    <xsd:annotation>
+      <xsd:documentation>
+            An endpoint definition has several attributes:
+                "name" - the endpoint name
+                "implementation" - the name of the endpoint implementation class
+                "wsdl" - the name of a resource corresponding to the WSDL document for the endpoint;
+                "service" - the QName of the WSDL service that owns this endpoint;
+                "port" - the QName of the WSDL port for this endpoint;
+                "urlpattern" - the URL pattern this endpoint is mapped to.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="handler-chain" type="tns:handler-chainType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="implementation" type="xsd:string" use="required"/>
+    <xsd:attribute name="wsdl" type="xsd:anyURI"/>
+    <xsd:attribute name="service" type="xsd:anyURI"/>
+    <xsd:attribute name="port" type="xsd:anyURI"/>
+    <xsd:attribute name="mtom" type="xsd:boolean"/>
+    <xsd:attribute name="urlpattern" type="xsd:anyURI" use="required"/>
+    <xsd:attribute name="binding" type="xsd:string" use="required"/>
+    <xsd:attribute name="enable-mtom" type="xsd:string" use="required"/>
+  </xsd:complexType>
+   
+</xsd:schema>
