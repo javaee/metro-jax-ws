@@ -7,10 +7,8 @@
   <meta name="CREATED" content="20050329;10375410">
   <meta name="CHANGED" content="20050401;8213207">
 </head>
-<body lang="en-US" dir="ltr">
-<br>
-<p><br>
-<span style="font-weight: bold;"></span></p>
+<body dir="ltr" lang="en-US">
+<span style="font-weight: bold;"></span>
 <h2><a name="wsdeploytool" id="wsdeploytool"></a>WAR file<br>
 </h2>
 <h4>The WAR Contents<br>
@@ -22,7 +20,8 @@ tools.</p>
 <p>For example, a sample WAR file starting from a WSDL file:<br>
 </p>
 <pre>WEB-INF/classes/hello/HelloIF.class          SEI<br>WEB-INF/classes/hello/HelloImpl.class        Endpoint<br>WEB-INF/sun-jaxws.xml                        JAX-WS RI deployment descriptor<br>WEB-INF/web.xml                              Web deployment descriptor<br>WEB-INF/wsdl/HelloService.wsdl               WSDL<br>WEB-INF/wsdl/schema.xsd                      WSDL imports this Schema</pre>
-<h4>The <code>sun-jaxws.xml</code> File</h4>
+<h4><a name="The_sun-jaxws.xml_File"></a>The <code>sun-jaxws.xml</code>
+File</h4>
 <p>The <code>&lt;endpoints&gt;</code> element contain one or more <code>&lt;endpoint&gt;</code>
 elements. Each endpoint represents a port in the WSDL and it contains
 all information about implementation class, servlet urlpattern,
@@ -35,7 +34,7 @@ file for a simple <code>HelloWorld</code> service.</p>
   </li>
   <li>
     <table style="text-align: left; width: 756px; height: 139px;"
- border="1" cellspacing="2" cellpadding="2">
+ border="1" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">Attribute</td>
@@ -116,7 +115,7 @@ this annotation.<br>
           </td>
           <td style="vertical-align: top;">Binding id defined in the
 JAX-WS API. The possible values are:<br>
-          <pre>"http://schemas.xmlsoap.org/wsdl/soap/http",<br>"http://www.w3.org/2003/05/soap/bindings/HTTP/",<br>"http://www.w3.org/2004/08/wsdl/http"</pre>
+          <pre>"http://schemas.xmlsoap.org/wsdl/soap/http",<br>"http://www.w3.org/2003/05/soap/bindings/HTTP/"<br></pre>
 If omitted, it is considered SOAP1.1 binding.<br>
           </td>
         </tr>
@@ -126,7 +125,8 @@ If omitted, it is considered SOAP1.1 binding.<br>
           </td>
           <td style="vertical-align: top;">Y<br>
           </td>
-          <td style="vertical-align: top;">Enables MTOM optimization<br>
+          <td style="vertical-align: top;">Enables MTOM optimization.
+true or false. Default is false.<br>
           </td>
         </tr>
       </tbody>
