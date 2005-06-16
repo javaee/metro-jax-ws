@@ -9,8 +9,8 @@
 </head>
 <body dir="ltr" lang="en-US">
 <span style="font-weight: bold;"></span>
-<h2><a name="wsdeploytool" id="wsdeploytool"></a>WAR file<br>
-</h2>
+<h1>WAR file</h1>
+<hr style="width: 100%; height: 2px;">Last modified: 6/16/2005
 <h4>The WAR Contents<br>
 </h4>
 <p>Typically, one creates the&nbsp; WAR file with a GUI development
@@ -26,7 +26,9 @@ File</h4>
 elements. Each endpoint represents a port in the WSDL and it contains
 all information about implementation class, servlet urlpattern,
 binding, WSDL, service, port QNames.&nbsp; The following shows a <code>sun-jaxws.xml</code>
-file for a simple <code>HelloWorld</code> service.</p>
+file for a simple <code>HelloWorld</code> service. sun-jaxws.xml is
+the schema instance of <a href="sun-jaxws.xsd">sun-jaxws.xsd</a>.<br>
+</p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>  xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>  version="2.0"&gt;<br>  &lt;endpoint<br>    name="MyHello"<br><code>    implementation="hello.HelloImpl"</code><br>    urlpattern="/<code>hello"/&gt;<br>&lt;/endpoints&gt;<br><br></code></pre>
 <ul>
   <li>
@@ -140,7 +142,10 @@ true or false. Default is false.<br>
 <h4>The<span style="font-family: monospace;"> </span><code>web.xml</code>
 File</h4>
 <p>The following shows a <code>web.xml</code> file for a simple <code>HelloWorld</code>
-service. It specifies JAX-WS RI specific listener, servlet classes.<br>
+service. It specifies JAX-WS RI specific listener, servlet classes.
+These classes are
+com.sun.ws.transport.http.servlet.JAXRPCContextListener, and
+com.sun.xml.ws.transport.http.servlet.JAXRPCServlet is servlet<br>
 </p>
 <code></code>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd"&gt;<br><br>&lt;web-app&gt;<br>  &lt;listener&gt;<br>    &lt;listener-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCContextListener&lt;/listener-class&gt;<br>  &lt;/listener&gt;<br>  &lt;servlet&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;servlet-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCServlet&lt;/servlet-class&gt;<br>    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;<br>  &lt;/servlet&gt;<br>  &lt;servlet-mapping&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;<br>  &lt;/servlet-mapping&gt;<br>  &lt;session-config&gt;<br>    &lt;session-timeout&gt;60&lt;/session-timeout&gt;<br>  &lt;/session-config&gt;<br>&lt;/web-app&gt;<code></code><br></pre>
@@ -148,7 +153,7 @@ service. It specifies JAX-WS RI specific listener, servlet classes.<br>
 <ul>
   <li>WSDL and auxiliary WSDL, Schema files should be packaged under
 /WEB-INF/wsdl dir. It is recommended that they need not be packaged
-when the service is started from j<br>
+when the service is started from java<br>
   </li>
   <li>WebService implementation class should contain @WebService
 annotation. Provider based endpoints need not have @WebService
