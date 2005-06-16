@@ -11,7 +11,7 @@
 <h1>JAX-WS 2.0 Early Access 2<br>
 Release Notes</h1>
 <hr>
-<p>Last Modified: 06/15/05</p>
+<p>Last Modified: 06/16/05</p>
 <h2>Online Documentation</h2>
 <p>The documentation for JAX-WS 2.0 as well as the sample applications
 will
@@ -41,9 +41,14 @@ Web Services
 <ul>
   <li>Implemenation of JAX-WS 2.0 APIs instead of JAX-RPC 2.0 APIs<br>
   </li>
-  <li><p>MTOM &amp; Swaref</><p></li>
-  <li><p>purely dynamic runtime<br></p>
-    </li>
+  <li>
+    <p>MTOM &amp; Swaref</p>
+    <p> </p>
+  </li>
+  <li>
+    <p>purely dynamic runtime<br>
+    </p>
+  </li>
   <li>
     <p>removal of wsdeploy and wscompile<br>
     </p>
@@ -82,11 +87,29 @@ the JAX-WS 2.0 EA extracted bundle.&nbsp;</p>
 release.</p>
   </li>
   <li>
-    <p>Dispatch attachment support is not supported in this Early Access release</p>
+    <p>Dispatch attachment support is not supported in this Early
+Access release</p>
+  </li>
+  <li>
     <p>SOAP 1.2 use with the Dispatch client has been minimally tested</p>
+  </li>
+  <li>
+    <p>headerfault is not supported. this is because of issues related
+with annotating Java exceptions as headerfaults on the SEI.</p>
+  </li>
+  <li>
+    <p>A return type cant be bound to header. This is because of no
+annotation to bind @WebResult to header.</p>
+  </li>
+  <li>SOAP 1.2 header processing (such as soap12env:MustUnderstand,
+soap12env:role) not supported<br>
   </li>
 </ul>
 <h2>Known Bugs/Issues</h2>
+<ul>
+  <li>Checked exception is not wrapped correctly in ExecutionException
+for async clients in for proxy port.</li>
+</ul>
 <ul>
 </ul>
 <h2>For More Information</h2>
