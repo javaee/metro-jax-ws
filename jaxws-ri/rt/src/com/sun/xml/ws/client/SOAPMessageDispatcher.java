@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.4 2005-05-25 20:52:02 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.5 2005-06-16 13:43:53 vivekp Exp $
  */
 
 /*
@@ -222,7 +222,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SOAPMessage sm = doSend(messageInfo);
             postSendHook(messageInfo);
 
-            Response r = sendAsyncReceive(messageInfo, sm);
+            //Response r = sendAsyncReceive(messageInfo, sm);
+
+            //pass a copy of MessageInfo to the future task,so that no conflicts 
+            //due to threading happens 
+            Response r = sendAsyncReceive(MessageInfoBase.copy(messageInfo), sm);
             if (executorService == null) {
                 executorService = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE);
                 /*

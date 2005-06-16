@@ -1,5 +1,5 @@
 /*
- * $Id: MessageInfoBase.java,v 1.1 2005-05-23 22:30:17 bbissett Exp $
+ * $Id: MessageInfoBase.java,v 1.2 2005-06-16 13:43:53 vivekp Exp $
  */
 
 /*
@@ -153,5 +153,27 @@ public class MessageInfoBase implements MessageInfo {
      */
     public void setConnection(Connection connection) {
         this._connection = connection;
+    }
+
+    public static MessageInfo copy(MessageInfo mi){
+        MessageInfoBase mib = (MessageInfoBase)mi;
+        MessageInfoBase newMi = new MessageInfoBase();
+        if(newMi._data != null){
+            Object[] data = new Object[mib._data.length];
+            int i = 0;
+            for(Object o : mib._data){
+                data[i++] = o;
+            }
+            newMi._data = data;
+        }
+        newMi.setConnection(mi.getConnection());
+        newMi.setMethod(mi.getMethod());
+        newMi.setDecoder(mi.getDecoder());
+        newMi.setEncoder(mi.getEncoder());
+        newMi.setEPTFactory(mi.getEPTFactory());
+        newMi.setMEP(mi.getMEP());
+        newMi._messageDispatcher = mib._messageDispatcher;
+        newMi._metadata = new HashMap(mib._metadata);
+        return (MessageInfo)newMi;
     }
 }
