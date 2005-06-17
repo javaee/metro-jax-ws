@@ -11,8 +11,8 @@
 <h1>JAX-RPC 2.0 Early Access<br>
 Provider</h1>
 <hr>
-<p>Last Modified: 06/07/05</p>
-<p>Web service endpoints may choose to work at the XML messasge level
+<p>Last Modified: 06/16/05</p>
+<p>Web Service endpoints may choose to work at the XML message level
 by implementing the <code>Provider</code> interface. This is achieved
 by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>.
 The endpoint accesses the message or message payload using this
@@ -47,17 +47,26 @@ is considered a one way MEP.</p>
 <h2>WSDL Customization</h2>
 <p>The provider endpoint starts with a WSDL file. A port can be
 customized to a provider endpoint using the <code>&lt;provider&gt;</code>
-customization. wsgen won't generate any artifacts for that.<br>
+customization. wsimport won't generate any artifacts for that port.<br>
 </p>
 <p>For example:</p>
 <pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    &lt;provider&gt;true&lt;/provider&gt;<br>  &lt;/bindings&gt;<br></pre>
 <h2>The <code>sun-jaxws.xml</code> file</h2>
 <span style="font-family: monospace;"></span>The provider endpoint
-require all the attributes: name, implementation, wsdl, service, port,
-urlpattern.
+requires all the attributes: name, implementation, wsdl, service, port,
+urlpattern.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br><br><br></pre>
+<h2><code></code>Provider and Handlers<br>
+</h2>
+<span style="font-family: monospace;"></span>Handlers can be configured
+with Provider endpoints in sun-jaxws.xml descriptor. For more
+information, see <a href="jaxws-war.html">handler config</a>.<br>
+<p>For example:<br>
+</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    urlpattern='/addnumbers'/&gt;<br>    &lt;handler-chain&gt;<br>      &lt;handler-chain-name&gt;my handler&lt;/handler-chain-name&gt;<br>      &lt;handler&gt;<br>        &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>        &lt;handler-class&gt;provider.server.MyHandler&lt;/handler-class&gt;<br>      &lt;/handler&gt;<br>    &lt;/handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
+<pre><br></pre>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>

@@ -63,7 +63,7 @@ the schema instance of <a href="sun-jaxws.xsd">sun-jaxws.xsd</a>.<br>
           <td style="vertical-align: top;">Primary wsdl file location
 in the WAR file. For e.g. /WEB-INF/wsdl/HelloService.wsdl. If this
 isn't specified, JAX-WS will create and publish a new WSDL. When the
-service is developed from java, it is recommended to omit this
+service is developed from Java, it is recommended to omit this
 attribute.<br>
           </td>
         </tr>
@@ -85,7 +85,7 @@ from java, it is recommended to omit this attribute.</td>
           </td>
           <td style="vertical-align: top;">QName of WSDL port. For e.g.
 {http://example.org/}HelloPort. When the service is developed from
-java, it is recommended to omit this attribute.</td>
+Java, it is recommended to omit this attribute.</td>
         </tr>
         <tr>
           <td style="vertical-align: top;">
@@ -136,7 +136,7 @@ true or false. Default is false.<br>
   </li>
   <li><br>
   </li>
-  <li>endpont can have a optional handler-chain element</li>
+  <li>endpoint can have a optional handler-chain element</li>
 </ul>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints ..."&gt;<br>  &lt;endpoint ...<code>&gt;<br></code>&nbsp;&nbsp;&nbsp; &lt;handler-chain&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-chain-name&gt;somename&lt;/handler-chain-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-class&gt;hello.MyHandler&lt;/handler-class&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/handler&gt;<br>&nbsp;&nbsp;&nbsp; &lt;/handler-chain&gt;<br><code>  &lt;/endpoint&gt;<br>&lt;/endpoints&gt;</code></pre>
 <h4>The<span style="font-family: monospace;"> </span><code>web.xml</code>
@@ -153,11 +153,13 @@ com.sun.xml.ws.transport.http.servlet.JAXRPCServlet is servlet<br>
 <ul>
   <li>WSDL and auxiliary WSDL, Schema files should be packaged under
 /WEB-INF/wsdl dir. It is recommended that they need not be packaged
-when the service is started from java<br>
+when the service is started from Java<br>
   </li>
   <li>WebService implementation class should contain @WebService
 annotation. Provider based endpoints need not have @WebService
-annotation.<br>
+annotation.</li>
+  <li>wsdl, service, port attributes for endpoint element are mandatory
+for Provider based endpoints.<br>
   </li>
 </ul>
 <p><br>

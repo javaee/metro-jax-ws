@@ -29,9 +29,10 @@
       <xsd:element name="handler-class" type="xsd:string"/>
       <xsd:element name="init-param" type="tns:param-valueType" minOccurs="0" maxOccurs="unbounded"/>
 <!--
+      This element is ignored for now in the runtime.
       <xsd:element name="soap-header" type="xsd:QName" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="soap-role" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
 -->
+      <xsd:element name="soap-role" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
