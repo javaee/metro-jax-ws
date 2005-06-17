@@ -50,11 +50,12 @@ customized to a provider endpoint using the <code>&lt;provider&gt;</code>
 customization. wsimport won't generate any artifacts for that port.<br>
 </p>
 <p>For example:</p>
-<pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    &lt;provider&gt;true&lt;/provider&gt;<br>  &lt;/bindings&gt;<br></pre>
+<pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    <span
+ style="font-weight: bold;">&lt;provider&gt;true&lt;/provider&gt;</span><br>  &lt;/bindings&gt;<br></pre>
 <h2>The <code>sun-jaxws.xml</code> file</h2>
 <span style="font-family: monospace;"></span>The provider endpoint
 requires all the attributes: name, implementation, wsdl, service, port,
-urlpattern.<br>
+urlpattern. For SOAP1.2 binding, one needs to specify binding attribute.<br>
 <p>For example:<br>
 </p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br><br><br></pre>
