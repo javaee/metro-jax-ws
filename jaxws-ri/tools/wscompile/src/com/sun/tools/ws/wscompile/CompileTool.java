@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.3 2005-06-08 06:13:21 vivekp Exp $
+ * $Id: CompileTool.java,v 1.4 2005-06-17 01:27:44 kohlert Exp $
  */
 
 /*
@@ -312,7 +312,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 new CustomExceptionGenerator());
         actions.put(ActionConstants.ACTION_JAXB_TYPE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.JAXBTypeGenerator());
-//        actions.put(ActionConstants.ACTION_WSDL_GENERATOR, new WSDLGenerator());
+//        actions.put(ActionConstants.ACTION_WSDL_GENERATOR, new com.sun.tools.ws.processor.generator.WSDLGenerator());
     }
 
     public void removeGeneratedFiles() {
@@ -336,25 +336,29 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         args[6] = "-XclassesAsDecls";
         args[7] = endpoint;
 
-//        com.sun.tools.apt.Main main = new com.sun.tools.apt.Main();
         int result = com.sun.tools.apt.Main.process(this, args);
         if (result != 0) {
             environment.error(getMessage("wscompile.compilationFailed"));
             return;
         }
         if (genWsdl) {
-            String tmpPath = destDir.getAbsolutePath()+File.pathSeparator+classpath;
-            ClassLoader classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath));
+            ClassLoader classLoader = null;
             Class endpointClass = null;
+            com.sun.xml.ws.modeler.RuntimeModeler rtModeler;            
             try {
-                endpointClass = classLoader.loadClass(endpoint);
+                endpointClass = Class.forName(endpoint);
             } catch (ClassNotFoundException e) {
-                // this should never happen
-                environment.error(getMessage("wsgen.class.not.found", endpoint));
+                String tmpPath = classpath+File.pathSeparator+destDir.getAbsolutePath();
+                classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath));
+                try {
+                    endpointClass = classLoader.loadClass(endpoint);                
+                } catch (ClassNotFoundException e2) {
+                    // this should never happen
+                    environment.error(getMessage("wsgen.class.not.found", endpoint));
+                }
             }
             String bindingID = getBindingID(protocol);
-            com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
-                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);
+            rtModeler = new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);    
             rtModeler.setClassLoader(classLoader);
             com.sun.xml.ws.model.RuntimeModel rtModel = rtModeler.buildRuntimeModel();
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
@@ -566,7 +570,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds,
             AnnotationProcessorEnvironment apEnv) {
         if (verbose)
-            apEnv.getMessager().printNotice("\n\n\nap round: " + ++round);
+            apEnv.getMessager().printNotice("\tap round: " + ++round);
         webServiceAP.init(apEnv);
         return webServiceAP;
     }
