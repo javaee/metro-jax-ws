@@ -498,11 +498,16 @@ service endpoint interface was generated from.</p>
  id="2.1.2.2_Implement_the_servce_endpoint"></a>3.1.2.2 Implement the
 Service Endpoint Interface</h4>
 <p>The next thing to do will be to provide the implementation of the
-service endpoint interface generated in the previous step. Let's look
+service endpoint interface generated in the previous step. When you
+implement the service endpoint interface it is necessary to provide a
+@WebService annotation on the implementation class with a
+endpointInteface element specifying the qualified name of the endpoint
+interface class. Let's look
 at the implementation class <code><a
  href="../samples/fromwsdl/src/fromwsdl/server/AddNumbersImpl.java">fromwsdl.server.AddNumbersImpl.java</a></code>
 from the sample application <code>fromwsdl</code>:</p>
-<pre style="margin-left: 40px;">package fromwsdl.server;<br><br>public class AddNumbersImpl implements AddNumbersPortType {<br> /**<br> * @param number1<br> * @param number2<br> * @return The sum<br> * @throws AddNumbersException<br> * if any of the numbers to be added is negative.<br> */<br><br> public int addNumbers(int number1, int number2)<br>   throws AddNumbersFault_Exception {<br> ...<br> }<br>}<br></pre>
+<pre style="margin-left: 40px;">package fromwsdl.server;<br><br><font
+ lang="0">@WebService(endpointInterface="fromwsdl.server.AddNumbersPortType")</font><br>public class AddNumbersImpl implements AddNumbersPortType {<br> /**<br> * @param number1<br> * @param number2<br> * @return The sum<br> * @throws AddNumbersException<br> * if any of the numbers to be added is negative.<br> */<br><br> public int addNumbers(int number1, int number2)<br>   throws AddNumbersFault_Exception {<br> ...<br> }<br>}<br></pre>
 <h4><a class="mozTocH4" name="mozTocId853441"></a><a
  name="2.1.2.3_Create_raw_war_" id="2.1.2.3_Create_raw_war_"></a>3.1.2.3
 Create a WAR</h4>
