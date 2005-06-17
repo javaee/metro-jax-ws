@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.4 2005-06-17 01:27:44 kohlert Exp $
+ * $Id: CompileTool.java,v 1.5 2005-06-17 18:45:07 kohlert Exp $
  */
 
 /*
@@ -342,23 +342,19 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             return;
         }
         if (genWsdl) {
-            ClassLoader classLoader = null;
+            String tmpPath = destDir.getAbsolutePath()+File.pathSeparator+classpath;
+            ClassLoader classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath));
             Class endpointClass = null;
-            com.sun.xml.ws.modeler.RuntimeModeler rtModeler;            
+
             try {
-                endpointClass = Class.forName(endpoint);
+                endpointClass = classLoader.loadClass(endpoint);
             } catch (ClassNotFoundException e) {
-                String tmpPath = classpath+File.pathSeparator+destDir.getAbsolutePath();
-                classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath));
-                try {
-                    endpointClass = classLoader.loadClass(endpoint);                
-                } catch (ClassNotFoundException e2) {
-                    // this should never happen
-                    environment.error(getMessage("wsgen.class.not.found", endpoint));
-                }
+                // this should never happen
+                environment.error(getMessage("wsgen.class.not.found", endpoint));
             }
             String bindingID = getBindingID(protocol);
-            rtModeler = new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);    
+            com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
+                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);
             rtModeler.setClassLoader(classLoader);
             com.sun.xml.ws.model.RuntimeModel rtModel = rtModeler.buildRuntimeModel();
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
