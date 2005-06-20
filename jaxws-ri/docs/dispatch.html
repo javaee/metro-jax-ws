@@ -22,7 +22,7 @@
   Dispatch&lt;T&gt;</h1>
   <hr>
 
-  <p>Last Modified: 06/15/2005</p>
+  <p>Last Modified: 06/20/2005</p>
 
   <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.rpc.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
@@ -46,17 +46,18 @@ Service service = serviceFactory.createService(serviceQName);
 
   <p>Other methods in <code>ServiceFactory</code> may be used to create a <code>Service</code>. However, they are not supported in this EA release of JAXRPC 2.0. In these cases, the created service would still be devoid of the WSDL knowledge of the web service types, messages, and operations.</p>
 
-  <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service instance has a <code>createPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch</code> and Call instances.</p>
+  <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service instance has a <code>createPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch</code> instances.</p>
 
-  <p>Those developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint parameters of this method. However, what is this <code>BindingID</code> URI parameter? Currently, the JAXRPC 2.0 Early Draft Specification supports and defines one <code>Binding</code> URI, that of the SOAP/HTTP Binding. In WSDL this corresponds to the following lines. More may be defined in future versions of the JAXRPC 2.0 specification.</p>
-  <pre>
-&lt;binding name="BindingName" type="tns:typename"&gt;
-    &lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document|rpc"/&gt;
-</pre>
+  <p>Those developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint parameters of this method. Currently, the JAXRPC 2.0 EA2 implementation supports two <code>Binding</code> URI's, that of the SOAP 1.1 and SOAP 1.2 Bindings. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents.</p>
 
-  <p>The creation of the port using the <code>Service</code> API is shown here:</p>
+  <p>The creation of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
   <pre>
 service.createPort(QName portName, URI new URI(SOAPBinding.SOAP11HTTP_BINDING),String endpointAddress);
+</pre>
+
+<p>SOAP 1.2 support has been implemented for <code>Dispatch</code>. This requires only one change in the programming model. The creation of the SOAP 1.2 port using the <code>Service</code> API is shown here:</p>
+  <pre>
+service.createPort(QName portName, URI new URI(SOAPBinding.SOAP12HTTP_BINDING),String endpointAddress);
 </pre>
 
   <h3>Create a <code>Dispatch</code> instance.</h3>
