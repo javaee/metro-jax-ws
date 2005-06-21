@@ -44,9 +44,9 @@ public class AddNumbersImpl implements Provider<Source> {
     private Source sendSource(int number1, int number2) {
         int sum = number1+number2;
         String body =
-            "<ns:addNumbersResponse xmlns:ns=\"http://duke.org\"><return>"
+            "<ns:addNumbersResponse xmlns:ns=\"http://duke.org\"><ns:return>"
             +sum
-            +"</return></ns:addNumbersResponse>";
+            +"</ns:return></ns:addNumbersResponse>";
         Source source = new StreamSource(
             new ByteArrayInputStream(body.getBytes()));
         return source;
