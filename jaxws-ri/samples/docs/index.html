@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <title>JAX-WS 2.0 Samples Documentation</title>
+</head>
+<body>
+<h1>JAX-WS 2.0 Early Access 2 Samples Documentation</h1>
+<p>Java APIs for XML Web Services 2.0 is developed as <a
+ href="http://jcp.org/en/jsr/detail?id=224">JSR
+224</a> under the <a href="http://jcp.org">Java Community Process</a>
+(JCP).
+This document explains the samples that are bundled along with the
+Early Access
+Standards Implementation of JAX-WS 2.0.</p>
+<h2>1.0 Directory Structure</h2>
+<p>This section explains the directory structure of the bundle:</p>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td valign="top" width="15%">docs</td>
+      <td valign="top" width="85%">index.html, this file</td>
+    </tr>
+    <tr>
+      <td valign="top">etc</td>
+      <td valign="top">Supporting files required by all the samples</td>
+    </tr>
+    <tr>
+      <td valign="top">dispatch</td>
+      <td valign="top">Demonstrates how to dynamically invoke web
+service endpoints</td>
+    </tr>
+    <tr>
+      <td valign="top">fromjava</td>
+      <td valign="top">Demonstrates how to build, deploy, and invoke a
+simple Web service starting from a Java service endpoint implementation
+using annotations</td>
+    </tr>
+    <tr>
+      <td valign="top">fromjavahandler&nbsp;</td>
+      <td valign="top">Same as <b>fromjava</b> sample but with a
+simple logging handler on the client and server</td>
+    </tr>
+    <tr>
+      <td valign="top">fromwsdl</td>
+      <td valign="top">Demonstrates how to build, deploy, and invoke a
+simple Web service starting from a WSDL using external customizations</td>
+    </tr>
+    <tr>
+      <td valign="top">fromwsdlhandler&nbsp;</td>
+      <td valign="top">Same as <b>fromwsdl</b> sample but with a
+simple logging handler on the client and server</td>
+    </tr>
+    <tr>
+      <td valign="top">provider</td>
+      <td valign="top">Demonstrates how to build, deploy, and invoke
+javax.xml.rpc.Provider based Web service endpoint</td>
+    </tr>
+    <tr>
+      <td valign="top">annotations</td>
+      <td valign="top">Same as <b>fromjava</b> but shows how to
+specify a different
+parameter name, operation name, targetNamespace, and other similar
+features.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">async </td>
+      <td style="vertical-align: top;">Demonstrates how to generate
+async operations in a client SEI from a WSDL and invoke it from the
+client application. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">external-customize </td>
+      <td style="vertical-align: top;">Demonstrates how a client client
+application can customize a published WSDL using external binding&nbsp;
+file. </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">inline-customize </td>
+      <td style="vertical-align: top;">Demonstrates how a client
+application and server endpoint can be generated from a WSDL with
+embedded binding declarations. </td>
+    </tr>
+  </tbody>
+</table>
+<h2>2.0 Prerequisites</h2>
+<p>Here is the list of prerequisites that needs to be met before any of
+the samples can be invoked:</p>
+<ol>
+  <li>Download Java 2 Standard Edition 5.0 Update 2 (J2SE 5.0 U2) from <a
+ href="http://java.sun.com/j2se/1.5.0/download.jsp">java.sun.com/j2se/1.5.0/download.jsp</a>.</li>
+  <li>Download Sun Java System Application Server Platform Edition 8.1
+2005 Q1 UR1 (SJSAS PE 8.1 or Application Server) or later from <a
+ href="http://java.sun.com/j2ee/1.4/download.html">java.sun.com/j2ee/1.4/download.html</a>.
+SJSAS PE 8.1 download page has J2EE 1.4 SDK 2005Q1 UR1 available as
+All-In-One bundle and SJSJAS PE 8.1 available as separate bundle. Make
+sure that you download SJSAS PE 8.1 separate bundle only and use J2SE
+5.0 U2 as the J2SE platform for it's installation. Although the
+download page requires J2SE 1.4.2 SDK for SJSAS PE 8.1, J2SE 5.0 U2 is
+required for JAX-RPC 2.0 binaries and must be used as the J2SE platform
+for SJSAS PE 8.1 for the samples to work.</li>
+  <li>Invoke <code>AS_HOME/bin/asant install</code> from the root
+directory of the JAX-WS 2.0 EA 2 bundle.</li>
+</ol>
+<h2>3.0 Invoking the sample</h2>
+<p>Each sample can be built using the <code>AS_HOME/bin/asant</code>
+and <code>build.xml</code> ant
+script in the
+root directory of the sample. Each ant script supports the following
+set of
+targets:</p>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="15%">server</td>
+      <td width="85%">Builds and deploy the service endpoint WAR</td>
+    </tr>
+    <tr>
+      <td>client</td>
+      <td>Builds the client</td>
+    </tr>
+    <tr>
+      <td>run</td>
+      <td>Runs the client</td>
+    </tr>
+  </tbody>
+</table>
+<p>It is essential for the service endpoint to be deployed on
+Application Server
+before clients can be built because clients use the WSDL exposed from
+the
+service endpoint deployed in the Application Server. So please make
+sure that
+your Application Server is either running before the <code>server</code>
+target
+is invoked or run it after the <code>server</code> target is invoked.
+You will
+have to wait a few minutes for the Application Server to deploy the
+service
+endpoint correctly before building the client. </p>
+<p>&nbsp;</p>
+<p>We appreciate your feedback, please send it to <a
+ href="mailto:users@jax-rpc.dev.java.net">users@jax-rpc.dev.java.net</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
