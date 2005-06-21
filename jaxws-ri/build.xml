@@ -154,7 +154,7 @@
   <target name="image">
     <antcall target="tools-build"/>
     <copy todir="${build.home}">
-        <fileset dir="." includes="*.txt" />
+        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, jrl.txt" />
     </copy>
   </target>
 
