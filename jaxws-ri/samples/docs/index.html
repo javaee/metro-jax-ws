@@ -14,7 +14,8 @@ This document explains the samples that are bundled along with the
 Early Access
 Standards Implementation of JAX-WS 2.0.</p>
 <h2>1.0 Directory Structure</h2>
-<p>This section explains the directory structure of the bundle:</p>
+<p>This section explains the directory structure of the <code>samples</code>
+directory in the bundle:</p>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
   <tbody>
     <tr>
@@ -26,48 +27,48 @@ Standards Implementation of JAX-WS 2.0.</p>
       <td valign="top">Supporting files required by all the samples</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">utils<br>
+      <td style="vertical-align: top;">utils
       </td>
-      <td style="vertical-align: top;">Utilities for samples<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">lib<br>
-      </td>
-      <td style="vertical-align: top;">jaxwsSampleUtils.jar - contains
-the utils<br>
+      <td style="vertical-align: top;">Utility source file(s) required by the
+        samples.
       </td>
     </tr>
     <tr>
-      <td valign="top">dispatch</td>
-      <td valign="top">Demonstrates how to dynamically invoke web
-service endpoints</td>
+      <td style="vertical-align: top;">lib
+      </td>
+      <td style="vertical-align: top;">Utility JAR file(s), generated from the
+        source files in <code>utils</code> directory, required by the samples.
+      </td>
     </tr>
     <tr>
       <td valign="top">fromjava</td>
       <td valign="top">Demonstrates how to build, deploy, and invoke a
 simple Web service starting from a Java service endpoint implementation
-using annotations</td>
+using annotations.</td>
     </tr>
     <tr>
       <td valign="top">fromjavahandler&nbsp;</td>
       <td valign="top">Same as <b>fromjava</b> sample but with a
-simple logging handler on the client and server</td>
+simple logging handler on the client and server.</td>
     </tr>
     <tr>
       <td valign="top">fromwsdl</td>
       <td valign="top">Demonstrates how to build, deploy, and invoke a
-simple Web service starting from a WSDL using external customizations</td>
+simple Web service starting from a WSDL using external customizations.</td>
     </tr>
     <tr>
       <td valign="top">fromwsdlhandler&nbsp;</td>
       <td valign="top">Same as <b>fromwsdl</b> sample but with a
-simple logging handler on the client and server</td>
+simple logging handler on the client and server.</td>
+    </tr>
+    <tr>
+      <td valign="top">dispatch</td>
+      <td valign="top">Demonstrates how to dynamically invoke web
+service endpoints.</td>
     </tr>
     <tr>
       <td valign="top">provider</td>
-      <td valign="top">Demonstrates how to build, deploy, and invoke
-javax.xml.rpc.Provider based Web service endpoint</td>
+      <td valign="top">Demonstrates how to build, deploy, and invoke <code>javax.xml.ws.Provider</code> based Web service endpoint.</td>
     </tr>
     <tr>
       <td valign="top">annotations</td>
@@ -95,29 +96,37 @@ application and server endpoint can be generated from a WSDL with
 embedded binding declarations. </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">mtom<br>
+      <td style="vertical-align: top;">mtom
       </td>
-      <td style="vertical-align: top;">MTOM and swaRef sample<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">mtom-soap12<br>
-      </td>
-      <td style="vertical-align: top;">SOAP 1.2 MTOM and swaRef sample<br>
+      <td style="vertical-align: top;">Demonstrates how to enable MTOM and swaRef.
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fromwsdl-soap12<br>
+      <td style="vertical-align: top;">mtom-soap12
       </td>
-      <td style="vertical-align: top;">SOAP 1.2 sample starting from
-WSDL<br>
+      <td style="vertical-align: top;">Same as <b>mtom</b> sample but shows how
+        to specify SOAP 1.2 binding.
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">fromjava-soap12<br>
+      <td style="vertical-align: top;">fromjava-soap12
       </td>
-      <td style="vertical-align: top;">SOAP 1.2 sample starting from
-JAVA<br>
+      <td style="vertical-align: top;">Same as <b>fromjava</b>   sample but shows how to specify
+        SOAP 1.2 binding.
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fromwsdl-soap12
+      </td>
+      <td style="vertical-align: top;">Same as <b>fromwsdl</b> sample but shows how to specify
+        SOAP 1.2 binding.
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">supplychain
+      </td>
+      <td style="vertical-align: top;">Same as <b>fromjava</b>   sample  but
+        using JavaBeans as parameter and return types.
       </td>
     </tr>
   </tbody>
@@ -127,23 +136,31 @@ JAVA<br>
 the samples can be invoked:</p>
 <ol>
   <li>Download Java 2 Standard Edition 5.0 Update 2 (J2SE 5.0 U2) from <a
- href="http://java.sun.com/j2se/1.5.0/download.jsp">java.sun.com/j2se/1.5.0/download.jsp</a>.</li>
+ href="http://java.sun.com/j2se/1.5.0/download.jsp">java.sun.com/j2se/1.5.0/download.jsp</a>.
+    Set <code>JAVA_HOME</code> to the J2SE 5.0 U2 installation directory.</li>
   <li>Download Sun Java System Application Server Platform Edition 8.1
-2005 Q1 UR1 (SJSAS PE 8.1 or Application Server) or later from <a
+2005 Q1 UR2 (SJSAS PE 8.1 or Application Server) or later from <a
  href="http://java.sun.com/j2ee/1.4/download.html">java.sun.com/j2ee/1.4/download.html</a>.
-SJSAS PE 8.1 download page has J2EE 1.4 SDK 2005Q1 UR1 available as
+SJSAS PE 8.1 download page has J2EE 1.4 SDK 2005Q1 UR2 available as
 All-In-One bundle and SJSJAS PE 8.1 available as separate bundle. Make
 sure that you download SJSAS PE 8.1 separate bundle only and use J2SE
 5.0 U2 as the J2SE platform for it's installation. Although the
 download page requires J2SE 1.4.2 SDK for SJSAS PE 8.1, J2SE 5.0 U2 is
-required for JAX-RPC 2.0 binaries and must be used as the J2SE platform
-for SJSAS PE 8.1 for the samples to work.</li>
-  <li>Invoke <code>AS_HOME/bin/asant install</code> from the root
-directory of the JAX-WS 2.0 EA 2 bundle.</li>
+required for JAX-WS 2.0 binaries and must be used as the J2SE platform
+for SJSAS PE 8.1 for the samples to work. Set <code>AS_HOME</code> to point to
+    the Application Server installation directory.</li>
+  <li>Download Ant 1.6.2 or later from <a href="http://ant.apache.org/bindownload.cgi">ant.apache.org</a>
+    and install it, lets say this is installed in <code>ANT_HOME</code>. Please
+    note that <code>AS_HOME/bin/asant</code> cannot be used for building and
+    invoking the samples since JAX-RPC 1.1 implementation is baked into this
+    version of ant script.&nbsp;</li>
+  <li>Invoke <code>ANT_HOME/bin/ant install</code> from the root
+directory of the JAX-WS 2.0 EA2 bundle. This will install JAX-WS 2.0 bundle on
+    the Application Server referred by <code>AS_HOME</code> environment
+    variable.</li>
 </ol>
 <h2>3.0 Invoking the sample</h2>
-<p>Each sample can be built using the <code>AS_HOME/bin/asant</code>
-and <code>build.xml</code> ant
+<p>Each sample can be built, deployed and invoked using the <code>ANT_HOME/bin/ant</code> and <code>build.xml</code> ant
 script in the
 root directory of the sample. Each ant script supports the following
 set of
