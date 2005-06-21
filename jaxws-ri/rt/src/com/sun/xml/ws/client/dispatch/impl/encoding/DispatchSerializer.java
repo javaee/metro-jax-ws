@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.11 2005-06-15 11:11:57 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.12 2005-06-21 17:48:55 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -90,11 +90,8 @@ public class DispatchSerializer {
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
                             if (atts.isNamespaceDeclaration(i)) {
-
                                 String value = atts.getValue(i);
-                                System.out.println("attrs value = " + value);
                                 String localName = atts.getName(i).getLocalPart();
-                                System.out.println("atts localName " + localName);
                                 writer.setPrefix(localName, value);
                                 writer.writeNamespace(localName, value);
                             } else {
