@@ -2,7 +2,7 @@
 
 <!--
  Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ Use is subject to license terms.
 -->
 
 <project name="JAX-WS 2.0 EA2 On Sun Java System App Server 8.1" default="help" basedir=".">
@@ -42,6 +42,6 @@
         
         <target name="help">
             <echo message="install:    Installs JAX-WS 2.0 EA2 on the Application Server"/>
-            <echo message="            Usage: AS_HOME/bin/asant install"/>
+            <echo message="            Usage: ANT_HOME/bin/ant install"/>
         </target>
 </project>
