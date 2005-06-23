@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeContext.java,v 1.3 2005-05-26 18:48:19 vivekp Exp $
+ * $Id: RuntimeContext.java,v 1.4 2005-06-23 02:09:57 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -69,7 +69,9 @@ public class RuntimeContext {
      * @param mi
      */
     public void setMethodAndMEP(QName qname, MessageInfo mi) {
-        mi.setMethod(model.getDispatchMethod(qname));
+        if (model != null) {
+            mi.setMethod(model.getDispatchMethod(qname));
+        }
     }
     
     /**

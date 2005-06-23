@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.6 2005-06-13 22:08:20 kwalsh Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.7 2005-06-23 02:09:55 jitu Exp $
  */
 
 /*
@@ -305,6 +305,16 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     @Override
     protected QName getHeaderTag() {
         return SOAP12Constants.QNAME_SOAP_HEADER;
+    }
+    
+    @Override
+    protected QName getMUAttrQName(){
+        return SOAP12Constants.QNAME_MUSTUNDERSTAND;
+    }
+    
+    @Override
+    protected QName getRoleAttrQName(){
+        return SOAP12Constants.QNAME_ROLE;
     }
 
 }

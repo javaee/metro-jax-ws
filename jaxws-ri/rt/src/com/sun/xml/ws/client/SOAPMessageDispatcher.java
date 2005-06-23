@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.5 2005-06-16 13:43:53 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.6 2005-06-23 02:09:55 jitu Exp $
  */
 
 /*
@@ -14,7 +14,6 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
@@ -22,21 +21,17 @@ import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
-import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
-import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.SOAPConnection;
+import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -155,9 +150,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         HandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
 
         try {
-            checkMustUnderstandHeaders(handlerContext);
+            decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
+            //checkMustUnderstandHeaders(handlerContext);
         } catch (SOAPException se) { // unusual saaj error
             throw new RuntimeException(se);
+        } catch (IOException ie) { // unusual saaj error
+            throw new RuntimeException(ie);
         } catch (SOAPFaultException sfe) {
             closeAllHandlers(handlerContext);
             throw sfe;
@@ -459,7 +457,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * chain caller is null unless one is found.
      *
      * todo -- cleanup
-     */
+     *
     private void checkMustUnderstandHeaders(HandlerContext context) throws SOAPException {
         SOAPMessage message = context.getSOAPMessage();
         SOAPHeader header = message.getSOAPHeader();
@@ -505,5 +503,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         }
     }
+     */
 
 }

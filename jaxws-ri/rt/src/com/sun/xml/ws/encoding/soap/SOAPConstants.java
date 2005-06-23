@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConstants.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ * $Id: SOAPConstants.java,v 1.2 2005-06-23 02:09:56 jitu Exp $
  */
 
 /*
@@ -28,6 +28,8 @@ public class SOAPConstants {
 
     public final static QName QNAME_SOAP_ENVELOPE             = new QName(URI_ENVELOPE, "Envelope");
     public final static QName QNAME_SOAP_HEADER             = new QName(URI_ENVELOPE, "Header");
+    public static final QName QNAME_MUSTUNDERSTAND         = new QName(URI_ENVELOPE, "mustUnderstand");
+    public static final QName QNAME_ROLE                   = new QName(URI_ENVELOPE, "actor");
     public final static QName QNAME_SOAP_BODY             = new QName(URI_ENVELOPE, "Body");
     public final static QName QNAME_SOAP_FAULT             = new QName(URI_ENVELOPE, "Fault");
     public final static QName QNAME_SOAP_FAULT_CODE             = new QName("", "faultcode");

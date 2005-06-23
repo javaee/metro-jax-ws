@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.2 2005-05-25 19:05:50 spericas Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.3 2005-06-23 02:09:57 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -48,6 +48,16 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     @Override
     protected QName getHeaderTag() {
         return SOAP12Constants.QNAME_SOAP_HEADER;
+    }
+    
+    @Override
+    protected QName getMUAttrQName(){
+        return SOAP12Constants.QNAME_MUSTUNDERSTAND;
+    }
+    
+    @Override
+    protected QName getRoleAttrQName(){
+        return SOAP12Constants.QNAME_ROLE;
     }
 
 }

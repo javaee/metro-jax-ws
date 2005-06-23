@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12Constants.java,v 1.1 2005-05-23 22:30:14 bbissett Exp $
+ * $Id: SOAP12Constants.java,v 1.2 2005-06-23 02:09:56 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,6 +31,8 @@ public class SOAP12Constants {
     public static final QName QNAME_ENVELOPE_ENCODINGSTYLE = new QName(URI_ENVELOPE, "encodingStyle");
     public static final QName QNAME_SOAP_FAULT             = new QName(URI_ENVELOPE, "Fault");
     public static final QName QNAME_MUSTUNDERSTAND         = new QName(URI_ENVELOPE, "mustUnderstand");
+    public static final QName QNAME_ROLE                   = new QName(URI_ENVELOPE, "role");
+
     public static final QName QNAME_NOT_UNDERSTOOD         = new QName(URI_ENVELOPE, "NotUnderstood");
     
     //fault

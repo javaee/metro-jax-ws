@@ -1,18 +1,17 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.4 2005-06-13 23:19:59 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.5 2005-06-23 02:09:57 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  *
  */
 package com.sun.xml.ws.server;
-
-import com.sun.pept.ept.EPTFactory;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
@@ -25,9 +24,11 @@ import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import java.io.InputStream;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
@@ -44,6 +45,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
@@ -83,8 +86,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             boolean skipEndpoint = false;
             boolean peekOneWay = false;
             try {
-                peekOneWay = checkHeadersPeekBody(messageInfo, context);
+                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                SOAPDecoder decoder = eptf.getSOAPDecoder();
+                peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
+                        messageInfo, context, true);
+                //peekOneWay = checkHeadersPeekBody(messageInfo, context);
             } catch (Exception e) {
+                e.printStackTrace();
                 skipEndpoint = true;
                 InternalMessage internalMessage =
                     SOAPRuntimeModel.createFaultInBody(e, null, null, null);
@@ -381,7 +389,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * is one-way or not. Assume request-response
      * if it cannot be determined.
      *
-     */
+     *
     private boolean checkHeadersPeekBody(MessageInfo mi, HandlerContext context)
             throws SOAPException {
      
@@ -417,13 +425,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
 
     }
+     */
     
     /*
      * Try to create as few objects as possible, thus carry
      * around null sets when possible and check if MU headers
      * are found. Also assume handler chain caller is null
      * unless one is found.
-     */
+     *
     private void checkMustUnderstandHeaders(MessageInfo mi, HandlerContext context,
         SOAPHeader header) throws SOAPException {
         
@@ -502,6 +511,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         }
     }
+     */
 
 }
 

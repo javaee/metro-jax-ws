@@ -1,24 +1,20 @@
 /*
- * $Id: SOAPDecoder.java,v 1.8 2005-06-13 22:08:22 kwalsh Exp $
+ * $Id: SOAPDecoder.java,v 1.9 2005-06-23 02:09:56 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
 package com.sun.xml.ws.encoding.soap;
-
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamReader;
 
 import com.sun.pept.encoding.Decoder;
 import com.sun.pept.ept.MessageInfo;
+import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.*;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
@@ -28,9 +24,10 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
@@ -44,13 +41,23 @@ import javax.xml.transform.Source;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author JAX-RPC RI Development Team
  */
 public abstract class SOAPDecoder implements Decoder {
+    
+    private static final Logger logger = Logger.getLogger(
+        com.sun.xml.ws.util.Constants.LoggingDomain + ".soap.decoder");
+    
+    private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
+        "SOAP must understand error";
 
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
@@ -100,6 +107,14 @@ public abstract class SOAPDecoder implements Decoder {
 
     protected QName getHeaderTag(){
         return SOAPConstants.QNAME_SOAP_HEADER;
+    }
+    
+    protected QName getMUAttrQName(){
+        return SOAPConstants.QNAME_MUSTUNDERSTAND;
+    }
+    
+    protected QName getRoleAttrQName(){
+        return SOAPConstants.QNAME_ROLE;
     }
 
     protected void skipBody(XMLStreamReader reader) {
@@ -310,6 +325,169 @@ public abstract class SOAPDecoder implements Decoder {
             return null;
         else
             return values[0];
+    }
+    
+    /*
+     * It does mustUnderstand processing, and does best guess of MEP
+     *
+     * Avoids SAAJ call that create DOM.
+     *
+     */
+    public boolean doMustUnderstandProcessing(SOAPMessage soapMessage,
+            MessageInfo mi, HandlerContext handlerContext, boolean getMEP)
+    throws SOAPException, IOException {
+        
+        boolean oneway = false;
+        Source source = soapMessage.getSOAPPart().getContent();
+        ByteInputStream bis = null;
+        if (source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            InputStream is = streamSource.getInputStream();
+            if (is != null && is instanceof ByteInputStream) {
+                bis = ((ByteInputStream)is);
+            } else {
+                System.out.println("****** NOT ByteInputStream **** "+is);
+            }
+        } else {
+            System.out.println("****** NOT StreamSource **** ");
+        }
+        
+        XMLStreamReader reader =
+                SourceReaderFactory.createSourceReader(source, true);
+        XMLStreamReaderUtil.nextElementContent(reader);
+        checkMustUnderstandHeaders(reader,  mi, handlerContext);
+        
+        if (getMEP) {
+            oneway = isOneway(reader, mi);
+        }
+        XMLStreamReaderUtil.close(reader);
+        if (bis != null) {
+            bis.close();            // resets stream; SAAJ has whole stream
+        }
+        return oneway;
+    }
+    
+    /*
+     * returns Oneway or not. reader is on <Body>
+     *
+     * Peek into the body and make a best guess as to whether the request
+     * is one-way or not. Assume request-response if it cannot be determined.
+     *
+     */
+    private boolean isOneway(XMLStreamReader reader, MessageInfo mi) {
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getBodyTag());    // <Body>
+        int state = XMLStreamReaderUtil.nextElementContent(reader);
+        QName operationName = null;
+        if (state == START_ELEMENT) {   // handles empty Body i.e. <Body/>
+            operationName = reader.getName();
+        }
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+        rtCtxt.setMethodAndMEP(operationName, mi);
+        return (mi.getMEP() == MessageStruct.ONE_WAY_MEP);
+    }
+    
+    /*
+     * Does MU processing. reader is on <Envelope>, at the end of this method
+     * leaves it on <Body>
+     *
+     * Also assume handler chain caller is null unless one is found.
+     */
+    private void checkMustUnderstandHeaders(XMLStreamReader reader, MessageInfo mi,
+            HandlerContext context) {
+        
+        // Decode envelope
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
+
+        
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
+            return;             // No Header, no MU processing
+        }
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
+        
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+        
+        // start with just the endpoint roles
+        Set<String> roles = new HashSet<String>();
+        roles.add("http://schemas.xmlsoap.org/soap/actor/next");
+        roles.add("");
+        HandlerChainCaller hcCaller = (HandlerChainCaller)mi.getMetaData(
+                HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        if (hcCaller != null) {
+            roles.addAll(hcCaller.getRoles());
+        }
+
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("roles:");
+            for (String r : roles) {
+                logger.finest("\t\"" + r + "\"");
+            }
+        }
+
+        // keep set=null if there are no understood headers
+        Set<QName> understoodHeaders = null;
+        SOAPRuntimeModel model = (SOAPRuntimeModel)rtCtxt.getModel();
+        if (model != null && model.getKnownHeaders() != null) {
+            understoodHeaders =
+                new HashSet<QName>(((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders());
+        }
+        if (understoodHeaders == null) {
+            if (hcCaller != null) {
+                understoodHeaders = hcCaller.getUnderstoodHeaders();
+            }
+        } else {
+            if (hcCaller != null) {
+                understoodHeaders.addAll(hcCaller.getUnderstoodHeaders());
+            }
+        }
+
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("understood headers:");
+            if (understoodHeaders == null || understoodHeaders.isEmpty()) {
+                logger.finest("\tnone");
+            } else {
+                for (QName nameX : understoodHeaders) {
+                    logger.finest("\t" + nameX.toString());
+                }
+            }
+        }
+        
+        while (true) {
+            if (reader.getEventType() == START_ELEMENT) {
+                // check MU header for each role
+                QName qName = reader.getName();
+                String mu = reader.getAttributeValue(
+                        getMUAttrQName().getNamespaceURI(),
+                        getMUAttrQName().getLocalPart());
+                if (mu != null && mu.equals("1")) {
+                    String role = reader.getAttributeValue(
+                        getRoleAttrQName().getNamespaceURI(),
+                        getRoleAttrQName().getLocalPart());
+                    if (role != null && roles.contains(role)) {
+                        logger.finest("Element="+qName+" targeted at="+role);
+                        if (understoodHeaders == null || !understoodHeaders.contains(qName)) {
+                            logger.finest("Element not understood="+qName);
+                            throw new SOAPFaultException(
+                                    SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
+                                    MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
+                                    role,
+                                    null);
+                        } 
+                    }
+                }
+                XMLStreamReaderUtil.skipElement(reader);   // Moves to END state
+                XMLStreamReaderUtil.nextElementContent(reader);
+            } else {
+                break;
+            }
+        }
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
     }
 
     /*
