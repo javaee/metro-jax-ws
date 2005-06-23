@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.4 2005-06-14 23:38:11 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.5 2005-06-23 02:51:53 vivekp Exp $
  */
 
 /*
@@ -322,6 +322,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     _bindingNameToPortMap.get(bindingName);
                 port.setOperationsList(existingPort.getOperationsList());
                 port.setJavaInterface(existingPort.getJavaInterface());
+                port.setStyle(existingPort.getStyle());
+                port.setWrapped(existingPort.isWrapped());
             } else {
                 // find out the SOAP binding extension, if any
                 SOAPBinding soapBinding =
