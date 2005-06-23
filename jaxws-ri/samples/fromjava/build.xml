@@ -26,4 +26,18 @@
 		<antcall target="deploy" />
 	</target>
 
+	<target name="mustang" depends="setup">
+
+		<antcall target="clean" />
+		<antcall target="build-server-java" />
+		<java fork="true" classname="fromjava.server.AddWebservice">
+			<classpath>
+				<path refid="jaxws.classpath"/>
+				<pathelement location="${build.classes.home}"/>
+			</classpath>
+        		<jvmarg value="-Djavax.xml.ws.EndpointFactory=com.sun.xml.ws.transport.http.server.EndpointFactoryImpl"/>
+		</java>
+
+	</target>
+
 </project>
