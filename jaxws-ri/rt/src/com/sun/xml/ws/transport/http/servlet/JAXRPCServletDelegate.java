@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.5 2005-06-14 18:02:33 jitu Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.6 2005-06-23 01:32:53 jitu Exp $
  *
  */
 
@@ -325,6 +325,9 @@ public class JAXRPCServletDelegate implements ServletDelegate {
         throws ServletException {
         
         try {
+            WebServiceContext.setServletContext(servletContext);
+            WebServiceContext.setServletRequest(request);
+            
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
             if (targetEndpoint != null) {
                 if (logger.isLoggable(Level.FINEST)) {
