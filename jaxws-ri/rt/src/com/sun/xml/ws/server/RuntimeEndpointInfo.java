@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.19 2005-06-09 20:30:33 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.20 2005-06-24 18:04:32 bbissett Exp $
  */
 
 /*
@@ -43,7 +43,6 @@ public class RuntimeEndpointInfo
     private String wsdlFileName;
     private boolean deployed;
     private String urlPattern;
-    private HandlerChainCaller handlerChainCaller;
     private List<Source> metadata;
     private Binding binding;
     private RuntimeModel runtimeModel;
@@ -152,12 +151,16 @@ public class RuntimeEndpointInfo
                 }
             }
             
-            if (getHandlerChain() == null) {
+            if (getBinding().getHandlerChain() == null) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
                         getImplementor().getClass());
                 if (chainInfo != null) {
-                    setHandlerChainCaller(new HandlerChainCaller(chainInfo));
+                    getBinding().setHandlerChain(chainInfo.getHandlers());
+                    if (getBinding() instanceof SOAPBinding) {
+                        ((SOAPBinding) getBinding()).setRoles(
+                            chainInfo.getRoles());
+                    }
                 }
             }
             
@@ -208,28 +211,6 @@ public class RuntimeEndpointInfo
         this.metadata = metadata;
     }
 
-    public List<Handler> getHandlerChain() {
-        return (handlerChainCaller == null ? null :
-            handlerChainCaller.getHandlerChain());
-    }
-
-    public void setHandlerChain(List<Handler> chain) {
-        if (chain != null) {
-            handlerChainCaller = new HandlerChainCaller(chain);
-        } else {
-            handlerChainCaller = null;
-        }
-    }
-    
-    // used internally in deploy() method. may be set to null
-    private void setHandlerChainCaller(HandlerChainCaller caller) {
-        handlerChainCaller = caller;
-    }
-    
-    public HandlerChainCaller getHandlerChainCaller() {
-        return handlerChainCaller;
-    }
-    
     public RuntimeModel getRuntimeModel() {
         return runtimeModel;
     }

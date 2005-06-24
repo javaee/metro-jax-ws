@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.9 2005-06-14 21:06:21 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.10 2005-06-24 18:04:33 bbissett Exp $
  */
 
 /*
@@ -13,6 +13,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -276,8 +277,12 @@ public class JAXRPCRuntimeInfoParser {
             XMLStreamReaderUtil.nextContent(reader);
         }
 
-        rei.setHandlerChain(handlerChain);
-        rei.getHandlerChainCaller().setRoles(roles);
+        rei.getBinding().setHandlerChain(handlerChain);
+        if (!roles.isEmpty() &&
+            rei.getBinding() instanceof SOAPBinding) {
+            Set<URI> uriRoles = new HashSet<URI>(roles.size());
+            ((SOAPBinding) rei.getBinding()).setRoles(uriRoles);
+        }
 
         // move past </handler-chain>
         XMLStreamReaderUtil.nextContent(reader);

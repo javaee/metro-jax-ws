@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.5 2005-06-14 19:25:33 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.6 2005-06-24 18:04:34 bbissett Exp $
  */
 
 /*
@@ -10,6 +10,8 @@ package com.sun.xml.ws.util;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import javax.jws.WebService;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 
 import com.sun.xml.ws.handler.HandlerChainCaller;
@@ -99,7 +102,7 @@ public class HandlerAnnotationProcessor {
         HandlerAnnotationInfo info = new HandlerAnnotationInfo();
         
         List<Handler> handlerChain = new ArrayList<Handler>();
-        Set<String> roles = new HashSet<String>();
+        Set<URI> roles = new HashSet<URI>();
         
         // skip <handler-config> and <handler-chain>
         String elementName = reader.getLocalName();
@@ -166,7 +169,14 @@ public class HandlerAnnotationProcessor {
                 } else if (reader.getLocalName().equals("soap-header")) {
                     skipTextElement(reader);
                 } else if (reader.getLocalName().equals("soap-role")) {
-                    roles.add(XMLStreamReaderUtil.getElementText(reader));
+                    String roleString =
+                        XMLStreamReaderUtil.getElementText(reader);
+                    try {
+                        roles.add(new URI(roleString));
+                    } catch (URISyntaxException e) {
+                        // todo: which exception?
+                        throw new WebServiceException(e);
+                    }
                     XMLStreamReaderUtil.nextContent(reader);
                 } else {
                     failWithLocalName("util.parser.wrong.element", reader,

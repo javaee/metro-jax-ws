@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationInfo.java,v 1.2 2005-06-02 14:32:48 bbissett Exp $
+ * $Id: HandlerAnnotationInfo.java,v 1.3 2005-06-24 18:04:34 bbissett Exp $
  */
 
 /*
@@ -8,6 +8,7 @@
  */
 package com.sun.xml.ws.util;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import javax.xml.ws.handler.Handler;
 public class HandlerAnnotationInfo {
     
     private List<Handler> handlers;
-    private Set<String> roles;
+    private Set<URI> roles;
     
     public List<Handler> getHandlers() {
         return handlers;
@@ -32,11 +33,11 @@ public class HandlerAnnotationInfo {
         this.handlers = handlers;
     }
     
-    public Set<String> getRoles() {
+    public Set<URI> getRoles() {
         return roles;
     }
     
-    public void setRoles(Set<String> roles) {
+    public void setRoles(Set<URI> roles) {
         this.roles = roles;
     }
     

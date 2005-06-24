@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.1 2005-05-23 22:54:49 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.2 2005-06-24 18:04:33 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -64,21 +64,4 @@ public interface RuntimeEndpointInfo {
      */
     public void setMetadata(List<Source> metadata);
 
-    /**
-     * Gets a copy of the handler chain for this endpoint.
-     *  If the returned chain is modified a call to <code>setHandlerChain</code>
-     * is required to configure the endpoint with the new chain.
-     *
-     *  @return java.util.List<javax.xml.rpc.handler.HandlerInfo> Handler chain
-     */
-    public java.util.List<Handler> getHandlerChain();
-
-    /**
-     * Sets the handler chain for the endpoint.
-     *
-     * @param chain    A List of handlers
-     * @throws java.lang.IllegalStateException If the endpoint
-     *         has already been published.
-     */
-    public void setHandlerChain(java.util.List<Handler> chain);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.5 2005-06-06 17:11:55 vivekp Exp $
+ * $Id: SOAPBindingImpl.java,v 1.6 2005-06-24 18:04:32 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -112,12 +112,11 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         this.enableMtom = b;
     }
 
+    // handler chain caller only used on client side
     private void setRolesOnHandlerChain() {
-        Set<String> roleStrings = new HashSet<String>(roles.size());
-        for (URI uri : roles) {
-            roleStrings.add(uri.toString());
+        if (chainCaller != null) {
+            chainCaller.setRoles(roles);
         }
-        chainCaller.setRoles(roleStrings);
     }
 
     // used to create uri's to have exception code in one place

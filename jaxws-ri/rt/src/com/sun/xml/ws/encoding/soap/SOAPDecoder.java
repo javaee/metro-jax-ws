@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.9 2005-06-23 02:09:56 jitu Exp $
+ * $Id: SOAPDecoder.java,v 1.10 2005-06-24 18:04:32 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -418,7 +418,7 @@ public abstract class SOAPDecoder implements Decoder {
         HandlerChainCaller hcCaller = (HandlerChainCaller)mi.getMetaData(
                 HandlerChainCaller.HANDLER_CHAIN_CALLER);
         if (hcCaller != null) {
-            roles.addAll(hcCaller.getRoles());
+            roles.addAll(hcCaller.getRoleStrings());
         }
 
         if (logger.isLoggable(Level.FINEST)) {

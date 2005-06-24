@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.5 2005-06-23 02:09:57 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.6 2005-06-24 18:04:33 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,6 +12,7 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
@@ -32,9 +33,11 @@ import java.io.InputStream;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
@@ -308,8 +311,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
     
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
-        return MessageInfoUtil.getRuntimeContext(info).
-            getRuntimeEndpointInfo().getHandlerChainCaller();
+        RuntimeContext context = (RuntimeContext)
+            info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        Binding binding = context.getRuntimeEndpointInfo().getBinding();
+        HandlerChainCaller caller =
+            new HandlerChainCaller(binding.getHandlerChain());
+        if (binding instanceof SOAPBinding) {
+            caller.setRoles(((SOAPBinding) binding).getRoles());
+        }
+        return caller;
     }
     
     protected boolean callHandlersOnResponse(HandlerChainCaller caller,

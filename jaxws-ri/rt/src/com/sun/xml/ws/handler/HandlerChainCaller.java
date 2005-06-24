@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.2 2005-06-01 19:06:24 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.3 2005-06-24 18:04:32 bbissett Exp $
  */
 
 /*
@@ -21,6 +21,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +62,7 @@ public class HandlerChainCaller {
     private List<LogicalHandler> logicalHandlers;
     private List<SOAPHandler> soapHandlers;
     
-    private Set<String> roles; // todo: change to Set<URI> ?
+    private Set<URI> roles;
 
     /*
      * The handlers that are passed in will be sorted into
@@ -80,14 +81,6 @@ public class HandlerChainCaller {
         sortHandlers();
     }
     
-    /*
-     * Used when creating directly from an annotated class.
-     */
-    public HandlerChainCaller(HandlerAnnotationInfo info) {
-        this(info.getHandlers());
-        setRoles(info.getRoles());
-    }
-
     public List<Handler> getHandlerChain() {
         return handlers;
     }
@@ -96,12 +89,24 @@ public class HandlerChainCaller {
         return (handlers.size() != 0);
     }
 
-    public void setRoles(Set<String> roles) {
+    public void setRoles(Set<URI> roles) {
         this.roles = roles;
     }
 
-    public Set<String> getRoles() {
+    public Set<URI> getRoles() {
         return roles;
+    }
+    
+    // returns a string version of the roles
+    public Set<String> getRoleStrings() {
+        if (roles == null) {
+            return null;
+        }
+        Set<String> rStrings = new HashSet<String>(roles.size());
+        for (URI role : roles) {
+            rStrings.add(role.toString());
+        }
+        return rStrings;
     }
 
     public Set<QName> getUnderstoodHeaders() {
@@ -240,7 +245,7 @@ public class HandlerChainCaller {
         ContextHolder ch = new ContextHolder(context);
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,
             (direction == Direction.OUTBOUND));
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(roles);
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
 
         // call handlers
         if (direction == Direction.OUTBOUND) {
@@ -285,7 +290,7 @@ public class HandlerChainCaller {
     public boolean callHandleFault(HandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, true);
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(roles);
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
 
         int i = 0; // counter for logical handlers
         int j = 0; // counter for protocol handlers
@@ -668,7 +673,7 @@ public class HandlerChainCaller {
 
         // only called after an inbound request
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(roles);
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
         closeHandlers(ch);
     }
 

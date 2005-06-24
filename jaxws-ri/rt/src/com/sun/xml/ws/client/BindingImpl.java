@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.3 2005-06-02 17:53:09 vivekp Exp $
+ * $Id: BindingImpl.java,v 1.4 2005-06-24 18:04:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -20,6 +20,11 @@ import java.util.List;
  * Instances are created by HandlerRegistryImpl, which then
  * sets the handler chain on the binding impl. The handler
  * caller class actually creates and manages the handlers.
+ *
+ * Also used on the server side, where non-api calls such as
+ * getHandlerChainCaller cannot be used. So the binding impl
+ * now stores the handler list rather than deferring to the
+ * handler chain caller.
  */
 
 /**
@@ -28,19 +33,20 @@ import java.util.List;
  */
 public abstract class BindingImpl implements Binding {
 
+    // caller ignored on server side
     HandlerChainCaller chainCaller;
+    List<Handler> handlers;
     private String bindingId;
 
 
     // called by DispatchImpl
     public BindingImpl(String bindingId) {
-        chainCaller = new HandlerChainCaller(new ArrayList());
         this.bindingId = bindingId;
     }
 
     // created by HandlerRegistryImpl
     BindingImpl(List<Handler> handlerChain, String bindingId) {
-        chainCaller = new HandlerChainCaller(handlerChain);
+        handlers = handlerChain;
         this.bindingId = bindingId;
     }
 
@@ -48,16 +54,20 @@ public abstract class BindingImpl implements Binding {
      * Return a copy of the list.
      */
     public List<Handler> getHandlerChain() {
-        return new ArrayList(chainCaller.getHandlerChain());
+        if (chainCaller != null) {
+            return new ArrayList(chainCaller.getHandlerChain());
+        }
+        return handlers;
     }
 
     public void setHandlerChain(List<Handler> chain) {
-
-        // have old chain call destroy on handlers first
-        chainCaller.cleanup();
-
-        // create new caller
-        chainCaller = new HandlerChainCaller(chain);
+        if (chainCaller != null) {
+            chainCaller.cleanup();
+            chainCaller = new HandlerChainCaller(chain);
+            handlers = chainCaller.getHandlerChain();
+        } else {
+            handlers = chain;
+        }
     }
 
     public SecurityConfiguration getSecurityConfiguration() {
@@ -65,8 +75,11 @@ public abstract class BindingImpl implements Binding {
         //return null;
     }
 
-    // used by runtime before invoking handlers
+    // used by client runtime before invoking handlers
     public HandlerChainCaller getHandlerChainCaller() {
+        if (chainCaller == null) {
+            chainCaller = new HandlerChainCaller(handlers);
+        }
         return chainCaller;
     }
 
