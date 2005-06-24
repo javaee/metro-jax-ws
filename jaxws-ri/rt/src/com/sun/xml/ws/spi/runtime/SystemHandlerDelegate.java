@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.1 2005-05-23 22:54:50 bbissett Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.2 2005-06-24 14:26:00 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,7 +7,7 @@
 package com.sun.xml.ws.spi.runtime;
 
 
-
+//taken from jaxrpc 1.1
 /**
  * The methods of this interface are invoked by the JAXRPCServletDelegate of
  * on the path to web sevice endpoints deployed as servlets.
@@ -23,7 +23,7 @@ public interface SystemHandlerDelegate {
 
    /**
     * The processRequest method is invoked with an object that
-    * implements com.sun.xml.rpc.spi2.runtime.SOAPMessageContext.
+    * implements com.sun.xml.rpc.spi.runtime.SOAPMessageContext.
     * <p>
     * When this method is called by the JAXRPCServletDelegate
     * (on the server side of jaxrpc servlet container invocation processing)
@@ -33,7 +33,7 @@ public interface SystemHandlerDelegate {
     * <p>
     * com.sun.xml.rpc.server.http.MessageContextProperties.IMPLEMENTOR
     * <br>
-    * This property must be set to the com.sun.xml.rpc.spi2.runtime.Implementor
+    * This property must be set to the com.sun.xml.rpc.spi.runtime.Implementor
     * object corresponding to the target endpoint.
     *
     * NOTE: I'd like us to be able to hang the ServletAuthContext off the Implementor.
@@ -68,7 +68,7 @@ public interface SystemHandlerDelegate {
     * the caller will return a HTTP layer response code reporting that an internal
     * error occured.
     */
-    public boolean processRequest(MessageContext messageContext);
+    public boolean processRequest(MessageContext messageContext)throws RuntimeException;
 
    /**
     * The processResponse method is invoked with an object that
@@ -86,5 +86,5 @@ public interface SystemHandlerDelegate {
     * in which case the caller is expected to return an HTTP layer
     * response code reporting that an internal error occured.
     */
-    public void processResponse(MessageContext messageContext);
+    public void processResponse(MessageContext messageContext) throws RuntimeException;
 }
