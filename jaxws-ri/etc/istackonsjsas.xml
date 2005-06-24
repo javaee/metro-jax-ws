@@ -12,36 +12,48 @@
 	<property name="domain" value="domain1"/>
 	<property name="backup.dir" value="${as.home}/.jaxws20ea2"/>
 
-	<target name="init">
+    <condition property="notInstalled">
+        <not>
+            <available file="${as.home}/.jaxws20ea2"/>
+        </not>
+    </condition>
+
+    <target name="init">
 		<mkdir dir="${backup.dir}"/>
 	</target>
 	
 	<target name="install">
 		<echo message="Installing JAX-WS 2.0 on ${as.home} ..." />
 		<copy toDir="${backup.dir}">
-			<fileset dir="lib">
+			<fileset dir="${as.lib.home}">
 				<include name="saaj-*.jar"/>
 			</fileset>
 		</copy>
+        
 		<copy toDir="${as.lib.home}" overwrite="true">
 			<fileset dir="lib">
 				<include name="*.jar"/>
-				<exclude name="mail.jar, activation, xsdlib.jar, relaxngDatatype.jar, xercesImpl.jar, xalan.jar"/>
+				<exclude name="activation.jar"/>
+                <exclude name="relaxngDatatype.jar"/>
 			</fileset>
 		</copy>
-
+        
+        <antcall target="update-classpath"/>
+			
+		<echo message="... done."/>
+	</target>
+    
+    <target name="update-classpath" if="notInstalled">
 		<!-- Add the JAX-WS 2.0 and JAXB 2.0 jars to classpath-prefix -->
 		<copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
 		<replace file="${as.home}/domains/${domain}/config/domain.xml" >
 			<replacetoken><![CDATA[classpath-suffix="$]]></replacetoken>
 			<replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/jaxws-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-libs.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-api.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar" classpath-suffix="$]]></replacevalue>
 		</replace>
-			
-		<echo message="... done."/>
-	</target>
-        
-        <target name="help">
-            <echo message="install:    Installs JAX-WS 2.0 EA2 on the Application Server"/>
-            <echo message="            Usage: ANT_HOME/bin/ant install"/>
-        </target>
+    </target>
+    
+    <target name="help">
+        <echo message="install:    Installs JAX-WS 2.0 EA2 on the Application Server"/>
+        <echo message="            Usage: ANT_HOME/bin/ant install"/>
+    </target>
 </project>
