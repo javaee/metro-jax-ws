@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Simple build script for the source code bundle
+-->
+<project name="jax-ws" default="build">
+
+  <path id="runtime.compile.classpath">
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+  
+  <path id="tools.compile.classpath">
+    <path refid="runtime.compile.classpath"/>
+    <pathelement location="build"/>
+  </path>
+  
+  <target name="build">
+    <mkdir dir="build"/>
+    <javac srcdir="src/rt/src" destdir="build">
+      <classpath refid="runtime.compile.classpath"/>
+    </javac>
+    <javac srcdir="src/tools/wscompile/src" destdir="build">
+      <classpath refid="tools.compile.classpath"/>
+    </javac>
+  </target>
+  
+</project>

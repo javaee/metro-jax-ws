@@ -12,8 +12,6 @@
 
 <project name="JAXWS-RI" default="main" basedir=".">
 
-  <!-- a skeleton file to start the workspace -->
-
   <property name="Name" value="JAXWS RI"/>
   <property name="version" value="2.0-INTERNAL"/>
       
@@ -338,6 +336,75 @@
       </copy>
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
-    
 
+    <taskdef name="installerBuilder"
+        classname="com.sun.tools.xjc.installer.builder.BuilderTask">
+      <classpath>
+        <fileset dir="${basedir}/tools/lib" includes="installer-builder.jar, sfx4j-1.0.jar"/>
+      </classpath>
+    </taskdef>
+    
+    <target name="generate-weekly-binary"
+        depends="dist.zip"
+        description="generate java.net binary distribution">
+      <tstamp/>
+      <!-- generate the class -->
+      <installerBuilder classFile="${build.home}/JAXWS_SI_${DSTAMP}.jar"
+          licenseFile="${basedir}/jrl.txt"
+          zipFile="${build.home}/jaxws-ri.zip" />
+      <delete file="${build.home}/jaxws-ri.zip" />
+    </target>
+        
+    <target name="generate-weekly-source"
+        depends="prepare"
+        description="generate java.net binary distribution">
+      <tstamp/>
+            
+      <!-- create the zip file contents -->
+      <property name="source.drop.dir" value="${build.home}/source-bundle"/>
+      <delete dir="${source.drop.dir}"/>
+      <mkdir dir="${source.drop.dir}"/>
+      <mkdir dir="${source.drop.dir}/jaxws-si/lib"/>
+      <copy todir="${source.drop.dir}/jaxws-si/lib">
+        <fileset dir="${basedir}/lib">
+          <include name="*.jar"/>
+          <exclude name="ant*.*"/>
+          <exclude name="junit.jar"/>
+        </fileset>
+      </copy>
+      <copy file="${basedir}/jrl.txt"
+          todir="${source.drop.dir}/jaxws-si"/>
+      <copy file="${basedir}/etc/src-bundle.xml"
+          tofile="${source.drop.dir}/jaxws-si/build.xml"/>
+      <mkdir dir="${source.drop.dir}/jaxws-si/bin"/>
+      <copy todir="${source.drop.dir}/jaxws-si/bin">
+        <fileset dir="${basedir}/tools/bin">
+          <include name="*.sh"/>
+          <include name="*.bat"/>
+        </fileset>
+      </copy>
+      <mkdir dir="${source.drop.dir}/jaxws-si/src"/>
+      <copy todir="${source.drop.dir}/jaxws-si/src">
+        <fileset dir="${basedir}">
+          <include name="rt/**/*.java"/>
+          <include name="rt/**/*.properties"/>
+          <include name="tools/**/*.java"/>
+          <include name="tools/**/*.properties"/>
+        </fileset>
+      </copy>
+      <zip destfile="${source.drop.dir}/jaxws-src.zip">
+        <zipfileset dir="${source.drop.dir}"/>
+      </zip>
+      <!-- 1.X version opens to a zip file, so wrap our zip
+          in another one to send to installer -->
+      <zip destfile="${source.drop.dir}/jaxws-src-installer.zip">
+        <zipfileset file="${source.drop.dir}/jaxws-src.zip"/>
+      </zip>
+          
+      <!-- generate the installer -->
+      <installerBuilder classFile="${build.home}/JAXWS_SI_source_${DSTAMP}.jar"
+          licenseFile="${basedir}/jrl.txt"
+          zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
+      <delete dir="${source.drop.dir}"/>
+    </target>
 </project>
