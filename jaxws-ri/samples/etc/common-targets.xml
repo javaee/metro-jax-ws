@@ -61,6 +61,20 @@
     </copy>
 </target>
 
+<target name="server-j2se" depends="setup">
+
+    <antcall target="clean" />
+    <antcall target="build-server-java" />
+    <java fork="true" classname="${j2se.sei}">
+        <classpath>
+            <path refid="jaxws.classpath"/>
+            <pathelement location="${build.classes.home}"/>
+        </classpath>
+        <jvmarg value="-Djavax.xml.ws.EndpointFactory=com.sun.xml.ws.transport.http.server.EndpointFactoryImpl"/>
+    </java>
+
+</target>
+
 <target name="build-server-wsdl" depends="setup">
     <wsimport
         fork="true"
