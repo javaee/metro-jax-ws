@@ -110,7 +110,7 @@
         todir="${as.home}/domains/${domain}/autodeploy"/>
 </target>
 
-<target name="generate-client">
+<target name="generate-client" depends="setup">
     <wsimport
         fork="true"
         debug="${debug}"
