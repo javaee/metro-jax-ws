@@ -27,9 +27,9 @@ import java.util.concurrent.ExecutionException;
 
 public class AddNumbersClient {
 
-    private static String request = "<ns2:addNumbers xmlns:ns2=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></ns2:addNumbers>";
+    private static String request = "<addNumbers xmlns=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers>";
 
-    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns2:addNumbers xmlns:ns2=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></ns2:addNumbers></soapenv:Body></soapenv:Envelope>";
+    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><addNumbers xmlns=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers></soapenv:Body></soapenv:Envelope>";
 
     private static final QName serviceQName = new QName("http://duke.org", "AddNumbersService");
     private static final QName portQName = new QName("http://duke.org", "AddNumbersPort");
@@ -52,8 +52,13 @@ public class AddNumbersClient {
         }
 
         try {
+            //dispatch using Source
             client.invokeAddNumbers(request, Service.Mode.PAYLOAD);
+
+            //dispatch using JAXBContext
             client.invokeAddNumbers();
+
+            //dispatch using SOAPMessage
             client.invokeAddNumbers(smRequest);
 
             client.invokeAsyncPollAddNumbers(request, Service.Mode.PAYLOAD);
