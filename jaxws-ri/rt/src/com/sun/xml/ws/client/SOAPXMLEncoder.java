@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.12 2005-06-15 23:31:14 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.13 2005-06-30 18:18:35 vivekp Exp $
  */
 
 /*
@@ -48,6 +48,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP_ACTION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XMLFAST_ENCODING_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
@@ -214,7 +215,11 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
         // default Accept is XML encoding
         if (!acceptPropertySet) {
-            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+            if(getBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING)){
+                mimeHeaders.addHeader(ACCEPT_PROPERTY, SOAP12_XML_ACCEPT_VALUE);
+            }else{
+                mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+            }
         }
 
         messageContext.setMessage(soapMessage);

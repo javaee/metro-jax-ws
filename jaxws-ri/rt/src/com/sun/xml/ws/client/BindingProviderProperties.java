@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.2 2005-05-25 18:22:07 kohlert Exp $
+ * $Id: BindingProviderProperties.java,v 1.3 2005-06-30 18:18:35 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -56,7 +56,8 @@ public interface BindingProviderProperties {
     String ACCEPT_PROPERTY = "Accept";
     String FAST_CONTENT_TYPE_VALUE = "application/fastsoap";    // deprecated
     String XML_CONTENT_TYPE_VALUE = "text/xml";
-    String STANDARD_ACCEPT_VALUE = "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
+    String STANDARD_ACCEPT_VALUE = "application/xop+xml, text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
+    String SOAP12_XML_ACCEPT_VALUE = "application/soap+xml"+ ", " + STANDARD_ACCEPT_VALUE;
     String XML_ACCEPT_VALUE = XML_CONTENT_TYPE_VALUE + ", " + STANDARD_ACCEPT_VALUE;
     String FAST_ACCEPT_VALUE = FAST_CONTENT_TYPE_VALUE + ", " + STANDARD_ACCEPT_VALUE;      // deprecated
     String SOAP_ACTION_PROPERTY = "SOAPAction";
