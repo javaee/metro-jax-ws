@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.6 2005-06-23 02:09:55 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.7 2005-06-30 18:50:31 bbissett Exp $
  */
 
 /*
@@ -21,6 +21,8 @@ import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.SOAPMessageContextImpl;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.server.SOAPConnection;
 import java.io.IOException;
 
@@ -101,6 +103,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     sm = encoder.toSOAPMessage(im, messageInfo);
             }
 
+            SystemHandlerDelegate systemHandlerDelegate =
+                ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
+                getSystemHandlerDelegate();
+            if (systemHandlerDelegate != null) {
+                handlerResult = systemHandlerDelegate.processRequest(
+                    (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
+                    new SOAPMessageContextImpl(
+                    new HandlerContext(messageInfo, im, sm)));
+            }
             if (!isAsync(messageInfo)) {
                 SOAPConnection connection = (SOAPConnection) messageInfo.getConnection();
                 connection.sendResponse(sm);
@@ -149,6 +160,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         // null, sm);
         HandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
 
+        SystemHandlerDelegate systemHandlerDelegate =
+            ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
+            getSystemHandlerDelegate();
+        if (systemHandlerDelegate != null) {
+            systemHandlerDelegate.processResponse(
+                (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
+                new SOAPMessageContextImpl(handlerContext));
+        }
+        
         try {
             decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
             //checkMustUnderstandHeaders(handlerContext);
@@ -308,12 +328,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             false);
     }
 
-    protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
+    protected Binding getBinding(MessageInfo messageInfo) {
         ContextMap context = (ContextMap) ((MessageInfoBase) messageInfo)
             .getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         BindingProvider provider = (BindingProvider) context
             .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
-        BindingImpl binding = (BindingImpl) provider.getBinding();
+        return provider.getBinding();
+    }
+    
+    protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
+        BindingImpl binding = (BindingImpl) getBinding(messageInfo);
         return binding.getHandlerChainCaller();
     }
 

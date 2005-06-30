@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.4 2005-06-24 18:04:31 bbissett Exp $
+ * $Id: BindingImpl.java,v 1.5 2005-06-30 18:50:30 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,7 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
@@ -30,14 +31,17 @@ import java.util.List;
 /**
  * This class is made abstract as we dont see a situation when a BindingImpl has much meaning without binding id.
  * IOw, for a specific binding there will be a class extending BindingImpl, for example SOAPBindingImpl.
+ *
+ * The spi Binding interface extends Binding.
  */
-public abstract class BindingImpl implements Binding {
+public abstract class BindingImpl implements 
+    com.sun.xml.ws.spi.runtime.Binding {
 
     // caller ignored on server side
     HandlerChainCaller chainCaller;
     List<Handler> handlers;
     private String bindingId;
-
+    private SystemHandlerDelegate systemHandlerDelegate;
 
     // called by DispatchImpl
     public BindingImpl(String bindingId) {
@@ -87,4 +91,13 @@ public abstract class BindingImpl implements Binding {
         return bindingId;
     }
 
+    public SystemHandlerDelegate getSystemHandlerDelegate() {
+        return systemHandlerDelegate;
+    }
+
+    public void setSystemHandlerDelegate(SystemHandlerDelegate delegate) {
+        systemHandlerDelegate = delegate;
+    }
+
+        
 }

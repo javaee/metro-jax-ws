@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.6 2005-06-24 18:04:32 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.7 2005-06-30 18:50:31 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -22,7 +22,8 @@ import java.util.List;
 /**
  * @author JAX-RPC RI Development Team
  */
-public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
+public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
+    com.sun.xml.ws.spi.runtime.SOAPBinding {
 
     private static URI ROLE_NONE;
 

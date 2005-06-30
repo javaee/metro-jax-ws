@@ -1,11 +1,13 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.1 2005-05-23 22:37:26 bbissett Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.2 2005-06-30 18:50:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.handler;
 
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -25,7 +27,10 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.security.SecurityConfiguration;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.Name;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
@@ -42,11 +47,13 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 /**
  * @author JAX-WS RI Development Team
  */
-public class SOAPMessageContextImpl implements SOAPMessageContext {
+public class SOAPMessageContextImpl implements SOAPMessageContext,
+    com.sun.xml.ws.spi.runtime.SOAPMessageContext {
 
     private HandlerContext ctxt;
     private Set<String> roles;
     private static Map<String, Class> allowedTypes = null;
+    private boolean failure;
 
     public SOAPMessageContextImpl(HandlerContext ctxt) {
         this.ctxt = ctxt;
@@ -206,6 +213,35 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
 
     public Collection<Object> values() {
         return ctxt.values();
+    }
+
+    public SOAPMessage createMessage(MimeHeaders headers, InputStream in)
+        throws IOException {
+        
+        try {
+            MessageFactory mFac = MessageFactory.newInstance();
+            return mFac.createMessage(headers, in);
+        } catch (SOAPException e) {
+            throw new WebServiceException(e);
+        }
+    }
+
+    public boolean isFailure() {
+        return failure;
+    }
+
+    public void setFailure(boolean failure) {
+        this.failure = failure;
+    }
+    
+    public void writeInternalServerErrorResponse() {
+        setFailure(true);
+        //todo
+    }
+
+    public void writeSimpleErrorResponse(QName faultCode, String faultString) {
+        setFailure(true);
+        //todo
     }
 
 }

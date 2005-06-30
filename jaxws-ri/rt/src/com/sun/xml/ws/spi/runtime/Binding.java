@@ -1,5 +1,7 @@
-/*
- * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+/**
+ * $Id: Binding.java,v 1.2 2005-06-30 18:50:32 bbissett Exp $
+ *
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
@@ -15,15 +17,5 @@ public interface Binding extends javax.xml.ws.Binding {
 
   public SystemHandlerDelegate getSystemHandlerDelegate();
 
-  /** Sets the handler chain for the protocol binding instance.
-   *
-   *  @param chain    A List of handler configuration entries
-   *  @throws WebServiceException On an error in the configuration of
-   *                  the handler chain
-   *  @throws java.lang.UnsupportedOperationException If this
-   *          operation is not supported. This may be done to
-   *          avoid any overriding of a pre-configured handler
-   *          chain.
-  **/
   public void setSystemHandlerDelegate(SystemHandlerDelegate delegate);
 }
