@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.4 2005-06-15 18:48:48 kwalsh Exp $
+ * $Id: WSDLParser.java,v 1.5 2005-06-30 15:10:41 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,6 +23,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static com.sun.xml.ws.streaming.XMLReader.START;
 import static com.sun.xml.ws.streaming.XMLReader.END;
@@ -33,10 +35,11 @@ import static com.sun.xml.ws.streaming.XMLReader.EOF;
  * @author JAX-RPC Development Team
  */
 public class WSDLParser {
-    private String serviceName;
-    private String location;
+    //private String serviceName;
+    private String tns;
+    //private String location;
     private String systemId;
-    private String bindingId;
+   // private String bindingId;
     private WSDLContext wsdlContext;
 
     //todo:rename
@@ -61,41 +64,6 @@ public class WSDLParser {
         return wsdlContext;
     }
 
-    /**
-     * @param source
-     * @param location
-     * @return
-     */
-
-    public boolean isDone() {
-        return (bindingDone() && locationDone());
-    }
-
-    public boolean isImport() {
-        return isImport;
-    }
-
-    public void setIsImport(boolean imp) {
-        isImport = imp;
-    }
-
-    public boolean importDone() {
-        return importsDone;
-    }
-
-    public void setImportsDone(boolean imp) {
-        importsDone = imp;
-    }
-
-    private boolean bindingDone() {
-        return bindingDone;
-    }
-
-    private boolean locationDone() {
-        return locationDone;
-    }
-
-
     public WSDLContext parse(InputStream is, WSDLContext wsdlcontext)
         throws Exception {
 
@@ -119,6 +87,7 @@ public class WSDLParser {
                 case START:
                     QName name = reader.getName();
                     if (WSDLConstants.QNAME_DEFINITIONS.equals(name)) {
+                        tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
                         reader.nextElementContent();
                     } else if (WSDLConstants.QNAME_IMPORT.equals(name)) {
                         parseWSDLImport(reader, wsdlcontext);
@@ -267,15 +236,15 @@ public class WSDLParser {
     protected void parseWSDLService(XMLReader reader, WSDLContext wsdlcontext) {
 
         if (WSDLConstants.QNAME_SERVICE.equals(reader.getName())) {
-            //wsdlContext.setServiceName(ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_NAME));
+            String serviceName =ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_NAME);
             reader.nextElementContent();
-
+            LinkedHashMap<QName, String> portsMap = new LinkedHashMap<QName, String>();
             do {
                 switch (reader.getState()) {
                     case START:
                         QName name = reader.getName();
                         if (WSDLConstants.QNAME_PORT.equals(reader.getName())) {
-                            parseWSDLPort(reader, wsdlcontext);
+                            parseWSDLPort(reader, wsdlcontext, portsMap);
                             reader.next();
                             reader.nextElementContent();
                         } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(reader.getName())) {
@@ -292,6 +261,7 @@ public class WSDLParser {
                 //if (reader.getName().equals(WSDLConstants.QNAME_SERVICE))
                 //     break;
             } while (reader.getState() != EOF);
+            wsdlcontext.addService2Ports(new QName(tns, serviceName), portsMap);
             serviceDone = true;
             reader.next();
             reader.nextElementContent();
@@ -300,7 +270,7 @@ public class WSDLParser {
         }
     }
 
-    protected void parseWSDLPort(XMLReader reader, WSDLContext wsdlcontext) {
+    protected void parseWSDLPort(XMLReader reader, WSDLContext wsdlcontext, HashMap portsMap) {
 
         if (WSDLConstants.QNAME_PORT.equals(reader.getName())) {
             String portName = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_NAME);
@@ -314,7 +284,7 @@ public class WSDLParser {
                         if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName()) ||
                             WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
                             String endpoint = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_LOCATION);
-                            wsdlcontext.addPort(new QName("", portName), endpoint);
+                            portsMap.put(new QName(tns, portName), endpoint);
                             locationDone = true;
                             reader.next();
                             reader.nextElementContent();
@@ -330,12 +300,43 @@ public class WSDLParser {
                 if (reader.getName().equals(WSDLConstants.QNAME_PORT)) {
                     break;
                 }
+
             } while (reader.getState() != EOF);
             portDone = true;
             reader.next();
             reader.nextElementContent();
         }
     }
+
+    private boolean isDone() {
+        return (bindingDone() && locationDone());
+    }
+
+    private boolean isImport() {
+        return isImport;
+    }
+
+    private void setIsImport(boolean imp) {
+        isImport = imp;
+    }
+
+    private boolean importDone() {
+        return importsDone;
+    }
+
+    private void setImportsDone(boolean imp) {
+        importsDone = imp;
+    }
+
+    private boolean bindingDone() {
+        return bindingDone;
+    }
+
+    private boolean locationDone() {
+        return locationDone;
+    }
+
+
 
     /**
      * Utility method to get wsdlLocation attribute from @WebService annotation on sei.

@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.10 2005-06-09 12:11:15 kwalsh Exp $
+ * $Id: WebService.java,v 1.11 2005-06-30 15:10:40 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -53,12 +53,9 @@ public class WebService
     //todo:will take out dispatch ports once bindingId
     //endpoint, QName determined in ConfiguredService
     protected HashMap<QName, PortInfoBase> dispatchPorts;
-
     protected HandlerRegistryImpl handlerRegistry;
     protected Class si;
     protected Object serviceProxy;
-
-
     private RuntimeContext rtContext;
 
     public void setWSDLLocation(URL location) {
@@ -194,7 +191,7 @@ public class WebService
             e.printStackTrace();
         }
 
-        EndpointIFProxyBuilder builder = new EndpointIFProxyBuilder(getHandlerRegistry(), rtContext, wsdlContext);
+        EndpointIFProxyBuilder builder = new EndpointIFProxyBuilder(getHandlerRegistry(), rtContext, wsdlContext, name);
         return builder.buildEndpointIFProxy(portName, portInterface);
     }
 

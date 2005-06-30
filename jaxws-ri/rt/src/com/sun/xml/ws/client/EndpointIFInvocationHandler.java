@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.6 2005-06-07 03:38:31 vivekp Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.7 2005-06-30 15:10:39 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -13,10 +13,10 @@ import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
+import javax.xml.namespace.QName;
+import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.AsyncHandler;
-import javax.jws.soap.SOAPBinding;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -28,6 +28,7 @@ public class EndpointIFInvocationHandler
     Object _proxy;
     DelegateBase _delegate;
     Class _portInterface;
+    QName _serviceQName;
 
     RuntimeContext _rtcontext;
     WSDLContext _wsdlContext;
@@ -37,7 +38,7 @@ public class EndpointIFInvocationHandler
     /**
      * public constructor
      */
-    public EndpointIFInvocationHandler(Class pi, RuntimeContext context, WSDLContext wscontext) {
+    public EndpointIFInvocationHandler(Class pi, RuntimeContext context, WSDLContext wscontext, QName serviceName) {
         if (wscontext == null) {
             failure = true;
             return;
@@ -46,8 +47,20 @@ public class EndpointIFInvocationHandler
         _rtcontext = context;
         _wsdlContext = wscontext;
         _bindingId = wscontext.getBindingID();
-        if (wscontext.getEndpoint() != null)   //temp workaround for local transport kw
-            getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, wscontext.getEndpoint());
+
+        if (serviceName != null) {
+            if (wscontext.getServiceQName(serviceName) != null)
+                _serviceQName = serviceName;
+            else
+                throw new WebServiceException("Supplied service QName " +
+                    serviceName + " does not exist in this wsdl.");
+        } else
+            _serviceQName =
+                wscontext.getServiceQName();
+
+        if (wscontext.getEndpoint(_serviceQName) != null)   //temp workaround for local transport kw
+            getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                wscontext.getEndpoint(_serviceQName));
 
         //leave for now check on binding id
         // _bindingId = wscontext.getBindingID();
@@ -57,10 +70,9 @@ public class EndpointIFInvocationHandler
     }
 
     public EndpointIFInvocationHandler(RuntimeContext context, Class si, URL wsdlLocation) {
-        this(si, context, null);
+        this(si, context, null, null);
         wsdlDocumentLocation = wsdlLocation;
     }
-
 
     public void setModel(RuntimeContext rtcontext) {
         _rtcontext = rtcontext;
@@ -75,7 +87,6 @@ public class EndpointIFInvocationHandler
         if (isSEIMethod(method, _portInterface)) {
             return implementSEIMethod(method, args);
         } else {
-            //return implementStubMethod(method, args);
             return method.invoke(this, args);
         }
     }
@@ -93,9 +104,9 @@ public class EndpointIFInvocationHandler
                 MessageStruct.ASYNC_POLL_MEP : MessageStruct.ASYNC_CALLBACK_MEP);
         }
 
-        if(mmep == MessageStruct.ASYNC_CALLBACK_MEP){
-            for(Object param : parameters){
-                if(AsyncHandler.class.isAssignableFrom(param.getClass())){
+        if (mmep == MessageStruct.ASYNC_CALLBACK_MEP) {
+            for (Object param : parameters) {
+                if (AsyncHandler.class.isAssignableFrom(param.getClass())) {
                     messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, param);
                 }
             }
@@ -107,14 +118,12 @@ public class EndpointIFInvocationHandler
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, ((BindingProvider) _proxy).getRequestContext());
 
-
-
         messageStruct.setMEP(mmep);
 
         //set mtom processing
-        if(_rtcontext != null && _rtcontext.getModel() != null){
-            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding)?(javax.xml.ws.soap.SOAPBinding)binding:null;
-            if(sb != null){
+        if (_rtcontext != null && _rtcontext.getModel() != null) {
+            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding) ? (javax.xml.ws.soap.SOAPBinding) binding : null;
+            if (sb != null) {
                 _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
             }
         }
@@ -126,7 +135,6 @@ public class EndpointIFInvocationHandler
             case MessageStruct.CHECKED_EXCEPTION_RESPONSE:
                 if (_rtcontext.getModel().isCheckedException(method, messageStruct.getResponse().getClass()))
                     throw (Throwable) messageStruct.getResponse();
-                // throw (RemoteException) messageStruct.getResponse();
                 throw (Exception) messageStruct.getResponse();
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
                 throw (RuntimeException) messageStruct.getResponse();
@@ -134,25 +142,7 @@ public class EndpointIFInvocationHandler
         return messageStruct.getResponse();
     }
 
-    //don't think I need this- test later
-    protected Object implementBindingProviderMethod(Method method, Object[] args) {
-
-        String methodName = method.getName();
-
-        if (methodName.equals("getRequestContext")) {
-            return this.getRequestContext();
-        } else if (methodName.equals("getResponseContext")) {
-            return this.getResponseContext();
-        } else if (methodName.equals("getBinding")) {
-            return this.getBinding();
-        } else
-            throw new WebServiceException("No such method exception ");
-
-    }
-
-
     boolean isSEIMethod(Method method, Class sei) {
         return (sei.equals(method.getDeclaringClass())) ? true : false;
     }
-
 }

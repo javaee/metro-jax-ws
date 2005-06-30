@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.2 2005-05-25 20:44:16 kohlert Exp $
+ * $Id: WSDLContext.java,v 1.3 2005-06-30 15:10:41 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,76 +8,105 @@ package com.sun.xml.ws.wsdl;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPBinding;
-import java.util.*;
+import javax.xml.ws.WebServiceException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * $author: JAXWS Development Team
  */
 public class WSDLContext {
     private URL orgWsdlLocation;
-    private String targetNamespaceURI;
-    private QName serviceName;
-    //private String endpoint;
+    private String targetNamespace;
     private URI bindingId;
     private String defaultBindingId = SOAPBinding.SOAP11HTTP_BINDING;
-    private HashMap<QName, String> portsLocationMap; //ports2LocationMap
-    private HashMap<QName, HashMap> service2portsLocationMap;   //service2
+    private LinkedHashMap<QName, LinkedHashMap> service2portsLocationMap;   //service2
 
     public WSDLContext() {
-        portsLocationMap = new HashMap<QName, String>();
-        service2portsLocationMap = new HashMap<QName, HashMap>();
+        service2portsLocationMap = new LinkedHashMap<QName, LinkedHashMap>();
     }
 
-
-    public void setOrigWSDLLocation(URL wsdlLocation){
+    public void setOrigWSDLLocation(URL wsdlLocation) {
         orgWsdlLocation = wsdlLocation;
-
     }
 
-
-     public URL getOrigWSDLLocation(){
+    public URL getOrigWSDLLocation() {
         return orgWsdlLocation;
     }
 
-    public String getOrigURLPath(){
+    public String getOrigURLPath() {
         return orgWsdlLocation.getPath();
     }
 
-    //just get the first one for now
-    public String getEndpoint() {
-        String endpoint = null;
-        if (!portsLocationMap.isEmpty()){
-            Set<QName> keys = portsLocationMap.keySet();
-            Iterator<QName> iter =  keys.iterator();
+    public QName getServiceQName(){
 
-            if (iter.hasNext()){
-                endpoint = portsLocationMap.get(iter.next());
-            }
+        Set<QName> serviceKeys = service2portsLocationMap.keySet();
+        Iterator<QName> iter = serviceKeys.iterator();
+        if (iter.hasNext()){
+            return iter.next();
         }
+        return null;
+    }
+
+    public QName getServiceQName(QName serviceName){
+
+        Set<QName> serviceKeys = service2portsLocationMap.keySet();
+        if (serviceKeys.contains(serviceName))
+            return serviceName;
+        else throw new WebServiceException("Error supplied serviceQName is not correct.");
+    }
+
+    //just get the first one for now
+    public String getEndpoint(QName serviceName) {
+        String endpoint = null;
+        if (serviceName != null) {
+            //iterates in insertion order
+            LinkedHashMap portsLocationMap = service2portsLocationMap.get(serviceName);
+            if (portsLocationMap != null) {
+                if (!portsLocationMap.isEmpty()) {
+                    Set<QName> keys = portsLocationMap.keySet();
+                    Iterator<QName> iter = keys.iterator();
+                    if (iter.hasNext()) {
+                        endpoint = (String) portsLocationMap.get(iter.next());
+                    }
+                }
+            } else {
+                throw new WebServiceException("No ports found for service " + serviceName);
+            }
+        } else {
+            //service QName unknown throw exception
+            throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
+        }
+        if (endpoint == null)
+            throw new WebServiceException("Endpoint not found. Check WSDL file to verify endpoint was provided.");
+
         return endpoint;
     }
 
-     //just get the first one for now
+    //just get the first one for now
     public QName getPortName() {
         String endpoint = null;
         QName portName = null;
-        if (!portsLocationMap.isEmpty()){
+        HashMap portsLocationMap = null;
+        if (!portsLocationMap.isEmpty()) {
             Set<QName> keys = portsLocationMap.keySet();
-            Iterator<QName> iter =  keys.iterator();
+            Iterator<QName> iter = keys.iterator();
 
-            if (iter.hasNext()){
-                 portName = iter.next();
+            if (iter.hasNext()) {
+                portName = iter.next();
             }
         }
         return portName;
     }
 
-   // public void setEndpoint(String loc) {
-   //     endpoint = loc;
-   // }
+    // public void setEndpoint(String loc) {
+    //     endpoint = loc;
+    // }
 
     public URI getBindingID() {
         if (bindingId == null)
@@ -97,15 +126,15 @@ public class WSDLContext {
         }
     }
 
-    public QName getServiceName() {
-        return serviceName;
+    public String getTargetNamespace() {
+        return targetNamespace;
     }
 
-    public void setServiceName(QName name) {
-        serviceName = name;
+    public void setTargetNamespace(String tns) {
+        targetNamespace = tns;
     }
 
-    public void addPort(QName portName, String location){
-        portsLocationMap.put(portName, location);
+    public void addService2Ports(QName serviceName, LinkedHashMap portsMap) {
+        service2portsLocationMap.put(serviceName, portsMap);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.1 2005-05-23 22:26:38 bbissett Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.2 2005-06-30 15:10:40 kwalsh Exp $
  */
 
 /*
@@ -33,66 +33,58 @@ public class ServiceFactoryImpl extends ServiceFactory {
     public ServiceFactoryImpl() {
     }
 
-    //this will change
+
     public Service createService(java.net.URL wsdlDocumentLocation, QName name)
         throws WebServiceException {
-        //todo:add back once done
-        //if (wsdlDocumentLocation == null) {
-        //    throw new IllegalArgumentException("wsdlDocumentLocation must not be null");
-        //}
+
+
         return new WebService(name, (Class) null, wsdlDocumentLocation);
     }
 
     public Service createService(QName name) throws WebServiceException {
-        //only qname is known, a BasicService is returned
-        // return new BasicService(name);
+
+        //if (name == null)
+        //    throw new WebServiceException("QName for the service must not be null");
+
         return new WebService(name, null, null);
     }
 
-    public WebServiceInterface createService(URL wsdlDocumentLocation, Class serviceInterface)
+    public Service createService(URL wsdlDocumentLocation, Class serviceInterface)
         throws WebServiceException {
 
-        //check for null arguments
-        //todo:add basck in when done
-        //if (wsdlDocumentLocation == null) {
-        //    throw new IllegalArgumentException("wsdlDocumentLocation must not be null");
-        //}
-
         if (serviceInterface == null) {
-            throw new IllegalArgumentException();
+            throw new WebServiceException("ServiceInterface class must not be null");
         }
 
         //check to make sure this is a service
         if (!Service.class.isAssignableFrom(serviceInterface)) {
-            // throw (WebServiceException)new WebServiceException("service.interface.required",
-            //     serviceInterface.getName());
+             throw new WebServiceException("service.interface.required " +
+                 serviceInterface.getName());
         }
-
-        return (WebServiceInterface) bootStrap(serviceInterface, wsdlDocumentLocation);
-
+        return (Service) bootStrap(serviceInterface, wsdlDocumentLocation);
     }
 
     public Service createService(Class serviceInterface)
-        throws Exception {
+        throws WebServiceException {
         if (serviceInterface == null) {
-            throw new IllegalArgumentException();
+            throw new WebServiceException("Service interface must not be null");
         }
 
         //load a service given the service interface
         if (!Service.class.isAssignableFrom(serviceInterface)) {
-            throw new Exception("service.interface.required" +
+            throw new WebServiceException("service.interface.required" +
                 serviceInterface.getName());
         }
 
         return bootStrap(serviceInterface);
     }
 
-
-    /* public Service createService(Class serviceInterface, QName name)
-         throws Exception {
+    /* todo
+     public Service createService(Class serviceInterface, QName name)
+         throws WebServiceException {
          //create a service using the service qname and an interface
          if (!Service.class.isAssignableFrom(serviceInterface)) {
-             throw new WebServiceExceptionImpl("service.interface.required",
+             throw new WebServiceException("service.interface.required " +
                  serviceInterface.getName());
          }
 
@@ -205,11 +197,17 @@ public class ServiceFactoryImpl extends ServiceFactory {
     private WebServiceInterface createServiceProxy(RuntimeContext context, Class si, URL wsdlLocation) {
         ServiceInvocationHandler handler =
             new ServiceInvocationHandler(context, si, wsdlLocation);
-
-        Service serviceProxy = (Service) Proxy.newProxyInstance(si.getClassLoader(),
+        Service serviceProxy = null;
+        try {
+           serviceProxy = (Service) Proxy.newProxyInstance(si.getClassLoader(),
             new Class[]{si, com.sun.xml.ws.client.WebServiceInterface.class, javax.xml.ws.Service.class, Serializable.class, Referenceable.class},
             handler);
         handler.setProxy((Proxy) serviceProxy);
+        } catch (Exception ex){
+            throw new WebServiceException(ex.getMessage(), ex);
+        }
+        if (serviceProxy == null)
+            throw new WebServiceException("Failed to create ServiceProxy.");
 
         return (com.sun.xml.ws.client.WebServiceInterface) serviceProxy;
     }

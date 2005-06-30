@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLConstants.java,v 1.2 2005-06-02 17:53:15 vivekp Exp $
+ * $Id: WSDLConstants.java,v 1.3 2005-06-30 15:10:41 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -43,5 +43,6 @@ public interface WSDLConstants {
     public static String ATTR_TRANSPORT = "transport";
     public static String ATTR_LOCATION = "location";
     public static String ATTR_NAME = "name";
+    public static String ATTR_TNS = "targetNamespace";
     //public static QName QNAME_ATTR_ARRAY_TYPE = new QName(NS_WSDL, "arrayType");
 }

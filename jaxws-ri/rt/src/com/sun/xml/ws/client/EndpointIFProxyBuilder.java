@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFProxyBuilder.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: EndpointIFProxyBuilder.java,v 1.2 2005-06-30 15:10:39 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -26,11 +26,17 @@ public class EndpointIFProxyBuilder {
     protected HandlerRegistryImpl handlerRegistry;
     private RuntimeContext rtContext;
     private WSDLContext wsdlContext;
+    private QName serviceQName;
 
-    public EndpointIFProxyBuilder(HandlerRegistryImpl handlerRegistry, RuntimeContext context, WSDLContext wsContext) {
+    public EndpointIFProxyBuilder(HandlerRegistryImpl handlerRegistry,
+                                  RuntimeContext context,
+                                  WSDLContext wsContext,
+                                  QName serviceName) {
+
         this.handlerRegistry = handlerRegistry;
         rtContext = context;
         wsdlContext = wsContext;
+        serviceQName = serviceName;
     }
 
     public void setBindingOnProvider(InternalBindingProvider provider,
@@ -43,7 +49,7 @@ public class EndpointIFProxyBuilder {
         throws WebServiceException {
 
         EndpointIFInvocationHandler handler =
-            new EndpointIFInvocationHandler(portInterface, rtContext, wsdlContext);   //need handler registry passed in here
+            new EndpointIFInvocationHandler(portInterface, rtContext, wsdlContext, serviceQName);   //need handler registry passed in here
         setBindingOnProvider(handler, portQName, handler._getBindingId());
 
         Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),

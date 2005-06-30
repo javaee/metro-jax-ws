@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.6 2005-06-24 18:04:33 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.7 2005-06-30 15:10:40 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -53,24 +53,24 @@ import javax.xml.transform.stream.StreamSource;
 
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
-    
+
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.soapmd");
     private Localizer localizer = new Localizer();
-    private LocalizableMessageFactory messageFactory = 
+    private LocalizableMessageFactory messageFactory =
         new LocalizableMessageFactory("com.sun.xml.ws.resources.soapmd");
-    
+
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
 
     public SOAPMessageDispatcher() {
     }
-    
+
     public void send(MessageInfo messageInfo) {
         // Not required for server
         throw new UnsupportedOperationException();
     }
-   
+
     // TODO: need to work the exception logic
     public void receive(MessageInfo messageInfo) {
         try {
@@ -81,7 +81,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sendResponseError(messageInfo, e);
                 return;
             }
-            
+
             HandlerContext context = new HandlerContext(messageInfo, null,
                 soapMessage);
             updateContextPropertyBag(messageInfo, context);
@@ -121,18 +121,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sendResponse(messageInfo, soapMessage);
             } else {
                 toMessageInfo(messageInfo, context);
-       
+
                 if (isOneway(messageInfo)) {
                     sendResponseOneway(messageInfo);
-                    if (!peekOneWay) { // handler chain didn't already close
+                    if (!peekOneWay) { // handler chain didn't already clos
                         closeHandlers(messageInfo, context);
                     }
                 }
-                
+
                 if (!isFailure(messageInfo)) {
                     invokeEndpoint(messageInfo, context);
                 }
-                
+
                 if (isOneway(messageInfo)) {
                     if (isFailure(messageInfo)) {
                         // Just log the error. Not much to do
@@ -148,7 +148,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             sendResponseError(messageInfo, e);
         }
     }
-    
+
     protected void toMessageInfo(MessageInfo messageInfo, HandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         try {
@@ -190,7 +190,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             updateMessageInfoPropertyBag(context, messageInfo);
         }
     }
-    
+
     /*
      * Gets SOAPMessage from the connection
      */
@@ -198,8 +198,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
         return SOAPConnectionUtil.getSOAPMessage(con, messageInfo);
     }
-    
-    /*
+
+/*
      * Invokes the endpoint.
      */
     protected void invokeEndpoint(MessageInfo messageInfo, HandlerContext hc) {
@@ -208,9 +208,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         Tie tie = targetFinder.findTarget(messageInfo);
         tie._invoke(messageInfo);
     }
-    
+
     protected SOAPMessage getResponse(MessageInfo messageInfo, HandlerContext context) {
-    	setResponseInContext(messageInfo, context);
+        setResponseInContext(messageInfo, context);
         try {
             HandlerChainCaller handlerCaller =
                 getCallerFromMessageInfo(messageInfo);
@@ -218,7 +218,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 int messageType = messageInfo.getResponseType();
                 if (messageType == MessageInfo.CHECKED_EXCEPTION_RESPONSE ||
                     messageType == MessageInfo.UNCHECKED_EXCEPTION_RESPONSE) {
-                    
+
                     callHandleFault(handlerCaller, context);
                 } else {
                     callHandlersOnResponse(handlerCaller, context);
@@ -240,22 +240,22 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             return encoder.toSOAPMessage(internalMessage, messageInfo);
         }
     }
-    
+
     /*
      * MessageInfo contains the endpoint invocation results. The information
      * is converted to InternalMessage or SOAPMessage and set in HandlerContext
      */
     protected void setResponseInContext(MessageInfo messageInfo,
-    		HandlerContext context) {
-	    // MessageInfo to InternalMessage
+            HandlerContext context) {
+        // MessageInfo to InternalMessage
         LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-	    InternalMessage internalMessage = (InternalMessage)eptf.getInternalEncoder().toInternalMessage(
-	    		messageInfo);
-	    // set handler context
-	    context.setInternalMessage(internalMessage);
-	    context.setSOAPMessage(null);
+        InternalMessage internalMessage = (InternalMessage)eptf.getInternalEncoder().toInternalMessage(
+                messageInfo);
+        // set handler context
+        context.setInternalMessage(internalMessage);
+        context.setSOAPMessage(null);
     }
-    
+
     /*
      * Sends SOAPMessage response on the connection
      */
@@ -264,35 +264,35 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponse(con, soapMessage);
     }
-    
+
     protected void sendResponseOneway(MessageInfo messageInfo) {
         JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponseOneway(con);
     }
-    
+
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
         e.printStackTrace();
         JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponseError(con);
     }
-    
-    
+
+
 
     /*
      * Calls inbound handlers. It also calls outbound handlers incase flow is
      * reversed. If the handler throws a ProtocolException, SOAP message is
      * already set in the context. Otherwise, it creates InternalMessage,
      * and that is used to create SOAPMessage.
-     * 
+     *
      * returns whether to invoke endpoint or not.
      */
     private boolean callHandlersOnRequest(MessageInfo messageInfo,
         HandlerContext context, boolean responseExpected) {
-        
+
         boolean skipEndpoint = false;
         HandlerChainCaller handlerCaller =
             getCallerFromMessageInfo(messageInfo);
-        
+
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
             try {
                 skipEndpoint = !handlerCaller.callHandlers(Direction.INBOUND,
@@ -309,7 +309,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         return skipEndpoint;
     }
-    
+
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
         RuntimeContext context = (RuntimeContext)
             info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
@@ -321,14 +321,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         return caller;
     }
-    
+
     protected boolean callHandlersOnResponse(HandlerChainCaller caller,
         HandlerContext context) {
-            
+
         return caller.callHandlers(Direction.OUTBOUND,
             RequestOrResponse.RESPONSE, context, false);
     }
-    
+
     /*
      * Used when the endpoint throws an exception. HandleFault is called
      * on the server handlers rather than handleMessage.
@@ -351,21 +351,21 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             handlerCaller.forceCloseHandlers(context);
         }
     }
-    
+
     private static boolean isFailure(MessageInfo messageInfo) {
         return (messageInfo.getResponseType() == MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
     }
-    
+
     public static boolean isOneway(MessageInfo messageInfo) {
         return (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
-    
+
 /*
     protected void fine(String key, Object obj) {
         logger.fine(localizer.localize(messageFactory.getMessage(key, new Object[] { ""+obj.hashCode() })));
     }
 */
-    
+
     // copy from message info to handler context
     private void updateContextPropertyBag(MessageInfo messageInfo,
             HandlerContext context) {
@@ -378,7 +378,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.setScope(name, Scope.APPLICATION);
         }
     }
-    
+
     // copy from handler context to message info
     private void updateMessageInfoPropertyBag(HandlerContext context,
             MessageInfo messageInfo) {
@@ -402,13 +402,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      *
     private boolean checkHeadersPeekBody(MessageInfo mi, HandlerContext context)
             throws SOAPException {
-     
+
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
         SOAPMessage message = context.getSOAPMessage();
         SOAPHeader header = message.getSOAPHeader();
         if (header != null) {
             //TODO remove, we dont want enc/dec to have any state
-            //rtCtxt.setMethodAndMEP(null, context.getMessageInfo());            
+            //rtCtxt.setMethodAndMEP(null, context.getMessageInfo());
             checkMustUnderstandHeaders(mi, context, header);
         }
 
@@ -436,7 +436,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     }
      */
-    
+
     /*
      * Try to create as few objects as possible, thus carry
      * around null sets when possible and check if MU headers
@@ -445,13 +445,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      *
     private void checkMustUnderstandHeaders(MessageInfo mi, HandlerContext context,
         SOAPHeader header) throws SOAPException {
-        
+
         // this is "finer" level
         logger.entering("com.sun.xml.rpc.server.SOAPMessageDispatcher",
             "checkMustUnderstandHeaders");
-        
+
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-        
+
         // start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
         roles.add("http://schemas.xmlsoap.org/soap/actor/next");

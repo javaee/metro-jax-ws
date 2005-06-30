@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.4 2005-06-06 22:01:13 vivekp Exp $
+ * $Id: HttpClientTransport.java,v 1.5 2005-06-30 15:10:41 kwalsh Exp $
  */
 
 /*
@@ -67,8 +67,8 @@ public class HttpClientTransport
             else
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
 
-            _logStream = logStream;
-            //_logStream = System.out;
+            //_logStream = logStream;
+            _logStream = System.out;
         } catch (Exception e) {
             throw new ClientTransportException("http.client.cannotCreateMessageFactory");
         }
