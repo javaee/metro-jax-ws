@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2005 Sun Microsystems, Inc.
- * All rights reserved. 
+ * All rights reserved.
  */
 package fromjava_soap12.server;
 
 public class AddNumbersException extends Exception {
     String detail;
-
-    public AddNumbersException(String message, String detail) {
-        super(message);
+    
+    public AddNumbersException (String message, String detail) {
+        super (message);
         this.detail = detail;
     }
-
-    public String getDetail() {
+    
+    public String getDetail () {
         return detail;
     }
 }

@@ -6,9 +6,9 @@
 -->
 
 <endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
-  <endpoint
-    name='fromjava-soap12'
-    implementation='fromjava_soap12.server.AddNumbersImpl'
-    binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"  
-    urlpattern='/addnumbers'/>
+    <endpoint
+        name='fromjava-soap12'
+        implementation='fromjava_soap12.server.AddNumbersImpl'
+        binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"  
+        urlpattern='/addnumbers'/>
 </endpoints>
