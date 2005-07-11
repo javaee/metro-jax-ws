@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2005 Sun Microsystems, Inc.
- * All rights reserved. 
+ * All rights reserved.
  */
 package fromwsdlhandler.common;
 
@@ -19,39 +19,39 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
  * and outgoing messages.
  */
 public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
-
+    
     // change this to redirect output if desired
     private static PrintStream out = System.out;
-
+    
     // used to hold initilization data
     private Map config;
     
-    public void init(Map config) {
+    public void init (Map config) {
         this.config = config;
     }
     
-    public Set<QName> getHeaders() {
+    public Set<QName> getHeaders () {
         return null;
     }
-
-    public boolean handleMessage(SOAPMessageContext smc) {
-        logToSystemOut(smc);
+    
+    public boolean handleMessage (SOAPMessageContext smc) {
+        logToSystemOut (smc);
         return true;
     }
-
-    public boolean handleFault(SOAPMessageContext smc) {
-        logToSystemOut(smc);
+    
+    public boolean handleFault (SOAPMessageContext smc) {
+        logToSystemOut (smc);
         return true;
     }
-
+    
     // nothing to clean up
-    public void close(MessageContext messageContext) {
+    public void close (MessageContext messageContext) {
     }
-
+    
     // nothing to clean up
-    public void destroy() {
+    public void destroy () {
     }
-
+    
     /*
      * Check the MESSAGE_OUTBOUND_PROPERTY in the context
      * to see if this is an outgoing or incoming message.
@@ -59,22 +59,22 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
      * output the message. The writeTo() method can throw
      * SOAPException or IOException
      */
-    private void logToSystemOut(SOAPMessageContext smc) {
+    private void logToSystemOut (SOAPMessageContext smc) {
         Boolean outboundProperty = (Boolean)
-            smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         
-        if (outboundProperty.booleanValue()) {
-            out.println("\nOutbound message:");
+        if (outboundProperty.booleanValue ()) {
+            out.println ("\nOutbound message:");
         } else {
-            out.println("\nInbound message:");
+            out.println ("\nInbound message:");
         }
         
-        SOAPMessage message = smc.getMessage();
+        SOAPMessage message = smc.getMessage ();
         try {
-            message.writeTo(out);
-            out.println("");   // just to add a newline
+            message.writeTo (out);
+            out.println ("");   // just to add a newline
         } catch (Exception e) {
-            out.println("Exception in handler: " + e);
+            out.println ("Exception in handler: " + e);
         }
     }
 }

@@ -11,19 +11,19 @@
 
 <project basedir="." default="help" name="fromwsdlhandler">
 
-	&commonTargets;
+    &commonTargets;
 
-	<property file="etc/build.properties" />
+    <property file="etc/build.properties" />
 
-	<target name="server" depends="setup">
+    <target name="server" depends="setup">
 
-		<antcall target="clean" />
+        <antcall target="clean" />
 
-		<antcall target="build-server-wsdl" />
+        <antcall target="build-server-wsdl" />
 
-		<antcall target="create-war" />
+        <antcall target="create-war" />
 
-		<antcall target="deploy" />
-	</target>
+        <antcall target="deploy" />
+    </target>
 
 </project>

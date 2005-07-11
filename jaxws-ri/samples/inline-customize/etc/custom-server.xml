@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
+-->
+
 <bindings 
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-	wsdlLocation="AddNumbers.wsdl"
-	xmlns="http://java.sun.com/xml/ns/jaxws">    
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    wsdlLocation="AddNumbers.wsdl"
+    xmlns="http://java.sun.com/xml/ns/jaxws">    
     <bindings node="wsdl:definitions">
-		<package name="inline_customize.server"/>
+        <package name="inline_customize.server"/>
     </bindings>
     <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.org']">
         <jaxb:schemaBindings>

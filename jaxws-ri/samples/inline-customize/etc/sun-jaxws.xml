@@ -6,12 +6,12 @@
 -->
 
 <endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
-  <endpoint
-    name='inline_customize'
-	interface="inline_customize.server.AddNumbersPortType"
-    implementation='inline_customize.server.AddNumbersImpl'
-	wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"
-	service="{http://duke.org}AddNumbersService"
-	port="{http://duke.org}AddNumbersPort"
-    urlpattern='/addnumbers'/>
+    <endpoint
+        name='inline_customize'
+        interface="inline_customize.server.AddNumbersPortType"
+        implementation='inline_customize.server.AddNumbersImpl'
+        wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"
+        service="{http://duke.org}AddNumbersService"
+        port="{http://duke.org}AddNumbersPort"
+        urlpattern='/addnumbers'/>
 </endpoints>
