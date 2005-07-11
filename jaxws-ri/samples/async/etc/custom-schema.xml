@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
+-->
+
 <bindings 
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns="http://java.sun.com/xml/ns/jaxb"
-	version="1.0">    
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://java.sun.com/xml/ns/jaxb"
+    version="1.0">    
     <bindings schemaLocation="http://localhost:8080/jaxws-async/addnumbers?xsd=schema1.xsd" node="/xsd:schema">
         <schemaBindings>
             <package name="async.client"/>

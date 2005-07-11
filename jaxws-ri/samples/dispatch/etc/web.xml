@@ -10,23 +10,23 @@
     "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd">
 
 <web-app>
-  <display-name>dispatch</display-name>
-  <description>dispatch</description>
-  <listener>
-<listener-class>com.sun.xml.ws.transport.http.servlet.JAXRPCContextListener</listener-class>
-</listener>
-<servlet>
-<servlet-name>dispatch</servlet-name>
-<display-name>dispatch</display-name>
-<description>JAX-WS endpoint - dispatch</description>
-<servlet-class>com.sun.xml.ws.transport.http.servlet.JAXRPCServlet</servlet-class>
-<load-on-startup>1</load-on-startup>
-</servlet>
-<servlet-mapping>
-<servlet-name>dispatch</servlet-name>
-<url-pattern>/addnumbers</url-pattern>
-</servlet-mapping>
-<session-config>
-    <session-timeout>60</session-timeout>
-  </session-config>
+    <display-name>dispatch</display-name>
+    <description>dispatch</description>
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.JAXRPCContextListener</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>dispatch</servlet-name>
+        <display-name>dispatch</display-name>
+        <description>JAX-WS endpoint - dispatch</description>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.JAXRPCServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatch</servlet-name>
+        <url-pattern>/addnumbers</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
 </web-app>
