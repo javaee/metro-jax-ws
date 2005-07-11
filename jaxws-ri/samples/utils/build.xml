@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
- Copyright 2005 Sun Microsystems, Inc. All rights reserved.
- SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
 -->
 
 <!DOCTYPE project [
@@ -11,20 +11,20 @@
 
 <project basedir="." default="gen-utils" name="Sample-Utils">
 
-	&commonTargets;
+    &commonTargets;
 
-	<target name="gen-utils" depends="setup">
-    <javac srcdir="src"
-        source="1.5"
-        debug="true"
-        destdir="${build.classes.home}"
-	    includes="**/**">
-        <classpath refid="jaxws.classpath"/>
-    </javac>
+    <target name="gen-utils" depends="setup">
+        <javac srcdir="src"
+            source="1.5"
+            debug="true"
+            destdir="${build.classes.home}"
+            includes="**/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
 
-    <jar destfile="${basedir}/../lib/jaxwsSampleUtils.jar"
-        basedir="${build.classes.home}"
-        includes="utils/**"
-        update="true"/>
-	</target>
+        <jar destfile="${basedir}/../lib/jaxwsSampleUtils.jar"
+            basedir="${build.classes.home}"
+            includes="utils/**"
+            update="true"/>
+    </target>
 </project>
