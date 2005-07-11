@@ -1,4 +1,8 @@
-<!-- property name="lib.home" value="${basedir}/../lib"/ -->
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
+-->
+
 <property environment="env"/>
 <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
 <property name="as.home" value="${env.AS_HOME}"/>
@@ -42,16 +46,16 @@
     	base="${build.classes.home}"
     	sourceBase="${build.classes.home}"
     	sourcePath="${basedir}/src">
-		<classpath>
-	        <path refid="jaxws.classpath"/>
-		    <pathelement location="${basedir}/src"/>
-		</classpath>
-		<option key="nd" value="${build.home}"/>
-		<option key="verbose" value="${verbose}"/>
-		<source dir="${basedir}/src">
+        <classpath>
+        <path refid="jaxws.classpath"/>
+            <pathelement location="${basedir}/src"/>
+        </classpath>
+        <option key="nd" value="${build.home}"/>
+        <option key="verbose" value="${verbose}"/>
+        <source dir="${basedir}/src">
             <include name="**/server/*.java"/>
             <include name="**/common/*.java"/>
-		</source>
+        </source>
     </apt>
     <!-- copy handlers descriptor file -->
     <copy todir="${build.classes.home}">
@@ -83,14 +87,14 @@
         keep="${keep}"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
-		<binding dir="${basedir}/etc" includes="${server.binding}"/>
+        <binding dir="${basedir}/etc" includes="${server.binding}"/>
     </wsimport>
     <javac
-		fork="true"
-		srcdir="${basedir}/src"
-		destdir="${build.classes.home}"
-		includes="**/server/**,**/common/**">
-		<classpath refid="jaxws.classpath"/>
+        fork="true"
+        srcdir="${basedir}/src"
+        destdir="${build.classes.home}"
+        includes="**/server/**,**/common/**">
+        <classpath refid="jaxws.classpath"/>
     </javac>
 </target>
 
@@ -98,9 +102,9 @@
     <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
 	<webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
 	<zipfileset
-		dir="${basedir}/etc"
-		includes="*.wsdl, *.xsd"
-		prefix="/WEB-INF/wsdl"/>
+            dir="${basedir}/etc"
+            includes="*.wsdl, *.xsd"
+            prefix="/WEB-INF/wsdl"/>
 	<classes dir="${build.classes.home}"/>
     </war>
 </target>
@@ -119,26 +123,26 @@
         base="${build.classes.home}"
         httpProxy="webcache.sfbay.sun.com:8080"
         wsdlFile="${client.wsdl}">
-		<binding dir="${basedir}/etc" includes="${client.binding}"/>
+        <binding dir="${basedir}/etc" includes="${client.binding}"/>
     </wsimport>
 </target>
 
 <target name="client" depends="generate-client">
     <javac
-		fork="true"
-		srcdir="${basedir}/src"
-		destdir="${build.classes.home}"
-		includes="**/client/**,**/common/**">
-		<classpath refid="jaxws.classpath"/>
+        fork="true"
+        srcdir="${basedir}/src"
+        destdir="${build.classes.home}"
+        includes="**/client/**,**/common/**">
+        <classpath refid="jaxws.classpath"/>
     </javac>
 </target>
 
 <target name="run">
     <java fork="true" classname="${client}">
-		<classpath>
-	        <path refid="jaxws.classpath"/>
-	        <pathelement location="${build.classes.home}"/>
-		</classpath>
+        <classpath>
+            <path refid="jaxws.classpath"/>
+            <pathelement location="${build.classes.home}"/>
+        </classpath>
         <jvmarg value="-Dhttp.proxyHost=webcache.sfbay.sun.com"/>
         <jvmarg value="-Dhttp.proxyPort=8080"/>
     </java>
