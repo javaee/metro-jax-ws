@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.13 2005-06-30 18:18:35 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.14 2005-07-12 19:56:43 arungupta Exp $
  */
 
 /*
@@ -21,6 +21,7 @@ import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
+import static javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_ENCODING_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_TYPE_PROPERTY;
@@ -44,8 +46,8 @@ import static com.sun.xml.ws.client.BindingProviderProperties.FAST_CONTENT_TYPE_
 import static com.sun.xml.ws.client.BindingProviderProperties.FAST_ENCODING_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
 import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP_ACTION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XMLFAST_ENCODING_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
@@ -198,10 +200,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                     } else { // default is XML encoding
                         mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
                     }
-                } else if (propName.equals(SOAP_ACTION_PROPERTY)) {
-                    String soapAction = (String) properties.get(SOAP_ACTION_PROPERTY);
-                    if (soapAction != null)
-                        mimeHeaders.addHeader(SOAP_ACTION_PROPERTY, soapAction);
                 } else {
                     messageContext.put(propName, properties.get(propName));
                 }
@@ -220,6 +218,14 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }else{
                 mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
             }
+        }
+
+        RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData (JAXWS_RUNTIME_CONTEXT);
+        JavaMethod javaMethod = runtimeContext.getModel().getJavaMethod (messageInfo.getMethod ());
+        if (javaMethod != null) {
+            String soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding)javaMethod.getBinding()).getSOAPAction ();
+            if (soapAction != null)
+                messageContext.put(SOAPACTION_URI_PROPERTY, soapAction);
         }
 
         messageContext.setMessage(soapMessage);
