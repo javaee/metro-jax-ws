@@ -8,6 +8,7 @@ package com.sun.xml.ws.transport.http.server;
 
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.server.WSDLPatcher;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -19,10 +20,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import javax.net.http.HttpContext;
-import javax.net.http.HttpHandler;
-import javax.net.http.HttpServer;
-import javax.net.http.HttpTransaction;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpInteraction;
 
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.handler.Handler;
@@ -58,13 +59,20 @@ public class EndpointImpl implements Endpoint {
     private List<Source> metadata;
     private Binding binding;
     
+    private static final int MAX_THREADS = 5;
+    private static final String GET_METHOD = "GET";
+    private static final String POST_METHOD = "POST";
+    private static final String HTML_CONTENT_TYPE = "text/html";
+    private static final String XML_CONTENT_TYPE = "text/xml";
+    private static final String CONTENT_TYPE_HEADER = "Content-Type";
+    
     public EndpointImpl(URI bindingId, Object impl) {
         this.impl = impl;
         // TODO: get Binding from bindingId
         this.binding = null;
         localizer = new Localizer();
         messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
+            new LocalizableMessageFactory("com.sun.xml.ws.resources.httpserver");
     }
     
     public Binding getBinding() {
@@ -77,32 +85,35 @@ public class EndpointImpl implements Endpoint {
 
     public void publish(String address) {
         try {
-            System.out.println("Publishing at address="+address);
             this.address = address;
             URL url = new URL(address);
             int port = url.getPort();
             if (port == -1) {
                 port = url.getDefaultPort();
             }
-            HttpServer server = HttpServer.create(new InetSocketAddress(port), 5);
+            InetSocketAddress inetAddress = new InetSocketAddress(port);
+            HttpServer server = HttpServer.create(inetAddress, MAX_THREADS);
             server.setExecutor(Executors.newFixedThreadPool(5));
             int index = url.getPath().lastIndexOf('/');
             String contextRoot = url.getPath().substring(0, index);
             System.out.println("*** contextRoot ***"+contextRoot);
-            HttpContext context = server.createContext(url.getProtocol(), contextRoot);
+            HttpContext context = server.createContext(contextRoot);
             publish(context);
             server.start();
         } catch(Exception e) {
-            e.printStackTrace();
+            throw new ServerRtException("publish.err", new Object[] { e } );
         }
     }
 
     public void publish(Object serverContext) {
+        if (!(serverContext instanceof HttpContext)) {
+            throw new ServerRtException("not.HttpContext.type");
+        }
         this.httpContext = (HttpContext)serverContext;
         try {
             publish(httpContext);
         } catch(Exception e) {
-            e.printStackTrace();
+            throw new ServerRtException("publish.err", new Object[] { e } );
         }
         published = true;
     }
@@ -112,13 +123,13 @@ public class EndpointImpl implements Endpoint {
         httpContext.setHandler(null);
         if (httpServer != null) {
             httpServer.removeContext(httpContext);
-            httpServer.terminate();
+            httpServer.terminate(0);
         }
         published = false;
     }
 
     public boolean isPublished() {
-        return false;
+        return published;
     }
 
     public java.util.List<Source> getMetadata() {
@@ -126,7 +137,6 @@ public class EndpointImpl implements Endpoint {
     }
 
     public void setMetadata(java.util.List<Source> metadata) {
-
         this.metadata = metadata;
     }
 
@@ -148,43 +158,49 @@ public class EndpointImpl implements Endpoint {
         
         final Tie tie = new Tie();
         context.setHandler(new HttpHandler() {
-            public void handleTransaction(HttpTransaction msg) {
+            public void handleInteraction(HttpInteraction msg) {
                 try {
                     System.out.println("Received HTTP request:"+msg.getRequestURI());
-                    if (msg.getRequestMethod().equals("GET")) {
+                    String method = msg.getRequestMethod();
+                    if (method.equals(GET_METHOD)) {
                         InputStream is = msg.getRequestBody();
-                        byte[] bytes = readFully(is);
-                        System.out.println("Closing input");
+                        readFully(is);
                         is.close();
                         writeGetReply(msg, endpointInfo);
-                    } else {
+                    } else if (method.equals(POST_METHOD)) {
                         ServerConnectionImpl con = new ServerConnectionImpl(msg);
                         tie.handle(con, endpointInfo);
                         //con.getOutput().close();
+                    } else {
+                        logger.warning(
+                                localizer.localize(
+                                    messageFactory.getMessage(
+                                        "unexpected.http.method", method)));
                     }
-                    msg.close();
                 } catch(Exception e) {
                     e.printStackTrace();
+                } finally {
+                    try {
+                        msg.close();
+                    } catch(IOException ioe) {
+                        ioe.printStackTrace();          // Not much can be done
+                    }
                 }
             }
         });
     }
     
-    protected static byte[] readFully(InputStream istream) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    /*
+     * Consumes the entire input stream
+     */
+    private static void readFully(InputStream is) throws IOException {
         byte[] buf = new byte[1024];
-        int num = 0;
-
-        if (istream != null) {
-            while ((num = istream.read(buf)) != -1) {
-                bout.write(buf, 0, num);
-            }
+        if (is != null) {
+            while (is.read(buf) != -1);
         }
-        byte[] ret = bout.toByteArray();
-        return ret;
     }
             
-    protected void writeGetReply(HttpTransaction msg, RuntimeEndpointInfo targetEndpoint)
+    protected void writeGetReply(HttpInteraction msg, RuntimeEndpointInfo targetEndpoint)
     throws Exception {
      
         String queryString = msg.getRequestURI().getQuery();
@@ -200,7 +216,7 @@ public class EndpointImpl implements Endpoint {
             writeNotFoundErrorPage(msg, "Invalid Request="+msg.getRequestURI());
             return;
         }
-        msg.getResponseHeaders().addHeader("Content-Type", "text/xml");
+        msg.getResponseHeaders().addHeader(CONTENT_TYPE_HEADER, XML_CONTENT_TYPE);
         msg.sendResponseHeaders(HttpURLConnection.HTTP_OK,  0);
         OutputStream outputStream = msg.getResponseBody();
         
@@ -218,26 +234,24 @@ public class EndpointImpl implements Endpoint {
          
     }
     
-    protected void writeNotFoundErrorPage(HttpTransaction msg, String message)
-    throws Exception {
-        
-        System.out.println("Wrint the not found");
-        msg.getResponseHeaders().addHeader("Content-Type", "text/html");
+    /*
+     * writes 404 Not found error html page
+     */
+    private void writeNotFoundErrorPage(HttpInteraction msg, String message)
+    throws IOException {
+        msg.getResponseHeaders().addHeader(CONTENT_TYPE_HEADER, HTML_CONTENT_TYPE);
         msg.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND,  0);
         OutputStream outputStream = msg.getResponseBody();
         PrintWriter out = new PrintWriter(outputStream);
-        out.println("<html>");
-        out.println("<head><title>");
+        out.println("<html><head><title>");
         out.println(
             localizer.localize(
-                messageFactory.getMessage("servlet.html.title")));
-        out.println("</title></head>");
-        out.println("<body>");
+                messageFactory.getMessage("html.title")));
+        out.println("</title></head><body>");
         out.println(
             localizer.localize(
-                messageFactory.getMessage("servlet.html.notFound", message)));
-        out.println("</body>");
-        out.println("</html>");
+                messageFactory.getMessage("html.notFound", message)));
+        out.println("</body></html>");
         out.close();
     }
             

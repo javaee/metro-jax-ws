@@ -20,11 +20,13 @@ public class EndpointFactoryImpl extends EndpointFactory {
     public EndpointFactoryImpl() {
     }
     
+    @Override
     public Endpoint createEndpoint(URI bindingId, Object impl) {
         Endpoint endpoint = new EndpointImpl(bindingId, impl);
         return endpoint;
     }
     
+    @Override
     public Endpoint publish(String address, Object impl) {
         // TODO : binding
         Endpoint endpoint = new EndpointImpl(null, impl);

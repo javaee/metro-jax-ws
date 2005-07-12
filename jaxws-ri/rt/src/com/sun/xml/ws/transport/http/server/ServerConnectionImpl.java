@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.1 2005-06-23 01:37:21 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.2 2005-07-12 17:57:27 jitu Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
-import javax.net.http.HttpTransaction;
+import com.sun.net.httpserver.HttpInteraction;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -33,14 +33,14 @@ import java.util.Map;
  */
 public class ServerConnectionImpl implements JaxrpcConnection {
 
-    private HttpTransaction httpTransaction;
+    private HttpInteraction httpTransaction;
     private STATUS status;
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
     private InputStream is;
     private OutputStream out;
 
-    public ServerConnectionImpl(HttpTransaction httpTransaction) {
+    public ServerConnectionImpl(HttpInteraction httpTransaction) {
         this.httpTransaction = httpTransaction;
     }
 
