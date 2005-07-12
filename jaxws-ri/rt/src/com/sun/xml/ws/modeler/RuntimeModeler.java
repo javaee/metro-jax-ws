@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.15 2005-07-12 01:19:57 arungupta Exp $
+ * $Id: RuntimeModeler.java,v 1.16 2005-07-12 22:39:48 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -32,7 +32,8 @@ import java.util.concurrent.Future;
 
 
 /**
- * $author: JAXWS Development Team
+ * Creates a runtime model of a SEI (portClass).
+ * @author JAXWS Developement Team
  */
 public class RuntimeModeler {
     private String bindingId;
@@ -44,7 +45,13 @@ public class RuntimeModeler {
     private boolean isWrapped = true;
     private boolean usesWebMethod = false;
     private ClassLoader classLoader = null;
+    /**
+     * 
+     */
     public static final String PD_JAXWS_PACKAGE_PD  = ".jaxws.";
+    /**
+     * 
+     */
     public static final String JAXWS_PACKAGE_PD     = "jaxws.";
     public static final String RESPONSE             = "Response";
     public static final String RETURN               = "return";
@@ -54,17 +61,30 @@ public class RuntimeModeler {
     public static final Class REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class RPC_LIT_PAYLOAD_CLASS = com.sun.xml.ws.encoding.jaxb.RpcLitPayload.class;
 
+    /**
+     * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
+     * @param portClass The SEI class to be modeled.
+     * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
+     */
     public RuntimeModeler(Class portClass, String bindingId) {
         this.portClass = portClass;
         this.bindingId = bindingId;
     }
 
+    /**
+     * sets the classloader to be used when loading classes by the <code>RuntimeModeler</code>.
+     * @param classLoader ClassLoader used to load classes
+     */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
     
     //currently has many local vars which will be eliminated after debugging issues
     //first draft
+    /**
+     * builds the runtime model from the <code>portClass</code> using the binding ID <code>bindingId</code>.
+     * @return the runtime model for the <code>portClass</code>.
+     */
     public RuntimeModel buildRuntimeModel() {
         runtimeModel = new SOAPRuntimeModel();
 
@@ -88,6 +108,11 @@ public class RuntimeModeler {
         return runtimeModel;
     }
 
+    /**
+     * utility method to load classes
+     * @param className the name of the class to load
+     * @return the class specified by <code>className</code>
+     */
     protected Class getClass(String className) {
         try {
             if (classLoader == null)
@@ -155,6 +180,11 @@ public class RuntimeModeler {
         }
     }
 
+    /**
+     * creates a runtime model <code>SOAPBinding</code> from a <code>javax.jws.soap.SOAPBinding</code> object
+     * @param soapBinding the <code>javax.jws.soap.SOAPBinding</code> to model
+     * @return returns the runtime model SOAPBinding corresponding to <code>soapBinding</code>
+     */
     protected com.sun.xml.ws.model.soap.SOAPBinding createBinding(javax.jws.soap.SOAPBinding soapBinding) {
         com.sun.xml.ws.model.soap.SOAPBinding rtSOAPBinding =
             new com.sun.xml.ws.model.soap.SOAPBinding();
@@ -168,6 +198,11 @@ public class RuntimeModeler {
         return rtSOAPBinding;
     }
 
+    /**
+     * gets the namespace <code>String</code> for a given <code>packageName</code>
+     * @param packageName the name of the package used to find a namespace
+     * @return the namespace for the specified <code>packageName</code>
+     */
     protected String getNamespace(String packageName) {
         StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
         String[] tokens;
@@ -189,6 +224,11 @@ public class RuntimeModeler {
         return namespace + "/jaxws";
     }
 
+    /**
+     * creates the runtime model for a method on the <code>portClass</code>
+     * @param method the method to model
+     * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
+     */
     protected void processMethod(Method method, WebService webService) {
 //System.out.println("processing Method: "+method.getName());
 
@@ -276,6 +316,15 @@ public class RuntimeModeler {
         return MessageStruct.REQUEST_RESPONSE_MEP;
     }
 
+    /**
+     * models a document/literal wrapped method
+     * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
+     * @param methodName the runtime model <code>JavaMethod</code> instance being created
+     * @param webMethod the runtime model <code>JavaMethod</code> instance being created
+     * @param operationName the runtime model <code>JavaMethod</code> instance being created
+     * @param method the <code>method</code> to model
+     * @param webService The <code>WebService</code> annotation instance on the <code>portClass</code>
+     */
     protected void processDocWrappedMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
@@ -458,8 +507,9 @@ public class RuntimeModeler {
     }
 
     /**
-     * @param paramPos
-     * @param wrapperClass
+     * gets the WSDL element name for a given parameter
+     * @param paramPos the parameter position
+     * @param wrapperClass the wrapper class for this method
      * @return returns the wrapper child element name thats annotated with @ParameterIndex equals to paramPos.
      *         Returns null if it cant find any.
      */
@@ -478,6 +528,11 @@ public class RuntimeModeler {
         return elementName;
     }
 
+    /**
+     * gets the element name for the <code>wrapperClass</code>
+     * @param wrapper The wrapper class
+     * @return the element name for the <code>wrapperClass</code>
+     */
     protected QName getWrapperElementName(Class wrapper) {
         QName elementName = null;
         XmlRootElement rootElement = (XmlRootElement)wrapper.getAnnotation(XmlRootElement.class);
@@ -498,6 +553,15 @@ public class RuntimeModeler {
     }
 
 
+    /**
+     * models a rpc/literal method
+     * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
+     * @param methodName the name of the <code>method</code> being modeled.
+     * @param webMethod the <code>WebMethod</code> annotations instance on the <code>method</code>
+     * @param operationName the WSDL operation name for this <code>method</code>
+     * @param method the runtime model <code>JavaMethod</code> instance being created
+     * @param webService the runtime model <code>JavaMethod</code> instance being created
+     */
     protected void processRpcMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
@@ -629,6 +693,12 @@ public class RuntimeModeler {
         processExceptions(javaMethod, method);
     }
 
+    /**
+     * models the exceptions thrown by <code>method</code> and adds them to the <code>javaMethod</code>
+     * runtime model object
+     * @param javaMethod the runtime model object to add the exception model objects to
+     * @param method the <code>method</code> from which to find the exceptions to model
+     */
     protected void processExceptions(JavaMethod javaMethod, Method method) {
         for (Type exception : method.getGenericExceptionTypes()) {
             if (REMOTE_EXCEPTION_CLASS.isAssignableFrom((Class)exception))
@@ -640,10 +710,10 @@ public class RuntimeModeler {
             String namespace = targetNamespace;
             String name = ((Class)exception).getSimpleName();
             if (faultInfoMethod == null)  {
-                String packageName = ((Class)exception).getPackage().getName();
+//                String packageName = ((Class)exception).getPackage().getName();
                 String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
-                if (packageName.length() == 0)
-                    beanPackage = JAXWS_PACKAGE_PD;
+//                if (packageName.length() == 0)
+//                    beanPackage = JAXWS_PACKAGE_PD;
                 String className = beanPackage+ name + BEAN;
                 exceptionBean = getClass(className);
                 exceptionType = ExceptionType.UserDefined;
@@ -665,6 +735,13 @@ public class RuntimeModeler {
         }
     }
 
+    /**
+     * returns the method that corresponds to "getFaultInfo".  Returns null if this is not an
+     * exception generated from a WSDL
+     * @param exception the class to search for the "getFaultInfo" method
+     * @return the method named "getFaultInfo" if this is an exception generated from WSDL or an
+     * exception that contains the <code>WebFault</code> annotation.  Otherwise it returns null
+     */
     protected Method getWSDLExceptionFaultInfo(Class exception) {
         if (!exception.isAnnotationPresent(WebFault.class))
             return null;
@@ -676,6 +753,15 @@ public class RuntimeModeler {
         }
     }
 
+    /**
+     * models a document/literal bare method
+     * @param javaMethod the runtime model <code>JavaMethod</code> instance being created
+     * @param methodName the runtime model <code>JavaMethod</code> instance being created
+     * @param webMethod the runtime model <code>JavaMethod</code> instance being created
+     * @param operationName the runtime model <code>JavaMethod</code> instance being created
+     * @param method the runtime model <code>JavaMethod</code> instance being created
+     * @param webService the runtime model <code>JavaMethod</code> instance being created
+     */
     protected void processDocBareMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
 
@@ -795,6 +881,11 @@ public class RuntimeModeler {
         return returnType;
     }
 
+    /**
+     * utility to capitalize the first letter in a string
+     * @param name the string to capitalize
+     * @return the capitalized string
+     */
     public static String capitalize(String name) {
         if (name == null || name.length() == 0) {
             return name;
@@ -806,6 +897,11 @@ public class RuntimeModeler {
     
     /*
      * Return service QName
+     */
+    /**
+     * gets the <code>wsdl:serviceName</code> for a given implementation class
+     * @param implClass the implementation class
+     * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
     public QName getServiceName(Class implClass) {
         String name = implClass.getSimpleName();
