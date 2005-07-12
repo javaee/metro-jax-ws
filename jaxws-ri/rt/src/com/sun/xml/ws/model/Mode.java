@@ -1,5 +1,5 @@
 /**
- * $Id: Mode.java,v 1.1 2005-05-23 22:42:10 bbissett Exp $
+ * $Id: Mode.java,v 1.2 2005-07-12 23:32:50 kohlert Exp $
  */
 
 /*
@@ -10,9 +10,9 @@
 package com.sun.xml.ws.model;
 
 /**
- * @author Vivek Pandey
- *
  * Defines parameter mode, IN, OUT or INOUT
+ *
+ * @author Vivek Pandey
  */
 
 public enum Mode {

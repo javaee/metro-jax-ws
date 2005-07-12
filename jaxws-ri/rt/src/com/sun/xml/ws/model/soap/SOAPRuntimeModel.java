@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.4 2005-06-08 05:21:27 vivekp Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.5 2005-07-12 23:32:52 kohlert Exp $
  */
 
 /*
@@ -36,9 +36,9 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.server.ServerRtException;
 
 /**
- * @author Vivek Pandey
- *
  * Creates SOAP specific RuntimeModel
+ *
+ * @author Vivek Pandey
  */
 public class SOAPRuntimeModel extends RuntimeModel {
 

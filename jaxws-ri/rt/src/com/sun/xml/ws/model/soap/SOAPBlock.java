@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBlock.java,v 1.1 2005-05-23 22:42:08 bbissett Exp $
+ * $Id: SOAPBlock.java,v 1.2 2005-07-12 23:32:52 kohlert Exp $
  */
 
 /*
@@ -9,9 +9,9 @@
 package com.sun.xml.ws.model.soap;
 
 /**
- * @author Vivek Pandey
- *
  * Denotes the soap block
+ *
+ * @author Vivek Pandey
  */
 public enum SOAPBlock {
     BODY(0), HEADER(1), ATTACHMENT(2);

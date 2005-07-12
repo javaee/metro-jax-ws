@@ -1,5 +1,5 @@
 /**
- * $Id: ExceptionType.java,v 1.1 2005-05-23 22:42:09 bbissett Exp $
+ * $Id: ExceptionType.java,v 1.2 2005-07-12 23:32:50 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -7,9 +7,9 @@
  */
 package com.sun.xml.ws.model;
 /**
- * @author Vivek Pandey
- *
  * Type of java exception
+ *
+ * @author Vivek Pandey
  */
 public enum ExceptionType {
     WSDLException(0), UserDefined(1);

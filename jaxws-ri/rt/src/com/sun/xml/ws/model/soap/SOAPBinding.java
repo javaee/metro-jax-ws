@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBinding.java,v 1.1 2005-05-23 22:42:08 bbissett Exp $
+ * $Id: SOAPBinding.java,v 1.2 2005-07-12 23:32:51 kohlert Exp $
  */
 
 /*
@@ -11,9 +11,9 @@ package com.sun.xml.ws.model.soap;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 
 /**
- * @author Vivek Pandey
- *
  * Binding object that represents soap:binding
+ *
+  * @author Vivek Pandey
  */
 public class SOAPBinding {
     public SOAPBinding() {

@@ -1,5 +1,5 @@
 /**
- * $Id: WrapperParameter.java,v 1.1 2005-05-23 22:42:10 bbissett Exp $
+ * $Id: WrapperParameter.java,v 1.2 2005-07-12 23:32:51 kohlert Exp $
  */
 
 /*
@@ -15,10 +15,9 @@ import java.util.List;
 import com.sun.xml.bind.api.TypeReference;
 
 /**
- * @author Vivek Pandey
- *
  * Models Wrapper parameter
  * 
+ * @author Vivek Pandey
  */
 public class WrapperParameter extends Parameter{
     public WrapperParameter(TypeReference type, Mode mode, int index) {

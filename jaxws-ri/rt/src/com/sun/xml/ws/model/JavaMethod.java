@@ -1,5 +1,5 @@
 /**
- * $Id: JavaMethod.java,v 1.4 2005-06-10 22:51:03 jitu Exp $
+ * $Id: JavaMethod.java,v 1.5 2005-07-12 23:32:50 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -17,9 +17,9 @@ import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.pept.presentation.MessageStruct;
 
 /**
- * @author Vivek Pandey
- * 
  * Build this runtime model using java SEI and annotations
+ *
+ * @author Vivek Pandey
  */
 public class JavaMethod {
     /**

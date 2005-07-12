@@ -1,5 +1,5 @@
 /**
- * $Id: CheckedException.java,v 1.1 2005-05-23 22:42:09 bbissett Exp $
+ * $Id: CheckedException.java,v 1.2 2005-07-12 23:32:49 kohlert Exp $
  */
 
 /*
@@ -13,8 +13,6 @@ import com.sun.xml.bind.api.TypeReference;
 import java.lang.reflect.Type; 
 
 /**
- * @author Vivek Pandey
- * 
  * CheckedException class. Holds the exception class - class that has public
  * constructor
  * 
@@ -23,6 +21,8 @@ import java.lang.reflect.Type;
  * and method
  * 
  * <code>public FaultBean getFaultInfo();</code>
+ *
+ * @author Vivek Pandey
  */
 
 public class CheckedException {

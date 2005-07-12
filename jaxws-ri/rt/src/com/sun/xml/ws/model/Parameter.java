@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.2 2005-06-10 20:28:38 vivekp Exp $
+ * $Id: Parameter.java,v 1.3 2005-07-12 23:32:50 kohlert Exp $
  */
 
 /*
@@ -16,10 +16,9 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 
 /**
- * @author Vivek Pandey
- * 
  * runtime Parameter that abstracts the annotated java parameter
  * 
+ * @author Vivek Pandey
  */
 
 public class Parameter {

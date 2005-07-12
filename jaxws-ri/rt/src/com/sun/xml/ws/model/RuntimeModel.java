@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.10 2005-06-01 19:06:24 bbissett Exp $
+ * $Id: RuntimeModel.java,v 1.11 2005-07-12 23:32:51 kohlert Exp $
  */
 
 /*
@@ -24,6 +24,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
+ * model of the web service.  Used by the runtime marshall/unmarshall 
+ * web service invocations
+ *
  * $author: JAXWS Development Team
  */
 public abstract class RuntimeModel {
