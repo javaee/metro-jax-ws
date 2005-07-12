@@ -4,11 +4,12 @@
  * Created on April 13, 2005, 10:34 AM
  */
 
-package com.sun.xml.ws.transport.http.server;
+package com.sun.xml.ws.server;
 
 import javax.xml.ws.EndpointFactory;
 import javax.xml.ws.Endpoint;
 import java.net.URI;
+import com.sun.xml.ws.transport.http.server.EndpointImpl;
 
 /**
  *
