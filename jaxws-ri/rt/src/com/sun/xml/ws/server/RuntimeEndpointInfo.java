@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.20 2005-06-24 18:04:32 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.21 2005-07-12 23:34:09 jitu Exp $
  */
 
 /*
@@ -47,6 +47,7 @@ public class RuntimeEndpointInfo
     private Binding binding;
     private RuntimeModel runtimeModel;
     private Object implementor;
+    private Object implementorProxy;
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
     private boolean enableMtom;
@@ -221,6 +222,14 @@ public class RuntimeEndpointInfo
     
     public void setImplementor(Object implementor) {
         this.implementor = implementor;
+    }
+    
+    public Object getImplementorProxy() {
+        return implementorProxy;
+    }
+    
+    public void setImplementorProxy(Object implementorProxy) {
+        this.implementorProxy = implementorProxy;
     }
     
     public void setMetadata(Map<String, DocInfo> docs) {

@@ -1,67 +1,64 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.2 2005-06-24 18:04:33 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.3 2005-07-12 23:34:10 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi.runtime;
 
-import java.util.List;
-import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
-import javax.xml.ws.handler.Handler;
-import javax.xml.transform.Source;
-import com.sun.xml.ws.spi.runtime.*;
 
 /**
- * This class is implemented by
- * com.sun.xml.rpc.server.http.RuntimeEndpointInfo
+ * This captures all the required information (e.g: handlers, binding, endpoint
+ * object, proxy for endpoint object etc.) about the endpoint.
  */
 public interface RuntimeEndpointInfo {
-
-    public void setName(String s);
     
+    /**
+     * TODO: remove this method
+     * Not used.
+     */
+    public void setUrlPattern(String s);
+        
     /*
      * Builds runtime model from implementor object. It also generates required
      * WSDL, schema documents if there is no corresponding metadata. 
      */
     public void deploy();
-    public void setPortName(QName n);
-    public void setServiceName(QName n);
-    public void setUrlPattern(String s);
     
     /**
-     * Sets the endpoint implementation object
+     * Sets the endpoint implementation object. This servant object should have
+     * @WebService annotation. Provider endpoints need not have @WebService
+     * annotation. Dynamic model is created using this object.
      */
     public void setImplementor(Object servant);
+    
+    /**
+     * Sets a proxy object for actual implementor. If the proxy object is set,
+     * it is used for method invocation. Otherwise, actual implementor is used
+     * for method invocation.
+     */
+    public void setImplementorProxy(Object servantProxy);
     
     /**
      * Gets the endpoint implementation object
      */
     public Object getImplementor();
-
     
     /**
+     * @return proxy object for the actual implementor object
+     */
+    public Object getImplementorProxy();
+
+    /**
      * Returns the binding for this endpoint.
-     *
      */
     public Binding getBinding();
     
     /**
-     * Returns a list of metadata documents for the service.
+     * sets the binding for this endpoint. If there are handlers, set them on
+     * the binding object.
      */
-    public List<javax.xml.transform.Source> getMetadata();
-
-    /**
-     * Sets the metadata for this endpoint.
-     *
-     * @param metadata A list of XML document sources containing
-     *           metadata information for the endpoint (e.g.
-     *           WSDL or XML Schema documents)
-     *
-     * @throws java.lang.IllegalStateException If the endpoint
-     *         has already been published.
-     */
-    public void setMetadata(List<Source> metadata);
+    public void setBinding(Binding binding);
 
 }

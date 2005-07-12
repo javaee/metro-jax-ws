@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderPeptTie.java,v 1.1 2005-05-23 22:50:22 bbissett Exp $
+ * $Id: ProviderPeptTie.java,v 1.2 2005-07-12 23:34:10 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -47,7 +47,10 @@ public class ProviderPeptTie extends PeptTie {
         Map<String, Object> context = (Map<String, Object>) oa[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-        Provider servant = (Provider)endpointInfo.getImplementor();
+        Provider servant = (Provider)endpointInfo.getImplementorProxy();
+        if (servant == null) {     // If no proxy object, use actual implementor
+            servant = (Provider)endpointInfo.getImplementor();
+        }
         try {
             Object response = servant.invoke(oa[0], context);
             messageInfo.setResponse(response);
