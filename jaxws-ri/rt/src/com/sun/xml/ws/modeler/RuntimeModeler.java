@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.14 2005-06-10 00:37:39 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.15 2005-07-12 01:19:57 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -245,6 +245,10 @@ public class RuntimeModeler {
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
             javaMethod.setBinding(mySOAPBinding);
         } else {
+            if (action != null)
+                defaultBinding.setSOAPAction(action);
+            else
+                defaultBinding.setSOAPAction("");
             javaMethod.setBinding(defaultBinding);
         }
         if (!methodIsWrapped) {
