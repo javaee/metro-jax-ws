@@ -78,7 +78,9 @@
           <root url="jar://$MODULE_DIR$/../lib/saaj-impl.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../../../saaj-ws/tag/src/java" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">

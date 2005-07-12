@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.3 2005-05-31 22:38:06 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.4 2005-07-12 15:54:09 vivekp Exp $
  */
 
 /*
@@ -9,14 +9,11 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
-import com.sun.xml.ws.util.ASCIIUtility;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
 import java.util.Map;
 
 /**
@@ -38,12 +35,18 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
      * @return
      */
     public DataHandler getAttachmentAsDataHandler(String cid) {
-        AttachmentBlock block = attachments.get(decodeCid(cid));
+        AttachmentBlock ab = attachments.get(decodeCid(cid));
         //TODO localize exception message
-        if(block == null)
+        if((ab == null)&& ((ab != null) && (ab.getAttachmentPart() == null)))
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-        Object value = block.getValue();
-        return new DataHandler(new ByteArrayDataSource((InputStream)block.getValue(),  block.getType()));
+        try {
+            AttachmentPart ap = ab.getAttachmentPart();
+            if(ap != null)
+                return new DataHandler(new com.sun.xml.bind.v2.ByteArrayDataSource(ap.getRawContentBytes(),  ap.getContentType()));
+        } catch (SOAPException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 
     /**
@@ -52,13 +55,12 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
      * @return
      */
     public byte[] getAttachmentAsByteArray(String cid) {
-        AttachmentBlock block = attachments.get(decodeCid(cid));
-        if(block == null)
+        AttachmentBlock ab = attachments.get(decodeCid(cid));
+        if((ab == null) && ((ab != null) && (ab.getAttachmentPart() == null)))
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-
         try {
-            return ASCIIUtility.getBytes((InputStream)block.getValue());
-        } catch (IOException e) {
+            return ab.getAttachmentPart().getRawContentBytes();
+        } catch (SOAPException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;

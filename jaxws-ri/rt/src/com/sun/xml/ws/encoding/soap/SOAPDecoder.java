@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.10 2005-06-24 18:04:32 bbissett Exp $
+ * $Id: SOAPDecoder.java,v 1.11 2005-07-12 15:54:10 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,6 +15,7 @@ import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.messaging.saaj.soap.AttachmentPartImpl;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.*;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
@@ -294,9 +295,8 @@ public abstract class SOAPDecoder implements Decoder {
 
         while(iter.hasNext()){
             AttachmentPart ap = (AttachmentPart) iter.next();
-            InputStream content = ap.getRawContent();
-            String id = ap.getContentId();
-            im.addAttachment(id, new AttachmentBlock(id, content, ap.getContentType()));
+            im.addAttachment(ap.getContentId(),
+                    new AttachmentBlock(ap));
         }
     }
 

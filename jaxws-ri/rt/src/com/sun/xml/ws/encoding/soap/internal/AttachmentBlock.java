@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.3 2005-05-28 01:04:38 vivekp Exp $
+ * $Id: AttachmentBlock.java,v 1.4 2005-07-12 15:54:09 vivekp Exp $
  */
 
 /*
@@ -8,7 +8,7 @@
 */
 package com.sun.xml.ws.encoding.soap.internal;
 
-import java.io.InputStream;
+import javax.xml.soap.AttachmentPart;
 
 /**
  * @author JAX-RPC RI Development Team
@@ -17,6 +17,11 @@ public class AttachmentBlock {
     private String id;
     private Object value;
     private String type;
+    private AttachmentPart ap;
+
+    public AttachmentBlock(AttachmentPart ap){
+        this.ap = ap;
+    }
 
     public AttachmentBlock(String id, Object value, String type) {
         this.id = id;
@@ -36,8 +41,12 @@ public class AttachmentBlock {
         return value;
     }
 
-    public void setValue(InputStream value) {
+    public void setValue(Object value) {
         this.value = value;
+    }
+
+    public AttachmentPart getAttachmentPart(){
+        return ap;
     }
 
     public String getType() {
