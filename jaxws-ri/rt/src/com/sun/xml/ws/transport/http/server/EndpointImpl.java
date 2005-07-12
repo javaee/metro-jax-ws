@@ -1,7 +1,9 @@
-/*
- * EndpointImpl.java
+
+/**
+ * $Id: EndpointImpl.java,v 1.3 2005-07-12 21:27:44 jitu Exp $
  *
- * Created on April 13, 2005, 10:34 AM
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
 package com.sun.xml.ws.transport.http.server;
@@ -101,7 +103,7 @@ public class EndpointImpl implements Endpoint {
             publish(context);
             server.start();
         } catch(Exception e) {
-            throw new ServerRtException("publish.err", new Object[] { e } );
+            throw new ServerRtException("server.rt.err", new Object[] { e } );
         }
     }
 
@@ -113,7 +115,7 @@ public class EndpointImpl implements Endpoint {
         try {
             publish(httpContext);
         } catch(Exception e) {
-            throw new ServerRtException("publish.err", new Object[] { e } );
+            throw new ServerRtException("server.rt.err", new Object[] { e } );
         }
         published = true;
     }
