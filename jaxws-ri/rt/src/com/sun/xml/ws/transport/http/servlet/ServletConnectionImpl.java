@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.2 2005-06-13 20:21:25 jitu Exp $
+ * $Id: ServletConnectionImpl.java,v 1.3 2005-07-13 21:21:17 jitu Exp $
  */
 
 /*
@@ -18,8 +18,8 @@ import java.nio.ByteBuffer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.sun.pept.ept.EPTFactory;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * @author JAX-RPC RI Development Team
  */
-public class ServletConnectionImpl implements JaxrpcConnection {
+public class ServletConnectionImpl implements WSConnection {
 
     private HttpServletRequest request;
     private HttpServletResponse response;

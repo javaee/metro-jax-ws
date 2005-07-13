@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.7 2005-06-30 15:10:40 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-13 21:21:15 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -24,7 +24,7 @@ import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -195,7 +195,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * Gets SOAPMessage from the connection
      */
     private SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
-        JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection)messageInfo.getConnection();
         return SOAPConnectionUtil.getSOAPMessage(con, messageInfo);
     }
 
@@ -261,18 +261,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      */
     // TODO: HTTP response code
     private void sendResponse(MessageInfo messageInfo, SOAPMessage soapMessage) {
-        JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponse(con, soapMessage);
     }
 
     protected void sendResponseOneway(MessageInfo messageInfo) {
-        JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponseOneway(con);
     }
 
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
         e.printStackTrace();
-        JaxrpcConnection con = (JaxrpcConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponseError(con);
     }
 

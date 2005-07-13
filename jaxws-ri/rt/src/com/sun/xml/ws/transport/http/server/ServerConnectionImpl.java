@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.2 2005-07-12 17:57:27 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.3 2005-07-13 21:21:17 jitu Exp $
  */
 
 /*
@@ -16,8 +16,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 import com.sun.pept.ept.EPTFactory;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.net.httpserver.HttpInteraction;
 
 import java.net.HttpURLConnection;
@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * @author JAX-RPC RI Development Team
  */
-public class ServerConnectionImpl implements JaxrpcConnection {
+public class ServerConnectionImpl implements WSConnection {
 
     private HttpInteraction httpTransaction;
     private STATUS status;

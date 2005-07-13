@@ -1,5 +1,5 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.2 2005-06-13 20:21:25 jitu Exp $
+ * $Id: LocalConnectionImpl.java,v 1.3 2005-07-13 21:21:18 jitu Exp $
  */
 
 /*
@@ -29,7 +29,7 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.spi.runtime.MessageContext;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.server.MessageContextProperties;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +37,7 @@ import java.io.OutputStream;
 /**
  * @author JAX-RPC RI Development Team
  */
-public class LocalConnectionImpl implements JaxrpcConnection, SOAPConnection
+public class LocalConnectionImpl implements WSConnection, SOAPConnection
 {
     private SOAPMessageContext context;
     private EPTFactory eptFactory;

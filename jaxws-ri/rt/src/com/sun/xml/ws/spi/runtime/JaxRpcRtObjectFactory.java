@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcRtObjectFactory.java,v 1.3 2005-06-09 19:55:20 jitu Exp $
+ * $Id: JaxRpcRtObjectFactory.java,v 1.4 2005-07-13 21:21:15 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -56,7 +56,7 @@ public abstract class JaxRpcRtObjectFactory {
     /**
      * Creates a connection for servlet transport
      */
-    public abstract JaxrpcConnection createJaxrpcConnection(
+    public abstract WSConnection createWSConnection(
             HttpServletRequest req, HttpServletResponse res);
 
 

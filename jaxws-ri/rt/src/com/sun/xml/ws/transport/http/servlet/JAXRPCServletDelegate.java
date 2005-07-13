@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.6 2005-06-23 01:32:53 jitu Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.7 2005-07-13 21:21:17 jitu Exp $
  *
  */
 
@@ -36,7 +36,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
 //import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -337,7 +337,7 @@ public class JAXRPCServletDelegate implements ServletDelegate {
                                 targetEndpoint.getName())));
                 }
             }
-            JaxrpcConnection connection =
+            WSConnection connection =
                 new ServletConnectionImpl(request, response);
             tie.handle(connection, targetEndpoint);
         } catch (JAXWSExceptionBase e) {

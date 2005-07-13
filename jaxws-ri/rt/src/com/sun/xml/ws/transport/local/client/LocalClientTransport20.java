@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.4 2005-06-13 19:25:27 vivekp Exp $
+ * $Id: LocalClientTransport20.java,v 1.5 2005-07-13 21:21:18 jitu Exp $
  */
 
 /*
@@ -25,7 +25,7 @@ import com.sun.xml.ws.client.BindingImpl;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.local.server.LocalConnectionImpl;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
@@ -67,7 +67,7 @@ public class LocalClientTransport20 implements ClientTransport {
 
 
 
-            JaxrpcConnection con = new LocalConnectionImpl(context, null);
+            WSConnection con = new LocalConnectionImpl(context, null);
             tie.handle(con, endpointInfo);
 
             setSOAPMessageFromSAAJ(context);
@@ -151,7 +151,7 @@ public class LocalClientTransport20 implements ClientTransport {
                 logStream.write("\n".getBytes());
             }
 
-            JaxrpcConnection con = new LocalConnectionImpl(context, null);
+            WSConnection con = new LocalConnectionImpl(context, null);
             tie.handle(con, endpointInfo);
 
             // set this because a sender cannot rely on it being set

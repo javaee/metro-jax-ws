@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.2 2005-06-30 18:50:31 bbissett Exp $
+ * $Id: Tie.java,v 1.3 2005-07-13 21:21:15 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,13 +17,13 @@ import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.MessageInfoUtil;
 
 public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
     
-    public void handle(JaxrpcConnection connection,
+    public void handle(WSConnection connection,
         com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo endpoint)
     throws Exception {
                 

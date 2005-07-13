@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.4 2005-07-13 01:37:26 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.5 2005-07-13 21:21:15 jitu Exp $
  */
 
 /*
@@ -26,8 +26,8 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.client.BindingImpl;
 import com.sun.pept.ept.MessageInfo;
@@ -38,7 +38,7 @@ import com.sun.xml.ws.util.SOAPUtil;
  */
 public class SOAPConnectionUtil {
     
-    public static SOAPMessage getSOAPMessage(JaxrpcConnection con, MessageInfo mi) {
+    public static SOAPMessage getSOAPMessage(WSConnection con, MessageInfo mi) {
         if (con instanceof SOAPConnection) {
             return ((SOAPConnection)con).getSOAPMessage();
         }
@@ -62,7 +62,7 @@ public class SOAPConnectionUtil {
         }
     }
     
-    private static void send(JaxrpcConnection con, SOAPMessage soapMessage) {
+    private static void send(WSConnection con, SOAPMessage soapMessage) {
         if (con instanceof SOAPConnection) {
             ((SOAPConnection)con).sendResponse(soapMessage);
             return;
@@ -91,12 +91,12 @@ public class SOAPConnectionUtil {
         }
     }
     
-    public static void sendResponse(JaxrpcConnection con, SOAPMessage soapMessage) {
+    public static void sendResponse(WSConnection con, SOAPMessage soapMessage) {
         setStatus(con, STATUS.OK);
         send(con, soapMessage);
     }
     
-    public static void sendResponseOneway(JaxrpcConnection con) {
+    public static void sendResponseOneway(WSConnection con) {
          if (con instanceof SOAPConnection) {
             ((SOAPConnection)con).sendResponseOneway();
             return;
@@ -106,7 +106,7 @@ public class SOAPConnectionUtil {
         //con.write(buf);
     }
         
-    public static void sendResponseError(JaxrpcConnection con) {
+    public static void sendResponseError(WSConnection con) {
         try {
             SOAPMessage message = SOAPUtil.createMessage();
             ByteArrayOutputStream bufferedStream = new ByteArrayOutputStream();
@@ -123,19 +123,19 @@ public class SOAPConnectionUtil {
         }
     }
     
-    public static Map<String,List<String>> getHeaders(JaxrpcConnection con) {
+    public static Map<String,List<String>> getHeaders(WSConnection con) {
         return con.getHeaders();
     }
     
     /**
      * sets response headers.
      */
-    public static void setHeaders(JaxrpcConnection con,
+    public static void setHeaders(WSConnection con,
         Map<String,List<String>> headers) {
         con.setHeaders(headers);
     }
     
-    public static void setStatus(JaxrpcConnection con, STATUS status) {
+    public static void setStatus(WSConnection con, STATUS status) {
         con.setStatus(status);
     }
     

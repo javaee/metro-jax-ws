@@ -1,5 +1,5 @@
 /*
- * $Id: JaxRpcRtObjectFactoryImpl.java,v 1.2 2005-06-09 19:11:14 jitu Exp $
+ * $Id: JaxRpcRtObjectFactoryImpl.java,v 1.3 2005-07-13 21:21:19 jitu Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 
 import com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes;
-import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.servlet.ServletConnectionImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,7 +54,7 @@ public class JaxRpcRtObjectFactoryImpl
     /**
      * Creates a connection for servlet transport
      */
-    public JaxrpcConnection createJaxrpcConnection(HttpServletRequest req,
+    public WSConnection createWSConnection(HttpServletRequest req,
             HttpServletResponse res) {
         return new ServletConnectionImpl(req, res);
     }
