@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.7 2005-06-06 23:08:08 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.8 2005-07-13 01:37:26 jitu Exp $
  */
 
 /*
@@ -20,11 +20,11 @@ import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.DOMStreamReader;
+import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.XMLConstants;
@@ -64,7 +64,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
             MimeHeaders mh = new MimeHeaders();
             mh.addHeader("Content-Type", getContentType(messageInfo));
-            SOAPMessage msg = new SOAPMessageContext().createMessage(mh, bis, getBindingId());
+            SOAPMessage msg = SOAPUtil.createMessage(mh, bis, getBindingId());
             processAttachments(response, msg);
             return msg;
         } catch(Exception e) {

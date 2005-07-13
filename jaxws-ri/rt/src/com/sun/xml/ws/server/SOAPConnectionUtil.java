@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.3 2005-06-13 20:21:24 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.4 2005-07-13 01:37:26 jitu Exp $
  */
 
 /*
@@ -26,19 +26,17 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection;
 import com.sun.xml.ws.spi.runtime.JaxrpcConnection.STATUS;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.client.BindingImpl;
 import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.util.SOAPUtil;
 
 /**
  * @author JAX-RPC RI Development Team
  */
 public class SOAPConnectionUtil {
-    
-    public static final SOAPMessageContext ctxt = new SOAPMessageContext();
     
     public static SOAPMessage getSOAPMessage(JaxrpcConnection con, MessageInfo mi) {
         if (con instanceof SOAPConnection) {
@@ -56,8 +54,8 @@ public class SOAPConnectionUtil {
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
             RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
             String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
-            SOAPMessage soapMessage =  (new SOAPMessageContext()).createMessage(
-                mh, con.getInput(), bindingId);
+            SOAPMessage soapMessage =  SOAPUtil.createMessage(mh,
+                    con.getInput(), bindingId);
             return soapMessage;
         } catch(Exception e) {
             throw new WebServiceException(e);
@@ -110,7 +108,7 @@ public class SOAPConnectionUtil {
         
     public static void sendResponseError(JaxrpcConnection con) {
         try {
-            SOAPMessage message = ctxt.createMessage();
+            SOAPMessage message = SOAPUtil.createMessage();
             ByteArrayOutputStream bufferedStream = new ByteArrayOutputStream();
             Writer writer = new OutputStreamWriter(bufferedStream, "UTF-8");
             writer.write(DEFAULT_SERVER_ERROR_ENVELOPE);

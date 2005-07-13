@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMessageDispatcher.java,v 1.2 2005-06-09 04:30:05 jitu Exp $
+ * $Id: ProviderMessageDispatcher.java,v 1.3 2005-07-13 01:37:26 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -20,7 +20,6 @@ import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.handler.LogicalMessageImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -28,6 +27,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.SOAPMessageDispatcher;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 import java.util.Map;
 
 public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
@@ -112,7 +112,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
                 try {
                     Source source = (Source)obj;
                     String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
-                    soapMessage = new SOAPMessageContext().createMessage(bindingId);
+                    soapMessage = SOAPUtil.createMessage(bindingId);
                     soapMessage.getSOAPPart().setContent(source);
                 } catch(SOAPException e) {
                     throw new ServerRtException("soapencoder.err", new Object[]{e});
