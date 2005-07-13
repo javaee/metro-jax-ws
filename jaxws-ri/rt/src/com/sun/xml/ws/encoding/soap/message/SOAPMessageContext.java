@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.3 2005-06-06 23:08:07 vivekp Exp $
+ * $Id: SOAPMessageContext.java,v 1.4 2005-07-13 00:45:31 jitu Exp $
  */
 
 /*
@@ -15,8 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -27,8 +25,8 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.handler.MessageContextImpl;
-import com.sun.xml.ws.util.NullIterator;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import java.lang.reflect.Method;
 
 /**
  * A MessageContext holds a SOAP message as well as a set
@@ -218,6 +216,14 @@ public class SOAPMessageContext extends MessageContextImpl
                 "soap.msg.factory.create.err",
                 new Object[] { e });
         }
+    }
+    
+    /*
+     * Returns the invocation method
+     */
+    public Method getMethod() {
+        // TODO
+        return null;
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.2 2005-06-30 18:50:31 bbissett Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.3 2005-07-13 00:45:32 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -43,6 +43,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import java.lang.reflect.Method;
 
 /**
  * @author JAX-WS RI Development Team
@@ -242,6 +243,14 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
     public void writeSimpleErrorResponse(QName faultCode, String faultString) {
         setFailure(true);
         //todo
+    }
+    
+    /*
+     * Returns the invocation method
+     */
+    public Method getMethod() {
+        // TODO
+        return null;
     }
 
 }
