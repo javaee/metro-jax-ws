@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.7 2005-06-14 01:04:53 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.8 2005-07-13 19:44:25 bbissett Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -11,7 +11,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -67,9 +66,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 javax.xml.soap.Detail sfeDetail = null;
                 if(detail != null)
                     sfeDetail = (javax.xml.soap.Detail)detail;
-                RemoteException rex = new RemoteException(sfi.getString(), new SOAPFaultException(sfi.getCode(), sfi.getString(), sfi.getActor(), sfeDetail));
+                SOAPFaultException sfe = new SOAPFaultException(sfi.getCode(), sfi.getString(), sfi.getActor(), sfeDetail);
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
-                mi.setResponse(rex);
+                mi.setResponse(sfe);
                 return;
             }
             JAXBBridgeInfo bi = (JAXBBridgeInfo)detail;
@@ -97,10 +96,10 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 if(frt != null && frt.length > 0)
                     reason = frt[0].getValue();
 
-                RemoteException rex = new RemoteException(reason, new SOAP12FaultException(sfi.getCode(),
-                        sfi.getReasons(), sfi.getNode(), sfi.getRole(), sfi.getDetail()));
+                SOAP12FaultException sfe = new SOAP12FaultException(sfi.getCode(),
+                        sfi.getReasons(), sfi.getNode(), sfi.getRole(), sfi.getDetail());
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
-                mi.setResponse(rex);
+                mi.setResponse(sfe);
                 return;
             }
             JAXBBridgeInfo bi = (JAXBBridgeInfo)detail;
