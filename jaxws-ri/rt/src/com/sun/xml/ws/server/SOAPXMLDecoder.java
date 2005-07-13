@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.3 2005-05-25 19:05:50 spericas Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.4 2005-07-13 20:49:47 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,8 @@
 package com.sun.xml.ws.server;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -30,9 +32,13 @@ import com.sun.xml.ws.util.MessageInfoUtil;
  * @author JAX-RPC RI Development Team
  */
 public class SOAPXMLDecoder extends SOAPDecoder {
-
+    
+    private static Set<String> requiredRoles;
+    
     public SOAPXMLDecoder() {
-
+        requiredRoles = new HashSet<String>();
+        requiredRoles.add("http://schemas.xmlsoap.org/soap/actor/next");
+        requiredRoles.add("");
     }
 
     /*
@@ -129,4 +135,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         throw new SOAPFaultException(faultCode, faultString, null, null);
     }
 
+    public Set<String> getRequiredRoles() {
+        return requiredRoles;
+    }
+    
 }

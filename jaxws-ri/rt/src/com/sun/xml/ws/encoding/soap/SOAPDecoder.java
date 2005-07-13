@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.11 2005-07-12 15:54:10 vivekp Exp $
+ * $Id: SOAPDecoder.java,v 1.12 2005-07-13 20:49:45 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -80,6 +80,14 @@ public abstract class SOAPDecoder implements Decoder {
             return null;
     }
 
+    /**
+     * Returns the roles required for the type of binding. Returns
+     * an empty set if there are none.
+     */
+    public Set<String> getRequiredRoles() {
+        return new HashSet<String>();
+    }
+    
     /**
      * Parses and binds headers from SOAPMessage.
      * @param soapMessage
@@ -413,8 +421,7 @@ public abstract class SOAPDecoder implements Decoder {
         
         // start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
-        roles.add("http://schemas.xmlsoap.org/soap/actor/next");
-        roles.add("");
+        roles.addAll(getRequiredRoles());
         HandlerChainCaller hcCaller = (HandlerChainCaller)mi.getMetaData(
                 HandlerChainCaller.HANDLER_CHAIN_CALLER);
         if (hcCaller != null) {
@@ -463,7 +470,8 @@ public abstract class SOAPDecoder implements Decoder {
                 String mu = reader.getAttributeValue(
                         getMUAttrQName().getNamespaceURI(),
                         getMUAttrQName().getLocalPart());
-                if (mu != null && mu.equals("1")) {
+                if (mu != null && (mu.equals("1") ||
+                    mu.equalsIgnoreCase("true"))) {
                     String role = reader.getAttributeValue(
                         getRoleAttrQName().getNamespaceURI(),
                         getRoleAttrQName().getLocalPart());

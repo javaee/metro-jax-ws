@@ -1,11 +1,14 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.3 2005-06-23 02:09:57 jitu Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.4 2005-07-13 20:49:46 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
 package com.sun.xml.ws.server;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
@@ -16,6 +19,14 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.streaming.XMLReader;
 
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
+
+    private static Set<String> requiredRoles;
+
+    public SOAP12XMLDecoder() {
+        requiredRoles = new HashSet<String>();
+        requiredRoles.add("http://www.w3.org/2003/05/soap-envelope/role/next");
+        requiredRoles.add("http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver");
+    }
 
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
@@ -60,4 +71,8 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return SOAP12Constants.QNAME_ROLE;
     }
 
+    public Set<String> getRequiredRoles() {
+        return requiredRoles;
+    }
+    
 }
