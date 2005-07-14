@@ -1,5 +1,5 @@
 /*
- * $Id: DOMStreamReader.java,v 1.5 2005-06-08 19:09:41 spericas Exp $
+ * $Id: DOMStreamReader.java,v 1.6 2005-07-14 23:01:19 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -32,6 +32,11 @@ public class DOMStreamReader implements XMLStreamReader {
      * Current DOM node being traversed.
      */
     Node _current;
+
+    /**
+     * Starting node of the subtree being traversed.
+     */
+    Node _start;
     
     /**
      * Named mapping for attributes and NS decls for the current node.
@@ -89,7 +94,7 @@ public class DOMStreamReader implements XMLStreamReader {
     }
     
     public void setCurrentNode(Node node) {
-        _current = node;
+        _start = _current = node;
         _state = START_DOCUMENT;        
         // verifyDOMIntegrity(node);
         // displayDOM(node, System.out);
@@ -522,6 +527,11 @@ public class DOMStreamReader implements XMLStreamReader {
             case ENTITY_REFERENCE:
             case PROCESSING_INSTRUCTION:
             case END_ELEMENT:
+                // If at the end of this fragment, then terminate traversal
+                if (_current == _start) {
+                    return (_state = END_DOCUMENT);
+                }
+                
                 Node sibling = _current.getNextSibling();
                 if (sibling == null) {
                     _current = _current.getParentNode();
