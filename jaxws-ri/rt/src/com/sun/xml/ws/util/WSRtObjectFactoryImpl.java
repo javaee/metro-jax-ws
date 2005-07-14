@@ -1,5 +1,5 @@
 /*
- * $Id: JaxRpcRtObjectFactoryImpl.java,v 1.3 2005-07-13 21:21:19 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.1 2005-07-14 23:39:50 jitu Exp $
  */
 
 /*
@@ -8,6 +8,7 @@
  */
 package com.sun.xml.ws.util;
 
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import java.io.OutputStream;
 
 import com.sun.xml.ws.client.ClientTransportFactory;
@@ -20,18 +21,16 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.servlet.ServletConnectionImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.SOAPBinding;
 
 /**
  * Singleton factory class to instantiate concrete objects.
  *
- * @author JAX-RPC Development Team
+ * @author JAX-WS Development Team
  */
-public class JaxRpcRtObjectFactoryImpl
-    extends com.sun.xml.ws.spi.runtime.JaxRpcRtObjectFactory {
-    
-    public JaxRpcRtObjectFactoryImpl() {
-    }
-    
+public class WSRtObjectFactoryImpl
+    extends com.sun.xml.ws.spi.runtime.WSRtObjectFactory {
     
     public com.sun.xml.ws.spi.runtime.ClientTransportFactory
         createClientTransportFactory(int type, OutputStream outputStream) {
@@ -69,5 +68,15 @@ public class JaxRpcRtObjectFactoryImpl
     
     public com.sun.xml.ws.spi.runtime.Tie createTie() {
         return new Tie();
+    }
+    
+    public com.sun.xml.ws.spi.runtime.Binding createBinding(String bindingId) {
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
+                bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            return new SOAPBindingImpl(bindingId);
+        } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
+            return null;        // TODO
+        }
+        return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
     }
 }

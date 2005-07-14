@@ -1,12 +1,12 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.3 2005-07-12 23:34:10 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.4 2005-07-14 23:39:49 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi.runtime;
 
-import javax.xml.ws.Binding;
+import com.sun.xml.ws.spi.runtime.Binding;
 
 /**
  * This captures all the required information (e.g: handlers, binding, endpoint

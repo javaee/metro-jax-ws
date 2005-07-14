@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcRtObjectFactory.java,v 1.4 2005-07-13 21:21:15 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.1 2005-07-14 23:39:49 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,35 +9,23 @@ package com.sun.xml.ws.spi.runtime;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.sun.xml.ws.util.JaxRpcRtObjectFactoryImpl;
-
+import com.sun.xml.ws.util.WSRtObjectFactoryImpl;
 
 /**
- * Singleton abstract factory used to produce jaxrpc related objects.
+ * Singleton abstract factory used to produce JAX-WS runtime related objects.
  */
-public abstract class JaxRpcRtObjectFactory {
+public abstract class WSRtObjectFactory {
 
-    private static JaxRpcRtObjectFactory factory;
-
-    public JaxRpcRtObjectFactory() {
-    }
+    private static WSRtObjectFactory factory;
 
     /**
-     * Obtain an instance of a factory.
-     *
-     * <p> The implementation class to be used can be overridden by setting a
-     * system property (name TBD). </p>
+     * Obtain an instance of a factory. Don't worry about synchronization(at
+     * the most, one more factory object is created).
      *
      */
-    public static JaxRpcRtObjectFactory newInstance() {
+    public static WSRtObjectFactory newInstance() {
         if (factory == null) {
-            //XXX FIXME Make it configurable by property
-            try {
-                factory = new JaxRpcRtObjectFactoryImpl();
-            } catch (Exception e) {
-                //XXX FIXME  i18n.  Better Handling of the Error
-                e.printStackTrace();
-            }
+            factory = new WSRtObjectFactoryImpl();
         }
         return factory;
     }
@@ -76,16 +64,24 @@ public abstract class JaxRpcRtObjectFactory {
         String program);
      */
 
-    public abstract ServletDelegate createServletDelegate();
-
     /**
-     * Names provides utility methods used by other wscompile classes
-     * for dealing with identifiers.  This is not the most obvious/intuitive
-     * method name.  Any suggestion is welcome.
-     *
-    public abstract Names createNames();
+     * Delete it? not used
      */
+    public abstract ServletDelegate createServletDelegate();
     
+    /**
+     * creates the Tie object, entry point to JAXWS runtime.
+     */
     public abstract Tie createTie();
+    
+    /**
+     * creates the Binding object implementation. Set the object on
+     * RuntimeEndpointInfo.
+     * bindingId should be one of these values:
+     * javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
+     * javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING,
+     * javax.xml.ws.http.HTTP_BINDING
+     */
+    public abstract Binding createBinding(String bindingId);
 
 }

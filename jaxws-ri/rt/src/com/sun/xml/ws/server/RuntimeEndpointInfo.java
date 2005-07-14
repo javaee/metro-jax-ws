@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.22 2005-07-14 02:01:26 arungupta Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.23 2005-07-14 23:39:51 jitu Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Binding;
+import com.sun.xml.ws.spi.runtime.Binding;
 import javax.xml.ws.Provider;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.Handler;
