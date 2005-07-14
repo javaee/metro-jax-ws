@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.5 2005-07-13 21:21:18 jitu Exp $
+ * $Id: LocalClientTransport20.java,v 1.6 2005-07-14 02:01:28 arungupta Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.ws.client.ClientTransport;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.client.BindingImpl;
+import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;

@@ -1,11 +1,11 @@
 /*
- * $Id: BindingImpl.java,v 1.5 2005-06-30 18:50:30 bbissett Exp $
+ * $Id: BindingImpl.java,v 1.1 2005-07-14 02:01:17 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
-package com.sun.xml.ws.client;
+package com.sun.xml.ws.binding.soap;
 
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
@@ -49,7 +49,7 @@ public abstract class BindingImpl implements
     }
 
     // created by HandlerRegistryImpl
-    BindingImpl(List<Handler> handlerChain, String bindingId) {
+    public BindingImpl(List<Handler> handlerChain, String bindingId) {
         handlers = handlerChain;
         this.bindingId = bindingId;
     }

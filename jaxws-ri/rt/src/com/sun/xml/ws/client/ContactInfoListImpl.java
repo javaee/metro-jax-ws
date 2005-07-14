@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoListImpl.java,v 1.2 2005-06-02 17:53:09 vivekp Exp $
+ * $Id: ContactInfoListImpl.java,v 1.3 2005-07-14 02:01:19 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -13,6 +13,7 @@ import com.sun.xml.ws.encoding.soap.ClientEncoderDecoder;
 
 import javax.xml.ws.soap.SOAPBinding;
 import java.util.ArrayList;
+import com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher;
 
 public class ContactInfoListImpl implements ContactInfoList {
 

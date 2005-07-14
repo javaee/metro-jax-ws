@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.6 2005-06-13 22:08:21 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.7 2005-07-14 02:01:21 arungupta Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.DISPATCH_CONTEXT;
 import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CLASS;
+import com.sun.xml.ws.binding.soap.BindingImpl;
 
 
 /**

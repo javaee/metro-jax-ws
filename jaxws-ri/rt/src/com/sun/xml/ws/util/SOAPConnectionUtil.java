@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.5 2005-07-13 21:21:15 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.1 2005-07-14 02:01:29 arungupta Exp $
  */
 
 /*
@@ -7,7 +7,7 @@
 * All rights reserved.
 */
 
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -28,10 +28,9 @@ import javax.xml.transform.stream.StreamSource;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
-import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.client.BindingImpl;
+import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.pept.ept.MessageInfo;
-import com.sun.xml.ws.util.SOAPUtil;
+import com.sun.xml.ws.server.*;
 
 /**
  * @author JAX-RPC RI Development Team

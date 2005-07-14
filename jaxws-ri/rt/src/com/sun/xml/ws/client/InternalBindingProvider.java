@@ -1,5 +1,5 @@
 /**
- * $Id: InternalBindingProvider.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: InternalBindingProvider.java,v 1.2 2005-07-14 02:01:20 arungupta Exp $
  */
 /*
  * Copyright 2004 Sun Microsystems, Inc. All rights reserved.
@@ -7,6 +7,8 @@
  */
 
 package com.sun.xml.ws.client;
+
+import com.sun.xml.ws.binding.soap.BindingImpl;
 
 
 /**

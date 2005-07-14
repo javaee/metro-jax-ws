@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.2 2005-06-02 17:53:10 vivekp Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.3 2005-07-14 02:01:20 arungupta Exp $
  */
 
 /*
@@ -20,6 +20,8 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.http.HTTPBinding;
 import java.net.URI;
 import java.util.*;
+import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 /**
  * Because this class is created even for binding providers that

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.10 2005-06-24 18:04:33 bbissett Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.11 2005-07-14 02:01:28 arungupta Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-import com.sun.xml.ws.client.SOAPBindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;

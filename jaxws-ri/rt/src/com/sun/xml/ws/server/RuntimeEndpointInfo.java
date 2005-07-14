@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.21 2005-07-12 23:34:09 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.22 2005-07-14 02:01:26 arungupta Exp $
  */
 
 /*
@@ -15,8 +15,8 @@ import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
-import com.sun.xml.ws.client.BindingImpl;
-import com.sun.xml.ws.client.SOAPBindingImpl;
+import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 import java.util.HashMap;
 import java.util.List;

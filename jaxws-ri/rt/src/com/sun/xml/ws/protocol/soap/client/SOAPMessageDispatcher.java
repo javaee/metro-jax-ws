@@ -1,17 +1,25 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.7 2005-06-30 18:50:31 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.1 2005-07-14 02:01:24 arungupta Exp $
  */
 
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.sun.xml.ws.client;
+package com.sun.xml.ws.protocol.soap.client;
 
 import com.sun.pept.ept.EPTFactory;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.client.ContextMap;
+import com.sun.xml.ws.client.RequestContext;
+import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.SOAPXMLDecoder;
+import com.sun.xml.ws.client.SOAPXMLEncoder;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -27,8 +35,6 @@ import com.sun.xml.ws.server.SOAPConnection;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.*;
-import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -38,6 +44,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import javax.xml.soap.Detail;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.Binding;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Response;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
 

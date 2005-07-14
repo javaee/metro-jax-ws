@@ -1,10 +1,10 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.7 2005-06-30 18:50:31 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.1 2005-07-14 02:01:17 arungupta Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
-package com.sun.xml.ws.client;
+package com.sun.xml.ws.binding.soap;
 
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -18,6 +18,8 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
+
+
 
 /**
  * @author JAX-RPC RI Development Team
@@ -38,7 +40,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
     }
 
     // created by HandlerRegistryImpl
-    SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
+    public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
         setup(bindingId);
     }

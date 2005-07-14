@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.3 2005-06-09 15:51:32 kwalsh Exp $
+ * $Id: DispatchDelegate.java,v 1.4 2005-07-14 02:01:22 arungupta Exp $
  */
 
 /*
@@ -20,6 +20,7 @@ import com.sun.xml.ws.client.*;
 import javax.xml.ws.BindingProvider;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import com.sun.xml.ws.binding.soap.BindingImpl;
 
 /**
  * @author JAX-RPC RI Development Team

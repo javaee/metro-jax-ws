@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.3 2005-06-02 17:53:11 vivekp Exp $
+ * $Id: DelegateBase.java,v 1.4 2005-07-14 02:01:23 arungupta Exp $
  */
 
 /*
@@ -19,7 +19,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.client.BindingImpl;
+import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.xml.ws.client.ContactInfoBase;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 

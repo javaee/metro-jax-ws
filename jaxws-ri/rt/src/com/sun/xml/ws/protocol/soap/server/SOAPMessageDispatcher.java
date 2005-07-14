@@ -1,11 +1,11 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-13 21:21:15 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.1 2005-07-14 02:01:25 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  *
  */
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.protocol.soap.server;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
@@ -50,6 +50,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import com.sun.xml.ws.server.*;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
 
 
 public class SOAPMessageDispatcher implements MessageDispatcher {

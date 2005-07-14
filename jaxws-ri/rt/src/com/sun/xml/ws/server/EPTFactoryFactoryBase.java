@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.3 2005-06-02 17:53:13 vivekp Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.4 2005-07-14 02:01:25 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -22,7 +22,8 @@ import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.server.provider.ProviderSED;
-import com.sun.xml.ws.client.BindingImpl;
+import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 
 public abstract class EPTFactoryFactoryBase {
 
