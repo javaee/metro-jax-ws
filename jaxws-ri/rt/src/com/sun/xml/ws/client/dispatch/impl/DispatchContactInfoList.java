@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfoList.java,v 1.4 2005-07-14 20:19:16 kwalsh Exp $
+ * $Id: DispatchContactInfoList.java,v 1.5 2005-07-14 20:25:31 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,10 +11,6 @@ package com.sun.xml.ws.client.dispatch.impl;
 import com.sun.pept.ept.ContactInfoList;
 import com.sun.pept.ept.ContactInfoListIterator;
 import com.sun.xml.ws.client.*;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSOAP12XMLDecoder;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSOAP12XMLEncoder;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchXMLEncoder;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchXMLDecoder;
 import com.sun.xml.ws.client.dispatch.impl.protocol.MessageDispatcherHelper;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.soap.*;
