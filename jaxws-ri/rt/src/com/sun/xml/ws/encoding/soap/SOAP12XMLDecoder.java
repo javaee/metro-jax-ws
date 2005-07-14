@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.1 2005-07-14 20:21:04 kwalsh Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.2 2005-07-14 20:37:59 kwalsh Exp $
  */
 
 /*
@@ -53,7 +53,7 @@ import org.xml.sax.XMLReader;
 
 public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecoder {
 
-
+    //needs further cleanup
     private static final Logger logger =
             Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
         private static Dispatch12Serializer dispatchSerializer;
@@ -165,18 +165,6 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
             XMLStreamReaderUtil.nextElementContent(reader);
             XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
         }
-
-
-        /*  protected void decodeBody(XMLReader reader, InternalMessage response, MessageInfo messageInfo) {
-              XMLReaderUtil.verifyReaderState(reader, XMLReader.START);
-              XMLReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
-              int state = reader.nextElementContent();
-              decodeBodyContent(reader, response, messageInfo);
-              XMLReaderUtil.verifyReaderState(reader, XMLReader.END);
-              XMLReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
-              reader.nextElementContent();
-          }
-          */
 
         protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
             decodeDispatchMethod(reader, response, messageInfo);
