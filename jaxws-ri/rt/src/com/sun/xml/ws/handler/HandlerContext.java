@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.2 2005-07-15 02:09:03 jitu Exp $
+ * $Id: HandlerContext.java,v 1.3 2005-07-15 21:46:49 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -12,6 +12,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import java.lang.reflect.Method;
 
 /**
  * @author JAX-WS RI Development Team
@@ -87,6 +88,11 @@ public class HandlerContext extends MessageContextImpl {
     */
     public void setMessageInfo(MessageInfo messageInfo) {
         this.messageInfo = messageInfo;
+    }
+    
+    @Override
+    public Method getMethod() {
+        return messageInfo.getMethod();
     }
 
     /*
