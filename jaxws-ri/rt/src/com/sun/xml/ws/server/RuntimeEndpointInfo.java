@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.23 2005-07-14 23:39:51 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.24 2005-07-15 17:53:17 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,10 @@ import javax.xml.transform.Source;
 
 
 /**
- * @author JAX-RPC Development Team
+ * modeled after the javax.xml.ws.Endpoint class in API. 
+ * Contains all the information about Binding, handler chain, Implementor object, 
+ * WSDL & Schema Metadata
+ * @author WS Development Team
  */
 public class RuntimeEndpointInfo
     implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
@@ -78,7 +81,7 @@ public class RuntimeEndpointInfo
 
     /**
      * Enable Mtom processing
-     * @param enable
+     * @param enable enables the use of MTOM
      */
     public void setMtomEnabled(boolean enable){
         this.enableMtom = enable;
@@ -95,6 +98,12 @@ public class RuntimeEndpointInfo
         runtimeModel = rap.buildRuntimeModel();     
     }
     
+    /**
+     * creates a RuntimeModel using @link com.sun.xml.ws.modeler.RuntimeModeler. 
+     * The modeler creates the model by reading annotations on Implementor object. 
+     * RuntimeModel is read only and is accessed from multiple threads afterwards.
+     * Generates the WSDL and XML Schemam for the endpoint if necessary
+     */
     public void deploy() {
         if (implementor == null) {
             // TODO throw exception

@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.5 2005-07-15 16:41:21 kohlert Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.6 2005-07-15 17:53:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -36,6 +36,8 @@ import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
  * The provider EPTFactories are reused for all the requests.
  * The factories reuse encoder, decoder, message dispatcher objects since these objects 
  * are Stateless. They are reused for all the requests.
+ *
+ * @author WS Development Team
  */
 public abstract class EPTFactoryFactoryBase {
 

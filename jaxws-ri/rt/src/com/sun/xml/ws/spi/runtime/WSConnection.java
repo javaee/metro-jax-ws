@@ -1,5 +1,5 @@
 /**
- * $Id: WSConnection.java,v 1.1 2005-07-13 21:21:16 jitu Exp $
+ * $Id: WSConnection.java,v 1.2 2005-07-15 17:53:18 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 /**
- * Captures many transports that are used to talk with JAXRPC endpoints.
+ * Captures many transports that are used to talk with WS endpoints.
  * 
  * For endpoints deployed in light weight http server in J2SE, the implemenation
  * of this class uses HttpTransaction to read from or write to stream.

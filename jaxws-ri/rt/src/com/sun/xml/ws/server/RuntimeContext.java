@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeContext.java,v 1.4 2005-06-23 02:09:57 jitu Exp $
+ * $Id: RuntimeContext.java,v 1.5 2005-07-15 17:53:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -18,7 +18,7 @@ import com.sun.xml.ws.model.RuntimeModel;
 
 
 /**
- * $author: JAXWS Development Team
+ * $author: WS Development Team
  */
 public class RuntimeContext {
 
