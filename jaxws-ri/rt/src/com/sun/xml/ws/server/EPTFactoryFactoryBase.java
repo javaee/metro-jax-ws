@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.4 2005-07-14 02:01:25 arungupta Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.5 2005-07-15 16:41:21 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -25,6 +25,18 @@ import com.sun.xml.ws.server.provider.ProviderSED;
 import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 
+/**
+ * factory for creating the appropriate EPTFactory given the BindingId from the EndpointInfo
+ * in the RuntimeContext of the MessageInfo
+ * Based on MessageInfo data(Binding, Implementor) it selects one the static EPTFactories 
+ * using Binding information
+ * Has a static EPTFactory object for each particular binding. 
+ * EPTFactories are reused for all the requests.
+ * Has static provider EPTFactory objects. 
+ * The provider EPTFactories are reused for all the requests.
+ * The factories reuse encoder, decoder, message dispatcher objects since these objects 
+ * are Stateless. They are reused for all the requests.
+ */
 public abstract class EPTFactoryFactoryBase {
 
     public static final ProviderMessageDispatcher providerMessageDispatcher =
@@ -107,7 +119,9 @@ public abstract class EPTFactoryFactoryBase {
     
     /**
      * Choose correct EPTFactory. MessageInfo contains all the needed
-     * information like Binding, JaxrpcConnection to make that decision.
+     * information like Binding, WSConnection to make that decision.
+     * @param mi the MessageInfo object to obtain the BindingID from.
+     * @return returns the appropriate EPTFactory for the BindingID in the mi
      */
     public static EPTFactory getEPTFactory(MessageInfo mi) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
