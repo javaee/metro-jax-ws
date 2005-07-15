@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.1 2005-07-14 02:01:24 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.2 2005-07-15 19:14:20 kwalsh Exp $
  */
 
 /*
@@ -18,8 +18,8 @@ import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
-import com.sun.xml.ws.client.SOAPXMLDecoder;
-import com.sun.xml.ws.client.SOAPXMLEncoder;
+import com.sun.xml.ws.encoding.soap.SOAPXMLDecoder;
+import com.sun.xml.ws.encoding.soap.SOAPXMLEncoder;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -184,7 +184,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
                 new SOAPMessageContextImpl(handlerContext));
         }
-        
+
         try {
             decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
             //checkMustUnderstandHeaders(handlerContext);
@@ -258,8 +258,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
             //Response r = sendAsyncReceive(messageInfo, sm);
 
-            //pass a copy of MessageInfo to the future task,so that no conflicts 
-            //due to threading happens 
+            //pass a copy of MessageInfo to the future task,so that no conflicts
+            //due to threading happens
             Response r = sendAsyncReceive(MessageInfoBase.copy(messageInfo), sm);
             if (executorService == null) {
                 executorService = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE);
@@ -351,7 +351,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
         return provider.getBinding();
     }
-    
+
     protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
         BindingImpl binding = (BindingImpl) getBinding(messageInfo);
         return binding.getHandlerChainCaller();
