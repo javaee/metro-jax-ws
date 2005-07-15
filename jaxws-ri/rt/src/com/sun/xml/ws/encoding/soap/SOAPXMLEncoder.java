@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.2 2005-07-15 19:12:18 kwalsh Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-15 21:42:58 kwalsh Exp $
  */
 
 /*
@@ -26,6 +26,9 @@ import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -42,6 +45,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
+import java.util.Iterator;
 
 import static java.util.logging.Logger.getLogger;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
@@ -146,7 +150,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         //just stub it out
     }
 
-    public void processProperties(MessageInfo messageInfo) {
+    /*public void processProperties(MessageInfo messageInfo) {
 
         SOAPMessageContext messageContext = new SOAPMessageContext();
         SOAPMessage soapMessage = messageContext.createMessage();
@@ -170,6 +174,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             clientTransportFactory.create(),
             messageContext));
     }
+    */
 
     public InternalMessage createInternalMessage(MessageInfo messageInfo) {
 
@@ -278,7 +283,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     /**
      * @param messageInfo
      */
-    /* protected void processProperties(MessageInfo messageInfo) {
+     protected void processProperties(MessageInfo messageInfo) {
          SOAPMessageContext messageContext = new SOAPMessageContext();
          SOAPMessage soapMessage = messageContext.createMessage(getBindingId());
          MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
@@ -350,13 +355,15 @@ public class SOAPXMLEncoder extends SOAPEncoder {
              }
          }
 
-         RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData (JAXWS_RUNTIME_CONTEXT);
-         JavaMethod javaMethod = runtimeContext.getModel().getJavaMethod (messageInfo.getMethod ());
-         if (javaMethod != null) {
-             String soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding)javaMethod.getBinding()).getSOAPAction ();
-             if (soapAction != null)
-                 messageContext.put(SOAPACTION_URI_PROPERTY, soapAction);
-         }
+        RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData(JAXWS_RUNTIME_CONTEXT);
+        if (runtimeContext != null) {
+            JavaMethod javaMethod = runtimeContext.getModel().getJavaMethod(messageInfo.getMethod());
+            if (javaMethod != null) {
+                String soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
+                if (soapAction != null)
+                    messageContext.put(javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY, soapAction);
+            }
+        }
 
          messageContext.setMessage(soapMessage);
          ClientTransport clientTransport = null;
@@ -372,7 +379,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
          messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransport,
              messageContext));
      }
-     */
+
     protected String getContentType(MessageInfo messageInfo) {
 
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
