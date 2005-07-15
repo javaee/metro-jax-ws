@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoListImpl.java,v 1.3 2005-07-14 02:01:19 arungupta Exp $
+ * $Id: ContactInfoListImpl.java,v 1.4 2005-07-15 19:13:28 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -24,12 +24,12 @@ public class ContactInfoListImpl implements ContactInfoList {
         ArrayList arrayList = new ArrayList();
         arrayList.add(new ContactInfoBase(null,
             new SOAPMessageDispatcher(),
-            new SOAPXMLEncoder(),
-            new SOAPXMLDecoder(), SOAPBinding.SOAP11HTTP_BINDING));
+            new com.sun.xml.ws.encoding.soap.SOAPXMLEncoder(),
+            new com.sun.xml.ws.encoding.soap.SOAPXMLDecoder(), SOAPBinding.SOAP11HTTP_BINDING));
         arrayList.add(new ContactInfoBase(null,
             new SOAPMessageDispatcher(),
-            new SOAP12XMLEncoder(),
-            new SOAP12XMLDecoder(), SOAPBinding.SOAP12HTTP_BINDING));
+            new com.sun.xml.ws.encoding.soap.SOAP12XMLEncoder(),
+            new com.sun.xml.ws.encoding.soap.SOAP12XMLDecoder(), SOAPBinding.SOAP12HTTP_BINDING));
         return new ContactInfoListIteratorBase(arrayList);
     }
 
