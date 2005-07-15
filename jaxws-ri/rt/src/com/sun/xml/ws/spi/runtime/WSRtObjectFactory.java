@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.1 2005-07-14 23:39:49 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.2 2005-07-15 02:03:20 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -80,7 +80,7 @@ public abstract class WSRtObjectFactory {
      * bindingId should be one of these values:
      * javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
      * javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING,
-     * javax.xml.ws.http.HTTP_BINDING
+     * javax.xml.ws.http.HTTPBinding.HTTP_BINDING
      */
     public abstract Binding createBinding(String bindingId);
 
