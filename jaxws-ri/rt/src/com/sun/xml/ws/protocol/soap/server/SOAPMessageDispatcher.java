@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.2 2005-07-15 02:09:04 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.3 2005-07-15 21:11:39 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -76,6 +76,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             updateContextPropertyBag(messageInfo, context);
                     
             boolean skipEndpoint = false;
+            SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
+            if (shd != null) {
+                skipEndpoint = !shd.processRequest(
+                        context.getSOAPMessageContext());
+                // TODO: need to act if processRequest() retuns false
+            }
             boolean peekOneWay = false;
             try {
                 LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
@@ -92,11 +98,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 context.setSOAPMessage(null);
             }
             
-            SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
-            if (shd != null) {
-                skipEndpoint = !shd.processRequest(
-                        context.getSOAPMessageContext());
-            }
+
 
             // Call inbound handlers. It also calls outbound handlers incase of
             // reversal of flow.
@@ -125,6 +127,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 }
 
                 if (!isFailure(messageInfo)) {
+                    if (shd != null) {
+                        shd.preInvokeEndpointHook(context);
+                    }
                     invokeEndpoint(messageInfo, context);
                 }
 

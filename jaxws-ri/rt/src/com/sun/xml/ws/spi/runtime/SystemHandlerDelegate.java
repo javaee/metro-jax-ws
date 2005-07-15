@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.3 2005-07-15 02:09:06 jitu Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.4 2005-07-15 21:11:40 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -107,4 +107,11 @@ public interface SystemHandlerDelegate {
      * Called after response handlers are invoked
      */
     public void postResponseHandlerHook(MessageContext messageContext);
+    
+    /**
+     * Called before the method invocation.
+     * @param MessageContext It contains property bag with the scope of the
+     *                       properties
+     */
+    public void preInvokeEndpointHook(MessageContext messageContext);
 }
