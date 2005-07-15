@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.1 2005-05-23 22:37:25 bbissett Exp $
+ * $Id: HandlerContext.java,v 1.2 2005-07-15 02:09:03 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,7 +7,7 @@
 package com.sun.xml.ws.handler;
 
 import javax.xml.ws.handler.LogicalMessageContext;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
+import com.sun.xml.ws.spi.runtime.SOAPMessageContext;
 import javax.xml.soap.SOAPMessage;
 
 import com.sun.pept.ept.MessageInfo;

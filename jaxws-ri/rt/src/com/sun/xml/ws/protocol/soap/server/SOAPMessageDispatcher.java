@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.1 2005-07-14 02:01:25 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.2 2005-07-15 02:09:04 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,6 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
@@ -25,32 +24,20 @@ import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
-import java.io.InputStream;
-import org.w3c.dom.Node;
-
-import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import com.sun.xml.ws.server.*;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 
 
@@ -87,7 +74,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             HandlerContext context = new HandlerContext(messageInfo, null,
                 soapMessage);
             updateContextPropertyBag(messageInfo, context);
-
+                    
             boolean skipEndpoint = false;
             boolean peekOneWay = false;
             try {
@@ -103,6 +90,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     SOAPRuntimeModel.createFaultInBody(e, null, null, null);
                 context.setInternalMessage(internalMessage);
                 context.setSOAPMessage(null);
+            }
+            
+            SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
+            if (shd != null) {
+                skipEndpoint = !shd.processRequest(
+                        context.getSOAPMessageContext());
             }
 
             // Call inbound handlers. It also calls outbound handlers incase of
@@ -142,6 +135,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 } else {
                     updateContextPropertyBag(messageInfo, context);
                     soapMessage = getResponse(messageInfo, context);
+                    if (shd != null) {
+                        shd.processResponse(
+                                context.getSOAPMessageContext());
+                    }
                     sendResponse(messageInfo, soapMessage);
                 }
             }
@@ -234,13 +231,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.setSOAPMessage(null);
         }
         InternalMessage internalMessage = context.getInternalMessage();
-        if (internalMessage == null) {
-            return context.getSOAPMessage();
-        } else {
+        if (internalMessage != null) {
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
             SOAPEncoder encoder = eptf.getSOAPEncoder();
-            return encoder.toSOAPMessage(internalMessage, messageInfo);
+            SOAPMessage soapMesage = encoder.toSOAPMessage(internalMessage, messageInfo);
+            context.setSOAPMessage(soapMesage);
         }
+        return context.getSOAPMessage();
     }
 
     /*
@@ -524,6 +521,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
      */
+    
+    private SystemHandlerDelegate getSystemHandlerDelegate(MessageInfo mi) {
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+        RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
+        return endpointInfo.getBinding().getSystemHandlerDelegate();
+    }
 
 }
 

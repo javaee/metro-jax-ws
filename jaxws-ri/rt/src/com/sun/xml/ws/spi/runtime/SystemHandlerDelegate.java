@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.2 2005-06-24 14:26:00 kwalsh Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.3 2005-07-15 02:09:06 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -87,4 +87,24 @@ public interface SystemHandlerDelegate {
     * response code reporting that an internal error occured.
     */
     public void processResponse(MessageContext messageContext) throws RuntimeException;
+    
+    /**
+     * Called before request handlers are invoked
+     */
+    public void preRequestHandlerHook(MessageContext messageContext);
+    
+    /**
+     * Called after request handlers are invoked
+     */
+    public void postRequestHandlerHook(MessageContext messageContext);
+    
+    /**
+     * Called before response handlers are invoked
+     */
+    public void preResponseHandlerHook(MessageContext messageContext);
+    
+    /**
+     * Called after response handlers are invoked
+     */
+    public void postResponseHandlerHook(MessageContext messageContext);
 }

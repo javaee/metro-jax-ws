@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.4 2005-07-15 00:34:01 kohlert Exp $
+ * $Id: Tie.java,v 1.5 2005-07-15 02:09:05 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -68,21 +68,7 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         EPTFactory eptFactory = EPTFactoryFactoryBase.getEPTFactory(messageInfo);
         messageInfo.setEPTFactory(eptFactory);
         
-        SystemHandlerDelegate systemHandlerDelegate =
-            ((com.sun.xml.ws.spi.runtime.Binding) endpointInfo.getBinding()).getSystemHandlerDelegate();
-            
-        if (systemHandlerDelegate == null) {
-            dispatchMessage(messageInfo);
-        } else if (systemHandlerDelegate.processRequest(
-            (com.sun.xml.ws.spi.runtime.SOAPMessageContext) context)) {
-            
-            dispatchMessage(messageInfo);
-            systemHandlerDelegate.processResponse(
-                (com.sun.xml.ws.spi.runtime.SOAPMessageContext) context);
-        }
-    }
-
-    private void dispatchMessage(MessageInfo messageInfo) throws Exception {
+        // MessageDispatcher archestrates the flow
         MessageDispatcher messageDispatcher =
             messageInfo.getEPTFactory().getMessageDispatcher(messageInfo);
         messageDispatcher.receive(messageInfo);
