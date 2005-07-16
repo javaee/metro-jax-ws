@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.7 2005-07-14 02:01:21 arungupta Exp $
+ * $Id: DispatchBase.java,v 1.8 2005-07-16 23:23:27 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -254,20 +254,19 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     public ClientTransportFactory _getTransportFactory() {
-        _transportFactory = null;
-        //  (ClientTransportFactory)
-        // getRequestContext().getProperty(ClientTransportFactory.class.getName());
+            _transportFactory =
+                (ClientTransportFactory) getRequestContext().get(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
 
-        if (_transportFactory == null) {
-            _transportFactory = defaultTransportFactory;
+            if (_transportFactory == null) {
+                _transportFactory = new HttpClientTransportFactory();
+            }
+            return _transportFactory;
         }
-        return _transportFactory;
-    }
 
-    public void _setTransportFactory(ClientTransportFactory f) {
-        getRequestContext().put(ClientTransportFactory.class.getName(), f);
-        _transportFactory = f;
-    }
+        public void _setTransportFactory(ClientTransportFactory f) {
+            getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
+            _transportFactory = f;
+        }
 
     private Object sendAndReceive(MessageStruct messageStruct) throws RemoteException {
         Object response = null;
@@ -275,7 +274,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         _delegate.send(messageStruct);
         response = messageStruct.getResponse();
         updateResponseContext(messageStruct);
-        ((ContextMap) getRequestContext()).clear();
+        //((ContextMap) getRequestContext()).clear();
         switch (messageStruct.getResponseType()) {
 
             case MessageStruct.NORMAL_RESPONSE:
