@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-15 21:42:58 kwalsh Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.4 2005-07-16 23:25:05 kwalsh Exp $
  */
 
 /*
@@ -23,12 +23,11 @@ import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
+import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -44,15 +43,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import static java.util.logging.Logger.getLogger;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS RI Development Team
  */
 public class SOAPXMLEncoder extends SOAPEncoder {
 
@@ -62,7 +62,12 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     //jaxbcontext can not be static
     private JAXBContext jc = null;
 
-    protected JAXBContext getJAXBContext() {
+    protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
+        if (jc == null){
+            RequestContext context = (RequestContext)messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+            if (context != null)
+                jc = (JAXBContext)context.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
+        }
         return jc;
     }
 
@@ -87,7 +92,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 case JAXB_MESSAGE:
                     break;
                 case JAXB_PAYLOAD:
-                    JAXBBeanInfo jaxbInfo = new JAXBBeanInfo(data[0], getJAXBContext());
+                    JAXBBeanInfo jaxbInfo = new JAXBBeanInfo(data[0], getJAXBContext(messageInfo));
                     bodyBlock = new BodyBlock(jaxbInfo);
                     break;
                 case SOURCE_PAYLOAD:
@@ -102,7 +107,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         } else {
             LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory();
             InternalEncoder internalEncoder = eptf.getInternalEncoder();
-            processProperties(messageInfo);
+            //processProperties(messageInfo);
             return (InternalMessage) internalEncoder.toInternalMessage(messageInfo);
         }
         return internalMessage;
@@ -145,10 +150,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     /*
      * writes multiple header elements in <env:Header> ... </env:Header>
      */
-    protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-                                MessageInfo messageInfo) {
+   // protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
+    //                            MessageInfo messageInfo) {
         //just stub it out
-    }
+    //}
 
     /*public void processProperties(MessageInfo messageInfo) {
 
@@ -184,8 +189,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         Object response = messageInfo.getResponse();
 
         BodyBlock bodyBlock = null;
-        if (getJAXBContext() != null) {
-            JAXBBeanInfo jaxbBean = new JAXBBeanInfo(response, getJAXBContext());
+        if (getJAXBContext(messageInfo) != null) {
+            JAXBBeanInfo jaxbBean = new JAXBBeanInfo(response, getJAXBContext(messageInfo));
             bodyBlock = new BodyBlock(jaxbBean);
         } else if (response instanceof Source) {
             bodyBlock = new BodyBlock((Source) response);
@@ -283,77 +288,77 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     /**
      * @param messageInfo
      */
-     protected void processProperties(MessageInfo messageInfo) {
-         SOAPMessageContext messageContext = new SOAPMessageContext();
-         SOAPMessage soapMessage = messageContext.createMessage(getBindingId());
-         MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
+    protected void processProperties(MessageInfo messageInfo) {
+        SOAPMessageContext messageContext = new SOAPMessageContext();
+        SOAPMessage soapMessage = messageContext.createMessage(getBindingId());
+        MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
 
-         ContextMap properties = (ContextMap) messageInfo
-             .getMetaData(JAXWS_CONTEXT_PROPERTY);
+        ContextMap properties = (ContextMap) messageInfo
+            .getMetaData(JAXWS_CONTEXT_PROPERTY);
 
-         if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
-             messageContext.put(ONE_WAY_OPERATION, "true");
+        if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
+            messageContext.put(ONE_WAY_OPERATION, "true");
 
-         ClientTransportFactory clientTransportFactory = null;
-         boolean acceptPropertySet = false;
-         boolean encodingPropertySet = false;
-         // process the properties
-         if (properties != null) {
-             for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
-                 String propName = (String) names.next();
-                 // consume PEPT-specific properties
-                 if (propName.equals(ClientTransportFactory.class.getName())) {
-                     clientTransportFactory = (ClientTransportFactory) properties
-                         .get(propName);
-                 } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
-                     Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
-                     if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
-                         Object cookieJar = properties.get(HTTP_COOKIE_JAR);
-                         if (cookieJar != null)
-                             messageContext.put(HTTP_COOKIE_JAR, cookieJar);
-                     }
-                 } else if (propName.equals(XMLFAST_ENCODING_PROPERTY)) {
-                     encodingPropertySet = true;
-                     String encoding = (String) properties.get(XMLFAST_ENCODING_PROPERTY);
-                     if (encoding != null) {
-                         if (encoding.equals(FAST_ENCODING_VALUE)) {
-                             mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
-                         } else {
-                             mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType(messageInfo));
-                         }
-                     } else { // default is XML encoding
-                         mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-                     }
-                 } else if (propName.equals(ACCEPT_ENCODING_PROPERTY)) {
-                     acceptPropertySet = true;
-                     String accept = (String) properties.get(ACCEPT_ENCODING_PROPERTY);
-                     if (accept != null) {
-                         if (accept.equals(FAST_ENCODING_VALUE))
-                             mimeHeaders.addHeader(ACCEPT_PROPERTY, FAST_ACCEPT_VALUE);
-                         else
-                             mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-                     } else { // default is XML encoding
-                         mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-                     }
-                 } else {
-                     messageContext.put(propName, properties.get(propName));
-                 }
-             }
-         }
+        ClientTransportFactory clientTransportFactory = null;
+        boolean acceptPropertySet = false;
+        boolean encodingPropertySet = false;
+        // process the properties
+        if (properties != null) {
+            for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
+                String propName = (String) names.next();
+                // consume PEPT-specific properties
+                if (propName.equals(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY)) {
+                    clientTransportFactory = (ClientTransportFactory) properties
+                        .get(propName);
+                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
+                    Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
+                    if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
+                        Object cookieJar = properties.get(HTTP_COOKIE_JAR);
+                        if (cookieJar != null)
+                            messageContext.put(HTTP_COOKIE_JAR, cookieJar);
+                    }
+                } else if (propName.equals(XMLFAST_ENCODING_PROPERTY)) {
+                    encodingPropertySet = true;
+                    String encoding = (String) properties.get(XMLFAST_ENCODING_PROPERTY);
+                    if (encoding != null) {
+                        if (encoding.equals(FAST_ENCODING_VALUE)) {
+                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
+                        } else {
+                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType(messageInfo));
+                        }
+                    } else { // default is XML encoding
+                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+                    }
+                } else if (propName.equals(ACCEPT_ENCODING_PROPERTY)) {
+                    acceptPropertySet = true;
+                    String accept = (String) properties.get(ACCEPT_ENCODING_PROPERTY);
+                    if (accept != null) {
+                        if (accept.equals(FAST_ENCODING_VALUE))
+                            mimeHeaders.addHeader(ACCEPT_PROPERTY, FAST_ACCEPT_VALUE);
+                        else
+                            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+                    } else { // default is XML encoding
+                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+                    }
+                } else {
+                    messageContext.put(propName, properties.get(propName));
+                }
+            }
+        }
 
-         // default Content-Type is XML encoding
-         if (!encodingPropertySet) {
-             mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
-         }
+        // default Content-Type is XML encoding
+        if (!encodingPropertySet) {
+            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
+        }
 
-         // default Accept is XML encoding
-         if (!acceptPropertySet) {
-             if(getBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING)){
-                 mimeHeaders.addHeader(ACCEPT_PROPERTY, SOAP12_XML_ACCEPT_VALUE);
-             }else{
-                 mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-             }
-         }
+        // default Accept is XML encoding
+        if (!acceptPropertySet) {
+            if (getBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                mimeHeaders.addHeader(ACCEPT_PROPERTY, SOAP12_XML_ACCEPT_VALUE);
+            } else {
+                mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
+            }
+        }
 
         RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData(JAXWS_RUNTIME_CONTEXT);
         if (runtimeContext != null) {
@@ -365,20 +370,33 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }
         }
 
-         messageContext.setMessage(soapMessage);
-         ClientTransport clientTransport = null;
-         if (clientTransportFactory == null){
-             clientTransportFactory = new HttpClientTransportFactory();
-         }
-         if(clientTransportFactory instanceof HttpClientTransportFactory){
-             clientTransport = ((HttpClientTransportFactory)clientTransportFactory).create(getBindingId());
-         }else{
-             //local transport
-             clientTransport = clientTransportFactory.create();
-         }
-         messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransport,
-             messageContext));
-     }
+        messageContext.setMessage(soapMessage);
+        ClientTransport clientTransport = null;
+
+
+            if (clientTransportFactory == null) {
+                clientTransportFactory = new HttpClientTransportFactory();
+            }
+            if (clientTransportFactory instanceof HttpClientTransportFactory) {
+                clientTransport = ((HttpClientTransportFactory) clientTransportFactory).create(getBindingId());
+            } else {
+                //local transport
+                clientTransport = clientTransportFactory.create();
+            }
+            messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransport,
+            messageContext));
+
+
+
+         /*   if (clientTransportFactory == null)
+                clientTransportFactory = DispatchBase.getDefaultTransportFactory();
+
+            messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY),
+                clientTransportFactory.create(),
+                messageContext));
+        }*/
+
+    }
 
     protected String getContentType(MessageInfo messageInfo) {
 

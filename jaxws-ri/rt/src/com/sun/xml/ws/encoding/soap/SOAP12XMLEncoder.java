@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.2 2005-07-14 20:37:59 kwalsh Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.3 2005-07-16 23:25:05 kwalsh Exp $
  */
 
 /*
@@ -63,7 +63,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
            return jc;
        }
 
-       public void encodeAndSend(MessageInfo messageInfo) {
+      /* public void encodeAndSend(MessageInfo messageInfo) {
            //processProperties(messageInfo);
            InternalMessage request = toInternalMessage(messageInfo);
 
@@ -95,20 +95,21 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                    throw new WebServiceException(e.getMessage(), e);
            }
        }
-
-       protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-                                   MessageInfo messageInfo) {
-
-       }
+       */
+       //protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
+       //                            MessageInfo messageInfo) {
+       //
+       //}
 
        //dispatch will need to overide for now till handlers figured out
-       protected void writeHeader(XMLStreamWriter writer, InternalMessage request) {
-           List<HeaderBlock> headerBlocks = request.getHeaders();
+       //protected void writeHeader(XMLStreamWriter writer, InternalMessage request) {
+       //    List<HeaderBlock> headerBlocks = request.getHeaders();
 
-           if (headerBlocks == null) {
-               return;
-           }
-       }
+        //   if (headerBlocks == null) {
+        //       return;
+        //   }
+      // }
+
 
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)
