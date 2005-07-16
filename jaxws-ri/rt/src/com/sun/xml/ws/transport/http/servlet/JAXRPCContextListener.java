@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.8 2005-06-15 04:36:07 jitu Exp $
+ * $Id: JAXRPCContextListener.java,v 1.9 2005-07-16 01:38:41 kohlert Exp $
  */
 
 /*
@@ -36,11 +36,17 @@ import java.util.Set;
 
 
 /**
- * @author JAX-RPC Development Team
+ * Parses sun-jaxws.xml and creates a <code>java.util.List</code> of 
+ * RuntimeEndpointInfos. It also calls deploy() on each RuntimeEndpointInfo.
+ *
+ * @author WS Development Team
  */
 public class JAXRPCContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
+    /**
+     * default contructor
+     */
     public JAXRPCContextListener() {
         localizer = new Localizer();
         messageFactory =

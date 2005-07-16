@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.21 2005-07-15 17:53:18 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.22 2005-07-16 01:38:42 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -63,7 +63,8 @@ import static com.sun.tools.jxc.util.Util.*;
 
 /**
  * Class used to generate WSDLs from a <code>RunTimeModel</code>
- * @author Doug Kohlert
+ *
+ * @author WS Development Team
  */
 public class WSDLGenerator {
     private JAXWSOutputSchemaResolver resolver;

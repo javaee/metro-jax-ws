@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.5 2005-07-15 02:09:05 jitu Exp $
+ * $Id: Tie.java,v 1.6 2005-07-16 01:38:40 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -29,16 +29,17 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
     
     /**
-     * Common entry point for server runtime. 
-     * creates a MessageInfo for every Request/Response.
-     * creates a RuntimeContext for every Request/Response and sets that as a metadata in 
-     * MessageInfo. Don't create any other metadata on MessageInfo. If anything is needed, 
-     * that can be created on RuntimeContext
-     * EPTFactoryFactoryBase is used to select a correct EPTFactory
-     * Calls MessageDispatcher.receive(MessageInfo). 
+     * Common entry point for server runtime. <br>
+     * Creates a MessageInfo for every Request/Response.<br>
+     * Creates a RuntimeContext for every Request/Response and sets that as a metadata in 
+     * MessageInfo. Doesn't create any other metadata on MessageInfo. If anything is needed, 
+     * that can be created on RuntimeContext<br>
+     * EPTFactoryFactoryBase is used to select a correct EPTFactory<br>
+     * Calls MessageDispatcher.receive(MessageInfo). <br>
      * MessageDispatcher orchestrates all the flow: reading from WSConnection, 
      * decodes message to parameters, invoking implementor, encodes parameters to message, 
      * and writing to WSConnection
+     *
      * @param connection encapsulates multiple transports
      * @param endpoint has all the information about target endpoint
      * @throws Exception throws Exception if any error occurs

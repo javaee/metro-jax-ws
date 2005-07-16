@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.7 2005-07-13 21:21:17 jitu Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.8 2005-07-16 01:38:41 kohlert Exp $
  *
  */
 
@@ -43,7 +43,9 @@ import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 
 /**
- * @author JAX-RPC Development Team
+ * Servlet for WS invocations
+ *
+ * @author WS Development Team
  */
 public class JAXRPCServletDelegate implements ServletDelegate {
     
@@ -319,6 +321,14 @@ public class JAXRPCServletDelegate implements ServletDelegate {
         }
     }
 
+    /**
+     * processes web service requests by finding the <code>RuntimeEndpointInfo</code>
+     * created by the <code>WSContextListener</code> and creating a 
+     * <code>ServletConnectionImpl</code> and passing it to <code>Tie.handle</code>
+     * @param request the HTTP request object
+     * @param response the HTTP response object
+     * @throws javax.servlet.ServletException 
+     */
     public void doPost(
         HttpServletRequest request,
         HttpServletResponse response)

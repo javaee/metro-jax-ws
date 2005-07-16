@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.3 2005-07-13 21:21:17 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.4 2005-07-16 01:38:40 kohlert Exp $
  */
 
 /*
@@ -29,7 +29,9 @@ import java.util.Map;
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * <code>com.sun.xml.ws.spi.runtime.WSConnection</code> used with Java SE endpoints
+ *
+ * @author WS Development Team
  */
 public class ServerConnectionImpl implements WSConnection {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.3 2005-07-13 21:21:17 jitu Exp $
+ * $Id: ServletConnectionImpl.java,v 1.4 2005-07-16 01:38:41 kohlert Exp $
  */
 
 /*
@@ -30,7 +30,11 @@ import java.util.Map;
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * <code>com.sun.xml.ws.spi.runtime.WSConnection</code> used by 
+ * WSServletDelegate, uses <code>javax.servlet.http.HttpServletRequest</code>
+ * and <code>javax.servlet.http.HttpServletResponse</code>
+ *
+ * @author WS Development Team
  */
 public class ServletConnectionImpl implements WSConnection {
 
