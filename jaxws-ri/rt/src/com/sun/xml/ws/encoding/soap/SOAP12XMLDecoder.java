@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.2 2005-07-14 20:37:59 kwalsh Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.3 2005-07-17 19:54:20 kwalsh Exp $
  */
 
 /*
@@ -36,6 +36,8 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 
 import static javax.xml.stream.XMLStreamConstants.*;
@@ -56,15 +58,18 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
     //needs further cleanup
     private static final Logger logger =
             Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-        private static Dispatch12Serializer dispatchSerializer;
+        //private static Dispatch12Serializer dispatchSerializer;
         //jaxbcontext can not be static
         private JAXBContext jc;
 
         public SOAP12XMLDecoder() {
-            dispatchSerializer = Dispatch12Serializer.getInstance();
+            //dispatchSerializer = Dispatch12Serializer.getInstance();
         }
 
-        protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
+        protected SerializerIF getSerializerInstance(){
+            return Dispatch12Serializer.getInstance();
+    }
+      /*  protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
             XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
             XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
             int state = XMLStreamReaderUtil.nextElementContent(reader);
@@ -95,7 +100,8 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
             XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
             XMLStreamReaderUtil.nextElementContent(reader);
         }
-        public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
+        */
+        /*public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
 
             if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo) {
                 messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
@@ -112,9 +118,9 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
                     messageInfo.setResponse(internalMessage.getBody().getValue());
             }
         }
+        */
 
-
-        protected void skipBody(XMLStreamReader reader) {
+     /*   protected void skipBody(XMLStreamReader reader) {
             XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
             XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
             XMLStreamReaderUtil.skipElement(reader);                     // Moves to </Body>
@@ -140,11 +146,11 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
             }
             return false;
         }
-
+         */
         /*
          * skipBody is true, the body is skipped during parsing.
          */
-        protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
+       /* protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
                 boolean skipBody, MessageInfo messageInfo) {
             XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
             XMLStreamReaderUtil.verifyTag(reader,SOAP12Constants.QNAME_SOAP_ENVELOPE);
@@ -165,8 +171,8 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
             XMLStreamReaderUtil.nextElementContent(reader);
             XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
         }
-
-        protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
+       */
+       /* protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
             decodeDispatchMethod(reader, response, messageInfo);
             if (reader.getEventType() == START_ELEMENT) {
                 QName name = reader.getName(); // Operation name
@@ -186,7 +192,7 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
             }
         }
 
-
+       */
 
     /*
      * TODO need to add more logic and processing
@@ -417,6 +423,13 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
         }
     }
 
+    /* (non-Javadoc)
+     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getFaultTag()
+     */
+    @Override
+    protected QName getFaultTag(){
+        return SOAP12Constants.QNAME_SOAP_FAULT;
+    }
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getBodyTag()
      */

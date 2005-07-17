@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.2 2005-07-15 19:12:18 kwalsh Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.3 2005-07-17 19:54:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,6 +16,8 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -61,10 +63,10 @@ import static javax.xml.stream.XMLStreamConstants.*;
 public class SOAPXMLDecoder extends SOAPDecoder {
     private JAXBContext jc;
     //private Method methodName = null;
-    private static DispatchSerializer dispatchSerializer;
+
 
     public SOAPXMLDecoder() {
-        dispatchSerializer = DispatchSerializer.getInstance();
+        //dispatchSerializer = DispatchSerializer.getInstance();
     }
 
     /* (non-Javadoc)
@@ -72,6 +74,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      */
     public void decode(MessageInfo messageInfo) {
         receiveAndDecode(messageInfo);
+    }
+
+    protected SerializerIF getSerializerInstance(){
+        return DispatchSerializer.getInstance();
     }
 
     /* (non-Javadoc)
@@ -130,8 +136,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 BodyBlock responseBody = null;
 
                 QName responseBodyName = reader.getName();   // Operation name
-                if (responseBodyName.getNamespaceURI().equals(SOAPNamespaceConstants.ENVELOPE) &&
-                    responseBodyName.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
+                if (responseBodyName.getNamespaceURI().equals(getEnvelopeTag()) &&
+                    responseBodyName.getLocalPart().equals(getFaultTag())) {
                     SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
 
                     responseBody = new BodyBlock(soapFaultInfo);
@@ -139,7 +145,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
                     //jaxb will leave reader on ending </body> element
                     Object jaxbBean =
-                        dispatchSerializer.deserialize(reader,
+                        getSerializerInstance().deserialize(reader,
                             jaxbContext);
                     JAXBBeanInfo jaxBean = new JAXBBeanInfo(jaxbBean, jaxbContext);
                     responseBody = new BodyBlock(jaxBean);
@@ -148,7 +154,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             }
 
             XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_BODY);
+            XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
             XMLStreamReaderUtil.nextElementContent(reader);
         } else
             super.decodeBody(reader, response, messageInfo);

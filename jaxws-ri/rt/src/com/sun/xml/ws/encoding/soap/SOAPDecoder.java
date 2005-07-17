@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.12 2005-07-13 20:49:45 bbissett Exp $
+ * $Id: SOAPDecoder.java,v 1.13 2005-07-17 19:54:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -53,10 +53,10 @@ import javax.xml.transform.stream.StreamSource;
  * @author JAX-RPC RI Development Team
  */
 public abstract class SOAPDecoder implements Decoder {
-    
+
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".soap.decoder");
-    
+
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
 
@@ -87,7 +87,7 @@ public abstract class SOAPDecoder implements Decoder {
     public Set<String> getRequiredRoles() {
         return new HashSet<String>();
     }
-    
+
     /**
      * Parses and binds headers from SOAPMessage.
      * @param soapMessage
@@ -109,7 +109,6 @@ public abstract class SOAPDecoder implements Decoder {
         return SOAPConstants.QNAME_SOAP_ENVELOPE;
     }
 
-
     protected QName getBodyTag(){
         return SOAPConstants.QNAME_SOAP_BODY;
     }
@@ -117,13 +116,17 @@ public abstract class SOAPDecoder implements Decoder {
     protected QName getHeaderTag(){
         return SOAPConstants.QNAME_SOAP_HEADER;
     }
-    
+
     protected QName getMUAttrQName(){
         return SOAPConstants.QNAME_MUSTUNDERSTAND;
     }
-    
+
     protected QName getRoleAttrQName(){
         return SOAPConstants.QNAME_ROLE;
+    }
+
+    protected QName getFaultTag(){
+        return SOAPConstants.QNAME_SOAP_FAULT;
     }
 
     protected void skipBody(XMLStreamReader reader) {
@@ -334,7 +337,7 @@ public abstract class SOAPDecoder implements Decoder {
         else
             return values[0];
     }
-    
+
     /*
      * It does mustUnderstand processing, and does best guess of MEP
      *
@@ -344,7 +347,7 @@ public abstract class SOAPDecoder implements Decoder {
     public boolean doMustUnderstandProcessing(SOAPMessage soapMessage,
             MessageInfo mi, HandlerContext handlerContext, boolean getMEP)
     throws SOAPException, IOException {
-        
+
         boolean oneway = false;
         Source source = soapMessage.getSOAPPart().getContent();
         ByteInputStream bis = null;
@@ -359,12 +362,12 @@ public abstract class SOAPDecoder implements Decoder {
         } else {
             System.out.println("****** NOT StreamSource **** ");
         }
-        
+
         XMLStreamReader reader =
                 SourceReaderFactory.createSourceReader(source, true);
         XMLStreamReaderUtil.nextElementContent(reader);
         checkMustUnderstandHeaders(reader,  mi, handlerContext);
-        
+
         if (getMEP) {
             oneway = isOneway(reader, mi);
         }
@@ -374,7 +377,7 @@ public abstract class SOAPDecoder implements Decoder {
         }
         return oneway;
     }
-    
+
     /*
      * returns Oneway or not. reader is on <Body>
      *
@@ -394,7 +397,7 @@ public abstract class SOAPDecoder implements Decoder {
         rtCtxt.setMethodAndMEP(operationName, mi);
         return (mi.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
-    
+
     /*
      * Does MU processing. reader is on <Envelope>, at the end of this method
      * leaves it on <Body>
@@ -403,22 +406,22 @@ public abstract class SOAPDecoder implements Decoder {
      */
     private void checkMustUnderstandHeaders(XMLStreamReader reader, MessageInfo mi,
             HandlerContext context) {
-        
+
         // Decode envelope
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
         XMLStreamReaderUtil.nextElementContent(reader);
 
-        
+
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
             return;             // No Header, no MU processing
         }
         XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
         XMLStreamReaderUtil.nextElementContent(reader);
-        
+
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-        
+
         // start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
         roles.addAll(getRequiredRoles());
@@ -462,7 +465,7 @@ public abstract class SOAPDecoder implements Decoder {
                 }
             }
         }
-        
+
         while (true) {
             if (reader.getEventType() == START_ELEMENT) {
                 // check MU header for each role
@@ -484,7 +487,7 @@ public abstract class SOAPDecoder implements Decoder {
                                     MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
                                     role,
                                     null);
-                        } 
+                        }
                     }
                 }
                 XMLStreamReaderUtil.skipElement(reader);   // Moves to END state
