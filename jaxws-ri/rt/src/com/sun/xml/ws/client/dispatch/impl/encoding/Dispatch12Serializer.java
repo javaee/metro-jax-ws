@@ -35,7 +35,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author JAX-RPC RI Development Team
  */
 
-public class Dispatch12Serializer {
+public class Dispatch12Serializer implements SerializerIF{
 
     private static final Logger logger =
             Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());

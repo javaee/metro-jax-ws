@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.12 2005-06-21 17:48:55 kwalsh Exp $
+ * $Id: DispatchSerializer.java,v 1.13 2005-07-17 19:52:06 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -38,7 +38,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author JAX-RPC RI Development Team
  */
 
-public class DispatchSerializer {
+public class DispatchSerializer implements SerializerIF{
 
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
