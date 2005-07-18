@@ -1,5 +1,5 @@
 /*
- * $Id: VersionUtil.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
+ * $Id: VersionUtil.java,v 1.3 2005-07-18 18:12:28 kohlert Exp $
  */
 
 /*
@@ -22,40 +22,40 @@ public final class VersionUtil implements Version {
     /**
      * Get JAX-WS full version, like: "JAX-WS Reference Implementation 1.1 EA-R16"
      *
-     * Method getJAXRPCCompleteVersion.
+     * Method getJAXWSCompleteVersion.
      * @return String
      */
-    public static String getJAXRPCCompleteVersion() {
+    public static String getJAXWSCompleteVersion() {
         return PRODUCT_NAME + VERSION_NUMBER + BUILD_NUMBER;
     }
 
     /**
-     * Method getJAXRPCVersion.
+     * Method getJAXWSVersion.
      * @return String
      */
-    public static String getJAXRPCVersion() {
+    public static String getJAXWSVersion() {
         return VERSION_NUMBER;
     }
 
     /**
-     * Method getJAXRPCBuildNumber.
+     * Method getJAXWSBuildNumber.
      * @return String
      */
-    public static String getJAXRPCBuildNumber() {
+    public static String getJAXWSBuildNumber() {
         return BUILD_NUMBER;
     }
 
     /**
-     * Method getJAXRPCProductName.
+     * Method getJAXWSProductName.
      * @return String
      */
-    public static String getJAXRPCProductName() {
+    public static String getJAXWSProductName() {
         return PRODUCT_NAME;
     }
 
 
     public static boolean isVersion20(String version) {
-        return JAXRPC_VERSION_20.equals(version);
+        return JAXWS_VERSION_20.equals(version);
     }
 
     /**
@@ -67,7 +67,7 @@ public final class VersionUtil implements Version {
     }
 
     public static String getValidVersionString() {
-        return JAXRPC_VERSION_20;
+        return JAXWS_VERSION_20;
     }
 
     /**
@@ -180,7 +180,7 @@ public final class VersionUtil implements Version {
         }
     }
 
-    public static final String JAXRPC_VERSION_20 = "2.0";
+    public static final String JAXWS_VERSION_20 = "2.0";
     // the latest version is default
-    public static final String JAXRPC_VERSION_DEFAULT = JAXRPC_VERSION_20;
+    public static final String JAXWS_VERSION_DEFAULT = JAXWS_VERSION_20;
 }
