@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.4 2005-07-18 16:52:14 kohlert Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-18 18:55:44 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -34,6 +34,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 
@@ -47,6 +48,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,7 +68,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
 
     public SOAPXMLDecoder() {
-        //dispatchSerializer = DispatchSerializer.getInstance();
     }
 
     /* (non-Javadoc)
@@ -79,23 +80,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     protected SerializerIF getSerializerInstance(){
         return DispatchSerializer.getInstance();
     }
-
-    /* (non-Javadoc)
-     * @see com.sun.pept.encoding.Decoder#receiveAndDecode(com.sun.pept.ept.MessageInfo)
-     */
-    /*
-    public void receiveAndDecode(MessageInfo messageInfo) {
-        Connection connection = messageInfo.getConnection();
-        ByteBuffer responseBuffer = connection.readUntilEnd();
-        ByteInputStream inputStream = new ByteInputStream(responseBuffer.array(),
-                responseBuffer.array().length);
-        //methodName = messageInfo.getMethod();
-        XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
-        reader.nextElementContent();
-        decodeEnvelope(reader, messageInfo);
-    }
-     */
-
 
     public void receiveAndDecode(MessageInfo messageInfo) {
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) !=
@@ -160,15 +144,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             super.decodeBody(reader, response, messageInfo);
     }
 
-    /*
-    public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
-        RuntimeContext rtContext =
-            (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory();
-        InternalEncoder encoder = eptf.getInternalEncoder();
-        encoder.toMessageInfo(internalMessage, messageInfo);
-    }
-    */
     public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
 
         RuntimeContext rtContext =
@@ -195,7 +170,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             }
         }
     }
-
 
     protected void decodeEnvelope(XMLStreamReader reader, MessageInfo messageInfo) {
         InternalMessage im = decodeInternalMessage(reader, messageInfo);
@@ -386,7 +360,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             }
         }
 
-        //SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
+
         SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
 
         // reader could be left on CHARS token rather than </fault>
@@ -460,13 +434,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             detail = fault.addDetail();
             detail.addChildElement(soapElement);
         } catch (SOAPException e) {
-            //throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         } catch (TransformerException e) {
-            //throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         } catch (TransformerFactoryConfigurationError e) {
-            // throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         } catch (XMLStreamException e) {
-            // throw new SenderException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
         }
 
         return detail;

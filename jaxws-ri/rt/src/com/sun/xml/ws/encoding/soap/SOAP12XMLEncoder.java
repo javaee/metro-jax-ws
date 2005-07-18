@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.3 2005-07-16 23:25:05 kwalsh Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.4 2005-07-18 18:55:44 kwalsh Exp $
  */
 
 /*
@@ -62,54 +62,6 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
        protected JAXBContext getJAXBContext() {
            return jc;
        }
-
-      /* public void encodeAndSend(MessageInfo messageInfo) {
-           //processProperties(messageInfo);
-           InternalMessage request = toInternalMessage(messageInfo);
-
-           Connection connection = messageInfo.getConnection();
-
-           ByteArrayOutputStream baos = new ByteArrayOutputStream();
-           XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-
-           try {
-               startEnvelope(writer);
-               //headers will most likely be handled by "JAXWS handlers"
-               //need to overide for now
-               writeHeader(writer, request);
-               writeBody(writer, request, messageInfo);
-               endEnvelope(writer);
-               writer.writeEndDocument();
-               writer.close();
-
-               // sending the request over the wire
-               if (connection != null)
-                   connection.write(ByteBuffer.wrap(baos.toByteArray()));
-               else
-                   throw new WebServiceException("connection is null");
-
-           } catch (Exception e) {
-               if (e instanceof WebServiceException)
-                   throw (WebServiceException) e;
-               else
-                   throw new WebServiceException(e.getMessage(), e);
-           }
-       }
-       */
-       //protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-       //                            MessageInfo messageInfo) {
-       //
-       //}
-
-       //dispatch will need to overide for now till handlers figured out
-       //protected void writeHeader(XMLStreamWriter writer, InternalMessage request) {
-       //    List<HeaderBlock> headerBlocks = request.getHeaders();
-
-        //   if (headerBlocks == null) {
-        //       return;
-        //   }
-      // }
-
 
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)

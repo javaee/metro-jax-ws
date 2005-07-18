@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.4 2005-07-16 23:25:05 kwalsh Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.5 2005-07-18 18:55:45 kwalsh Exp $
  */
 
 /*
@@ -147,40 +147,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return message;
     }
 
-    /*
-     * writes multiple header elements in <env:Header> ... </env:Header>
-     */
-   // protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-    //                            MessageInfo messageInfo) {
-        //just stub it out
-    //}
-
-    /*public void processProperties(MessageInfo messageInfo) {
-
-        SOAPMessageContext messageContext = new SOAPMessageContext();
-        SOAPMessage soapMessage = messageContext.createMessage();
-        MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
-
-        ContextMap ocontext =
-            (ContextMap) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
-        ContextMap context = ((RequestContext) ocontext).copy();
-
-        jc = (JAXBContext)
-            context.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
-
-        if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
-            messageContext.put(BindingProviderProperties.ONE_WAY_OPERATION, "true");
-        messageContext.setMessage(soapMessage);
-        ClientTransportFactory clientTransportFactory = null;
-        if (clientTransportFactory == null)
-            clientTransportFactory = DispatchBase.getDefaultTransportFactory();
-
-        messageInfo.setConnection(new ClientConnectionBase((String) context.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY),
-            clientTransportFactory.create(),
-            messageContext));
-    }
-    */
-
     public InternalMessage createInternalMessage(MessageInfo messageInfo) {
 
         InternalMessage internalMessage = new InternalMessage();
@@ -242,49 +208,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         connection.write(buffer);
     }
 
-    /*public InternalMessage toInternalMessage(MessageInfo messageInfo) {
-        LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory();
-        InternalEncoder internalEncoder = eptf.getInternalEncoder();
-        processProperties(messageInfo);
-        InternalMessage im = (InternalMessage) internalEncoder.toInternalMessage(messageInfo);
-
-        return im;
-    }
-    */
-    /* public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
-         MessageInfo messageInfo) {
-         setAttachmentsMap(messageInfo, internalMessage);
-         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-
-         SOAPMessage message = null;
-         try {
-             startEnvelope(writer);
-             writeHeaders(writer, internalMessage, messageInfo);
-             writeBody(writer, internalMessage, messageInfo);
-             endEnvelope(writer);
-             writer.writeEndDocument();
-             writer.close();
-
-             byte[] buf = baos.toByteArray();
-             ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
-
-             // TODO: Copy the mime headers from messageInfo.METADATA
-             MimeHeaders mh = new MimeHeaders();
-             mh.addHeader("Content-Type", getContentType(messageInfo));
-             message = new SOAPMessageContext().createMessage(mh, bis, getBindingId());
-             processAttachments(internalMessage, message);
-         } catch (IOException e) {
-             throw new SenderException("sender.request.messageNotReady", new LocalizableExceptionAdapter(e));
-         } catch (SOAPException e) {
-             throw new SenderException(new LocalizableExceptionAdapter(e));
-         } catch (XMLStreamException e) {
-             throw new SenderException(new LocalizableExceptionAdapter(e));
-         }
-
-         return message;
-     }
-     */
     /**
      * @param messageInfo
      */
@@ -385,17 +308,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }
             messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransport,
             messageContext));
-
-
-
-         /*   if (clientTransportFactory == null)
-                clientTransportFactory = DispatchBase.getDefaultTransportFactory();
-
-            messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY),
-                clientTransportFactory.create(),
-                messageContext));
-        }*/
-
     }
 
     protected String getContentType(MessageInfo messageInfo) {

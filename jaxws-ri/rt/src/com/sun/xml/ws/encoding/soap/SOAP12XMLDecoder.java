@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.3 2005-07-17 19:54:20 kwalsh Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.4 2005-07-18 18:55:44 kwalsh Exp $
  */
 
 /*
@@ -58,141 +58,16 @@ public class SOAP12XMLDecoder extends com.sun.xml.ws.encoding.soap.SOAPXMLDecode
     //needs further cleanup
     private static final Logger logger =
             Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-        //private static Dispatch12Serializer dispatchSerializer;
+
         //jaxbcontext can not be static
         private JAXBContext jc;
 
         public SOAP12XMLDecoder() {
-            //dispatchSerializer = Dispatch12Serializer.getInstance();
         }
 
         protected SerializerIF getSerializerInstance(){
             return Dispatch12Serializer.getInstance();
-    }
-      /*  protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
-            XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
-            int state = XMLStreamReaderUtil.nextElementContent(reader);
-
-            // if Body is not empty, then deserialize the Body
-            if (state != END_ELEMENT) {
-                BodyBlock responseBody = null;
-
-                QName responseBodyName = reader.getName();   // Operation name
-                if (responseBodyName.getNamespaceURI().equals(SOAPNamespaceConstants.ENVELOPE) &&
-                    responseBodyName.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
-                    SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
-
-                    responseBody = new BodyBlock(soapFaultInfo);
-                } else {
-                    JAXBContext jaxbContext = getJAXBContext(messageInfo);
-                    //jaxb will leave reader on ending </body> element
-                    Object jaxbBean =
-                            dispatchSerializer.deserialize(reader,
-                            jaxbContext);
-                    JAXBBeanInfo jaxBean = new JAXBBeanInfo(jaxbBean, jaxbContext);
-                    responseBody = new BodyBlock(jaxBean);
-                }
-                response.setBody(responseBody);
-            }
-
-            XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
-            XMLStreamReaderUtil.nextElementContent(reader);
         }
-        */
-        /*public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
-
-            if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo) {
-                messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
-                messageInfo.setResponse(internalMessage.getBody().getValue());
-            } else if (internalMessage.getBody().getValue() instanceof Exception) {
-                messageInfo.setResponseType(UNCHECKED_EXCEPTION_RESPONSE);
-                messageInfo.setResponse(internalMessage.getBody().getValue());
-            } else {
-                messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
-                //unfortunately we must do this
-                if (internalMessage.getBody().getValue() instanceof JAXBBeanInfo)
-                    messageInfo.setResponse(((JAXBBeanInfo) internalMessage.getBody().getValue()).getBean());
-                else
-                    messageInfo.setResponse(internalMessage.getBody().getValue());
-            }
-        }
-        */
-
-     /*   protected void skipBody(XMLStreamReader reader) {
-            XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_BODY);
-            XMLStreamReaderUtil.skipElement(reader);                     // Moves to </Body>
-            XMLStreamReaderUtil.nextElementContent(reader);
-        }
-
-        protected void skipHeader(XMLStreamReader reader) {
-
-            XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-            if (!SOAP12NamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
-                return;
-            }
-            XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_HEADER);
-            XMLStreamReaderUtil.skipElement(reader);                     // Moves to </Header>
-            XMLStreamReaderUtil.nextElementContent(reader);
-        }
-
-
-        private boolean skipHeader(MessageInfo messageInfo) {
-            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
-                Service.Mode.PAYLOAD) {
-                return true;
-            }
-            return false;
-        }
-         */
-        /*
-         * skipBody is true, the body is skipped during parsing.
-         */
-       /* protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
-                boolean skipBody, MessageInfo messageInfo) {
-            XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader,SOAP12Constants.QNAME_SOAP_ENVELOPE);
-            XMLStreamReaderUtil.nextElementContent(reader);
-
-            if (skipHeader(messageInfo))
-                skipHeader(reader);
-            else
-                decodeHeader(reader, messageInfo, request);
-
-            if (skipBody) {
-                skipBody(reader);
-            } else {
-                decodeBody(reader, request, messageInfo);
-            }
-            XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
-            XMLStreamReaderUtil.verifyTag(reader, SOAP12Constants.QNAME_SOAP_ENVELOPE);
-            XMLStreamReaderUtil.nextElementContent(reader);
-            XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
-        }
-       */
-       /* protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
-            decodeDispatchMethod(reader, response, messageInfo);
-            if (reader.getEventType() == START_ELEMENT) {
-                QName name = reader.getName(); // Operation name
-                JAXBContext jaxbContext = getJAXBContext(messageInfo);
-                RpcLitPayload rpcLitPayload = null;//getRpcLitPayload(name);
-                if (name.getNamespaceURI().equals(SOAP12NamespaceConstants.ENVELOPE) &&
-                        name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
-                    SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
-                    BodyBlock responseBody = new BodyBlock(soapFaultInfo);
-                    response.setBody(responseBody);
-                } else {
-                    //jaxb will leave reader on ending </body> element
-                    Object jaxbBean = dispatchSerializer.deserialize(reader, jaxbContext);
-                    BodyBlock responseBody = new BodyBlock(new JAXBBeanInfo(jaxbBean, jaxbContext));
-                    response.setBody(responseBody);
-                }
-            }
-        }
-
-       */
 
     /*
      * TODO need to add more logic and processing
