@@ -1,5 +1,5 @@
 /*
- * $Id: Definitions.java,v 1.1 2005-05-24 14:00:44 bbissett Exp $
+ * $Id: Definitions.java,v 1.2 2005-07-18 18:14:11 kohlert Exp $
  */
 
 /*
@@ -29,7 +29,7 @@ import com.sun.tools.ws.wsdl.framework.Extension;
 /**
  * Entity corresponding to the "definitions" WSDL element.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Definitions extends Entity implements Defining, Extensible {
 

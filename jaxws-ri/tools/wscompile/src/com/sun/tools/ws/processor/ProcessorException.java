@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorException.java,v 1.2 2005-05-25 20:16:36 kohlert Exp $
+ * $Id: ProcessorException.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * 
  * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ProcessorException extends JAXWSExceptionBase {
 

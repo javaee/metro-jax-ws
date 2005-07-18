@@ -1,5 +1,5 @@
 /*
- * $Id: Extensible.java,v 1.1 2005-05-24 14:04:12 bbissett Exp $
+ * $Id: Extensible.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import java.util.Iterator;
 /**
  * An entity that can be extended.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface Extensible extends Elemental {
     public void addExtension(Extension e);

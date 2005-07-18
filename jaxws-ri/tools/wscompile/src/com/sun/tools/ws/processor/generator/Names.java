@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.1 2005-05-23 23:14:49 bbissett Exp $
+ * $Id: Names.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
  */
 
 /*
@@ -30,7 +30,7 @@ import java.util.Map;
  * Names provides utility methods used by other wscompile classes
  * for dealing with identifiers.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Names implements GeneratorConstants{
 

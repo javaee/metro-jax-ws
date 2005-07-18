@@ -1,5 +1,5 @@
 /*
- * $Id: QNameAction.java,v 1.1 2005-05-24 14:04:15 bbissett Exp $
+ * $Id: QNameAction.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * An action operating on a QName.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface QNameAction {
     public void perform(QName name);

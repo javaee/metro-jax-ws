@@ -1,5 +1,5 @@
 /*
- * $Id: Processor.java,v 1.2 2005-05-25 20:16:35 kohlert Exp $
+ * $Id: Processor.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Processor {
 

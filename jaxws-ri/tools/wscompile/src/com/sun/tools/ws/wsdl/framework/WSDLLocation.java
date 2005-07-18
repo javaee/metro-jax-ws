@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLLocation.java,v 1.1 2005-05-24 14:04:16 bbissett Exp $
+ * $Id: WSDLLocation.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ package com.sun.tools.ws.wsdl.framework;
  * ParserContext, where one each WSDL being imported its location is pushed, this will be used
  * latter to resolve relative imports of schema in SchemaParser.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLLocation {
     WSDLLocation() {

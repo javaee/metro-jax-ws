@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceImplGenerator.java,v 1.1 2005-05-23 23:14:49 bbissett Exp $
+ * $Id: RemoteInterfaceImplGenerator.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
  */
 
 /*
@@ -37,7 +37,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class RemoteInterfaceImplGenerator extends GeneratorBase20 implements ProcessorAction {
 

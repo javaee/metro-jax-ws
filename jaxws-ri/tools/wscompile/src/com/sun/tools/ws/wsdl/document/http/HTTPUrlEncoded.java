@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPUrlEncoded.java,v 1.1 2005-05-24 13:53:25 bbissett Exp $
+ * $Id: HTTPUrlEncoded.java,v 1.2 2005-07-18 18:14:14 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.wsdl.framework.Extension;
 /**
  * A HTTP urlEncoded extension.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class HTTPUrlEncoded extends Extension {
 

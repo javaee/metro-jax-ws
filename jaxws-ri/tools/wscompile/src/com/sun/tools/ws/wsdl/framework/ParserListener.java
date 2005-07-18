@@ -1,5 +1,5 @@
 /*
- * $Id: ParserListener.java,v 1.1 2005-05-24 14:04:15 bbissett Exp $
+ * $Id: ParserListener.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * A listener for parsing-related events.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ParserListener {
     public void ignoringExtension(QName name, QName parent);

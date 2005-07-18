@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorAction.java,v 1.1 2005-05-24 13:43:48 bbissett Exp $
+ * $Id: ProcessorAction.java,v 1.2 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.processor.config.Configuration;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ProcessorAction {
     public void perform(Model model, Configuration config, Properties options);

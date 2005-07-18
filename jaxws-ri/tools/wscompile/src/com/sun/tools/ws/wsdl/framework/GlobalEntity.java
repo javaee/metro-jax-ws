@@ -1,5 +1,5 @@
 /*
- * $Id: GlobalEntity.java,v 1.1 2005-05-24 14:04:14 bbissett Exp $
+ * $Id: GlobalEntity.java,v 1.2 2005-07-18 18:14:20 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  * An entity that can be defined in a target namespace.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class GlobalEntity extends Entity implements GloballyKnown {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameCollector.java,v 1.1 2005-05-24 13:43:45 bbissett Exp $
+ * $Id: ClassNameCollector.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
  */
 
 /*
@@ -27,49 +27,16 @@ import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.model.jaxb.JAXBTypeVisitor;
 import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
-
-/*import com.sun.xml.rpc.processor.model.literal.LiteralAllType;
-import com.sun.xml.rpc.processor.model.literal.LiteralArrayType;
-import com.sun.xml.rpc.processor.model.literal.LiteralArrayWrapperType;
-import com.sun.xml.rpc.processor.model.literal.LiteralAttachmentType;
-import com.sun.xml.rpc.processor.model.literal.LiteralAttributeMember;
-import com.sun.xml.rpc.processor.model.literal.LiteralElementMember;
-import com.sun.xml.rpc.processor.model.literal.LiteralEnumerationType;
-import com.sun.xml.rpc.processor.model.literal.LiteralFragmentType;
-import com.sun.xml.rpc.processor.model.literal.LiteralIDType;
-import com.sun.xml.rpc.processor.model.literal.LiteralListType;
-import com.sun.xml.rpc.processor.model.literal.LiteralSequenceType;
-import com.sun.xml.rpc.processor.model.literal.LiteralSimpleType;
-import com.sun.xml.rpc.processor.model.literal.LiteralStructuredType;
-import com.sun.xml.rpc.processor.model.literal.LiteralType;
-import com.sun.xml.rpc.processor.model.literal.LiteralTypeVisitor;
-
-import com.sun.xml.rpc.processor.model.soap.RPCRequestOrderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.RPCRequestUnorderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.RPCResponseStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPAnyType;
-import com.sun.xml.rpc.processor.model.soap.SOAPArrayType;
-import com.sun.xml.rpc.processor.model.soap.SOAPCustomType;
-import com.sun.xml.rpc.processor.model.soap.SOAPEnumerationType;
-import com.sun.xml.rpc.processor.model.soap.SOAPListType;
-import com.sun.xml.rpc.processor.model.soap.SOAPOrderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPSimpleType;
-import com.sun.xml.rpc.processor.model.soap.SOAPStructureMember;
-import com.sun.xml.rpc.processor.model.soap.SOAPStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPType;
-import com.sun.xml.rpc.processor.model.soap.SOAPTypeVisitor;
-import com.sun.xml.rpc.processor.model.soap.SOAPUnorderedStructureType;
-*/
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.xml.ws.util.VersionUtil;
 
 /**
  * This class writes out a Model as an XML document.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ClassNameCollector extends ExtendedModelVisitor
-    implements /*SOAPTypeVisitor, LiteralTypeVisitor,*/ JAXBTypeVisitor {
+    implements JAXBTypeVisitor {
 
     public ClassNameCollector() {
     }
@@ -272,142 +239,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
     private void visitType(RpcLitStructure type) throws Exception {
         type.accept(this);
     }
-/*
-    private void visitType(LiteralType type) throws Exception {
-        type.accept(this);
-    }
-
-    public void visit(LiteralSimpleType type) throws Exception {
-    }
-
-    public void visit(LiteralSequenceType type) throws Exception {
-        visitLiteralStructuredType(type);
-    }
-
-    public void visit(LiteralAllType type) throws Exception {
-        visitLiteralStructuredType(type);
-    }
-
-    private void visitLiteralStructuredType(LiteralStructuredType type)
-        throws Exception {
-
-        boolean alreadySeen = _visitedTypes.contains(type);
-        if (!alreadySeen) {
-            _visitedTypes.add(type);
-            registerClassName(type.getJavaType().getName());
-            for (Iterator iter = type.getAttributeMembers(); iter.hasNext();) {
-                LiteralAttributeMember attribute =
-                    (LiteralAttributeMember) iter.next();
-                visitType(attribute.getType());
-            }
-            for (Iterator iter = type.getElementMembers(); iter.hasNext();) {
-                LiteralElementMember element =
-                    (LiteralElementMember) iter.next();
-                visitType(element.getType());
-            }
-        }
-    }
-
-    public void visit(LiteralArrayType type) throws Exception {
-        visitType(type.getElementType());
-    }
-
-    public void visit(LiteralArrayWrapperType type) throws Exception {
-        boolean alreadySeen = _visitedTypes.contains(type);
-        if (!alreadySeen) {
-            _visitedTypes.add(type);
-            registerClassName(type.getJavaType().getName());
-            visitType(type.getElementMember().getType());
-        }
-    }
-
-    public void visit(LiteralFragmentType type) throws Exception {
-    }
-
-    public void visit(LiteralListType type) throws Exception {
-    }
-
-    public void visit(SOAPListType type) throws Exception {
-    }
-
-    public void visit(LiteralIDType type) throws Exception {
-    }
-
-
-    public void visit(LiteralEnumerationType type) throws Exception {
-        boolean alreadySeen = _visitedTypes.contains(type);
-        if (!alreadySeen) {
-            _visitedTypes.add(type);
-            registerClassName(type.getJavaType().getName());
-        }
-    }
-
-    private void visitType(SOAPType type) throws Exception {
-        type.accept(this);
-    }
-
-    public void visit(SOAPArrayType type) throws Exception {
-        visitType(type.getElementType());
-    }
-
-    public void visit(SOAPCustomType type) throws Exception {
-    }
-
-    public void visit(SOAPEnumerationType type) throws Exception {
-        visitType(type.getBaseType());
-    }
-
-    public void visit(SOAPSimpleType type) throws Exception {
-    }
-
-    public void visit(SOAPAnyType type) throws Exception {
-    }
-
-    public void visit(SOAPOrderedStructureType type) throws Exception {
-        visitSOAPStructureType(type);
-    }
-
-    public void visit(SOAPUnorderedStructureType type) throws Exception {
-        visitSOAPStructureType(type);
-    }
-
-    public void visit(RPCRequestOrderedStructureType type) throws Exception {
-        visitSOAPStructureType(type);
-    }
-
-    public void visit(RPCRequestUnorderedStructureType type) throws Exception {
-        visitSOAPStructureType(type);
-    }
-
-    public void visit(RPCResponseStructureType type) throws Exception {
-        visitSOAPStructureType(type);
-    }
-
-    private void visitSOAPStructureType(SOAPStructureType type)
-        throws Exception {
-
-        boolean alreadySeen = _visitedTypes.contains(type);
-        if (!alreadySeen) {
-            _visitedTypes.add(type);
-
-            if (_exceptions.contains(type.getJavaType())) {
-                return;
-            }
-
-            registerClassName(type.getJavaType().getName());
-            for (Iterator iter = type.getMembers(); iter.hasNext();) {
-                SOAPStructureMember member = (SOAPStructureMember) iter.next();
-                visitType(member.getType());
-            }
-            for (Iterator iter = type.getSubtypes();
-                iter != null && iter.hasNext();) {
-
-                SOAPStructureType subType = (SOAPStructureType) iter.next();
-                visitType(subType);
-            }
-        }
-    }
-*/
     private void registerClassName(String name) {
         if (name == null || name.equals("")) {
             return;
@@ -437,14 +268,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
     }
 
     private Set<String> _exceptionClassNames;
-    /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.literal.LiteralTypeVisitor#visit(com.sun.xml.rpc.processor.model.literal.LiteralAttachmentType)
-     */
-/*    public void visit(LiteralAttachmentType type) throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-*/
     boolean doneVisitingJAXBModel = false;
     public void visit(JAXBType type) throws Exception {
         if(!doneVisitingJAXBModel){

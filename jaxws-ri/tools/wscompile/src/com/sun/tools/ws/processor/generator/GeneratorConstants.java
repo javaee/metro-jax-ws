@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorConstants.java,v 1.2 2005-06-01 00:38:28 kohlert Exp $
+ * $Id: GeneratorConstants.java,v 1.3 2005-07-18 18:13:57 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.processor.generator;
 import com.sun.tools.ws.processor.modeler.ModelerConstants;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface GeneratorConstants extends ModelerConstants {
 

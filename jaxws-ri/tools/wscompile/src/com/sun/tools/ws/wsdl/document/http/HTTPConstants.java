@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPConstants.java,v 1.1 2005-05-24 13:53:26 bbissett Exp $
+ * $Id: HTTPConstants.java,v 1.2 2005-07-18 18:14:14 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * Interface defining HTTP-extension-related constants.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface HTTPConstants {
 

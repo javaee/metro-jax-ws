@@ -1,5 +1,5 @@
 /*
- * $Id: Response.java,v 1.1 2005-05-23 23:18:57 bbissett Exp $
+ * $Id: Response.java,v 1.2 2005-07-18 18:14:00 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Response extends Message {
 

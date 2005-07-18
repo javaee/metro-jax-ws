@@ -1,5 +1,5 @@
 /*
- * $Id: JavaCompilerHelper.java,v 1.1 2005-05-24 13:49:43 bbissett Exp $
+ * $Id: JavaCompilerHelper.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import com.sun.xml.ws.util.localization.Localizable;
 /**
  * A helper class to invoke javac.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JavaCompilerHelper extends ToolBase {
 

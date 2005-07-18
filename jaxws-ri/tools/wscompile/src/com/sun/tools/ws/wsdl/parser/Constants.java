@@ -1,5 +1,5 @@
 /*
- * $Id: Constants.java,v 1.1 2005-05-24 14:07:27 bbissett Exp $
+ * $Id: Constants.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.parser;
 /**
  * An interface defining constants needed to read and write WSDL documents.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface Constants {
     // WSDL element tags

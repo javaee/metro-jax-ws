@@ -1,5 +1,5 @@
 /*
- * $Id: Message.java,v 1.1 2005-05-23 23:18:55 bbissett Exp $
+ * $Id: Message.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class Message extends ModelObject {
 

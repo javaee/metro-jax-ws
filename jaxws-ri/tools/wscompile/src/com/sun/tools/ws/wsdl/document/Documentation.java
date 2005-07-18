@@ -1,5 +1,5 @@
 /*
- * $Id: Documentation.java,v 1.1 2005-05-24 14:00:44 bbissett Exp $
+ * $Id: Documentation.java,v 1.2 2005-07-18 18:14:12 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.document;
 /**
  * Entity corresponding to the "documentation" WSDL element.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Documentation {
 

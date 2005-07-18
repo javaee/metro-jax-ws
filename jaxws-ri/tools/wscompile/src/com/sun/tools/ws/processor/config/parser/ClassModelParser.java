@@ -1,5 +1,5 @@
 /*
- * $Id: ClassModelParser.java,v 1.1 2005-05-23 23:13:20 bbissett Exp $
+ * $Id: ClassModelParser.java,v 1.2 2005-07-18 18:13:56 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ClassModelParser extends InputParser {
 

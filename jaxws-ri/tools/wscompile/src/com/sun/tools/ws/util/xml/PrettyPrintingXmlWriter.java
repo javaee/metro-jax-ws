@@ -1,5 +1,5 @@
 /*
- * $Id: PrettyPrintingXmlWriter.java,v 1.1 2005-05-24 13:49:41 bbissett Exp $
+ * $Id: PrettyPrintingXmlWriter.java,v 1.2 2005-07-18 18:14:09 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,7 @@ import com.sun.xml.ws.util.xml.CDATA;
  * both SAX streams and DOM documents.  </p>
  *
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class PrettyPrintingXmlWriter {

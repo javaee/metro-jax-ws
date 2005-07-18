@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLDocument.java,v 1.1 2005-05-24 14:00:50 bbissett Exp $
+ * $Id: WSDLDocument.java,v 1.2 2005-07-18 18:14:13 kohlert Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import com.sun.tools.ws.wsdl.framework.ValidationException;
 /**
  * A WSDL document.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLDocument extends AbstractDocument{
 

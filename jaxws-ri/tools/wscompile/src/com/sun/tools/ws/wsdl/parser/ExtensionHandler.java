@@ -1,5 +1,5 @@
 /*
- * $Id: ExtensionHandler.java,v 1.1 2005-05-24 14:07:27 bbissett Exp $
+ * $Id: ExtensionHandler.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import com.sun.tools.ws.wsdl.framework.WriterContext;
 /**
  * A handler for extensions elements definined in one namespace.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class ExtensionHandler {
 

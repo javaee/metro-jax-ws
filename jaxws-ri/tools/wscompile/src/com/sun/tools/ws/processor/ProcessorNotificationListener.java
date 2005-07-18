@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorNotificationListener.java,v 1.1 2005-05-24 13:43:49 bbissett Exp $
+ * $Id: ProcessorNotificationListener.java,v 1.2 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * A ProcessorNotificationListener is registered with a Processor and receives
  * notifications of errors, warnings and informational messages.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ProcessorNotificationListener {
     public void onError(Localizable msg);

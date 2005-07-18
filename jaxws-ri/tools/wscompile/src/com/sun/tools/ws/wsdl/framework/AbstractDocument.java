@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractDocument.java,v 1.1 2005-05-24 14:04:10 bbissett Exp $
+ * $Id: AbstractDocument.java,v 1.2 2005-07-18 18:14:18 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 /**
  * An abstract class for documents containing entities.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class AbstractDocument {
 

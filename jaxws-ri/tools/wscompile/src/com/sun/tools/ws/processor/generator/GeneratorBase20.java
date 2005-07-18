@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase20.java,v 1.1 2005-05-23 23:14:48 bbissett Exp $
+ * $Id: GeneratorBase20.java,v 1.2 2005-07-18 18:13:57 kohlert Exp $
  */
 
 /*
@@ -20,8 +20,6 @@ import com.sun.tools.ws.processor.ProcessorAction;
 import com.sun.tools.ws.processor.ProcessorConstants;
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.Configuration;
-//import com.sun.xml.rpc.processor.generator.writer.SerializerWriterFactory;
-//import com.sun.xml.rpc.processor.generator.writer.SerializerWriterFactoryImpl;
 import com.sun.tools.ws.processor.model.AbstractType;
 import com.sun.tools.ws.processor.model.Block;
 import com.sun.tools.ws.processor.model.Fault;
@@ -36,37 +34,6 @@ import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.model.jaxb.JAXBTypeVisitor;
 import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
-/*import com.sun.xml.rpc.processor.model.literal.LiteralAllType;
-import com.sun.xml.rpc.processor.model.literal.LiteralArrayType;
-import com.sun.xml.rpc.processor.model.literal.LiteralArrayWrapperType;
-import com.sun.xml.rpc.processor.model.literal.LiteralAttachmentType;
-import com.sun.xml.rpc.processor.model.literal.LiteralAttributeMember;
-import com.sun.xml.rpc.processor.model.literal.LiteralElementMember;
-import com.sun.xml.rpc.processor.model.literal.LiteralEnumerationType;
-import com.sun.xml.rpc.processor.model.literal.LiteralFragmentType;
-import com.sun.xml.rpc.processor.model.literal.LiteralIDType;
-import com.sun.xml.rpc.processor.model.literal.LiteralListType;
-import com.sun.xml.rpc.processor.model.literal.LiteralSequenceType;
-import com.sun.xml.rpc.processor.model.literal.LiteralSimpleType;
-import com.sun.xml.rpc.processor.model.literal.LiteralStructuredType;
-import com.sun.xml.rpc.processor.model.literal.LiteralType;
-import com.sun.xml.rpc.processor.model.literal.LiteralTypeVisitor;
-import com.sun.xml.rpc.processor.model.soap.RPCRequestOrderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.RPCRequestUnorderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.RPCResponseStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPAnyType;
-import com.sun.xml.rpc.processor.model.soap.SOAPArrayType;
-import com.sun.xml.rpc.processor.model.soap.SOAPAttributeMember;
-import com.sun.xml.rpc.processor.model.soap.SOAPCustomType;
-import com.sun.xml.rpc.processor.model.soap.SOAPEnumerationType;
-import com.sun.xml.rpc.processor.model.soap.SOAPListType;
-import com.sun.xml.rpc.processor.model.soap.SOAPOrderedStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPSimpleType;
-import com.sun.xml.rpc.processor.model.soap.SOAPStructureMember;
-import com.sun.xml.rpc.processor.model.soap.SOAPStructureType;
-import com.sun.xml.rpc.processor.model.soap.SOAPType;
-import com.sun.xml.rpc.processor.model.soap.SOAPTypeVisitor;
-import com.sun.xml.rpc.processor.model.soap.SOAPUnorderedStructureType;*/
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
@@ -76,15 +43,13 @@ import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class GeneratorBase20
     implements
         GeneratorConstants,
         ProcessorAction,
         ModelVisitor,
-//        SOAPTypeVisitor,
-//        LiteralTypeVisitor, 
         JAXBTypeVisitor {
     protected File sourceDir;
     protected File destDir;
@@ -96,9 +61,8 @@ public abstract class GeneratorBase20
     protected boolean encodeTypes;
     protected boolean multiRefEncoding;
     protected boolean serializeInterfaces;
-//    protected SerializerWriterFactory writerFactory;
     protected SOAPVersion curSOAPVersion;
-    protected String JAXRPCVersion;
+    protected String WSVersion;
     protected String targetVersion;
     protected boolean generateSerializableIf;
     protected boolean donotOverride;
@@ -122,15 +86,6 @@ public abstract class GeneratorBase20
         Properties properties) {
         ProcessorEnvironment env =
             (ProcessorEnvironment) config.getEnvironment();
-//        String key = ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY;
-//        String dirPath = properties.getProperty(key);
-//        File destDir = new File(dirPath);
-//        key = ProcessorOptions.SOURCE_DIRECTORY_PROPERTY;
-//        String sourcePath = properties.getProperty(key);
-//        File sourceDir = new File(sourcePath);
-//        key = ProcessorOptions.NONCLASS_DESTINATION_DIRECTORY_PROPERTY;
-//        String nonclassDestPath = properties.getProperty(key);
-//        File nonclassDestDir = new File(nonclassDestPath);
 
         GeneratorBase20 generator = getGenerator(model, config, properties);
 
@@ -165,24 +120,12 @@ public abstract class GeneratorBase20
         this.nonclassDestDir = new File(nonclassDestPath);
         if (nonclassDestDir == null)
             nonclassDestDir = destDir;
-        key = ProcessorOptions.ENCODE_TYPES_PROPERTY;
-        this.encodeTypes =
-            Boolean.valueOf(properties.getProperty(key)).booleanValue();
-        key = ProcessorOptions.MULTI_REF_ENCODING_PROPERTY;
-        this.multiRefEncoding =
-            Boolean.valueOf(properties.getProperty(key)).booleanValue();
         messageFactory =
             new LocalizableMessageFactory("com.sun.tools.ws.resources.generator");
-        key = ProcessorOptions.SERIALIZE_INTERFACES_PROPERTY;
-        this.serializeInterfaces =
-            Boolean.valueOf(properties.getProperty(key)).booleanValue();
-        this.JAXRPCVersion =
-            properties.getProperty(ProcessorConstants.JAXRPC_VERSION);
+        this.WSVersion =
+            properties.getProperty(ProcessorConstants.JAXWS_VERSION);
         this.targetVersion =
-            properties.getProperty(ProcessorOptions.JAXRPC_SOURCE_VERSION);
-        key = ProcessorOptions.GENERATE_SERIALIZABLE_IF;
-        this.generateSerializableIf =
-            Boolean.valueOf(properties.getProperty(key)).booleanValue();
+            properties.getProperty(ProcessorOptions.JAXWS_SOURCE_VERSION);
         key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
         this.donotOverride =
             Boolean.valueOf(properties.getProperty(key)).booleanValue();
@@ -452,7 +395,7 @@ public abstract class GeneratorBase20
     }
 
     protected void writeWarning(IndentingWriter p) throws IOException {
-        writeWarning(p, JAXRPCVersion, targetVersion);
+        writeWarning(p, WSVersion, targetVersion);
     }
 
     public static void writeWarning(IndentingWriter p, String version,
@@ -460,7 +403,7 @@ public abstract class GeneratorBase20
         /*
          * Write boiler plate comment.
          */
-        p.pln("// This class was generated by the JAXRPC SI, do not edit.");
+        p.pln("// This class was generated by the JAX SI, do not edit.");
         p.pln("// Contents subject to change without notice.");
         p.pln("// " + version);
         p.pln("// Generated source version: " + targetVersion);
@@ -470,7 +413,7 @@ public abstract class GeneratorBase20
     public void writePackage(IndentingWriter p, String classNameStr)
         throws IOException {
 
-        writePackage(p, classNameStr, JAXRPCVersion, targetVersion);
+        writePackage(p, classNameStr, WSVersion, targetVersion);
     }
 
     public static void writePackage(

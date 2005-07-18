@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPExtensionHandler.java,v 1.1 2005-05-24 14:07:30 bbissett Exp $
+ * $Id: SOAPExtensionHandler.java,v 1.2 2005-07-18 18:14:23 kohlert Exp $
  */
 
 /*
@@ -35,7 +35,7 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 /**
  * The SOAP extension handler for WSDL.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPExtensionHandler extends ExtensionHandlerBase {
 

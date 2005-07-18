@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceGenerator.java,v 1.3 2005-06-10 17:20:07 vivekp Exp $
+ * $Id: RemoteInterfaceGenerator.java,v 1.4 2005-07-18 18:13:58 kohlert Exp $
  */
 
 /*
@@ -42,7 +42,7 @@ import java.util.Properties;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class RemoteInterfaceGenerator extends GeneratorBase20 implements ProcessorAction {
     protected boolean isDocStyle;

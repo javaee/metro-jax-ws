@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorUtil.java,v 1.2 2005-06-01 00:38:28 kohlert Exp $
+ * $Id: GeneratorUtil.java,v 1.3 2005-07-18 18:13:57 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class GeneratorUtil implements GeneratorConstants {
 

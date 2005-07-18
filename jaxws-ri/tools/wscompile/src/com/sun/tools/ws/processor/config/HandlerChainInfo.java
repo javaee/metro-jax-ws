@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerChainInfo.java,v 1.1 2005-05-23 23:13:25 bbissett Exp $
+ * $Id: HandlerChainInfo.java,v 1.2 2005-07-18 18:13:55 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class HandlerChainInfo {
 

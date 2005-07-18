@@ -1,5 +1,5 @@
 /*
- * $Id: Extension.java,v 1.1 2005-05-24 14:04:12 bbissett Exp $
+ * $Id: Extension.java,v 1.2 2005-07-18 18:14:20 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  * An entity extending another entity.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class Extension extends Entity {
 

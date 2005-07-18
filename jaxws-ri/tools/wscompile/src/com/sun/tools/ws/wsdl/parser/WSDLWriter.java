@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLWriter.java,v 1.1 2005-05-24 14:07:31 bbissett Exp $
+ * $Id: WSDLWriter.java,v 1.2 2005-07-18 18:14:24 kohlert Exp $
  */
 
 /*
@@ -48,7 +48,7 @@ import com.sun.tools.ws.wsdl.framework.WriterContext;
 /**
  * A writer for WSDL documents.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLWriter {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLUtil.java,v 1.1 2005-05-24 14:07:31 bbissett Exp $
+ * $Id: WSDLUtil.java,v 1.2 2005-07-18 18:14:24 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -32,7 +32,7 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 /**
  * WSDL Utilities.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLUtil {
     public WSDLUtil() {

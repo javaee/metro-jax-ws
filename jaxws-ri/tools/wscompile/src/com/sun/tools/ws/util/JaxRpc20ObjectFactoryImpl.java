@@ -1,5 +1,5 @@
 /*
- * $Id: JaxRpc20ObjectFactoryImpl.java,v 1.1 2005-05-24 13:49:44 bbissett Exp $
+ * $Id: JaxRpc20ObjectFactoryImpl.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import com.sun.tools.ws.processor.config.Configuration;
 /**
  * Singleton factory class to instantiate concrete objects.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JaxRpc20ObjectFactoryImpl {
 //    extends com.sun.tools.ws.spi2.JaxRpcObjectFactory {

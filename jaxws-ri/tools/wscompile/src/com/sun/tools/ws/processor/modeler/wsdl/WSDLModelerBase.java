@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.1 2005-05-24 13:31:30 bbissett Exp $
+ * $Id: WSDLModelerBase.java,v 1.2 2005-07-18 18:14:04 kohlert Exp $
  */
 
 /*
@@ -93,7 +93,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  *
  * Base class for WSDL->Model classes.
  */
@@ -182,7 +182,7 @@ public abstract class WSDLModelerBase implements Modeler {
                 parser.parse(inputSource, useWSIBasicProfile);
             document.validateLocally();
 
-            literalOnly =
+/*            literalOnly =
                 useWSIBasicProfile
                     || Boolean
                         .valueOf(
@@ -196,7 +196,7 @@ public abstract class WSDLModelerBase implements Modeler {
                         .valueOf(
                             _options.getProperty(
                                 ProcessorOptions.USE_RPC_LITERAL_ENCODING))
-                        .booleanValue();
+                        .booleanValue();*/
             boolean validateWSDL =
                 Boolean
                     .valueOf(
@@ -318,15 +318,15 @@ public abstract class WSDLModelerBase implements Modeler {
          *
          */
 
-        boolean searchSchema =
-            Boolean
-                .valueOf(
-                    _options.getProperty(
-                        ProcessorOptions.SEARCH_SCHEMA_FOR_SUBTYPES))
-                .booleanValue();
-        if (searchSchema) {
-            processSearchSchemaOption(document, model);
-        }
+//        boolean searchSchema =
+//            Boolean
+//                .valueOf(
+//                    _options.getProperty(
+//                        ProcessorOptions.SEARCH_SCHEMA_FOR_SUBTYPES))
+//                .booleanValue();
+//        if (searchSchema) {
+//            processSearchSchemaOption(document, model);
+//        }
 
         boolean hasServices = document.getDefinitions().services().hasNext();
         if (hasServices) {
@@ -380,51 +380,51 @@ public abstract class WSDLModelerBase implements Modeler {
      * @param document WSDL document
      * @param model Model which will be used by the generators to generate code.
      */
-    protected void processSearchSchemaOption(
-        WSDLDocument document,
-        Model model) {
-        // embark on a very aggressive search for types defined in this document
-        Map typeMap = document.getMap(SchemaKinds.XSD_TYPE);
-        int errorcount = 0;
-        for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
-            QName typeName = (QName)iter.next();
-            try {
-                // just looking up the type is enough to trigger the subtyping behavior of the analyzer!
-                AbstractType extraType = null;
-                /* Here we retrieve from the wsdl the use defined for the operations in
-                   a binding in a WSDl */
-                //hSet = parser.getUse();
-
-                if (hSet.contains("encoded") && !hSet.contains("literal")) {
-//                    extraType = _analyzer.schemaTypeToSOAPType(typeName);
-                } else if (
-                    !hSet.contains("encoded") && hSet.contains("literal")) {
-//                    extraType = _analyzer.schemaTypeToLiteralType(typeName);
-                } else {
-                    throw new ModelerException("wsdlmodler.warning.operation.use");
-                    //throw new ModelerException("wsdlmodeler.invalid.bindingOperation.notFound");
-                }
-
-                if (extraType != null) {
-                    //if (soapType instanceof SOAPStructureType) {
-                    // the original idea was to add only those types that can participate in inheritance,
-                    // but that seems wrong
-                    model.addExtraType(extraType);
-                    //}
-                } else {
-                    ++errorcount;
-                }
-            } catch (ModelException e) {
-                ++errorcount;
-            }
-        }
-        if (errorcount > 0) {
-            warn(
-                "wsdlmodeler.warning.searchSchema.unrecognizedTypes",
-                Integer.toString(errorcount));
-        }
-
-    }
+//    protected void processSearchSchemaOption(
+//        WSDLDocument document,
+//        Model model) {
+//        // embark on a very aggressive search for types defined in this document
+//        Map typeMap = document.getMap(SchemaKinds.XSD_TYPE);
+//        int errorcount = 0;
+//        for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
+//            QName typeName = (QName)iter.next();
+//            try {
+//                // just looking up the type is enough to trigger the subtyping behavior of the analyzer!
+//                AbstractType extraType = null;
+//                /* Here we retrieve from the wsdl the use defined for the operations in
+//                   a binding in a WSDl */
+//                //hSet = parser.getUse();
+//
+//                if (hSet.contains("encoded") && !hSet.contains("literal")) {
+////                    extraType = _analyzer.schemaTypeToSOAPType(typeName);
+//                } else if (
+//                    !hSet.contains("encoded") && hSet.contains("literal")) {
+////                    extraType = _analyzer.schemaTypeToLiteralType(typeName);
+//                } else {
+//                    throw new ModelerException("wsdlmodler.warning.operation.use");
+//                    //throw new ModelerException("wsdlmodeler.invalid.bindingOperation.notFound");
+//                }
+//
+//                if (extraType != null) {
+//                    //if (soapType instanceof SOAPStructureType) {
+//                    // the original idea was to add only those types that can participate in inheritance,
+//                    // but that seems wrong
+//                    model.addExtraType(extraType);
+//                    //}
+//                } else {
+//                    ++errorcount;
+//                }
+//            } catch (ModelException e) {
+//                ++errorcount;
+//            }
+//        }
+//        if (errorcount > 0) {
+//            warn(
+//                "wsdlmodeler.warning.searchSchema.unrecognizedTypes",
+//                Integer.toString(errorcount));
+//        }
+//
+//    }
 
     protected Documentation getDocumentationFor(Element e) {
         String s = XmlUtil.getTextForNode(e);
@@ -5560,7 +5560,7 @@ public abstract class WSDLModelerBase implements Modeler {
     protected static SOAPConstants soap11WSDLConstants = null;
     //protected static SOAPWSDLConstants soap12WSDLConstants = null;
     protected boolean useWSIBasicProfile = false;
-    private boolean literalOnly = false;
+//    private boolean literalOnly = false;
     private boolean unwrap = true;
     protected boolean strictCompliance = false;
     //    private boolean doNotUnwrap = false;

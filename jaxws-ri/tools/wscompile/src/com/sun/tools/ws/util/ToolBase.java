@@ -1,5 +1,5 @@
 /*
- * $Id: ToolBase.java,v 1.1 2005-05-24 13:49:44 bbissett Exp $
+ * $Id: ToolBase.java,v 1.2 2005-07-18 18:14:08 kohlert Exp $
  */
 
 /*
@@ -19,7 +19,7 @@ import com.sun.xml.ws.util.localization.Localizer;
 /**
  * A base class for command-line tools.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class ToolBase {
 

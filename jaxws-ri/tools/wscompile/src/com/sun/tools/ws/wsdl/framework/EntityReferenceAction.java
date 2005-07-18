@@ -1,5 +1,5 @@
 /*
- * $Id: EntityReferenceAction.java,v 1.1 2005-05-24 14:04:11 bbissett Exp $
+ * $Id: EntityReferenceAction.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * An action operating on an entity reference composed of a kind and a QName.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface EntityReferenceAction {
     public void perform(Kind kind, QName name);

@@ -1,5 +1,5 @@
 /*
- * $Id: ModelInfo.java,v 1.1 2005-05-23 23:13:25 bbissett Exp $
+ * $Id: ModelInfo.java,v 1.2 2005-07-18 18:13:56 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.processor.modeler.Modeler;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class ModelInfo {
 

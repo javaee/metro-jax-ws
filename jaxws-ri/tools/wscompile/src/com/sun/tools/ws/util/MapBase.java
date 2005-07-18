@@ -1,5 +1,5 @@
 /*
- * $Id: MapBase.java,v 1.1 2005-05-24 13:49:44 bbissett Exp $
+ * $Id: MapBase.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import java.util.Set;
  * This class was lifted from JDK 1.4 (where it's called java.util.AbstractMap)
  * so that we can use it on 1.3.1.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 /**

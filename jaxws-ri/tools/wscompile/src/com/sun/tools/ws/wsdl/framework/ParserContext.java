@@ -1,5 +1,5 @@
 /*
- * $Id: ParserContext.java,v 1.1 2005-05-24 14:04:15 bbissett Exp $
+ * $Id: ParserContext.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 /**
  * The context used by parser classes.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ParserContext {
 

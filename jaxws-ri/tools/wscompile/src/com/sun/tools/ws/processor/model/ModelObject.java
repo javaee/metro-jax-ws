@@ -1,5 +1,5 @@
 /*
- * $Id: ModelObject.java,v 1.1 2005-05-23 23:18:55 bbissett Exp $
+ * $Id: ModelObject.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.NullIterator;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class ModelObject {
 

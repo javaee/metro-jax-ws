@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.1 2005-05-23 23:14:49 bbissett Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ServiceInterfaceGenerator extends GeneratorBase20 implements ProcessorAction {
 

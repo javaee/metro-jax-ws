@@ -1,5 +1,5 @@
 /*
- * $Id: BuiltInTypes.java,v 1.1 2005-05-24 13:58:12 bbissett Exp $
+ * $Id: BuiltInTypes.java,v 1.2 2005-07-18 18:14:15 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface BuiltInTypes {
     public QName STRING = SchemaConstants.QNAME_TYPE_STRING;

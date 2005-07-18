@@ -1,5 +1,5 @@
 /*
- * $Id: SchemaParser.java,v 1.1 2005-05-24 14:07:30 bbissett Exp $
+ * $Id: SchemaParser.java,v 1.2 2005-07-18 18:14:23 kohlert Exp $
  */
 
 /*
@@ -41,7 +41,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 /**
  * A parser for XML Schema, including the fragments found inside a WSDL document.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SchemaParser {
 

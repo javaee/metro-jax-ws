@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcAP.java,v 1.2 2005-06-06 23:03:23 kohlert Exp $
+ * $Id: JaxRpcAP.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -56,10 +56,10 @@ public class JaxRpcAP extends WebServiceAP {
         if (srcDir == null)
             srcDir = classDir;
         properties.setProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY, srcDir);
-        properties.setProperty(ProcessorConstants.JAXRPC_VERSION,
+        properties.setProperty(ProcessorConstants.JAXWS_VERSION,
                                 getVersionString());
-        properties.setProperty(ProcessorOptions.JAXRPC_SOURCE_VERSION,
-            VersionUtil.JAXRPC_VERSION_DEFAULT);
+        properties.setProperty(ProcessorOptions.JAXWS_SOURCE_VERSION,
+            VersionUtil.JAXWS_VERSION_DEFAULT);
         properties.setProperty(ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY, classDir);
         String ndDir = classDir;
         for (String key : options.keySet()) {

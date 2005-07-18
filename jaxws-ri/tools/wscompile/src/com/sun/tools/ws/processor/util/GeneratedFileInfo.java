@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratedFileInfo.java,v 1.1 2005-05-24 13:43:46 bbissett Exp $
+ * $Id: GeneratedFileInfo.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.io.File;
  * A container to hold info on the files that get
  * generated.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class GeneratedFileInfo {
 

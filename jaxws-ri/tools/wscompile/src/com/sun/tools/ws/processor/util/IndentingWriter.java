@@ -1,5 +1,5 @@
 /*
- * $Id: IndentingWriter.java,v 1.1 2005-05-24 13:43:46 bbissett Exp $
+ * $Id: IndentingWriter.java,v 1.2 2005-07-18 18:14:06 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import com.sun.tools.ws.processor.generator.GeneratorException;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class IndentingWriter extends BufferedWriter {
 

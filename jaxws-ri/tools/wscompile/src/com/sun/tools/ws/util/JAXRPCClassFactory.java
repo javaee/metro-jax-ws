@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCClassFactory.java,v 1.1 2005-05-24 13:49:43 bbissett Exp $
+ * $Id: JAXRPCClassFactory.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
  */
 
 /*
@@ -22,12 +22,12 @@ import com.sun.xml.ws.util.VersionUtil;
  * Singleton factory class to instantiate concrete classes based on the jaxrpc version
  * to be used to generate the code.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JAXRPCClassFactory {
     private static final JAXRPCClassFactory factory = new JAXRPCClassFactory();
 
-    private static String classVersion = VersionUtil.JAXRPC_VERSION_DEFAULT;
+    private static String classVersion = VersionUtil.JAXWS_VERSION_DEFAULT;
 
     private JAXRPCClassFactory() {
     }
@@ -47,7 +47,7 @@ public class JAXRPCClassFactory {
      */
     public void setSourceVersion(String version) {
         if (version == null)
-            version = VersionUtil.JAXRPC_VERSION_DEFAULT;
+            version = VersionUtil.JAXWS_VERSION_DEFAULT;
 
         if (!VersionUtil.isValidVersion(version)) {
             // TODO: throw exception
@@ -66,7 +66,7 @@ public class JAXRPCClassFactory {
         WSDLModelInfo modelInfo,
         Properties options) {
         WSDLModelerBase wsdlModeler = null;
-        if (classVersion.equals(VersionUtil.JAXRPC_VERSION_20))
+        if (classVersion.equals(VersionUtil.JAXWS_VERSION_20))
             wsdlModeler =
                 (WSDLModelerBase) new WSDLModeler20(modelInfo, options);
         else {

@@ -1,5 +1,5 @@
 /*
- * $Id: MIMEExtensionHandler.java,v 1.1 2005-05-24 14:07:29 bbissett Exp $
+ * $Id: MIMEExtensionHandler.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 /**
  * The MIME extension handler for WSDL.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class MIMEExtensionHandler extends ExtensionHandler {
 

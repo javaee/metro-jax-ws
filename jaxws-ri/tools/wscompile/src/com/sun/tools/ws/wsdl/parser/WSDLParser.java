@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser.java,v 1.2 2005-05-27 18:14:06 vivekp Exp $
+ * $Id: WSDLParser.java,v 1.3 2005-07-18 18:14:23 kohlert Exp $
  */
 
 /*
@@ -71,7 +71,7 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 /**
  * A parser for WSDL documents.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLParser {
 

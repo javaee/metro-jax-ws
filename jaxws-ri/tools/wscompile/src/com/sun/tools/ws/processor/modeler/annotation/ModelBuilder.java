@@ -1,5 +1,5 @@
 /**
- * $Id: ModelBuilder.java,v 1.1 2005-05-23 23:23:50 bbissett Exp $
+ * $Id: ModelBuilder.java,v 1.2 2005-07-18 18:14:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -26,7 +26,7 @@ import com.sun.tools.ws.processor.modeler.annotation.*;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ModelBuilder {
 //    public ClassLoader getClassLoader();

@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameInfo.java,v 1.1 2005-05-24 13:49:42 bbissett Exp $
+ * $Id: ClassNameInfo.java,v 1.2 2005-07-18 18:14:06 kohlert Exp $
  */
 
 /*
@@ -10,7 +10,7 @@
 package com.sun.tools.ws.util;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public final class ClassNameInfo {

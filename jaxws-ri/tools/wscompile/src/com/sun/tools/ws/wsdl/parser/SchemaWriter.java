@@ -1,5 +1,5 @@
 /*
- * $Id: SchemaWriter.java,v 1.1 2005-05-24 14:07:30 bbissett Exp $
+ * $Id: SchemaWriter.java,v 1.2 2005-07-18 18:14:23 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.wsdl.framework.WriterContext;
 /**
  * A writer for XML Schema fragments within a WSDL document.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SchemaWriter {
 

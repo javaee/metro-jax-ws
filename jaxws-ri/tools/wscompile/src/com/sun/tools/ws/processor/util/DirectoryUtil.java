@@ -4,7 +4,7 @@
  */
 
 /*
- * $Id: DirectoryUtil.java,v 1.1 2005-05-24 13:43:46 bbissett Exp $
+ * $Id: DirectoryUtil.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
  */
 
 package com.sun.tools.ws.processor.util;
@@ -17,7 +17,7 @@ import com.sun.tools.ws.util.ClassNameInfo;
 /**
  * Util provides static utility methods used by other wscompile classes.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class DirectoryUtil  {
 

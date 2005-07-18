@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.2 2005-06-06 16:34:42 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.3 2005-07-18 18:14:04 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -106,7 +106,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         this.tool = tool;
         this.env = env;
         if (options != null) {
-            sourceVersion = options.getProperty(ProcessorOptions.JAXRPC_SOURCE_VERSION);
+            sourceVersion = options.getProperty(ProcessorOptions.JAXWS_SOURCE_VERSION);
             sourceDir = new File(options.getProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY));
             String key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
             this.donotOverride =

@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorActionVersion.java,v 1.1 2005-05-24 13:43:48 bbissett Exp $
+ * $Id: ProcessorActionVersion.java,v 1.2 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -9,7 +9,7 @@
 package com.sun.tools.ws.processor;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  *
  * Typesafe enum class to hold the ProcessorActionVersion
  */

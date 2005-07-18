@@ -1,5 +1,5 @@
 /*
- * $Id: GloballyKnown.java,v 1.1 2005-05-24 14:04:14 bbissett Exp $
+ * $Id: GloballyKnown.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  * An interface implemented by entities which can be defined in a target namespace.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface GloballyKnown extends Elemental {
     public String getName();

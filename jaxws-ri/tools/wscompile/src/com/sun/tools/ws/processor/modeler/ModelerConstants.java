@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerConstants.java,v 1.1 2005-05-24 13:42:07 bbissett Exp $
+ * $Id: ModelerConstants.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import com.sun.xml.ws.encoding.soap.InternalEncodingConstants;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ModelerConstants extends InternalEncodingConstants {
 

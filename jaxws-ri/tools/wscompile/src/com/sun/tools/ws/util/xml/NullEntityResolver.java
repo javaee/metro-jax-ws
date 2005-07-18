@@ -1,5 +1,5 @@
 /*
- * $Id: NullEntityResolver.java,v 1.1 2005-05-24 13:49:41 bbissett Exp $
+ * $Id: NullEntityResolver.java,v 1.2 2005-07-18 18:14:08 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class NullEntityResolver implements EntityResolver {
 

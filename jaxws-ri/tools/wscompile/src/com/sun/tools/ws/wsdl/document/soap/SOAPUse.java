@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPUse.java,v 1.1 2005-05-24 13:58:15 bbissett Exp $
+ * $Id: SOAPUse.java,v 1.2 2005-07-18 18:14:18 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.document.soap;
 /**
  * A SOAP "use" enumeration.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public final class SOAPUse {
 

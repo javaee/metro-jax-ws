@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCCodeWriter.java,v 1.1 2005-05-24 13:51:45 bbissett Exp $
+ * $Id: JAXRPCCodeWriter.java,v 1.2 2005-07-18 18:14:10 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,7 +16,7 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 
 /**
  * {@link CodeWriter} implementation that notifies
- * JAX-RPC about newly created files.
+ * JAX-WS about newly created files.
  *
  * @author
  *     Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
@@ -32,7 +32,7 @@ public class JAXRPCCodeWriter extends FileCodeWriter {
     protected File getFile(JPackage pkg, String fileName ) throws IOException {
         File f = super.getFile(pkg, fileName);
 
-        // notify JAX-RPC RI
+        // notify JAX-WS RI
         GeneratedFileInfo fi = new GeneratedFileInfo();
         fi.setType("JAXB"/*GeneratorConstants.FILE_TYPE_VALUETYPE*/);
         fi.setFile(f);

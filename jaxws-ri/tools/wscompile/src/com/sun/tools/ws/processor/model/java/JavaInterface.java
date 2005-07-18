@@ -1,5 +1,5 @@
 /*
- * $Id: JavaInterface.java,v 1.1 2005-05-23 23:15:59 bbissett Exp $
+ * $Id: JavaInterface.java,v 1.2 2005-07-18 18:14:01 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.tools.ws.processor.model.ModelException;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JavaInterface {
 

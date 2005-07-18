@@ -1,5 +1,5 @@
 /*
- * $Id: EntityAction.java,v 1.1 2005-05-24 14:04:11 bbissett Exp $
+ * $Id: EntityAction.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  * An action operating on an entity.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface EntityAction {
     public void perform(Entity entity);

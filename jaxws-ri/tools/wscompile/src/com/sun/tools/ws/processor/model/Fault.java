@@ -1,5 +1,5 @@
 /**
- * $Id: Fault.java,v 1.1 2005-05-23 23:18:55 bbissett Exp $
+ * $Id: Fault.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -18,7 +18,7 @@ import com.sun.tools.ws.processor.model.java.JavaException;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Fault extends ModelObject {
 

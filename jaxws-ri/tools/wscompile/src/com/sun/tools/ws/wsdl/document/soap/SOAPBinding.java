@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBinding.java,v 1.1 2005-05-24 13:58:16 bbissett Exp $
+ * $Id: SOAPBinding.java,v 1.2 2005-07-18 18:14:17 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.wsdl.framework.Extension;
 /**
  * A SOAP binding extension.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPBinding extends Extension {
 

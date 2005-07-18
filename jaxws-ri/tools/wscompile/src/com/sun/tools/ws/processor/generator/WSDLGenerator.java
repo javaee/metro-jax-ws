@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.2 2005-06-08 20:00:53 arungupta Exp $
+ * $Id: WSDLGenerator.java,v 1.3 2005-07-18 18:13:58 kohlert Exp $
  */
 
 /*
@@ -84,7 +84,7 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBModel;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLGenerator extends GeneratorBase20 implements Constants, ProcessorAction {
     private boolean doneGeneration;

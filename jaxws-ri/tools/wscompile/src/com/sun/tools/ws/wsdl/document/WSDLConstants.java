@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLConstants.java,v 1.1 2005-05-24 14:00:49 bbissett Exp $
+ * $Id: WSDLConstants.java,v 1.2 2005-07-18 18:14:13 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * Interface defining WSDL-related constants.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface WSDLConstants {
 

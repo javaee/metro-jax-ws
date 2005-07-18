@@ -1,5 +1,5 @@
 /*
- * $Id: WriterContext.java,v 1.1 2005-05-24 14:04:16 bbissett Exp $
+ * $Id: WriterContext.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.util.xml.PrettyPrintingXmlWriter;
 /**
  * The context used by writer classes.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WriterContext {
 

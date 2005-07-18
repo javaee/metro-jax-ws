@@ -1,5 +1,5 @@
 /*
- * $Id: JavaStructureMember.java,v 1.1 2005-05-23 23:16:00 bbissett Exp $
+ * $Id: JavaStructureMember.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.tools.ws.processor.model.java;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JavaStructureMember {
 

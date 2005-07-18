@@ -1,5 +1,5 @@
 /*
- * $Id: SchemaEntity.java,v 1.1 2005-05-24 13:58:12 bbissett Exp $
+ * $Id: SchemaEntity.java,v 1.2 2005-07-18 18:14:16 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.tools.ws.wsdl.framework.Kind;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SchemaEntity extends Entity implements GloballyKnown {
 

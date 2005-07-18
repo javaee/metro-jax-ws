@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorConstants.java,v 1.1 2005-05-24 13:43:48 bbissett Exp $
+ * $Id: ProcessorConstants.java,v 1.2 2005-07-18 18:13:54 kohlert Exp $
  */
 
 /*
@@ -12,10 +12,10 @@ package com.sun.tools.ws.processor;
 /**
  * Constants used by Model, Modelers, Config ProcessorActions
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ProcessorConstants {
     public final static String SOAP_VERSION_1_1 = "SOAP 1.1";
     public final static String SOAP_VERSION_1_2 = "SOAP 1.2";
-    public final static String JAXRPC_VERSION   = "JAXRPC Version";
+    public final static String JAXWS_VERSION   = "JAXWS Version";
 }

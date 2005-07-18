@@ -1,5 +1,5 @@
 /*
- * $Id: Message.java,v 1.1 2005-05-24 14:00:47 bbissett Exp $
+ * $Id: Message.java,v 1.2 2005-07-18 18:14:12 kohlert Exp $
  */
 
 /*
@@ -27,7 +27,7 @@ import com.sun.tools.ws.wsdl.framework.ValidationException;
 /**
  * Entity corresponding to the "message" WSDL element.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Message extends GlobalEntity {
 

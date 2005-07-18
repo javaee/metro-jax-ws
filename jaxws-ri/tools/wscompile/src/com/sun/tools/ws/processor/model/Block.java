@@ -1,5 +1,5 @@
 /**
- * $Id: Block.java,v 1.1 2005-05-23 23:18:54 bbissett Exp $
+ * $Id: Block.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,7 +10,7 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Block extends ModelObject {
 

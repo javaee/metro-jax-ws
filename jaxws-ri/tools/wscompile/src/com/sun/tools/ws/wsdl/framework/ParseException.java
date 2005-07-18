@@ -1,5 +1,5 @@
 /*
- * $Id: ParseException.java,v 1.2 2005-05-25 20:16:37 kohlert Exp $
+ * $Id: ParseException.java,v 1.3 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.xml.ws.util.localization.Localizable;
 /**
  * An exception signalling a parsing error.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ParseException extends JAXWSExceptionBase {
 

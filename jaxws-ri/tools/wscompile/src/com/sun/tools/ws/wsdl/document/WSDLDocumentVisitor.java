@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLDocumentVisitor.java,v 1.1 2005-05-24 14:00:50 bbissett Exp $
+ * $Id: WSDLDocumentVisitor.java,v 1.2 2005-07-18 18:14:13 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import com.sun.tools.ws.wsdl.framework.ExtensionVisitor;
 /**
  * A visitor for WSDL documents.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface WSDLDocumentVisitor extends ExtensionVisitor {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Kinds.java,v 1.1 2005-05-24 14:00:46 bbissett Exp $
+ * $Id: Kinds.java,v 1.2 2005-07-18 18:14:12 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import com.sun.tools.ws.wsdl.framework.Kind;
 /**
  * Enumeration of the kind of entities that can be defined in a WSDL "definitions" element.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Kinds {
     public static final Kind BINDING = new Kind("wsdl:binding");

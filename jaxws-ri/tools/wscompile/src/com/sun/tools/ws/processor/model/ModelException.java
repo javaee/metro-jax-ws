@@ -1,5 +1,5 @@
 /*
- * $Id: ModelException.java,v 1.1 2005-05-23 23:18:55 bbissett Exp $
+ * $Id: ModelException.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  *
  * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ModelException extends ProcessorException {
 

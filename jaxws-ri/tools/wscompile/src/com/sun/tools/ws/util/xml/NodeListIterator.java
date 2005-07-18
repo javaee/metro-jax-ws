@@ -1,5 +1,5 @@
 /*
- * $Id: NodeListIterator.java,v 1.1 2005-05-24 13:49:40 bbissett Exp $
+ * $Id: NodeListIterator.java,v 1.2 2005-07-18 18:14:08 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import org.w3c.dom.NodeList;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class NodeListIterator implements Iterator {
 

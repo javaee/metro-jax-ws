@@ -1,5 +1,5 @@
 /*
- * $Id: DuplicateEntityException.java,v 1.1 2005-05-24 14:04:10 bbissett Exp $
+ * $Id: DuplicateEntityException.java,v 1.2 2005-07-18 18:14:18 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  * An exception signalling that an entity with the given name/id has already been defined.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class DuplicateEntityException extends ValidationException {
 

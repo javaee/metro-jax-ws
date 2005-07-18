@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.5 2005-06-17 18:45:07 kohlert Exp $
+ * $Id: CompileTool.java,v 1.6 2005-07-18 18:14:10 kohlert Exp $
  */
 
 /*
@@ -521,7 +521,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             nonclassDestDir = destDir;
         }
 
-        properties.setProperty(ProcessorConstants.JAXRPC_VERSION, getVersionString());
+        properties.setProperty(ProcessorConstants.JAXWS_VERSION, getVersionString());
         properties.setProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY, sourceDir
                 .getAbsolutePath());
         properties.setProperty(ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY, destDir

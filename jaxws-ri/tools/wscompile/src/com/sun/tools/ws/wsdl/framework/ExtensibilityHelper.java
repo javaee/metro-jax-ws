@@ -1,5 +1,5 @@
 /*
- * $Id: ExtensibilityHelper.java,v 1.1 2005-05-24 14:04:11 bbissett Exp $
+ * $Id: ExtensibilityHelper.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 /**
  * A helper class for extensible entities.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ExtensibilityHelper {
 

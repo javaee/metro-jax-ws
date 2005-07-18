@@ -1,5 +1,5 @@
 /**
- * $Id: TypeModeler.java,v 1.1 2005-05-23 23:23:50 bbissett Exp $
+ * $Id: TypeModeler.java,v 1.2 2005-07-18 18:14:04 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -19,7 +19,7 @@ import com.sun.xml.ws.util.StringUtils;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class TypeModeler implements WebServiceConstants {
 

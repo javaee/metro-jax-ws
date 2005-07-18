@@ -1,5 +1,5 @@
 /*
- * $Id: SchemaConstants.java,v 1.1 2005-05-24 13:58:13 bbissett Exp $
+ * $Id: SchemaConstants.java,v 1.2 2005-07-18 18:14:16 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface SchemaConstants {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: Entity.java,v 1.1 2005-05-24 14:04:11 bbissett Exp $
+ * $Id: Entity.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * An entity, typically corresponding to an XML element.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class Entity implements Elemental {
 

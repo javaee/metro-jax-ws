@@ -1,5 +1,5 @@
 /*
- * $Id: BindingOutput.java,v 1.1 2005-05-24 14:00:44 bbissett Exp $
+ * $Id: BindingOutput.java,v 1.2 2005-07-18 18:14:11 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import com.sun.tools.ws.wsdl.framework.Extension;
 /**
  * Entity corresponding to the "output" child element of a binding operation.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class BindingOutput extends Entity implements Extensible {
 

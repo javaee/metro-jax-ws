@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelInfo.java,v 1.1 2005-05-23 23:13:26 bbissett Exp $
+ * $Id: WSDLModelInfo.java,v 1.2 2005-07-18 18:13:56 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import com.sun.tools.ws.util.JAXRPCClassFactory;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLModelInfo extends ModelInfo {
 

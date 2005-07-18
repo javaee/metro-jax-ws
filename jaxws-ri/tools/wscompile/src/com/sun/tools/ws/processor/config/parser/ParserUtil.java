@@ -1,5 +1,5 @@
 /*
- * $Id: ParserUtil.java,v 1.2 2005-05-25 18:22:15 kohlert Exp $
+ * $Id: ParserUtil.java,v 1.3 2005-07-18 18:13:56 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ParserUtil {
     public static void failWithFullName(String key, String file, XMLReader reader) {

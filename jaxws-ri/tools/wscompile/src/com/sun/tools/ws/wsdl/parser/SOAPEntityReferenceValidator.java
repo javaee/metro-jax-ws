@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEntityReferenceValidator.java,v 1.1 2005-05-24 14:07:30 bbissett Exp $
+ * $Id: SOAPEntityReferenceValidator.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.wsdl.framework.Kind;
  * An interface implemented by a class that is capable of validating
  * a QName/Kind pair referring to an external entity.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPEntityReferenceValidator implements EntityReferenceValidator {
     public SOAPEntityReferenceValidator() {

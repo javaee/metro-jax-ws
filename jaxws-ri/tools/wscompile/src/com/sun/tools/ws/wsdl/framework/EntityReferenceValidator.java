@@ -1,5 +1,5 @@
 /*
- * $Id: EntityReferenceValidator.java,v 1.1 2005-05-24 14:04:11 bbissett Exp $
+ * $Id: EntityReferenceValidator.java,v 1.2 2005-07-18 18:14:19 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import javax.xml.namespace.QName;
  * An interface implemented by a class that is capable of validating
  * a QName/Kind pair referring to an external entity.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface EntityReferenceValidator {
     public boolean isValid(Kind kind, QName name);

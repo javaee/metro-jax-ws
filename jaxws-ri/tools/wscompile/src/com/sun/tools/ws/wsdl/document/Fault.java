@@ -1,5 +1,5 @@
 /*
- * $Id: Fault.java,v 1.1 2005-05-24 14:00:45 bbissett Exp $
+ * $Id: Fault.java,v 1.2 2005-07-18 18:14:12 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.wsdl.framework.QNameAction;
 /**
  * Entity corresponding to the "fault" child element of a port type operation.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Fault extends Entity implements Extensible{
 

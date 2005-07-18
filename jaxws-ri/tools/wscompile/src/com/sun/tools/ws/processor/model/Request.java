@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.1 2005-05-23 23:18:57 bbissett Exp $
+ * $Id: Request.java,v 1.2 2005-07-18 18:14:00 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.tools.ws.processor.model;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Request extends Message {
 

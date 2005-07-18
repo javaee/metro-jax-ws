@@ -1,5 +1,5 @@
 /*
- * $Id: ValidationException.java,v 1.2 2005-05-25 20:16:38 kohlert Exp $
+ * $Id: ValidationException.java,v 1.3 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.xml.ws.util.localization.Localizable;
 /**
  * An exception signalling that validation of an entity failed.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ValidationException extends JAXWSExceptionBase {
 

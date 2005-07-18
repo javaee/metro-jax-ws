@@ -1,5 +1,5 @@
 /*
- * $Id: NoSuchEntityException.java,v 1.1 2005-05-24 14:04:14 bbissett Exp $
+ * $Id: NoSuchEntityException.java,v 1.2 2005-07-18 18:14:21 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ import javax.xml.namespace.QName;
 /**
  * An exception signalling that an entity with the given name/id does not exist.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class NoSuchEntityException extends ValidationException {
 

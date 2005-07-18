@@ -1,5 +1,5 @@
 /*
- * $Id: Util.java,v 1.1 2005-05-24 14:07:31 bbissett Exp $
+ * $Id: Util.java,v 1.2 2005-07-18 18:14:23 kohlert Exp $
  */
 
 /*
@@ -27,7 +27,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 /**2
  * Defines various utility methods.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Util {
 
