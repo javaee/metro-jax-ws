@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.2 2005-07-13 21:21:16 jitu Exp $
+ * $Id: Tie.java,v 1.3 2005-07-18 18:21:50 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -13,7 +13,7 @@ import com.sun.xml.ws.spi.runtime.*;
 public interface Tie {
     
     /* 
-     * Reads a Web Service request for JaxrpcEndpoint from JaxrpcConnection
+     * Reads a Web Service request for RuntimeEndpointInfo from WSConnection
      * and sends a response.
      */
     public void handle(WSConnection con, RuntimeEndpointInfo endpoint)

@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.6 2005-06-24 18:04:34 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.7 2005-07-18 18:21:51 kohlert Exp $
  */
 
 /*
@@ -95,7 +95,7 @@ public class HandlerAnnotationProcessor {
         return clazz;
     }
     
-    // see JAXRPCRuntimeInfoParser.setHandlersAndRoles
+    // see RuntimeInfoParser.setHandlersAndRoles
     static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
         Class clazz) {
         

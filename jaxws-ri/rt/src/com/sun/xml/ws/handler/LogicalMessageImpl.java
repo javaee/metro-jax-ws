@@ -1,5 +1,5 @@
 /*
- * $Id: LogicalMessageImpl.java,v 1.1 2005-05-23 22:37:25 bbissett Exp $
+ * $Id: LogicalMessageImpl.java,v 1.2 2005-07-18 18:21:49 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -140,7 +140,7 @@ public class LogicalMessageImpl implements LogicalMessage {
     /*
      * The object is marshalled into DOMSource and stored in BodyBlock. If an
      * error occurs when using the supplied JAXBContext to marshall the
-     * payload, it throws a JAXRPCException.
+     * payload, it throws a JAXWSException.
      */
     public void setPayload(Object bean, JAXBContext jaxbContext) {
         Source source = null;
