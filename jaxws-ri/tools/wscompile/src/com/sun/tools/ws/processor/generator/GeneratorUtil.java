@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorUtil.java,v 1.3 2005-07-18 18:13:57 kohlert Exp $
+ * $Id: GeneratorUtil.java,v 1.4 2005-07-18 18:18:20 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,6 @@ import com.sun.tools.ws.processor.model.java.JavaStructureType;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
-import com.sun.xml.ws.encoding.soap.InternalEncodingConstants;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;

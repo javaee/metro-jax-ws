@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerConstants.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
+ * $Id: ModelerConstants.java,v 1.3 2005-07-18 18:18:21 kohlert Exp $
  */
 
 /*
@@ -9,13 +9,12 @@
 
 package com.sun.tools.ws.processor.modeler;
 
-import com.sun.xml.ws.encoding.soap.InternalEncodingConstants;
 
 /**
  *
  * @author WS Development Team
  */
-public interface ModelerConstants extends InternalEncodingConstants {
+public interface ModelerConstants {
 
     public static final String BRACKETS  = "[]";
     public static final String FALSE_STR = "false";
