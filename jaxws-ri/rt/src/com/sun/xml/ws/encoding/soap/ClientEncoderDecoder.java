@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.8 2005-07-13 19:44:25 bbissett Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.9 2005-07-18 16:13:46 bbissett Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -96,8 +96,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 if(frt != null && frt.length > 0)
                     reason = frt[0].getValue();
 
-                SOAP12FaultException sfe = new SOAP12FaultException(sfi.getCode(),
-                        sfi.getReasons(), sfi.getNode(), sfi.getRole(), sfi.getDetail());
+                SOAP12FaultException sfe = new SOAP12FaultException(reason,
+                    sfi.getCode(), sfi.getReasons(), sfi.getNode(),
+                    sfi.getRole(), sfi.getDetail());
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
                 mi.setResponse(sfe);
                 return;

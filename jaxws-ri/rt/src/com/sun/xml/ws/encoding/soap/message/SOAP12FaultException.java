@@ -4,7 +4,7 @@ import javax.xml.ws.ProtocolException;
 import java.util.List;
 
 /**
- * $Id: SOAP12FaultException.java,v 1.1 2005-06-04 01:48:14 vivekp Exp $
+ * $Id: SOAP12FaultException.java,v 1.2 2005-07-18 16:13:46 bbissett Exp $
  */
 
 /**
@@ -18,12 +18,22 @@ public class SOAP12FaultException extends ProtocolException{
     private String role;
     private List detail;
 
-    public SOAP12FaultException(FaultCode code, FaultReason reason, String node, String role, List detail) {
+    // constructor that also takes a string for getMessage
+    public SOAP12FaultException(String message, FaultCode code,
+        FaultReason reason, String node, String role, List detail) {
+        
+        super(message);
         this.code = code;
         this.reason = reason;
         this.node = node;
         this.role = role;
         this.detail = detail;
+    }
+    
+    // sets exception message to null, which was the original behavior
+    public SOAP12FaultException(FaultCode code, FaultReason reason, String node,
+        String role, List detail) {
+        this(null, code,  reason, node, role, detail);
     }
 
     public FaultCode getCode() {
