@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterFactory.java,v 1.5 2005-05-28 01:10:13 spericas Exp $
+ * $Id: XMLStreamWriterFactory.java,v 1.6 2005-07-18 19:06:11 spericas Exp $
  */
 
 /*
@@ -48,7 +48,7 @@ public class XMLStreamWriterFactory {
     /**
      * FI stream writer for each thread.
      */
-    static ThreadLocal fiStreamWriter = null;
+    static ThreadLocal fiStreamWriter = new ThreadLocal();
     
     static {
         // Use StAX pluggability layer to get factory instance
@@ -117,10 +117,6 @@ public class XMLStreamWriterFactory {
         }
         
         try {
-            if (fiStreamWriter == null) {
-                fiStreamWriter = new ThreadLocal();
-            }
-            
             Object sds = fiStreamWriter.get();
             if (sds == null) {
                 // Do not use StAX pluggable layer for FI

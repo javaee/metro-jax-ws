@@ -1,5 +1,5 @@
 /**
- * $Id: SourceReaderFactory.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
+ * $Id: SourceReaderFactory.java,v 1.4 2005-07-18 19:06:10 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -27,7 +27,8 @@ public class SourceReaderFactory {
     /**
      * Thread variable used to store DOMStreamReader for current thread.
      */
-    static ThreadLocal<DOMStreamReader> domStreamReader = null;
+    static ThreadLocal<DOMStreamReader> domStreamReader = 
+        new ThreadLocal<DOMStreamReader>();
     
     /**
      * FI FastInfosetSource class.
@@ -86,10 +87,6 @@ public class SourceReaderFactory {
         }
         else if (source instanceof DOMSource) {
             try {
-                if (domStreamReader == null) {
-                    domStreamReader = new ThreadLocal();
-                }
-                
                 DOMStreamReader dsr = domStreamReader.get();
                 if (dsr == null) {
                     domStreamReader.set(dsr = new DOMStreamReader());

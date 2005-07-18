@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.3 2005-05-28 01:10:13 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.4 2005-07-18 19:06:11 spericas Exp $
  */
 
 /*
@@ -45,7 +45,7 @@ public class XMLStreamReaderFactory {
     /**
      * FI stream reader for each thread.
      */
-    static ThreadLocal fiStreamReader = null;
+    static ThreadLocal fiStreamReader = new ThreadLocal();
     
     static {
         // Use StAX pluggability layer to get factory instance
@@ -127,10 +127,6 @@ public class XMLStreamReaderFactory {
         }
         
         try {
-            if (fiStreamReader == null) {
-                fiStreamReader = new ThreadLocal();
-            }
-            
             Object sdp = fiStreamReader.get();
             if (sdp == null) {
                 // Do not use StAX pluggable layer for FI
