@@ -1,5 +1,5 @@
 /*
- * $Id: VersionUtil.java,v 1.1 2005-05-23 23:06:27 bbissett Exp $
+ * $Id: VersionUtil.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -14,13 +14,13 @@ import java.util.StringTokenizer;
 /**
  * Provides some version utilities.
  *
- * @author JAX-RPC Development Team
+ * @author JAX-WS Development Team
  */
 
 public final class VersionUtil implements Version {
 
     /**
-     * GetJAX-RPC full version, like: "JAX-RPC Reference Implementation 1.1 EA-R16"
+     * Get JAX-WS full version, like: "JAX-WS Reference Implementation 1.1 EA-R16"
      *
      * Method getJAXRPCCompleteVersion.
      * @return String

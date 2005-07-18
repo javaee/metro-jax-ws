@@ -1,5 +1,5 @@
 /*
- * $Id: SerializerConstants.java,v 1.1 2005-05-23 22:30:15 bbissett Exp $
+ * $Id: SerializerConstants.java,v 1.2 2005-07-18 16:52:14 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.xml.ws.encoding.soap;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface SerializerConstants {
     public static final boolean ENCODE_TYPE             = true;

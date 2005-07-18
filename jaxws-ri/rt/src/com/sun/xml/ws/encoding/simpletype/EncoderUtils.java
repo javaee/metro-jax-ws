@@ -1,5 +1,5 @@
 /*
- * $Id: EncoderUtils.java,v 1.1 2005-05-23 22:28:40 bbissett Exp $
+ * $Id: EncoderUtils.java,v 1.2 2005-07-18 16:52:11 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.encoding.simpletype;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class EncoderUtils {
     public static boolean needsCollapsing(String str) {

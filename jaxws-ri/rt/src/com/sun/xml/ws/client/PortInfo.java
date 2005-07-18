@@ -1,5 +1,5 @@
 /*
- * $Id: PortInfo.java,v 1.1 2005-05-23 22:26:36 bbissett Exp $
+ * $Id: PortInfo.java,v 1.2 2005-07-18 16:52:05 kohlert Exp $
  */
 
 /*
@@ -8,7 +8,7 @@
  */
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 package com.sun.xml.ws.client;
 

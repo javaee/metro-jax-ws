@@ -1,5 +1,5 @@
 /*
- * $Id: RecordedXMLReader.java,v 1.1 2005-05-23 22:59:35 bbissett Exp $
+ * $Id: RecordedXMLReader.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -9,7 +9,7 @@
 
 /**
 *
-* @author JAX-RPC Development Team
+* @author WS Development Team
 */
 package com.sun.xml.ws.streaming;
 

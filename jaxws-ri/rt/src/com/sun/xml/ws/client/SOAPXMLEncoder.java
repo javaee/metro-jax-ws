@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.14 2005-07-12 19:56:43 arungupta Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.15 2005-07-18 16:52:06 kohlert Exp $
  */
 
 /*
@@ -57,7 +57,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class SOAPXMLEncoder extends SOAPEncoder {
 

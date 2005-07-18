@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoBase.java,v 1.2 2005-06-02 17:53:09 vivekp Exp $
+ * $Id: ContactInfoBase.java,v 1.3 2005-07-18 16:52:05 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -26,7 +26,7 @@ import com.sun.xml.ws.server.LogicalEncoderImpl;
 import javax.xml.ws.soap.SOAPBinding;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
 

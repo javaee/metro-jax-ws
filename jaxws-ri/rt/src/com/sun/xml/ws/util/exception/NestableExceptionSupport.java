@@ -1,5 +1,5 @@
 /*
- * $Id: NestableExceptionSupport.java,v 1.1 2005-05-23 23:05:06 bbissett Exp $
+ * $Id: NestableExceptionSupport.java,v 1.2 2005-07-18 16:52:33 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 /**
  * NestableExceptionSupport
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class NestableExceptionSupport {

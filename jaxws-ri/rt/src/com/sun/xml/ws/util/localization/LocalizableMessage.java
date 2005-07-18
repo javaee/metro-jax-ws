@@ -1,5 +1,5 @@
 /*
- * $Id: LocalizableMessage.java,v 1.1 2005-05-23 23:05:06 bbissett Exp $
+ * $Id: LocalizableMessage.java,v 1.2 2005-07-18 16:52:34 kohlert Exp $
  */
 
 /*
@@ -10,7 +10,7 @@
 package com.sun.xml.ws.util.localization;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class LocalizableMessage implements Localizable {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: NullIterator.java,v 1.1 2005-05-23 23:06:26 bbissett Exp $
+ * $Id: NullIterator.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 /**
  * An Iterator on an empty collection.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public final class NullIterator implements Iterator {
 

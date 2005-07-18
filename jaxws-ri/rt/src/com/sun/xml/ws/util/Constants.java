@@ -1,5 +1,5 @@
 /*
- * $Id: Constants.java,v 1.1 2005-05-23 23:06:25 bbissett Exp $
+ * $Id: Constants.java,v 1.2 2005-07-18 16:52:30 kohlert Exp $
  */
 
 /*
@@ -10,14 +10,14 @@
 package com.sun.xml.ws.util;
 
 /**
- * This holds generic constants information for the whole JAX-RPC SI.
+ * This holds generic constants information for the whole JAX-WS SI.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class Constants {
     /**
-     * JAX-RPC SI Logging Domain
+     * WS SI Logging Domain
      */
     public static final String LoggingDomain =
         "javax.enterprise.resource.webservices.rpc";

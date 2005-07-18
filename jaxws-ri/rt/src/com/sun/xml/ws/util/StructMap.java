@@ -1,5 +1,5 @@
 /*
- * $Id: StructMap.java,v 1.1 2005-05-23 23:06:26 bbissett Exp $
+ * $Id: StructMap.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import java.util.Set;
  * <code>keys()</code> has been added. It returns an unmodifiable List of the
  * keys in the order in which they were added. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class StructMap implements Map {
     protected HashMap map = new HashMap();

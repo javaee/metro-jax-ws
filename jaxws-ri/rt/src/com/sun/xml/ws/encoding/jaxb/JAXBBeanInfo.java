@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.1 2005-05-23 22:28:40 bbissett Exp $
+ * $Id: JAXBBeanInfo.java,v 1.2 2005-07-18 16:52:10 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import javax.xml.bind.JAXBContext;
  * a bean object and a JAXBContext. Runtime invokes JAXB API with the given
  * JAXBContext to marshall this bean.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JAXBBeanInfo {
     private Object jaxbBean;

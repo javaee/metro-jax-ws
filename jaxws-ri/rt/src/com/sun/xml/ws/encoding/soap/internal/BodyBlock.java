@@ -1,5 +1,5 @@
 /*
- * $Id: BodyBlock.java,v 1.3 2005-06-04 01:48:11 vivekp Exp $
+ * $Id: BodyBlock.java,v 1.4 2005-07-18 16:52:15 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class BodyBlock {
      

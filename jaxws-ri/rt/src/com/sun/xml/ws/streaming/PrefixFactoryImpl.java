@@ -1,5 +1,5 @@
 /*
- * $Id: PrefixFactoryImpl.java,v 1.1 2005-05-23 22:59:35 bbissett Exp $
+ * $Id: PrefixFactoryImpl.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * <p> A prefix factory that caches the prefixes it creates. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class PrefixFactoryImpl implements PrefixFactory {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.3 2005-07-13 21:21:18 jitu Exp $
+ * $Id: LocalConnectionImpl.java,v 1.4 2005-07-18 16:52:29 kohlert Exp $
  */
 
 /*
@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class LocalConnectionImpl implements WSConnection, SOAPConnection
 {

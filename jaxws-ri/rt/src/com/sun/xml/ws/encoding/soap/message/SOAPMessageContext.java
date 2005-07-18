@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.4 2005-07-13 00:45:31 jitu Exp $
+ * $Id: SOAPMessageContext.java,v 1.5 2005-07-18 16:52:17 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
  * A MessageContext holds a SOAP message as well as a set
  * (possibly transport-specific) properties.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPMessageContext extends MessageContextImpl
     implements com.sun.xml.ws.spi.runtime.SOAPMessageContext {

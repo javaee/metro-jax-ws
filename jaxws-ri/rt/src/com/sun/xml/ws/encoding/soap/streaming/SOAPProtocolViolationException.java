@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPProtocolViolationException.java,v 1.2 2005-05-25 20:16:27 kohlert Exp $
+ * $Id: SOAPProtocolViolationException.java,v 1.3 2005-07-18 16:52:18 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPProtocolViolationException extends JAXWSExceptionBase {
     public SOAPProtocolViolationException(String key) {

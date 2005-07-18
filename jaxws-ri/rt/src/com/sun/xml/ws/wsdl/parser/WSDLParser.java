@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.5 2005-06-30 15:10:41 kwalsh Exp $
+ * $Id: WSDLParser.java,v 1.6 2005-07-18 16:52:36 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -32,7 +32,7 @@ import static com.sun.xml.ws.streaming.XMLReader.EOF;
 
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLParser {
     //private String serviceName;

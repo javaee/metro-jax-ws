@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.4 2005-07-13 20:49:47 bbissett Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-18 16:52:20 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -29,7 +29,7 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class SOAPXMLDecoder extends SOAPDecoder {
     

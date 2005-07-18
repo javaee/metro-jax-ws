@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterException.java,v 1.1 2005-05-28 01:03:09 spericas Exp $
+ * $Id: XMLStreamWriterException.java,v 1.2 2005-07-18 16:52:24 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @see XMLWriter
  * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class XMLStreamWriterException extends JAXWSExceptionBase {
 

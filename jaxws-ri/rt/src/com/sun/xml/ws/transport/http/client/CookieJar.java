@@ -1,5 +1,5 @@
 /*
- * $Id: CookieJar.java,v 1.1 2005-05-23 23:01:37 bbissett Exp $
+ * $Id: CookieJar.java,v 1.2 2005-07-18 16:52:24 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import java.util.Vector;
  * Generic class to hold onto HTTP cookies.  Can record, retrieve, and
  * persistently store cookies associated with particular URLs.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class CookieJar {
 

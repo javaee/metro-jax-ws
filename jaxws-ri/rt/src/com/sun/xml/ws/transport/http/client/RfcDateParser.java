@@ -1,5 +1,5 @@
 /*
- * $Id: RfcDateParser.java,v 1.1 2005-05-23 23:01:38 bbissett Exp $
+ * $Id: RfcDateParser.java,v 1.2 2005-07-18 16:52:25 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import java.util.TimeZone;
  * attempt to parse it by trying matches with a set of patterns, returning
  * null on failure, a Date object on success.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class RfcDateParser {
 

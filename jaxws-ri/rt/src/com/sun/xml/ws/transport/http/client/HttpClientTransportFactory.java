@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransportFactory.java,v 1.2 2005-06-06 22:01:13 vivekp Exp $
+ * $Id: HttpClientTransportFactory.java,v 1.3 2005-07-18 16:52:25 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.client.ClientTransportFactory;
 import javax.xml.ws.soap.SOAPBinding;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class HttpClientTransportFactory implements ClientTransportFactory {
 

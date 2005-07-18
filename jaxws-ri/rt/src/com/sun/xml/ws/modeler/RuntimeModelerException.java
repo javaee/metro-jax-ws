@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModelerException.java,v 1.1 2005-05-26 17:12:38 kohlert Exp $
+ * $Id: RuntimeModelerException.java,v 1.2 2005-07-18 16:52:18 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * 
  * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class RuntimeModelerException extends JAXWSExceptionBase {
 

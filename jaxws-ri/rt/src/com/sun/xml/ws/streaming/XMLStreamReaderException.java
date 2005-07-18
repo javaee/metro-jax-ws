@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderException.java,v 1.2 2005-05-25 20:16:32 kohlert Exp $
+ * $Id: XMLStreamReaderException.java,v 1.3 2005-07-18 16:52:24 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * 
  * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class XMLStreamReaderException extends JAXWSExceptionBase {
 

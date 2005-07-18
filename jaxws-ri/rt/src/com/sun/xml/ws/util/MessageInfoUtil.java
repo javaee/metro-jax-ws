@@ -1,5 +1,5 @@
 /**
- * $Id: MessageInfoUtil.java,v 1.2 2005-05-25 18:22:13 kohlert Exp $
+ * $Id: MessageInfoUtil.java,v 1.3 2005-07-18 16:52:30 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS RI Development Team
  */
 public class MessageInfoUtil {
 

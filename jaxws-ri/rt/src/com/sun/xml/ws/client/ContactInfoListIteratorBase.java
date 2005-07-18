@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoListIteratorBase.java,v 1.1 2005-05-23 22:26:35 bbissett Exp $
+ * $Id: ContactInfoListIteratorBase.java,v 1.2 2005-07-18 16:52:05 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class ContactInfoListIteratorBase implements ContactInfoListIterator {
     private Iterator iterator;

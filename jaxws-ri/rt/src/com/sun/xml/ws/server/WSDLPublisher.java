@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.6 2005-06-06 21:11:30 jitu Exp $
+ * $Id: WSDLPublisher.java,v 1.7 2005-07-18 16:52:21 kohlert Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class WSDLPublisher {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.2 2005-06-30 15:10:40 kwalsh Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.3 2005-07-18 16:52:06 kohlert Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import java.net.URL;
 /**
  * <p> A concrete factory for Service objects. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ServiceFactoryImpl extends ServiceFactory {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.13 2005-07-17 19:54:20 kwalsh Exp $
+ * $Id: SOAPDecoder.java,v 1.14 2005-07-18 16:52:13 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public abstract class SOAPDecoder implements Decoder {
 

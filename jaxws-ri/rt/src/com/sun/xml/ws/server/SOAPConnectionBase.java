@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionBase.java,v 1.1 2005-05-23 22:50:25 bbissett Exp $
+ * $Id: SOAPConnectionBase.java,v 1.2 2005-07-18 16:52:20 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,7 +11,7 @@ import javax.xml.soap.SOAPMessage;
 import com.sun.pept.ept.MessageInfo;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public abstract class SOAPConnectionBase implements SOAPConnection {
     public void sendResponse(SOAPMessage soapMessage) {

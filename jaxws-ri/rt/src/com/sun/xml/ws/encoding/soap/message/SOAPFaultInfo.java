@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPFaultInfo.java,v 1.1 2005-05-23 22:30:17 bbissett Exp $
+ * $Id: SOAPFaultInfo.java,v 1.2 2005-07-18 16:52:16 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.xml.ws.encoding.soap.message;
 import javax.xml.namespace.QName;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPFaultInfo {
 

@@ -1,5 +1,5 @@
 /*
- *$Id: SOAPVersion.java,v 1.3 2005-06-01 00:15:32 vivekp Exp $
+ *$Id: SOAPVersion.java,v 1.4 2005-07-18 16:52:14 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import javax.xml.ws.soap.SOAPBinding;
 
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class SOAPVersion {

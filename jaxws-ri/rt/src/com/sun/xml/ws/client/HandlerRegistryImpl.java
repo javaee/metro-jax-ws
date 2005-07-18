@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.3 2005-07-14 02:01:20 arungupta Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.4 2005-07-18 16:52:05 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,7 @@ import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
  * simple lists to store handlers and not a more specific class
  * that extends List.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class HandlerRegistryImpl implements HandlerRegistry {
 

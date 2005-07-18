@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransportFactory20.java,v 1.1 2005-05-23 23:02:26 bbissett Exp $
+ * $Id: LocalClientTransportFactory20.java,v 1.2 2005-07-18 16:52:29 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.spi.runtime.Tie;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class LocalClientTransportFactory20 implements ClientTransportFactory {
     private RuntimeEndpointInfo endpointInfo;

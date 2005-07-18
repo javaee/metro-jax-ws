@@ -1,5 +1,5 @@
 /*
- * $Id: MessageDispatcherHelper.java,v 1.3 2005-07-14 02:01:22 arungupta Exp $
+ * $Id: MessageDispatcherHelper.java,v 1.4 2005-07-18 16:52:09 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import javax.xml.ws.WebServiceException;
 import java.util.logging.Logger;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class MessageDispatcherHelper extends com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher
     implements MessageDispatcher, BindingProviderProperties {

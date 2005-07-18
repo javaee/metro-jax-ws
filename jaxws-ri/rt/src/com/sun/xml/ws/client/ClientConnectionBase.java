@@ -1,5 +1,5 @@
 /*
- * $Id: ClientConnectionBase.java,v 1.2 2005-05-24 17:48:11 vivekp Exp $
+ * $Id: ClientConnectionBase.java,v 1.3 2005-07-18 16:52:04 kohlert Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,7 +31,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_V
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class ClientConnectionBase extends SOAPConnectionBase implements Connection {
     ClientTransport transport;

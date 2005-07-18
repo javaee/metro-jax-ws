@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReaderBase.java,v 1.1 2005-05-23 22:59:36 bbissett Exp $
+ * $Id: XMLReaderBase.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ package com.sun.xml.ws.streaming;
  *
  * <p> It provides the implementation of some derived XMLReader methods. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class XMLReaderBase implements XMLReader {
 

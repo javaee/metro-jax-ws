@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletException.java,v 1.2 2005-05-25 20:16:34 kohlert Exp $
+ * $Id: JAXRPCServletException.java,v 1.3 2005-07-18 16:52:27 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.xml.ws.server.*;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JAXRPCServletException extends JAXWSExceptionBase {
 

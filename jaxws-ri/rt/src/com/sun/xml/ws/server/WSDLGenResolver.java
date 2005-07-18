@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.2 2005-06-03 20:48:35 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.3 2005-07-18 16:52:21 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class WSDLGenResolver implements WSDLOutputResolver {

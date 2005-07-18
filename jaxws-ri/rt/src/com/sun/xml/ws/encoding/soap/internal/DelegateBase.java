@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.4 2005-07-14 02:01:23 arungupta Exp $
+ * $Id: DelegateBase.java,v 1.5 2005-07-18 16:52:15 kohlert Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import javax.xml.ws.WebServiceException;
 import java.util.Iterator;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class DelegateBase implements Delegate {
     protected ContactInfoList contactInfoList;

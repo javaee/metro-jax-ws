@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContextProperties.java,v 1.1 2005-05-23 23:01:38 bbissett Exp $
+ * $Id: MessageContextProperties.java,v 1.2 2005-07-18 16:52:26 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.transport.http.server;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface MessageContextProperties {
 

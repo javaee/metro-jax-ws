@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.4 2005-07-12 15:54:09 vivekp Exp $
+ * $Id: AttachmentBlock.java,v 1.5 2005-07-18 16:52:14 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.encoding.soap.internal;
 import javax.xml.soap.AttachmentPart;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class AttachmentBlock {
     private String id;

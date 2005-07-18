@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtils.java,v 1.1 2005-05-23 23:06:26 bbissett Exp $
+ * $Id: StringUtils.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.util;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class StringUtils {
 

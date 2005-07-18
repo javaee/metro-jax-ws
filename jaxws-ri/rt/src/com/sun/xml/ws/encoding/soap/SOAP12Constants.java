@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12Constants.java,v 1.2 2005-06-23 02:09:56 jitu Exp $
+ * $Id: SOAP12Constants.java,v 1.3 2005-07-18 16:52:13 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -12,7 +12,7 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAP12Constants {
 

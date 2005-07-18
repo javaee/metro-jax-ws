@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.13 2005-07-12 15:54:10 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.14 2005-07-18 16:52:13 kohlert Exp $
  */
 
 /*
@@ -61,7 +61,7 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.util.DOMUtil;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public abstract class SOAPEncoder implements Encoder {
 

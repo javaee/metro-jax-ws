@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.11 2005-07-14 02:01:28 arungupta Exp $
+ * $Id: JAXRPCRuntimeInfoParser.java,v 1.12 2005-07-18 16:52:26 kohlert Exp $
  */
 
 /*
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JAXRPCRuntimeInfoParser {
 

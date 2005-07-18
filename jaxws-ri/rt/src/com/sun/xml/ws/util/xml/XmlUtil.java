@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.1 2005-05-23 23:05:08 bbissett Exp $
+ * $Id: XmlUtil.java,v 1.2 2005-07-18 16:52:35 kohlert Exp $
  */
 
 /*
@@ -32,12 +32,11 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-//import com.sun.tools.ws.util.WSDLParseException;
 import com.sun.xml.ws.util.xml.NamedNodeMapIterator;
 import com.sun.xml.ws.util.xml.NodeListIterator;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class XmlUtil {
 

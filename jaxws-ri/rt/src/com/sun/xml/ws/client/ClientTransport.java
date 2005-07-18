@@ -1,5 +1,5 @@
 /*
- * $Id: ClientTransport.java,v 1.1 2005-05-23 22:26:34 bbissett Exp $
+ * $Id: ClientTransport.java,v 1.2 2005-07-18 16:52:04 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.xml.ws.client;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface ClientTransport {
     //todo add invoke async methods

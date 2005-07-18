@@ -1,5 +1,5 @@
 /**
- * $Id: ServletDelegate.java,v 1.1 2005-05-23 22:54:49 bbissett Exp $
+ * $Id: ServletDelegate.java,v 1.2 2005-07-18 16:52:22 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * A delegate for the JAX-RPC dispatcher servlet.
+ * A delegate for the WS dispatcher servlet.
  * <p>
  * This interface is implemented by
  * com.sun.xml.rpc.server.http.ServletDelegate
  *
+ * @author WS Development Team
  */
 public interface ServletDelegate {
     public void init(ServletConfig servletConfig) throws ServletException;

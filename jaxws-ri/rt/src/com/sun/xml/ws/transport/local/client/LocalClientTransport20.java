@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport20.java,v 1.6 2005-07-14 02:01:28 arungupta Exp $
+ * $Id: LocalClientTransport20.java,v 1.7 2005-07-18 16:52:28 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class LocalClientTransport20 implements ClientTransport {
 

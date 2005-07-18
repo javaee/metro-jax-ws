@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.1 2005-07-14 02:01:29 arungupta Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -33,7 +33,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.*;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class SOAPConnectionUtil {
     

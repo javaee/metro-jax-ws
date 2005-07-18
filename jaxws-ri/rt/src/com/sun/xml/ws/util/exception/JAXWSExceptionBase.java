@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSExceptionBase.java,v 1.1 2005-05-25 20:16:35 kohlert Exp $
+ * $Id: JAXWSExceptionBase.java,v 1.2 2005-07-18 16:52:32 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import com.sun.xml.ws.util.localization.Localizer;
 /**
  * JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public abstract class JAXWSExceptionBase
     extends WebServiceException

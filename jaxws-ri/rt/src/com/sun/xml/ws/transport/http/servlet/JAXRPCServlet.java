@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServlet.java,v 1.1 2005-05-23 23:01:39 bbissett Exp $
+ * $Id: JAXRPCServlet.java,v 1.2 2005-07-18 16:52:27 kohlert Exp $
  */
 
 /*
@@ -25,7 +25,7 @@ import com.sun.xml.ws.util.localization.Localizer;
 /**
  * The JAX-RPC dispatcher servlet.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class JAXRPCServlet extends HttpServlet {
 

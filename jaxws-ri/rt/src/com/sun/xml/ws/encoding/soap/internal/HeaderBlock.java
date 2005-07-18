@@ -1,5 +1,5 @@
 /*
- * $Id: HeaderBlock.java,v 1.2 2005-06-01 00:51:34 jitu Exp $
+ * $Id: HeaderBlock.java,v 1.3 2005-07-18 16:52:16 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import javax.xml.namespace.QName;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class HeaderBlock {
     

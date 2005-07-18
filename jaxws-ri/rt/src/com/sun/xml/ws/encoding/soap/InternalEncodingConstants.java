@@ -1,5 +1,5 @@
 /*
- * $Id: InternalEncodingConstants.java,v 1.1 2005-05-23 22:30:14 bbissett Exp $
+ * $Id: InternalEncodingConstants.java,v 1.2 2005-07-18 16:52:13 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface InternalEncodingConstants {
     // internal URI

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageInfoBase.java,v 1.2 2005-06-16 13:43:53 vivekp Exp $
+ * $Id: MessageInfoBase.java,v 1.3 2005-07-18 16:52:16 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.transport.Connection;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class MessageInfoBase implements MessageInfo {
 

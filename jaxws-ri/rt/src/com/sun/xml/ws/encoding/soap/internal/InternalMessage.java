@@ -1,5 +1,5 @@
 /*
- * $Id: InternalMessage.java,v 1.2 2005-05-24 17:48:12 vivekp Exp $
+ * $Id: InternalMessage.java,v 1.3 2005-07-18 16:52:16 kohlert Exp $
  */
 
 
@@ -16,7 +16,7 @@ import javax.activation.DataHandler;
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class InternalMessage {
     private List<HeaderBlock> headers;

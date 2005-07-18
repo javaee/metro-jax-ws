@@ -1,5 +1,5 @@
 /*
- * $Id: SerializationException.java,v 1.2 2005-05-25 20:16:26 kohlert Exp $
+ * $Id: SerializationException.java,v 1.3 2005-07-18 16:52:14 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * 
  * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
  * 
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SerializationException extends JAXWSExceptionBase {
 

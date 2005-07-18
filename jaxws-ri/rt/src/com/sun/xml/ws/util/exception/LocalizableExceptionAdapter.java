@@ -1,5 +1,5 @@
 /*
- * $Id: LocalizableExceptionAdapter.java,v 1.1 2005-05-23 23:05:06 bbissett Exp $
+ * $Id: LocalizableExceptionAdapter.java,v 1.2 2005-07-18 16:52:32 kohlert Exp $
  */
 
 /*
@@ -19,7 +19,7 @@ import com.sun.xml.ws.util.localization.NullLocalizable;
 /**
  * LocalizableExceptionAdapter
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class LocalizableExceptionAdapter
     extends Exception

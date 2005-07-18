@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFProxyBuilder.java,v 1.2 2005-06-30 15:10:39 kwalsh Exp $
+ * $Id: EndpointIFProxyBuilder.java,v 1.3 2005-07-18 16:52:05 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -19,7 +19,7 @@ import java.rmi.Remote;
 
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class EndpointIFProxyBuilder {
 

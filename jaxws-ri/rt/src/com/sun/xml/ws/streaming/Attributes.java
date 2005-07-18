@@ -1,5 +1,5 @@
 /*
- * $Id: Attributes.java,v 1.1 2005-05-23 22:59:34 bbissett Exp $
+ * $Id: Attributes.java,v 1.2 2005-07-18 16:52:22 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 
 /**
  * <p> The Attributes interface is essentially a version of the
- * org.xml.sax.Attributes interface modified to use the JAX-RPC QName class.</p>
+ * org.xml.sax.Attributes interface modified to use the JAX-WS QName class.</p>
  *
  * <p> Although namespace declarations can appear in the attribute list, the
  * actual values of the local name and URI properties are
@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
  * <p> Also, the URI property of an attribute will never be null. The value
  * "" (empty string) is used for the URI of non-qualified attributes. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface Attributes {
 

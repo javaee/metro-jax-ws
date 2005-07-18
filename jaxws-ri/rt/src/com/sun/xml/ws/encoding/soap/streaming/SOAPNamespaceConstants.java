@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPNamespaceConstants.java,v 1.1 2005-05-23 22:30:18 bbissett Exp $
+ * $Id: SOAPNamespaceConstants.java,v 1.2 2005-07-18 16:52:18 kohlert Exp $
  */
 
 /*
@@ -10,7 +10,7 @@
 package com.sun.xml.ws.encoding.soap.streaming;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPNamespaceConstants {
     public static final String NSPREFIX_SOAP_ENVELOPE = "soapenv";

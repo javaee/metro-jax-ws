@@ -1,5 +1,5 @@
 /*
- * $Id: SenderException.java,v 1.2 2005-05-25 20:16:24 kohlert Exp $
+ * $Id: SenderException.java,v 1.3 2005-07-18 16:52:06 kohlert Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SenderException extends JAXWSExceptionBase {
 

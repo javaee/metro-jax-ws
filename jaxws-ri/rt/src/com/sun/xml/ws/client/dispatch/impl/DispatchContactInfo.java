@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfo.java,v 1.3 2005-06-09 15:51:31 kwalsh Exp $
+ * $Id: DispatchContactInfo.java,v 1.4 2005-07-18 16:52:07 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.pept.transport.Connection;
 import com.sun.xml.ws.client.ContactInfoBase;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class DispatchContactInfo extends ContactInfoBase {
 

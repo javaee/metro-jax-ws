@@ -1,5 +1,5 @@
 /*
- * $Id: Localizer.java,v 1.1 2005-05-23 23:05:07 bbissett Exp $
+ * $Id: Localizer.java,v 1.2 2005-07-18 16:52:34 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class Localizer {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.11 2005-06-30 15:10:40 kwalsh Exp $
+ * $Id: WebService.java,v 1.12 2005-07-18 16:52:07 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public class WebService

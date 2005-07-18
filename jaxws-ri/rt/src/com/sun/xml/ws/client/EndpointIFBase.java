@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.4 2005-07-14 02:01:19 arungupta Exp $
+ * $Id: EndpointIFBase.java,v 1.5 2005-07-18 16:52:05 kohlert Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import com.sun.xml.ws.binding.soap.BindingImpl;
 
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     BindingProvider, InternalBindingProvider {

@@ -1,5 +1,5 @@
 /**
- * $Id: ParserUtil.java,v 1.2 2005-05-25 18:22:14 kohlert Exp $
+ * $Id: ParserUtil.java,v 1.3 2005-07-18 16:52:35 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,19 +8,17 @@ package com.sun.xml.ws.wsdl.parser;
 
 import javax.xml.namespace.QName;
 
-//import com.sun.xml.rpc.client.dii.webservice.WebServicesClientException;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.util.xml.XmlUtil;
-//import com.sun.tools.ws.wsdl.framework.ParseException;
 
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.File;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class ParserUtil {
 
@@ -28,15 +26,7 @@ public class ParserUtil {
         Attributes attributes = reader.getAttributes();
         return attributes.getValue(name);
     }
-/*
-    public static String getNonEmptyAttribute(XMLReader reader, String name) {
-        String value = getAttribute(reader, name);
-        if (value != null && value.equals("")) {
-            failWithLocalName("client.invalidAttributeValue", reader, name);
-        }
-        return value;
-    }
-*/
+
     public static String getMandatoryAttribute(XMLReader reader, String name) {
         String value = getAttribute(reader, name);
         if (value == null) {

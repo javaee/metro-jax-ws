@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.4 2005-06-13 21:01:27 spericas Exp $
+ * $Id: XMLStreamReaderUtil.java,v 1.5 2005-07-18 16:52:24 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -24,7 +24,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * <p> XMLStreamReaderUtil provides some utility methods intended to be used
  * in conjunction with a StAX XMLStreamReader. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class XMLStreamReaderUtil {
 

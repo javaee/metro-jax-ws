@@ -1,5 +1,5 @@
 /*
- * $Id: HttpCookie.java,v 1.1 2005-05-23 23:01:38 bbissett Exp $
+ * $Id: HttpCookie.java,v 1.2 2005-07-18 16:52:25 kohlert Exp $
  */
 
 /*
@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
  *
  * All but the first field are optional.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class HttpCookie {
 

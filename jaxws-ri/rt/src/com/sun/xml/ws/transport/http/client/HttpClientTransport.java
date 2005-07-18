@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.6 2005-06-30 15:27:43 kwalsh Exp $
+ * $Id: HttpClientTransport.java,v 1.7 2005-07-18 16:52:25 kohlert Exp $
  */
 
 /*
@@ -8,7 +8,7 @@
  */
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 package com.sun.xml.ws.transport.http.client;
 

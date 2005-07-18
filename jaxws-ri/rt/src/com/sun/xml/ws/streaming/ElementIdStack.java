@@ -1,5 +1,5 @@
 /*
- * $Id: ElementIdStack.java,v 1.1 2005-05-23 22:59:34 bbissett Exp $
+ * $Id: ElementIdStack.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.xml.ws.streaming;
 /**
  * <p> A stack of int-valued element IDs. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public final class ElementIdStack {
 

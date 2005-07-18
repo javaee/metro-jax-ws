@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.1 2005-05-23 22:59:35 bbissett Exp $
+ * $Id: XMLReader.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -53,7 +53,7 @@ import javax.xml.namespace.QName;
  *
  * @see XMLReaderFactory
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public interface XMLReader {
     /**

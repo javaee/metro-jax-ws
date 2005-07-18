@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMsgFactoryCreateException.java,v 1.2 2005-05-25 20:16:27 kohlert Exp $
+ * $Id: SOAPMsgFactoryCreateException.java,v 1.3 2005-07-18 16:52:17 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ package com.sun.xml.ws.encoding.soap.message;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class SOAPMsgFactoryCreateException extends JAXWSExceptionBase {
 

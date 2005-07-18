@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.8 2005-07-13 01:37:26 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.9 2005-07-18 16:52:21 kohlert Exp $
  */
 
 /*
@@ -37,7 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 public class SOAPXMLEncoder extends SOAPEncoder {
 

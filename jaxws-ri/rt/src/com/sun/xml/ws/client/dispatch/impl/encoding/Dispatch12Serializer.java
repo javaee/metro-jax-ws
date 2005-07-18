@@ -32,7 +32,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 
 public class Dispatch12Serializer implements SerializerIF{

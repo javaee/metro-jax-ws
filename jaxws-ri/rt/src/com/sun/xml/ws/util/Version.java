@@ -1,5 +1,5 @@
 /*
- * $Id: Version.java,v 1.4 2005-06-21 19:15:09 kohlert Exp $
+ * $Id: Version.java,v 1.5 2005-07-18 16:52:31 kohlert Exp $
  */
 
 /*
@@ -10,27 +10,27 @@
 package com.sun.xml.ws.util;
 
 /**
- * This interface holds version information for the whole JAX-RPC RI.
+ * This interface holds version information for the whole JAX-WS RI.
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 
 public interface Version {
 
 	/**
-	 * JAX-RPC RI product name
+	 * JAX-WS RI product name
 	 */
 	public static final String PRODUCT_NAME = "JAX-WS Standard Implementation";
 
 	/**
-	 * JAX-RPC RI version number
+	 * JAX-WS RI version number
 	 */
 	public static final String VERSION_NUMBER = "2.0";
 
 	/**
-	 * JAX-RPC RI build number
+	 * JAX-WS RI build number
 	 */
         // TODO change this back to R11 for the FCS release.
 //	public static final String BUILD_NUMBER = "R11";
-	public static final String BUILD_NUMBER = "EA2_B3";
+	public static final String BUILD_NUMBER = "EA3_B1";
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReaderFactoryImpl.java,v 1.1 2005-05-23 22:59:36 bbissett Exp $
+ * $Id: XMLReaderFactoryImpl.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 /**
  * <p> A concrete factory for XMLReader objects. </p>
  *
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
 public class XMLReaderFactoryImpl extends XMLReaderFactory {
 

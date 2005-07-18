@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.10 2005-06-23 02:17:22 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.11 2005-07-18 16:52:05 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -71,7 +71,7 @@ import java.util.Properties;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
- * @author JAX-RPC RI Development Team
+ * @author WS Development Team
  */
 
 public class SOAPXMLDecoder extends SOAPDecoder {
