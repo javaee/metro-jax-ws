@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.3 2005-07-19 18:10:03 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.4 2005-07-19 18:18:05 arungupta Exp $
  */
 
 /*
@@ -88,6 +88,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERT
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_STATUS_CODE;
 
 import com.sun.xml.ws.client.SOAP12XMLEncoder;
+import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -744,7 +745,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * @return
      */
     protected String getBindingId(MessageInfo messageInfo){
-        SOAPXMLEncoder encoder = (SOAPXMLEncoder)messageInfo.getEncoder();
+        SOAPEncoder encoder = (SOAPEncoder)messageInfo.getEncoder();
         if (encoder instanceof SOAP12XMLEncoder)
             return SOAPBinding.SOAP12HTTP_BINDING;
         else
