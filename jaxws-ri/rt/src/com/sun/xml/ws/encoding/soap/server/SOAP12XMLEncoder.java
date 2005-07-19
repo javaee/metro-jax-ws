@@ -1,12 +1,12 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.7 2005-06-04 01:48:12 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.1 2005-07-19 20:41:25 arungupta Exp $
  */
 
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.encoding.soap.server;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
@@ -27,6 +27,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.server.*;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     /*

@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.6 2005-07-15 17:53:17 kohlert Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.7 2005-07-19 20:41:26 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -24,6 +24,10 @@ import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.server.provider.ProviderSED;
 import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
+import com.sun.xml.ws.encoding.soap.server.SOAP12XMLDecoder;
+import com.sun.xml.ws.encoding.soap.server.SOAP12XMLEncoder;
+import com.sun.xml.ws.encoding.soap.server.SOAPXMLDecoder;
+import com.sun.xml.ws.encoding.soap.server.SOAPXMLEncoder;
 
 /**
  * factory for creating the appropriate EPTFactory given the BindingId from the EndpointInfo

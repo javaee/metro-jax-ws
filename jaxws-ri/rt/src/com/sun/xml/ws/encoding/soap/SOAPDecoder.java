@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.14 2005-07-18 16:52:13 kohlert Exp $
+ * $Id: SOAPDecoder.java,v 1.15 2005-07-19 20:41:22 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -63,12 +63,16 @@ public abstract class SOAPDecoder implements Decoder {
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
      */
-    public abstract void decode(MessageInfo arg0);
+    public void decode(MessageInfo arg0) {
+        throw new UnsupportedOperationException();
+    }
 
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#receieveAndDecode(com.sun.pept.ept.MessageInfo)
      */
-    public abstract void receiveAndDecode(MessageInfo arg0);
+    public void receiveAndDecode(MessageInfo arg0) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * parses and binds headers, body from SOAPMessage.

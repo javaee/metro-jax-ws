@@ -1,11 +1,11 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.4 2005-07-13 20:49:46 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.1 2005-07-19 20:41:24 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.encoding.soap.server;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,6 +17,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.streaming.XMLReader;
+import com.sun.xml.ws.server.*;
 
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 

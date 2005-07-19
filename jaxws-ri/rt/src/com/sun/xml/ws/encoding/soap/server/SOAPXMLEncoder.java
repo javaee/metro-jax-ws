@@ -1,12 +1,12 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.9 2005-07-18 16:52:21 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.1 2005-07-19 20:41:25 arungupta Exp $
  */
 
 /*
 * Copyright (c) 2004 Sun Microsystems, Inc.
 * All rights reserved.
 */
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.encoding.soap.server;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
@@ -35,6 +35,7 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import com.sun.xml.ws.server.*;
 
 /**
  * @author WS Development Team
@@ -93,17 +94,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 }
         }
         return "text/xml";
-    }
-
-    public ByteBuffer encode(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * @see com.sun.pept.encoding.Encoder#encodeAndSend(com.sun.pept.ept.MessageInfo)
-     */
-    public void encodeAndSend(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
     }
 
     /*

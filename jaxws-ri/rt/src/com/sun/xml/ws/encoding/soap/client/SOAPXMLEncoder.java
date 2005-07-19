@@ -1,12 +1,12 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.6 2005-07-19 18:10:02 arungupta Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.1 2005-07-19 20:41:24 arungupta Exp $
  */
 
 /*
 * Copyright (c) 2004 Sun Microsystems, Inc.
 * All rights reserved.
 */
-package com.sun.xml.ws.encoding.soap;
+package com.sun.xml.ws.encoding.soap.client;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -50,6 +50,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import static java.util.logging.Logger.getLogger;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
+import com.sun.xml.ws.encoding.soap.*;
 
 /**
  * @author WS RI Development Team
@@ -170,20 +171,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     public SOAPXMLEncoder() {
     }
 
-
-    /* (non-Javadoc)
-     * @see com.sun.pept.encoding.Encoder#encode(com.sun.pept.ept.MessageInfo)
-     */
-    public ByteBuffer encode(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
-    }
-
-    /* (non-Javadoc)
-     * @see com.sun.pept.encoding.Encoder#encodeAndSend(com.sun.pept.ept.MessageInfo)
-     */
-    public void encodeAndSend(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
-    }
 
 //    /**
 //     * @param messageInfo

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.4 2005-07-19 18:18:05 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.5 2005-07-19 20:41:25 arungupta Exp $
  */
 
 /*
@@ -19,8 +19,9 @@ import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
-import com.sun.xml.ws.encoding.soap.SOAPXMLDecoder;
-import com.sun.xml.ws.encoding.soap.SOAPXMLEncoder;
+import com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder;
+import com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder;
+import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -87,7 +88,6 @@ import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_F
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_STATUS_CODE;
 
-import com.sun.xml.ws.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import java.io.OutputStream;

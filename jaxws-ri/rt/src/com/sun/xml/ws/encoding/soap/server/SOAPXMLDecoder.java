@@ -1,11 +1,11 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-18 16:52:20 kohlert Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.1 2005-07-19 20:41:25 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
-package com.sun.xml.ws.server;
+package com.sun.xml.ws.encoding.soap.server;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -26,6 +26,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.server.*;
 
 
 /**
@@ -96,21 +97,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return request;
     }
 
-    /*
-     *
-     * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
-     */
-    public void decode(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     *
-     * @see com.sun.pept.encoding.Decoder#receiveAndDecode(com.sun.pept.ept.MessageInfo)
-     */
-    public void receiveAndDecode(MessageInfo messageInfo) {
-        throw new UnsupportedOperationException();
-    }
     public void decodeDispatchMethod(XMLStreamReader reader, InternalMessage request, MessageInfo messageInfo) {
         // Operation's QName. takes care of <body/>
         QName name = (reader.getEventType() == XMLStreamConstants.START_ELEMENT) ? reader.getName() : null;
