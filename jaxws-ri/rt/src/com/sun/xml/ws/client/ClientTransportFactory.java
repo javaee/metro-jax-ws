@@ -1,5 +1,5 @@
 /*
- * $Id: ClientTransportFactory.java,v 1.2 2005-07-18 16:52:04 kohlert Exp $
+ * $Id: ClientTransportFactory.java,v 1.3 2005-07-19 18:10:02 arungupta Exp $
  */
 
 /*
@@ -9,10 +9,12 @@
 
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.spi.runtime.WSConnection;
+
 /**
  * @author WS Development Team
  */
 public interface ClientTransportFactory
     extends com.sun.xml.ws.spi.runtime.ClientTransportFactory {
-    public ClientTransport create();
+    public WSConnection create();
 }

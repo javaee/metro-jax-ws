@@ -1,5 +1,5 @@
 /**
- * $Id: WSConnection.java,v 1.3 2005-07-15 22:38:27 kohlert Exp $
+ * $Id: WSConnection.java,v 1.4 2005-07-19 18:10:03 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,10 +49,15 @@ public interface WSConnection extends Connection {
      * sets response headers. can we use javax.net.http.Headers ?
      */
     public void setHeaders(Map<String,List<String>> headers);
+    public void setStatus(int status);
     public void setStatus(STATUS status);
+    public int getStatus();
     
     public InputStream getInput();
     
     public OutputStream getOutput();
+    
+    public OutputStream getDebug();
+    public void closeOutput();
 
 }

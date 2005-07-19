@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.7 2005-07-18 16:52:25 kohlert Exp $
+ * $Id: HttpClientTransport.java,v 1.8 2005-07-19 18:10:04 arungupta Exp $
  */
 
 /*
@@ -7,19 +7,14 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-/**
- * @author WS Development Team
- */
 package com.sun.xml.ws.transport.http.client;
 
+import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.client.ClientTransport;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.transport.http.server.MessageContextProperties;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.Base64Util;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -32,34 +27,42 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 
 
-import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
 import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
 import static javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY;
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_STATUS_CODE;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
 import static com.sun.xml.ws.client.BindingProviderProperties.HOSTNAME_VERIFICATION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.REDIRECT_REQUEST_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import com.sun.xml.ws.transport.WSConnectionImpl;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
- * @author JAX-RPC Development Team
+ * @author WS Development Team
  */
-public class HttpClientTransport
-        implements ClientTransport {
+public class HttpClientTransport extends WSConnectionImpl {
+    
 
     private static String LAST_ENDPOINT = "";
     private static boolean redirect = true;
     private static final int START_REDIRECT_COUNT = 3;
     private static int redirectCount = START_REDIRECT_COUNT;
+    int statusCode;
 
     public HttpClientTransport() {
         this(null, SOAPBinding.SOAP11HTTP_BINDING);
     }
 
+    // TODO: Consider passing the properyt bag
     public HttpClientTransport(OutputStream logStream, String bindingId) {
         try {
             if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
@@ -68,149 +71,161 @@ public class HttpClientTransport
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
 
             _logStream = logStream;
-            //_logStream = System.out;
         } catch (Exception e) {
             throw new ClientTransportException("http.client.cannotCreateMessageFactory");
         }
     }
 
-    public void invoke(String endpoint, SOAPMessageContext context)
-            throws ClientTransportException {
-
-        if (isOneWayOperation(context)) {
-            invokeOneWay(endpoint, context);
-            return;
-        }
-
-        //using an HttpURLConnection the soap message is sent
-        //over the wire
+    public HttpClientTransport(OutputStream logStream, Map<String, Object> context) {
+        String bindingId = (String)context.get(BINDING_ID_PROPERTY);
         try {
+            if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
+                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+            else
+                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
 
-            HttpURLConnection httpConnection =
-                    createHttpConnection(endpoint, context);
-
-            setupContextForInvoke(context);
-
-            CookieJar cookieJar = sendCookieAsNeeded(context, httpConnection);
-
-            moveHeadersFromContextToConnection(context, httpConnection);
-
-            writeMessageToConnection(context, httpConnection);
-
-            boolean isFailure = connectForResponse(httpConnection, context);
-            int statusCode = httpConnection.getResponseCode();
-
-            //http URL redirection does not redirect http requests
-            //to an https endpoint probably due to a bug in the jdk
-            //or by intent - to workaround this if an error code
-            //of HTTP_MOVED_TEMP or HTTP_MOVED_PERM is received then
-            //the jaxrpc client will reinvoke the original request
-            //to the new endpoint - kw bug 4890118
-            if (checkForRedirect(statusCode)) {
-                redirectRequest(httpConnection, context);
-                return;
+            endpoint = (String)context.get(ENDPOINT_ADDRESS_PROPERTY);
+            this.context = context;
+            _logStream = logStream;
+        } catch (Exception e) {
+            throw new ClientTransportException("http.client.cannotCreateMessageFactory");
+        }
+    }
+    
+    /**
+     * Prepare the stream for HTTP request
+     */
+    public OutputStream getOutput() {
+        try {
+            httpConnection = createHttpConnection(endpoint, context);
+            // how to incorporate redirect processing: message dispatcher does not seem to tbe right place
+            outputStream = httpConnection.getOutputStream();
+            
+            cookieJar = sendCookieAsNeeded();
+            connectForResponse();
+        
+        } catch (Exception ex) {
+            if (ex instanceof Localizable) {
+                throw new ClientTransportException("http.client.failed",
+                        (Localizable) ex);
+            } else {
+                throw new ClientTransportException("http.client.failed",
+                        new LocalizableExceptionAdapter(ex));
             }
+        }
+        
+        return outputStream;
+    }
+    
+    /**
+     * Get the response from HTTP connection and prepare the input stream for response
+     */
+    public InputStream getInput() {
+        // response processing
+        
+        ByteInputStream in;
+        try {
+            isFailure = checkResponseCode();
 
-            MimeHeaders headers = collectResponseMimeHeaders(httpConnection);
+            Map<String, List<String>> headers = collectResponseMimeHeaders();
 
-            saveCookieAsNeeded(context, httpConnection, cookieJar);
-
-            SOAPMessage response = null;
-            //get the response from the HttpURLConnection
-            try {
-                response = readResponse(httpConnection, isFailure, headers);
-            } catch (SOAPException e) {
-                if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
-                        || (isFailure
-                        && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+            saveCookieAsNeeded(cookieJar);
+            setHeaders(headers);
+            
+            in = readResponse();
+        } catch (IOException e) {
+            if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
+                    || (isFailure
+                    && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+                try {
                     throw new ClientTransportException("http.status.code",
                             new Object[]{
                                 new Integer(statusCode),
                                 httpConnection.getResponseMessage()});
+                } catch (IOException ex) {
+                    throw new ClientTransportException("http.status.code",
+                            new Object[]{
+                                new Integer(statusCode),
+                                ex});
                 }
-                throw e;
             }
-            httpConnection = null;
+            throw new ClientTransportException("http.client.failed",
+                    e.getMessage());
+        }
+        httpConnection = null;
+        
+        return in;
+    }
+    
+    public OutputStream getDebug() {
+        return System.out;
+    }
+    
+    public void invoke(String endpoint, SOAPMessageContext context)
+            throws ClientTransportException {
 
-            logResponseMessage(context, response);
+//        if (isOneWayOperation(context)) {
+//            invokeOneWay(endpoint, context);
+//            return;
+//        }
 
-            context.setMessage(response);
+        //using an HttpURLConnection the soap message is sent
+        //over the wire
+//        try {
+//            int statusCode = httpConnection.getResponseCode();
+//
+//            //http URL redirection does not redirect http requests
+//            //to an https endpoint probably due to a bug in the jdk
+//            //or by intent - to workaround this if an error code
+//            //of HTTP_MOVED_TEMP or HTTP_MOVED_PERM is received then
+//            //the jaxrpc client will reinvoke the original request
+//            //to the new endpoint - kw bug 4890118
+//            if (checkForRedirect(statusCode)) {
+//                redirectRequest(httpConnection, context);
+//                return;
+//            }
+
+
+//            SOAPMessage response = null;
+//            //get the response from the HttpURLConnection
+//            try {
+//                response = readResponse(isFailure);
+//            } catch (SOAPException e) {
+//                if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
+//                        || (isFailure
+//                        && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+//                    throw new ClientTransportException("http.status.code",
+//                            new Object[]{
+//                                new Integer(statusCode),
+//                                httpConnection.getResponseMessage()});
+//                }
+//                throw e;
+//            }
+//            httpConnection = null;
+
+//            logResponseMessage(context, response);
+
+//            context.setMessage(response);
             // do not set the failure flag, because stubs cannot rely on it,
             // since transports different from HTTP may not be able to set it
             // context.setFailure(isFailure);
 
-        } catch (ClientTransportException e) {
-            // let these through unmodified
-            throw e;
-        } catch (Exception e) {
-            if (e instanceof Localizable) {
-                throw new ClientTransportException("http.client.failed",
-                        (Localizable) e);
-            } else {
-                throw new ClientTransportException("http.client.failed",
-                        new LocalizableExceptionAdapter(e));
-            }
-        }
+//        } catch (ClientTransportException e) {
+//            // let these through unmodified
+//            throw e;
+//        } catch (Exception e) {
+//            if (e instanceof Localizable) {
+//                throw new ClientTransportException("http.client.failed",
+//                        (Localizable) e);
+//            } else {
+//                throw new ClientTransportException("http.client.failed",
+//                        new LocalizableExceptionAdapter(e));
+//            }
+//        }
     }
 
-    public void invokeOneWay(String endpoint, SOAPMessageContext context) {
-
-        //one way send of message over the wire
-        //no response will be returned
-        try {
-            HttpURLConnection httpConnection =
-                    createHttpConnection(endpoint, context);
-
-            setupContextForInvoke(context);
-
-            moveHeadersFromContextToConnection(context, httpConnection);
-
-            writeMessageToConnection(context, httpConnection);
-
-            forceMessageToBeSent(httpConnection, context);
-
-        } catch (Exception e) {
-            if (e instanceof Localizable) {
-                throw new ClientTransportException("http.client.failed",
-                        (Localizable) e);
-            } else {
-                throw new ClientTransportException("http.client.failed",
-                        new LocalizableExceptionAdapter(e));
-            }
-        }
-    }
-
-    protected void logResponseMessage(SOAPMessageContext context,
-                                      SOAPMessage response)
-            throws IOException, SOAPException {
-
-        if (_logStream != null) {
-            String s = "Response\n";
-            _logStream.write(s.getBytes());
-            s =
-                    "Http Status Code: "
-                    + context.get(HTTP_STATUS_CODE)
-                    + "\n\n";
-            _logStream.write(s.getBytes());
-            for (Iterator iter =
-                    context.getMessage().getMimeHeaders().getAllHeaders();
-                 iter.hasNext();
-                    ) {
-                MimeHeader header = (MimeHeader) iter.next();
-                s = header.getName() + ": " + header.getValue() + "\n";
-                _logStream.write(s.getBytes());
-            }
-            _logStream.flush();
-            response.writeTo(_logStream);
-            s = "******************\n\n";
-            _logStream.write(s.getBytes());
-        }
-    }
-
-    protected SOAPMessage readResponse(HttpURLConnection httpConnection,
-                                       boolean isFailure,
-                                       MimeHeaders headers)
-            throws IOException, SOAPException {
+    protected ByteInputStream readResponse()
+            throws IOException {
         ByteInputStream in;
         InputStream contentIn =
                 (isFailure
@@ -224,15 +239,13 @@ public class HttpClientTransport
                 : httpConnection.getContentLength();
         in = new ByteInputStream(bytes, length);
 
-        SOAPMessage response = _messageFactory.createMessage(headers, in);
-
         contentIn.close();
 
-        return response;
+        return in;
     }
 
-    protected MimeHeaders collectResponseMimeHeaders(HttpURLConnection httpConnection) {
-        MimeHeaders headers = new MimeHeaders();
+    protected Map<String, List<String>> collectResponseMimeHeaders() {
+        MimeHeaders mimeHeaders = new MimeHeaders();
         for (int i = 1; ; ++i) {
             String key = httpConnection.getHeaderFieldKey(i);
             if (key == null) {
@@ -240,33 +253,26 @@ public class HttpClientTransport
             }
             String value = httpConnection.getHeaderField(i);
             try {
-                headers.addHeader(key, value);
+                mimeHeaders.addHeader(key, value);
             } catch (IllegalArgumentException e) {
                 // ignore headers that are illegal in MIME
             }
         }
+        
+        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        for (Iterator iter = mimeHeaders.getAllHeaders(); iter.hasNext();) {
+            MimeHeader header = (MimeHeader)iter.next();
+            List<String> h = new ArrayList<String>();
+            h.add(header.getValue());
+            headers.put (header.getName (), h);
+        }
         return headers;
     }
 
-    protected boolean connectForResponse(HttpURLConnection httpConnection,
-                                         SOAPMessageContext context)
+    protected void connectForResponse()
             throws IOException {
 
         httpConnection.connect();
-        return checkResponseCode(httpConnection, context);
-    }
-
-    protected void forceMessageToBeSent(HttpURLConnection httpConnection,
-                                        SOAPMessageContext context)
-            throws IOException {
-
-        try {
-            httpConnection.connect();
-            httpConnection.getInputStream();
-            checkResponseCode(httpConnection, context);
-
-        } catch (IOException io) {
-        }
     }
 
     /*
@@ -274,15 +280,14 @@ public class HttpClientTransport
      * return message to be processed (i.e., in the case of an UNAUTHORIZED
      * response from the servlet or 404 not found)
      */
-    protected boolean checkResponseCode(HttpURLConnection httpConnection,
-                                        SOAPMessageContext context)
+    protected boolean checkResponseCode()
             throws IOException {
         boolean isFailure = false;
         try {
 
-            int statusCode = httpConnection.getResponseCode();
-            context.put(HTTP_STATUS_CODE,
-                    Integer.toString(statusCode));
+            statusCode = httpConnection.getResponseCode();
+            setStatus (statusCode);
+            
             if ((httpConnection.getResponseCode()
                     == HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 isFailure = true;
@@ -323,16 +328,15 @@ public class HttpClientTransport
             }
         } catch (IOException e) {
             // on JDK1.3.1_01, we end up here, but then getResponseCode() succeeds!
-            if (httpConnection.getResponseCode()
-                    == HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                isFailure = true;
-            } else {
-                throw e;
-            }
+//            if (httpConnection.getResponseCode()
+//                    == HttpURLConnection.HTTP_INTERNAL_ERROR) {
+//                isFailure = true;
+//            } else {
+//                throw e;
+//            }
         }
 
         return isFailure;
-
     }
 
     protected String getStatusMessage(HttpURLConnection httpConnection)
@@ -350,54 +354,12 @@ public class HttpClientTransport
         return message;
     }
 
-    protected void logRequestMessage(SOAPMessageContext context)
-            throws IOException, SOAPException {
-
-        if (_logStream != null) {
-            String s = "******************\nRequest\n";
-            _logStream.write(s.getBytes());
-            for (Iterator iter =
-                    context.getMessage().getMimeHeaders().getAllHeaders();
-                 iter.hasNext();
-                    ) {
-                MimeHeader header = (MimeHeader) iter.next();
-                s = header.getName() + ": " + header.getValue() + "\n";
-                _logStream.write(s.getBytes());
-            }
-            _logStream.flush();
-            context.getMessage().writeTo(_logStream);
-            s = "\n";
-            _logStream.write(s.getBytes());
-            _logStream.flush();
-        }
-    }
-
-    protected void writeMessageToConnection(SOAPMessageContext context,
-                                            HttpURLConnection httpConnection)
-            throws IOException, SOAPException {
-        OutputStream contentOut = httpConnection.getOutputStream();
-        context.getMessage().writeTo(contentOut);
-        contentOut.flush();
-        contentOut.close();
-        logRequestMessage(context);
-    }
-
-    protected void moveHeadersFromContextToConnection(SOAPMessageContext context,
-                                                      HttpURLConnection httpConnection) {
-        for (Iterator iter =
-                context.getMessage().getMimeHeaders().getAllHeaders();
-             iter.hasNext();
-                ) {
-            MimeHeader header = (MimeHeader) iter.next();
-            httpConnection.setRequestProperty(header.getName(),
-                    header.getValue());
-        }
-    }
-
-    protected CookieJar sendCookieAsNeeded(SOAPMessageContext context,
-                                           HttpURLConnection httpConnection) {
-        Boolean shouldMaintainSessionProperty =
-                (Boolean) context.get(SESSION_MAINTAIN_PROPERTY);
+    protected CookieJar sendCookieAsNeeded() {
+        String header = (String)context.get(SESSION_MAINTAIN_PROPERTY);
+        if (header == null)
+            return null;
+        
+        Boolean shouldMaintainSessionProperty = new Boolean(header);
         boolean shouldMaintainSession =
                 (shouldMaintainSessionProperty == null
                 ? false
@@ -415,51 +377,18 @@ public class HttpClientTransport
         }
     }
 
-    protected void saveCookieAsNeeded(SOAPMessageContext context,
-                                      HttpURLConnection httpConnection,
-                                      CookieJar cookieJar) {
+    protected void saveCookieAsNeeded(CookieJar cookieJar) {
         if (cookieJar != null) {
             cookieJar.recordAnyCookies(httpConnection);
             context.put(HTTP_COOKIE_JAR,
                     cookieJar);
         }
-    }
-
-    protected void setupContextForInvoke(SOAPMessageContext context)
-            throws SOAPException, Exception {
-        if (context.getMessage().saveRequired()) {
-            context.getMessage().saveChanges();
-        }
-        String soapAction =
-                (String) context.get(SOAPACTION_URI_PROPERTY);
-        // From SOAP 1.1 spec section 6.1.1 "The header field value of empty string ("") means that
-        // the intent of the SOAP message is provided by the HTTP Request-URI. No value means that
-        // there is no indication of the intent of the message." Here I provide a mechanism for
-        // providing "no value" (PBG):
-        //kw null soapaction? made not null-
-        if (soapAction == null) {
-            context.getMessage().getMimeHeaders().setHeader("SOAPAction",
-                    "\"\"");
-            // httpConnection.setRequestProperty("SOAPAction", "");
-        } else {
-            context.getMessage().getMimeHeaders().setHeader("SOAPAction",
-                    "\"" + soapAction + "\"");
-            // httpConnection.setRequestProperty("SOAPAction", "\"" + soapAction + "\"");
-        }
-        //set up Basic Authentication mime header
-        String credentials = (String) context.get(USERNAME_PROPERTY);
-        if (credentials != null) {
-            credentials += ":"
-                    + (String) context.get(PASSWORD_PROPERTY);
-            credentials =
-                    Base64Util.encode(credentials.getBytes());
-            context.getMessage().getMimeHeaders().setHeader("Authorization",
-                    "Basic " + credentials);
-        }
+        
+        // TODO: where and how this cookieJar is used ?
     }
 
     protected HttpURLConnection createHttpConnection(String endpoint,
-                                                     SOAPMessageContext context)
+                                                     Map<String, Object> context)
             throws IOException {
 
         boolean verification = false;
@@ -542,16 +471,6 @@ public class HttpClientTransport
         return ret;
     }
 
-    boolean isOneWayOperation(SOAPMessageContext context) {
-        //need to modify to check actual setting
-        Object oneWayOperation =
-                context.get(MessageContextProperties.ONE_WAY_OPERATION);
-        if (oneWayOperation != null) {
-            return true;
-        }
-        return false;
-    }
-
     // overide default SSL HttpClientVerifier to always return true
     // effectively overiding Hostname client verification when using SSL
     static class HttpClientVerifier implements HostnameVerifier {
@@ -561,5 +480,10 @@ public class HttpClientTransport
     }
 
     private MessageFactory _messageFactory;
-    private OutputStream _logStream;
+    HttpURLConnection httpConnection = null;
+    String endpoint = null;
+    Map<String, Object> context = null;
+    CookieJar cookieJar = null;
+    boolean isFailure = false;
+    OutputStream _logStream = null;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.3 2005-07-19 18:10:08 arungupta Exp $
  */
 
 /*
@@ -44,12 +44,13 @@ public class SOAPConnectionUtil {
         try {
             Map<String, List<String>> headers = con.getHeaders();
             MimeHeaders mh = new MimeHeaders();
-            for(Map.Entry<String, List<String>> entry : headers.entrySet()) {
-                String name = entry.getKey();
-                for(String value : entry.getValue()) {
-                    mh.addHeader(name, value);
+            if (headers != null)
+                for(Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                    String name = entry.getKey();
+                    for(String value : entry.getValue()) {
+                        mh.addHeader(name, value);
+                    }
                 }
-            }
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
             RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
             String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
@@ -57,6 +58,7 @@ public class SOAPConnectionUtil {
                     con.getInput(), bindingId);
             return soapMessage;
         } catch(Exception e) {
+            e.printStackTrace();
             throw new WebServiceException(e);
         }
     }
@@ -85,6 +87,7 @@ public class SOAPConnectionUtil {
             con.setStatus(STATUS.OK);
             con.setHeaders(headers);
             soapMessage.writeTo(con.getOutput());
+            con.closeOutput();
         } catch(Exception e) {
             throw new WebServiceException(e);
         }

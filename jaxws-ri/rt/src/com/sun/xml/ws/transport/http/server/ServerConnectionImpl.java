@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.4 2005-07-16 01:38:40 kohlert Exp $
+ * $Id: ServerConnectionImpl.java,v 1.5 2005-07-19 18:10:05 arungupta Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 
 import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
-import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.net.httpserver.HttpInteraction;
 
 import java.net.HttpURLConnection;
@@ -33,35 +33,19 @@ import java.util.Map;
  *
  * @author WS Development Team
  */
-public class ServerConnectionImpl implements WSConnection {
+public class ServerConnectionImpl extends WSConnectionImpl {
 
     private HttpInteraction httpTransaction;
-    private STATUS status;
+    private int status;
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
     private InputStream is;
-    private OutputStream out;
+//    private OutputStream out;
 
     public ServerConnectionImpl(HttpInteraction httpTransaction) {
         this.httpTransaction = httpTransaction;
     }
 
-    public int read(ByteBuffer byteBuffer) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void write(ByteBuffer byteBuffer) {
-        throw new UnsupportedOperationException();
-    }
-    
-    public EPTFactory getEPTFactory() {
-        throw new UnsupportedOperationException();
-    }
-
-    public ByteBuffer readUntilEnd() {
-        throw new UnsupportedOperationException();
-    }
-    
     public Map<String,List<String>> getHeaders() {
         return httpTransaction.getRequestHeaders();
     }
@@ -73,7 +57,7 @@ public class ServerConnectionImpl implements WSConnection {
         responseHeaders = headers;
     }
     
-    public void setStatus(STATUS status) {
+    public void setStatus(int status) {
         this.status = status;
     }
     
@@ -81,19 +65,20 @@ public class ServerConnectionImpl implements WSConnection {
      * sets HTTP status code
      */
     private int getStatusCode() {
-        switch(status) {
-            case OK :
-                return HttpURLConnection.HTTP_OK;
-            case ONEWAY :
-                return HttpURLConnection.HTTP_ACCEPTED;
-            case UNSUPPORTED_MEDIA :
-                return HttpURLConnection.HTTP_UNSUPPORTED_TYPE;
-            case MALFORMED_XML :
-                return HttpURLConnection.HTTP_BAD_REQUEST;
-            case INTERNAL_ERR :
-                return HttpURLConnection.HTTP_INTERNAL_ERROR;
-        }
-        return HttpURLConnection.HTTP_OK;
+//        switch(status) {
+//            case STATUS.OK :
+//                return HttpURLConnection.HTTP_OK;
+//            case ONEWAY :
+//                return HttpURLConnection.HTTP_ACCEPTED;
+//            case UNSUPPORTED_MEDIA :
+//                return HttpURLConnection.HTTP_UNSUPPORTED_TYPE;
+//            case MALFORMED_XML :
+//                return HttpURLConnection.HTTP_BAD_REQUEST;
+//            case INTERNAL_ERR :
+//                return HttpURLConnection.HTTP_INTERNAL_ERROR;
+//        }
+//        return HttpURLConnection.HTTP_OK;
+        return status;
     }
     
     public InputStream getInput() {
@@ -104,7 +89,7 @@ public class ServerConnectionImpl implements WSConnection {
     }
     
     public OutputStream getOutput() {
-        if (out == null) {
+        if (outputStream == null) {
             try {
                 // Read everything from request and close it
                 byte[] buf = new byte[1024];
@@ -125,12 +110,12 @@ public class ServerConnectionImpl implements WSConnection {
 
                 // write HTTP status code, and headers
                 httpTransaction.sendResponseHeaders(getStatusCode(), 0);
-                out = httpTransaction.getResponseBody();
+                outputStream = httpTransaction.getResponseBody();
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
         }
-        return out;
+        return outputStream;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransportFactory.java,v 1.3 2005-07-18 16:52:25 kohlert Exp $
+ * $Id: HttpClientTransportFactory.java,v 1.4 2005-07-19 18:10:05 arungupta Exp $
  */
 
 /*
@@ -13,6 +13,8 @@ import java.io.OutputStream;
 
 import com.sun.xml.ws.client.ClientTransport;
 import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import java.util.Map;
 
 import javax.xml.ws.soap.SOAPBinding;
 
@@ -29,14 +31,21 @@ public class HttpClientTransportFactory implements ClientTransportFactory {
         _logStream = logStream;
     }
 
-    public ClientTransport create() {
+    public WSConnection create() {
         return new HttpClientTransport(_logStream, SOAPBinding.SOAP11HTTP_BINDING);
     }
 
-    //at present the HTTPClientTransport is binding aware so we need to pass the binding id to
+    // at present the HTTPClientTransport is binding aware so we need to pass the binding id to
     // chose appropriate binding
-    public ClientTransport create(String bindingId) {
+    public WSConnection create(String bindingId) {
         return new HttpClientTransport(_logStream, bindingId);
+    }
+
+    /**
+     * Binding Id, Endpoint address and other metadata is in the property bag
+     */
+    public WSConnection create(Map<String, Object> context) {
+        return new HttpClientTransport(_logStream, context);
     }
 
     private OutputStream _logStream;

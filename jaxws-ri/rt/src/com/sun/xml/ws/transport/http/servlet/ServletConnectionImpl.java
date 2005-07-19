@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.4 2005-07-16 01:38:41 kohlert Exp $
+ * $Id: ServletConnectionImpl.java,v 1.5 2005-07-19 18:10:05 arungupta Exp $
  */
 
 /*
@@ -8,8 +8,6 @@
 */
 
 package com.sun.xml.ws.transport.http.servlet;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
-import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.transport.WSConnectionImpl;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ import java.util.Map;
  *
  * @author WS Development Team
  */
-public class ServletConnectionImpl implements WSConnection {
+public class ServletConnectionImpl extends WSConnectionImpl {
 
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -50,33 +48,6 @@ public class ServletConnectionImpl implements WSConnection {
         this.response = response;
     }
 
-    // TODO: correct the logic
-    public int read(ByteBuffer byteBuffer) {
-        return -1;
-    }
-
-    public void write(ByteBuffer byteBuffer) {
-
-    }
-    
-    public EPTFactory getEPTFactory() {
-        // TODO
-        return null;
-    }
-
-    /*
-     * @see com.sun.pept.transport.Connection#readUntilEnd()
-     */
-    public ByteBuffer readUntilEnd() {
-
-        return null;
-    }
-
-    protected static byte[] readFully(InputStream istream) throws IOException {
-
-        return null;
-    }
-    
     public Map<String,List<String>> getHeaders() {
         if (requestHeaders == null) {
             requestHeaders = new HashMap<String, List<String>>();
@@ -147,7 +118,8 @@ public class ServletConnectionImpl implements WSConnection {
             }
         }
         try {
-            return response.getOutputStream();
+            outputStream = response.getOutputStream();
+            return outputStream;
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }

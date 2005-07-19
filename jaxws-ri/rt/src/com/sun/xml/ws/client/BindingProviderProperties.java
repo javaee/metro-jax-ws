@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.3 2005-06-30 18:18:35 vivekp Exp $
+ * $Id: BindingProviderProperties.java,v 1.4 2005-07-19 18:10:01 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -85,4 +85,6 @@ public interface BindingProviderProperties {
     public static final String FAST_INFOSET_ACCEPT_VALUE =
         FAST_INFOSET_TYPE_SOAP11 + ", " + FAST_INFOSET_TYPE_SOAP12 +
         ", text/xml, application/soap+xml, text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
+    
+    public static final String BINDING_ID_PROPERTY = "com.sun.xml.ws.binding";
 }

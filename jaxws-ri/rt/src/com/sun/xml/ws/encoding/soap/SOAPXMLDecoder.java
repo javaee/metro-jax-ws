@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-18 18:55:44 kwalsh Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.6 2005-07-19 18:10:02 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,7 +16,6 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
-import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
 import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
@@ -28,12 +27,12 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.server.SOAPConnection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -52,11 +51,15 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static javax.xml.stream.XMLStreamConstants.*;
+import javax.xml.ws.soap.SOAPBinding;
 
 /**
  * @author WS Development Team
@@ -103,9 +106,26 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
-        SOAPConnection connection = (SOAPConnection) messageInfo.getConnection();
-        SOAPMessage sm = connection.getSOAPMessage(messageInfo);
+        WSConnection connection = (WSConnection) messageInfo.getConnection();
+        
+        SOAPMessage sm = null;
+        
+        try {
+            MessageFactory messageFactory = MessageFactory.newInstance ();
+            // TODO: can the header on WSConnection be MimeHeaders instead of Map<String, List<String>>
 
+            Map<String, List<String>> headers = connection.getHeaders ();
+            MimeHeaders mimeHeaders = new MimeHeaders();
+            for (String headerName : headers.keySet()) {
+                MimeHeader mimeHeader = new MimeHeader(headerName,  headers.get(headerName).get(0));
+            }
+            sm = SOAPUtil.createMessage (mimeHeaders, connection.getInput(), getBindingId());
+        } catch (SOAPException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
         return sm;
     }
 
@@ -243,6 +263,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      */
     public String getSOAPBindingId() {
         return SOAPConstants.NS_WSDL_SOAP;
+    }
+
+    public String getBindingId() {
+        return SOAPBinding.SOAP11HTTP_BINDING;
     }
 
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
