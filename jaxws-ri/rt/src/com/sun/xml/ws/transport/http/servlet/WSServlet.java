@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServlet.java,v 1.2 2005-07-18 16:52:27 kohlert Exp $
+ * $Id: WSServlet.java,v 1.1 2005-07-20 16:50:02 jitu Exp $
  */
 
 /*
@@ -27,7 +27,7 @@ import com.sun.xml.ws.util.localization.Localizer;
  *
  * @author WS Development Team
  */
-public class JAXRPCServlet extends HttpServlet {
+public class WSServlet extends HttpServlet {
 
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);

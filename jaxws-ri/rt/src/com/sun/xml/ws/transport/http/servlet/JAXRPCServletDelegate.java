@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.8 2005-07-16 01:38:41 kohlert Exp $
+ * $Id: JAXRPCServletDelegate.java,v 1.9 2005-07-20 16:50:02 jitu Exp $
  *
  */
 
@@ -79,7 +79,7 @@ public class JAXRPCServletDelegate implements ServletDelegate {
 
         jaxrpcInfo =
             (List<RuntimeEndpointInfo>) servletContext.getAttribute(
-                JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
+                WSServlet.JAXRPC_RI_RUNTIME_INFO);
         if (jaxrpcInfo == null) {
             warnMissingContextInformation();
         } else {
@@ -100,21 +100,21 @@ public class JAXRPCServletDelegate implements ServletDelegate {
 
         String publishWSDLParam =
             servletContext.getInitParameter(
-                JAXRPCServlet.JAXRPC_RI_PROPERTY_PUBLISH_WSDL);
+                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_WSDL);
         publishWSDL =
             (publishWSDLParam == null
                 ? true
                 : Boolean.valueOf(publishWSDLParam).booleanValue());
         String publishModelParam =
             servletContext.getInitParameter(
-                JAXRPCServlet.JAXRPC_RI_PROPERTY_PUBLISH_MODEL);
+                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_MODEL);
         publishModel =
             (publishModelParam == null
                 ? true
                 : Boolean.valueOf(publishModelParam).booleanValue());
         String publishStatusPageParam =
             servletContext.getInitParameter(
-                JAXRPCServlet.JAXRPC_RI_PROPERTY_PUBLISH_STATUS_PAGE);
+                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_STATUS_PAGE);
         publishStatusPage =
             (publishStatusPageParam == null
                 ? true

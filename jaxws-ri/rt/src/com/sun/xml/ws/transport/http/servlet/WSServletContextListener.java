@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCContextListener.java,v 1.9 2005-07-16 01:38:41 kohlert Exp $
+ * $Id: WSServletContextListener.java,v 1.1 2005-07-20 16:50:02 jitu Exp $
  */
 
 /*
@@ -41,13 +41,13 @@ import java.util.Set;
  *
  * @author WS Development Team
  */
-public class JAXRPCContextListener
+public class WSServletContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
     /**
      * default contructor
      */
-    public JAXRPCContextListener() {
+    public WSServletContextListener() {
         localizer = new Localizer();
         messageFactory =
             new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
@@ -93,7 +93,7 @@ public class JAXRPCContextListener
                 new JAXRPCRuntimeInfoParser(classLoader);
             InputStream is = context.getResourceAsStream(JAXRPC_RI_RUNTIME);
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
-            context.setAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO, endpoints);
+            context.setAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO, endpoints);
             
             // Creates WSDL & schema metadata and runtime model
             createModelAndMetadata(endpoints, docs);
@@ -106,7 +106,7 @@ public class JAXRPCContextListener
                         "listener.parsingFailed",
                         e.toString())),
                 e);
-            context.removeAttribute(JAXRPCServlet.JAXRPC_RI_RUNTIME_INFO);
+            context.removeAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO);
             throw new JAXRPCServletException("listener.parsingFailed", new Object[] {e});
         }
     }
