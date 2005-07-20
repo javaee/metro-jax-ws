@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.1 2005-07-14 23:39:50 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.2 2005-07-20 21:36:13 jitu Exp $
  */
 
 /*
@@ -12,7 +12,7 @@ import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import java.io.OutputStream;
 
 import com.sun.xml.ws.client.ClientTransportFactory;
-import com.sun.xml.ws.transport.http.servlet.JAXRPCServletDelegate;
+import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 
@@ -63,7 +63,7 @@ public class WSRtObjectFactoryImpl
     }
     
     public com.sun.xml.ws.spi.runtime.ServletDelegate createServletDelegate() {
-        return new JAXRPCServletDelegate();
+        return new WSServletDelegate();
     }
     
     public com.sun.xml.ws.spi.runtime.Tie createTie() {

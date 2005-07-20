@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletDelegate.java,v 1.9 2005-07-20 16:50:02 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.1 2005-07-20 21:36:11 jitu Exp $
  *
  */
 
@@ -47,7 +47,7 @@ import com.sun.xml.ws.util.localization.Localizer;
  *
  * @author WS Development Team
  */
-public class JAXRPCServletDelegate implements ServletDelegate {
+public class WSServletDelegate implements ServletDelegate {
     
     private com.sun.xml.ws.server.Tie tie =
         new com.sun.xml.ws.server.Tie();

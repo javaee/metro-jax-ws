@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCRuntimeInfoParser.java,v 1.13 2005-07-20 16:50:02 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.1 2005-07-20 21:36:10 jitu Exp $
  */
 
 /*
@@ -39,9 +39,9 @@ import javax.xml.stream.XMLStreamReader;
 /**
  * @author WS Development Team
  */
-public class JAXRPCRuntimeInfoParser {
+public class RuntimeEndpointInfoParser {
 
-    public JAXRPCRuntimeInfoParser(ClassLoader cl) {
+    public RuntimeEndpointInfoParser(ClassLoader cl) {
         classLoader = cl;
     }
 

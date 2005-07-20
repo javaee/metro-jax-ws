@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.1 2005-07-20 16:50:02 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.2 2005-07-20 21:36:10 jitu Exp $
  */
 
 /*
@@ -89,8 +89,8 @@ public class WSServletContextListener
             logger.fine("war metadata="+docs);
 
             // Parse the descriptor file and build endpoint infos
-            JAXRPCRuntimeInfoParser parser =
-                new JAXRPCRuntimeInfoParser(classLoader);
+            RuntimeEndpointInfoParser parser =
+                new RuntimeEndpointInfoParser(classLoader);
             InputStream is = context.getResourceAsStream(JAXRPC_RI_RUNTIME);
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
             context.setAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO, endpoints);
@@ -107,7 +107,7 @@ public class WSServletContextListener
                         e.toString())),
                 e);
             context.removeAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO);
-            throw new JAXRPCServletException("listener.parsingFailed", new Object[] {e});
+            throw new WSServletException("listener.parsingFailed", new Object[] {e});
         }
     }
     

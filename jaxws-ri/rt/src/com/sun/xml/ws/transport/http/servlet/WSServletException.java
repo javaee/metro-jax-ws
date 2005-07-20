@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCServletException.java,v 1.3 2005-07-18 16:52:27 kohlert Exp $
+ * $Id: WSServletException.java,v 1.1 2005-07-20 21:36:12 jitu Exp $
  */
 
 /*
@@ -17,21 +17,21 @@ import com.sun.xml.ws.server.*;
  *
  * @author WS Development Team
  */
-public class JAXRPCServletException extends JAXWSExceptionBase {
+public class WSServletException extends JAXWSExceptionBase {
 
-    public JAXRPCServletException(String key) {
+    public WSServletException(String key) {
         super(key);
     }
 
-    public JAXRPCServletException(String key, String arg) {
+    public WSServletException(String key, String arg) {
         super(key, arg);
     }
 
-    public JAXRPCServletException(String key, Object[] args) {
+    public WSServletException(String key, Object[] args) {
         super(key, args);
     }
 
-    public JAXRPCServletException(String key, Localizable arg) {
+    public WSServletException(String key, Localizable arg) {
         super(key, arg);
     }
 
