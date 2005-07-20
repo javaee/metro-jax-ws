@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.7 2005-06-30 15:10:39 kwalsh Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.8 2005-07-20 20:28:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -18,6 +18,7 @@ import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
@@ -62,9 +63,6 @@ public class EndpointIFInvocationHandler
             getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
                 wscontext.getEndpoint(_serviceQName));
 
-        //leave for now check on binding id
-        // _bindingId = wscontext.getBindingID();
-
         ContactInfoListImpl cil = new ContactInfoListImpl();
         _delegate = new DelegateBase(cil);
     }
@@ -82,12 +80,24 @@ public class EndpointIFInvocationHandler
         _proxy = p;
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws WebServiceException, Throwable{
 
-        if (isSEIMethod(method, _portInterface)) {
-            return implementSEIMethod(method, args);
-        } else {
-            return method.invoke(this, args);
+        try {
+            if (isSEIMethod(method, _portInterface)) {
+                return implementSEIMethod(method, args);
+            } else {
+                return method.invoke(this, args);
+            }
+        } catch (IllegalAccessException e) {
+            throw new WebServiceException(e.getMessage(), e);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        } catch (java.lang.reflect.UndeclaredThrowableException ex) {
+             throw new WebServiceException(ex.getMessage(), ex.getCause());
+        } catch (java.lang.reflect.GenericSignatureFormatError ex) {
+             throw new WebServiceException(ex.getMessage(), ex);
+        } catch (java.lang.reflect.MalformedParameterizedTypeException ex) {
+             throw new WebServiceException(ex.getMessage(), ex);
         }
     }
 

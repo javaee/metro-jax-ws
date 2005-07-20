@@ -1,20 +1,17 @@
 /*
- * $Id: PortInfoBase.java,v 1.2 2005-05-25 19:05:47 spericas Exp $
+ * $Id: PortInfoBase.java,v 1.3 2005-07-20 20:28:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
-
 package com.sun.xml.ws.client;
 
 import javax.xml.namespace.QName;
+import java.net.URI;
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: kwalsh
- * Date: Jan 6, 2005
- * Time: 12:03:32 PM
- * To change this template use File | Settings | File Templates.
+ * JAXWS Development Team
  */
 public class PortInfoBase {
 
@@ -24,11 +21,16 @@ public class PortInfoBase {
     protected QName portTypeName;
     protected java.net.URI bindingId;
 
-
     public PortInfoBase(QName name) {
         this.name = name;
         targetEndpoint = "";
         defaultNamespace = "";
+    }
+
+    public PortInfoBase(String targetEndpoint, QName name, URI bindingId) {
+        this.targetEndpoint = targetEndpoint;
+        this.name = name;
+        this.bindingId = bindingId;
     }
 
     void setName(QName nm) {
@@ -39,7 +41,7 @@ public class PortInfoBase {
         return name;
     }
 
-    public void setTargetEndpoint(String endpoint) {
+    void setTargetEndpoint(String endpoint) {
         targetEndpoint = endpoint;
     }
 
@@ -47,8 +49,7 @@ public class PortInfoBase {
         return targetEndpoint;
     }
 
-
-    public void setBindingId(java.net.URI id) {
+    void setBindingId(java.net.URI id) {
         bindingId = id;
     }
 
@@ -56,7 +57,7 @@ public class PortInfoBase {
         return bindingId;
     }
 
-    public void setPortTypeName(QName typeName) {
+    void setPortTypeName(QName typeName) {
         portTypeName = typeName;
     }
 
@@ -64,8 +65,7 @@ public class PortInfoBase {
         return portTypeName;
     }
 
-    public void setDefaultNamespace(String namespace) {
+    void setDefaultNamespace(String namespace) {
         defaultNamespace = namespace;
     }
-
 }

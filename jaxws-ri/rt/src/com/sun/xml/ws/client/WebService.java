@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.12 2005-07-18 16:52:07 kohlert Exp $
+ * $Id: WebService.java,v 1.13 2005-07-20 20:28:23 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,13 +7,6 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.client.dispatch.DispatchBase;
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.modeler.RuntimeModeler;
-import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.util.HandlerAnnotationInfo;
-import com.sun.xml.ws.util.HandlerAnnotationProcessor;
-import com.sun.xml.ws.wsdl.WSDLContext;
-import com.sun.xml.ws.wsdl.parser.WSDLParser;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -21,179 +14,109 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.security.SecurityConfiguration;
-import java.io.BufferedInputStream;
 import java.io.Serializable;
-import java.net.MalformedURLException;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
+import java.rmi.Remote;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.Executor;
 
 /**
  * @author WS Development Team
  */
-
+/**
+ *  <code>Service</code> objects provide the client view of a Web service.
+ *  <p><code>Service</code> acts as a factory of the following:
+ *  <ul>
+ *  <li>Proxies for a target service endpoint.
+ *  <li>Instances of <code>javax.xml.ws.Dispatch</code> for
+ *      dynamic message-oriented invocation of a remote
+ *      operation.
+ *  </li>
+ *
+ * <p>The ports available on a service can be enumerated using the
+ * <code>getPorts</code> method. Alternatively, you can pass a
+ * service endpoint interface to the unary <code>getPort</code> method
+ * and let the runtime select a compatible port.
+ *
+ * <p>Handler chains for all the objects created by a <code>Service</code>
+ * can be set by means of the provided <code>HandlerRegistry</code>.
+ *
+ * <p>An <code>Executor</code> may be set on the service in order
+ * to gain better control over the threads used to dispatch asynchronous
+ * callbacks. For instance, thread pooling with certain parameters
+ * can be enabled by creating a <code>ThreadPoolExecutor</code> and
+ * registering it with the service.
+ *
+ *  @since JAX-WS 2.0
+ *
+ *  @see javax.xml.ws.ServiceFactory
+ *  @see javax.xml.ws.handler.HandlerRegistry
+ *  @see java.util.concurrent.Executor
+**/
 public class WebService
     implements WebServiceInterface, Serializable, Referenceable {
 
     protected static final String GET = "get";
-    protected static final String PORT = "Port";
-    protected static final int EXCLUDE_LEN = 7; //get len + Port len
-    protected static final int GET_LEN = 3;
-    protected static final int PORT_LEN = 4;
-    protected static final String DEFAULT_OPERATION_STYLE = "rpc";
-    protected QName name;
-    protected WSDLContext wsdlContext;
+
     protected HashSet<QName> ports;
-    protected URL wsdlLocation;
-    //todo:will take out dispatch ports once bindingId
-    //endpoint, QName determined in ConfiguredService
+
     protected HashMap<QName, PortInfoBase> dispatchPorts;
     protected HandlerRegistryImpl handlerRegistry;
-    protected Class si;
+
     protected Object serviceProxy;
-    private RuntimeContext rtContext;
+    protected URL wsdlLocation;
+    protected ServiceContext serviceContext;
+    protected Executor executor;
+    private Object seiProxy;
+
+    public WebService(ServiceContext scontext) {
+        serviceContext = scontext;
+        this.dispatchPorts = new HashMap();
+    }
+
+    private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
+        ServiceContextBuilder builder = new ServiceContextBuilder();
+        serviceContext = builder.completeServiceContext(serviceContext, portName, portInterface);
+    }
+
+    public URL getWSDLLocation() {
+        if (wsdlLocation == null)
+            setWSDLLocation(getWsdlLocation());
+        return wsdlLocation;
+    }
 
     public void setWSDLLocation(URL location) {
         wsdlLocation = location;
     }
 
-    protected void init(QName name, Class si) {
-        this.name = name;
-        this.si = si;
-        this.ports = new HashSet<QName>();
-        this.dispatchPorts = new HashMap();
+    public Executor getExecutor() {
+        return executor;
     }
 
-    //do we need this? //yes for proxy
-    public WebService(RuntimeContext context, Class sinterface, URL wsdlDocumentLocation) {
-        rtContext = context;
-        wsdlLocation = wsdlDocumentLocation;
-        init(null, sinterface);
-    }
-
-    public WebService(QName name, Class si) {
-        init(name, si);
-    }
-
-    public WebService(QName name, Class si, URL wsdlDocumentLocation) {
-        init(name, si);
-        wsdlLocation = wsdlDocumentLocation;
-    }
-
-    private WSDLContext getWSDLContext() {
-        if (wsdlContext == null)
-            wsdlContext = new WSDLContext();
-        return wsdlContext;
-    }
-
-
-    public WSDLContext parseWSDL(URL wsdlDocumentLocation) {
-        //must get binding information
-        WSDLParser parser = new WSDLParser();
-        getWSDLContext().setOrigWSDLLocation(wsdlDocumentLocation);
-        try {
-            //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
-            return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    //todo: valid port in wsdl
-    private void preProcess(QName portName, Class portInterface) throws WebServiceException, MalformedURLException {
-        //if the wsdlLocation not already there try to get it from SEI @WebService annotation
-        if (wsdlLocation == null) {
-            wsdlLocation = WSDLParser.getWSDLLocation(portInterface);
-            if(wsdlLocation == null)
-                noWsdlException();
-        }
-
-        wsdlContext = parseWSDL(wsdlLocation);
-
-        if (rtContext == null) {
-            RuntimeModeler processor =
-                new RuntimeModeler(portInterface, wsdlContext.getBindingID().toString());
-
-            RuntimeModel model = processor.buildRuntimeModel();
-
-            rtContext = new RuntimeContext(model);
-
-            // get handler information
-            HandlerAnnotationInfo chainInfo =
-                HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
-                if (chainInfo != null) {
-                    HandlerRegistryImpl registry = getHandlerRegistry();
-                    registry.setHandlerChain(chainInfo.getHandlers());
-
-                    // todo: need a place to store role information to
-                    // place in binding
-                    //chainInfo.getRoles();
-                }
-
-        }
-
-//        //todo: if changed reprocess wsdl- track this
-//        if (wsdlLocation != null) {
-//            wsdlContext = parseWSDL(wsdlLocation);
-//        } else {
-//            noWsdlException();
-//        }
-
-    }
-
-    protected void addPorts(QName[] ports) {
-        if (ports != null) {
-            for (int i = 0; i < ports.length; ++i) {
-                addPort(ports[i]);
-            }
-        }
-    }
-
-    public WebService(QName name, Iterator<QName> eachPort) {
-        this.name = name;
-        while (eachPort.hasNext()) {
-            addPort(eachPort.next());
-        }
-    }
-
-    protected void addPort(QName port) {
-        ports.add(port);
-        if (handlerRegistry != null) {
-            handlerRegistry.addPort(port);
-        }
-    }
-
-    protected WebServiceException noWsdlException() {
-        return new WebServiceException("dii.service.no.wsdl.available");
+    public void setExecutor(Executor executor) {
+        executor = this.executor;
     }
 
     public Object getPort(QName portName, Class portInterface)
         throws WebServiceException {
-
+        seiProxy = createEndpointIFBaseProxy(portName, portInterface);
         if (portName != null) {
             addPort(portName);
         }
 
-        return createEndpointIFBaseProxy(portName, portInterface);
+        return seiProxy;
     }
 
-    private Object createEndpointIFBaseProxy(QName portName, Class portInterface) throws WebServiceException {
-
-        try {
-            preProcess(portName, portInterface);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        EndpointIFProxyBuilder builder = new EndpointIFProxyBuilder(getHandlerRegistry(), rtContext, wsdlContext, name);
-        return builder.buildEndpointIFProxy(portName, portInterface);
-    }
 
     public Object getPort(Class portInterface) throws WebServiceException {
         return createEndpointIFBaseProxy(null, portInterface);
@@ -201,22 +124,13 @@ public class WebService
 
     //todo: rename addPort :spec tbd
     public void createPort(QName portName, URI bindingId, String endpointAddress) throws WebServiceException {
-        //doesn't work for local transport
-        //if (!isEndpointValidForBinding(bindingId, endpointAddress)) {
-        //    throw new ServiceException("Endpoint address not valid for binding id " + bindingId.toString());
-        //} else {
+
         if (!dispatchPorts.containsKey(portName)) {
-            PortInfoBase info = new PortInfoBase(portName);
-            info.setTargetEndpoint(endpointAddress);
-            info.setBindingId(bindingId);
-            //take out dispatch ports temp
-            dispatchPorts.put(portName, info);
+            dispatchPorts.put(portName, new PortInfoBase(endpointAddress, portName, bindingId));
         } else
             throw new WebServiceException("Port " + portName.toString() + " already exists can not create a port with the same name.");
-
         // need to add port to list for HandlerRegistry
         addPort(portName);
-        //}
     }
 
     public <T> Dispatch<T> createDispatch(QName qName, Class<T> aClass, Mode mode) throws WebServiceException {
@@ -227,39 +141,110 @@ public class WebService
         return createDispatchJAXB(qName, jaxbContext, mode);
     }
 
-
     public QName getServiceName() {
-        return name;
-    }
-
-    protected HashSet<QName> getPortsAsSet() {
-        return ports;
+        return serviceContext.getServiceName();
     }
 
     public Iterator getPorts() throws WebServiceException {
+        if (ports == null)
+            populatePorts();
+
         if (ports.size() == 0)
             throw noWsdlException();
         return ports.iterator();
-
     }
 
     public java.net.URL getWSDLDocumentLocation() {
-        return wsdlLocation;
+        return getWsdlLocation();
     }
-
 
     public SecurityConfiguration getSecurityConfiguration() {
         throw new UnsupportedOperationException("Security is not implemented for JAXWS 2.0 Early Access.");
-        // return null;
     }
 
     public HandlerRegistryImpl getHandlerRegistry() {
         //need to return handlerRegistryImpl?
         if (handlerRegistry == null) {
-            handlerRegistry = new HandlerRegistryImpl(getPortsAsSet());
+            if (serviceContext.getRegistry() != null)
+                handlerRegistry = serviceContext.getRegistry();
+            else {
+                handlerRegistry = new HandlerRegistryImpl(getPortsAsSet());
+            }
         }
 
         return (HandlerRegistryImpl) handlerRegistry;
+    }
+
+
+    public Reference getReference() throws NamingException {
+        Reference reference =
+            new Reference(getClass().getName(),
+                "com.sun.xml.rpc.naming.ServiceReferenceResolver",
+                null);
+        String serviceName = ServiceReferenceResolver.registerService(this);
+        reference.add(new StringRefAddr("ServiceName", serviceName));
+        return reference;
+    }
+
+
+    protected void addPorts(QName[] ports) {
+        if (ports != null) {
+            for (int i = 0; i < ports.length; ++i) {
+                addPort(ports[i]);
+            }
+        }
+    }
+
+    private void populatePorts() {
+        if (ports == null)
+            ports = new HashSet<QName>();
+
+        if (serviceContext.getServiceName() == null) {
+            if (serviceContext.getWsdlContext() != null) {
+                serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
+            }
+        }
+        Set knownPorts = null;
+
+        if (serviceContext.getWsdlContext() != null) {
+            knownPorts =
+                serviceContext.getWsdlContext().getPortsAsSet(serviceContext.getServiceName());
+            if (knownPorts != null) {
+                QName[] portz = (QName[]) knownPorts.toArray(new QName[knownPorts.size()]);
+                addPorts(portz);
+            }
+        }
+    }
+
+    protected void addPort(QName port) {
+        if (ports == null)
+            populatePorts();
+
+        ports.add(port);
+        if (handlerRegistry != null) {
+            handlerRegistry.addPort(port);
+        }
+    }
+
+    protected WebServiceException noWsdlException() {
+        return new WebServiceException("dii.service.no.wsdl.available");
+    }
+
+    private Object createEndpointIFBaseProxy(QName portName, Class portInterface) throws WebServiceException {
+
+        processServiceContext(portName, portInterface);
+
+        if (serviceContext.getWsdlContext().contains(serviceContext.getServiceName(), portName).size() < 1) {
+            throw new WebServiceException("Port " + portName + "is not found in service " + serviceContext.getServiceName());
+        }
+
+        return buildEndpointIFProxy(portName, portInterface);
+    }
+
+    protected HashSet<QName> getPortsAsSet() {
+        if (ports == null)
+            populatePorts();
+        return ports;
     }
 
     /*
@@ -268,12 +253,10 @@ public class WebService
      */
     protected void setBindingOnProvider(InternalBindingProvider provider,
                                         QName portName, URI bindingId) {
-
         provider._setBinding(getHandlerRegistry().createBinding(portName, bindingId));
     }
 
-    //todo: dispatch ports can be reused-
-    //must have way to clear all except binding in dispatch
+
     private Dispatch createDispatchClazz(QName port, Class clazz, Mode mode) throws WebServiceException {
         PortInfoBase dispatchPort = dispatchPorts.get(port);
         if (dispatchPort != null) {
@@ -296,22 +279,22 @@ public class WebService
         }
     }
 
-    public Reference getReference() throws NamingException {
-        Reference reference =
-            new Reference(getClass().getName(),
-                "com.sun.xml.rpc.naming.ServiceReferenceResolver",
-                null);
-        String serviceName = ServiceReferenceResolver.registerService(this);
-        reference.add(new StringRefAddr("ServiceName", serviceName));
-        return reference;
+    private URL getWsdlLocation() {
+        return serviceContext.getWsdlContext().getWsdlLocation();
     }
 
-    boolean isEndpointValidForBinding(URI bindingId, String endpoint) {
-        if (bindingId.toString().equals("http://schemas.xmlsoap.org/wsdl/soap/http")) {
-            if (endpoint.startsWith("http:") || endpoint.startsWith("file:"))
-                return true;
-        }
-        return false;
-    }
+    private Object buildEndpointIFProxy(QName portQName, Class portInterface)
+        throws WebServiceException {
+        EndpointIFInvocationHandler handler = new EndpointIFInvocationHandler(portInterface,
+            serviceContext.getRuntimeContext(), serviceContext.getWsdlContext(), getServiceName()); //need handler registry passed in here
+        setBindingOnProvider(handler, portQName, handler._getBindingId());
 
+        Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),
+            new Class[]{
+                portInterface, Remote.class, BindingProvider.class,
+                BindingProviderProperties.class, AnnotatedElement.class
+            }, handler);
+        handler.setProxy((Object) proxy);
+        return (BindingProvider) proxy;
+    }
 }

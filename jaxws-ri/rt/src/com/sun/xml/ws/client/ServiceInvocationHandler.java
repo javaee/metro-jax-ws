@@ -1,61 +1,81 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.3 2005-06-09 12:11:15 kwalsh Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.4 2005-07-20 20:28:23 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.server.RuntimeContext;
-
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.URL;
+
 
 /**
  * $author: JAXWS Development Team
  */
-public class ServiceInvocationHandler extends WebService implements InvocationHandler {
+public class ServiceInvocationHandler extends WebService
+    implements InvocationHandler {
 
-    public ServiceInvocationHandler(RuntimeContext context, Class si, URL wsdlDocumentLocation) {
-        super(context, si, wsdlDocumentLocation);
+    public ServiceInvocationHandler(ServiceContext serviceContext) {
+        super(serviceContext);
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (isSIMethod(method, si))
-            return invokeSIMethod(method, args);
-        else
-            return method.invoke(this, args);
+    public Object invoke(Object proxy, Method method, Object[] args)
+        throws Throwable {
+
+        try {
+            if (isSIMethod(method, serviceContext.getServiceInterface())) {
+                return invokeSIMethod(method, args);
+            } else {
+                return method.invoke(this, args);
+            }
+        } catch (java.lang.reflect.UndeclaredThrowableException ex) {
+             throw new WebServiceException(ex.getMessage(), ex.getCause());
+        } catch (java.lang.reflect.InvocationTargetException ex) {
+              throw new WebServiceException(ex.getMessage(), ex.getCause());
+        } catch (java.lang.reflect.GenericSignatureFormatError ex) {
+             throw new WebServiceException(ex.getMessage(), ex);
+        } catch (java.lang.reflect.MalformedParameterizedTypeException ex) {
+             throw new WebServiceException(ex.getMessage(), ex);
+        }
     }
 
-    private Object invokeSIMethod(Method method, Object[] args) throws WebServiceException {
-        if (!method.isAccessible())
+    private Object invokeSIMethod(Method method, Object[] args)
+        throws WebServiceException {
+        if (!method.isAccessible()) {
             method.setAccessible(true);
+        }
+
         return getXXXPort(method);
     }
 
     private Object getXXXPort(Method method) throws WebServiceException {
-
         String methodName = method.getName();
         Class returnType = method.getReturnType();
         String portName = null;
+
         if (returnType != null) {
             portName = getPortName(methodName, returnType.getSimpleName());
-            if (portName != null)
-                return getPort(returnType, portName);
-            else
-                throw new WebServiceException("port name undefined, must have port name");
-        } else
-            throw new WebServiceException("No Return type, " + method.getName() + "must have a return Class");
 
+            if (portName != null) {
+                return getPort(returnType, portName);
+            } else {
+                throw new WebServiceException("port name undefined, must have port name");
+            }
+        } else {
+            throw new WebServiceException("No Return type, " +
+                method.getName() + "must have a return Class");
+        }
     }
 
-    private Object getPort(Class returnType, String portName) throws WebServiceException {
+    private Object getPort(Class returnType, String portName)
+        throws WebServiceException {
         Class sei = null;
         Object port = null;
+
         if (returnType.isInterface()) {
             try {
                 sei = Thread.currentThread().getContextClassLoader().loadClass(returnType.getName());
@@ -66,14 +86,18 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
             try {
                 if (sei != null) {
                     port = getPort(new QName("", portName), sei);
-                    if (port == null)
+
+                    if (port == null) {
                         throw new WebServiceException("Unable to create Port");
-                } else
+                    }
+                } else {
                     throw new WebServiceException("No serviceEndpointInterface Class found, Unable to create Port.");
+                }
             } catch (RuntimeException rex) {
                 throw new WebServiceException("Error creating dynamic stub");
             }
         }
+
         return port;
     }
 
@@ -92,7 +116,6 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
         //this portname is currently needed when sei proxy is
         //created as the handler registry requires a known port on creation.
         //The handler registry is instantiated when sei proxy is generated.
-
         //assumption rt name is used in method name
         if (rtName.indexOf(mName) != 0) {
             //just check to make sure method is a getter
@@ -100,7 +123,7 @@ public class ServiceInvocationHandler extends WebService implements InvocationHa
                 return rtName;
             }
         }
+
         return rtName;
     }
-
 }

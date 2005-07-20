@@ -1,7 +1,6 @@
 /*
- * $Id: ContactInfoListIteratorBase.java,v 1.2 2005-07-18 16:52:05 kohlert Exp $
+ * $Id: ContactInfoListIteratorBase.java,v 1.3 2005-07-20 20:28:22 kwalsh Exp $
  */
-
 /*
 * Copyright (c) 2004 Sun Microsystems, Inc.
 * All rights reserved.
@@ -13,6 +12,7 @@ import com.sun.pept.ept.ContactInfoListIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 
 /**
  * @author WS Development Team
@@ -34,5 +34,4 @@ public class ContactInfoListIteratorBase implements ContactInfoListIterator {
     public boolean hasNext() {
         return iterator.hasNext();
     }
-
 }

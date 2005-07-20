@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.5 2005-06-15 00:45:20 jitu Exp $
+ * $Id: ContextMap.java,v 1.6 2005-07-20 20:28:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -40,7 +40,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
 
     protected BindingProvider _owner;
-    protected PortInfo portInfo;
+    protected PortInfoBase portInfo;
     protected Version version;
 
     public abstract ContextMap copy();
@@ -107,7 +107,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
     }
 
     //used for dispatch
-    public ContextMap(PortInfo info, BindingProvider provider) {
+    public ContextMap(PortInfoBase info, BindingProvider provider) {
         init();
         _owner = provider;
         if (info != null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoBase.java,v 1.3 2005-07-18 16:52:05 kohlert Exp $
+ * $Id: ContactInfoBase.java,v 1.4 2005-07-20 20:28:22 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -14,6 +14,7 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.transport.Connection;
+
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
@@ -25,11 +26,11 @@ import com.sun.xml.ws.server.LogicalEncoderImpl;
 
 import javax.xml.ws.soap.SOAPBinding;
 
+
 /**
  * @author WS Development Team
  */
 public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
-
     protected Connection _connection;
     protected MessageDispatcher _messageDispatcher;
     protected Encoder _encoder;
@@ -37,9 +38,8 @@ public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
     private String bindingId;
 
     public ContactInfoBase(Connection connection,
-                           MessageDispatcher messageDispatcher,
-                           Encoder encoder,
-                           Decoder decoder, String bindingId) {
+        MessageDispatcher messageDispatcher, Encoder encoder, Decoder decoder,
+        String bindingId) {
         _connection = connection;
         _messageDispatcher = messageDispatcher;
         _encoder = encoder;
@@ -120,9 +120,11 @@ public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
         return new ClientEncoderDecoder();
     }
 
-    public String getBindingId(){
-        if(bindingId == null)
+    public String getBindingId() {
+        if (bindingId == null) {
             return SOAPBinding.SOAP11HTTP_BINDING;
+        }
+
         return bindingId;
     }
 }
