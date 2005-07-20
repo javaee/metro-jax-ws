@@ -1,5 +1,5 @@
 /*
- * $Id: WSServlet.java,v 1.1 2005-07-20 16:50:02 jitu Exp $
+ * $Id: WSServlet.java,v 1.2 2005-07-20 21:41:31 jitu Exp $
  */
 
 /*
@@ -103,7 +103,7 @@ public class WSServlet extends HttpServlet {
 
     private static final String DELEGATE_PROPERTY = "delegate";
     private static final String DEFAULT_DELEGATE_CLASS_NAME =
-        "com.sun.xml.ws.transport.http.servlet.JAXRPCServletDelegate";
+        "com.sun.xml.ws.transport.http.servlet.WSServletDelegate";
 
     private static final String EA_CONFIG_FILE_PROPERTY = "configuration.file";
     private static final String EA_DELEGATE_CLASS_NAME =
