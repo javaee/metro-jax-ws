@@ -109,12 +109,16 @@ invocation.</p>
     <tr>
       <td style="vertical-align: top;">-wsdl[:protocol]<br>
       </td>
-      <td style="vertical-align: top;">Generate a WSDL file.&nbsp; The
-protocol is optional and is usually only used so that the developer can
-look at the WSDL before the endpoint is deploy.&nbsp; This option is
+      <td style="vertical-align: top;">By default wsgen does not
+generate a WSDL file.&nbsp; This flag is optional and will cause wsgen
+to generate a WSDL file and is usually only used so that the developer
+can
+look at the WSDL before the endpoint is deploy.&nbsp; The
+protocol is optional and is
 used to specify what protocol should be
 used in the <code>wsdl:binding</code>. Valid protocols include:&nbsp; <code>soap11</code>
-and <code>soap12</code>.&nbsp; The default is <code>soap11</code>.<br>
+and <code>soap12</code>.&nbsp; The default is <code>soap11</code>.&nbsp;
+      <br>
       </td>
     </tr>
   </tbody>
