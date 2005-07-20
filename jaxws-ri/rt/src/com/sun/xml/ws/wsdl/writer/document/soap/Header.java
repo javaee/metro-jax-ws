@@ -22,5 +22,5 @@ public interface Header
 
     @XmlAttribute
     public com.sun.xml.ws.wsdl.writer.document.soap.BodyType part(String value);
-    
+
 }

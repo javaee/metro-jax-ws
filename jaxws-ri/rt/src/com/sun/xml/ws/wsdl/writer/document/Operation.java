@@ -29,10 +29,10 @@ public interface Operation
 
     @XmlElement
     public ParamType output();
-    
+
     @XmlElement
-    public FaultType fault();    
-    
+    public FaultType fault();
+
     @XmlAttribute
     public com.sun.xml.ws.wsdl.writer.document.Operation name(String value);
 

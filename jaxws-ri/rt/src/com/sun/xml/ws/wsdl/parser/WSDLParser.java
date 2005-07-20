@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.6 2005-07-18 16:52:36 kohlert Exp $
+ * $Id: WSDLParser.java,v 1.7 2005-07-20 20:58:52 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -152,7 +152,7 @@ public class WSDLParser {
                 int port = 0;
 
                 try {
-                    owsdlLoc = new URI(wsdlcontext.getOrigWSDLLocation().toExternalForm());
+                    owsdlLoc = new URI(wsdlcontext.getWsdlLocation().toExternalForm());
                     host = owsdlLoc.getHost();
                     port = owsdlLoc.getPort();
                 } catch (URISyntaxException e) {
@@ -338,20 +338,5 @@ public class WSDLParser {
 
 
 
-    /**
-     * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
-     *
-     * @param sei
-     * @return
-     */
-    public static URL getWSDLLocation(Class sei) throws MalformedURLException {
-        WebService ws = (WebService) sei.getAnnotation(WebService.class);
-        if (ws == null)
-            return null;
-        String wsdlLocation = ws.wsdlLocation();
-        if (wsdlLocation == null)
-            return null;
-        return new URL(wsdlLocation);
-    }
 
 }

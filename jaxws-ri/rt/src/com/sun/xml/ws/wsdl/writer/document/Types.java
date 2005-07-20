@@ -11,5 +11,5 @@ public interface Types
     extends TypedXmlWriter, Documented
 {
     @XmlElement(value="schema",ns="http://www.w3.org/2001/XMLSchema")
-    public Schema schema();   
+    public Schema schema();
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.22 2005-07-16 01:38:42 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.23 2005-07-20 20:58:52 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -105,20 +105,20 @@ public class WSDLGenerator {
         this.wsdlResolver = wsdlResolver;
         this.bindingId = bindingId;
     }
-    
+
     public void doGeneration() {
         OutputStream outputStream = null;
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         wsdlLocation = result.getSystemId();
         if (result instanceof StreamResult) {
-            outputStream = ((StreamResult)result).getOutputStream();           
+            outputStream = ((StreamResult)result).getOutputStream();
         } else {
             // TODO throw an exception
             throw new WebServiceException("unsupported result");
         }
         generateDocument(outputStream);
     }
-    
+
     private void generateDocument(OutputStream stream) {
         definitions = TXW.create(Definitions.class, new StreamSerializer(stream));
         definitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
@@ -129,7 +129,7 @@ public class WSDLGenerator {
             definitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
 
 //        definitions._namespace(WSDL_NAMESPACE, false);
-        
+
         definitions.name(model.getServiceQName().getLocalPart());
         if (model.getTargetNamespace() != null) {
             definitions.targetNamespace(model.getTargetNamespace());
@@ -142,10 +142,10 @@ public class WSDLGenerator {
         generateBinding();
         generateService();
         definitions.commit();
-    }    
-    
-    
-    
+    }
+
+
+
     protected void generateTypes() {
         types = definitions.types();
         if (model.getJAXBContext() != null) {
@@ -158,14 +158,14 @@ public class WSDLGenerator {
             }
         }
     }
-    
+
     protected void generateMessages() {
         for (JavaMethod method : model.getJavaMethods()) {
             if (method.getBinding() instanceof SOAPBinding)
                 generateSOAPMessages(method, (SOAPBinding)method.getBinding());
         }
     }
-    
+
     protected void generateSOAPMessages(JavaMethod method, SOAPBinding binding) {
         boolean isDoclit = binding.isDocLit();
         Message message = definitions.message().name(method.getOperationName());
@@ -194,7 +194,7 @@ public class WSDLGenerator {
                     part.element(param.getName());
                 }
             }
-        }                
+        }
         if (method.getMEP() != MessageStruct.ONE_WAY_MEP) {
             message = definitions.message().name(method.getOperationName()+RESPONSE);
             if (unwrappable) {
@@ -207,7 +207,7 @@ public class WSDLGenerator {
             for (Parameter param : method.getResponseParameters()) {
                 if (isDoclit) {
                     if (param.isWrapperStyle()) {
-                        // if its not really wrapper style dont use the same name as input message                    
+                        // if its not really wrapper style dont use the same name as input message
                         if (unwrappable)
                             part = message.part().name(RESULT);
                         else
@@ -215,7 +215,7 @@ public class WSDLGenerator {
                         part.element(param.getName());
                     } else {
                         part = message.part().name(param.getName().getLocalPart());
-                        part.element(param.getName());                    
+                        part.element(param.getName());
                     }
                 } else {
                     if (param.isWrapperStyle()) {
@@ -228,7 +228,7 @@ public class WSDLGenerator {
                         part.element(param.getName());
                     }
                 }
-            }                
+            }
         }
         for (CheckedException exception : method.getCheckedExceptions()) {
             QName tagName = exception.getDetailType().tagName;
@@ -240,15 +240,15 @@ public class WSDLGenerator {
             processedExceptions.add(tagName);
         }
     }
-    
+
     protected void generatePortType() {
-        
+
         PortType portType = definitions.portType().name(model.getPortQName().getLocalPart());
         for (JavaMethod method : model.getJavaMethods()) {
             Operation operation = portType.operation().name(method.getOperationName());
             generateParameterOrder(operation, method);
             switch (method.getMEP()) {
-                case MessageStruct.REQUEST_RESPONSE_MEP: 
+                case MessageStruct.REQUEST_RESPONSE_MEP:
                     // input message
                     generateInputMessage(operation, method);
                     // output message
@@ -256,7 +256,7 @@ public class WSDLGenerator {
                     break;
                 case MessageStruct.ONE_WAY_MEP:
                     generateInputMessage(operation, method);
-                    break;   
+                    break;
             }
             // faults
             for (CheckedException exception : method.getCheckedExceptions()) {
@@ -265,16 +265,16 @@ public class WSDLGenerator {
                 FaultType paramType = operation.fault().name(tagName.getLocalPart()).message(messageName);
             }
         }
-    }    
-    
+    }
+
     protected boolean isWrapperStyle(JavaMethod method) {
         if (method.getRequestParameters().size() > 0) {
             Parameter param = method.getRequestParameters().iterator().next();
             return param.isWrapperStyle();
-        }        
+        }
         return false;
     }
-            
+
     protected boolean isRpcLit(JavaMethod method) {
         if (method.getBinding() instanceof SOAPBinding) {
             if (((SOAPBinding)method.getBinding()).getStyle().equals(Style.RPC))
@@ -282,7 +282,7 @@ public class WSDLGenerator {
         }
         return false;
     }
-    
+
     protected void generateParameterOrder(Operation operation, JavaMethod method) {
         if (method.getMEP() == MessageStruct.ONE_WAY_MEP)
             return;
@@ -311,8 +311,8 @@ public class WSDLGenerator {
         }
         operation.parameterOrder(paramOrder);
     }
-    
-    
+
+
     protected void generateDocumentParameterOrder(Operation operation, JavaMethod method) {
         String partName = "";
         String paramOrder = "";
@@ -348,7 +348,7 @@ public class WSDLGenerator {
             operation.parameterOrder(paramOrder);
         }
     }
-    
+
     protected List<Parameter> sortMethodParameters(JavaMethod method) {
         Set<Parameter> paramSet = new HashSet<Parameter>();
         List<Parameter> sortedParams = new ArrayList<Parameter>();
@@ -366,10 +366,10 @@ public class WSDLGenerator {
                 } else {
                     paramSet.add(param);
                 }
-            }            
+            }
         } else  {
             paramSet.addAll(method.getRequestParameters());
-            paramSet.addAll(method.getResponseParameters());            
+            paramSet.addAll(method.getResponseParameters());
         }
         Iterator<Parameter>params = paramSet.iterator();
         if (paramSet.size() == 0)
@@ -388,12 +388,12 @@ public class WSDLGenerator {
                 if (param.getIndex() < sortedParam.getIndex()) {
                     break;
                 }
-            }            
+            }
             sortedParams.add(pos, param);
         }
         return sortedParams;
     }
-    
+
     protected boolean isBodyParameter(Parameter parameter) {
         SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
         return paramBinding.isBody();
@@ -403,13 +403,13 @@ public class WSDLGenerator {
         SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
         return paramBinding.isHeader();
     }
-    
+
     protected boolean isAttachmentParameter(Parameter parameter) {
         SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
         return paramBinding.isAttachment();
     }
-    
-    
+
+
     protected void generateBinding() {
         Binding binding = definitions.binding().name(model.getPortQName().getLocalPart()+BINDING);
         binding.type(model.getPortQName());
@@ -443,8 +443,8 @@ public class WSDLGenerator {
             else
                 generateBindingOperation(method, binding);
         }
-    }    
-    
+    }
+
     protected void generateBindingOperation(JavaMethod method, Binding binding) {
         BindingOperationType operation = binding.operation().name(method.getOperationName());
         String targetNamespace = model.getTargetNamespace();
@@ -480,10 +480,10 @@ public class WSDLGenerator {
                        body.parts(param.getName().getLocalPart());
                     }
                     generateSOAPHeaders(input, headerParams, requestMessage);
-                }    
+                }
                 if (isRpc) {
                     body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
-                }                  
+                }
             } else {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
@@ -520,10 +520,10 @@ public class WSDLGenerator {
                         body.parts(param.getName().getLocalPart());
                     }
                     generateSOAPHeaders(output, headerParams, responseMessage);
-                }                
+                }
                 if (isRpc) {
                     body.namespace(method.getRequestParameters().iterator().next().getName().getNamespaceURI());
-                }                  
+                }
             }
             for (CheckedException exception : method.getCheckedExceptions()) {
                 QName tagName = exception.getDetailType().tagName;
@@ -578,14 +578,14 @@ public class WSDLGenerator {
                 // TODO localize this
                 throw new WebServiceException("encoded use is not supported");
             }
-            
+
             if (method.getMEP() != MessageStruct.ONE_WAY_MEP) {
                 // output
                 boolean unwrappable = headerParams.size() == 0;
                 bodyParams.clear();
                 headerParams.clear();
                 splitParameters(bodyParams, headerParams, method.getResponseParameters());
-                unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;            
+                unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;
                 TypedXmlWriter output = operation.output();
                 body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
                 body.use(LITERAL);
@@ -631,17 +631,17 @@ public class WSDLGenerator {
             } else {
                 headerParams.add(parameter);
             }
-        }        
+        }
     }
 
     protected void generateSOAPHeaders(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
-        
+
         for (Parameter headerParam : parameters) {
             Header header = writer._element(Header.class);
             header.message(message);
             header.part(headerParam.getName().getLocalPart());
             header.use(LITERAL);
-        }        
+        }
     }
 
     protected void generateSOAP12Headers(TypedXmlWriter writer, List<Parameter> parameters, QName message) {
@@ -670,17 +670,17 @@ public class WSDLGenerator {
             }
         }
     }
-    
+
     protected void generateInputMessage(Operation operation, JavaMethod method) {
         ParamType paramType = operation.input();//.name();
-        paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()));        
+        paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()));
     }
 
     protected void generateOutputMessage(Operation operation, JavaMethod method) {
         ParamType paramType = operation.output();//.name();
-        paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()+RESPONSE));        
+        paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()+RESPONSE));
     }
-    
+
     public Result createOutputFile(String namespaceUri, String suggestedFileName) throws IOException {
         Result result;
         if (namespaceUri.equals("")) {
@@ -693,7 +693,7 @@ public class WSDLGenerator {
         _import.schemaLocation(schemaLoc);
         return result;
     }
-    
+
    /**
      * Relativizes a URI by using another URI (base URI.)
      *
@@ -764,11 +764,11 @@ public class WSDLGenerator {
             return "../" + calculateRelativePath(uri, getParentUriPath(base));
         }
     }
-    
-    
+
+
     protected class JAXWSOutputSchemaResolver extends SchemaOutputResolver {
         public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
             return createOutputFile(namespaceUri, suggestedFileName);
         }
-    }    
+    }
 }

@@ -20,5 +20,5 @@ public interface Header
 
     @XmlAttribute
     public BodyType part(String value);
-    
+
 }

@@ -15,7 +15,7 @@ public interface BindingOperationType
 
     @XmlAttribute
     public com.sun.xml.ws.wsdl.writer.document.BindingOperationType name(String value);
-    
+
     @XmlElement(value="operation",ns="http://schemas.xmlsoap.org/wsdl/soap/")
     public SOAPOperation soapOperation();
 
