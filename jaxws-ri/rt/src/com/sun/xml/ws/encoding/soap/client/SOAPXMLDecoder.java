@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.1 2005-07-19 20:41:24 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.2 2005-07-21 19:43:48 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -119,12 +119,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 //    }
 
     public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
+
         WSConnection connection = (WSConnection) messageInfo.getConnection();
-        
+
         SOAPMessage sm = null;
-        
+
         try {
-            MessageFactory messageFactory = MessageFactory.newInstance ();
             // TODO: can the header on WSConnection be MimeHeaders instead of Map<String, List<String>>
 
             Map<String, List<String>> headers = connection.getHeaders ();
@@ -132,13 +132,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             for (String headerName : headers.keySet()) {
                 MimeHeader mimeHeader = new MimeHeader(headerName,  headers.get(headerName).get(0));
             }
-            sm = SOAPUtil.createMessage (mimeHeaders, connection.getInput(), getBindingId());
-        } catch (SOAPException ex) {
-            ex.printStackTrace();
+            sm = SOAPUtil.createMessage (mimeHeaders, connection.getInput(), getBindingId(messageInfo));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         return sm;
     }
 
@@ -281,6 +279,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     public String getBindingId() {
         return SOAPBinding.SOAP11HTTP_BINDING;
     }
+
+
 
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
                                         MessageInfo messageInfo) {
@@ -504,6 +504,17 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
     protected JAXBContext getJAXBContext() {
         return jc;
+    }
+
+    private String getBindingId(MessageInfo messageInfo){
+        RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        String bindingId = null;
+        if (requestContext != null){
+            bindingId = (String)requestContext.get(BindingProviderProperties.BINDING_ID_PROPERTY);
+            if (bindingId != null)
+                return bindingId;
+        }
+           return getBindingId();
     }
 }
 
