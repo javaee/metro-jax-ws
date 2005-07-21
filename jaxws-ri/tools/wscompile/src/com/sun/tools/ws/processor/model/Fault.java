@@ -1,5 +1,5 @@
 /**
- * $Id: Fault.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
+ * $Id: Fault.java,v 1.3 2005-07-21 01:59:08 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -15,6 +15,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.tools.ws.processor.generator.GeneratorUtil;
 import com.sun.tools.ws.processor.model.java.JavaException;
+import com.sun.codemodel.JClass;
 
 /**
  *
@@ -151,6 +152,14 @@ public class Fault extends ModelObject {
             this.wsdlException = wsdlFault;
     }
 
+    public void setExceptionClass(JClass ex){
+        exceptionClass = ex;
+    }
+
+    public JClass getExceptionClass(){
+        return exceptionClass;
+    }
+
     private boolean wsdlException = true;
     private String name;
     private Block block;
@@ -159,4 +168,5 @@ public class Fault extends ModelObject {
     private Set subfaults = new HashSet();
     private QName elementName = null;
     private String javaMemberName = null;
+    private JClass exceptionClass;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.2 2005-07-18 18:14:04 kohlert Exp $
+ * $Id: WSDLModelerBase.java,v 1.3 2005-07-21 01:59:12 vivekp Exp $
  */
 
 /*
@@ -4699,7 +4699,6 @@ public abstract class WSDLModelerBase implements Modeler {
             javaException = fault.getJavaException();
             method.addException(javaException.getName());
         }
-
     }
 
     protected boolean createJavaException(

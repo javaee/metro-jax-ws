@@ -1,5 +1,5 @@
 /*
- * $Id: JavaType.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
+ * $Id: JavaType.java,v 1.3 2005-07-21 01:59:09 vivekp Exp $
  */
 
 /*
@@ -8,6 +8,10 @@
  */
 
 package com.sun.tools.ws.processor.model.java;
+
+import com.sun.codemodel.JType;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
+import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
 
 /**
  *
@@ -22,8 +26,14 @@ public abstract class JavaType {
     private boolean holderPresent;
     private String initString;
     private String holderName;
+    private JAXBTypeAndAnnotation type;
 
     public JavaType() {}
+
+    public JavaType(JAXBTypeAndAnnotation type){
+        this.type = type;
+        init(type.getName(), false, null, null);
+    }
 
     public JavaType(String name, boolean present, String initString) {
         init(name, present, initString, null);
@@ -33,6 +43,10 @@ public abstract class JavaType {
         String holderName) {
 
         init(name, present, initString, holderName);
+    }
+
+    public JAXBTypeAndAnnotation getType(){
+        return type;
     }
 
     private void init(String name, boolean present, String initString,

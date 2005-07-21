@@ -1,5 +1,5 @@
 /*
- * $Id: Operation.java,v 1.2 2005-07-18 18:14:00 kohlert Exp $
+ * $Id: Operation.java,v 1.3 2005-07-21 01:59:08 vivekp Exp $
  */
 
 /*
@@ -35,8 +35,8 @@ public class Operation extends ModelObject {
     public Operation(QName name) {
         _name = name;
         _uniqueName = name.getLocalPart();
-        _faultNames = new HashSet();
-        _faults = new HashSet();
+        _faultNames = new HashSet<String>();
+        _faults = new HashSet<Fault>();
     }
 
     public QName getName() {
@@ -83,7 +83,7 @@ public class Operation extends ModelObject {
         _faults.add(f);
     }
 
-    public Iterator getFaults() {
+    public Iterator<Fault> getFaults() {
         return _faults.iterator();
     }
 
@@ -92,13 +92,13 @@ public class Operation extends ModelObject {
     }
 
     /* serialization */
-    public void setFaultsSet(Set s) {
+    public void setFaultsSet(Set<Fault> s) {
         _faults = s;
         initializeFaultNames();
     }
 
     private void initializeFaultNames() {
-        _faultNames = new HashSet();
+        _faultNames = new HashSet<String>();
         if (_faults != null) {
             for (Iterator iter = _faults.iterator(); iter.hasNext();) {
                 Fault f = (Fault) iter.next();
@@ -110,15 +110,12 @@ public class Operation extends ModelObject {
         }
     }
 
-    public Iterator getAllFaults() {
-        Set allFaults = getAllFaultsSet();
-        if (allFaults.size() == 0) {
-            return null;
-        }
+    public Iterator<Fault> getAllFaults() {
+        Set<Fault> allFaults = getAllFaultsSet();
         return allFaults.iterator();
     }
 
-    public Set getAllFaultsSet() {
+    public Set<Fault> getAllFaultsSet() {
         Set transSet = new HashSet();
         transSet.addAll(_faults);
         Iterator iter = _faults.iterator();
@@ -190,9 +187,6 @@ public class Operation extends ModelObject {
         visitor.visit(this);
     }
 
-
-
-    @Persistent
     private boolean _isWrapped = true;
     private QName _name;
     private String _uniqueName;
@@ -202,7 +196,7 @@ public class Operation extends ModelObject {
     private String _soapAction;
     private SOAPStyle _style = SOAPStyle.DOCUMENT;
     private SOAPUse _use = SOAPUse.LITERAL;
-    private Set _faultNames;
-    private Set _faults;
+    private Set<String> _faultNames;
+    private Set<Fault> _faults;
 
 }

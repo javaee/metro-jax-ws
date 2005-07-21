@@ -1,5 +1,5 @@
 /*
- * $Id: JavaMethod.java,v 1.2 2005-07-18 18:14:01 kohlert Exp $
+ * $Id: JavaMethod.java,v 1.3 2005-07-21 01:59:08 vivekp Exp $
  */
 
 /*
@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.sun.tools.ws.processor.model.ModelException;
+import com.sun.codemodel.JClass;
 
 /**
  *
@@ -133,9 +134,19 @@ public class JavaMethod {
         this.throwsRemoteException = throwsRemoteException;
     }
 
+    public void addExceptionClass(JClass ex){
+        exceptionClasses.add(ex);
+    }
+
+    public List<JClass> getExceptionClasses(){
+        return exceptionClasses;
+    }
+
     private String name;
     private List<JavaParameter> parameters = new ArrayList<JavaParameter>();
-    private List exceptions = new ArrayList();
+    private List<String> exceptions = new ArrayList<String>();
+    private List<JClass> exceptionClasses = new ArrayList<JClass>();
+
     private JavaType returnType;
     private String declaringClass;
     private boolean throwsRemoteException = true;

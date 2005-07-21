@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.1 2005-05-24 13:42:08 bbissett Exp $
+ * $Id: ModelerUtils.java,v 1.2 2005-07-21 01:59:11 vivekp Exp $
  */
 
 /*
@@ -24,13 +24,7 @@ import com.sun.tools.ws.processor.model.java.JavaSimpleType;
 import com.sun.tools.ws.processor.model.java.JavaStructureMember;
 import com.sun.tools.ws.processor.model.java.JavaStructureType;
 import com.sun.tools.ws.processor.model.java.JavaType;
-import com.sun.tools.ws.processor.model.jaxb.JAXBElementMember;
-import com.sun.tools.ws.processor.model.jaxb.JAXBMapping;
-import com.sun.tools.ws.processor.model.jaxb.JAXBProperty;
-import com.sun.tools.ws.processor.model.jaxb.JAXBStructuredType;
-import com.sun.tools.ws.processor.model.jaxb.JAXBType;
-import com.sun.tools.ws.processor.model.jaxb.RpcLitMember;
-import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
+import com.sun.tools.ws.processor.model.jaxb.*;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.Message;
 import com.sun.tools.ws.wsdl.document.MessagePart;
@@ -108,10 +102,7 @@ public class ModelerUtils {
             JAXBType jaxbType, Block block, JAXBStructuredType type,
             JavaStructureType jst) {
         QName elementName = prop.getElementName();
-        JavaType javaType = new JavaSimpleTypeCreator().getJavaSimpleType(prop
-                .getType());
-        //its a JAXB bean
-        if (javaType == null) javaType = new JavaSimpleType(prop.getType(), null);
+        JavaType javaType = new JavaSimpleType(prop.getType());
         JAXBElementMember eType = new JAXBElementMember(elementName, jaxbType);
         JavaStructureMember jsm = new JavaStructureMember(elementName
                 .getLocalPart(), javaType, eType);
@@ -124,21 +115,12 @@ public class ModelerUtils {
         t.setUnwrapped(true);
         Parameter parameter = createParameter(elementName.getLocalPart(), t, block);
         parameter.setEmbedded(true);
-//        Parameter parameter = new Parameter(elementName.getLocalPart());
-//        parameter.setProperty(ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                elementName.getLocalPart());
-//        parameter.setEmbedded(true);
-//        parameter.setType(t);
-//        parameter.setTypeName(prop.getType());
-//        parameter.setBlock(block);
-//        parameter.setEmbedded(true);
         return parameter;
     }
 
     public static List<Parameter> createRpcLitParameters(Message message, Block block, S2JJAXBModel jaxbModel){
         RpcLitStructure rpcStruct = (RpcLitStructure)block.getType();
 
-        List<RpcLitMember> members = new ArrayList<RpcLitMember>();
         List<Parameter> parameters = new ArrayList<Parameter>();
         for(MessagePart part : message.getParts()){
             if(part.getBindingExtensibilityElementKind() == MessagePart.PART_NOT_BOUNDED)
@@ -147,12 +129,10 @@ public class ModelerUtils {
             TypeAndAnnotation typeAndAnn = jaxbModel.getJavaType(name);
             if(typeAndAnn == null)
                 continue;
-            String type = typeAndAnn.getTypeClass();
+            String type = typeAndAnn.getTypeClass().fullName();
             type = ClassNameInfo.getGenericClass(type);
             RpcLitMember param = new RpcLitMember(new QName("", part.getName()), type);
-            JavaType javaType = new JavaSimpleTypeCreator().getJavaSimpleType(type);
-            if (javaType == null)
-                javaType = new JavaSimpleType(type, null);
+            JavaType javaType = new JavaSimpleType(new JAXBTypeAndAnnotation(typeAndAnn));
             param.setJavaType(javaType);
             rpcStruct.addRpcLitMember(param);
             Parameter parameter = ModelerUtils.createParameter(part.getName(), param, block);
@@ -178,13 +158,11 @@ public class ModelerUtils {
                 partName);
         parameter.setEmbedded(false);
         parameter.setType(jaxbType);
-        parameter.setTypeName(jaxbType.getJavaType().getRealName());
+        parameter.setTypeName(jaxbType.getJavaType().getType().getName());
         parameter.setBlock(block);
         //add jaxb type annotations
         if(jaxbType instanceof JAXBType){
             JAXBMapping jaxbMapping = ((JAXBType)jaxbType).getJaxbMapping();
-            if(jaxbMapping != null)
-                parameter.setAnnotations(jaxbMapping.getAnnotations());
         }
         return parameter;
     }

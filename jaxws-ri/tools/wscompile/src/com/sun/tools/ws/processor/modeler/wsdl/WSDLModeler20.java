@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.5 2005-06-23 02:51:53 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.6 2005-07-21 01:59:11 vivekp Exp $
  */
 
 /*
@@ -47,12 +47,7 @@ import com.sun.tools.ws.processor.model.java.JavaParameter;
 import com.sun.tools.ws.processor.model.java.JavaSimpleType;
 import com.sun.tools.ws.processor.model.java.JavaStructureMember;
 import com.sun.tools.ws.processor.model.java.JavaType;
-import com.sun.tools.ws.processor.model.jaxb.JAXBElementMember;
-import com.sun.tools.ws.processor.model.jaxb.JAXBProperty;
-import com.sun.tools.ws.processor.model.jaxb.JAXBStructuredType;
-import com.sun.tools.ws.processor.model.jaxb.JAXBType;
-import com.sun.tools.ws.processor.model.jaxb.RpcLitMember;
-import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
+import com.sun.tools.ws.processor.model.jaxb.*;
 import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.modeler.ModelerUtils;
@@ -204,6 +199,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     ? "model"
                     : document.getDefinitions().getName());
         Model model = new Model(modelName);
+        model.setJAXBModel(getJAXBModelBuilder().getJAXBModel());
+        
         // This fails with the changed classname (WSDLModeler to WSDLModeler11 etc.)
         // with this source comaptibility change the WSDL Modeler class name is changed. Right now hardcoding the
         // modeler class name to the same one being checked in WSDLGenerator.
@@ -1897,11 +1894,10 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if(typeAnno == null){
                 fail("wsdlmodeler.jaxb.javatype.notfound", new Object[]{name, part.getName()});
             }
-            String cls = typeAnno.getTypeClass();
-            cls = ClassNameInfo.getGenericClass(cls);
-            JavaType javaType = new JavaSimpleTypeCreator().getJavaSimpleType(cls);
-            if (javaType == null)
-                javaType = new JavaSimpleType(cls, null);
+
+            System.out.println("type: " + typeAnno.getTypeClass().fullName());
+            System.out.println("isPrimitive: "+typeAnno.getTypeClass().isPrimitive());
+            JavaType javaType = new  JavaSimpleType(new JAXBTypeAndAnnotation(typeAnno));
             type = new JAXBType(new QName("", part.getName()), javaType);
         }
         return type;
@@ -1965,7 +1961,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @param part
      * @param param
      * @param wrapperStyle TODO
-     * @return
      */
     private void setCustomizedParameterName(Extensible extension, MessagePart part, Parameter param, boolean wrapperStyle) {
         JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(extension, JAXRPCBinding.class);
@@ -1997,7 +1992,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     JAXBProperty prop = props.next();
                     paramList.add(prop.getElementName().getLocalPart());
                     if(inputParamMap != null)
-                        inputParamMap.put(prop.getElementName().getLocalPart(), prop.getType());
+                        inputParamMap.put(prop.getElementName().getLocalPart(), prop.getType().getName());
                 }
             }
         }
@@ -2015,8 +2010,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     if(inputParamMap != null)
                         type = inputParamMap.get(prop.getElementName().getLocalPart());
                     if(outputParamMap != null)
-                        outputParamMap.put(prop.getElementName().getLocalPart(), prop.getType());
-                    if(type != null && type.equals(prop.getType())){
+                        outputParamMap.put(prop.getElementName().getLocalPart(), prop.getType().getName());
+                    if(type != null && type.equals(prop.getType().getName())){
                         continue;
                     }
                     outWrapperChildren.add(prop);
@@ -2806,7 +2801,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
     /**
      * @param port
-     * @param type
      */
     private void applyWrapperStyleCustomization(Port port, PortType portType) {
         JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(portType, JAXRPCBinding.class);

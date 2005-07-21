@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBMapping.java,v 1.1 2005-05-23 23:18:52 bbissett Exp $
+ * $Id: JAXBMapping.java,v 1.2 2005-07-21 01:59:09 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import com.sun.tools.xjc.api.Mapping;
 import com.sun.tools.xjc.api.Property;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
+import com.sun.codemodel.JType;
 
 /**
  * @author Kohsuke Kawaguchi, Vivek Pandey
@@ -29,12 +30,9 @@ public class JAXBMapping {
     private QName elementName;
 
     /**
-     * @see Mapping#getTypeClass()
+     *
      */
-    @Persistent
-    private String typeClass;
-
-    private List<String> annotations;
+    private JAXBTypeAndAnnotation type;
 
     /**
      * @see Mapping#getWrapperStyleDrilldown()
@@ -50,11 +48,10 @@ public class JAXBMapping {
     /**
      * Constructor that fills in the values from the given raw model
      */
-    /*package*/ JAXBMapping( com.sun.tools.xjc.api.Mapping rawModel ) {
+    JAXBMapping( com.sun.tools.xjc.api.Mapping rawModel ) {
         elementName = rawModel.getElement();
         TypeAndAnnotation typeAndAnno = rawModel.getType();
-        typeClass = typeAndAnno.getTypeClass();
-        annotations = typeAndAnno.getAnnotations();
+        type = new JAXBTypeAndAnnotation(typeAndAnno);
         List<? extends Property> list = rawModel.getWrapperStyleDrilldown();
         if(list==null)
             wrapperStyleDrilldown = null;
@@ -77,41 +74,15 @@ public class JAXBMapping {
         this.elementName = elementName;
     }
 
-    /**
-     * @see Mapping#getTypeClass()
-     */
-    public String getTypeClass() {
-        return typeClass;
+
+    public JAXBTypeAndAnnotation getType() {
+        return type;
     }
-
-    public void setTypeClass(String typeClass) {
-        this.typeClass = typeClass;
-    }
-
-
-    /**
-     * @return Returns the annotations.
-     */
-    public List<String> getAnnotations() {
-        return annotations;
-    }
-
-    /**
-     * @param annotations The annotations to set.
-     */
-    public void setAnnotations(List<String> annotations) {
-        this.annotations = annotations;
-    }
-
 
     /**
      * @see Mapping#getWrapperStyleDrilldown()
      */
     public List<JAXBProperty> getWrapperStyleDrilldown() {
         return wrapperStyleDrilldown;
-    }
-
-    public void setWrapperStyleDrilldown(List<JAXBProperty> wrapperStyleDrilldown) {
-        this.wrapperStyleDrilldown = wrapperStyleDrilldown;
     }
 }

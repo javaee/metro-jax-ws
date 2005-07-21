@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBElementMember.java,v 1.1 2005-05-23 23:18:52 bbissett Exp $
+ * $Id: JAXBElementMember.java,v 1.2 2005-07-21 01:59:09 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -69,38 +69,6 @@ public class JAXBElementMember {
     public void setProperty(JAXBProperty prop) {
         _prop = prop;
     }
-    
-    /**
-     * @param jaxbBean
-     *            A variable name that evaluates to the bean whose values will
-     *            be retrieved.
-     * @param val
-     *            A variable name that evaluates to the values to be set. The
-     *            type of this variable must be the one returned by type().
-     * @return The expressions assignment expression such as
-     *         JAXBElementMember.getterExpr("inputType", "String value"); will
-     *         return "String value = inputType.getXXX();"
-     */
-//    public String getterExpr(String jaxbBean, String val, String extraParam) {
-//        JAXBProperty prop = getProperty();
-//        return prop.getValue(jaxbBean, val, extraParam);
-//    }
-    
-    /**
-     * @param jaxbBean
-     *            A variable name that evaluates to the bean that receives new
-     *            values.
-     * @param val
-     *            A variable name that evaluates to the values to be set. The
-     *            type of this variable must be the one returned by type()
-     * @return The expressions assignment expression such as
-     *         JAXBElementMember.setterExpr("inputType", "value"); will
-     *         return "inputType.setXXX(value);"
-     */
-//    public String setterExpr(String jaxbBean, String val, String extraParam) {
-//        JAXBProperty prop = getProperty();
-//        return prop.setValue(jaxbBean, val, extraParam);
-//    }
     
     private QName _name;
     private JAXBType _type;

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.3 2005-07-18 18:14:04 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.4 2005-07-21 01:59:10 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -339,7 +339,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     private void buildModel() {
         WebService webService;
         WebServiceVisitor wrapperGenerator = createWrapperGenerator();
-        WebServiceVisitor webServiceVisitor = createModeler();
         boolean processedEndpoint = false;
         for (TypeDeclaration typedecl: apEnv.getSpecifiedTypeDeclarations()) {
             if (!(typedecl instanceof ClassDeclaration))
@@ -359,9 +358,10 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return new WebServiceWrapperGenerator(this, context);
     }
 
-    protected WebServiceVisitor createModeler() {
-        return new WebServiceModeler(this, context);
-    }
+//    protected WebServiceVisitor createModeler() {
+        //return new WebServiceModeler(this, context);
+//        return null;
+//    }
 
     protected WebServiceVisitor createReferenceCollector() {
         return new WebServiceReferenceCollector(this, context);
@@ -377,7 +377,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         JavaCompiler javaC = XJC.createJavaCompiler();
         JAXBModel jaxBModel;
         WebServiceVisitor referenceCollector = createReferenceCollector();
-        WebServiceVisitor webServiceModeler = createModeler();
+       // WebServiceVisitor webServiceModeler = createModeler();
         for (SEIContext seiContext : context.getSEIContexts()) {
             log("completing model for endpoint: "+seiContext.getSEIImplName());
             TypeDeclaration decl = apEnv.getTypeDeclaration(seiContext.getSEIImplName());
@@ -403,7 +403,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
                 seiContext.getNamespaceURI(), apEnv));
 //            for (JAXBMapping map : jaxBModel.getMappings()) {System.out.println("map.getClazz: "+map.getClazz());}
             seiContext.setJAXBModel(jaxBModel);
-            decl.accept(webServiceModeler);
+            //decl.accept(webServiceModeler);
         }
     }
 

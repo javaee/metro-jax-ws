@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBProperty.java,v 1.1 2005-05-23 23:18:52 bbissett Exp $
+ * $Id: JAXBProperty.java,v 1.2 2005-07-21 01:59:10 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import com.sun.tools.xjc.api.Property;
 
 import com.sun.tools.ws.processor.model.Persistent;
+import com.sun.codemodel.JType;
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -19,17 +20,12 @@ public class JAXBProperty {
     /**
      * @see Property#name()
      */
-    @Persistent
     private String name;
-    /**
-     * @see Property#type()
-     */
-    @Persistent
-    private String type;
+
+    private JAXBTypeAndAnnotation type;
     /**
      * @see Property#elementName()
      */
-    @Persistent
     private QName elementName;
 
     /**
@@ -40,9 +36,9 @@ public class JAXBProperty {
     /**
      * Constructor that fills in the values from the given raw model
      */
-    /*package*/ JAXBProperty( Property prop ) {
+    JAXBProperty( Property prop ) {
         this.name = prop.name();
-        this.type = prop.type();
+        this.type = new JAXBTypeAndAnnotation(prop.type());
         this.elementName = prop.elementName();
     }
 
@@ -56,16 +52,9 @@ public class JAXBProperty {
     public void setName(String name) {
         this.name = name;
     }
-
-    /**
-     * @see Property#type()
-     */
-    public String getType() {
+    
+    public JAXBTypeAndAnnotation getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     /**
@@ -73,9 +62,5 @@ public class JAXBProperty {
      */
     public QName getElementName() {
         return elementName;
-    }
-
-    public void setElementName(QName elementName) {
-        this.elementName = elementName;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBModel.java,v 1.1 2005-05-23 23:18:52 bbissett Exp $
+ * $Id: JAXBModel.java,v 1.2 2005-07-21 01:59:09 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,6 +12,7 @@ import javax.xml.namespace.QName;
 import java.util.*;
 
 import com.sun.tools.ws.processor.model.Persistent;
+import com.sun.codemodel.JType;
 
 /**
  * Root of the JAXB Model.
@@ -26,13 +27,7 @@ public class JAXBModel {
     /**
      * All the mappings known to this model.
      */
-    private List<JAXBMapping> mappings;
-
-    /**
-     * @see com.sun.tools.xjc.api.JAXBModel#getClassList()
-     */
-    @Persistent
-    private List<String> classList;
+    private List<JAXBMapping> mappings;   
 
     // index for faster access.
     private final Map<QName,JAXBMapping> byQName = new HashMap<QName,JAXBMapping>();
@@ -80,22 +75,9 @@ public class JAXBModel {
                 ms.add(new JAXBMapping(m));
             setMappings(ms);
         }
-        setClassList(new ArrayList<String>(rawModel.getClassList()));
     }
 
     /**
-     * @see com.sun.tools.xjc.api.JAXBModel#getClassList()
-     */
-    public List<String> getClassList() {
-        return classList;
-    }
-
-    public void setClassList(List<String> classList) {
-        this.classList = classList;
-    }
-
-    /**
-     * @see com.sun.tools.xjc.api.JAXBModel#getMappings()
      */
     public List<JAXBMapping> getMappings() {
         return mappings;
@@ -109,19 +91,17 @@ public class JAXBModel {
         Iterator iter = mappings.iterator();
         for( JAXBMapping m : mappings ) {
             byQName.put(m.getElementName(),m);
-            byClassName.put(m.getTypeClass(),m);
+            byClassName.put(m.getType().getName(),m);
         }
     }
 
     /**
-     * @see com.sun.tools.xjc.api.JAXBModel#get(QName)
      */
     public JAXBMapping get( QName elementName ) {
         return byQName.get(elementName);
     }
 
     /**
-     * @see com.sun.tools.xjc.api.JAXBModel#get(String)
      */
     public JAXBMapping get( String className ) {
         return byClassName.get(className);
