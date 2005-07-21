@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.16 2005-07-12 22:39:48 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.17 2005-07-21 15:57:26 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -395,8 +395,9 @@ public class RuntimeModeler {
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
-                throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
-                    new Object[] {"-1", responseClass.getName(), method.getName()});
+                  resultQName = new QName(targetNamespace,RETURN);
+//                throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
+//                    new Object[] {"-1", responseClass.getName(), method.getName()});
             }
 
         }
