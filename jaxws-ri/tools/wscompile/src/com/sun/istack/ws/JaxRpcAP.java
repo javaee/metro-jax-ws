@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcAP.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
+ * $Id: JaxRpcAP.java,v 1.4 2005-07-21 01:59:47 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,16 +10,10 @@ import com.sun.tools.ws.processor.Processor;
 import com.sun.tools.ws.processor.ProcessorConstants;
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.Configuration;
-import com.sun.tools.ws.processor.generator.WSDLGenerator;
 import com.sun.tools.ws.processor.model.Model;
-import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
-import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
-import com.sun.tools.ws.processor.modeler.annotation.WebServiceModeler;
-import com.sun.tools.ws.processor.modeler.annotation.WebServiceWrapperGenerator;
-import com.sun.tools.ws.processor.modeler.annotation.WebServiceVisitor;
+import com.sun.tools.ws.processor.modeler.annotation.*;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.localization.LocalizableMessage;
 import com.sun.xml.ws.util.VersionUtil;
 
 import java.util.*;
@@ -38,10 +32,7 @@ public class JaxRpcAP extends WebServiceAP {
         return new WebServiceWrapperGenerator(this, context);    
     }
 
-    protected WebServiceVisitor createModeler() {
-        return new WebServiceModeler(this, context);
-    }    
-    
+
     protected boolean shouldProcessWebService(WebService webService) {
         return webService != null;
     }    
