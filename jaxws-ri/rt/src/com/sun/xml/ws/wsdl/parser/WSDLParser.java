@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.7 2005-07-20 20:58:52 kwalsh Exp $
+ * $Id: WSDLParser.java,v 1.8 2005-07-21 17:06:47 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -242,14 +242,8 @@ public class WSDLParser {
             do {
                 switch (reader.getState()) {
                     case START:
-                        QName name = reader.getName();
                         if (WSDLConstants.QNAME_PORT.equals(reader.getName())) {
                             parseWSDLPort(reader, wsdlcontext, portsMap);
-                            reader.next();
-                            reader.nextElementContent();
-                        } else if (WSDLConstants.QNAME_DOCUMENTATION.equals(reader.getName())) {
-                            reader.skipElement();
-                            reader.nextElementContent();
                         } else {
                             reader.skipElement();
                             reader.nextElementContent();
@@ -279,8 +273,6 @@ public class WSDLParser {
             do {
                 switch (reader.getState()) {
                     case START:
-                        QName name = reader.getName();
-
                         if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName()) ||
                             WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
                             String endpoint = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_LOCATION);
@@ -288,7 +280,6 @@ public class WSDLParser {
                             locationDone = true;
                             reader.next();
                             reader.nextElementContent();
-                            QName ename = reader.getName();
                         } else {
                             reader.skipElement();
                             reader.nextElementContent();
