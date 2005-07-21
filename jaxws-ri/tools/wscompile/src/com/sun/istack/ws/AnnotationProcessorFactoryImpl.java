@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorFactoryImpl.java,v 1.1 2005-05-23 23:10:13 bbissett Exp $
+ * $Id: AnnotationProcessorFactoryImpl.java,v 1.2 2005-07-21 23:13:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,7 +23,7 @@ import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactory {
 
     private static int round = 0; 
-    private static JaxRpcAP jaxRpcAP;
+    private static WSAP wsAP;
     /*
      * Processor doesn't examine any options.
      */
@@ -62,12 +62,12 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
     public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds,
 					AnnotationProcessorEnvironment apEnv) {
                                             
-        if (jaxRpcAP == null) {
+        if (wsAP == null) {
             AnnotationProcessorContext context = new AnnotationProcessorContext();
-            jaxRpcAP = new JaxRpcAP(context);
+            wsAP = new WSAP(context);
         }
-        jaxRpcAP.init(apEnv);
-        return jaxRpcAP;
+        wsAP.init(apEnv);
+        return wsAP;
     }
 }
 

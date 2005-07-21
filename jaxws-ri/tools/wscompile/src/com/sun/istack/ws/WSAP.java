@@ -1,5 +1,5 @@
 /**
- * $Id: JaxRpcAP.java,v 1.4 2005-07-21 01:59:47 vivekp Exp $
+ * $Id: WSAP.java,v 1.1 2005-07-21 23:13:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -22,9 +22,9 @@ import javax.jws.*;
 
 
 
-public class JaxRpcAP extends WebServiceAP {
+public class WSAP extends WebServiceAP {
              
-    public JaxRpcAP(AnnotationProcessorContext context) {         
+    public WSAP(AnnotationProcessorContext context) {         
         super(null, (ProcessorEnvironment)null, null, context);    
     }
 
