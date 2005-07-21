@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.8 2005-07-19 18:10:04 arungupta Exp $
+ * $Id: HttpClientTransport.java,v 1.9 2005-07-21 18:31:43 jitu Exp $
  */
 
 /*
@@ -158,7 +158,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
     
     public OutputStream getDebug() {
-        return System.out;
+        return _logStream;
     }
     
     public void invoke(String endpoint, SOAPMessageContext context)
