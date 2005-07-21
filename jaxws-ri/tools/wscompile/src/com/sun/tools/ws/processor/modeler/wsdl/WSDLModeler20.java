@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.6 2005-07-21 01:59:11 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.7 2005-07-21 16:05:20 vivekp Exp $
  */
 
 /*
@@ -1894,9 +1894,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if(typeAnno == null){
                 fail("wsdlmodeler.jaxb.javatype.notfound", new Object[]{name, part.getName()});
             }
-
-            System.out.println("type: " + typeAnno.getTypeClass().fullName());
-            System.out.println("isPrimitive: "+typeAnno.getTypeClass().isPrimitive());
             JavaType javaType = new  JavaSimpleType(new JAXBTypeAndAnnotation(typeAnno));
             type = new JAXBType(new QName("", part.getName()), javaType);
         }
