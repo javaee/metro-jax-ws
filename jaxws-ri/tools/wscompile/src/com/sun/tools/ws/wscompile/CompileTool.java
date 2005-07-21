@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.6 2005-07-18 18:14:10 kohlert Exp $
+ * $Id: CompileTool.java,v 1.7 2005-07-21 01:52:35 vivekp Exp $
  */
 
 /*
@@ -10,17 +10,13 @@ package com.sun.tools.ws.wscompile;
 
 import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;
-
-import com.sun.xml.ws.wsdl.writer.*;
-
 import com.sun.tools.ws.processor.*;
 import com.sun.tools.ws.processor.config.ClassModelInfo;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.config.parser.Reader;
 import com.sun.tools.ws.processor.generator.CustomExceptionGenerator;
-import com.sun.tools.ws.processor.generator.RemoteInterfaceGenerator;
-//import com.sun.tools.ws.processor.generator.WSDLGenerator;
+import com.sun.tools.ws.processor.generator.SeiGenerator;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
@@ -31,13 +27,12 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironmentBase;
 import com.sun.tools.ws.util.JAXRPCUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
-import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -307,7 +302,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         actions.put(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator());
         actions.put(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR,
-                new RemoteInterfaceGenerator());
+                new SeiGenerator());
         actions.put(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR,
                 new CustomExceptionGenerator());
         actions.put(ActionConstants.ACTION_JAXB_TYPE_GENERATOR,
@@ -486,14 +481,17 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         if (genServiceInterface) {
             processor.add(getAction(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR));
         }
-        if (genInterface) {
-            processor.add(getAction(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR));
-            processor.add(getAction(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR));
-        }
 
         if (genCustomClasses) {
             processor.add(getAction(ActionConstants.ACTION_JAXB_TYPE_GENERATOR));
         }
+
+        if (genInterface) {
+            processor.add(getAction(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR));
+            processor.add(getAction(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR));
+        }
+
+
 //        if (genWsdl) {
 //            processor.add(getAction(ActionConstants.ACTION_WSDL_GENERATOR));
 //        }
