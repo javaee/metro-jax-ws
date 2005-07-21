@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.1 2005-07-21 01:51:49 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.2 2005-07-21 16:09:05 vivekp Exp $
  */
 
 /**
@@ -139,7 +139,6 @@ public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, Mo
                 JAnnotationUse paramAnn = var.annotate(cm.ref(WebParam.class));
                 writeWebParam(operation, parameter, paramAnn);
             }
-            m._throws(java.rmi.RemoteException.class);
             for(Fault fault:operation.getFaultsSet()){
                 m._throws(fault.getExceptionClass());
                 methodDoc.addThrows(fault.getExceptionClass());
