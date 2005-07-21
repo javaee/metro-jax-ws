@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.1 2005-05-23 23:14:49 bbissett Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.2 2005-07-21 02:06:20 vivekp Exp $
  */
 
 /*
@@ -131,7 +131,7 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
         generateJAXBClasses(model);
     }
 
-    private static boolean doneGeneration = false;
+    private static boolean doneGeneration = true;
     private void generateJAXBClasses(S2JJAXBModel model) throws Exception{
         if(doneGeneration)
             return;
