@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.8 2005-07-16 23:23:27 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.9 2005-07-21 19:45:14 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -24,7 +24,6 @@ import javax.xml.ws.*;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.net.URI;
-import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
@@ -92,7 +91,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *                                  the WebServiceException is the original JAXBException.
      */
     public Object invoke(Object msg)
-        throws RemoteException, WebServiceException {
+        throws WebServiceException {
 
         MessageStruct messageStruct = setupMessageStruct(msg);
         messageStruct.setMEP(MessageStruct.REQUEST_RESPONSE_MEP);
@@ -268,7 +267,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
             _transportFactory = f;
         }
 
-    private Object sendAndReceive(MessageStruct messageStruct) throws RemoteException {
+    private Object sendAndReceive(MessageStruct messageStruct) {
         Object response = null;
 
         _delegate.send(messageStruct);
@@ -282,7 +281,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                 break;
             case MessageStruct.CHECKED_EXCEPTION_RESPONSE:
                 if (response instanceof SOAPFaultException)
-                    throw new RemoteException("Exception from server", (SOAPFaultException) response);
+                    throw (SOAPFaultException) response;
                 if (response instanceof SOAPFaultInfo) {
                     SOAPFaultInfo soapFaultInfo = (SOAPFaultInfo) response;
                     JAXBException jbe = null;
@@ -293,13 +292,12 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getCode(), soapFaultInfo.getString(),
                         soapFaultInfo.getActor(), (Detail) soapFaultInfo.getDetail());
                     sfe.initCause(jbe);
-                    throw new RemoteException(sfe.getFaultString(), sfe);
+                    throw sfe;
                 } else if (response instanceof WebServiceException)
                     throw (WebServiceException) response;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
                 if (response instanceof SOAPFaultException) {
-                    throw new RemoteException("Exception from service " +
-                        ((SOAPFaultException) response).getFaultString(), (Exception) response);
+                    throw (SOAPFaultException) response;
                 } else
                 //before invocation
                     if (response instanceof Exception)
@@ -398,6 +396,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         jaxwsContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
         jaxwsContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
+        jaxwsContext.put(BindingProviderProperties.BINDING_ID_PROPERTY,_getBindingId().toString());
         if (_jaxbContext != null)
             jaxwsContext.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, _jaxbContext);
         messageStruct.setMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY,

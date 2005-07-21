@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.5 2005-07-18 16:52:08 kohlert Exp $
+ * $Id: DispatchDelegate.java,v 1.6 2005-07-21 19:45:14 kwalsh Exp $
  */
 
 /*
@@ -18,6 +18,7 @@ import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.client.*;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.xml.ws.binding.soap.BindingImpl;
@@ -45,7 +46,7 @@ public class DispatchDelegate extends DelegateBase {
         BindingProvider dispatch = (BindingProvider)properties.get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
 
         if (!contactInfoList.iterator().hasNext())
-            throw new RuntimeException("can't pickup message encoder/decoder, no ContactInfo!");
+            throw new WebServiceException("can't pickup message encoder/decoder, no ContactInfo!");
 
 
         BindingImpl bi = (BindingImpl)dispatch.getBinding();
