@@ -1,5 +1,5 @@
 /*
- * $Id: AsyncOperation.java,v 1.1 2005-05-23 23:18:54 bbissett Exp $
+ * $Id: AsyncOperation.java,v 1.2 2005-07-21 19:53:23 vivekp Exp $
  */
 
 /*
@@ -11,6 +11,11 @@ package com.sun.tools.ws.processor.model;
 import javax.xml.namespace.QName;
 
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
+import com.sun.tools.ws.processor.model.java.JavaType;
+import com.sun.tools.ws.processor.model.java.JavaSimpleType;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JCodeModel;
 
 
 /**
@@ -68,8 +73,26 @@ public class AsyncOperation extends Operation {
         return _responseBean;
     }
 
-    public String getResponseBeanJavaType(){
-        return _responseBean.getJavaType().getName();
+    public JavaType getResponseBeanJavaType(){
+        JCodeModel cm = _responseBean.getJavaType().getType().getType().owner();
+        if(_asyncOpType.equals(AsyncOperationType.CALLBACK)){
+            JClass future = cm.ref(java.util.concurrent.Future.class).narrow(cm.ref(Object.class).wildcard());
+            return new JavaSimpleType(new JAXBTypeAndAnnotation(future));
+        }else if(_asyncOpType.equals(AsyncOperationType.POLLING)){
+            JClass polling = cm.ref(javax.xml.ws.Response.class).narrow(_responseBean.getJavaType().getType().getType().boxify());
+            return new JavaSimpleType(new JAXBTypeAndAnnotation(polling));
+        }
+        return null;
+    }
+
+    public JavaType getCallBackType(){
+        if(_asyncOpType.equals(AsyncOperationType.CALLBACK)){
+            JCodeModel cm = _responseBean.getJavaType().getType().getType().owner();
+            JClass cb = cm.ref(javax.xml.ws.AsyncHandler.class).narrow(_responseBean.getJavaType().getType().getType().boxify());
+            return new JavaSimpleType(new JAXBTypeAndAnnotation(cb));
+
+        }
+        return null;        
     }
 
     public Operation getNormalOperation(){

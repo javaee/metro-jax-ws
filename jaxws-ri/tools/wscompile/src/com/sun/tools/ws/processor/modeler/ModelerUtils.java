@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.2 2005-07-21 01:59:11 vivekp Exp $
+ * $Id: ModelerUtils.java,v 1.3 2005-07-21 19:53:23 vivekp Exp $
  */
 
 /*
@@ -157,7 +157,7 @@ public class ModelerUtils {
         parameter.setProperty(ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
                 partName);
         parameter.setEmbedded(false);
-        parameter.setType(jaxbType);
+        parameter.setType(jaxbType);        
         parameter.setTypeName(jaxbType.getJavaType().getType().getName());
         parameter.setBlock(block);
         //add jaxb type annotations

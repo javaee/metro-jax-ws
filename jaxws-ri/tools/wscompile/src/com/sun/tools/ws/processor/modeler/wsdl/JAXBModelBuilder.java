@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.2 2005-07-21 01:59:11 vivekp Exp $
+ * $Id: JAXBModelBuilder.java,v 1.3 2005-07-21 19:53:23 vivekp Exp $
  */
 
 /*
@@ -122,12 +122,6 @@ public class JAXBModelBuilder {
         }
 
         JavaType javaType = new JavaSimpleType(mapping.getType());
-//        String fullName = mapping.getType();
-//        JavaType javaType = new JavaSimpleTypeCreator().getJavaSimpleType(fullName);
-//        if (javaType == null) {
-//           javaType = new JavaSimpleType(fullName, null);
-//        }
-
         JAXBType type =  new JAXBType(qname, javaType, mapping, jaxbModel);
         return type;
     }

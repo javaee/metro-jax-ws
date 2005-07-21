@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.7 2005-07-21 16:05:20 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.8 2005-07-21 19:53:24 vivekp Exp $
  */
 
 /*
@@ -82,6 +82,8 @@ import com.sun.tools.xjc.api.S2JJAXBModel;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.xjc.api.XJC;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JClass;
 
 
 /**
@@ -1221,14 +1223,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
         QName respBeanName = new QName(soapResponseBody.getNamespace(),info.operation.getName()+"Response");
         Block block = new Block(respBeanName, operation.getResponseBeanType());
-        String respName = null;
-        if(operation.getAsyncType() == AsyncOperationType.CALLBACK){
-            respName = "java.util.concurrent.Future<?>";
-        }else if(operation.getAsyncType() == AsyncOperationType.POLLING){
-            String javaType = SimpleToBoxedUtil.getBoxedClassName(operation.getResponseBeanJavaType());
-            respName = "javax.xml.ws.Response<"+javaType+">";
-        }
-        JavaType respJavaType = new JavaSimpleType(respName, null);
+        JavaType respJavaType = operation.getResponseBeanJavaType();
         JAXBType respType = new JAXBType(respBeanName, respJavaType);
         Parameter respParam = ModelerUtils.createParameter(info.operation.getName()+"Response", respType, block);
         respParam.setParameterOrderPosition(-1);
@@ -1239,8 +1234,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         List<String> definitiveParameterList = new ArrayList<String>();
         int parameterOrderPosition = 0;
         for (String name: parameterList) {
-            boolean isInput = false;
-            boolean isOutput = false;
             Parameter inParameter = null;
 
             inParameter = ModelerUtils.getParameter(name, inParameters);
@@ -1276,9 +1269,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
         //  add callback handlerb Parameter to request
         if(operation.getAsyncType().equals(AsyncOperationType.CALLBACK)){
-            String javaType = SimpleToBoxedUtil.getBoxedClassName(operation.getResponseBeanJavaType());
-            String callbackHandler = "javax.xml.ws.AsyncHandler<"+ javaType +">";
-            JavaType cbJavaType = new JavaSimpleType(callbackHandler, null);
+            JavaType cbJavaType = operation.getCallBackType();
             JAXBType callbackType = new JAXBType(respBeanName, cbJavaType);
             Parameter cbParam = ModelerUtils.createParameter("asyncHandler", callbackType, block);
             request.addParameter(cbParam);
