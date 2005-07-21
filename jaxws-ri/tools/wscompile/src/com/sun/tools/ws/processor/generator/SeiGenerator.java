@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.2 2005-07-21 16:09:05 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.3 2005-07-21 20:35:56 vivekp Exp $
  */
 
 /**
@@ -187,8 +187,10 @@ public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, Mo
             if(!(operation instanceof AsyncOperation) &&
                     (!resultName.equals("return") || !nsURI.equals(serviceNS))){
                 JAnnotationUse wr = m.annotate(javax.jws.WebResult.class);
-                if(!resultName.equals("return"))
-                    wr.param("name", resultName);
+                //temporarliy comment out the line below till 181 @WebResult annotation is fixed
+                // right now the @WebResult name element default value is "result" instead of "return"
+                //if(!resultName.equals("return"))
+                wr.param("name", resultName);
                 if (operation.getStyle().equals(SOAPStyle.DOCUMENT) && !(nsURI.equals(serviceNS))) {
                     wr.param("targetNamespace", nsURI);
                 }
