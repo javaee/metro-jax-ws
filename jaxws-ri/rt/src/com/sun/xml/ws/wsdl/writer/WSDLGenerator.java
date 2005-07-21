@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.23 2005-07-20 20:58:52 kwalsh Exp $
+ * $Id: WSDLGenerator.java,v 1.24 2005-07-21 02:19:34 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,55 +10,29 @@ package com.sun.xml.ws.wsdl.writer;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.SchemaOutputResolver;
-import com.sun.tools.jxc.XmlSchemaGenerator;
-import java.io.IOException;
-import java.io.OutputStream;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.txw2.output.StreamSerializer;
-import com.sun.xml.ws.model.CheckedException;
-import com.sun.xml.ws.model.JavaMethod;
-import com.sun.xml.ws.model.Parameter;
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.encoding.soap.SOAPVersion;
+import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.model.soap.Use;
-import com.sun.xml.ws.wsdl.writer.document.Binding;
-import com.sun.xml.ws.wsdl.writer.document.BindingOperationType;
-import com.sun.xml.ws.wsdl.writer.document.Definitions;
-import com.sun.xml.ws.wsdl.writer.document.Fault;
-import com.sun.xml.ws.wsdl.writer.document.FaultType;
-import com.sun.xml.ws.wsdl.writer.document.Message;
-import com.sun.xml.ws.wsdl.writer.document.Operation;
-import com.sun.xml.ws.wsdl.writer.document.ParamType;
-import com.sun.xml.ws.wsdl.writer.document.Port;
-import com.sun.xml.ws.wsdl.writer.document.PortType;
-import com.sun.xml.ws.wsdl.writer.document.Service;
-import com.sun.xml.ws.wsdl.writer.document.Types;
-import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
-import com.sun.xml.ws.wsdl.writer.document.soap.Body;
-import com.sun.xml.ws.wsdl.writer.document.soap.BodyType;
-import com.sun.xml.ws.wsdl.writer.document.soap.Header;
-import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
-import com.sun.xml.ws.encoding.soap.SOAPVersion;
+import com.sun.xml.ws.wsdl.writer.document.*;
+import com.sun.xml.ws.wsdl.writer.document.soap.*;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import javax.xml.namespace.QName;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import static com.sun.tools.jxc.util.Util.*;
+import java.util.*;
+
+import static com.sun.xml.bind.v2.schemagen.Util.*;
 
 
 /**
