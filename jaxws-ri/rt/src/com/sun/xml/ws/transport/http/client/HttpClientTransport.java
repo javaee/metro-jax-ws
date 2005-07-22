@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.9 2005-07-21 18:31:43 jitu Exp $
+ * $Id: HttpClientTransport.java,v 1.10 2005-07-22 00:34:49 arungupta Exp $
  */
 
 /*
@@ -95,6 +95,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     /**
      * Prepare the stream for HTTP request
      */
+    @Override
     public OutputStream getOutput() {
         try {
             httpConnection = createHttpConnection(endpoint, context);
@@ -120,6 +121,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     /**
      * Get the response from HTTP connection and prepare the input stream for response
      */
+    @Override
     public InputStream getInput() {
         // response processing
         
@@ -157,6 +159,7 @@ public class HttpClientTransport extends WSConnectionImpl {
         return in;
     }
     
+    @Override
     public OutputStream getDebug() {
         return _logStream;
     }
@@ -164,13 +167,6 @@ public class HttpClientTransport extends WSConnectionImpl {
     public void invoke(String endpoint, SOAPMessageContext context)
             throws ClientTransportException {
 
-//        if (isOneWayOperation(context)) {
-//            invokeOneWay(endpoint, context);
-//            return;
-//        }
-
-        //using an HttpURLConnection the soap message is sent
-        //over the wire
 //        try {
 //            int statusCode = httpConnection.getResponseCode();
 //
@@ -184,44 +180,6 @@ public class HttpClientTransport extends WSConnectionImpl {
 //                redirectRequest(httpConnection, context);
 //                return;
 //            }
-
-
-//            SOAPMessage response = null;
-//            //get the response from the HttpURLConnection
-//            try {
-//                response = readResponse(isFailure);
-//            } catch (SOAPException e) {
-//                if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
-//                        || (isFailure
-//                        && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
-//                    throw new ClientTransportException("http.status.code",
-//                            new Object[]{
-//                                new Integer(statusCode),
-//                                httpConnection.getResponseMessage()});
-//                }
-//                throw e;
-//            }
-//            httpConnection = null;
-
-//            logResponseMessage(context, response);
-
-//            context.setMessage(response);
-            // do not set the failure flag, because stubs cannot rely on it,
-            // since transports different from HTTP may not be able to set it
-            // context.setFailure(isFailure);
-
-//        } catch (ClientTransportException e) {
-//            // let these through unmodified
-//            throw e;
-//        } catch (Exception e) {
-//            if (e instanceof Localizable) {
-//                throw new ClientTransportException("http.client.failed",
-//                        (Localizable) e);
-//            } else {
-//                throw new ClientTransportException("http.client.failed",
-//                        new LocalizableExceptionAdapter(e));
-//            }
-//        }
     }
 
     protected ByteInputStream readResponse()
@@ -428,8 +386,12 @@ public class HttpClientTransport extends WSConnectionImpl {
         // the soap message is always sent as a Http POST
         // HTTP Get is disallowed by BP 1.0
         httpConnection.setRequestMethod("POST");
-        // Content type must be xml
-        httpConnection.setRequestProperty("Content-Type", "text/xml");
+        
+        // set the properties on HttpURLConnection
+        for (Map.Entry entry : getHeaders().entrySet()) {
+            httpConnection.addRequestProperty ((String)entry.getKey(), ((List<String>)entry.getValue()).get(0));
+        }
+        
         return httpConnection;
     }
 

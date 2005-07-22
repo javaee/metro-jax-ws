@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.6 2005-07-20 20:27:18 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.7 2005-07-22 00:34:48 arungupta Exp $
  */
 
 /*
@@ -254,9 +254,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
 
         // default Content-Type is XML encoding: MIME header
-        if (!encodingPropertySet) {
-            soapMessage.getMimeHeaders().addHeader(XML_CONTENT_TYPE_VALUE, CONTENT_TYPE_PROPERTY);
-        }
+//        if (!encodingPropertySet) {
+//            soapMessage.getMimeHeaders().addHeader(XML_CONTENT_TYPE_VALUE, CONTENT_TYPE_PROPERTY);
+//        }
 
         // default Accept is XML encoding: MIME header
         if (!acceptPropertySet) {
