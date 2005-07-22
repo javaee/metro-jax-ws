@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.3 2005-07-19 18:10:08 arungupta Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.4 2005-07-22 00:15:09 jitu Exp $
  */
 
 /*
@@ -69,8 +69,9 @@ public class SOAPConnectionUtil {
             return;
         }
         try {
-            soapMessage.saveChanges();
-
+            if (soapMessage.saveRequired()) {
+                soapMessage.saveChanges();
+            }
             Map<String, List<String>> headers = new HashMap<String, List<String>>();
             MimeHeaders mhs = soapMessage.getMimeHeaders();
             Iterator i = mhs.getAllHeaders();
