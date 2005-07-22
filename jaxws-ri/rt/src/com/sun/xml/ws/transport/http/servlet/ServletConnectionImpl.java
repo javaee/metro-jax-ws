@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.5 2005-07-19 18:10:05 arungupta Exp $
+ * $Id: ServletConnectionImpl.java,v 1.6 2005-07-22 00:13:35 jitu Exp $
  */
 
 /*
@@ -48,6 +48,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
         this.response = response;
     }
 
+    @Override
     public Map<String,List<String>> getHeaders() {
         if (requestHeaders == null) {
             requestHeaders = new HashMap<String, List<String>>();
@@ -62,17 +63,19 @@ public class ServletConnectionImpl extends WSConnectionImpl {
                 }
                 values.add(headerValue);
             }
-        }
+        }       
         return requestHeaders;
     }
     
     /**
      * sets response headers.
      */
+    @Override
     public void setHeaders(Map<String,List<String>> headers) {
         responseHeaders = headers;
     }
     
+    @Override
     public void setStatus(STATUS status) {
         this.status = status;
     }
@@ -96,6 +99,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
         return HttpURLConnection.HTTP_OK;
     }
     
+    @Override
     public InputStream getInput() {
         try {
             return request.getInputStream();
@@ -105,6 +109,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
         return null;
     }
     
+    @Override
     public OutputStream getOutput() {
         // write HTTP status code, and headers
         response.setStatus(getStatusCode());
