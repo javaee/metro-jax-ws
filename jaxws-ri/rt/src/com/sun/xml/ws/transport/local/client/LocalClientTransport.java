@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.1 2005-07-19 18:10:06 arungupta Exp $
+ * $Id: LocalClientTransport.java,v 1.2 2005-07-22 01:11:39 arungupta Exp $
  */
 
 /*
@@ -54,6 +54,7 @@ public class LocalClientTransport extends WSConnectionImpl {
         debugStream = logStream;
     }
 
+    @Override
     public OutputStream getOutput() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         lm.setOutput(baos);
@@ -61,6 +62,7 @@ public class LocalClientTransport extends WSConnectionImpl {
         return lm.getOutput();
     }
     
+    @Override
     public void closeOutput() {
         super.closeOutput();
         WSConnection con = new LocalConnectionImpl(lm);
@@ -78,6 +80,7 @@ public class LocalClientTransport extends WSConnectionImpl {
         }
     }
     
+    @Override
     public InputStream getInput() {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(lm.getOutput().toByteArray ());

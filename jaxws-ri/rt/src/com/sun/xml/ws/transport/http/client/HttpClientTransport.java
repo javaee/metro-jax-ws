@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.10 2005-07-22 00:34:49 arungupta Exp $
+ * $Id: HttpClientTransport.java,v 1.11 2005-07-22 01:11:38 arungupta Exp $
  */
 
 /*
@@ -9,25 +9,33 @@
 
 package com.sun.xml.ws.transport.http.client;
 
-import com.sun.pept.ept.EPTFactory;
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-import com.sun.xml.ws.util.localization.Localizable;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
-import javax.xml.soap.*;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPConstants;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.transport.WSConnectionImpl;
 
 import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
 import static javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY;
@@ -37,20 +45,12 @@ import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
 import static com.sun.xml.ws.client.BindingProviderProperties.HOSTNAME_VERIFICATION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.REDIRECT_REQUEST_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
-import com.sun.xml.ws.transport.WSConnectionImpl;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 
 /**
  * @author WS Development Team
  */
 public class HttpClientTransport extends WSConnectionImpl {
-    
 
     private static String LAST_ENDPOINT = "";
     private static boolean redirect = true;
@@ -59,34 +59,24 @@ public class HttpClientTransport extends WSConnectionImpl {
     int statusCode;
 
     public HttpClientTransport() {
-        this(null, SOAPBinding.SOAP11HTTP_BINDING);
-    }
-
-    // TODO: Consider passing the properyt bag
-    public HttpClientTransport(OutputStream logStream, String bindingId) {
-        try {
-            if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
-                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-            else
-                _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-
-            _logStream = logStream;
-        } catch (Exception e) {
-            throw new ClientTransportException("http.client.cannotCreateMessageFactory");
-        }
+        this(null, new HashMap<String, Object>());
     }
 
     public HttpClientTransport(OutputStream logStream, Map<String, Object> context) {
+        this.context = context;
+        _logStream = logStream;
+        
         String bindingId = (String)context.get(BINDING_ID_PROPERTY);
         try {
-            if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
+            if (bindingId == null)
+                bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+            
+            if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             else
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
 
             endpoint = (String)context.get(ENDPOINT_ADDRESS_PROPERTY);
-            this.context = context;
-            _logStream = logStream;
         } catch (Exception e) {
             throw new ClientTransportException("http.client.cannotCreateMessageFactory");
         }

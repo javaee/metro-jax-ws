@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.7 2005-07-22 00:34:48 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-22 01:11:38 arungupta Exp $
  */
 
 /*
@@ -13,7 +13,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.soap.BindingImpl;
-import com.sun.xml.ws.client.*;
+import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -30,7 +30,6 @@ import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.handler.SOAPMessageContextImpl;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
@@ -38,16 +37,24 @@ import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.*;
-import javax.xml.ws.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.Binding;
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Response;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,11 +73,19 @@ import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.client.ContextMap;
+import com.sun.xml.ws.client.RequestContext;
+import com.sun.xml.ws.client.ResponseContext;
+import javax.xml.soap.Detail;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
-
-    //RuntimeContext rtContext;
 
     protected static final int MAX_THREAD_POOL_SIZE = 2;
 
@@ -773,6 +788,5 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
         }
     }
-
 
 }
