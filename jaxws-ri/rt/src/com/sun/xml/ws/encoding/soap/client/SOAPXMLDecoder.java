@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.3 2005-07-22 23:04:28 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.4 2005-07-22 23:34:17 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -75,9 +75,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
  */
 
 public class SOAPXMLDecoder extends SOAPDecoder {
-    private JAXBContext jc;
-    //private Method methodName = null;
-
     public SOAPXMLDecoder() {
     }
 
@@ -440,18 +437,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         throw new SOAPFaultException(faultCode, faultString, null, null);
     }
 
-    protected JAXBContext getJAXBContext
-        (MessageInfo
-        messageInfo) {
-        if (jc == null) {
-            RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
-            jc = (JAXBContext)
-                requestContext.copy().get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
-        }
-        return jc;
-    }
-
-    protected JAXBContext getJAXBContext() {
+    protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
+        JAXBContext jc = null;
+        
+        RequestContext requestContext = (RequestContext) messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        if (requestContext != null)
+            jc = (JAXBContext)requestContext.copy ().get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
         return jc;
     }
 

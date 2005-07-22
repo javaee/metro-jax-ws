@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.2 2005-07-22 23:04:28 arungupta Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.3 2005-07-22 23:34:17 arungupta Exp $
  */
 
 /*
@@ -57,12 +57,6 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
 
     private static final Logger logger =
            getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch.util").toString());
-       //jaxbcontext can not be static
-       private JAXBContext jc = null;
-
-       protected JAXBContext getJAXBContext() {
-           return jc;
-       }
 
     /*
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)
