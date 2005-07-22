@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.1 2005-07-19 20:41:23 arungupta Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.2 2005-07-22 23:04:28 arungupta Exp $
  */
 
 /*
@@ -13,16 +13,12 @@ import static com.sun.pept.presentation.MessageStruct.UNCHECKED_EXCEPTION_RESPON
 import javax.xml.stream.XMLStreamReader;
 
 import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
@@ -31,28 +27,21 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
-import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
 import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
-import com.sun.xml.ws.client.dispatch.DispatchContext;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.bind.JAXBContext;
-import javax.xml.ws.Service;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
-import org.xml.sax.XMLReader;
-import com.sun.xml.ws.encoding.soap.*;
+import javax.xml.ws.soap.SOAPBinding;
 
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     
@@ -348,6 +337,11 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     @Override
         protected QName getRoleAttrQName (){
         return SOAP12Constants.QNAME_ROLE;
+    }
+
+    @Override
+    public String getBindingId() {
+        return SOAPBinding.SOAP12HTTP_BINDING;
     }
     
 }

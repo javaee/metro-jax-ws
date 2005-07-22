@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.4 2005-07-22 00:15:09 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.5 2005-07-22 23:04:30 arungupta Exp $
  */
 
 /*
@@ -37,7 +37,7 @@ import com.sun.xml.ws.server.*;
  */
 public class SOAPConnectionUtil {
     
-    public static SOAPMessage getSOAPMessage(WSConnection con, MessageInfo mi) {
+    public static SOAPMessage getSOAPMessage(WSConnection con, MessageInfo mi, String bindingId) {
         if (con instanceof SOAPConnection) {
             return ((SOAPConnection)con).getSOAPMessage();
         }
@@ -53,7 +53,8 @@ public class SOAPConnectionUtil {
                 }
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
             RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
+            if (bindingId == null)
+                bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
             SOAPMessage soapMessage =  SOAPUtil.createMessage(mh,
                     con.getInput(), bindingId);
             return soapMessage;

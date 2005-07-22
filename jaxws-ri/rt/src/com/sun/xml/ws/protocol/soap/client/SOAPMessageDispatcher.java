@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.9 2005-07-22 21:26:22 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.10 2005-07-22 23:04:29 arungupta Exp $
  */
 
 /*
@@ -158,8 +158,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
             // set the MIME headers on connection headers: required for local transport for now
             Map<String, List<String>> ch = new HashMap<String, List<String>>();
-            List<String> h = new ArrayList<String>();
             for (Iterator iter = sm.getMimeHeaders().getAllHeaders(); iter.hasNext();) {
+                List<String> h = new ArrayList<String>();
                 MimeHeader mh = (MimeHeader) iter.next();
 
                 h.clear();
@@ -299,7 +299,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 }
             }
         }
-        //TODO: How about connection.setHeaders() instead of setting MIME headers ?
 
         return messageContext;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.3 2005-07-15 21:11:39 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.4 2005-07-22 23:04:29 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -200,7 +200,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      */
     private SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        return SOAPConnectionUtil.getSOAPMessage(con, messageInfo);
+        return SOAPConnectionUtil.getSOAPMessage(con, messageInfo, null);
     }
 
 /*

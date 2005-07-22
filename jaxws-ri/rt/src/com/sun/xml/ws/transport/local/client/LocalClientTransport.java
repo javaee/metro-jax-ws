@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.2 2005-07-22 01:11:39 arungupta Exp $
+ * $Id: LocalClientTransport.java,v 1.3 2005-07-22 23:04:29 arungupta Exp $
  */
 
 /*
@@ -96,4 +96,15 @@ public class LocalClientTransport extends WSConnectionImpl {
             }
         }
     }
+    
+    @Override
+    public void setHeaders(Map<String, List<String>> headers) {
+        lm.setHeaders(headers);
+    }
+    
+    @Override
+    public Map<String, List<String>> getHeaders() {
+        return lm.getHeaders();
+    }
+    
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.11 2005-07-22 01:11:38 arungupta Exp $
+ * $Id: HttpClientTransport.java,v 1.12 2005-07-22 23:04:29 arungupta Exp $
  */
 
 /*
@@ -117,13 +117,6 @@ public class HttpClientTransport extends WSConnectionImpl {
         
         ByteInputStream in;
         try {
-            isFailure = checkResponseCode();
-
-            Map<String, List<String>> headers = collectResponseMimeHeaders();
-
-            saveCookieAsNeeded(cookieJar);
-            setHeaders(headers);
-            
             in = readResponse();
         } catch (IOException e) {
             if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
@@ -152,6 +145,40 @@ public class HttpClientTransport extends WSConnectionImpl {
     @Override
     public OutputStream getDebug() {
         return _logStream;
+    }
+    
+    @Override
+    public Map<String, List<String>> getHeaders () {
+        ByteInputStream in;
+        try {
+            isFailure = checkResponseCode ();
+            
+            Map<String, List<String>> headers = collectResponseMimeHeaders ();
+            
+            saveCookieAsNeeded (cookieJar);
+            setHeaders (headers);
+            
+            return headers;
+        } catch (IOException e) {
+            if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
+                || (isFailure
+                && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+                try {
+                    throw new ClientTransportException ("http.status.code",
+                        new Object[]{
+                        new Integer (statusCode),
+                            httpConnection.getResponseMessage ()});
+                } catch (IOException ex) {
+                    throw new ClientTransportException ("http.status.code",
+                        new Object[]{
+                        new Integer (statusCode),
+                            ex});
+                }
+            }
+            throw new ClientTransportException ("http.client.failed",
+                e.getMessage ());
+        }
+        
     }
     
     public void invoke(String endpoint, SOAPMessageContext context)
@@ -378,7 +405,7 @@ public class HttpClientTransport extends WSConnectionImpl {
         httpConnection.setRequestMethod("POST");
         
         // set the properties on HttpURLConnection
-        for (Map.Entry entry : getHeaders().entrySet()) {
+        for (Map.Entry entry : super.getHeaders().entrySet()) {
             httpConnection.addRequestProperty ((String)entry.getKey(), ((List<String>)entry.getValue()).get(0));
         }
         

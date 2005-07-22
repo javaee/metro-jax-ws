@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.2 2005-07-21 19:43:48 kwalsh Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.3 2005-07-22 23:04:28 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,7 +31,6 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -49,18 +48,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
 import javax.xml.soap.Detail;
 import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeader;
-import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
@@ -82,62 +78,17 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     private JAXBContext jc;
     //private Method methodName = null;
 
-
     public SOAPXMLDecoder() {
     }
-
-//    /* (non-Javadoc)
-//     * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
-//     */
-//    public void decode(MessageInfo messageInfo) {
-//        receiveAndDecode(messageInfo);
-//    }
 
     protected SerializerIF getSerializerInstance(){
         return DispatchSerializer.getInstance();
     }
 
-//    public void receiveAndDecode(MessageInfo messageInfo) {
-//        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) !=
-//            Service.Mode.MESSAGE) {
-//            Connection connection = messageInfo.getConnection();
-//            ByteBuffer responseBuffer = connection.readUntilEnd();
-//            ByteInputStream inputStream = new ByteInputStream(responseBuffer.array(),
-//                responseBuffer.array().length);
-//
-//            //methodName = messageInfo.getMethod();
-//
-//            // TODO: Decide between XML and FI
-//            XMLStreamReader reader =
-//                XMLStreamReaderFactory.createXMLStreamReader(inputStream, true);
-//            XMLStreamReaderUtil.nextElementContent(reader);
-//            decodeEnvelope(reader, messageInfo);
-//        } else {
-//            SOAPMessage sm = toSOAPMessage(messageInfo);
-//            messageInfo.setResponse(sm);
-//        }
-//    }
 
     public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
-
         WSConnection connection = (WSConnection) messageInfo.getConnection();
-
-        SOAPMessage sm = null;
-
-        try {
-            // TODO: can the header on WSConnection be MimeHeaders instead of Map<String, List<String>>
-
-            Map<String, List<String>> headers = connection.getHeaders ();
-            MimeHeaders mimeHeaders = new MimeHeaders();
-            for (String headerName : headers.keySet()) {
-                MimeHeader mimeHeader = new MimeHeader(headerName,  headers.get(headerName).get(0));
-            }
-            sm = SOAPUtil.createMessage (mimeHeaders, connection.getInput(), getBindingId(messageInfo));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return sm;
+        return SOAPConnectionUtil.getSOAPMessage(connection, messageInfo, getBindingId(messageInfo));
     }
 
     protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
@@ -279,8 +230,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     public String getBindingId() {
         return SOAPBinding.SOAP11HTTP_BINDING;
     }
-
-
 
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
                                         MessageInfo messageInfo) {
