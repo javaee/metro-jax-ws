@@ -39,6 +39,7 @@
   <path id="tools.compile.classpath">
     <path refid="runtime.compile.classpath"/>
     <pathelement location="${build.home}/lib/jaxws-rt.jar"/>
+    <pathelement location="${java.home}/../lib/tools.jar"/>
   </path>
   
   <target name="init">
@@ -79,7 +80,7 @@
 
 
   <target name="javadocs" depends="image">
-    <javadoc packagenames="com.sun.xml.ws.*,com.sun.tools.ws.*"
+    <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
          sourcepath="${basedir}/rt/src:${basedir}/tools/wscompile/src"
          destdir="${build.home}/javadocs/"
          author="false"
@@ -90,6 +91,59 @@
         <classpath refid="runtime.compile.classpath"/>
     </javadoc>
   </target>
+
+    <target name="architecture-document" depends="prepare"
+            description="generate architecture documents (which is just a glorified javadoc)">
+<!--      <ant dir="tools/taglets" target="compile" />  -->
+      <mkdir dir="${build.home}/javadoc" />
+      <javadoc
+            destdir="${build.home}/javadoc"
+            use="true"
+            author="false"
+            version="false"
+            windowtitle="JAX-WS RI"
+            doctitle="JAX-WS RI"
+            access="package">
+        <doclet name="com.sun.xml.bind.taglets.CustomHtmlDoclet"
+                path="${basedir}/tools/lib/taglets.jar">
+        </doclet>
+        <arg value="-quiet"/>
+
+        <packageset dir="${basedir}/javadoc"/>
+        <group title="Root Architecture Document" packages="jaxws" />
+
+        <packageset dir="${basedir}/rt/src"/>
+        <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
+
+
+        <packageset dir="${basedir}/tools/wscompile/src"/>
+        <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
+        
+        <!--        <packageset dir="${runtime.src}"/>
+        <packageset dir="${runtime-api.src}"/>
+        <packageset dir="${schemagen.src}"/>
+        <group title="Runtime API for JAX-WS" packages="com.sun.xml.bind.api" />
+        <group title="Runtime" packages="com.sun.xml.bind*" />
+
+        <packageset dir="${xjc.src}"/>
+        <group title="XJC API for JAX-WS" packages="com.sun.tools.xjc.api" />
+        <group title="XJC" packages="com.sun.tools.xjc*:com.sun.tools.jxc*" />
+-->
+        <link href="https://jaxb.dev.java.net/nonav/jaxb20-pr/api/"
+          offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"   />
+        <link href="http://java.sun.com/j2se/1.5.0/docs/api/"
+          offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"  />
+        <link href="https://jaxb-architecture-document.dev.java.net/nonav/doc/"
+          offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-ri"  />
+
+        <classpath refid="tools.compile.classpath"/>
+<!--        <classpath>
+          <fileset dir="${build.home}/../lib" includes="**/*.jar" />
+        </classpath>-->
+      </javadoc>
+    </target>
+
+
     
   <target name="runtime-build" depends="runtime-compile">
     <!-- Copy resource files etc -->
