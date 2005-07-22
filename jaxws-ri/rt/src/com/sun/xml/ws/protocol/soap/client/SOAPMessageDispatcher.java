@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-22 01:11:38 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.9 2005-07-22 21:26:22 kwalsh Exp $
  */
 
 /*
@@ -412,8 +412,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         decoder.toMessageInfo(im, messageInfo);
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
-            Service.Mode.MESSAGE) {
-            sm = decoder.toSOAPMessage(messageInfo);
+            Service.Mode.MESSAGE) {           
             messageInfo.setResponse(sm);
             postReceiveAndDecodeHook(messageInfo);
         }
