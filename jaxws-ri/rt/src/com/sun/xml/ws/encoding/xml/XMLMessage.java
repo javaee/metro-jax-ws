@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.1 2005-07-21 21:13:28 jitu Exp $
+ * $Id: XMLMessage.java,v 1.2 2005-07-23 00:21:27 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -10,6 +10,8 @@ import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,7 +36,8 @@ public class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;
     
     protected MimeHeaders headers;
-    protected MimeMultipart multiPart;
+    protected DataSource dataSource;
+    protected MimeMultipart multipart;
     protected Source source;
 
     /**
@@ -42,7 +45,7 @@ public class XMLMessage {
      * received, there's two parts -- the transport headers and the
      * message content in a transport specific stream.
      */
-    protected XMLMessage(MimeHeaders headers, final InputStream in)
+    public XMLMessage(MimeHeaders headers, final InputStream in)
         throws IOException {
         this.headers = headers;
         final String ct;
@@ -81,7 +84,7 @@ public class XMLMessage {
             if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
                 source = new StreamSource(in);
             } else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                DataSource ds = new DataSource() {
+                dataSource = new DataSource() {
                     public InputStream getInputStream() {
                         return in;
                     }
@@ -98,26 +101,6 @@ public class XMLMessage {
                         return "";
                     }
                 };
-
-                multiPart = new MimeMultipart(ds);
-
-                MimeBodyPart sourcePart;
-                String contentID;
-                sourcePart = (MimeBodyPart)multiPart.getBodyPart(0);
-
-                ContentType soapPartCType = new ContentType(
-                        sourcePart.getContentType());
-
-                String baseType = soapPartCType.getBaseType();
-                if (!(isXMLType(baseType))) {
-                    log.log(Level.SEVERE, 
-                            "xml.root.part.invalid.Content-Type",
-                            new Object[] {baseType});
-                    throw new WebServiceException(
-                            "Bad Content-Type for Root Part : " +
-                            baseType);
-                }    
-
             } else {
                 log.severe("xml.unknown.Content-Type");
                 throw new WebServiceException("Unrecognized Content-Type");
@@ -128,6 +111,90 @@ public class XMLMessage {
         }
     }
     
+    public XMLMessage(Source source) {
+        this.source = source;
+    }
+    
+    public XMLMessage(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    public Source getSource() {
+        if (source != null) {
+            return source;
+        }
+        try {
+            if (dataSource != null) {
+                multipart = new MimeMultipart(dataSource);
+                dataSource = null;
+            }
+            MimeBodyPart sourcePart = (MimeBodyPart)multipart.getBodyPart(0);
+            ContentType ctype = new ContentType(sourcePart.getContentType());
+            String baseType = ctype.getBaseType();
+            if (!(isXMLType(baseType))) {
+                log.log(Level.SEVERE, 
+                        "xml.root.part.invalid.Content-Type",
+                        new Object[] {baseType});
+                throw new WebServiceException(
+                        "Bad Content-Type for Root Part : " +
+                        baseType);
+            }
+            return new StreamSource(sourcePart.getInputStream());
+        } catch (MessagingException ex) {
+            throw new WebServiceException("Cannot return source", ex);
+        } catch (IOException ioe) {
+            throw new WebServiceException("cannot return source", ioe);
+        }
+    }
+    
+    public void setPayloadSource(StreamSource source) {
+        try {
+            if (dataSource != null) {
+                multipart = new MimeMultipart(dataSource);
+                dataSource = null;
+            }
+            if (multipart != null) {
+                MimeBodyPart sourcePart = new MimeBodyPart(source.getInputStream());
+                multipart.addBodyPart(sourcePart, 0);
+            } else {
+                this.source = source;
+            }
+        } catch (MessagingException ex) {
+            throw new WebServiceException("Cannot set payload source", ex);
+        }
+    }
+    
+    public DataSource getDataSource() {
+        if (dataSource == null) {
+            return new DataSource() {
+                public InputStream getInputStream() {
+                    try {
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        multipart.writeTo(bos);
+                        bos.close();
+                        return new ByteArrayInputStream(bos.toByteArray());
+                    } catch(MessagingException me) {
+                        throw new WebServiceException("Cannot give DataSource", me);
+                    } catch(IOException ioe) {
+                        throw new WebServiceException("Cannot give DataSource", ioe);
+                    }
+                }
+
+                public OutputStream getOutputStream() {
+                    return null;
+                }
+
+                public String getContentType() {
+                    return multipart.getContentType();
+                }
+
+                public String getName() {
+                    return "";
+                }
+            };
+        }
+        return dataSource;
+    }
 
     /**
      * Verify a contentType.
@@ -242,10 +309,23 @@ public class XMLMessage {
 
 
     public void writeTo(OutputStream out) throws MessagingException, IOException {
-        if (multiPart != null) {
-            multiPart.writeTo(out);
+        if (dataSource != null) {
+            MimeMultipart multipart = new MimeMultipart(dataSource);
+            multipart.writeTo(out);
         } else {
             // Write the Source object to stream
+            if (source instanceof StreamSource) {
+                StreamSource src = (StreamSource)source;
+                InputStream is = src.getInputStream();
+                byte[] buf = new byte[1024];
+                int num = 0;
+                while ((num = is.read(buf)) != -1) {
+                    out.write(buf, 0, num);
+                }
+            } else {
+                // TODO
+            }
+
         }
     }
 
