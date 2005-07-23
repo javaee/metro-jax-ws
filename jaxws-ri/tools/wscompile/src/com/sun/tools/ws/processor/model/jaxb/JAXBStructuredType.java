@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBStructuredType.java,v 1.1 2005-05-23 23:18:53 bbissett Exp $
+ * $Id: JAXBStructuredType.java,v 1.2 2005-07-23 04:10:58 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -86,7 +86,7 @@ public class JAXBStructuredType extends JAXBType {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.jaxb.JAXBType#isUnwrapped()
+     * @see JAXBType#isUnwrapped()
      */
     public boolean isUnwrapped() {
         return true;

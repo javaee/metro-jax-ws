@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCCodeWriter.java,v 1.2 2005-07-18 18:14:10 kohlert Exp $
+ * $Id: JAXRPCCodeWriter.java,v 1.3 2005-07-23 04:11:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -15,7 +15,7 @@ import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 
 /**
- * {@link CodeWriter} implementation that notifies
+ * {@link FileCodeWriter} implementation that notifies
  * JAX-WS about newly created files.
  *
  * @author

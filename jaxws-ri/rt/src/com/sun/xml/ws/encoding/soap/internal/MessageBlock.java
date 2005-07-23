@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBlock.java,v 1.2 2005-07-18 16:52:16 kohlert Exp $
+ * $Id: MessageBlock.java,v 1.3 2005-07-23 04:10:06 kohlert Exp $
  */
 
 
@@ -31,7 +31,7 @@ public class MessageBlock {
     }
 
     /**
-     * @return
+     * @return the value of this block
      */
     public Object getValue() {
         return _value;
@@ -45,7 +45,7 @@ public class MessageBlock {
     }
 
     /**
-     * @return
+     * @return the <code>QName</code> of this block
      */
     public QName getName() {
         return _name;

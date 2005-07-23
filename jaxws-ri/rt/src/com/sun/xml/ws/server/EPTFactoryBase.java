@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryBase.java,v 1.2 2005-07-18 16:52:19 kohlert Exp $
+ * $Id: EPTFactoryBase.java,v 1.3 2005-07-23 04:10:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -75,35 +75,35 @@ public class EPTFactoryBase implements EPTFactory, LogicalEPTFactory {
     }
 
     /*
-     * @see com.sun.istack.pept.ept.EPTFactory#getInterceptors(com.sun.istack.pept.ept.MessageInfo)
+     * @see EPTFactory#getInterceptors(com.sun.istack.pept.ept.MessageInfo)
      */
     public Interceptors getInterceptors(MessageInfo x) {
         return null;
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getLogicalEncoder()
+     * @see LogicalEPTFactory#getLogicalEncoder()
      */
     public LogicalEncoder getLogicalEncoder() {
         return logicalEncoder;
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getLogicalDecoder()
+     * @see LogicalEPTFactory#getLogicalDecoder()
      */
     public LogicalDecoder getLogicalDecoder() {
         return null;
     }
 
     /* 
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getSoapEncoder()
+     * @see LogicalEPTFactory#getSoapEncoder()
      */
     public SOAPEncoder getSOAPEncoder() {
         return soapEncoder;
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getSoapDecoder()
+     * @see LogicalEPTFactory#getSoapDecoder()
      */
     public SOAPDecoder getSOAPDecoder() {
         return soapDecoder;

@@ -1,5 +1,5 @@
 /*
- * $Id: SerializationException.java,v 1.3 2005-07-18 16:52:14 kohlert Exp $
+ * $Id: SerializationException.java,v 1.4 2005-07-23 04:10:03 kohlert Exp $
  */
 
 /*
@@ -15,7 +15,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * SerializationException represents an exception that occurred while
  * serializing a Java value as XML.
  * 
- * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * @see JAXWSExceptionBase
  * 
  * @author WS Development Team
  */

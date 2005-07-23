@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBinding.java,v 1.1 2005-05-24 13:53:27 bbissett Exp $
+ * $Id: JAXRPCBinding.java,v 1.2 2005-07-23 04:11:05 kohlert Exp $
  */
 
 /*
@@ -41,7 +41,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Entity#validateThis()
+     * @see Entity#validateThis()
      */
     public void validateThis(){
         // TODO Auto-generated method stub
@@ -49,7 +49,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Elemental#getElementName()
+     * @see Elemental#getElementName()
      */
     public QName getElementName(){
         // TODO Auto-generated method stub
@@ -57,7 +57,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Extensible#addExtension(com.sun.xml.rpc.wsdl.framework.Extension)
+     * @see Extensible#addExtension(Extension)
      */
     public void addExtension(Extension e) {
         // TODO Auto-generated method stub
@@ -65,7 +65,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Extensible#extensions()
+     * @see Extensible#extensions()
      */
     public Iterator extensions() {
         // TODO Auto-generated method stub
@@ -196,7 +196,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     }
 
     /**
-     * @param jaxbBindings The jaxbBindings to set.
+     * @param jaxbBinding The jaxbBindings to set.
      */
     public void addJaxbBindings(Element jaxbBinding) {
         if(jaxbBindings == null)
@@ -206,7 +206,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
 
 
     /**
-     * @return Returns the isProvider.
+     * @return the isProvider.
      */
     public Boolean isProvider() {
         return isProvider;
@@ -219,7 +219,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Entity#getProperty(java.lang.String)
+     * @see Entity#getProperty(java.lang.String)
      */
     public Object getProperty(String key) {
         if(key.equals(JAXRPCBindingsConstants.JAXB_BINDINGS))

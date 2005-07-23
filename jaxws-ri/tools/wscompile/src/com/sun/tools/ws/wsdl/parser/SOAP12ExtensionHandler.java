@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12ExtensionHandler.java,v 1.1 2005-05-24 14:07:29 bbissett Exp $
+ * $Id: SOAP12ExtensionHandler.java,v 1.2 2005-07-23 04:11:06 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.wsdl.document.soap.SOAP12Constants;
 public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getNamespaceURI()
+     * @see SOAPExtensionHandler#getNamespaceURI()
      */
     @Override
     public String getNamespaceURI() {
@@ -24,7 +24,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getAddressQName()
+     * @see SOAPExtensionHandler#getAddressQName()
      */
     @Override
     protected QName getAddressQName() {
@@ -32,7 +32,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getBindingQName()
+     * @see SOAPExtensionHandler#getBindingQName()
      */
     @Override
     protected QName getBindingQName() {
@@ -40,7 +40,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getBodyQName()
+     * @see SOAPExtensionHandler#getBodyQName()
      */
     @Override
     protected QName getBodyQName() {
@@ -48,7 +48,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getFaultQName()
+     * @see SOAPExtensionHandler#getFaultQName()
      */
     @Override
     protected QName getFaultQName() {
@@ -56,7 +56,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getHeaderfaultQName()
+     * @see SOAPExtensionHandler#getHeaderfaultQName()
      */
     @Override
     protected QName getHeaderfaultQName() {
@@ -64,7 +64,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getHeaderQName()
+     * @see SOAPExtensionHandler#getHeaderQName()
      */
     @Override
     protected QName getHeaderQName() {
@@ -72,7 +72,7 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
     }
 
     /* 
-     * @see com.sun.xml.rpc.wsdl.parser.SOAPExtensionHandler#getOperationQName()
+     * @see SOAPExtensionHandler#getOperationQName()
      */
     @Override
     protected QName getOperationQName() {

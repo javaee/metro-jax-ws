@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPUtil.java,v 1.1 2005-07-13 01:37:26 jitu Exp $
+ * $Id: SOAPUtil.java,v 1.2 2005-07-23 04:10:14 kohlert Exp $
  */
 
 /*
@@ -41,7 +41,7 @@ public class SOAPUtil {
     /**
      *
      * @param binding
-     * @return
+     * @return a <code>SOAPMessage</code> associated with <code>binding</code>
      */
     public static SOAPMessage createMessage(String binding) {
         try {
@@ -58,7 +58,8 @@ public class SOAPUtil {
      * @param binding
      * @param headers
      * @param in
-     * @return
+     * @return <code>SOAPMessage</code> with <code>MimeHeaders</code> from an
+     *         <code>InputStream</code> and binding.
      * @throws IOException
      */
     public static SOAPMessage createMessage(MimeHeaders headers, InputStream in,

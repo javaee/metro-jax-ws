@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.1 2005-07-19 20:41:25 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.2 2005-07-23 04:10:07 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -45,7 +45,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     /*
      *
      * @throws ServerRtException
-     * @see com.sun.xml.rpc.encoding.soap.SOAPDecoder#toInternalMessage(javax.xml.soap.SOAPMessage)
+     * @see SOAPDecoder#toInternalMessage(SOAPMessage)
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage, MessageInfo messageInfo) {
         // TODO handle exceptions, attachments
@@ -73,7 +73,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      * BodyBlock in InternalMessage is converted to JAXBTypeInfo or RpcLitPayload
      *
      * @throws ServerRtException
-     * @see com.sun.xml.rpc.encoding.soap.SOAPDecoder#toInternalMessage(javax.xml.soap.SOAPMessage, InternalMessage)
+     * @see SOAPDecoder#toInternalMessage(SOAPMessage, InternalMessage)
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
             InternalMessage request, MessageInfo messageInfo) {

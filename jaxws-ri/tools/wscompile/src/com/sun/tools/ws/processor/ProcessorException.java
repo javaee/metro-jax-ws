@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorException.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
+ * $Id: ProcessorException.java,v 1.4 2005-07-23 04:10:56 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * ProcessorException represents an exception that occurred while processing
  * a web service.
  * 
- * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * @see JAXWSExceptionBase
  * 
  * @author WS Development Team
  */

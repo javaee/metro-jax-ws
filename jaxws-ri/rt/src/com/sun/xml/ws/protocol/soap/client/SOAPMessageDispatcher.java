@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.10 2005-07-22 23:04:29 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.11 2005-07-23 04:10:10 kohlert Exp $
  */
 
 /*
@@ -726,7 +726,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     /**
      * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
      *
-     * @return
+     * @return the BindingId associated with messageInfo
      */
     protected String getBindingId(MessageInfo messageInfo) {
         SOAPEncoder encoder = (SOAPEncoder) messageInfo.getEncoder();

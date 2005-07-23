@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerException.java,v 1.2 2005-07-18 18:14:03 kohlert Exp $
+ * $Id: ModelerException.java,v 1.3 2005-07-23 04:10:58 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * ModelerException represents an exception that occurred while
  * visiting service model.
  *
- * @see com.sun.xml.rpc.util.exception.JAXRPCExceptionBase
+ * @see ProcessorException
  *
  * @author WS Development Team
 */

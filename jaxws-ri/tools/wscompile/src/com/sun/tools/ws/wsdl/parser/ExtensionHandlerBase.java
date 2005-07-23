@@ -1,5 +1,5 @@
 /*
- * $Id: ExtensionHandlerBase.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
+ * $Id: ExtensionHandlerBase.java,v 1.3 2005-07-23 04:11:06 kohlert Exp $
  */
 
 /*
@@ -64,7 +64,7 @@ public abstract class ExtensionHandlerBase extends ExtensionHandler {
      * @param context
      * @param parent
      * @param e
-     * @return
+     * @return true if the PortTypeExtension should be handled
      */
     protected abstract boolean handlePortTypeExtension(
         ParserContext context,

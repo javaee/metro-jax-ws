@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoderBase.java,v 1.1 2005-05-23 22:36:14 bbissett Exp $
+ * $Id: EncoderDecoderBase.java,v 1.2 2005-07-23 04:10:01 kohlert Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ public abstract class EncoderDecoderBase {
      * Creates an internal message based thats binding dependent.
      * 
      * @param messageInfo
-     * @return
+     * @return the internal message given a messageInfo
      */
     public Object toInternalMessage(MessageInfo messageInfo) {
         throw new UnsupportedOperationException("Not Implementated!");

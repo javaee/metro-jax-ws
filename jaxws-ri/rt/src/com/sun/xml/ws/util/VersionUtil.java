@@ -1,5 +1,5 @@
 /*
- * $Id: VersionUtil.java,v 1.3 2005-07-18 18:12:28 kohlert Exp $
+ * $Id: VersionUtil.java,v 1.4 2005-07-23 04:10:15 kohlert Exp $
  */
 
 /*
@@ -60,7 +60,7 @@ public final class VersionUtil implements Version {
 
     /**
      * @param version
-     * @return
+     * @return true if version is a 2.0 version
      */
     public static boolean isValidVersion(String version) {
         return isVersion20(version);

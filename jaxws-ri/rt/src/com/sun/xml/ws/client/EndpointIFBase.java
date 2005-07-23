@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.5 2005-07-18 16:52:05 kohlert Exp $
+ * $Id: EndpointIFBase.java,v 1.6 2005-07-23 04:09:59 kohlert Exp $
  */
 
 /*
@@ -117,7 +117,7 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
 
     /**
      * returns binding id from BindingImpl
-     * @return
+     * @return the URI representing the BindingID
      */
     public URI _getBindingId(){
         return _bindingId;

@@ -1,5 +1,5 @@
 /*
- * $Id: PortType.java,v 1.2 2005-07-18 18:14:13 kohlert Exp $
+ * $Id: PortType.java,v 1.3 2005-07-23 04:11:04 kohlert Exp $
  */
 
 /*
@@ -107,7 +107,7 @@ public class PortType extends GlobalEntity implements Extensible{
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Extensible#addExtension(com.sun.xml.rpc.wsdl.framework.Extension)
+     * @see Extensible#addExtension(Extension)
      */
     public void addExtension(Extension e) {
         _helper.addExtension(e);
@@ -115,7 +115,7 @@ public class PortType extends GlobalEntity implements Extensible{
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.framework.Extensible#extensions()
+     * @see Extensible#extensions()
      */
     public Iterator extensions() {
         return _helper.extensions();

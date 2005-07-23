@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.4 2005-07-12 15:54:09 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.5 2005-07-23 04:10:01 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     /**
      *
      * @param cid
-     * @return
+     * @return a <code>DataHandler</code> for the attachment
      */
     public DataHandler getAttachmentAsDataHandler(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
@@ -52,7 +52,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     /**
      *
      * @param cid
-     * @return
+     * @return the attachment as a <code>byte[]</code>
      */
     public byte[] getAttachmentAsByteArray(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
@@ -68,7 +68,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
 
     /**
      *
-     * @return
+     * @return true if XOPPackage
      */
     public boolean isXOPPackage() {
         return isXOP;

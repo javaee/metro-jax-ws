@@ -1,5 +1,5 @@
 /**
- * $Id: Connection.java,v 1.1 2005-05-23 22:09:18 bbissett Exp $
+ * $Id: Connection.java,v 1.2 2005-07-23 04:09:58 kohlert Exp $
  */
 
 /*
@@ -63,7 +63,6 @@ public interface Connection {
  * Does ...
  * </p><p>
  * 
- * @param byteBuffer ...
  * </p>
  */
     public ByteBuffer readUntilEnd();

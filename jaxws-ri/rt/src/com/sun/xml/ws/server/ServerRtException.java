@@ -1,5 +1,5 @@
 /**
- * $Id: ServerRtException.java,v 1.2 2005-05-25 20:16:30 kohlert Exp $
+ * $Id: ServerRtException.java,v 1.3 2005-07-23 04:10:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -35,7 +35,7 @@ public class ServerRtException extends JAXWSExceptionBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase#getResourceBundleName()
+     * @see JAXWSExceptionBase#getResourceBundleName()
      */
     public String getResourceBundleName() {
         return "com.sun.xml.ws.resources.server";

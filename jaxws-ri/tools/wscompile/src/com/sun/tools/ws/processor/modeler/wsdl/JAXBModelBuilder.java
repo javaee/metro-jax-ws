@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.3 2005-07-21 19:53:23 vivekp Exp $
+ * $Id: JAXBModelBuilder.java,v 1.4 2005-07-23 04:10:59 kohlert Exp $
  */
 
 /*
@@ -59,7 +59,7 @@ public class JAXBModelBuilder {
      * Builds model from WSDL document. Model contains abstraction which is used by the
      * generators to generate the stub/tie/serializers etc. code.
      *
-     * @see com.sun.xml.rpc.processor.modeler.Modeler#buildModel()
+     * @see Modeler#buildModel()
      */
 
     private void internalBuildJAXBModel(List elements){

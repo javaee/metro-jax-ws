@@ -1,5 +1,5 @@
 /*
- * $Id: XmlWriter.java,v 1.2 2005-07-18 18:14:09 kohlert Exp $
+ * $Id: XmlWriter.java,v 1.3 2005-07-23 04:11:03 kohlert Exp $
  */
 
 /*
@@ -26,10 +26,6 @@ import com.sun.xml.ws.util.xml.CDATA;
  * <p> An XML writer knows hardly anything about XML document well-formedness,
  * to say nothing of validity.  It relies upon the invoker to ensure that the
  * generated document is well-formed and, if required, valid.
- *
- * <p> <b>Note:</b> This class is incomplete.  In the next draft it will be
- * extended to more closely mimic {@link XMLScanner}, and to support output to
- * both SAX streams and DOM documents.  </p>
  *
  *
  * @author WS Development Team
@@ -548,7 +544,7 @@ public class XmlWriter {
     /**
      * Writes some character data, skipping quoting.  </p>
      *
-     * @param  cbuf   Buffer containing the character data to be written
+     * @param  buf   Buffer containing the character data to be written
      * @param  off    The offset of the data to be written
      * @param  len    The length of the data to be written
      *
@@ -594,7 +590,7 @@ public class XmlWriter {
     /**
      * Writes an empty leaf element.  </p>
      *
-     * @param  The name to be used in the empty-element tag
+     * @param name name to be used in the empty-element tag
      */
     public void leaf(String name) throws IOException {
         leaf(name, null);

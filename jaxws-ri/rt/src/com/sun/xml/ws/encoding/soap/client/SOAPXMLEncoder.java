@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.2 2005-07-22 23:34:18 arungupta Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-23 04:10:05 kohlert Exp $
  */
 
 /*
@@ -176,7 +176,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     /**
      * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
      *
-     * @return
+     * @return the BindingID associated with this encoder
      */
     protected String getBindingId () {
         return SOAPBinding.SOAP11HTTP_BINDING;

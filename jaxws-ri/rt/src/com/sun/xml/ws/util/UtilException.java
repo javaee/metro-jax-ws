@@ -1,5 +1,5 @@
 /*
- * $Id: UtilException.java,v 1.2 2005-06-13 19:37:56 bbissett Exp $
+ * $Id: UtilException.java,v 1.3 2005-07-23 04:10:14 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * UtilException represents an exception that occurred while
  * one of the util classes is operating.
  * 
- * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * @see JAXWSExceptionBase
  * 
  * @author JAX-WS Development Team
  */

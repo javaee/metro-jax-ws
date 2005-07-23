@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.3 2005-07-22 23:34:17 arungupta Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.4 2005-07-23 04:10:04 kohlert Exp $
  */
 
 /*
@@ -58,7 +58,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     
     /*
      * TODO need to add more logic and processing
-     * @see com.sun.xml.rpc.rt.client.SOAPXMLDecoder#decodeFault(com.sun.xml.rpc.streaming.XMLStreamReader, com.sun.xml.rpc.soap.internal.InternalMessage, com.sun.pept.ept.MessageInfo)
+     * @see SOAPXMLDecoder#decodeFault(XMLStreamReader, InternalMessage, MessageInfo)
      */
     @Override
         protected SOAPFaultInfo decodeFault (XMLStreamReader reader, InternalMessage internalMessage, MessageInfo messageInfo) {

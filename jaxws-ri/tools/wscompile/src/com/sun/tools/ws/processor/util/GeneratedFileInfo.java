@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratedFileInfo.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
+ * $Id: GeneratedFileInfo.java,v 1.3 2005-07-23 04:11:01 kohlert Exp $
  */
 
 /*
@@ -31,8 +31,7 @@ public class GeneratedFileInfo {
     /**
      * Adds the file object to the container
      *
-     * @param instance of the file to be added
-     * @return void
+     * @param file instance of the file to be added
      */
     public void setFile( File file ) {
         this.file = file;
@@ -41,8 +40,7 @@ public class GeneratedFileInfo {
     /**
      * Adds the type of file it is the container
      *
-     * @param Type string which specifices the type
-     * @return void
+     * @param type string which specifices the type
      */
     public void setType( String type ) {
         this.type = type;
@@ -51,8 +49,7 @@ public class GeneratedFileInfo {
     /**
      * Gets the file that got added
      *
-     * @param none
-     * @return File instance
+     * @return File that got added
      */
     public File getFile() {
         return( file );
@@ -61,7 +58,6 @@ public class GeneratedFileInfo {
     /**
      * Get the file type that got added
      *
-     * @param none
      * @return File type of datatype String
      */
     public String getType() {

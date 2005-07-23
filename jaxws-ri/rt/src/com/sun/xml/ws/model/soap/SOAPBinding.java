@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBinding.java,v 1.2 2005-07-12 23:32:51 kohlert Exp $
+ * $Id: SOAPBinding.java,v 1.3 2005-07-23 04:10:09 kohlert Exp $
  */
 
 /*
@@ -57,28 +57,28 @@ public class SOAPBinding {
     }
 
     /**
-     * @return
+     * @return the SOAPVersion of this SOAPBinding
      */
     public SOAPVersion getSOAPVersion() {
         return soapVersion;
     }
 
     /**
-     * @return
+     * @return true if this is a document/literal SOAPBinding
      */
     public boolean isDocLit() {
         return style.equals(Style.DOCUMENT) && use.equals(Use.LITERAL);
     }
 
     /**
-     * @return
+     * @return true if this is a rpc/literal SOAPBinding
      */
     public boolean isRpcLit() {
         return style.equals(Style.RPC) && use.equals(Use.LITERAL);
     }
 
     /**
-     * @return Returns soapAction header value. It's always non-null. soap
+     * @return the soapAction header value. It's always non-null. soap
      *         message serializer needs to generated SOAPAction HTTP header with
      *         the return of this method enclosed in quotes("").
      */

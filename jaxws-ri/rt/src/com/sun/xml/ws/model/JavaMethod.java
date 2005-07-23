@@ -1,5 +1,5 @@
 /**
- * $Id: JavaMethod.java,v 1.5 2005-07-12 23:32:50 kohlert Exp $
+ * $Id: JavaMethod.java,v 1.6 2005-07-23 04:10:09 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -52,7 +52,7 @@ public class JavaMethod {
     }
 
     /**
-     * @return
+     * @return the Binding object
      */
     public Object getBinding() {
         if (binding == null)
@@ -93,7 +93,7 @@ public class JavaMethod {
     }
 
     /**
-     * @param parameter
+     * @param p
      * @throws XYZException
      *             when a parameter is already added. Its ok to have same in and
      *             out parameter but not duplicate inout.
@@ -153,7 +153,7 @@ public class JavaMethod {
     }
 
     /**
-     * @param exceptionType
+     * @param exceptionClass
      * @return CheckedException corresponding to the exceptionClass. Returns
      *         null if not found.
      */
@@ -166,7 +166,7 @@ public class JavaMethod {
     }
 
     /**
-     * @return
+     * @return a list of checked Exceptions thrown by this method
      */
     public List<CheckedException> getCheckedExceptions(){
         return Collections.unmodifiableList(exceptions);
@@ -190,7 +190,7 @@ public class JavaMethod {
 
     /**
      * Returns if the java method MEP is async
-     * @return
+     * @return if this is an Asynch MEP
      */
     public boolean isAsync(){
         return mep == MessageStruct.ASYNC_CALLBACK_MEP || mep == MessageStruct.ASYNC_POLL_MEP;

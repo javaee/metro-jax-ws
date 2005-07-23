@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.1 2005-07-19 20:41:25 arungupta Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.2 2005-07-23 04:10:07 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import com.sun.xml.ws.server.*;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startEnvelope(com.sun.xml.rpc.streaming.XMLStreamWriter)
+     * @see SOAPEncoder#startEnvelope(XMLStreamWriter)
      */
     @Override
     protected void startEnvelope(XMLStreamWriter writer) {
@@ -49,7 +49,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     }
 
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startBody(com.sun.xml.rpc.streaming.XMLStreamWriter)
+     * @see SOAPEncoder#startBody(XMLStreamWriter)
      */
     @Override
     protected void startBody(XMLStreamWriter writer) {
@@ -63,7 +63,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     }
 
     /*
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPEncoder#startHeader(com.sun.xml.rpc.streaming.XMLStreamWriter)
+     * @see SOAPEncoder#startHeader(XMLStreamWriter)
      */
     @Override
     protected void startHeader(XMLStreamWriter writer) {
@@ -103,7 +103,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
 
     /**
      * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
-     * @return
+     * @return the BindingID associated with this encoder
      */
     protected String getBindingId(){
         return SOAPBinding.SOAP12HTTP_BINDING;

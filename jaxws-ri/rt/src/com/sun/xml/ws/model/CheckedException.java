@@ -1,5 +1,5 @@
 /**
- * $Id: CheckedException.java,v 1.2 2005-07-12 23:32:49 kohlert Exp $
+ * $Id: CheckedException.java,v 1.3 2005-07-23 04:10:08 kohlert Exp $
  */
 
 /*
@@ -43,7 +43,7 @@ public class CheckedException {
     }
 
     /**
-     * @return
+     * @return the <code>Class</clode> for this object
      * 
      */
     public Class getExcpetionClass() {

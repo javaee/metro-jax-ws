@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.15 2005-07-19 20:41:23 arungupta Exp $
+ * $Id: SOAPEncoder.java,v 1.16 2005-07-23 04:10:03 kohlert Exp $
  */
 
 /*
@@ -66,14 +66,14 @@ import com.sun.xml.ws.util.DOMUtil;
 public abstract class SOAPEncoder implements Encoder {
 
     /*
-     * @see com.sun.pept.encoding.Encoder#encodeAndSend(com.sun.pept.ept.MessageInfo)
+     * @see Encoder#encodeAndSend(MessageInfo)
      */
     public void encodeAndSend(MessageInfo messageInfo) {
         throw new UnsupportedOperationException();
     }
 
     /*
-     * @see com.sun.pept.encoding.Encoder#encode(com.sun.pept.ept.MessageInfo)
+     * @see Encoder#encode(MessageInfo)
      */
     public ByteBuffer encode(MessageInfo messageInfo) {
         throw new UnsupportedOperationException();

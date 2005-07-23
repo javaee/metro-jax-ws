@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.5 2005-07-12 23:32:52 kohlert Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.6 2005-07-23 04:10:09 kohlert Exp $
  */
 
 /*
@@ -79,7 +79,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
     
 
     /* 
-     * @see com.sun.xml.rpc.rt.RuntimeModel#populateMaps()
+     * @see RuntimeModel#populateMaps()
      */
     @Override
     protected void populateMaps() {
@@ -108,7 +108,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
 
 
     /* 
-     * @see com.sun.xml.rpc.rt.RuntimeModel#fillTypes(com.sun.xml.rpc.rt.model.JavaMethod, java.util.List)
+     * @see RuntimeModel#fillTypes(JavaMethod, List)
      */
     @Override
     protected void fillTypes(JavaMethod m, List<TypeReference> types) {
@@ -183,7 +183,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
      * @param actor
      * @param detail
      * @param internalMsg
-     * @return
+     * @return the InternalMessage for a fault
      */
     public static InternalMessage createFaultInBody(Object obj, String actor,
             Object detail, InternalMessage internalMsg) {
@@ -314,7 +314,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
      * @param actor
      * @param detailBlock
      * @param internalMsg
-     * @return
+     * @return the <code>InteralMessage</code> for a HeaderFault
      */
     public static InternalMessage createHeaderFault(Object obj, String actor, JAXBBridgeInfo detailBlock, InternalMessage internalMsg){
         //its headerfault so, create body fault with no detail. detail object goes as a header block

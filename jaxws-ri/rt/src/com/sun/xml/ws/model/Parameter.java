@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.3 2005-07-12 23:32:50 kohlert Exp $
+ * $Id: Parameter.java,v 1.4 2005-07-23 04:10:09 kohlert Exp $
  */
 
 /*
@@ -68,7 +68,7 @@ public class Parameter {
     }
 
     /**
-     * @return
+     * @return the Binding for this Parameter
      */
     public Object getBinding() {
         if(binding == null)
@@ -120,7 +120,7 @@ public class Parameter {
      * message.
      * 
      * @param obj
-     * @return
+     * @return the holder value if applicable.
      */
     public Object getHolderValue(Object obj) {
         if (obj != null && obj instanceof Holder)

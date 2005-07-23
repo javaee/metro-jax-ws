@@ -1,5 +1,5 @@
 /*
- * $Id: InternalMessage.java,v 1.3 2005-07-18 16:52:16 kohlert Exp $
+ * $Id: InternalMessage.java,v 1.4 2005-07-23 04:10:05 kohlert Exp $
  */
 
 
@@ -25,7 +25,7 @@ public class InternalMessage {
     private Map<String, AttachmentBlock> attachments = new HashMap<String, AttachmentBlock>();
 
     /**
-     * @return
+     * @return the <code>BodyBlock</code> for this message
      */
     public BodyBlock getBody() {
         return body;
@@ -51,7 +51,8 @@ public class InternalMessage {
     }
 
     /**
-     * @return
+     * @return a <code>List</code> of <code>HeaderBlocks</code associated
+     * with this message
      */
     public List<HeaderBlock> getHeaders() {
         return headers;
@@ -73,7 +74,7 @@ public class InternalMessage {
     }
 
     /**
-     * @return
+     * @return a <code>Map</code> of contentIds to attachments
      */
     public Map<String, AttachmentBlock> getAttachments() {
         return attachments;

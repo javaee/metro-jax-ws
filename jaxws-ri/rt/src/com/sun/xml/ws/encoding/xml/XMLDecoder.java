@@ -1,5 +1,5 @@
 /*
- * $Id: XMLDecoder.java,v 1.1 2005-07-23 00:21:26 jitu Exp $
+ * $Id: XMLDecoder.java,v 1.2 2005-07-23 04:10:08 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -38,9 +38,10 @@ public abstract class XMLDecoder implements Decoder {
     public abstract void receiveAndDecode(MessageInfo arg0);
 
     /**
-     * parses and binds headers, body from SOAPMessage.
-     * @param soapMessage
-     * @return
+     * parses and binds body from xmlMessage.
+     * @param xmlMessage
+     * @param messageInfo
+     * @return InternalMessage representation of xmlMessage
      */
     public InternalMessage toInternalMessage(XMLMessage xmlMessage,
                     MessageInfo messageInfo) {
@@ -48,9 +49,10 @@ public abstract class XMLDecoder implements Decoder {
     }
     
     /**
-     * Parses and binds headers from SOAPMessage.
-     * @param soapMessage
-     * @param internalMesage
+     * Parses and binds xmlMessage.
+     * @param xmlMessage
+     * @param internalMessage
+     * @param messageInfo
      *
      */
     public InternalMessage toInternalMessage(XMLMessage xmlMessage,

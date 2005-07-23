@@ -1,5 +1,5 @@
 /*
- * $Id: MimeHelper.java,v 1.1 2005-05-24 13:31:29 bbissett Exp $
+ * $Id: MimeHelper.java,v 1.2 2005-07-23 04:10:59 kohlert Exp $
  */
 
 /*
@@ -19,8 +19,8 @@ import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
  */
 public class MimeHelper {
     /**
-     * @param newMimePart
-     * @return
+     * @param mimePart
+     * @return unique attachment ID
      */
     protected static String getAttachmentUniqueID(String mimePart) {
         //return "uuid@" + mimePart;
@@ -29,7 +29,7 @@ public class MimeHelper {
 
     /**
      * @param mimeType
-     * @return
+     * @return true if mimeType is a binary type
      */
     protected static boolean isMimeTypeBinary(String mimeType) {
         if (mimeType.equals(JPEG_IMAGE_MIME_TYPE)

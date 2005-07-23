@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.1 2005-05-23 22:30:14 bbissett Exp $
+ * $Id: EncoderDecoder.java,v 1.2 2005-07-23 04:10:03 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -103,8 +103,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * Returns the value corresponding to the localName or part accessor from
      * rpclit structure.
      * 
-     * @see com.sun.xml.rpc.rt.encoding.EncoderDecoderBase#getWrapperChildValue(com.sun.xml.rpc.rt.RuntimeContext,
-     *      java.lang.Object, java.lang.String, java.lang.String)
+     * @see EncoderDecoderBase#getWrapperChildValue(RuntimeContext,
+     *      Object, String, String)
      */
     @Override
     protected Object getWrapperChildValue(RuntimeContext context, Object obj, String nsURI,
@@ -135,7 +135,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * 
      * @param name
      * @param headers
-     * @return
+     * @return the <code>HeaderBlock</code> corresponding to the given 
+     * <code>QName name</code>
      */
     protected HeaderBlock getHeaderBlock(QName name, List<HeaderBlock> headers) {
         for (HeaderBlock header : headers) {

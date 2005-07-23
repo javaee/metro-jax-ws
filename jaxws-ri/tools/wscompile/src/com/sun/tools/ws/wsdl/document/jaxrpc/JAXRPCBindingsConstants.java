@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBindingsConstants.java,v 1.2 2005-05-27 18:14:05 vivekp Exp $
+ * $Id: JAXRPCBindingsConstants.java,v 1.3 2005-07-23 04:11:05 kohlert Exp $
  */
 
 /*
@@ -32,16 +32,16 @@ public interface JAXRPCBindingsConstants {
      * wsdlLocation="xs:anyURI"? node="xs:string"? version="string"?> binding
      * declarations... </jaxrpc:bindings>
      *
-     * @wsdlLocation A URI pointing to a WSDL file establishing the scope of the
+     * <code>@wsdlLocation</code> A URI pointing to a WSDL file establishing the scope of the
      *               contents of this binding declaration. It MUST NOT be
      *               present if the binding declaration is used as an extension
      *               inside a WSDL document or if there is an ancestor binding
      *               declaration that contains this attribute.
      *
-     * @node An XPath expression pointing to the element in the WSDL file in
+     * <code>@node</code> An XPath expression pointing to the element in the WSDL file in
      *       scope that this binding declaration is attached to.
      *
-     * @version A version identifier. It MAY only appear on jaxrpc:bindings
+     * <code>@version</code> A version identifier. It MAY only appear on jaxrpc:bindings
      *          elements that don't have any jaxrpc:bindings ancestors (i.e. on
      *          outermost binding declarations).
      */

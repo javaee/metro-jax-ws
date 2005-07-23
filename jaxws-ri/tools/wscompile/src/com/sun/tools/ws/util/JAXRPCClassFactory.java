@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCClassFactory.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
+ * $Id: JAXRPCClassFactory.java,v 1.3 2005-07-23 04:11:01 kohlert Exp $
  */
 
 /*
@@ -43,7 +43,6 @@ public class JAXRPCClassFactory {
     /**
      * Sets the version to a static classVersion
      * @param version
-     * @return
      */
     public void setSourceVersion(String version) {
         if (version == null)
@@ -60,7 +59,7 @@ public class JAXRPCClassFactory {
      *
      * @param modelInfo
      * @param options
-     * @return
+     * @return the WSDLModeler for specific target version.
      */
     public WSDLModelerBase createWSDLModeler(
         WSDLModelInfo modelInfo,
@@ -78,7 +77,7 @@ public class JAXRPCClassFactory {
     /**
      * Returns the Names for specific target version.
      * //bug fix:4904604
-     * @return
+     * @return instance of Names
      */
     public Names createNames() {
         Names names = new Names();

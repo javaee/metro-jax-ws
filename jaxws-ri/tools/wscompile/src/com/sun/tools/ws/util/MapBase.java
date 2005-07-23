@@ -1,5 +1,5 @@
 /*
- * $Id: MapBase.java,v 1.2 2005-07-18 18:14:07 kohlert Exp $
+ * $Id: MapBase.java,v 1.3 2005-07-23 04:11:02 kohlert Exp $
  */
 
 /*
@@ -551,7 +551,7 @@ public abstract class MapBase implements Map {
      * up the results.
      *
      * @return the hash code value for this map.
-     * @see Map.Entry#hashCode()
+     * @see java.util.Map.Entry#hashCode()
      * @see Object#hashCode()
      * @see Object#equals(Object)
      * @see Set#equals(Object)

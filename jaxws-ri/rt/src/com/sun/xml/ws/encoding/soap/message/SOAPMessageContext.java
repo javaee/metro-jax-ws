@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.5 2005-07-18 16:52:17 kohlert Exp $
+ * $Id: SOAPMessageContext.java,v 1.6 2005-07-23 04:10:06 kohlert Exp $
  */
 
 /*
@@ -112,7 +112,7 @@ public class SOAPMessageContext extends MessageContextImpl
     /**
      *
      * @param binding
-     * @return
+     * @return a <code>SOAPMessage</code> with Binding <code>binding</code>
      */
     public static SOAPMessage createMessage(String binding) {
         try {
@@ -129,7 +129,7 @@ public class SOAPMessageContext extends MessageContextImpl
      * @param binding
      * @param headers
      * @param in
-     * @return
+     * @return a <code>SOAPMessage</code> created from headers, in, and binding
      * @throws IOException
      */
     public static SOAPMessage createMessage(MimeHeaders headers, InputStream in, String binding)

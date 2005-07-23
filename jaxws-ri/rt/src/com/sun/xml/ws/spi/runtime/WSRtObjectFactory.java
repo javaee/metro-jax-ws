@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.2 2005-07-15 02:03:20 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.3 2005-07-23 04:10:13 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -50,7 +50,7 @@ public abstract class WSRtObjectFactory {
 
     /**
      * @param type The type of ClientTransportFactory
-     * @see com.sun.xml.rpc.spi2.runtime.ClientTransportFactoryTypes
+     * @see com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes
      */
     public abstract ClientTransportFactory createClientTransportFactory(
         int type,

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageInfoBase.java,v 1.3 2005-07-18 16:52:16 kohlert Exp $
+ * $Id: MessageInfoBase.java,v 1.4 2005-07-23 04:10:06 kohlert Exp $
  */
 
 /*
@@ -100,56 +100,56 @@ public class MessageInfoBase implements MessageInfo {
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#getMessageDispatcher()
+     * @see MessageInfo#getMessageDispatcher()
      */
     public MessageDispatcher getMessageDispatcher() {
         return _messageDispatcher;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#getEncoder()
+     * @see MessageInfo#getEncoder()
      */
     public Encoder getEncoder() {
         return _encoder;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#getDecoder()
+     * @see MessageInfo#getDecoder()
      */
     public Decoder getDecoder() {
         return _decoder;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#getConnection()
+     * @see MessageInfo#getConnection()
      */
     public Connection getConnection() {
         return _connection;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#setMessageDispatcher(com.sun.pept.protocol.MessageDispatcher)
+     * @see MessageInfo#setMessageDispatcher(MessageDispatcher)
      */
     public void setMessageDispatcher(MessageDispatcher arg0) {
         this._messageDispatcher = arg0;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#setEncoder(com.sun.pept.encoding.Encoder)
+     * @see MessageInfo#setEncoder(Encoder)
      */
     public void setEncoder(Encoder encoder) {
         this._encoder = encoder;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#setDecoder(com.sun.pept.encoding.Decoder)
+     * @see MessageInfo#setDecoder(Decoder)
      */
     public void setDecoder(Decoder decoder) {
         this._decoder = decoder;
     }
 
     /*
-     * @see com.sun.pept.ept.MessageInfo#setConnection(com.sun.pept.transport.Connection)
+     * @see MessageInfo#setConnection(Connection)
      */
     public void setConnection(Connection connection) {
         this._connection = connection;

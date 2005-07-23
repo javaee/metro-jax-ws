@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBindingExtensionHandler.java,v 1.1 2005-05-24 14:07:29 bbissett Exp $
+ * $Id: JAXRPCBindingExtensionHandler.java,v 1.2 2005-07-23 04:11:06 kohlert Exp $
  */
 
 /*
@@ -51,7 +51,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandler#getNamespaceURI()
+     * @see ExtensionHandler#getNamespaceURI()
      */
     public String getNamespaceURI() {
         return JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS;
@@ -330,7 +330,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleDefinitionsExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleDefinitionsExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleDefinitionsExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -346,7 +346,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleTypesExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleTypesExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleTypesExtension(ParserContext context, Extensible parent, Element e) {
         // TODO Auto-generated method stub
@@ -354,7 +354,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handlePortTypeExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handlePortTypeExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handlePortTypeExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -399,7 +399,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleOperationExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleOperationExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleOperationExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -507,7 +507,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleBindingExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleBindingExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleBindingExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -548,7 +548,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleInputExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleInputExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleInputExtension(ParserContext context, Extensible parent, Element e) {
         // TODO Auto-generated method stub
@@ -556,7 +556,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleOutputExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleOutputExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleOutputExtension(ParserContext context, Extensible parent, Element e) {
         // TODO Auto-generated method stub
@@ -564,7 +564,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleFaultExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleFaultExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleFaultExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -602,7 +602,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleServiceExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleServiceExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleServiceExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -640,7 +640,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handlePortExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handlePortExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handlePortExtension(ParserContext context, Extensible parent, Element e) {
         if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
@@ -681,7 +681,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handleMIMEPartExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handleMIMEPartExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleMIMEPartExtension(ParserContext context, Extensible parent, Element e) {
         // TODO Auto-generated method stub

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.2 2005-07-21 02:06:20 vivekp Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.3 2005-07-23 04:10:57 kohlert Exp $
  */
 
 /*
@@ -99,14 +99,14 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
         super(model, config, properties);
     }
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.GeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties)
+     * @see GeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties)
      */
     public GeneratorBase20 getGenerator(Model model, Configuration config,
             Properties properties) {
         return new JAXBTypeGenerator(model, config, properties);
     }
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.GeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties, com.sun.xml.rpc.soap.SOAPVersion)
+     * @see cGeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties, com.sun.xml.rpc.soap.SOAPVersion)
      */
     public GeneratorBase20 getGenerator(Model model, Configuration config,
             Properties properties, SOAPVersion ver) {
@@ -114,7 +114,7 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.rpc.processor.model.jaxb.JAXBType)
+     * @see JAXBTypeVisitor#visit(JAXBType)
      */
     public void visit(JAXBType type) throws Exception {
         S2JJAXBModel model = type.getJaxbModel().getS2JJAXBModel();
@@ -124,7 +124,7 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.rpc.processor.model.jaxb.RpcLitStructure)
+     * @see JAXBTypeVisitor#visit(com.sun.xml.rpc.processor.model.jaxb.RpcLitStructure)
      */
     public void visit(RpcLitStructure type) throws Exception {
         S2JJAXBModel model = type.getJaxbModel().getS2JJAXBModel();

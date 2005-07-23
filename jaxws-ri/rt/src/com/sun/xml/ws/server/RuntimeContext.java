@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeContext.java,v 1.5 2005-07-15 17:53:17 kohlert Exp $
+ * $Id: RuntimeContext.java,v 1.6 2005-07-23 04:10:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -41,7 +41,7 @@ public class RuntimeContext {
     }
     
     /**
-     * @return Returns info about endpoint
+     * sets info about endpoint
      */
     public void setRuntimeEndpointInfo(RuntimeEndpointInfo endpointInfo) {
         this.endpointInfo = endpointInfo;
@@ -50,7 +50,7 @@ public class RuntimeContext {
     /**
      * @param name
      * @param mi
-     * @return
+     * @return the <code>Method</code> associated with the operation named name
      */
     public Method getDispatchMethod(QName name, MessageInfo mi) {
         return getDispatchMethod(name);
@@ -58,7 +58,7 @@ public class RuntimeContext {
     
     /**
      * @param name
-     * @return
+     * @return the <code>Method</code> associated with the operation named name
      */
     public Method getDispatchMethod(QName name){
         return model.getDispatchMethod(name);
@@ -76,7 +76,7 @@ public class RuntimeContext {
     
     /**
      * @param name
-     * @return
+     * @return the decoder Info associated with operation named name
      */
     public Object getDecoderInfo(QName name) {
         return model.getDecoderInfo(name);

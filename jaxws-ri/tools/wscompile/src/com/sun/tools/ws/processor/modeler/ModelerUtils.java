@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.3 2005-07-21 19:53:23 vivekp Exp $
+ * $Id: ModelerUtils.java,v 1.4 2005-07-23 04:10:59 kohlert Exp $
  */
 
 /*
@@ -172,7 +172,7 @@ public class ModelerUtils {
      *
      * @param paramName
      * @param parameters
-     * @return
+     * @return the Parameter with name paramName from parameters
      */
     public static Parameter getParameter(String paramName, List<Parameter> parameters){
         if(parameters == null)

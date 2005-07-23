@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.6 2005-06-13 19:04:42 jitu Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.7 2005-07-23 04:10:02 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -71,10 +71,7 @@ public class JAXBTypeSerializer {
     
 
     /*
-     * TODO: change reader param to take StAXReader or XMLStreamReader?
-     *
-     * @see com.sun.xml.rpc.encoding.jaxb.JAXBTypeSerializerIf#deserialize(com.sun.xml.rpc.streaming.XMLStreamReader,
-     *      javax.xml.bind.JAXBContext)
+     * @see JAXBTypeSerializerIf#deserialize(XMLStreamReader,JAXBContext)
      */
     public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         Object obj = null;

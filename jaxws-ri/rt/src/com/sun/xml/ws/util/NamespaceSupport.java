@@ -1,5 +1,5 @@
 /*
- * $Id: NamespaceSupport.java,v 1.2 2005-07-18 16:52:31 kohlert Exp $
+ * $Id: NamespaceSupport.java,v 1.3 2005-07-23 04:10:14 kohlert Exp $
  */
 
 /*
@@ -369,8 +369,6 @@ public class NamespaceSupport {
      * method with an argument of "".</p>
      *
      * @param uri The Namespace URI.
-     * @param isAttribute true if this prefix is for an attribute
-     *        (and the default Namespace is not allowed).
      * @return One of the prefixes currently mapped to the URI supplied,
      *         or null if none is mapped or if the URI is assigned to
      *         the default Namespace.
@@ -505,7 +503,7 @@ public class NamespaceSupport {
         /**
          * (Re)set the parent of this Namespace context.
          *
-         * @param context The parent Namespace context object.
+         * @param parent The parent Namespace context object.
          */
         void setParent(Context parent) {
             this.parent = parent;

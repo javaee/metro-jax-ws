@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderPeptTie.java,v 1.2 2005-07-12 23:34:10 jitu Exp $
+ * $Id: ProviderPeptTie.java,v 1.3 2005-07-23 04:10:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -40,7 +40,7 @@ public class ProviderPeptTie extends PeptTie {
     };
 
     /*
-     * @see com.sun.pept.presentation.Tie#_invoke(com.sun.pept.ept.MessageInfo)
+     * @see Tie#_invoke(MessageInfo)
      */
     public void _invoke(MessageInfo messageInfo) {
         Object[] oa = messageInfo.getData();

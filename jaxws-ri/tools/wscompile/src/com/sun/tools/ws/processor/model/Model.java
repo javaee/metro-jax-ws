@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
+ * $Id: Model.java,v 1.3 2005-07-23 04:10:58 kohlert Exp $
  */
 
 /*
@@ -141,7 +141,7 @@ public class Model extends ModelObject {
     }
 
     /**
-     * @return
+     * @return the source version
      */
     public String getSource() {
         return source;

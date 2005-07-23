@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: Names.java,v 1.3 2005-07-23 04:10:57 kohlert Exp $
  */
 
 /*
@@ -229,7 +229,7 @@ public class Names implements GeneratorConstants{
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.Names#holderClassName(com.sun.xml.rpc.processor.model.Port, com.sun.xml.rpc.processor.model.AbstractType)
+     * @see Names#holderClassName(Port, AbstractType)
      */
     public String holderClassName(Port port, AbstractType type) {
         String typeName = SimpleToBoxedUtil.getBoxedClassName(type.getJavaType().getName());
@@ -237,14 +237,14 @@ public class Names implements GeneratorConstants{
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.Names#holderClassName(com.sun.xml.rpc.processor.model.Port, com.sun.xml.rpc.processor.model.java.JavaType)
+     * @see Names#holderClassName(Port, JavaType)
      */
     public String holderClassName(Port port, JavaType type) {
         String typeName = SimpleToBoxedUtil.getBoxedClassName(type.getName());
         return "javax.xml.ws.Holder<"+typeName+">";
     }
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.Names#holderClassName(com.sun.xml.rpc.processor.model.Port, java.lang.String)
+     * @see Names#holderClassName(Port, String)
      */
     protected String holderClassName(Port port, String typeName) {
         typeName = SimpleToBoxedUtil.getBoxedClassName(typeName);
@@ -365,14 +365,14 @@ public class Names implements GeneratorConstants{
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.Names#validJavaClassName(java.lang.String)
+     * @see Names#validJavaClassName(String)
      */
     public String validJavaClassName(String name) {
         return com.sun.tools.xjc.api.XJC.mangleNameToClassName(name);
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.generator.Names#validJavaMemberName(java.lang.String)
+     * @see Names#validJavaMemberName(String)
      */
     public String validJavaMemberName(String name) {
         return com.sun.tools.xjc.api.XJC.mangleNameToVariableName(name);    

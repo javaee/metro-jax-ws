@@ -187,7 +187,7 @@ public class ServiceContextBuilder {
      * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
      *
      * @param sei
-     * @return
+     * @return the URL of the location of the WSDL for the sei.
      */
     //this will change
     public static URL getWSDLLocation(Class sei) throws MalformedURLException {

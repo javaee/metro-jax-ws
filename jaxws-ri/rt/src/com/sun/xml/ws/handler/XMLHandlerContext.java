@@ -1,5 +1,5 @@
 /*
- * $Id: XMLHandlerContext.java,v 1.1 2005-07-23 00:21:27 jitu Exp $
+ * $Id: XMLHandlerContext.java,v 1.2 2005-07-23 04:10:08 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -47,7 +47,7 @@ public class XMLHandlerContext extends MessageContextImpl {
     }
 
     /**
-     * @param soapMessage The soapMessage to set.
+     * @param xmlMessage The xmlMessage to set.
      */
     public void setXMLMessage(XMLMessage xmlMessage) {
         this.xmlMessage = xmlMessage;

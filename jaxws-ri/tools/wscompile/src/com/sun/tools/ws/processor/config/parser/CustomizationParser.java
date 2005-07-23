@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.1 2005-05-23 23:13:21 bbissett Exp $
+ * $Id: CustomizationParser.java,v 1.2 2005-07-23 04:10:56 kohlert Exp $
  */
 
 /*
@@ -35,9 +35,7 @@ public class CustomizationParser extends InputParser {
 
     /**
      * @param env
-     * @param jaxbBindings
-     * @param jaxrpcCustomization
-     * @param _options
+     * @param options
      */
     public CustomizationParser(ProcessorEnvironment env, Properties options) {
         super(env, options);

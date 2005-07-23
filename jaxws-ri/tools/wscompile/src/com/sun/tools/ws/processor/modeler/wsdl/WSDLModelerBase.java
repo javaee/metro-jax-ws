@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.3 2005-07-21 01:59:12 vivekp Exp $
+ * $Id: WSDLModelerBase.java,v 1.4 2005-07-23 04:11:00 kohlert Exp $
  */
 
 /*
@@ -129,7 +129,7 @@ public abstract class WSDLModelerBase implements Modeler {
      * Builds model from WSDL document. Model contains abstraction which is used by the
      * generators to generate the stub/tie/serializers etc. code.
      *
-     * @see com.sun.xml.rpc.processor.modeler.Modeler#buildModel()
+     * @see Modeler#buildModel()
      */
     public Model buildModel() {
         try {
@@ -347,14 +347,14 @@ public abstract class WSDLModelerBase implements Modeler {
         return model;
     }
 
-    /**
-     * @param document
-     * @param _modelInfo
-     * @param _options
-     * @param _conflictingClassNames
-     * @param _javaTypes
-     * @return
-     */
+//    /**
+//     * @param document
+//     * @param _modelInfo
+//     * @param _options
+//     * @param _conflictingClassNames
+//     * @param _javaTypes
+//     * @return
+//     */
 //    protected abstract SchemaAnalyzerBase getSchemaAnalyzerInstance(
 //        WSDLDocument document,
 //        WSDLModelInfo _modelInfo,
@@ -371,15 +371,15 @@ public abstract class WSDLModelerBase implements Modeler {
         return _modelInfo;
     }
 
-    /**
-     * Should be called for -f:searchschema option processing.
-     *
-     * With this option we look for all the schema types under
-     * <wsdl:types> ..</wsdl:types>.
-     *
-     * @param document WSDL document
-     * @param model Model which will be used by the generators to generate code.
-     */
+//    /**
+//     * Should be called for -f:searchschema option processing.
+//     *
+//     * With this option we look for all the schema types under
+//     * <wsdl:types> ..</wsdl:types>.
+//     *
+//     * @param document WSDL document
+//     * @param model Model which will be used by the generators to generate code.
+//     */
 //    protected void processSearchSchemaOption(
 //        WSDLDocument document,
 //        Model model) {
@@ -459,7 +459,7 @@ public abstract class WSDLModelerBase implements Modeler {
     /**
      * @param serviceQName
      * @param wsdlService
-     * @return
+     * @return the Java Class name for the service interface
      */
     protected String getServiceInterfaceName(
         QName serviceQName,
@@ -789,7 +789,7 @@ public abstract class WSDLModelerBase implements Modeler {
     }
 
     /**
-     * @param portByName
+     * @param port
      * @param wsdlPort
      */
     protected void applyPortMethodCustomization(Port port, com.sun.tools.ws.wsdl.document.Port wsdlPort) {
@@ -810,7 +810,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param binding
-     * @return
+     * @return true if Binding is WSDLBindingStyle
      */
     protected boolean validateWSDLBindingStyle(Binding binding) {
         // TODO Auto-generated method stub
@@ -1520,11 +1520,11 @@ public abstract class WSDLModelerBase implements Modeler {
 //        }
 //    }
 
-    /**
-     * @param response
-     * @param duplicateNames
-     * @param faultNames
-     */
+//    /**
+//     * @param response
+//     * @param duplicateNames
+//     * @param faultNames
+//     */
 //    private void handleEncodedSOAPFault(
 //        Response response,
 //        Set duplicateNames) {
@@ -1886,7 +1886,7 @@ public abstract class WSDLModelerBase implements Modeler {
     }
 
     /**
-     * @param iterator
+     * @param mimeParts
      */
     protected boolean validateMimeParts(Iterator mimeParts) {
         boolean gotRootPart = false;
@@ -2715,7 +2715,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param part
-     * @return
+     * @return true if part is bound to Mime content
      */
     protected boolean isBoundToMimeContent(MessagePart part) {
         if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.WSDL_MIME_BINDING)
@@ -2725,7 +2725,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param part
-     * @return
+     * @return true if part is bound to SOAPBody
      */
     protected boolean isBoundToSOAPBody(MessagePart part) {
         if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_BODY_BINDING)
@@ -2735,7 +2735,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param part
-     * @return
+     * @return true if part is bound to SOAPHeader
      */
     protected boolean isBoundToSOAPHeader(MessagePart part) {
         if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_HEADER_BINDING)
@@ -2751,7 +2751,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
 
     /**
-     * @return
+     * @return List of SOAPHeader extensions
      */
     protected List<SOAPHeader> getHeaderExtensions(Extensible extensible) {
         List<SOAPHeader> headerList = new ArrayList<SOAPHeader>();
@@ -2791,7 +2791,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param part
-     * @return
+     * @return true if part is the Root part
      */
     private boolean isRootPart(MIMEPart part) {
         Iterator iter = part.extensions();
@@ -3166,7 +3166,7 @@ public abstract class WSDLModelerBase implements Modeler {
      * @param body
      * @param message
      * @param headerPart
-     * @return
+     * @return true if header part is present in body part
      */
     private boolean isHeaderPartPresentInBody(
         SOAPBody body,
@@ -3181,10 +3181,6 @@ public abstract class WSDLModelerBase implements Modeler {
         return false;
     }
 
-    /**
-     * @param faultNames
-     * @param duplicateNames
-     */
     protected Set getDuplicateFaultNames() {
         // look for fault messages with the same soap:fault name
         Set faultNames = new HashSet();
@@ -3279,7 +3275,8 @@ public abstract class WSDLModelerBase implements Modeler {
      * @param faultPartName - to be used by versions < 1.1
      * @param soapFaultName
      * @param bindFaultName
-     * @return
+     * @return soapbinding:fault name. If null then gives warning for wsi R2721 and uses
+     * wsdl:fault name.
      */
     protected String getFaultName(
         String faultPartName,
@@ -4140,7 +4137,7 @@ public abstract class WSDLModelerBase implements Modeler {
 
     /**
      * @param operation
-     * @return
+     * @return true if operation has valid body parts
      */
     protected boolean validateBodyParts(BindingOperation operation) {
         boolean isRequestResponse =
@@ -4161,7 +4158,7 @@ public abstract class WSDLModelerBase implements Modeler {
     /**
      * @param operation
      * @param inputParts
-     * @return
+     * @return true if operation has valid style and part
      */
     private boolean validateStyleAndPart(BindingOperation operation, List parts) {
         SOAPOperation soapOperation =
@@ -5166,7 +5163,7 @@ public abstract class WSDLModelerBase implements Modeler {
      * @param ext
      * @param message
      * @param name
-     * @return
+     * @return List of MimeContents from ext
      */
     protected List getMimeContents(Extensible ext, Message message, String name) {
         Iterator mimeParts = getMimeParts(ext);

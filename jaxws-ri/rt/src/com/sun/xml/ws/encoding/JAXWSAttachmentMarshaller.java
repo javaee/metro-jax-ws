@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.6 2005-07-12 15:54:09 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.7 2005-07-23 04:10:01 kohlert Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author Vivek Pandey
+ * @author WS Development Team
  *
  *
  */
@@ -46,7 +46,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     }
 
     /*
-     * @see javax.xml.bind.attachment.AttachmentMarshaller#addMtomAttachment(javax.activation.DataHandler, java.lang.String, java.lang.String)
+     * @see AttachmentMarshaller#addMtomAttachment(DataHandler, String, String)
      */
     public String addMtomAttachment(DataHandler data, String elementNamespace, String elementName) {
         if(!isXOP)
@@ -61,7 +61,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     }
 
     /*
-     * @see javax.xml.bind.attachment.AttachmentMarshaller#addMtomAttachment(byte[], java.lang.String, java.lang.String)
+     * @see AttachmentMarshaller#addMtomAttachment(byte[], String, String)
      */
     public String addMtomAttachment(byte[] data, String elementNamespace, String elementName) {
         if(!isXOP || data == null)
@@ -81,7 +81,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     }
 
     /*
-     * @see javax.xml.bind.attachment.AttachmentMarshaller#addSwaRefAttachment(javax.activation.DataHandler)
+     * @see AttachmentMarshaller#addSwaRefAttachment(DataHandler)
      */
     public String addSwaRefAttachment(DataHandler data) {
         String cid = encodeCid(null);
@@ -132,7 +132,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
 
     /**
      *
-     * @return
+     * @return true if Xopped, false otherwise
      */
     public boolean isXopped() {
         return isXopped;

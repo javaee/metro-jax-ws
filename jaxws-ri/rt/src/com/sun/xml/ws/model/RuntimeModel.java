@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.11 2005-07-12 23:32:51 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.12 2005-07-23 04:10:09 kohlert Exp $
  */
 
 /*
@@ -61,7 +61,7 @@ public abstract class RuntimeModel {
     }
 
     /**
-     * @return
+     * @return the <code>BridgeContext</code> for this <code>RuntimeModel</code>
      */
     public BridgeContext getBridgeContext() {
         if (jaxbContext == null)
@@ -77,7 +77,7 @@ public abstract class RuntimeModel {
     }
 
     /**
-     * @return
+     * @return the <code>JAXBRIContext</code>
      */
     public JAXBRIContext getJAXBContext() {
         return jaxbContext;
@@ -85,7 +85,7 @@ public abstract class RuntimeModel {
 
     /**
      * @param type
-     * @return
+     * @return the <code>Bridge</code> for the <code>type</code>
      */
     public Bridge getBridge(TypeReference type) {
         return bridgeMap.get(type);
@@ -93,7 +93,8 @@ public abstract class RuntimeModel {
 
     /**
      * @param name
-     * @return
+     * @return either a <code>RpcLitpayload</code> or a <code>JAXBBridgeInfo</code> for 
+     * an operation named <code>name</code>
      */
     public Object getDecoderInfo(QName name) {
         Object obj = payloadMap.get(name);
@@ -172,7 +173,7 @@ public abstract class RuntimeModel {
 
     /**
      * @param qname
-     * @return
+     * @return the <code>Method</code> for a given Operation <code>qname</code>
      */
     public Method getDispatchMethod(QName qname) {
         //handle the empty body
@@ -188,7 +189,8 @@ public abstract class RuntimeModel {
     /**
      * @param name
      * @param method
-     * @return
+     * @return true if <code>name</code> is the name
+     * of a known fault name for the <code>Method method</code>
      */
     public boolean isKnownFault(QName name, Method method) {
         JavaMethod m = getJavaMethod(method);
@@ -202,7 +204,8 @@ public abstract class RuntimeModel {
     /**
      * @param m
      * @param ex
-     * @return
+     * @return true if <code>ex</code> is a Checked Exception
+     * for <code>Method m</code>
      */
     public boolean isCheckedException(Method m, Class ex) {
         JavaMethod jm = getJavaMethod(m);
@@ -215,7 +218,7 @@ public abstract class RuntimeModel {
 
     /**
      * @param method
-     * @return
+     * @return the <code>JavaMethod</code> representing the <code>method</code>
      */
     public JavaMethod getJavaMethod(Method method) {
         return methodToJM.get(method);
@@ -223,14 +226,16 @@ public abstract class RuntimeModel {
 
     /**
      * @param name
-     * @return
+     * @return the <code>JavaMethod</code> associated with the 
+     * operation named name
      */
     public JavaMethod getJavaMethod(QName name) {
         return nameToJM.get(name);
     }
 
     /**
-     * @return
+     * @return a <code>Collection</code> of <code>JavaMethods</code>
+     * associated with this <code>RuntimeModel</code>
      */
     public Collection<JavaMethod> getJavaMethods() {
         return Collections.unmodifiableList(javaMethods);

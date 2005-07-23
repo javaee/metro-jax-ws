@@ -1,5 +1,5 @@
 /*
- * $Id: PrettyPrintingXmlWriter.java,v 1.2 2005-07-18 18:14:09 kohlert Exp $
+ * $Id: PrettyPrintingXmlWriter.java,v 1.3 2005-07-23 04:11:03 kohlert Exp $
  */
 
 /*
@@ -26,10 +26,6 @@ import com.sun.xml.ws.util.xml.CDATA;
  * <p> An XML writer knows hardly anything about XML document well-formedness,
  * to say nothing of validity.  It relies upon the invoker to ensure that the
  * generated document is well-formed and, if required, valid.
- *
- * <p> <b>Note:</b> This class is incomplete.  In the next draft it will be
- * extended to more closely mimic {@link XMLScanner}, and to support output to
- * both SAX streams and DOM documents.  </p>
  *
  *
  * @author WS Development Team
@@ -551,7 +547,7 @@ public class PrettyPrintingXmlWriter {
     /**
      * Writes some character data, skipping quoting.  </p>
      *
-     * @param  cbuf   Buffer containing the character data to be written
+     * @param  buf   Buffer containing the character data to be written
      * @param  off    The offset of the data to be written
      * @param  len    The length of the data to be written
      *
@@ -568,9 +564,9 @@ public class PrettyPrintingXmlWriter {
     /**
      * Writes a leaf element with the given character content.  </p>
      *
-     * @param  name  The name to be used in the start and end tags
+     * @param name  ame to be used in the start and end tags
      *
-     * @param  chars  The character data to be written
+     * @param chars  character data to be written
      *
      * <p> This method writes a start tag with the given name, followed by the
      * given character data, followed by an end tag.  If the <tt>chars</tt>
@@ -597,7 +593,7 @@ public class PrettyPrintingXmlWriter {
     /**
      * Writes an empty leaf element.  </p>
      *
-     * @param  The name to be used in the empty-element tag
+     * @param  name name to be used in the empty-element tag
      */
     public void leaf(String name) throws IOException {
         leaf(name, null);

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser20.java,v 1.1 2005-05-24 14:07:31 bbissett Exp $
+ * $Id: WSDLParser20.java,v 1.2 2005-07-23 04:11:07 kohlert Exp $
  */
 
 /*
@@ -69,7 +69,7 @@ public class WSDLParser20 extends WSDLParser {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.WSDLParser#parseDefinitions(com.sun.xml.rpc.wsdl.framework.ParserContext, org.xml.sax.InputSource, java.lang.String)
+     * @see WSDLParser#parseDefinitions(ParserContext, org.xml.sax.InputSource, java.lang.String)
      */
     protected Definitions parseDefinitions(ParserContext context,
             InputSource source, String expectedTargetNamespaceURI) {
@@ -102,7 +102,7 @@ public class WSDLParser20 extends WSDLParser {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.WSDLParser#processImports(com.sun.xml.rpc.wsdl.framework.ParserContext, org.xml.sax.InputSource, com.sun.xml.rpc.wsdl.document.Definitions)
+     * @see WSDLParser#processImports(ParserContext, org.xml.sax.InputSource, Definitions)
      */
     protected void processImports(ParserContext context, InputSource source, Definitions definitions) {
         for(String location : imports){
@@ -251,7 +251,7 @@ public class WSDLParser20 extends WSDLParser {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.WSDLParser#parseTypes(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.document.Definitions, org.w3c.dom.Element)
+     * @see WSDLParser#parseTypes(ParserContext, Definitions, org.w3c.dom.Element)
      */
 //    protected Types parseTypes(ParserContext context, Definitions definitions,
 //            Element e) {

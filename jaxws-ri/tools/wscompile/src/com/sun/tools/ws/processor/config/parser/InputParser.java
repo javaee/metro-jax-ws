@@ -1,5 +1,5 @@
 /*
- * $Id: InputParser.java,v 1.1 2005-05-23 23:13:21 bbissett Exp $
+ * $Id: InputParser.java,v 1.2 2005-07-23 04:10:57 kohlert Exp $
  */
 
 /*
@@ -74,7 +74,7 @@ public abstract class InputParser{
     }
 
     /**
-     * @param _env The _env to set.
+     * @param env The ProcessorEnvironment to set.
      */
     public void setEnv(ProcessorEnvironment env){
         this._env = env;

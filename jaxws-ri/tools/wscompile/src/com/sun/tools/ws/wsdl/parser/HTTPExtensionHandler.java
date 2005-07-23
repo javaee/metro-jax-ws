@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPExtensionHandler.java,v 1.2 2005-07-18 18:14:22 kohlert Exp $
+ * $Id: HTTPExtensionHandler.java,v 1.3 2005-07-23 04:11:06 kohlert Exp $
  */
 
 /*
@@ -240,7 +240,7 @@ public class HTTPExtensionHandler extends ExtensionHandlerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.wsdl.parser.ExtensionHandlerBase#handlePortTypeExtension(com.sun.xml.rpc.wsdl.framework.ParserContext, com.sun.xml.rpc.wsdl.framework.Extensible, org.w3c.dom.Element)
+     * @see ExtensionHandlerBase#handlePortTypeExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handlePortTypeExtension(ParserContext context, Extensible parent, Element e) {
         Util.fail(

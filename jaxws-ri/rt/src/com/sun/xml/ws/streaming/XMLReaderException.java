@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReaderException.java,v 1.3 2005-07-18 16:52:23 kohlert Exp $
+ * $Id: XMLReaderException.java,v 1.4 2005-07-23 04:10:13 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.xml.ws.util.localization.Localizable;
  * XML document. </p>
  * 
  * @see XMLReader
- * @see com.sun.xml.rpc.util.exception.JAXWSExceptionBase
+ * @see JAXWSExceptionBase
  * 
  * @author WS Development Team
  */

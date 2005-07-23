@@ -1,5 +1,5 @@
 /**
- * $Id: StAXReader.java,v 1.1 2005-05-23 22:59:35 bbissett Exp $
+ * $Id: StAXReader.java,v 1.2 2005-07-23 04:10:13 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -156,11 +156,11 @@ public class StAXReader extends XMLReaderBase {
      * stream reader has been used so that the StAXReader has correct
      * information.
      *
-     * @return The actual XMLStreamReader being used. The StAXReader object
+     * @return the actual XMLStreamReader being used. The StAXReader object
      * will not contain valid information once the underlying reader is
      * used separately.
      *
-     * @see com.sun.xml.rpc.streaming.StAXReader#synchronizeReader
+     * @see StAXReader#synchronizeReader()
      */
     public XMLStreamReader getXMLStreamReader() {
         return reader;
@@ -170,7 +170,7 @@ public class StAXReader extends XMLReaderBase {
      * Used to resync the StAXReader with its underlying XMLStreamReader.
      * The element id stack may not be valid.
      *
-     * @see com.sun.xml.rpc.streaming.StAXReader#getXMLStreamReader
+     * @see StAXReader#getXMLStreamReader()
      */
     public void synchronizeReader() {
         currentName = null;

@@ -1,5 +1,5 @@
 /*
- * $Id: LogicalEPTFactory.java,v 1.2 2005-05-25 20:52:05 kohlert Exp $
+ * $Id: LogicalEPTFactory.java,v 1.3 2005-07-23 04:10:02 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -20,11 +20,11 @@ public interface LogicalEPTFactory {
     public InternalEncoder getInternalEncoder();
     
 	/**
-	 * @return
+	 * @return the SOAPEncoder
 	 */
 	public SOAPEncoder getSOAPEncoder();
 	/**
-	 * @return
+	 * @return the SOAPDecoder
 	 */
 	public SOAPDecoder getSOAPDecoder();
 }

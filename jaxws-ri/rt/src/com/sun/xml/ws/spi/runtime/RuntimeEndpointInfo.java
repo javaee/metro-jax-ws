@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.4 2005-07-14 23:39:49 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.5 2005-07-23 04:10:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -28,7 +28,7 @@ public interface RuntimeEndpointInfo {
     
     /**
      * Sets the endpoint implementation object. This servant object should have
-     * @WebService annotation. Provider endpoints need not have @WebService
+     * <code>@WebService</code> annotation. Provider endpoints need not have @WebService
      * annotation. Dynamic model is created using this object.
      */
     public void setImplementor(Object servant);

@@ -159,4 +159,4 @@ these methods.</P>
 */
 package com.sun.xml.ws;
 
-import javax.xml.ws.Binding;
+//import javax.xml.ws.Binding;

@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.5 2005-06-14 01:05:09 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.6 2005-07-23 04:10:03 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -229,7 +229,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
     }
 
     /**
-     * @return
+     * @return the actor
      */
     public String getActor() {
         return null;

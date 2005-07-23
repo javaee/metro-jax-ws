@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.8 2005-07-21 19:53:24 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.9 2005-07-23 04:10:59 kohlert Exp $
  */
 
 /*
@@ -240,7 +240,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#processService(com.sun.xml.rpc.wsdl.document.Service, com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.wsdl.document.WSDLDocument)
+     * @see WSDLModelerBase#processService(Service, Model, WSDLDocument)
      */
     protected void processService(com.sun.tools.ws.wsdl.document.Service wsdlService, Model model, WSDLDocument document) {
         String serviceInterface = "";
@@ -274,7 +274,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#processPort(com.sun.xml.rpc.wsdl.document.Port, com.sun.xml.rpc.processor.model.Service, com.sun.xml.rpc.wsdl.document.WSDLDocument)
+     * @see WSDLModelerBase#processPort(Port, Service, WSDLDocument)
      */
     protected boolean processPort(com.sun.tools.ws.wsdl.document.Port wsdlPort,
             Service service, WSDLDocument document) {
@@ -527,7 +527,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#processSOAPOperation()
+     * @see WSDLModelerBase#processSOAPOperation()
      */
     protected Operation processSOAPOperation() {
         Operation operation =
@@ -598,7 +598,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#createWSDLParser()
+     * @see WSDLModelerBase#createWSDLParser()
      */
     protected WSDLParser createWSDLParser() {
         return new WSDLParser20(_modelInfo);
@@ -2036,7 +2036,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#getJAXBSchemaAnalyzerInstnace(com.sun.xml.rpc.processor.config.WSDLModelInfo, java.util.Properties, org.w3c.dom.Element)
+     * @see WSDLModelerBase#getJAXBSchemaAnalyzerInstnace(WSDLModelInfo, Properties, org.w3c.dom.Element)
      */
     protected JAXBModelBuilder getJAXBSchemaAnalyzerInstnace(WSDLModelInfo info,
                                                              Properties options,
@@ -2045,7 +2045,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#isUnwrappable()
+     * @see WSDLModelerBase#isUnwrappable()
      */
     protected boolean isUnwrappable() {
         if(!getWrapperStyleCustomization())
@@ -2139,7 +2139,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#isSingleInOutPart(java.util.Set, com.sun.xml.rpc.wsdl.document.MessagePart)
+     * @see WSDLModelerBase#isSingleInOutPart(Set, MessagePart)
      */
     protected boolean isSingleInOutPart(Set inputParameterNames,
             MessagePart outputPart) {
@@ -2298,7 +2298,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#getServiceInterfaceName(javax.xml.namespace.QName, com.sun.xml.rpc.wsdl.document.Service)
+     * @see WSDLModelerBase#getServiceInterfaceName(QName, Service)
      */
     @Override
     protected String getServiceInterfaceName(QName serviceQName, com.sun.tools.ws.wsdl.document.Service wsdlService) {
@@ -2324,7 +2324,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#getJavaNameOfSEI(com.sun.xml.rpc.processor.model.Port)
+     * @see WSDLModelerBase#getJavaNameOfSEI(Port)
      */
     protected String getJavaNameOfSEI(Port port) {
         QName portTypeName =
@@ -2364,7 +2364,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#createJavaMethodForOperation(com.sun.xml.rpc.processor.model.Port, com.sun.xml.rpc.processor.model.Operation, com.sun.xml.rpc.processor.model.java.JavaInterface, java.util.Set, java.util.Set)
+     * @see WSDLModelerBase#createJavaMethodForOperation(Port, Operation, JavaInterface, Set, Set)
      */
     protected void createJavaMethodForOperation(Port port, Operation operation,
             JavaInterface intf, Set methodNames, Set methodSignatures) {
@@ -2665,7 +2665,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#setProperties(com.sun.xml.rpc.processor.model.Port, boolean)
+     * @see WSDLModelerBase#setProperties(Port, boolean)
      */
     protected void setProperties(Port port, boolean isProvider) {
         if(!isProvider){
@@ -2697,7 +2697,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
      *
      * @param port
      * @param suffix
-     * @return
+     * @return the Java ClassName for a port
      */
     protected String getClassName(Port port, String suffix) {
         String name = "";
@@ -2755,7 +2755,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     private JAXBModelBuilder _jaxbModelBuilder;
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#validWSDLBindingStyle(com.sun.xml.rpc.wsdl.document.Binding)
+     * @see WSDLModelerBase#validWSDLBindingStyle(Binding)
      */
     protected boolean validateWSDLBindingStyle(Binding binding) {
         boolean mixedStyle = false;
@@ -2799,7 +2799,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.modeler.wsdl.WSDLModelerBase#getJavaNameForOperation(com.sun.xml.rpc.processor.model.Operation)
+     * @see WSDLModelerBase#getJavaNameForOperation(Operation)
      */
     protected String getJavaNameForOperation(Operation operation) {
         String name = XJC.mangleNameToVariableName(operation.getName().getLocalPart());

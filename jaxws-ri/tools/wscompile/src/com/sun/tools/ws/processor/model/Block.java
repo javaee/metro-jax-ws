@@ -1,5 +1,5 @@
 /**
- * $Id: Block.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: Block.java,v 1.3 2005-07-23 04:10:57 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -63,7 +63,7 @@ public class Block extends ModelObject {
     private int location;
 
     /**
-     * @return
+     * @return true if the block is unbound
      */
     public boolean isUnbound() {
         if(location == UNBOUND)
