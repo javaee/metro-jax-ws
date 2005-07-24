@@ -1,12 +1,12 @@
 /*
- * $Id: JAXRPCBinding.java,v 1.2 2005-07-23 04:11:05 kohlert Exp $
+ * $Id: JAXWSBinding.java,v 1.1 2005-07-24 01:37:51 kohlert Exp $
  */
 
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.sun.tools.ws.wsdl.document.jaxrpc;
+package com.sun.tools.ws.wsdl.document.jaxws;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,12 +28,12 @@ import com.sun.tools.ws.wsdl.framework.Extension;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class JAXRPCBinding extends Extension implements Extensible {
+public class JAXWSBinding extends Extension implements Extensible {
 
     /**
      *
      */
-    public JAXRPCBinding(){
+    public JAXWSBinding(){
         super();
         jaxbBindings = new HashSet<Element>();
         // TODO Auto-generated constructor stub
@@ -53,7 +53,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
      */
     public QName getElementName(){
         // TODO Auto-generated method stub
-        return JAXRPCBindingsConstants.JAXRPC_BINDINGS;
+        return JAXWSBindingsConstants.JAXWS_BINDINGS;
     }
 
     /* (non-Javadoc)
@@ -123,16 +123,16 @@ public class JAXRPCBinding extends Extension implements Extensible {
         this.enableWrapperStyle = enableWrapperStyle;
     }
     /**
-     * @return Returns the jaxrpcPackage.
+     * @return Returns the jaxwsPackage.
      */
-    public CustomName getJaxrpcPackage() {
-        return jaxrpcPackage;
+    public CustomName getJaxwsPackage() {
+        return jaxwsPackage;
     }
     /**
-     * @param jaxrpcPackage The jaxrpcPackage to set.
+     * @param jaxwsPackage The jaxwsPackage to set.
      */
-    public void setJaxrpcPackage(CustomName jaxrpcPackage) {
-        this.jaxrpcPackage = jaxrpcPackage;
+    public void setJaxwsPackage(CustomName jaxwsPackage) {
+        this.jaxwsPackage = jaxwsPackage;
     }
     /**
      * @return Returns the node.
@@ -222,7 +222,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
      * @see Entity#getProperty(java.lang.String)
      */
     public Object getProperty(String key) {
-        if(key.equals(JAXRPCBindingsConstants.JAXB_BINDINGS))
+        if(key.equals(JAXWSBindingsConstants.JAXB_BINDINGS))
             return jaxbBindings;
         return null;
     }
@@ -306,7 +306,7 @@ public class JAXRPCBinding extends Extension implements Extensible {
     private String node;
     private String version;
 
-    private CustomName jaxrpcPackage;
+    private CustomName jaxwsPackage;
     private List<Parameter> parameters;
     private Boolean enableWrapperStyle;
     private Boolean enableAsyncMapping;
