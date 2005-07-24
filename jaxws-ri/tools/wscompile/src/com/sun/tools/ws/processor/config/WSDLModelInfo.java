@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelInfo.java,v 1.2 2005-07-18 18:13:56 kohlert Exp $
+ * $Id: WSDLModelInfo.java,v 1.3 2005-07-24 01:35:07 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import com.sun.tools.ws.processor.modeler.Modeler;
-import com.sun.tools.ws.util.JAXRPCClassFactory;
+import com.sun.tools.ws.util.JAXWSClassFactory;
 
 /**
  *
@@ -29,7 +29,7 @@ public class WSDLModelInfo extends ModelInfo {
     public WSDLModelInfo() {}
 
     protected Modeler getModeler(Properties options) {
-        return JAXRPCClassFactory.newInstance().createWSDLModeler(this, options);
+        return JAXWSClassFactory.newInstance().createWSDLModeler(this, options);
     }
 
     public String getLocation() {
@@ -40,12 +40,12 @@ public class WSDLModelInfo extends ModelInfo {
         _location = s;
     }
 
-    public Set<Element> getJAXRPCBindings(){
-        return _jaxrpcBindings;
+    public Set<Element> getJAXWSBindings(){
+        return _jaxwsBindings;
     }
 
-    public void addJAXRPCBindings(Element binding){        
-        _jaxrpcBindings.add(binding);
+    public void addJAXWSBindings(Element binding){        
+        _jaxwsBindings.add(binding);
     }
 
     public Set<InputSource> getJAXBBindings(){
@@ -68,10 +68,10 @@ public class WSDLModelInfo extends ModelInfo {
     
     private String _location;
 
-    //external jaxrpc:bindings elements
-    private Set<Element> _jaxrpcBindings = new HashSet<Element>();
+    //external jaxws:bindings elements
+    private Set<Element> _jaxwsBindings = new HashSet<Element>();
 
-    //we need an array of jaxb:binding elements, they are children of jaxrpc:bindings
+    //we need an array of jaxb:binding elements, they are children of jaxws:bindings
     //and could come from an external customization file or wsdl.
     private Set<InputSource> _jaxbBindings = new HashSet<InputSource>();
 }

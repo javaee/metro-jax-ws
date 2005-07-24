@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCClassFactory.java,v 1.3 2005-07-23 04:11:01 kohlert Exp $
+ * $Id: JAXWSClassFactory.java,v 1.1 2005-07-24 01:35:13 kohlert Exp $
  */
 
 /*
@@ -19,24 +19,24 @@ import com.sun.tools.ws.wsdl.framework.AbstractDocument;
 import com.sun.xml.ws.util.VersionUtil;
 
 /**
- * Singleton factory class to instantiate concrete classes based on the jaxrpc version
+ * Singleton factory class to instantiate concrete classes based on the jaxws version
  * to be used to generate the code.
  *
  * @author WS Development Team
  */
-public class JAXRPCClassFactory {
-    private static final JAXRPCClassFactory factory = new JAXRPCClassFactory();
+public class JAXWSClassFactory {
+    private static final JAXWSClassFactory factory = new JAXWSClassFactory();
 
     private static String classVersion = VersionUtil.JAXWS_VERSION_DEFAULT;
 
-    private JAXRPCClassFactory() {
+    private JAXWSClassFactory() {
     }
 
     /**
      * Get the factory instance for the default version.
-     * @return        JAXRPCClassFactory instance
+     * @return        JAXWSClassFactory instance
      */
-    public static JAXRPCClassFactory newInstance() {
+    public static JAXWSClassFactory newInstance() {
         return factory;
     }
 

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 /**
- * $author: JAXRPC Development Team
+ * $author: WS Development Team
  */
 public class ServiceContextBuilder {
 

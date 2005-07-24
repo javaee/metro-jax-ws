@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.2 2005-07-23 04:10:56 kohlert Exp $
+ * $Id: CustomizationParser.java,v 1.3 2005-07-24 01:35:07 kohlert Exp $
  */
 
 /*
@@ -24,8 +24,8 @@ import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLReaderFactory;
-import com.sun.tools.ws.util.JAXRPCUtils;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBindingsConstants;
+import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 
 /**
  * @author Vivek Pandey
@@ -39,7 +39,7 @@ public class CustomizationParser extends InputParser {
      */
     public CustomizationParser(ProcessorEnvironment env, Properties options) {
         super(env, options);
-//        getModelInfoParsers().put(JAXRPCBindingsConstants.JAXRPC_BINDINGS, new JAXRPCBindingInfoParser(env));
+//        getModelInfoParsers().put(JAXWSBindingsConstants.JAXWS_BINDINGS, new JAXWSBindingInfoParser(env));
     }
 
 
@@ -52,19 +52,19 @@ public class CustomizationParser extends InputParser {
         wsdlModelInfo = new WSDLModelInfo();
         wsdlModelInfo.setLocation(inputFiles.get(0));
 
-        //modelInfoParser = (JAXRPCBindingInfoParser)getModelInfoParsers().get(JAXRPCBindingsConstants.JAXRPC_BINDINGS);
-        modelInfoParser = new JAXRPCBindingInfoParser(getEnv());
+        //modelInfoParser = (JAXWSBindingInfoParser)getModelInfoParsers().get(JAXWSBindingsConstants.JAXWS_BINDINGS);
+        modelInfoParser = new JAXWSBindingInfoParser(getEnv());
 
-        //get the jaxrpc bindingd file and add it to the modelInfo
+        //get the jaxws bindingd file and add it to the modelInfo
         Set<String> bindingFiles = (Set<String>)_options.get(ProcessorOptions.BINDING_FILES);
         for(String bindingFile : bindingFiles){
             addBinding(bindingFile);
         }
 
-        for(String jaxrpcBinding : jaxrpcBindings){
-            Element root = modelInfoParser.parse(new InputSource(jaxrpcBinding));
+        for(String jaxwsBinding : jaxwsBindings){
+            Element root = modelInfoParser.parse(new InputSource(jaxwsBinding));
             if(root != null){
-                wsdlModelInfo.addJAXRPCBindings(root);
+                wsdlModelInfo.addJAXWSBindings(root);
             }
         }
 
@@ -79,14 +79,14 @@ public class CustomizationParser extends InputParser {
     }
 
     private void addBinding(String bindingLocation) throws Exception{
-        JAXRPCUtils.checkAbsoluteness(bindingLocation);
+        JAXWSUtils.checkAbsoluteness(bindingLocation);
         URL url = new URL(bindingLocation);
 
         XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(url.openStream());
         reader.next();
-        if(reader.getName().equals(JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
-            jaxrpcBindings.add(bindingLocation);
-        }else if(reader.getName().equals(JAXRPCBindingsConstants.JAXB_BINDINGS)){
+        if(reader.getName().equals(JAXWSBindingsConstants.JAXWS_BINDINGS)){
+            jaxwsBindings.add(bindingLocation);
+        }else if(reader.getName().equals(JAXWSBindingsConstants.JAXB_BINDINGS)){
             jaxbBindings.add(bindingLocation);
         }else{
             warn("configuration.notBindingFile");
@@ -95,7 +95,7 @@ public class CustomizationParser extends InputParser {
 
     private void addHandlerChainInfo() throws Exception{
         //setup handler chain info
-        for(Element e:wsdlModelInfo.getJAXRPCBindings()){
+        for(Element e:wsdlModelInfo.getJAXWSBindings()){
             NodeList nl = e.getElementsByTagNameNS("http://www.bea.com/xml/ns/jws", "handler-chain");            
             if(nl.getLength()== 0)
                 continue;
@@ -107,8 +107,8 @@ public class CustomizationParser extends InputParser {
     }
 
     private WSDLModelInfo wsdlModelInfo;
-    private JAXRPCBindingInfoParser modelInfoParser;
-    private Set<String> jaxrpcBindings = new HashSet<String>();
+    private JAXWSBindingInfoParser modelInfoParser;
+    private Set<String> jaxwsBindings = new HashSet<String>();
     private Set<String> jaxbBindings = new HashSet<String>();
 
 }

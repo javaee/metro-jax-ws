@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletException.java,v 1.1 2005-07-20 21:36:12 jitu Exp $
+ * $Id: WSServletException.java,v 1.2 2005-07-24 01:34:59 kohlert Exp $
  */
 
 /*
@@ -36,6 +36,6 @@ public class WSServletException extends JAXWSExceptionBase {
     }
 
     public String getResourceBundleName() {
-        return "com.sun.xml.ws.resources.jaxrpcservlet";
+        return "com.sun.xml.ws.resources.wsservlet";
     }
 }

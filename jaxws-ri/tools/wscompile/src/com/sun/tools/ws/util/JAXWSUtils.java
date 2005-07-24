@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCUtils.java,v 1.1 2005-05-24 13:49:43 bbissett Exp $
+ * $Id: JAXWSUtils.java,v 1.1 2005-07-24 01:35:13 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import java.util.UUID;
  *
  * Wrapper utility class to be used from the generated code or run time.
  */
-public final class JAXRPCUtils {
+public final class JAXWSUtils {
     public static String getUUID(){
          return UUID.randomUUID().toString();
     }

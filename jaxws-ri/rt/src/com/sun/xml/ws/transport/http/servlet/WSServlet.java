@@ -1,5 +1,5 @@
 /*
- * $Id: WSServlet.java,v 1.2 2005-07-20 21:41:31 jitu Exp $
+ * $Id: WSServlet.java,v 1.3 2005-07-24 01:34:58 kohlert Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 
 /**
- * The JAX-RPC dispatcher servlet.
+ * The JAX-WS dispatcher servlet.
  *
  * @author WS Development Team
  */
@@ -34,7 +34,7 @@ public class WSServlet extends HttpServlet {
 
         localizer = new Localizer();
         messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
+            new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
 
         try {
             String delegateClassName =
@@ -107,15 +107,15 @@ public class WSServlet extends HttpServlet {
 
     private static final String EA_CONFIG_FILE_PROPERTY = "configuration.file";
     private static final String EA_DELEGATE_CLASS_NAME =
-        "com.sun.xml.rpc.server.http.ea.JAXRPCServletDelegate";
+        "com.sun.xml.rpc.server.http.ea.WSServletDelegate";
 
-    public static final String JAXRPC_RI_RUNTIME_INFO =
+    public static final String JAXWS_RI_RUNTIME_INFO =
         "com.sun.xml.rpc.server.http.info";
-    public static final String JAXRPC_RI_PROPERTY_PUBLISH_WSDL =
+    public static final String JAXWS_RI_PROPERTY_PUBLISH_WSDL =
         "com.sun.xml.rpc.server.http.publishWSDL";
-    public static final String JAXRPC_RI_PROPERTY_PUBLISH_MODEL =
+    public static final String JAXWS_RI_PROPERTY_PUBLISH_MODEL =
         "com.sun.xml.rpc.server.http.publishModel";
-    public static final String JAXRPC_RI_PROPERTY_PUBLISH_STATUS_PAGE =
+    public static final String JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE =
         "com.sun.xml.rpc.server.http.publishStatusPage";
 
     private static final Logger logger =

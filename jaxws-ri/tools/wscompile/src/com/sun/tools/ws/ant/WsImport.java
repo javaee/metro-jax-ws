@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.3 2005-06-16 01:00:09 jitu Exp $
+ * $Id: WsImport.java,v 1.4 2005-07-24 01:35:07 kohlert Exp $
  */
 
 /*
@@ -33,7 +33,7 @@ import com.sun.tools.ws.wscompile.CompileTool;
 import org.apache.tools.ant.AntClassLoader;
 
 /**
- * wscompile task for use with the JAXRPC project.
+ * wscompile task for use with the JAXWS project.
  *
  */
 public class WsImport extends MatchingTask {

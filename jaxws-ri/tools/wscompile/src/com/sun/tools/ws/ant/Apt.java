@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.1 2005-05-23 23:11:23 bbissett Exp $
+ * $Id: Apt.java,v 1.2 2005-07-24 01:35:06 kohlert Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
 /**
- * apt task for use with the JAXRPC project.
+ * apt task for use with the JAXWS project.
  */
 public class Apt extends Task {
     

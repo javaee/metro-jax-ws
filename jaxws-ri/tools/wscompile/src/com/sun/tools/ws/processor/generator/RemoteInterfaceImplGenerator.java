@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceImplGenerator.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: RemoteInterfaceImplGenerator.java,v 1.3 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -39,7 +39,7 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
  *
  * @author WS Development Team
  */
-public class RemoteInterfaceImplGenerator extends GeneratorBase20 implements ProcessorAction {
+public class RemoteInterfaceImplGenerator extends GeneratorBase implements ProcessorAction {
 
     public RemoteInterfaceImplGenerator() {
         super();
@@ -52,7 +52,7 @@ public class RemoteInterfaceImplGenerator extends GeneratorBase20 implements Pro
         super(model, config, properties);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties) {
@@ -60,7 +60,7 @@ public class RemoteInterfaceImplGenerator extends GeneratorBase20 implements Pro
     }
 
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties,

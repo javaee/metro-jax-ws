@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.3 2005-07-21 20:35:56 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.4 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /**
@@ -23,7 +23,7 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
 import com.sun.tools.ws.processor.util.DirectoryUtil;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.IndentingWriter;
-import com.sun.tools.ws.wscompile.JAXRPCCodeWriter;
+import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
@@ -49,7 +49,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Properties;
 
-public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, ModelVisitor{
+public class SeiGenerator extends GeneratorBase implements ProcessorAction, ModelVisitor{
     private String wsdlLocation;
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
@@ -68,7 +68,7 @@ public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, Mo
         }
     }
 
-    public GeneratorBase20 getGenerator(Model model, Configuration config, Properties properties) {
+    public GeneratorBase getGenerator(Model model, Configuration config, Properties properties) {
         return new SeiGenerator(model, config, properties);
     }
 
@@ -79,7 +79,7 @@ public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, Mo
         this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();
     }
 
-    public GeneratorBase20 getGenerator(Model model, Configuration config, Properties properties, SOAPVersion ver) {
+    public GeneratorBase getGenerator(Model model, Configuration config, Properties properties, SOAPVersion ver) {
         return new SeiGenerator(model, config, properties);
     }
 
@@ -144,7 +144,7 @@ public class SeiGenerator extends GeneratorBase20 implements ProcessorAction, Mo
                 methodDoc.addThrows(fault.getExceptionClass());
             }
         }
-        CodeWriter cw = new JAXRPCCodeWriter(sourceDir,env);
+        CodeWriter cw = new WSCodeWriter(sourceDir,env);
 
         if(env.verbose())
             cw = new ProgressCodeWriter(cw, System.out);

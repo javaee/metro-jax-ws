@@ -1,5 +1,5 @@
 /*
- * $Id: CustomExceptionGenerator.java,v 1.3 2005-07-21 02:00:28 vivekp Exp $
+ * $Id: CustomExceptionGenerator.java,v 1.4 2005-07-24 01:35:08 kohlert Exp $
  */
 
 /*
@@ -25,20 +25,20 @@ import java.util.Properties;
  *
  * @author WS Development Team
  */
-public class CustomExceptionGenerator extends GeneratorBase20 {
+public class CustomExceptionGenerator extends GeneratorBase {
     private Map<String, JClass> faults = new HashMap<String, JClass>();
 
     public CustomExceptionGenerator() {
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties) {
         return new CustomExceptionGenerator(model, config, properties);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties,

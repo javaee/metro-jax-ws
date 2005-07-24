@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.7 2005-07-18 16:52:21 kohlert Exp $
+ * $Id: WSDLPublisher.java,v 1.8 2005-07-24 01:34:57 kohlert Exp $
  */
 
 /*
@@ -38,7 +38,7 @@ public class WSDLPublisher {
         this.endpoints = endpoints;
         localizer = new Localizer();
         messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
+            new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
     }
 
     public void handle(

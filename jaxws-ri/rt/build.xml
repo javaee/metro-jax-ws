@@ -41,7 +41,7 @@
         deprecation="${compile.deprecation}"
         optimize="${compile.optimize}"
         source="1.5"
-        excludes="**/JaxRpcRtObjectFactory*.java,**/JaxrpcServletContext.java,**/WSDLPublisher.java,**/servlet/,**/ServletDelegate.java, **/ServletSecondDelegate.java, **/FastInfoset*.java, **/SourceReaderFactory.java">
+        excludes="**/JaxWsRtObjectFactory*.java,**/WSServletContext.java,**/WSDLPublisher.java,**/servlet/,**/ServletDelegate.java, **/ServletSecondDelegate.java, **/FastInfoset*.java, **/SourceReaderFactory.java">
       <classpath refid="runtime.compile.classpath"/>
     </javac>
   </target>

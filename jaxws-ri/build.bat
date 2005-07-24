@@ -1,7 +1,7 @@
 @echo off  
 
 REM
-REM $Id: build.bat,v 1.2 2005-05-25 18:33:16 arungupta Exp $
+REM $Id: build.bat,v 1.3 2005-07-24 01:34:53 kohlert Exp $
 REM
 REM This script is optional and for convenience only.
 
@@ -10,7 +10,7 @@ REM Copyright 2005 Sun Microsystems, Inc. All rights reserved.
 REM SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
 REM
 
-echo JAX-RPC-RI Builder
+echo JAX-WS-RI Builder
 echo -------------------
 
 if "%JAVA_HOME%" == "" goto javaerror

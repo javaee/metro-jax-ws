@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMessageDispatcher.java,v 1.4 2005-07-14 02:01:27 arungupta Exp $
+ * $Id: ProviderMessageDispatcher.java,v 1.5 2005-07-24 01:34:57 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -34,8 +34,8 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
 
     /*
      * Fill the parameters, method in MessageInfo for Provider interface.
-     * invoke(Source, JAXRPCContext) to Object[]
-     * invoke(SOAPMessage, JAXRPCContext) to Object[]
+     * invoke(Source, HandlerContext) to Object[]
+     * invoke(SOAPMessage, HandlerContext) to Object[]
      */
     @Override
     protected void toMessageInfo(MessageInfo messageInfo, HandlerContext context) {
@@ -80,8 +80,8 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
                 messageInfo.setResponse(e);
             }
         }
-        ProviderMsgContextImpl jaxrpcContext = new ProviderMsgContextImpl(context);
-        data[1] = jaxrpcContext;
+        ProviderMsgContextImpl providerContext = new ProviderMsgContextImpl(context);
+        data[1] = providerContext;
         messageInfo.setData(data);
         messageInfo.setMethod(ProviderPeptTie.invoke_Method);
     }

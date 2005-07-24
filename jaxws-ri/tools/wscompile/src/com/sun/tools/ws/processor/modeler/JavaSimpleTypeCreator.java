@@ -1,5 +1,5 @@
 /*
- * $Id: JavaSimpleTypeCreator.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
+ * $Id: JavaSimpleTypeCreator.java,v 1.3 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -51,25 +51,6 @@ public class JavaSimpleTypeCreator implements ModelerConstants {
     public JavaSimpleType OBJECT_JAVATYPE;
     public JavaSimpleType SOAPELEMENT_JAVATYPE;
     public JavaSimpleType URI_JAVATYPE;
-
-    // Collections
-    public JavaSimpleType COLLECTION_JAVATYPE;
-    public JavaSimpleType LIST_JAVATYPE;
-    public JavaSimpleType SET_JAVATYPE;
-    public JavaSimpleType VECTOR_JAVATYPE;
-    public JavaSimpleType STACK_JAVATYPE;
-    public JavaSimpleType LINKED_LIST_JAVATYPE;
-    public JavaSimpleType ARRAY_LIST_JAVATYPE;
-    public JavaSimpleType HASH_SET_JAVATYPE;
-    public JavaSimpleType TREE_SET_JAVATYPE;
-
-    // Maps
-    public JavaSimpleType MAP_JAVATYPE;
-    public JavaSimpleType HASH_MAP_JAVATYPE;
-    public JavaSimpleType TREE_MAP_JAVATYPE;
-    public JavaSimpleType HASHTABLE_JAVATYPE;
-    public JavaSimpleType PROPERTIES_JAVATYPE;
-    public JavaSimpleType JAX_RPC_MAP_ENTRY_JAVATYPE;
 
     // Attachment types
     public JavaSimpleType IMAGE_JAVATYPE;
@@ -149,42 +130,6 @@ public class JavaSimpleTypeCreator implements ModelerConstants {
         javaTypes.put(SOAPELEMENT_CLASSNAME, SOAPELEMENT_JAVATYPE);
         URI_JAVATYPE = new JavaSimpleType(URI_CLASSNAME, null);
         javaTypes.put(URI_CLASSNAME, URI_JAVATYPE);
-
-
-        // Collections
-        COLLECTION_JAVATYPE = new JavaSimpleType(COLLECTION_CLASSNAME, null);
-        javaTypes.put(COLLECTION_CLASSNAME, COLLECTION_JAVATYPE);
-        LIST_JAVATYPE = new JavaSimpleType(LIST_CLASSNAME, null);
-        javaTypes.put(LIST_CLASSNAME, LIST_JAVATYPE);
-        SET_JAVATYPE = new JavaSimpleType(SET_CLASSNAME, null);
-        javaTypes.put(SET_CLASSNAME, SET_JAVATYPE);
-        VECTOR_JAVATYPE = new JavaSimpleType(VECTOR_CLASSNAME, null);
-        javaTypes.put(VECTOR_CLASSNAME, VECTOR_JAVATYPE);
-        STACK_JAVATYPE = new JavaSimpleType(STACK_CLASSNAME, null);
-        javaTypes.put(STACK_CLASSNAME, STACK_JAVATYPE);
-        LINKED_LIST_JAVATYPE = new JavaSimpleType(LINKED_LIST_CLASSNAME, null);
-        javaTypes.put(LINKED_LIST_CLASSNAME, LINKED_LIST_JAVATYPE);
-        ARRAY_LIST_JAVATYPE = new JavaSimpleType(ARRAY_LIST_CLASSNAME, null);
-        javaTypes.put(ARRAY_LIST_CLASSNAME, ARRAY_LIST_JAVATYPE);
-        HASH_SET_JAVATYPE = new JavaSimpleType(HASH_SET_CLASSNAME, null);
-        javaTypes.put(HASH_SET_CLASSNAME, HASH_SET_JAVATYPE);
-        TREE_SET_JAVATYPE = new JavaSimpleType(TREE_SET_CLASSNAME, null);
-        javaTypes.put(TREE_SET_CLASSNAME, TREE_SET_JAVATYPE);
-
-        // Maps
-        MAP_JAVATYPE = new JavaSimpleType(MAP_CLASSNAME, null);
-        javaTypes.put(MAP_CLASSNAME, MAP_JAVATYPE);
-        HASH_MAP_JAVATYPE = new JavaSimpleType(HASH_MAP_CLASSNAME, null);
-        javaTypes.put(HASH_MAP_CLASSNAME, HASH_MAP_JAVATYPE);
-        TREE_MAP_JAVATYPE = new JavaSimpleType(TREE_MAP_CLASSNAME, null);
-        javaTypes.put(TREE_MAP_CLASSNAME, TREE_MAP_JAVATYPE);
-        HASHTABLE_JAVATYPE = new JavaSimpleType(HASHTABLE_CLASSNAME, null);
-        javaTypes.put(HASHTABLE_CLASSNAME, HASHTABLE_JAVATYPE);
-        PROPERTIES_JAVATYPE = new JavaSimpleType(PROPERTIES_CLASSNAME, null);
-        javaTypes.put(PROPERTIES_CLASSNAME, PROPERTIES_JAVATYPE);
-        JAX_RPC_MAP_ENTRY_JAVATYPE =
-            new JavaSimpleType(JAX_RPC_MAP_ENTRY_CLASSNAME, null);
-        javaTypes.put(JAX_RPC_MAP_ENTRY_CLASSNAME, JAX_RPC_MAP_ENTRY_JAVATYPE);
 
         // Attachment types
         IMAGE_JAVATYPE = new JavaSimpleType(IMAGE_CLASSNAME, null);

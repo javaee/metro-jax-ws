@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBindingInfoParser.java,v 1.1 2005-05-23 23:13:22 bbissett Exp $
+ * $Id: JAXWSBindingInfoParser.java,v 1.1 2005-07-24 01:35:08 kohlert Exp $
  */
 
 /*
@@ -32,16 +32,16 @@ import com.sun.tools.ws.wsdl.framework.ParseException;
 /**
  * @author Vivek Pandey
  *
- * External jaxrpc:bindings parser
+ * External jaxws:bindings parser
  */
-public class JAXRPCBindingInfoParser {
+public class JAXWSBindingInfoParser {
 
     private ProcessorEnvironment env;
 
     /**
      * @param env
      */
-    public JAXRPCBindingInfoParser(ProcessorEnvironment env) {
+    public JAXWSBindingInfoParser(ProcessorEnvironment env) {
         this.env = env;
     }
 

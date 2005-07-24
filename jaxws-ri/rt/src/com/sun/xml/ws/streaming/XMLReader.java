@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.2 2005-07-18 16:52:23 kohlert Exp $
+ * $Id: XMLReader.java,v 1.3 2005-07-24 01:34:58 kohlert Exp $
  */
 
 /*
@@ -140,7 +140,7 @@ public interface XMLReader {
     public String getLocalName();
 
     /**
-     * Return the current attribute list. In the jaxrpc implementation,
+     * Return the current attribute list. In the jaxws implementation,
      * this list also includes namespace declarations.
      *
      * <p> Meaningful only when the state is one of: START. </p>

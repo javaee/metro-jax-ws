@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCBindingExtensionHandler.java,v 1.2 2005-07-23 04:11:06 kohlert Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.1 2005-07-24 01:35:14 kohlert Exp $
  */
 
 /*
@@ -24,10 +24,10 @@ import com.sun.tools.ws.wsdl.document.Documentation;
 import com.sun.tools.ws.wsdl.document.MessagePart;
 import com.sun.tools.ws.wsdl.document.Operation;
 import com.sun.tools.ws.wsdl.document.Service;
-import com.sun.tools.ws.wsdl.document.jaxrpc.CustomName;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBinding;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBindingsConstants;
-import com.sun.tools.ws.wsdl.document.jaxrpc.Parameter;
+import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
+import com.sun.tools.ws.wsdl.document.jaxws.Parameter;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
 import com.sun.tools.ws.wsdl.framework.Extensible;
 import com.sun.tools.ws.wsdl.framework.Extension;
@@ -39,22 +39,22 @@ import com.sun.tools.ws.util.xml.XmlUtil;
 /**
  * @author Vivek Pandey
  *
- * jaxrpc:bindings exension handler.
+ * jaxws:bindings exension handler.
  *
  */
-public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
+public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
     /**
      *
      */
-    public JAXRPCBindingExtensionHandler() {
+    public JAXWSBindingExtensionHandler() {
     }
 
     /* (non-Javadoc)
      * @see ExtensionHandler#getNamespaceURI()
      */
     public String getNamespaceURI() {
-        return JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS;
+        return JAXWSBindingsConstants.NS_JAXWS_BINDINGS;
     }
 
 
@@ -63,24 +63,24 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @param parent
      * @param e
      */
-    private boolean parseGlobalJAXRPCBindings(ParserContext context, Extensible parent, Element e) {
+    private boolean parseGlobalJAXWSBindings(ParserContext context, Extensible parent, Element e) {
         context.push();
         context.registerNamespaces(e);
-        JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+        JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
-        String attr = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.WSDL_LOCATION_ATTR);
+        String attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.WSDL_LOCATION_ATTR);
         if (attr != null) {
-            jaxrpcBinding.setWsdlLocation(attr);
+            jaxwsBinding.setWsdlLocation(attr);
         }
 
-        attr = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.NODE_ATTR);
+        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NODE_ATTR);
         if (attr != null) {
-            jaxrpcBinding.setNode(attr);
+            jaxwsBinding.setNode(attr);
         }
 
-        attr = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.VERSION_ATTR);
+        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.VERSION_ATTR);
         if (attr != null) {
-            jaxrpcBinding.setVersion(attr);
+            jaxwsBinding.setVersion(attr);
         }
 
         for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
@@ -88,20 +88,20 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
             if (e2 == null)
                 break;
 
-            if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.PACKAGE)){
-                parsePackage(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_WRAPPER_STYLE)){
-                parseWrapperStyle(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ASYNC_MAPPING)){
-                parseAsynMapping(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                parseAdditionalSOAPHeaderMapping(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_MIME_CONTENT)){
-                parseMimeContent(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.PROVIDER)){
-                parseProvider(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.JAXB_BINDINGS)){
-                parseJAXBBindings(context, jaxrpcBinding, e2);
+            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PACKAGE)){
+                parsePackage(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
+                parseWrapperStyle(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
+                parseAsynMapping(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+                parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+                parseMimeContent(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PROVIDER)){
+                parseProvider(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.JAXB_BINDINGS)){
+                parseJAXBBindings(context, jaxwsBinding, e2);
             }else{
                 Util.fail(
                     "parsing.invalidExtensionElement",
@@ -110,17 +110,17 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                 return false;
             }
         }
-        parent.addExtension(jaxrpcBinding);
+        parent.addExtension(jaxwsBinding);
         context.pop();
         context.fireDoneParsingEntity(
-                JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                jaxrpcBinding);
+                JAXWSBindingsConstants.JAXWS_BINDINGS,
+                jaxwsBinding);
         return true;
     }
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
     private void parseProvider(ParserContext context, Extensible parent, Element e) {
@@ -128,21 +128,21 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
         if(val == null)
             return;
         if(val.equals("false") || val.equals("0")){
-            ((JAXRPCBinding)parent).setProvider(Boolean.FALSE);
+            ((JAXWSBinding)parent).setProvider(Boolean.FALSE);
         }else if(val.equals("true") || val.equals("1")){
-            ((JAXRPCBinding)parent).setProvider(Boolean.TRUE);
+            ((JAXWSBinding)parent).setProvider(Boolean.TRUE);
         }
 
     }
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
     private void parseJAXBBindings(ParserContext context, Extensible parent, Element e) {
         //System.out.println("In handleJAXBBindingsExtension: " + e.getNodeName());
-        JAXRPCBinding binding = (JAXRPCBinding)parent;
+        JAXWSBinding binding = (JAXWSBinding)parent;
         binding.addJaxbBindings(e);
     }
 
@@ -153,9 +153,9 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      */
     private void parsePackage(ParserContext context, Extensible parent, Element e) {
         //System.out.println("In handlePackageExtension: " + e.getNodeName());
-        String packageName = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.NAME_ATTR);
-        JAXRPCBinding binding = (JAXRPCBinding)parent;
-        binding.setJaxrpcPackage(new CustomName(packageName, getJavaDoc(e)));
+        String packageName = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
+        JAXWSBinding binding = (JAXWSBinding)parent;
+        binding.setJaxwsPackage(new CustomName(packageName, getJavaDoc(e)));
     }
 
     /**
@@ -169,9 +169,9 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
         if(val == null)
             return;
         if(val.equals("false") || val.equals("0")){
-            ((JAXRPCBinding)parent).setEnableWrapperStyle(Boolean.FALSE);
+            ((JAXWSBinding)parent).setEnableWrapperStyle(Boolean.FALSE);
         }else if(val.equals("true") || val.equals("1")){
-            ((JAXRPCBinding)parent).setEnableWrapperStyle(Boolean.TRUE);
+            ((JAXWSBinding)parent).setEnableWrapperStyle(Boolean.TRUE);
         }
     }
 
@@ -186,9 +186,9 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
         if(val == null)
             return;
         if(val.equals("false") || val.equals("0")){
-            ((JAXRPCBinding)parent).setEnableAdditionalHeaderMapping(Boolean.FALSE);
+            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.FALSE);
         }else if(val.equals("true") || val.equals("1")){
-            ((JAXRPCBinding)parent).setEnableAdditionalHeaderMapping(Boolean.TRUE);
+            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.TRUE);
         }
     }
 
@@ -203,9 +203,9 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
         if(val == null)
             return;
         if(val.equals("false") || val.equals("0")){
-            ((JAXRPCBinding)parent).setEnableAsyncMapping(Boolean.FALSE);
+            ((JAXWSBinding)parent).setEnableAsyncMapping(Boolean.FALSE);
         }else if(val.equals("true") || val.equals("1")){
-            ((JAXRPCBinding)parent).setEnableAsyncMapping(Boolean.TRUE);
+            ((JAXWSBinding)parent).setEnableAsyncMapping(Boolean.TRUE);
         }
     }
 
@@ -221,31 +221,31 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
         if(val == null)
             return;
         if(val.equals("false") || val.equals("0")){
-            ((JAXRPCBinding)parent).setEnableMimeContentMapping(Boolean.FALSE);
+            ((JAXWSBinding)parent).setEnableMimeContentMapping(Boolean.FALSE);
         }else if(val.equals("true") || val.equals("1")){
-            ((JAXRPCBinding)parent).setEnableMimeContentMapping(Boolean.TRUE);
+            ((JAXWSBinding)parent).setEnableMimeContentMapping(Boolean.TRUE);
         }
     }
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
-    private void parseMethod(ParserContext context, JAXRPCBinding jaxrpcBinding, Element e) {
-        String methodName = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.NAME_ATTR);
+    private void parseMethod(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
+        String methodName = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
         String javaDoc = getJavaDoc(e);
         CustomName name = new CustomName(methodName, javaDoc);
-        jaxrpcBinding.setMethodName(name);
+        jaxwsBinding.setMethodName(name);
     }
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
-    private void parseParameter(ParserContext context, JAXRPCBinding jaxrpcBinding, Element e) {
-        String part = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.PART_ATTR);
+    private void parseParameter(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
+        String part = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.PART_ATTR);
 
         //evaluate this XPath
         NodeList nlst;
@@ -253,7 +253,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
             nlst = XPathAPI.selectNodeList(e.getOwnerDocument(), part, e.getOwnerDocument().getFirstChild());
         } catch( TransformerException ex ) {
             ex.printStackTrace();
-            return; // abort processing this <jaxrpc:bindings>
+            return; // abort processing this <jaxws:bindings>
         }
 
         if( nlst.getLength()==0 ) {
@@ -293,38 +293,38 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
             msgPart.setDescriptorKind(SchemaKinds.XSD_TYPE);
         }
 
-        String element = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.ELEMENT_ATTR);
-        String name = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.NAME_ATTR);
+        String element = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.ELEMENT_ATTR);
+        String name = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
         QName elementName = context.translateQualifiedName(element);
-        jaxrpcBinding.addParameter(new Parameter(msgPart.getName(), elementName, name));
+        jaxwsBinding.addParameter(new Parameter(msgPart.getName(), elementName, name));
     }
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
-    private void parseClass(ParserContext context, JAXRPCBinding jaxrpcBinding, Element e) {
-        String className = XmlUtil.getAttributeOrNull(e, JAXRPCBindingsConstants.NAME_ATTR);
+    private void parseClass(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
+        String className = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
         String javaDoc = getJavaDoc(e);
-        jaxrpcBinding.setClassName(new CustomName(className, javaDoc));
+        jaxwsBinding.setClassName(new CustomName(className, javaDoc));
     }
 
 
     /**
      * @param context
-     * @param jaxrpcBinding
+     * @param jaxwsBinding
      * @param e2
      */
-    private void parseException(ParserContext context, JAXRPCBinding jaxrpcBinding, Element e) {
+    private void parseException(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
         for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
             Element e2 = Util.nextElement(iter);
             if (e2 == null)
                 break;
-            if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.CLASS)){
-                String className = XmlUtil.getAttributeOrNull(e2, JAXRPCBindingsConstants.NAME_ATTR);
+            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
+                String className = XmlUtil.getAttributeOrNull(e2, JAXWSBindingsConstants.NAME_ATTR);
                 String javaDoc = getJavaDoc(e2);
-                jaxrpcBinding.setException(new com.sun.tools.ws.wsdl.document.jaxrpc.Exception(new CustomName(className, javaDoc)));
+                jaxwsBinding.setException(new com.sun.tools.ws.wsdl.document.jaxws.Exception(new CustomName(className, javaDoc)));
             }
         }
     }
@@ -333,8 +333,8 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handleDefinitionsExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleDefinitionsExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
-            parseGlobalJAXRPCBindings(context, parent, e);
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
+            parseGlobalJAXWSBindings(context, parent, e);
         }else {
             Util.fail(
                 "parsing.invalidExtensionElement",
@@ -357,22 +357,22 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handlePortTypeExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handlePortTypeExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_WRAPPER_STYLE)){
-                    parseWrapperStyle(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ASYNC_MAPPING)){
-                    parseAsynMapping(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.CLASS)){
-                    parseClass(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
+                    parseWrapperStyle(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
+                    parseAsynMapping(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
+                    parseClass(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -381,11 +381,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            parent.addExtension(jaxrpcBinding);
+            parent.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -402,7 +402,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handleOperationExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleOperationExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             if(parent instanceof Operation){
                 return handlePortTypeOperation(context, (Operation)parent, e);
             }else if(parent instanceof BindingOperation){
@@ -425,24 +425,24 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @return
      */
     private boolean handleBindingOperation(ParserContext context, BindingOperation operation, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                    parseAdditionalSOAPHeaderMapping(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_MIME_CONTENT)){
-                    parseMimeContent(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.PARAMETER)){
-                    parseParameter(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.EXCEPTION)){
-                    parseException(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+                    parseMimeContent(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PARAMETER)){
+                    parseParameter(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.EXCEPTION)){
+                    parseException(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -451,11 +451,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            operation.addExtension(jaxrpcBinding);
+            operation.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -475,21 +475,21 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
     private boolean handlePortTypeOperation(ParserContext context, Operation parent, Element e) {
         context.push();
         context.registerNamespaces(e);
-        JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+        JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
         for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
             Element e2 = Util.nextElement(iter);
             if (e2 == null)
                 break;
 
-            if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_WRAPPER_STYLE)){
-                parseWrapperStyle(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ASYNC_MAPPING)){
-                parseAsynMapping(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.METHOD)){
-                parseMethod(context, jaxrpcBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.PARAMETER)){
-                parseParameter(context, jaxrpcBinding, e2);
+            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
+                parseWrapperStyle(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
+                parseAsynMapping(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.METHOD)){
+                parseMethod(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PARAMETER)){
+                parseParameter(context, jaxwsBinding, e2);
             }else{
                 Util.fail(
                     "parsing.invalidExtensionElement",
@@ -498,11 +498,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                 return false;
             }
         }
-        parent.addExtension(jaxrpcBinding);
+        parent.addExtension(jaxwsBinding);
         context.pop();
         context.fireDoneParsingEntity(
-                JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                jaxrpcBinding);
+                JAXWSBindingsConstants.JAXWS_BINDINGS,
+                jaxwsBinding);
         return true;
     }
 
@@ -510,20 +510,20 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handleBindingExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleBindingExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                    parseAdditionalSOAPHeaderMapping(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.ENABLE_MIME_CONTENT)){
-                    parseMimeContent(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+                    parseMimeContent(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -532,11 +532,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            parent.addExtension(jaxrpcBinding);
+            parent.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -567,17 +567,17 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handleFaultExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleFaultExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.CLASS)){
-                    parseClass(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
+                    parseClass(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -586,11 +586,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            parent.addExtension(jaxrpcBinding);
+            parent.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -605,17 +605,17 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handleServiceExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handleServiceExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.CLASS)){
-                    parseClass(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
+                    parseClass(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -624,11 +624,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            parent.addExtension(jaxrpcBinding);
+            parent.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -643,20 +643,20 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
      * @see ExtensionHandlerBase#handlePortExtension(ParserContext, Extensible, org.w3c.dom.Element)
      */
     protected boolean handlePortExtension(ParserContext context, Extensible parent, Element e) {
-        if(XmlUtil.matchesTagNS(e, JAXRPCBindingsConstants.JAXRPC_BINDINGS)){
+        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
             context.push();
             context.registerNamespaces(e);
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
             for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
                 Element e2 = Util.nextElement(iter);
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.PROVIDER)){
-                    parseProvider(context, jaxrpcBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.METHOD)){
-                    parseMethod(context, jaxrpcBinding, e2);
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PROVIDER)){
+                    parseProvider(context, jaxwsBinding, e2);
+                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.METHOD)){
+                    parseMethod(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -665,11 +665,11 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
                     return false;
                 }
             }
-            parent.addExtension(jaxrpcBinding);
+            parent.addExtension(jaxwsBinding);
             context.pop();
             context.fireDoneParsingEntity(
-                    JAXRPCBindingsConstants.JAXRPC_BINDINGS,
-                    jaxrpcBinding);
+                    JAXWSBindingsConstants.JAXWS_BINDINGS,
+                    jaxwsBinding);
             return true;
         }else {
             Util.fail(
@@ -693,7 +693,7 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
             Element e2 = Util.nextElement(iter);
             if (e2 == null)
                 break;
-            if(XmlUtil.matchesTagNS(e2, JAXRPCBindingsConstants.JAVADOC)){
+            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.JAVADOC)){
                 return e2.getNodeValue();
             }
         }
@@ -702,16 +702,16 @@ public class JAXRPCBindingExtensionHandler extends ExtensionHandlerBase {
 
     public void doHandleExtension(WriterContext context, Extension extension)
         throws IOException {
-System.out.println("JAXRPCBindingExtensionHandler doHandleExtension: "+extension);
+//System.out.println("JAXWSBindingExtensionHandler doHandleExtension: "+extension);
         // NOTE - this ugliness can be avoided by moving all the XML parsing/writing code
         // into the document classes themselves
-        if (extension instanceof JAXRPCBinding) {
-            JAXRPCBinding binding = (JAXRPCBinding) extension;
+        if (extension instanceof JAXWSBinding) {
+            JAXWSBinding binding = (JAXWSBinding) extension;
             System.out.println("binding.getElementName: "+binding.getElementName());
             context.writeStartTag(binding.getElementName());
-            context.writeStartTag(JAXRPCBindingsConstants.ENABLE_WRAPPER_STYLE);
+            context.writeStartTag(JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE);
             context.writeChars(binding.isEnableWrapperStyle().toString());
-            context.writeEndTag(JAXRPCBindingsConstants.ENABLE_WRAPPER_STYLE);
+            context.writeEndTag(JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE);
             context.writeEndTag(binding.getElementName());
         } else {
             throw new IllegalArgumentException();

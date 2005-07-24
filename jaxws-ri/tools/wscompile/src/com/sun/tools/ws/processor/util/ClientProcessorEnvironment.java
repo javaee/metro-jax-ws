@@ -1,5 +1,5 @@
 /*
- * $Id: ClientProcessorEnvironment.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
+ * $Id: ClientProcessorEnvironment.java,v 1.3 2005-07-24 01:35:11 kohlert Exp $
  */
 
 /*
@@ -18,7 +18,7 @@ import java.util.List;
 
 import com.sun.tools.ws.processor.ProcessorNotificationListener;
 import com.sun.tools.ws.processor.generator.Names;
-import com.sun.tools.ws.util.JAXRPCClassFactory;
+import com.sun.tools.ws.util.JAXWSClassFactory;
 import com.sun.xml.ws.util.localization.Localizable;
 
 /**
@@ -82,7 +82,7 @@ public class ClientProcessorEnvironment extends ProcessorEnvironmentBase
         flags = 0;
 
         //bug fix:4904604
-        names = JAXRPCClassFactory.newInstance().createNames();
+        names = JAXWSClassFactory.newInstance().createNames();
     }
 
     /**

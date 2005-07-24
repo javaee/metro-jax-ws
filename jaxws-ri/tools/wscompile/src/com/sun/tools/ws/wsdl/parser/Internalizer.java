@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.1 2005-05-24 14:07:28 bbissett Exp $
+ * $Id: Internalizer.java,v 1.2 2005-07-24 01:35:14 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -28,10 +28,10 @@ import org.w3c.dom.NodeList;
 
 import com.sun.tools.xjc.util.DOMUtils;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.JAXRPCUtils;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBindingsConstants;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import com.sun.tools.ws.util.xml.XmlUtil;
 
 
@@ -45,28 +45,28 @@ public class Internalizer {
     private final XPath xpath = xpf.newXPath();
     private final  LocalizableMessageFactory messageFactory = new LocalizableMessageFactory("com.sun.tools.ws.resources.wsdl");;
     private ProcessorEnvironment env;
-    public  void transform(Set<Element> jaxrpcBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
-        if(jaxrpcBindings == null)
+    public  void transform(Set<Element> jaxwsBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
+        if(jaxwsBindings == null)
             return;
         this.env = env;
         this.wsdlDocuments = wsdlDocuments;
         Map targetNodes = new HashMap<Element, Node>();
 
-        // identify target nodes for all <jaxrpc:bindings>
-        for(Element jaxrpcBinding : jaxrpcBindings) {
+        // identify target nodes for all <jaxws:bindings>
+        for(Element jaxwsBinding : jaxwsBindings) {
             // initially, the inherited context is itself
-            buildTargetNodeMap( jaxrpcBinding, jaxrpcBinding, targetNodes );
+            buildTargetNodeMap( jaxwsBinding, jaxwsBinding, targetNodes );
         }
 
         // then move them to their respective positions.
-        for( Element jaxrpcBinding : jaxrpcBindings) {
-            move( jaxrpcBinding, targetNodes );
+        for( Element jaxwsBinding : jaxwsBindings) {
+            move( jaxwsBinding, targetNodes );
         }
 
     }
 
     /**
-     * Validates attributes of a &lt;JAXRPC:bindings> element.
+     * Validates attributes of a <JAXWS:bindings> element.
      */
     private void validate( Element bindings ) {
         NamedNodeMap atts = bindings.getAttributes();
@@ -125,14 +125,14 @@ public class Internalizer {
                 wsdlLocation = new URL(new URL(bindings.getOwnerDocument().getBaseURI()),
                         wsdlLocation ).toExternalForm();
             } catch( MalformedURLException e ) {
-                wsdlLocation = JAXRPCUtils.absolutize(JAXRPCUtils.getFileOrURLName(wsdlLocation));
+                wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
             }
 
             //target = wsdlDocuments.get(wsdlLocation);
             target = get(wsdlLocation);
             if(target==null) {
                 error("internalizer.targetNotFound", new Object[]{wsdlLocation});
-                return; // abort processing this <jaxrpc:bindings>
+                return; // abort processing this <jaxws:bindings>
             }
         }
 
@@ -173,14 +173,14 @@ public class Internalizer {
         // update the result map
         result.put( bindings, target );
 
-        // look for child <jaxrpc:bindings> and process them recursively
-        Element[] children = DOMUtils.getChildElements( bindings, JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS, "bindings" );
+        // look for child <jaxws:bindings> and process them recursively
+        Element[] children = DOMUtils.getChildElements( bindings, JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "bindings" );
         for( int i=0; i<children.length; i++ )
             buildTargetNodeMap( children[i], target, result );
     }
 
     /**
-     * Moves JAXRPC customizations under their respective target nodes.
+     * Moves JAXWS customizations under their respective target nodes.
      */
     private void move( Element bindings, Map<Element, Node> targetNodes ) {
         Node target = targetNodes.get(bindings);
@@ -222,20 +222,20 @@ public class Internalizer {
     private boolean hasJAXBBindingElement(Element e){
         Element[] children = DOMUtils.getChildElements(e);
         for(int i = 0; i < children.length; i++){
-            if(children[i].getNamespaceURI().equals(JAXRPCBindingsConstants.NS_JAXB_BINDINGS))
+            if(children[i].getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXB_BINDINGS))
                 return true;
         }
         return false;
     }
 
     private boolean isJAXBBindingElement(Element e){
-        if((e.getNamespaceURI() != null ) && e.getNamespaceURI().equals(JAXRPCBindingsConstants.NS_JAXB_BINDINGS))
+        if((e.getNamespaceURI() != null ) && e.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXB_BINDINGS))
             return true;
         return false;
     }
 
-    private boolean isJAXRPCBindingElement(Element e){
-        if((e.getNamespaceURI() != null ) && e.getNamespaceURI().equals(JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS))
+    private boolean isJAXWSBindingElement(Element e){
+        if((e.getNamespaceURI() != null ) && e.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS))
             return true;
         return false;
     }
@@ -245,7 +245,7 @@ public class Internalizer {
         if(e.getAttributeNode("node") != null){
             Element[] children = DOMUtils.getChildElements(e);
             for(int i = 0; i < children.length; i++){
-                if(children[i].getNamespaceURI().equals(JAXRPCBindingsConstants.NS_JAXB_BINDINGS)){
+                if(children[i].getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXB_BINDINGS)){
                     return children[i];
                 }
             }
@@ -264,7 +264,7 @@ public class Internalizer {
      * Moves the "decl" node under the "target" node.
      *
      * @param decl
-     *      A JAXRPC customization element (e.g., &lt;jaxrpc:class>)
+     *      A JAXWS customization element (e.g., <jaxws:class>)
      *
      * @param target
      *      XML wsdl element under which the declaration should move.
@@ -277,21 +277,21 @@ public class Internalizer {
         if(isJAXBBindingElement(decl)){
             //add jaxb namespace declaration
             if(!target.hasAttributeNS(Constants.NS_XMLNS, "jaxb")){
-                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxb", JAXRPCBindingsConstants.NS_JAXB_BINDINGS);
+                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxb", JAXWSBindingsConstants.NS_JAXB_BINDINGS);
             }
 
             //add jaxb:bindings version info. Lets put it to 1.0, may need to change latter
-            if(!target.hasAttributeNS(JAXRPCBindingsConstants.NS_JAXB_BINDINGS, "version")){
-                target.setAttributeNS(JAXRPCBindingsConstants.NS_JAXB_BINDINGS, "jaxb:version", JAXRPCBindingsConstants.JAXB_BINDING_VERSION);
+            if(!target.hasAttributeNS(JAXWSBindingsConstants.NS_JAXB_BINDINGS, "version")){
+                target.setAttributeNS(JAXWSBindingsConstants.NS_JAXB_BINDINGS, "jaxb:version", JAXWSBindingsConstants.JAXB_BINDING_VERSION);
             }
 
             //insert xs:annotation/xs:appinfo where in jaxb:binding will be put
             target = refineSchemaTarget(target);
             copyInscopeNSAttributes(decl);
-        }else if(isJAXRPCBindingElement(decl)){
+        }else if(isJAXWSBindingElement(decl)){
             //add jaxb namespace declaration
-            if(!target.hasAttributeNS(Constants.NS_XMLNS, "jaxrpc")){
-                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxrpc", JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS);
+            if(!target.hasAttributeNS(Constants.NS_XMLNS, "jaxws")){
+                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxws", JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
             }
 
             //insert xs:annotation/xs:appinfo where in jaxb:binding will be put
@@ -371,11 +371,11 @@ public class Internalizer {
 
     public Element refineWSDLTarget(Element target) {
         // look for existing xs:annotation
-        Element jaxrpcBindings = DOMUtils.getFirstChildElement(target, JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS, "bindings");
-        if(jaxrpcBindings==null)
+        Element jaxwsBindings = DOMUtils.getFirstChildElement(target, JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "bindings");
+        if(jaxwsBindings==null)
             // none exists. need to make one
-            jaxrpcBindings = insertJAXRPCBindingsElement(target, "bindings" );
-        return jaxrpcBindings;
+            jaxwsBindings = insertJAXWSBindingsElement(target, "bindings" );
+        return jaxwsBindings;
     }
 
     /**
@@ -405,10 +405,10 @@ public class Internalizer {
         return child;
     }
 
-    private Element insertJAXRPCBindingsElement( Element parent, String localName ) {
-        String qname = "jaxrpc:"+localName;
+    private Element insertJAXWSBindingsElement( Element parent, String localName ) {
+        String qname = "jaxws:"+localName;
 
-        Element child = parent.getOwnerDocument().createElementNS(JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS, qname );
+        Element child = parent.getOwnerDocument().createElementNS(JAXWSBindingsConstants.NS_JAXWS_BINDINGS, qname );
 
         NodeList children = parent.getChildNodes();
 

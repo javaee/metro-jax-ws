@@ -115,10 +115,9 @@
         <packageset dir="${basedir}/rt/src"/>
         <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
 
-
         <packageset dir="${basedir}/tools/wscompile/src"/>
         <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
-        
+   
         <!--        <packageset dir="${runtime.src}"/>
         <packageset dir="${runtime-api.src}"/>
         <packageset dir="${schemagen.src}"/>

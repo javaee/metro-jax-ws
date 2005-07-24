@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.11 2005-07-23 04:10:10 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.12 2005-07-24 01:34:55 kohlert Exp $
  */
 
 /*
@@ -445,7 +445,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                  * try {
                  * executorService.awaitTermination(AWAIT_TERMINATION_TIME,
                  * TimeUnit.MILLISECONDS); } catch (InterruptedException e) {
-                 * throw new JAXRPCException(e); }
+                 * throw new JAXWSException(e); }
                  */
             }
 
@@ -716,6 +716,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 QName qName = new QName(element.getNamespaceURI(), element.getLocalName());
                 if (understoodHeaders == null || !understoodHeaders.contains(qName)) {
                     throw new SOAPFaultException(SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
+
                         MUST_UNDERSTAND_FAULT_MESSAGE_STRING, role, null);
                 }
             }

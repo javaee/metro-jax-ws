@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLWriter.java,v 1.2 2005-07-18 18:14:24 kohlert Exp $
+ * $Id: WSDLWriter.java,v 1.3 2005-07-24 01:35:15 kohlert Exp $
  */
 
 /*
@@ -40,7 +40,7 @@ import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.tools.ws.wsdl.document.WSDLDocument;
 import com.sun.tools.ws.wsdl.document.WSDLDocumentVisitor;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBindingsConstants;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import com.sun.tools.ws.wsdl.framework.Extension;
 import com.sun.tools.ws.wsdl.framework.Kind;
 import com.sun.tools.ws.wsdl.framework.WriterContext;
@@ -60,7 +60,7 @@ public class WSDLWriter {
         register(new HTTPExtensionHandler());
         register(new MIMEExtensionHandler());
         register(new SchemaExtensionHandler());
-        register(new JAXRPCBindingExtensionHandler());
+        register(new JAXWSBindingExtensionHandler());
     }
 
     public void register(ExtensionHandler h) {
@@ -347,7 +347,7 @@ public class WSDLWriter {
         _commonPrefixes.put(Constants.NS_WSDL_MIME, "mime");
         _commonPrefixes.put(Constants.NS_XSD, "xsd");
         _commonPrefixes.put(Constants.NS_XSI, "xsi");
-        _commonPrefixes.put(JAXRPCBindingsConstants.NS_JAXRPC_BINDINGS, "jaxrpc");
+        _commonPrefixes.put(JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "jaxws");
     }
 
     private final static String TARGET_NAMESPACE_PREFIX = "tns";

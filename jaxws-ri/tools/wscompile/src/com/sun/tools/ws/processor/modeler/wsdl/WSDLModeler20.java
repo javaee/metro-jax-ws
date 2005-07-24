@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.9 2005-07-23 04:10:59 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.10 2005-07-24 01:35:10 kohlert Exp $
  */
 
 /*
@@ -64,8 +64,8 @@ import com.sun.tools.ws.wsdl.document.OperationStyle;
 import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.tools.ws.wsdl.document.WSDLDocument;
-import com.sun.tools.ws.wsdl.document.jaxrpc.CustomName;
-import com.sun.tools.ws.wsdl.document.jaxrpc.JAXRPCBinding;
+import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
 import com.sun.tools.ws.wsdl.document.soap.*;
 import com.sun.tools.ws.wsdl.framework.Entity;
@@ -89,7 +89,7 @@ import com.sun.codemodel.JClass;
 /**
  * @author Vivek Pandey
  *
- * WSDLModeler for JAXRPC 2.0, build jaxrpc model from jaxbModel
+ * WSDLModeler for JAXWS 2.0, build jaxws model from jaxbModel
  */
 public class WSDLModeler20 extends WSDLModelerBase {
 
@@ -989,20 +989,20 @@ public class WSDLModeler20 extends WSDLModelerBase {
      */
     private boolean enableAdditionalHeaderMapping() {
         //first we look at binding operation
-        JAXRPCBinding jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(info.bindingOperation, JAXRPCBinding.class);
+        JAXWSBinding jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
         Boolean additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
         if(additionalHeader != null)
             return additionalHeader;
 
         //then in wsdl:binding
         Binding binding = info.port.resolveBinding(info.document);
-        jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(binding, JAXRPCBinding.class);
+        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(binding, JAXWSBinding.class);
         additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
         if(additionalHeader != null)
             return additionalHeader;
 
         //at last look in wsdl:definitions
-        jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(info.document.getDefinitions(), JAXRPCBinding.class);
+        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.document.getDefinitions(), JAXWSBinding.class);
         additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
         if(additionalHeader != null)
             return additionalHeader;
@@ -1015,21 +1015,21 @@ public class WSDLModeler20 extends WSDLModelerBase {
      */
     private boolean enableMimeContent() {
         //first we look at binding operation
-        JAXRPCBinding jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(info.bindingOperation, JAXRPCBinding.class);
-        Boolean mimeContentMapping = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableMimeContentMapping():null;
+        JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
+        Boolean mimeContentMapping = (jaxwsCustomization != null)?jaxwsCustomization.isEnableMimeContentMapping():null;
         if(mimeContentMapping != null)
             return mimeContentMapping;
 
         //then in wsdl:binding
         Binding binding = info.port.resolveBinding(info.document);
-        jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(binding, JAXRPCBinding.class);
-        mimeContentMapping = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableMimeContentMapping():null;
+        jaxwsCustomization = (JAXWSBinding)getExtensionOfType(binding, JAXWSBinding.class);
+        mimeContentMapping = (jaxwsCustomization != null)?jaxwsCustomization.isEnableMimeContentMapping():null;
         if(mimeContentMapping != null)
             return mimeContentMapping;
 
         //at last look in wsdl:definitions
-        jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(info.document.getDefinitions(), JAXRPCBinding.class);
-        mimeContentMapping = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableMimeContentMapping():null;
+        jaxwsCustomization = (JAXWSBinding)getExtensionOfType(info.document.getDefinitions(), JAXWSBinding.class);
+        mimeContentMapping = (jaxwsCustomization != null)?jaxwsCustomization.isEnableMimeContentMapping():null;
         if(mimeContentMapping != null)
             return mimeContentMapping;
         return false;
@@ -1039,8 +1039,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
      *
      */
     private boolean applyOperationNameCustomization() {
-        JAXRPCBinding jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(info.portTypeOperation, JAXRPCBinding.class);
-        String operationName = (jaxrpcCustomization != null)?((jaxrpcCustomization.getMethodName() != null)?jaxrpcCustomization.getMethodName().getName():null):null;
+        JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(info.portTypeOperation, JAXWSBinding.class);
+        String operationName = (jaxwsCustomization != null)?((jaxwsCustomization.getMethodName() != null)?jaxwsCustomization.getMethodName().getName():null):null;
         if(operationName != null){
             if(getEnvironment().getNames().isJavaReservedWord(operationName)){
                 if(extension)
@@ -1282,8 +1282,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
     protected boolean isAsync(com.sun.tools.ws.wsdl.document.PortType portType, com.sun.tools.ws.wsdl.document.Operation wsdlOperation){
         //First look into wsdl:operation
-        JAXRPCBinding jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(wsdlOperation, JAXRPCBinding.class);
-        Boolean isAsync = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAsyncMapping():null;
+        JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(wsdlOperation, JAXWSBinding.class);
+        Boolean isAsync = (jaxwsCustomization != null)?jaxwsCustomization.isEnableAsyncMapping():null;
 
         if(isAsync != null)
             return isAsync;
@@ -1291,15 +1291,15 @@ public class WSDLModeler20 extends WSDLModelerBase {
         // then into wsdl:portType
         QName portTypeName = new QName(portType.getDefining().getTargetNamespaceURI(), portType.getName());
         if(portTypeName != null){
-            jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(portType, JAXRPCBinding.class);
-            isAsync = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAsyncMapping():null;
+            jaxwsCustomization = (JAXWSBinding)getExtensionOfType(portType, JAXWSBinding.class);
+            isAsync = (jaxwsCustomization != null)?jaxwsCustomization.isEnableAsyncMapping():null;
             if(isAsync != null)
                 return isAsync;
         }
 
         //then wsdl:definitions
-        jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(document.getDefinitions(), JAXRPCBinding.class);
-        isAsync = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAsyncMapping():null;
+        jaxwsCustomization = (JAXWSBinding)getExtensionOfType(document.getDefinitions(), JAXWSBinding.class);
+        isAsync = (jaxwsCustomization != null)?jaxwsCustomization.isEnableAsyncMapping():null;
         if(isAsync != null)
             return isAsync;
         return false;
@@ -1476,9 +1476,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @return
      */
     private String getFaultClassName(com.sun.tools.ws.wsdl.document.Fault portTypeFault) {
-        JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(portTypeFault, JAXRPCBinding.class);
-        if(jaxrpcBinding != null){
-            CustomName className = jaxrpcBinding.getClassName();
+        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(portTypeFault, JAXWSBinding.class);
+        if(jaxwsBinding != null){
+            CustomName className = jaxwsBinding.getClassName();
             if(className != null){
                 return className.getName();
             }
@@ -1592,9 +1592,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @return
      */
     private String getHeaderfaultExceptionClassName() {
-        JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(info.bindingOperation, JAXRPCBinding.class);
-        if(jaxrpcBinding != null){
-            com.sun.tools.ws.wsdl.document.jaxrpc.Exception exception = jaxrpcBinding.getException();
+        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
+        if(jaxwsBinding != null){
+            com.sun.tools.ws.wsdl.document.jaxws.Exception exception = jaxwsBinding.getException();
             if(exception != null && exception.getClassName() != null){
                 return exception.getClassName().getName();
             }
@@ -1951,14 +1951,14 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @param wrapperStyle TODO
      */
     private void setCustomizedParameterName(Extensible extension, MessagePart part, Parameter param, boolean wrapperStyle) {
-        JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(extension, JAXRPCBinding.class);
-        if(jaxrpcBinding == null)
+        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(extension, JAXWSBinding.class);
+        if(jaxwsBinding == null)
             return;
         String paramName = part.getName();
         QName elementName = part.getDescriptor();
         if(wrapperStyle)
             elementName = param.getType().getName();
-        String customName = jaxrpcBinding.getParameterName(paramName, elementName, wrapperStyle);
+        String customName = jaxwsBinding.getParameterName(paramName, elementName, wrapperStyle);
         if(customName != null && !customName.equals("")){
             param.setCustomName(customName);
         }
@@ -2112,26 +2112,26 @@ public class WSDLModeler20 extends WSDLModelerBase {
     private boolean getWrapperStyleCustomization() {
         //first we look into wsdl:portType/wsdl:operation
         com.sun.tools.ws.wsdl.document.Operation portTypeOperation = info.portTypeOperation;
-        JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(portTypeOperation, JAXRPCBinding.class);
-        if(jaxrpcBinding != null){
-             Boolean isWrappable = jaxrpcBinding.isEnableWrapperStyle();
+        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(portTypeOperation, JAXWSBinding.class);
+        if(jaxwsBinding != null){
+             Boolean isWrappable = jaxwsBinding.isEnableWrapperStyle();
              if(isWrappable != null)
                  return isWrappable;
         }
 
         //then into wsdl:portType
         com.sun.tools.ws.wsdl.document.Port port = info.port;
-        jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(port, JAXRPCBinding.class);
-        if(jaxrpcBinding != null){
-             Boolean isWrappable = jaxrpcBinding.isEnableWrapperStyle();
+        jaxwsBinding = (JAXWSBinding)getExtensionOfType(port, JAXWSBinding.class);
+        if(jaxwsBinding != null){
+             Boolean isWrappable = jaxwsBinding.isEnableWrapperStyle();
              if(isWrappable != null)
                  return isWrappable;
         }
 
         //then wsdl:definitions
-        jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(document.getDefinitions(), JAXRPCBinding.class);
-        if(jaxrpcBinding != null){
-             Boolean isWrappable = jaxrpcBinding.isEnableWrapperStyle();
+        jaxwsBinding = (JAXWSBinding)getExtensionOfType(document.getDefinitions(), JAXWSBinding.class);
+        if(jaxwsBinding != null){
+             Boolean isWrappable = jaxwsBinding.isEnableWrapperStyle();
              if(isWrappable != null)
                  return isWrappable;
         }
@@ -2258,8 +2258,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
     protected void buildJAXBModel(WSDLDocument wsdlDocument, WSDLModelInfo modelInfo, ClassNameCollector classNameCollector) {
         //set the java package where wsdl artifacts will be generated
-        String jaxrpcPackage = getJavaPackage();
-        getWSDLModelInfo().setJavaPackageName(jaxrpcPackage);
+        String jaxwsPackage = getJavaPackage();
+        getWSDLModelInfo().setJavaPackageName(jaxwsPackage);
         JAXBModelBuilder jaxbModelBuilder = new JAXBModelBuilder(getWSDLModelInfo(), _options, classNameCollector, parser.getSchemaElements());
 
         //create pseudo schema for async operations(if any) response bean
@@ -2272,13 +2272,13 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     protected String getJavaPackage(){
-        String jaxrpcPackage = null;
-        JAXRPCBinding jaxrpcCustomization = (JAXRPCBinding)getExtensionOfType(document.getDefinitions(), JAXRPCBinding.class);
-        if(jaxrpcCustomization != null && jaxrpcCustomization.getJaxrpcPackage() != null){
-            jaxrpcPackage = jaxrpcCustomization.getJaxrpcPackage().getName();
+        String jaxwsPackage = null;
+        JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(document.getDefinitions(), JAXWSBinding.class);
+        if(jaxwsCustomization != null && jaxwsCustomization.getJaxwsPackage() != null){
+            jaxwsPackage = jaxwsCustomization.getJaxwsPackage().getName();
         }
-        if(jaxrpcPackage != null){
-            return jaxrpcPackage;
+        if(jaxwsPackage != null){
+            return jaxwsPackage;
         }
         String wsdlUri = document.getDefinitions().getTargetNamespaceURI();
         return XJC.getDefaultPackageName(wsdlUri);
@@ -2303,9 +2303,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
     @Override
     protected String getServiceInterfaceName(QName serviceQName, com.sun.tools.ws.wsdl.document.Service wsdlService) {
         String serviceName = wsdlService.getName();
-        JAXRPCBinding jaxrpcCust = (JAXRPCBinding)getExtensionOfType(wsdlService, JAXRPCBinding.class);
-        if(jaxrpcCust != null && jaxrpcCust.getClassName() != null){
-            CustomName name = jaxrpcCust.getClassName();
+        JAXWSBinding jaxwsCust = (JAXWSBinding)getExtensionOfType(wsdlService, JAXWSBinding.class);
+        if(jaxwsCust != null && jaxwsCust.getClassName() != null){
+            CustomName name = jaxwsCust.getClassName();
             if(name != null && !name.equals(""))
                 serviceName = name.getName();
         }
@@ -2331,9 +2331,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
             (QName)port.getProperty(
                 ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
         PortType pt = (PortType)document.find(Kinds.PORT_TYPE, portTypeName);
-        JAXRPCBinding jaxrpcCust = (JAXRPCBinding)getExtensionOfType(pt, JAXRPCBinding.class);
-        if(jaxrpcCust != null && jaxrpcCust.getClassName() != null){
-            CustomName name = jaxrpcCust.getClassName();
+        JAXWSBinding jaxwsCust = (JAXWSBinding)getExtensionOfType(pt, JAXWSBinding.class);
+        if(jaxwsCust != null && jaxwsCust.getClassName() != null){
+            CustomName name = jaxwsCust.getClassName();
             if(name != null && !name.equals("")){
                 return makePackageQualified(
                         name.getName(),
@@ -2791,8 +2791,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @param port
      */
     private void applyWrapperStyleCustomization(Port port, PortType portType) {
-        JAXRPCBinding jaxrpcBinding = (JAXRPCBinding)getExtensionOfType(portType, JAXRPCBinding.class);
-        Boolean wrapperStyle = (jaxrpcBinding != null)?jaxrpcBinding.isEnableWrapperStyle():null;
+        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(portType, JAXWSBinding.class);
+        Boolean wrapperStyle = (jaxwsBinding != null)?jaxwsBinding.isEnableWrapperStyle():null;
         if(wrapperStyle != null){
             port.setWrapped(wrapperStyle);
         }

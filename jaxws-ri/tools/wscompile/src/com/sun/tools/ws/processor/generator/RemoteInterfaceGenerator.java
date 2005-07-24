@@ -1,5 +1,5 @@
 /*
- * $Id: RemoteInterfaceGenerator.java,v 1.4 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: RemoteInterfaceGenerator.java,v 1.5 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -44,7 +44,7 @@ import java.util.Properties;
  *
  * @author WS Development Team
  */
-public class RemoteInterfaceGenerator extends GeneratorBase20 implements ProcessorAction {
+public class RemoteInterfaceGenerator extends GeneratorBase implements ProcessorAction {
     protected boolean isDocStyle;
     protected boolean isLiteralUse;
     protected boolean isWrapped;
@@ -65,14 +65,14 @@ public class RemoteInterfaceGenerator extends GeneratorBase20 implements Process
         this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties) {
         return new RemoteInterfaceGenerator(model, config, properties);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties,

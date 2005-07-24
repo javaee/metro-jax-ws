@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.3 2005-07-23 04:10:57 kohlert Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.4 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.tools.ws.wscompile.JAXRPCCodeWriter;
+import com.sun.tools.ws.wscompile.WSCodeWriter;
 
 /**
  * @author Vivek Pandey
@@ -32,7 +32,7 @@ import com.sun.tools.ws.wscompile.JAXRPCCodeWriter;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class JAXBTypeGenerator extends GeneratorBase20 {
+public class JAXBTypeGenerator extends GeneratorBase {
 
     /**
      * @author Vivek Pandey
@@ -101,14 +101,14 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
     /* (non-Javadoc)
      * @see GeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties)
      */
-    public GeneratorBase20 getGenerator(Model model, Configuration config,
+    public GeneratorBase getGenerator(Model model, Configuration config,
             Properties properties) {
         return new JAXBTypeGenerator(model, config, properties);
     }
     /* (non-Javadoc)
      * @see cGeneratorBase#getGenerator(com.sun.xml.rpc.processor.model.Model, com.sun.xml.rpc.processor.config.Configuration, java.util.Properties, com.sun.xml.rpc.soap.SOAPVersion)
      */
-    public GeneratorBase20 getGenerator(Model model, Configuration config,
+    public GeneratorBase getGenerator(Model model, Configuration config,
             Properties properties, SOAPVersion ver) {
         return new JAXBTypeGenerator(model, config, properties);
     }
@@ -138,7 +138,7 @@ public class JAXBTypeGenerator extends GeneratorBase20 {
         JCodeModel cm = null;
 
         // get the list of jaxb source files
-        CodeWriter cw = new JAXRPCCodeWriter(sourceDir,env);
+        CodeWriter cw = new WSCodeWriter(sourceDir,env);
 
         if(env.verbose())
             cw = new ProgressCodeWriter(cw, System.out); // TODO this should not be System.out, should be

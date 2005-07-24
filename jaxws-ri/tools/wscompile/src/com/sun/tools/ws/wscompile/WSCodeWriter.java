@@ -1,5 +1,5 @@
 /*
- * $Id: JAXRPCCodeWriter.java,v 1.3 2005-07-23 04:11:03 kohlert Exp $
+ * $Id: WSCodeWriter.java,v 1.1 2005-07-24 01:35:14 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -21,10 +21,10 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironment;
  * @author
  *     Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
  */
-public class JAXRPCCodeWriter extends FileCodeWriter {
+public class WSCodeWriter extends FileCodeWriter {
     private final ProcessorEnvironment env;
 
-    public JAXRPCCodeWriter( File outDir, ProcessorEnvironment _env ) throws IOException {
+    public WSCodeWriter( File outDir, ProcessorEnvironment _env ) throws IOException {
         super(outDir);
         this.env = _env;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLUtil.java,v 1.2 2005-07-18 18:14:24 kohlert Exp $
+ * $Id: WSDLUtil.java,v 1.3 2005-07-24 01:35:15 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -91,7 +91,7 @@ public class WSDLUtil {
 
     /**
      * Subclass of WSDLParser that skips processing of imports.  Only
-     * needed temporarily until jaxrpc code uses value of setFollowImports()
+     * needed temporarily until jaxws code uses value of setFollowImports()
      */
     private static class WSDLParserOverride extends WSDLParser {
 

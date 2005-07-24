@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.5 2005-07-23 04:10:12 kohlert Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.6 2005-07-24 01:34:57 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,11 +9,11 @@ package com.sun.xml.ws.spi.runtime;
 
 //taken from jaxrpc 1.1
 /**
- * The methods of this interface are invoked by the JAXRPCServletDelegate of
+ * The methods of this interface are invoked by the WSServletDelegate of
  * on the path to web sevice endpoints deployed as servlets.
  *
  * NOTE: The methods of this interface may also be called on the client side of
- * jaxrpc invocations, although at this time, we have not decided from
+ * jaxws invocations, although at this time, we have not decided from
  * where such invocations will be made.
  *
  * @author Ron Monzillo
@@ -25,8 +25,8 @@ public interface SystemHandlerDelegate {
     * The processRequest method is invoked with an object that
     * implements com.sun.xml.rpc.spi.runtime.SOAPMessageContext.
     * <p>
-    * When this method is called by the JAXRPCServletDelegate
-    * (on the server side of jaxrpc servlet container invocation processing)
+    * When this method is called by the WSServletDelegate
+    * (on the server side of jaxws servlet container invocation processing)
     * it must be called just before the call to implementor.getTie().handle(),
     * and at the time of the request message and the following properties
     * must have been set on the SOAPMessageContext.
@@ -43,19 +43,19 @@ public interface SystemHandlerDelegate {
     * <br>
     * This property must be
     * set to the javax.servlet.http.HttpServletRequest object containing the
-    * JAXRPC invocation.
+    * JAXWS invocation.
     * <p>
     * com.sun.xml.rpc.server.http.MessageContextProperties.HTTP_SERVLET_RESPONSE
     * <br>
     * This property must be
     * set to the javax.servlet.http.HttpServletResponse object corresponding to
-    * the JAXRPC invocation.
+    * the JAXWS invocation.
     * <p>
     * com.sun.xml.rpc.server.MessageContextProperties.HTTP_SERVLET_CONTEXT
     * <br>
     * This property must be
     * set to the javax.servlet.ServletContext object corresponding to web application
-    * in which the JAXRPC servlet is running.
+    * in which the JAXWS servlet is running.
     * @param messageContext the SOAPMessageContext object containing the request
     * message and the properties described above.
     * @return true if processing by the delegate was such that the caller
@@ -74,8 +74,8 @@ public interface SystemHandlerDelegate {
     * The processResponse method is invoked with an object that
     * implements com.sun.xml.rpc.spi2.runtime.SOAPMessageContext.
     * <p>
-    * When this method is called by the JAXRPCServletDelegate
-    * (on the server side of jaxrpc servlet container invocation processing)
+    * When this method is called by the WSServletDelegate
+    * (on the server side of jaxws servlet container invocation processing)
     * it must be called just just after the call to implementor.getTie().handle().
     * In the special case where the handle method throws an exception, the
     * processResponse message must not be called.

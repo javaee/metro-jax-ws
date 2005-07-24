@@ -13,7 +13,7 @@ import javax.xml.namespace.QName;
 
 
 /**
- * $author: JAXRPC Development Team
+ * $author: WS Development Team
  */
 public class ServiceContext {
     private WSDLContext wsdlContext; //from wsdlParsing

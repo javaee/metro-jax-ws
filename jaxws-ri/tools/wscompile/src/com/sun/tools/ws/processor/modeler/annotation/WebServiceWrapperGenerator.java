@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.3 2005-05-25 21:20:45 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.4 2005-07-24 01:35:10 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import com.sun.tools.ws.processor.generator.GeneratorBase20;
+import com.sun.tools.ws.processor.generator.GeneratorBase;
 import com.sun.tools.ws.processor.generator.GeneratorConstants;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
@@ -209,10 +209,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
             // package declaration
             String version = builder.getVersionString();
-            GeneratorBase20.writePackage(reqOut, requestClassName, version, Version.VERSION_NUMBER);                                
+            GeneratorBase.writePackage(reqOut, requestClassName, version, Version.VERSION_NUMBER);                                
             reqOut.pln();
             if (resOut != null) {
-                GeneratorBase20.writePackage(resOut, responseClassName, version, Version.VERSION_NUMBER);                                
+                GeneratorBase.writePackage(resOut, responseClassName, version, Version.VERSION_NUMBER);                                
                 resOut.pln();
             }
 
@@ -431,7 +431,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         
         // package declaration
         String version = builder.getVersionString();
-        GeneratorBase20.writePackage(out, className, version, Version.VERSION_NUMBER);                                
+        GeneratorBase.writePackage(out, className, version, Version.VERSION_NUMBER);                                
         out.pln();
 
         // imports

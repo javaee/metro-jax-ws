@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.12 2005-07-22 23:04:29 arungupta Exp $
+ * $Id: HttpClientTransport.java,v 1.13 2005-07-24 01:34:58 kohlert Exp $
  */
 
 /*
@@ -191,7 +191,7 @@ public class HttpClientTransport extends WSConnectionImpl {
 //            //to an https endpoint probably due to a bug in the jdk
 //            //or by intent - to workaround this if an error code
 //            //of HTTP_MOVED_TEMP or HTTP_MOVED_PERM is received then
-//            //the jaxrpc client will reinvoke the original request
+//            //the jaxws client will reinvoke the original request
 //            //to the new endpoint - kw bug 4890118
 //            if (checkForRedirect(statusCode)) {
 //                redirectRequest(httpConnection, context);

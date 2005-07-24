@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.2 2005-07-20 21:36:10 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.3 2005-07-24 01:34:58 kohlert Exp $
  */
 
 /*
@@ -50,7 +50,7 @@ public class WSServletContextListener
     public WSServletContextListener() {
         localizer = new Localizer();
         messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
+            new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
     }
 
     public void attributeAdded(ServletContextAttributeEvent event) {
@@ -91,9 +91,9 @@ public class WSServletContextListener
             // Parse the descriptor file and build endpoint infos
             RuntimeEndpointInfoParser parser =
                 new RuntimeEndpointInfoParser(classLoader);
-            InputStream is = context.getResourceAsStream(JAXRPC_RI_RUNTIME);
+            InputStream is = context.getResourceAsStream(JAXWS_RI_RUNTIME);
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
-            context.setAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO, endpoints);
+            context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, endpoints);
             
             // Creates WSDL & schema metadata and runtime model
             createModelAndMetadata(endpoints, docs);
@@ -106,7 +106,7 @@ public class WSServletContextListener
                         "listener.parsingFailed",
                         e.toString())),
                 e);
-            context.removeAttribute(WSServlet.JAXRPC_RI_RUNTIME_INFO);
+            context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
             throw new WSServletException("listener.parsingFailed", new Object[] {e});
         }
     }
@@ -179,7 +179,7 @@ public class WSServletContextListener
     private ServletContext context;
     private ClassLoader classLoader;
 
-    private static final String JAXRPC_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
+    private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
     public static final String JAXWS_WSDL_DIR = "/WEB-INF/wsdl";
 
     private static final Logger logger =

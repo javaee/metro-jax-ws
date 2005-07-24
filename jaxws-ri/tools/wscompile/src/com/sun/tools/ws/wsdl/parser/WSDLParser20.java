@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser20.java,v 1.2 2005-07-23 04:11:07 kohlert Exp $
+ * $Id: WSDLParser20.java,v 1.3 2005-07-24 01:35:14 kohlert Exp $
  */
 
 /*
@@ -64,7 +64,7 @@ public class WSDLParser20 extends WSDLParser {
      */
     public WSDLParser20() {
         super();
-        register(new JAXRPCBindingExtensionHandler());
+        register(new JAXWSBindingExtensionHandler());
         register(new SOAP12ExtensionHandler());
     }
 
@@ -81,9 +81,9 @@ public class WSDLParser20 extends WSDLParser {
             System.out.println("Error: WSDL Docuemnt root cant be null!");
         }
 
-        //Internalizer.transform takes Set of jaxrpc:bindings elements, this is to allow multiple external
+        //Internalizer.transform takes Set of jaxws:bindings elements, this is to allow multiple external
         //bindings to be transformed.
-        new Internalizer().transform(modelInfo.getJAXRPCBindings(), wsdlDocuments,
+        new Internalizer().transform(modelInfo.getJAXWSBindings(), wsdlDocuments,
                 (ProcessorEnvironment)modelInfo.getParent().getEnvironment());
 
         //print the wsdl
@@ -250,52 +250,6 @@ public class WSDLParser20 extends WSDLParser {
         }
     }
 
-    /* (non-Javadoc)
-     * @see WSDLParser#parseTypes(ParserContext, Definitions, org.w3c.dom.Element)
-     */
-//    protected Types parseTypes(ParserContext context, Definitions definitions,
-//            Element e) {
-//        context.push();
-//        context.registerNamespaces(e);
-//        Types types = new Types();
-//
-//        boolean gotDocumentation = false;
-//
-//        for (Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();) {
-//            Element e2 = Util.nextElement(iter);
-//            if (e2 == null)
-//                break;
-//
-//            if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_DOCUMENTATION)) {
-//                if (gotDocumentation) {
-//                    Util.fail(
-//                        "parsing.onlyOneDocumentationAllowed",
-//                        e.getLocalName());
-//                }
-//                gotDocumentation = true;
-//                types.setDocumentation(getDocumentationFor(e2));
-//            } else if ((XmlUtil.matchesTagNS(e2, SchemaConstants.QNAME_IMPORT))) {
-//                warn("warning.wsi.r2003");
-//            } else {
-//                // possible extensibility element -- must live outside the WSDL namespace
-//                checkNotWsdlElement(e2);
-//                try {
-//                    if(!XmlUtil.matchesTagNS(e2, SchemaConstants.QNAME_SCHEMA)){
-//                        checkNotWsdlRequired(e2);
-//                    }
-//                } catch (ParseException pe) {
-//                    if (pe.getKey().equals("parsing.incorrectRootElement")) {
-//                        warn("warning.wsi.r2004");
-//                        throw pe;
-//                    }
-//                }
-//            }
-//        }
-//
-//        context.pop();
-//        context.fireDoneParsingEntity(WSDLConstants.QNAME_TYPES, types);
-//        return types;
-//    }
     //all the wsdl:import system Ids
     private final Set<String> imports = new HashSet<String>();
 

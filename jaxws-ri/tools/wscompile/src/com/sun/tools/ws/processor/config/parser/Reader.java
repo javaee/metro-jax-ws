@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.2 2005-05-25 18:22:16 kohlert Exp $
+ * $Id: Reader.java,v 1.3 2005-07-24 01:35:08 kohlert Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.ConfigurationException;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.JAXRPCUtils;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLReaderFactory;
@@ -61,7 +61,7 @@ public class Reader {
             return;
         }
 
-        JAXRPCUtils.checkAbsoluteness(file);
+        JAXWSUtils.checkAbsoluteness(file);
         URL url = new URL(file);
 
         XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(url.openStream());

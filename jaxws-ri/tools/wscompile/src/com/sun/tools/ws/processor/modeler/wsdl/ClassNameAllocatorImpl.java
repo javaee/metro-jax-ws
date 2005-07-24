@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameAllocatorImpl.java,v 1.1 2005-05-24 13:31:29 bbissett Exp $
+ * $Id: ClassNameAllocatorImpl.java,v 1.2 2005-07-24 01:35:10 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -37,7 +37,7 @@ public class ClassNameAllocatorImpl implements ClassNameAllocator {
 
         String fullClassName = packageName+"."+className;
 
-        // Check if there is any conflict with jaxrpc generated classes
+        // Check if there is any conflict with jaxws generated classes
         Set<String> seiClassNames = classNameCollector.getSeiClassNames();
         if(seiClassNames != null && seiClassNames.contains(fullClassName)){
             className += TYPE_SUFFIX;

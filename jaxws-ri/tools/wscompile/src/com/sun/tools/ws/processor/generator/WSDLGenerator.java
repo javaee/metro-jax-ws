@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.3 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.4 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -86,7 +86,7 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBModel;
  *
  * @author WS Development Team
  */
-public class WSDLGenerator extends GeneratorBase20 implements Constants, ProcessorAction {
+public class WSDLGenerator extends GeneratorBase implements Constants, ProcessorAction {
     private boolean doneGeneration;
     private Definitions definitions;
     private WSDLDocument wsdlDocument;
@@ -111,14 +111,14 @@ public class WSDLGenerator extends GeneratorBase20 implements Constants, Process
         resolver = new JAXWSOutputSchemaResolver();
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties) {
         return new WSDLGenerator(model, config, properties, SOAPVersion.SOAP_11);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties,
@@ -451,7 +451,7 @@ public class WSDLGenerator extends GeneratorBase20 implements Constants, Process
 
                 PortType wsdlPortType = new PortType(definitions);
                 wsdlPortType.setName(getWSDLPortTypeName(port));
-                generateJAXRPCBinding(wsdlPortType, port);
+                generateJAXWSBinding(wsdlPortType, port);
 
                 for (Iterator operations = port.getOperations();
                     operations.hasNext();
@@ -948,13 +948,13 @@ public class WSDLGenerator extends GeneratorBase20 implements Constants, Process
     }
 
 
-    protected void generateJAXRPCBinding(PortType wsdlPortType, Port port) {
-//        System.out.println("generateJAXRPCBinding wrapped: "+port.isWrapped()+
+    protected void generateJAXWSBinding(PortType wsdlPortType, Port port) {
+//        System.out.println("generateJAXWSBinding wrapped: "+port.isWrapped()+
 //                           " isDoc: "+port.getStyle().equals(SOAPStyle.DOCUMENT));
 /*        if (!port.isWrapped() && port.getStyle().equals(SOAPStyle.DOCUMENT)) {
-            JAXRPCBinding jaxrpcBinding = new JAXRPCBinding();
-            jaxrpcBinding.setEnableWrapperStyle(port.isWrapped());
-            wsdlPortType.addExtension(jaxrpcBinding);
+            JAXWSBinding jaxwsBinding = new JAXWSBinding();
+            jaxwsBinding.setEnableWrapperStyle(port.isWrapped());
+            wsdlPortType.addExtension(jaxwsBinding);
         }
         */
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.2 2005-07-18 18:13:58 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.3 2005-07-24 01:35:09 kohlert Exp $
  */
 
 /*
@@ -34,7 +34,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
  *
  * @author WS Development Team
  */
-public class ServiceInterfaceGenerator extends GeneratorBase20 implements ProcessorAction {
+public class ServiceInterfaceGenerator extends GeneratorBase implements ProcessorAction {
 
     public ServiceInterfaceGenerator() {
         super();
@@ -47,14 +47,14 @@ public class ServiceInterfaceGenerator extends GeneratorBase20 implements Proces
         super(model, config, properties);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties) {
         return new ServiceInterfaceGenerator(model, config, properties);
     }
 
-    public GeneratorBase20 getGenerator(
+    public GeneratorBase getGenerator(
         Model model,
         Configuration config,
         Properties properties,

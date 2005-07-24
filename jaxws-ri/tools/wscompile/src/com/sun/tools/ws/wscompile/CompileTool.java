@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.7 2005-07-21 01:52:35 vivekp Exp $
+ * $Id: CompileTool.java,v 1.8 2005-07-24 01:35:13 kohlert Exp $
  */
 
 /*
@@ -24,7 +24,7 @@ import com.sun.tools.ws.processor.util.ClientProcessorEnvironment;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.processor.util.ProcessorEnvironmentBase;
-import com.sun.tools.ws.util.JAXRPCUtils;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
 import com.sun.xml.ws.util.Version;
@@ -72,7 +72,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     args[i] = null;
                     String file = args[++i];
                     args[i] = null;
-                    bindingFiles.add(JAXRPCUtils.absolutize(JAXRPCUtils.getFileOrURLName(file)));
+                    bindingFiles.add(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(file)));
                 }
             } else if (args[i].equals("-version")) {
                 report(getVersion());
@@ -224,7 +224,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                         return false;
                     }
                 } else {
-                    fileName = JAXRPCUtils.absolutize(JAXRPCUtils.getFileOrURLName(args[i]));
+                    fileName = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(args[i]));
                 }
                 inputFiles.add(fileName);
             }
@@ -235,7 +235,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             usage();
             return false;
         }
-        // put jaxrpc and jaxb binding files
+        // put jaxws and jaxb binding files
         properties.put(ProcessorOptions.BINDING_FILES, bindingFiles);
         return true;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.1 2005-07-20 21:36:11 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.2 2005-07-24 01:34:59 kohlert Exp $
  *
  */
 
@@ -63,7 +63,7 @@ public class WSServletDelegate implements ServletDelegate {
         localizerMap = new HashMap();
         localizerMap.put(defaultLocalizer.getLocale(), defaultLocalizer);
         messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.jaxrpcservlet");
+            new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
 
         this.servletConfig = servletConfig;
         this.servletContext = servletConfig.getServletContext();
@@ -77,14 +77,14 @@ public class WSServletDelegate implements ServletDelegate {
         fixedUrlPatternEndpoints = new HashMap();
         pathUrlPatternEndpoints = new ArrayList();
 
-        jaxrpcInfo =
+        jaxwsInfo =
             (List<RuntimeEndpointInfo>) servletContext.getAttribute(
-                WSServlet.JAXRPC_RI_RUNTIME_INFO);
-        if (jaxrpcInfo == null) {
+                WSServlet.JAXWS_RI_RUNTIME_INFO);
+        if (jaxwsInfo == null) {
             warnMissingContextInformation();
         } else {
             Map endpointsByName = new HashMap();
-            for(RuntimeEndpointInfo info : jaxrpcInfo) {
+            for(RuntimeEndpointInfo info : jaxwsInfo) {
                 if (endpointsByName.containsKey(info.getName())) {
                     logger.warning(
                         defaultLocalizer.localize(
@@ -100,27 +100,27 @@ public class WSServletDelegate implements ServletDelegate {
 
         String publishWSDLParam =
             servletContext.getInitParameter(
-                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_WSDL);
+                WSServlet.JAXWS_RI_PROPERTY_PUBLISH_WSDL);
         publishWSDL =
             (publishWSDLParam == null
                 ? true
                 : Boolean.valueOf(publishWSDLParam).booleanValue());
         String publishModelParam =
             servletContext.getInitParameter(
-                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_MODEL);
+                WSServlet.JAXWS_RI_PROPERTY_PUBLISH_MODEL);
         publishModel =
             (publishModelParam == null
                 ? true
                 : Boolean.valueOf(publishModelParam).booleanValue());
         String publishStatusPageParam =
             servletContext.getInitParameter(
-                WSServlet.JAXRPC_RI_PROPERTY_PUBLISH_STATUS_PAGE);
+                WSServlet.JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE);
         publishStatusPage =
             (publishStatusPageParam == null
                 ? true
                 : Boolean.valueOf(publishStatusPageParam).booleanValue());
 
-        publisher = new WSDLPublisher(servletContext, jaxrpcInfo);
+        publisher = new WSDLPublisher(servletContext, jaxwsInfo);
 
         if (secondDelegate != null)
             secondDelegate.postInit(servletConfig);
@@ -166,7 +166,7 @@ public class WSServletDelegate implements ServletDelegate {
                 return;
             }
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
-            if (jaxrpcInfo == null && request.getQueryString() != null) {
+            if (jaxwsInfo == null && request.getQueryString() != null) {
                 writeNotFoundErrorPage(localizer, response, "Invalid Context");
             } else if (targetEndpoint != null && request.getQueryString() != null) {
                 if (request.getQueryString().equals("WSDL") ||
@@ -209,8 +209,8 @@ public class WSServletDelegate implements ServletDelegate {
                     out.println(
                         localizer.localize(
                             messageFactory.getMessage("servlet.html.title2")));
-                    if (jaxrpcInfo == null) {
-                        // out.println("<p>No JAX-RPC context information available.</p>");
+                    if (jaxwsInfo == null) {
+                        // out.println("<p>No JAX-WS context information available.</p>");
                         out.println(
                             localizer.localize(
                                 messageFactory.getMessage(
@@ -248,7 +248,7 @@ public class WSServletDelegate implements ServletDelegate {
                                 + request.getServerPort()
                                 + request.getContextPath();
 
-                        for (RuntimeEndpointInfo info : jaxrpcInfo) {
+                        for (RuntimeEndpointInfo info : jaxwsInfo) {
                             String endpointAddress =
                                 baseAddress + getValidPathForEndpoint(info);
                             out.println("<tr>");
@@ -559,7 +559,7 @@ public class WSServletDelegate implements ServletDelegate {
 
     private ServletConfig servletConfig;
     private ServletContext servletContext;
-    private List<RuntimeEndpointInfo> jaxrpcInfo;
+    private List<RuntimeEndpointInfo> jaxwsInfo;
     private Localizer defaultLocalizer;
     private LocalizableMessageFactory messageFactory;
     private Map fixedUrlPatternEndpoints;

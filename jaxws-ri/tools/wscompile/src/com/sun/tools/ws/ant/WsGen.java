@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.3 2005-06-08 06:13:20 vivekp Exp $
+ * $Id: WsGen.java,v 1.4 2005-07-24 01:35:07 kohlert Exp $
  */
 
 /*
@@ -33,7 +33,7 @@ import com.sun.tools.ws.wscompile.CompileTool;
 import com.sun.xml.ws.util.VersionUtil;
 
 /**
- * wscompile task for use with the JAXRPC project.
+ * wsgen task for use with the JAXWS project.
  *
  */
 public class WsGen extends MatchingTask {

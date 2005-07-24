@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderXMLMD.java,v 1.1 2005-07-23 00:21:28 jitu Exp $
+ * $Id: ProviderXMLMD.java,v 1.2 2005-07-24 01:34:56 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -38,8 +38,8 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
 
     /*
      * Fill the parameters, method in MessageInfo for Provider interface.
-     * invoke(Source, JAXRPCContext) to Object[]
-     * invoke(SOAPMessage, JAXRPCContext) to Object[]
+     * invoke(Source, XMLHandlerContext) to Object[]
+     * invoke(SOAPMessage, XMLHandlerContext) to Object[]
      */
     @Override
     protected void toMessageInfo(MessageInfo messageInfo, XMLHandlerContext context) {
