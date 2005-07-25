@@ -1,7 +1,7 @@
 /**
- *  <h1>JAX-WS 2.0 Server Runtime</h1>
+ * <h1>JAX-WS 2.0 Server Runtime</h1>
  * <P>This document describes the architecture of server side 
- * JAX-WS 2.0 runtime. 
+ * JAX-WS 2.0 runtime. </p>
  *
  * <h3>JAX-WS 2.0 Server Runtime Sequence Diagram</h3>
  * {@SequenceDiagram
@@ -75,10 +75,8 @@
  * 
  *      complete(A);
  * }
-
  *
  *
- 
  *
  * <H3>Message Flow</H3>
  * <P>A Web Service invocation starts with either the 
@@ -120,18 +118,19 @@
  * <H3>External Interactions</H3>
  * <H4>SAAJ API</H4>
  * <UL>
- * 	<LI><P>JAX-WS creates SAAJ SOAPMessage from the HttpServletRequest.
+ * 	<LI><P>JAX-WS creates SAAJ javax.xml.soap.SOAPMessage 
+ *      from the HttpServletRequest.
  * 	At present, JAX-WS reads all the bytes from the request stream and
  * 	then creates SOAPMessage along with the HTTP headers.</P>
  * </UL>
- * <P>MessageFactory(binding).createMessage(MimeHeaders, InputStream)</P>
+ * <P>javax.xml.soap.MessageFactory(binding).createMessage(MimeHeaders, InputStream)</P>
  * <UL>
  * 	<LI><P>SOAPMessage parses the content from the stream including MIME
  * 	data</P>
  * 	<LI><P>com.sun.xml.ws.server.SOAPMessageDispatcher::checkHeadersPeekBody()</P>
  * 	<P>SOAPMessage.getSOAPHeader() is used for mustUnderstand processing
  * 	of headers. It further uses
- * 	SOAPHeader.examineMustUnderstandHeaderElements(role)</P>
+ * 	javax.xml.soap.SOAPHeader.examineMustUnderstandHeaderElements(role)</P>
  * 	<P>SOAPMessage.getSOAPBody().getFistChild() is used for guessing the
  * 	MEP of the request</P>
  * 	<LI><P>com.sun.xml.ws.handler.HandlerChainCaller:insertFaultMessage()</P>
@@ -156,22 +155,27 @@
  * <P>JAX-WS RI uses the JAXB API to marshall/unmarshall user created
  * JAXB objects with user created {@link javax.xml.bind.JAXBContext JAXBContext}. 
  * Handler, Dispatch in JAX-WS API provide ways for the user to specify his/her own
- * JAXBContext. JAXBTypeSerializer class uses all these methods.</P>
+ * JAXBContext. {@link com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer JAXBTypeSerializer} class uses all these methods.</P>
  * <UL>
- * 	<LI><p>Marshaller.marshal(Object,XMLStreamWriter)</p>
- * 	<LI><P>Marshaller.marshal(Object, DomResult)</P>
- * 	<LI><P>Object Unmarshaller.unmarshal(XMLStreamReader)</P>
- * 	<LI><P><Object Unmarshaller.unmarshal(Source)</P>
+ * 	<LI><p>{@link javax.xml.bind.Marshaller#marshal(Object,XMLStreamWriter) Marshaller.marshal(Object,XMLStreamWriter)}</p>
+ * 	<LI><P>{@link javax.xml.bind.Marshaller#marshal(Object,Result) Marshaller.marshal(Object, DomResult)}</P>
+ * 	<LI><P>{@link javax.xml.bind.Unmarshaller#unmarshal(XMLStreamReader) Object Unmarshaller.unmarshal(XMLStreamReader)}</P>
+ * 	<LI><P>{@link javax.xml.bind.Unmarshaller#unmarshal(Source) Object Unmarshaller.unmarshal(Source)}</P>
+ * </UL>
+ * The following two JAXB classes are implemented by JAX-WS to enable/implement MTOM and XOP
+ * <UL>
+ *      <LI><P>{@link javax.xml.bind.attachment.AttachmentMarshaller AttachmentMarshaller}</P>
+ *      <LI><P>{@link javax.xml.bind.attachment.AttachmentUnmarshaller AttachmentUnmarshaller}</P>
  * </UL>
  * <H4>JAXB Runtime-API (private contract)</H4>
  * <P>JAX-WS RI uses these private API for serialization/deserialization
  * purposes. This private API is used to serialize/deserialize method
- * parameters at the time of binding.JAXBTypeSerializer class uses all
+ * parameters at the time of JAXBTypeSerializer class uses all
  * these methods.</P>
  * <UL>
- * 	<LI><P>Bridge.marshal(BridgeContext, Object, XMLStreamWriter)</P>
- * 	<LI><P>Bridge.marshal(BridgeContext, Object, Node)</P>
- * 	<LI><P>Bridge.unmarshal(BridgeContext, XMLStreamReader)</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#marshal(BridgeContext, Object, XMLStreamWriter) Bridge.marshal(BridgeContext, Object, XMLStreamWriter)}</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#marshal(BridgeContext, Object, Node) Bridge.marshal(BridgeContext, Object, Node)}</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#unmarshal(BridgeContext, XMLStreamReader) Object Bridge.unmarshal(BridgeContext, XMLStreamReader)}</P>
  * </UL>
  * 
  * @ArchitectureDocument
