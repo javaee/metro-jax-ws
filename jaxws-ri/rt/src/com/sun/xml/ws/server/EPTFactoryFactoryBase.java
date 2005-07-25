@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.7 2005-07-19 20:41:26 arungupta Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.8 2005-07-25 18:28:25 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,6 +9,7 @@ package com.sun.xml.ws.server;
 import com.sun.pept.ept.EPTFactory;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.TargetFinder;
+import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
@@ -28,6 +29,10 @@ import com.sun.xml.ws.encoding.soap.server.SOAP12XMLDecoder;
 import com.sun.xml.ws.encoding.soap.server.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.server.SOAPXMLDecoder;
 import com.sun.xml.ws.encoding.soap.server.SOAPXMLEncoder;
+import com.sun.xml.ws.encoding.xml.XMLDecoder;
+import com.sun.xml.ws.encoding.xml.XMLEncoder;
+import com.sun.xml.ws.protocol.xml.server.ProviderXMLMD;
+import javax.xml.ws.http.HTTPBinding;
 
 /**
  * factory for creating the appropriate EPTFactory given the BindingId from the EndpointInfo
@@ -52,8 +57,14 @@ public abstract class EPTFactoryFactoryBase {
     public static final SOAPDecoder soap11Decoder = new SOAPXMLDecoder();
     public static final SOAPEncoder soap12Encoder = new SOAP12XMLEncoder();
     public static final SOAPDecoder soap12Decoder = new SOAP12XMLDecoder();
+    
+    public static final XMLEncoder xmlEncoder = null; //new XMLEncoder();
+    public static final XMLDecoder xmlDecoder = null; //new XMLDecoder();
+
     public static final SOAPMessageDispatcher soap11MessageDispatcher =
         new SOAPMessageDispatcher();
+    public static final MessageDispatcher providerXmlMD =
+        new ProviderXMLMD();
     public static final InternalEncoder internalSED = new ServerEncoderDecoder();
     public static final InternalEncoder providerSED = new ProviderSED();
     public static final TargetFinder providerTargetFinder =
@@ -82,6 +93,12 @@ public abstract class EPTFactoryFactoryBase {
                 soap12Encoder, soap12Decoder,
                 logicalEncoder, internalSED, targetFinder,
                 soap11MessageDispatcher);
+    
+    public static final EPTFactory providerXml =
+        new XMLEPTFactoryImpl(
+            xmlEncoder, xmlDecoder,
+            logicalEncoder, providerSED, providerTargetFinder,
+            providerXmlMD);
 
     public static boolean isEncodeFast(MessageContext context) {
         boolean fast = false;
@@ -144,6 +161,10 @@ public abstract class EPTFactoryFactoryBase {
                 return providerSoap12;
             } else {
                 return soap12;
+            }
+        } else if(bindingId.equals(HTTPBinding.HTTP_BINDING)){
+            if (endpointInfo.getImplementor() instanceof Provider) {
+                return providerXml;
             }
         }
         return null;

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.1 2005-07-20 21:36:10 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.2 2005-07-25 18:28:25 jitu Exp $
  */
 
 /*
@@ -29,12 +29,14 @@ import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.ws.http.HTTPBinding;
 
 /**
  * @author WS Development Team
@@ -105,6 +107,8 @@ public class RuntimeEndpointInfoParser {
                 }else if(bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
                         bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)){
                     rei.setBinding(new SOAPBindingImpl(bindingId));
+                } else if(bindingId.equals(HTTPBinding.HTTP_BINDING)) {
+                    rei.setBinding(new HTTPBindingImpl());
                 }
                 rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
 

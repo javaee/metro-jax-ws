@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.1 2005-07-23 00:21:28 jitu Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.2 2005-07-25 18:28:24 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -35,7 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
-import javax.xml.transform.Source;
+import com.sun.xml.ws.util.XMLConnectionUtil;
 
 /**
  * @author WS Development Team
@@ -185,8 +185,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
      */
     private XMLMessage getXMLMessage(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        //return SOAPConnectionUtil.getSOAPMessage(con, messageInfo);
-        return null;
+        return XMLConnectionUtil.getXMLMessage(con, messageInfo);
     }
 
     /*
@@ -252,7 +251,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     // TODO: HTTP response code
     private void sendResponse(MessageInfo messageInfo, XMLMessage xmlMessage) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        //SOAPConnectionUtil.sendResponse(con, soapMessage);
+        XMLConnectionUtil.sendResponse(con, xmlMessage);
     }
 
     protected void sendResponseOneway(MessageInfo messageInfo) {

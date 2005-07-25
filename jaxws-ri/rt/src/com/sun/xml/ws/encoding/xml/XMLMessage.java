@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.2 2005-07-23 00:21:27 jitu Exp $
+ * $Id: XMLMessage.java,v 1.3 2005-07-25 18:28:23 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -67,16 +67,8 @@ public class XMLMessage {
       
             // In the absence of type attribute we assume it to be text/xml.
             // That would mean we're easy on accepting the message and 
-            // generate the correct thing (as the SWA spec also specifies
-            // that the type parameter should always be text/xml)
+            // generate the correct thing
             if(contentType.getParameter("type") == null)
-                contentType.setParameter("type", "text/xml");
-
-            // In the absence of type attribute we assume it to be text/xml.
-            // That would mean we're easy on accepting the message and
-            // generate the correct thing (as the SWA spec also specifies
-            // that the type parameter should always be text/xml)
-            if (contentType.getParameter("type") == null)
                 contentType.setParameter("type", "text/xml");
 
             int contentTypeId = identifyContentType(contentType);
@@ -113,6 +105,8 @@ public class XMLMessage {
     
     public XMLMessage(Source source) {
         this.source = source;
+        this.headers = new MimeHeaders();
+        headers.addHeader("Content-Type", "text/xml");
     }
     
     public XMLMessage(DataSource dataSource) {
@@ -225,7 +219,7 @@ public class XMLMessage {
                 throw new WebServiceException(
                     "Invalid Content-Type: " + primary + "/" + sub);
             }
-        } else if (isXMLType(primary)) {
+        } else if (isXMLType(primary, sub)) {
             return PLAIN_XML_FLAG;
         } else {
             log.severe("xml.invalid.content-type");
@@ -235,6 +229,10 @@ public class XMLMessage {
                     + "/"
                     + sub);
         }
+    }
+    
+    protected static boolean isXMLType(String primary, String sub) {
+        return primary.equalsIgnoreCase("text") && sub.equalsIgnoreCase("xml");
     }
     
     protected static boolean isXMLType(String type) {
