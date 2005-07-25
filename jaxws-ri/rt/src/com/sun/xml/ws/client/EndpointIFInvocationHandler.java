@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.8 2005-07-20 20:28:22 kwalsh Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.9 2005-07-25 23:00:11 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -101,6 +101,11 @@ public class EndpointIFInvocationHandler
         }
     }
 
+    /**
+     * Gets a new {@link com.sun.pept.presentation.MessageStruct} from the Delegate, copies
+     * the data and metadata into the newly created MessageStruct, invokes Delegate.send, and
+     * returns the response.
+     */
     public Object implementSEIMethod(Method method, Object[] parameters) throws Throwable {
 
         MessageStruct messageStruct = _delegate.getMessageStruct();

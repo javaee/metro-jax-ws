@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.12 2005-07-24 01:34:55 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.13 2005-07-25 23:00:12 arungupta Exp $
  */
 
 /*
@@ -85,6 +85,9 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 
+/**
+ * Client-side SOAP protocol-specific {@link com.sun.pept.protocol.MessageDispatcher}
+ */
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
     protected static final int MAX_THREAD_POOL_SIZE = 2;
@@ -95,11 +98,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING = "SOAP must understand error";
 
+    /**
+     * Default constructor
+     */
     public SOAPMessageDispatcher() {
     }
 
     /*
-     * (non-Javadoc)
+     * Invokes doSendAsync method if the message exchange pattern is asynchronous, otherwise
+     * invokes doSend method.
      *
      * @see com.sun.pept.protocol.MessageDispatcher#send(com.sun.pept.ept.MessageInfo)
      */
@@ -111,6 +118,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
+    /**
+     * Orchestrates the sending of a synchronous request
+     */
     protected SOAPMessage doSend(MessageInfo messageInfo) {
         //change from LogicalEPTFactory to ContactInfoBase - should be changed back when we have things working
         EPTFactory contactInfo = messageInfo.getEPTFactory();
@@ -156,7 +166,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
             Map<String, Object> context = processMetadata(messageInfo, sm);
 
-            // set the MIME headers on connection headers: required for local transport for now
+            // set the MIME headers on connection headers
             Map<String, List<String>> ch = new HashMap<String, List<String>>();
             for (Iterator iter = sm.getMimeHeaders().getAllHeaders(); iter.hasNext();) {
                 List<String> h = new ArrayList<String>();
@@ -332,7 +342,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     /*
-     * (non-Javadoc)
+     * Orchestrates the receiving of a synchronous response
      *
      * @see com.sun.pept.protocol.MessageDispatcher#receive(com.sun.pept.ept.MessageInfo)
      *
@@ -428,6 +438,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return handlerContext;
     }
 
+    /**
+     * Orchestrates the sending of an asynchronous request
+     */
     protected void doSendAsync(final MessageInfo messageInfo) {
         try { // should have already been caught
             preSendHook(messageInfo);
@@ -460,6 +473,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
+    /**
+     * Orchestrates the receiving of an asynchronous response
+     */
     protected Response<Object> sendAsyncReceive(final MessageInfo messageInfo, final SOAPMessage sm) {
 
         final AsyncHandler handler = (AsyncHandler) messageInfo
@@ -568,6 +584,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             responseContext.copy());
     }
 
+    /**
+     * @return true if message exchange pattern indicates asynchronous, otherwise returns false
+     */
     protected boolean isAsync(MessageInfo messageInfo) {
         if ((messageInfo.getMEP() == MessageStruct.ASYNC_POLL_MEP)
             || (messageInfo.getMEP() == MessageStruct.ASYNC_CALLBACK_MEP)) {
@@ -737,6 +756,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             return SOAPBinding.SOAP11HTTP_BINDING;
     }
 
+    /**
+     * Logs the SOAP request message
+     */
     protected void logRequestMessage(SOAPMessage soapMessage, MessageInfo messageInfo)
         throws IOException, SOAPException {
 
@@ -761,6 +783,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
+    /**
+     * Logs the SOAP response message
+     */
     protected void logResponseMessage(SOAPMessage response, MessageInfo messageInfo)
         throws IOException, SOAPException {
 

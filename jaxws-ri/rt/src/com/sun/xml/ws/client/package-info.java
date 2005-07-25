@@ -4,8 +4,122 @@
  * JAX-WS 2.0 runtime. 
  *
  * <h3>JAX-WS 2.0 Server Client Sequence Diagram</h3>
+ * {@SequenceDiagram
+ *    pobject(U,"user");
+ *    object(A,"EndpointIFInvocationHandler");
+ *    object(B,"DelegateBase");
+ *    object(C,"MessageDispatcher");
+ *    object(D,"Encoder");
+ *    object(E,"Decoder");
+ *    object(F,"WSConnection");
+ *    step();
+
+ *    message(U,A,"invoke Web Service");
+ *    active(A);
+ *    message(A,A,"invoke");
+ *    active(A);
+ *    step();
+ *    inactive(A);
+ *
+ *    active(A);
+ *    message(A,A,"implementSEIMethod");
+ *    step();
+ *    inactive(A);
+ *
+ *    message(A,B,"send");
+ *    active(B);
+ *    step();
+ *    inactive(A);
+ *
+ *    message(B,B,"getContactInfo");
+ *    active(B);
+ *    step();
+ *    inactive(B);
+ *
+ *    message(B,B,"getMessageDispatcher");
+ *    active(B);
+ *    step();
+ *    inactive(B);
+ *
+ *    message(B,C,"send");
+ *    active(C);
+ *    step();
+ *    inactive(B);
+ * 
+ *    active(C);
+ *    message(C,C,"doSend");
+ *    inactive(C);
+ *
+ *    message(C,D,"toInternalMessage");
+ *    active(D);
+ *    step();
+ *    inactive(C);
+ *
+ *    message(C,D,"toSOAPMessage");
+ *    complete(D);
+ *
+ *    message(C,F,"setHeaders");
+ *    active(F);
+ *    step();
+ *    inactive(C);
+ *
+ *    message(C,F,"getOutput");
+ *    active(F);
+ *    step();
+ *    inactive(C);
+ *
+ *    message(C,F,"writeTo");
+ *    active(F);
+ *    step();
+ *    inactive(C);
+ *
+ *    active(D);
+ *    message(C,C,"receive");
+ *    inactive(C);
+ *
+ *    active(C);
+ *    message(C,C,"doSendAsync");
+ *    inactive(C);
+ *
+ *    active(C);
+ *    message(C,C,"sendAsyncReceive");
+ *    inactive(C);
+ *
+ *    complete(A);
+ * }
  *
  * <H3>Message Flow</H3>
+ * {@link com.sun.xml.ws.client.WebService} provides client view of a Web service.
+ * WebService.getPort returns an instance of {@link com.sun.xml.ws.client.EndpointIFInvocationHandler}
+ * with {@link com.sun.pept.ept.ContactInfoList} and {@link com.sun.pept.Delegate} initialized. 
+ * A method invocation on the port, obtained from WebService, invokes
+ * {@link com.sun.xml.ws.client.EndpointIFInvocationHandler#invoke}. This method then creates a 
+ * {@link com.sun.pept.ept.MessageInfo} and populates the data (parameters specified by the user) and metadata such as
+ * RuntimeContext, RequestContext, Message Exchange Pattern into this MessageInfo. This method then
+ * invokes {@link com.sun.pept.Delegate#send} and returns the response.
+ * <P></P>
+ * Delegate.send iterates through the ContactInfoList and picks up the correct {@link com.sun.pept.ept.ContactInfo}
+ * based upon binding id of the {@link javax.xml.ws.BindingProvider} and sets it on
+ * the MessageInfo. After the Delegate obtains a specific ContactInfo it uses that ContactInfo
+ * to obtain a protocol-specific {@link com.sun.pept.protocol.MessageDispatcher}. There will be two types of 
+ * client-side MessageDispatchers for JAX-WS 2.0 FCS, {@link com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher} 
+ * and an {@link com.sun.xml.ws.protocol.xml.client.XMLMessageDispatcher}. The Delegate then invokes
+ * {@link com.sun.pept.protocol.MessageDispatcher#send}. A different method is invoked depending upon whether 
+ * the request is synchronous or asynchronous.
+ * 
+ * The MessageDispatcher uses ContactInfo to obtain
+ * a {@com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder} which converts the MessageInfo to 
+ * {@link com.sun.xml.ws.encoding.soap.internal.InternalMessage}. The MessageDispatcher invokes 
+ * any configured handlers and use the encoder to convert the InternalMessage to a {@link javax.xml.soap.SOAPMessage}. 
+ * The metadata from the MessageInfo is classified into {@link javax.xml.soap.MimeHeaders} of this SOAPMessage and 
+ * transport context. The SOAPMessge is then written to the output stream of the obtained WSConnection.
+ *
+ * The MessageDispatcher.receive handles the response. The SOAPMessageDispatcher extracts the 
+ * SOAPMessage from the input stream of WSConnection and performs the mustUnderstand processing followed
+ * by invocation of any handlers. The MessageDispatcher uses ContactInfo to obtain a {@com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder} 
+ * which converts the SOAPMessage to InternalMessage and then InternalMessage to MessageInfo. The response
+ * is returned back to the client code via Delegate.
+ *
  * <H3>External Interactions</H3>
  * <H4>SAAJ API</H4>
  * <UL>
