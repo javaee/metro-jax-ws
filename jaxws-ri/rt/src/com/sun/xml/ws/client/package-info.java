@@ -91,34 +91,48 @@
  * <H3>Message Flow</H3>
  * {@link com.sun.xml.ws.client.WebService} provides client view of a Web service.
  * WebService.getPort returns an instance of {@link com.sun.xml.ws.client.EndpointIFInvocationHandler}
- * with {@link com.sun.pept.ept.ContactInfoList} and {@link com.sun.pept.Delegate} initialized. 
- * A method invocation on the port, obtained from WebService, invokes
- * {@link com.sun.xml.ws.client.EndpointIFInvocationHandler#invoke}. This method then creates a 
- * {@link com.sun.pept.ept.MessageInfo} and populates the data (parameters specified by the user) and metadata such as
- * RuntimeContext, RequestContext, Message Exchange Pattern into this MessageInfo. This method then
- * invokes {@link com.sun.pept.Delegate#send} and returns the response.
+ * with {@link com.sun.pept.ept.ContactInfoList} and {@link com.sun.pept.Delegate} 
+ * initialized. A method invocation on the port, obtained from WebService, invokes
+ * {@link com.sun.xml.ws.client.EndpointIFInvocationHandler#invoke}. This method 
+ * then creates a {@link com.sun.pept.ept.MessageInfo} and populates the data 
+ * (parameters specified by the user) and metadata such as RuntimeContext, RequestContext, 
+ * Message Exchange Pattern into this MessageInfo. This method then invokes 
+ * {@link com.sun.pept.Delegate#send} and returns the response.
  * <P></P>
- * Delegate.send iterates through the ContactInfoList and picks up the correct {@link com.sun.pept.ept.ContactInfo}
- * based upon binding id of the {@link javax.xml.ws.BindingProvider} and sets it on
- * the MessageInfo. After the Delegate obtains a specific ContactInfo it uses that ContactInfo
- * to obtain a protocol-specific {@link com.sun.pept.protocol.MessageDispatcher}. There will be two types of 
- * client-side MessageDispatchers for JAX-WS 2.0 FCS, {@link com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher} 
- * and an {@link com.sun.xml.ws.protocol.xml.client.XMLMessageDispatcher}. The Delegate then invokes
- * {@link com.sun.pept.protocol.MessageDispatcher#send}. A different method is invoked depending upon whether 
- * the request is synchronous or asynchronous.
- * 
+ * The Delegate.send method iterates through the ContactInfoList and picks up the 
+ * correct {@link com.sun.pept.ept.ContactInfo} based upon the binding id of 
+ * {@link javax.xml.ws.BindingProvider} and sets it on the MessageInfo. After the 
+ * Delegate obtains a specific ContactInfo it uses that ContactInfo to obtain a 
+ * protocol-specific {@link com.sun.pept.protocol.MessageDispatcher}. There will be 
+ * two types of client-side MessageDispatchers for JAX-WS 2.0 FCS, 
+ * {@link com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher} and 
+ * {@link com.sun.xml.ws.protocol.xml.client.XMLMessageDispatcher}. The Delegate 
+ * then invokes {@link com.sun.pept.protocol.MessageDispatcher#send}. The 
+ * MessageDispatcher.send method makes a decision about the synchronous and 
+ * asynchronous nature of the message exchange pattern and invokes separate methods
+ * accordingly.
+ * <p></P>
  * The MessageDispatcher uses ContactInfo to obtain
- * a {@com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder} which converts the MessageInfo to 
- * {@link com.sun.xml.ws.encoding.soap.internal.InternalMessage}. The MessageDispatcher invokes 
- * any configured handlers and use the encoder to convert the InternalMessage to a {@link javax.xml.soap.SOAPMessage}. 
- * The metadata from the MessageInfo is classified into {@link javax.xml.soap.MimeHeaders} of this SOAPMessage and 
- * transport context. The SOAPMessge is then written to the output stream of the obtained WSConnection.
- *
- * The MessageDispatcher.receive handles the response. The SOAPMessageDispatcher extracts the 
- * SOAPMessage from the input stream of WSConnection and performs the mustUnderstand processing followed
- * by invocation of any handlers. The MessageDispatcher uses ContactInfo to obtain a {@com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder} 
- * which converts the SOAPMessage to InternalMessage and then InternalMessage to MessageInfo. The response
- * is returned back to the client code via Delegate.
+ * a {@link com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder} which converts 
+ * the MessageInfo to {@link com.sun.xml.ws.encoding.soap.internal.InternalMessage}. 
+ * There will be two types of client-side SOAPXMLEncoder for JAX-WS 2.0 FCS, 
+ * SOAPXMEncoder for SOAP 1.1 and {@link com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder}
+ * for SOAP 1.2. The MessageDispatcher invokes configured handlers and use the 
+ * encoder to convert the InternalMessage to a {@link javax.xml.soap.SOAPMessage}.
+ * The metadata from the MessageInfo is classified into {@link javax.xml.soap.MimeHeaders} 
+ * of this SOAPMessage and context information for {@link com.sun.xml.ws.spi.runtime.WSConnection}. 
+ * The SOAPMessge is then written to the output stream of the WSConnection
+ * obtained from MessageInfo.
+ *<P></P>
+ * The MessageDispatcher.receive method handles the response. The 
+ * SOAPMessageDispatcher extracts the SOAPMessage from the input stream of 
+ * WSConnection and performs the mustUnderstand processing followed by invocation 
+ * of any handlers. The MessageDispatcher uses ContactInfo to obtain a 
+ * {@link com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder} which converts the SOAPMessage 
+ * to InternalMessage and then InternalMessage to MessageInfo. There will be two types of 
+ * client-side SOAPXMLDecoder for JAX-WS 2.0 FCS, SOAPXMLDencoder for SOAP 1.1 and 
+ * {@link com.sun.xml.ws.encoding.soap.client.SOAP12XMLDecoder} for SOAP 1.2. The 
+ * response is returned back to the client code via Delegate.
  *
  * <H3>External Interactions</H3>
  * <H4>SAAJ API</H4>
