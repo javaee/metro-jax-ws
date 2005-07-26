@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.6 2005-07-26 18:30:07 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.7 2005-07-26 23:43:46 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
@@ -180,12 +181,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (!isFailure(messageInfo)) {
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
             eptf.getInternalEncoder().toMessageInfo(internalMessage, messageInfo);
+            Binding binding = MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo().getBinding();
+            String bindingId = (binding != null)?((SOAPBindingImpl)binding).getBindingId():SOAPBinding.SOAP11HTTP_BINDING;
+
             if (messageInfo.getMethod() == null) {
-                messageInfo.setResponseType(
-                    MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
+                messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
                 SOAPFaultInfo faultInfo = new SOAPFaultInfo(
-                    SOAPConstants.FAULT_CODE_SERVER,
-                    "Cannot find dispatch method", null, null);
+                            "Cannot find dispatch method",
+                            SOAPConstants.FAULT_CODE_SERVER,
+                            null, null, bindingId);
                 messageInfo.setResponse(faultInfo);
             } else {
                 context.put(MessageContext.WSDL_OPERATION,
@@ -277,7 +281,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
         e.printStackTrace();
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        SOAPConnectionUtil.sendResponseError(con);
+        Binding binding = MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo().getBinding();
+        String bindingId = ((SOAPBindingImpl)binding).getBindingId();
+        SOAPConnectionUtil.sendResponseError(con, bindingId);
     }
 
 

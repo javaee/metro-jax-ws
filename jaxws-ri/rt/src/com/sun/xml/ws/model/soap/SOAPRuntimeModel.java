@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.6 2005-07-23 04:10:09 kohlert Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.7 2005-07-26 23:43:45 vivekp Exp $
  */
 
 /*
@@ -8,32 +8,22 @@
  */
 package com.sun.xml.ws.model.soap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.messaging.saaj.soap.SOAPVersionMismatchException;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.*;
-import com.sun.xml.ws.model.CheckedException;
-import com.sun.xml.ws.model.JavaMethod;
-import com.sun.xml.ws.model.Parameter;
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.server.ServerRtException;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.soap.SOAPFault;
+import java.util.*;
 
 /**
  * Creates SOAP specific RuntimeModel
@@ -197,22 +187,23 @@ public class SOAPRuntimeModel extends RuntimeModel {
 
         } else if (obj instanceof SOAPFaultException) {
             SOAPFaultException e = (SOAPFaultException)obj;
-            faultInfo = new SOAPFaultInfo(e.getFaultCode(), e.getFaultString(),
-                    e.getFaultActor(), e.getDetail());
+            faultInfo = new SOAPFaultInfo(e.getFault());
         } else if (obj instanceof SOAPVersionMismatchException) {
             QName faultCode = SOAPConstants.FAULT_CODE_VERSION_MISMATCH;
             String faultString = "SOAP envelope version mismatch";
-            faultInfo = new SOAPFaultInfo(faultCode, faultString, actor);
+            faultInfo = new SOAPFaultInfo(faultString, faultCode, actor, null, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
         } else if (obj instanceof Exception) {
             faultInfo = createSOAPFaultInfo((Exception)obj, actor, detail);
         } else {
             QName faultCode = SOAPConstants.FAULT_CODE_SERVER;
             String faultString = "Unknown fault type:"+obj.getClass();
-            faultInfo = new SOAPFaultInfo(faultCode, faultString, actor, null);
+            faultInfo = new SOAPFaultInfo(faultString, faultCode, actor, null,javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
         }
+
         if (internalMsg == null) {
             internalMsg = new InternalMessage();
         }
+
         BodyBlock bodyBlock = internalMsg.getBody();
         if (bodyBlock == null) {
             bodyBlock = new BodyBlock(faultInfo);
@@ -224,7 +215,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
         return internalMsg;
     }
 
-    public static InternalMessage createSOAP12FaultInBody(Object obj, String role, String node, List detail, InternalMessage im) {
+    public static InternalMessage createSOAP12FaultInBody(Object obj, String role, String node, Object detail, InternalMessage im) {
         SOAP12FaultInfo faultInfo;
         if (obj instanceof SOAP12FaultInfo) {
             faultInfo = (SOAP12FaultInfo)obj;
@@ -233,21 +224,20 @@ public class SOAPRuntimeModel extends RuntimeModel {
             Throwable th = (cause == null) ? (ServerRtException)obj : cause;
             faultInfo = createSOAP12FaultInfo(th, role, node, detail);
 
-        } else if (obj instanceof SOAP12FaultException) {
-            SOAP12FaultException e = (SOAP12FaultException)obj;
-            faultInfo = new SOAP12FaultInfo(e.getCode(), e.getReason(),
-                    e.getNode(), e.getRole(), e.getDetail());
+        } else if (obj instanceof SOAPFaultException) {
+            SOAPFaultException e = (SOAPFaultException)obj;
+            faultInfo = new SOAP12FaultInfo(e.getFault());
         } else if (obj instanceof SOAPVersionMismatchException) {
             String faultString = "SOAP envelope version mismatch";
-            FaultCode code = new FaultCode(FaultCodeEnum.VersionMismatch, null);
-            FaultReason reason = new FaultReason(new FaultReasonText("en", faultString));
+            FaultCode code = new FaultCode(FaultCodeEnum.VersionMismatch, (FaultSubcode) null);
+            FaultReason reason = new FaultReason(new FaultReasonText(faultString, Locale.getDefault()));
             faultInfo = new SOAP12FaultInfo(code, reason, null, null, null);
         } else if (obj instanceof Exception) {
             faultInfo = createSOAP12FaultInfo((Exception)obj, role, node, detail);
         } else {
             String faultString = "Unknown fault type:"+obj.getClass();
-            FaultCode code = new FaultCode(FaultCodeEnum.Receiver, null);
-            FaultReason reason = new FaultReason(new FaultReasonText("en", faultString));
+            FaultCode code = new FaultCode(FaultCodeEnum.Receiver, (FaultSubcode) null);
+            FaultReason reason = new FaultReason(new FaultReasonText(faultString, Locale.getDefault()));
             faultInfo = new SOAP12FaultInfo(code, reason, null, null, null);
         }
         if (im == null) {
@@ -263,31 +253,33 @@ public class SOAPRuntimeModel extends RuntimeModel {
         return im;
     }
 
-    private static SOAP12FaultInfo createSOAP12FaultInfo(Throwable e, String role, String node, List detail) {
-        SOAP12FaultException soapFaultException = null;
+    private static SOAP12FaultInfo createSOAP12FaultInfo(Throwable e, String role, String node, Object detail) {
+        SOAPFaultException soapFaultException = null;
         FaultCode code = null;
         FaultReason reason = null;
         String faultRole = null;
         String faultNode = null;
         Throwable cause = e.getCause();
-        if (e instanceof SOAP12FaultException) {
-            soapFaultException = (SOAP12FaultException)e;
-        } else if (cause != null && cause instanceof SOAP12FaultException) {
-            soapFaultException = (SOAP12FaultException)e.getCause();
+        if (e instanceof SOAPFaultException) {
+            soapFaultException = (SOAPFaultException)e;
+        } else if (cause != null && cause instanceof SOAPFaultException) {
+            soapFaultException = (SOAPFaultException)e.getCause();
         }
         if (soapFaultException != null) {
-            code = soapFaultException.getCode();
-            reason = soapFaultException.getReason();
-            faultRole = soapFaultException.getRole();
+            SOAPFault soapFault =  soapFaultException.getFault();
+            code = new FaultCode(FaultCodeEnum.get(soapFault.getFaultCodeAsQName()), (FaultSubcode) null);
+            reason = new FaultReason(new FaultReasonText(soapFault.getFaultString(),
+                    soapFault.getFaultStringLocale()));
+            faultRole = soapFault.getFaultRole();
             if(faultRole == null)
                 faultRole = role;
-            faultNode = soapFaultException.getNode();
+            faultNode = soapFault.getFaultNode();
             if(faultNode == null)
                 faultNode = node;
         }
 
         if (code == null || ((code != null) && code.getValue() == null)) {
-            code = new FaultCode(FaultCodeEnum.Receiver, null);
+            code = new FaultCode(FaultCodeEnum.Receiver, (FaultSubcode) null);
         }
 
         if(reason == null){
@@ -296,11 +288,11 @@ public class SOAPRuntimeModel extends RuntimeModel {
                 faultString = e.toString();
             }
 
-            reason = new FaultReason(new FaultReasonText("en", faultString));
+            reason = new FaultReason(new FaultReasonText(faultString, Locale.getDefault()));
         }
 
-        if ((detail == null || ((detail != null) && detail.isEmpty())) && soapFaultException != null) {
-            detail = soapFaultException.getDetail();
+        if ((detail == null) && (soapFaultException != null)) {
+            detail = soapFaultException.getFault().getDetail();
         }
 
         return new SOAP12FaultInfo(code, reason, faultRole, faultNode, detail);
@@ -344,9 +336,9 @@ public class SOAPRuntimeModel extends RuntimeModel {
             soapFaultException = (SOAPFaultException)e.getCause();
         }
         if (soapFaultException != null) {
-            faultCode = soapFaultException.getFaultCode();
-            faultString = soapFaultException.getFaultString();
-            faultActor = soapFaultException.getFaultActor();
+            faultCode = soapFaultException.getFault().getFaultCodeAsQName();
+            faultString = soapFaultException.getFault().getFaultString();
+            faultActor = soapFaultException.getFault().getFaultActor();
         }
         
         if (faultCode == null) {
@@ -363,12 +355,12 @@ public class SOAPRuntimeModel extends RuntimeModel {
         if (faultActor == null) {
             faultActor = actor;   
         }
-        
+
         if (detail == null && soapFaultException != null) {
-            detail = soapFaultException.getDetail();   
+            detail = soapFaultException.getFault().getDetail();
         }
 
-        return new SOAPFaultInfo(faultCode, faultString, faultActor, detail);
+        return new SOAPFaultInfo(faultString, faultCode, faultActor, detail, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
     }
 
 }

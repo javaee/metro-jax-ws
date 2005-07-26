@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.3 2005-07-12 21:27:44 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.4 2005-07-26 23:43:47 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -35,7 +35,9 @@ import javax.xml.transform.Source;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 import java.util.logging.Logger;
 
 
@@ -140,6 +142,22 @@ public class EndpointImpl implements Endpoint {
 
     public void setMetadata(java.util.List<Source> metadata) {
         this.metadata = metadata;
+    }
+
+    public Executor getExecutor() {
+        return null;  //TODO
+    }
+
+    public void setExecutor(Executor executor) {
+        //ToDO
+    }
+
+    public Map<String, Object> getProperties() {
+        return null;  //TODO
+    }
+
+    public void setProperties(Map<String, Object> map) {
+        //TODO
     }
 
     public List<Handler> getHandlerChain() {

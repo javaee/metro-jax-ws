@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.2 2005-07-18 16:52:04 kohlert Exp $
+ * $Id: SOAPBindingImpl.java,v 1.3 2005-07-26 23:43:40 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -9,10 +9,13 @@ package com.sun.xml.ws.binding.soap;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import com.sun.xml.ws.util.SOAPUtil;
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.MessageFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -113,6 +116,15 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
      */
     public void setMTOMEnabled(boolean b) {
         this.enableMtom = b;
+    }
+
+    public SOAPFactory getSOAPFactory() {
+        return SOAPUtil.getSOAPFactory(getBindingId());
+    }
+
+
+    public MessageFactory getMessageFactory() {
+        return SOAPUtil.getMessageFactory(getBindingId());
     }
 
     // handler chain caller only used on client side

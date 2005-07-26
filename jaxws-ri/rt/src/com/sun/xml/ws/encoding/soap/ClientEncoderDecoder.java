@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.9 2005-07-18 16:13:46 bbissett Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.10 2005-07-26 23:43:42 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.namespace.QName;
+import javax.xml.soap.Detail;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -28,7 +29,6 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
-import com.sun.xml.ws.encoding.soap.message.SOAP12FaultException;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
@@ -63,10 +63,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             SOAPFaultInfo sfi = (SOAPFaultInfo)bodyValue;
             Object detail = sfi.getDetail();
             if(detail == null || detail instanceof javax.xml.soap.Detail) {
-                javax.xml.soap.Detail sfeDetail = null;
-                if(detail != null)
-                    sfeDetail = (javax.xml.soap.Detail)detail;
-                SOAPFaultException sfe = new SOAPFaultException(sfi.getCode(), sfi.getString(), sfi.getActor(), sfeDetail);
+                SOAPFaultException sfe = new SOAPFaultException(sfi.getSOAPFault());
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
                 mi.setResponse(sfe);
                 return;
@@ -81,24 +78,19 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
 
         if(bodyValue instanceof SOAP12FaultInfo){
             SOAP12FaultInfo sfi = (SOAP12FaultInfo)bodyValue;
-            List details = sfi.getDetail();
-            Object detail = null;
-            if(details.size() > 0)
-                detail = details.get(0);
+            Object detail = sfi.getDetail();
             if(detail == null || detail instanceof javax.xml.soap.Detail) {
                 javax.xml.soap.Detail sfeDetail = null;
                 if(detail != null)
                     sfeDetail = (javax.xml.soap.Detail)detail;
                 String reason = null;
-                FaultReasonText[] frt = sfi.getReasons().getFaultReasonTexts();
+                List<FaultReasonText> frt = sfi.getReasons().getFaultReasonTexts();
 
                 //for now we pickup onkly the first Reason Text
-                if(frt != null && frt.length > 0)
-                    reason = frt[0].getValue();
+                if(frt != null && !frt.isEmpty())
+                    reason = frt.get(0).getValue();
 
-                SOAP12FaultException sfe = new SOAP12FaultException(reason,
-                    sfi.getCode(), sfi.getReasons(), sfi.getNode(),
-                    sfi.getRole(), sfi.getDetail());
+                SOAPFaultException sfe = new SOAPFaultException(sfi.getSOAPFault());
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
                 mi.setResponse(sfe);
                 return;
@@ -106,10 +98,10 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             JAXBBridgeInfo bi = (JAXBBridgeInfo)detail;
             CheckedException ce = jm.getCheckedException(bi.getType());
             String reason = null;
-            FaultReasonText[] frt = sfi.getReasons().getFaultReasonTexts();
+            List<FaultReasonText> frt = sfi.getReasons().getFaultReasonTexts();
             //for now we pickup onkly the first Reason Text
-            if(frt != null && frt.length > 0)
-                reason = frt[0].getValue();
+            if(frt != null && !frt.isEmpty())
+                reason = frt.get(0).getValue();
             Exception ex = createCheckedException(reason, ce, bi.getValue());
             mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
             mi.setResponse(ex);

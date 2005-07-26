@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.16 2005-07-23 04:10:03 kohlert Exp $
+ * $Id: SOAPDecoder.java,v 1.17 2005-07-26 23:43:42 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -32,6 +32,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 
 import static javax.xml.stream.XMLStreamReader.*;
 
@@ -40,6 +41,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -97,7 +99,7 @@ public abstract class SOAPDecoder implements Decoder {
      * @param soapMessage
      * @param internalMessage
      * @param messageInfo
-     *
+     * @return
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
             InternalMessage internalMessage, MessageInfo messageInfo) {
@@ -133,6 +135,11 @@ public abstract class SOAPDecoder implements Decoder {
     protected QName getFaultTag(){
         return SOAPConstants.QNAME_SOAP_FAULT;
     }
+
+    protected QName getFaultDetailTag(){
+        return SOAPConstants.QNAME_SOAP_FAULT_DETAIL;
+    }
+
 
     protected void skipBody(XMLStreamReader reader) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
@@ -235,15 +242,12 @@ public abstract class SOAPDecoder implements Decoder {
         decodeDispatchMethod(reader, response, messageInfo);
         if (reader.getEventType() == START_ELEMENT) {
             QName name = reader.getName(); // Operation name
-            if(name.getNamespaceURI().equals(SOAPNamespaceConstants.ENVELOPE) &&
+            if(name.getNamespaceURI().equals(getEnvelopeTag().getNamespaceURI()) &&
                     name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)){
                 SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
                 BodyBlock responseBody = new BodyBlock(soapFaultInfo);
                 response.setBody(responseBody);
-            }else if(name.getNamespaceURI().equals(SOAP12NamespaceConstants.ENVELOPE) &&
-                    name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)){
-                decodeFault(reader, response, messageInfo);
-            } else {
+            }else {
                 Object decoderInfo = rtCtxt.getDecoderInfo(name);
                 if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                     JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo)decoderInfo;
@@ -487,11 +491,9 @@ public abstract class SOAPDecoder implements Decoder {
                         logger.finest("Element="+qName+" targeted at="+role);
                         if (understoodHeaders == null || !understoodHeaders.contains(qName)) {
                             logger.finest("Element not understood="+qName);
-                            throw new SOAPFaultException(
-                                    SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
-                                    MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
-                                    role,
-                                    null);
+                            SOAPFault sf = SOAPUtil.createSOAPFault(MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
+                                    SOAPConstants.FAULT_CODE_MUST_UNDERSTAND, role, null, SOAPBinding.SOAP11HTTP_BINDING);
+                            throw new SOAPFaultException(sf);
                         }
                     }
                 }
@@ -510,7 +512,7 @@ public abstract class SOAPDecoder implements Decoder {
      * @throws ServerRtException using this any known error is thrown
      */
     private void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(faultCode, faultString, null, null);
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
     }
 
     private final static String DUPLICATE_HEADER =

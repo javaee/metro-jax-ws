@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.6 2005-07-25 15:58:52 kwalsh Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.7 2005-07-26 23:43:47 vivekp Exp $
  */
 
 /*
@@ -23,6 +23,7 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -109,12 +110,15 @@ public class SOAPConnectionUtil {
         //con.write(buf);
     }
 
-    public static void sendResponseError(WSConnection con) {
+    public static void sendResponseError(WSConnection con, String bindingId) {
         try {
-            SOAPMessage message = SOAPUtil.createMessage();
+            SOAPMessage message = SOAPUtil.createMessage(bindingId);
             ByteArrayOutputStream bufferedStream = new ByteArrayOutputStream();
             Writer writer = new OutputStreamWriter(bufferedStream, "UTF-8");
-            writer.write(DEFAULT_SERVER_ERROR_ENVELOPE);
+            if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
+                writer.write(DEFAULT_SERVER_ERROR_SOAP12_ENVELOPE);
+            else
+                writer.write(DEFAULT_SERVER_ERROR_ENVELOPE);
             writer.close();
             byte[] data = bufferedStream.toByteArray();
             message.getSOAPPart().setContent(new StreamSource(new ByteInputStream(data, data.length)));
@@ -148,6 +152,18 @@ public class SOAPConnectionUtil {
         + "<env:Fault>"
         + "<faultcode>env:Server</faultcode>"
         + "<faultstring>Internal server error</faultstring>"
+        + "</env:Fault>"
+        + "</env:Body>"
+        + "</env:Envelope>";
+
+    private final static String DEFAULT_SERVER_ERROR_SOAP12_ENVELOPE =
+        "<?xml version='1.0' encoding='UTF-8'?>"
+        + "<env:Envelope xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\">"
+        + "<env:Body>"
+        + "<env:Fault>"
+        + "<env:Code><env:Value>env:Receiver</env:Value></env:Code>"
+        + "<env:Reason><env:Text lang=\""+ Locale.getDefault().getLanguage() +"\">"
+        + "Internal server error</env:Text></env:Reason>"
         + "</env:Fault>"
         + "</env:Body>"
         + "</env:Envelope>";

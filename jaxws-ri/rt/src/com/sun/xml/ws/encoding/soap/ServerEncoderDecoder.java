@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.6 2005-07-23 04:10:03 kohlert Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.7 2005-07-26 23:43:42 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -133,9 +133,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                     if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
                         SOAPRuntimeModel.createFaultInBody(result, null, di, im);
                     else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
-                            List details = new ArrayList();
-                            details.add(di);
-                            SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, details, im);
+                        SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, di, im);
                     }
                 }
                 return im;

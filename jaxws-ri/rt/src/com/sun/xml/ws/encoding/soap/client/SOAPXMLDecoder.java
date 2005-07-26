@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.4 2005-07-22 23:34:17 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-26 23:43:42 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -55,6 +55,8 @@ import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.xml.ws.util.SOAPUtil;
+
 import javax.xml.soap.Detail;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
@@ -344,7 +346,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         }
 
 
-        SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultcode, faultstring, faultactor, faultdetail);
+        SOAPFaultInfo soapFaultInfo = new SOAPFaultInfo(faultstring, faultcode, faultactor, faultdetail, getBindingId());
 
         // reader could be left on CHARS token rather than </fault>
         if (reader.getEventType() == CHARACTERS && reader.isWhiteSpace()) {
@@ -358,7 +360,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return soapFaultInfo;
     }
 
-    private Detail decodeFaultDetail(XMLStreamReader reader) {
+    protected Detail decodeFaultDetail(XMLStreamReader reader) {
         Detail detail = null;
 
         try {
@@ -369,9 +371,9 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
             XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
-            writer.writeStartElement(SOAPConstants.QNAME_SOAP_FAULT_DETAIL.getLocalPart());
+            writer.writeStartElement(getFaultDetailTag().getLocalPart());
             while (!((reader.getEventType() == END_ELEMENT) &&
-                reader.getName().equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL))) {
+                reader.getName().equals(getFaultDetailTag()))) {
                 if (reader.getEventType() == START_ELEMENT) {
                     QName name = reader.getName();
                     writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
@@ -434,7 +436,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      * Throws RuntimeException
      */
     protected void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(faultCode, faultString, null, null);
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
     }
 
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {

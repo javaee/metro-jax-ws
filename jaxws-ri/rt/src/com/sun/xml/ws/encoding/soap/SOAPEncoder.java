@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.16 2005-07-23 04:10:03 kohlert Exp $
+ * $Id: SOAPEncoder.java,v 1.17 2005-07-26 23:43:42 vivekp Exp $
  */
 
 /*
@@ -48,7 +48,6 @@ import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -200,7 +199,7 @@ public abstract class SOAPEncoder implements Encoder {
         }
     }
 
-    protected void serializeReader(XMLStreamReader reader, XMLStreamWriter writer) {
+    public static void serializeReader(XMLStreamReader reader, XMLStreamWriter writer) {
         try {
             int state = XMLStreamConstants.START_DOCUMENT;
             do {
@@ -225,6 +224,13 @@ public abstract class SOAPEncoder implements Encoder {
                         }
                         else {
                             assert uri != null;
+
+                            //Workaround for soapenv:Detail, Zephyr doesnt write the unknown prefix
+                            if(uri.equals(SOAP12Constants.QNAME_FAULT_DETAIL.getNamespaceURI()) &&
+                                    localName.equals("Detail")){
+                                prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
+                            }
+                            
                             // [1] When writing an element with an unseen prefix,
                             // Zephyr calls setPrefix(prefix, uri). Is this OK?
                             writer.writeStartElement(prefix, localName, uri);
@@ -378,9 +384,7 @@ public abstract class SOAPEncoder implements Encoder {
                     writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
                 } else if (value instanceof JAXBBridgeInfo) {
                     writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
-                } else if (value instanceof SOAP12FaultInfo){
-                    ((SOAP12FaultInfo)value).write(writer, messageInfo);
-                } else {
+                }else {
                     System.out.println("Unknown object in BodyBlock:"+value.getClass());
                 }
             }

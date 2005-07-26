@@ -6,9 +6,10 @@ import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import java.util.Locale;
 
 /**
- * $Id: FaultReasonText.java,v 1.1 2005-06-04 01:48:13 vivekp Exp $
+ * $Id: FaultReasonText.java,v 1.2 2005-07-26 23:43:44 vivekp Exp $
  */
 
 /**
@@ -24,16 +25,16 @@ import javax.xml.stream.XMLStreamException;
  * @author Vivek Pandey
  */
 public class FaultReasonText {
-    private String language = "en";
+    private Locale language = Locale.getDefault();
     private String value;
 
-    public FaultReasonText(String language, String value) {
+    public FaultReasonText(String value, Locale lang) {
         if(language != null && !language.equals(""))
-            this.language = language;
+            this.language = lang;
         this.value = value;
     }
 
-    public String getLanguage() {
+    public Locale getLanguage() {
         return language;
     }
 
@@ -46,7 +47,7 @@ public class FaultReasonText {
                 SOAP12Constants.QNAME_FAULT_REASON_TEXT.getLocalPart(), SOAP12NamespaceConstants.ENVELOPE);
 
         //for now we only generate "en" language
-        writer.writeAttribute("xml", SOAP12NamespaceConstants.XML_NS, "lang", language);
+        writer.writeAttribute("xml", SOAP12NamespaceConstants.XML_NS, "lang", language.getLanguage());
         writer.writeCharacters(value);
         writer.writeEndElement();
     }

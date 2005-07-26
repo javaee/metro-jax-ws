@@ -7,9 +7,10 @@ import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import java.util.Iterator;
 
 /**
- * $Id: FaultSubcode.java,v 1.1 2005-06-04 01:48:13 vivekp Exp $
+ * $Id: FaultSubcode.java,v 1.2 2005-07-26 23:43:44 vivekp Exp $
  */
 
 /**
@@ -42,11 +43,23 @@ public class FaultSubcode {
         this.subcode = subcode;
     }
 
+    public FaultSubcode(QName value, Iterator<QName> subcodes) {
+        this.value = value;
+        if(subcodes.hasNext()){
+            subcode = new FaultSubcode(subcodes.next(), subcodes);
+        }
+    }
+
     public QName getValue() {
         return value;
     }
 
     public FaultSubcode getSubcode() {
+        return subcode;
+    }
+
+    public FaultSubcode setSubCode(FaultSubcode sc){
+        this.subcode = sc;
         return subcode;
     }
 

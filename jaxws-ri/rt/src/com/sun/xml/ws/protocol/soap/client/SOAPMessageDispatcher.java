@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.13 2005-07-25 23:00:12 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.14 2005-07-26 23:43:45 vivekp Exp $
  */
 
 /*
@@ -656,9 +656,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         jbe = new JAXBException(soapFaultInfo.getString());
                         // do I need to put this in a jaxws exception
                     }
-                    SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getCode(),
-                        soapFaultInfo.getString(), soapFaultInfo.getActor(),
-                        (Detail) soapFaultInfo.getDetail());
+                    SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
                     if (jbe != null)
                         sfe.initCause(jbe);
                     messageInfo.setResponse((SOAPFaultException)sfe);

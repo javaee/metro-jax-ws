@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.9 2005-07-21 19:45:14 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.10 2005-07-26 23:43:41 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -80,8 +80,6 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      * @return The response to the operation invocation. The object is
      *         either an instance of <code>javax.xml.transform.Source</code>
      *         or a JAXB object.
-     * @throws java.rmi.RemoteException If a fault occurs during communication with
-     *                                  the service
      * @throws javax.xml.ws.WebServiceException
      *                                  If there is any error in the configuration of
      *                                  the <code>Dispatch</code> instance
@@ -289,8 +287,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                         jbe = new JAXBException(soapFaultInfo.getString());
                         //do I need to put this in a webservice exception
                     }
-                    SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getCode(), soapFaultInfo.getString(),
-                        soapFaultInfo.getActor(), (Detail) soapFaultInfo.getDetail());
+                    SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
                     sfe.initCause(jbe);
                     throw sfe;
                 } else if (response instanceof WebServiceException)

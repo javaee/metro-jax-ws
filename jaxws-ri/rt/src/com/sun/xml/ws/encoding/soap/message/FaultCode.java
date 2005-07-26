@@ -6,9 +6,11 @@ import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.namespace.QName;
+import java.util.Iterator;
 
 /**
- * $Id: FaultCode.java,v 1.1 2005-06-04 01:48:13 vivekp Exp $
+ * $Id: FaultCode.java,v 1.2 2005-07-26 23:43:43 vivekp Exp $
  */
 
 /**
@@ -38,6 +40,13 @@ public class FaultCode {
     public FaultCode(FaultCodeEnum value, FaultSubcode subcode) {
         this.value = value;
         this.subcode = subcode;
+    }
+
+    public FaultCode(FaultCodeEnum value, Iterator<QName> subcodes) {
+        this.value = value;
+        if(subcodes.hasNext()){
+            subcode = new FaultSubcode(subcodes.next(), subcodes);
+        }
     }
 
     public FaultCodeEnum getValue() {

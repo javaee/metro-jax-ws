@@ -9,9 +9,10 @@ import javax.xml.stream.XMLStreamException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Arrays;
 
 /**
- * $Id: FaultReason.java,v 1.1 2005-06-04 01:48:13 vivekp Exp $
+ * $Id: FaultReason.java,v 1.2 2005-07-26 23:43:44 vivekp Exp $
  */
 
 /**
@@ -28,17 +29,18 @@ import java.util.Collections;
  * @author Vivek Pandey
  */
 public class FaultReason {
-    private FaultReasonText[] texts;
+    private List<FaultReasonText> texts;
 
     public FaultReason(FaultReasonText... texts) {
-        this.texts = texts;
+        assert(texts == null);
+        this.texts = Arrays.asList(texts);
     }
 
     public FaultReason(List<FaultReasonText> textList) {
-        texts = textList.toArray(texts);
+        texts = textList;
     }
 
-    public FaultReasonText[] getFaultReasonTexts(){
+    public List<FaultReasonText> getFaultReasonTexts(){
         return texts;
     }
 

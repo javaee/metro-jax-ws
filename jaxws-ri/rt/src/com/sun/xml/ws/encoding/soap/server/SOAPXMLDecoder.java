@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.2 2005-07-23 04:10:07 kohlert Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.3 2005-07-26 23:43:45 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamReader;
@@ -26,6 +27,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.server.*;
 
 
@@ -118,7 +120,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      * @throws ServerRtException using this any known error is thrown
      */
     private void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(faultCode, faultString, null, null);
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
     }
 
     public Set<String> getRequiredRoles() {

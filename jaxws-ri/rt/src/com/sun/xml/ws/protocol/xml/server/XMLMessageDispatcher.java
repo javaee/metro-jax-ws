@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.2 2005-07-25 18:28:24 jitu Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.3 2005-07-26 23:43:46 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -168,10 +168,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             if (messageInfo.getMethod() == null) {
                 messageInfo.setResponseType(
                     MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
-                SOAPFaultInfo faultInfo = new SOAPFaultInfo(
-                    SOAPConstants.FAULT_CODE_SERVER,
-                    "Cannot find dispatch method", null, null);
-                messageInfo.setResponse(faultInfo);
+//                SOAPFaultInfo faultInfo = new SOAPFaultInfo(
+//                    "Cannot find dispatch method",
+//                    SOAPConstants.FAULT_CODE_SERVER,
+//                    null, null);
+//                messageInfo.setResponse(faultInfo);
             } else {
                 context.put(MessageContext.WSDL_OPERATION,
                     messageInfo.getMetaData("METHOD_QNAME"));

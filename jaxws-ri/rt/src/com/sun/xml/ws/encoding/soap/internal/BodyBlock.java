@@ -1,5 +1,5 @@
 /*
- * $Id: BodyBlock.java,v 1.4 2005-07-18 16:52:15 kohlert Exp $
+ * $Id: BodyBlock.java,v 1.5 2005-07-26 23:43:43 vivekp Exp $
  */
 
 /*
@@ -42,11 +42,7 @@ public class BodyBlock {
     
     public BodyBlock(SOAPFaultInfo faultInfo) {
     	setFaultInfo(faultInfo);
-    }
-
-    public BodyBlock(SOAP12FaultInfo faultInfo) {
-    	value = faultInfo;
-    }
+    }    
 
     public BodyBlock(RpcLitPayload rpcLoad) {
         this.value = rpcLoad;
