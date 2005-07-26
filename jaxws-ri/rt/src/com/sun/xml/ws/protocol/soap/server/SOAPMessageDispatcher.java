@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.4 2005-07-22 23:04:29 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.5 2005-07-26 16:07:54 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -90,7 +90,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         messageInfo, context, true);
                 //peekOneWay = checkHeadersPeekBody(messageInfo, context);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.FINE,
+                    "exception caught in SOAPMessageDispatcher", e);
                 skipEndpoint = true;
                 InternalMessage internalMessage =
                     SOAPRuntimeModel.createFaultInBody(e, null, null, null);
