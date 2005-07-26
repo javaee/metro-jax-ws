@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.4 2005-07-26 00:41:49 jitu Exp $
+ * $Id: XMLMessage.java,v 1.5 2005-07-26 18:54:46 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -22,6 +22,10 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 
 /**
  *
@@ -307,24 +311,14 @@ public class XMLMessage {
     }
 
 
-    public void writeTo(OutputStream out) throws MessagingException, IOException {
+    public void writeTo(OutputStream out)
+    throws MessagingException, IOException, TransformerException {
         if (dataSource != null) {
             MimeMultipart multipart = new MimeMultipart(dataSource);
             multipart.writeTo(out);
         } else {
-            // Write the Source object to stream
-            if (source instanceof StreamSource) {
-                StreamSource src = (StreamSource)source;
-                InputStream is = src.getInputStream();
-                byte[] buf = new byte[1024];
-                int num = 0;
-                while ((num = is.read(buf)) != -1) {
-                    out.write(buf, 0, num);
-                }
-            } else {
-                // TODO
-            }
-
+            Transformer transformer = XmlUtil.newTransformer();
+            transformer.transform(source, new StreamResult(out));
         }
     }
 
