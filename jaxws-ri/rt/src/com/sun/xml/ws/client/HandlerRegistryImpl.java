@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.4 2005-07-18 16:52:05 kohlert Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.5 2005-07-26 00:40:26 jitu Exp $
  */
 
 /*
@@ -210,7 +210,8 @@ public class HandlerRegistryImpl implements HandlerRegistry {
     // so far only supporting one binding
     private void checkBindingId(URI bindingId) {
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING) ||
+                bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
             return;
         }
 
