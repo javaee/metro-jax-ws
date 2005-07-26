@@ -6,86 +6,123 @@
  * <h3>JAX-WS 2.0 Server Client Sequence Diagram</h3>
  * {@SequenceDiagram
  *    pobject(U,"user");
- *    object(A,"EndpointIFInvocationHandler");
- *    object(B,"DelegateBase");
- *    object(C,"MessageDispatcher");
- *    object(D,"Encoder");
- *    object(E,"Decoder");
- *    object(F,"WSConnection");
- *    step();
-
- *    message(U,A,"invoke Web Service");
- *    active(A);
- *    message(A,A,"invoke");
- *    active(A);
- *    step();
- *    inactive(A);
+ *   object(A,"EndpointIFInvocationHandler");
+ *   object(B,"DelegateBase");
+ *   object(C,"MessageDispatcher");
+ *   object(D,"Encoder/Decoder");
+ *   object(F,"WSConnection");
+ *   step();
  *
- *    active(A);
- *    message(A,A,"implementSEIMethod");
- *    step();
- *    inactive(A);
+ *   message(U,A,"invoke Web Service");
+ *   active(A);
+ *   message(A,A,"invoke");
+ *   active(A);
+ *   step();
+ *   inactive(A);
+ *#    step();
  *
- *    message(A,B,"send");
- *    active(B);
- *    step();
- *    inactive(A);
+ *   message(A,A,"implementSEIMethod");
+ *   active(A);
+ *   step();
+ *   inactive(A);
  *
- *    message(B,B,"getContactInfo");
- *    active(B);
- *    step();
- *    inactive(B);
+ *   message(A,B,"send");
+ *   active(B);
+ *   
+ *   message(B,B,"getContactInfo");
+ *   active(B);
+ *   step();
+ *   inactive(B);
  *
- *    message(B,B,"getMessageDispatcher");
- *    active(B);
- *    step();
- *    inactive(B);
+ *   message(B,B,"getMessageDispatcher");
+ *   active(B);
+ *   step();
+ *  inactive(B);
  *
- *    message(B,C,"send");
- *    active(C);
- *    step();
- *    inactive(B);
+ *   message(B,C,"send");
+ *   active(C);
+ *#    step();
+ *#    inactive(B);
  * 
- *    active(C);
- *    message(C,C,"doSend");
- *    inactive(C);
+ *#    message(C,C,"doSend");
+ *#    active(C);
+ *#    step();
+ *#    inactive(C);
  *
- *    message(C,D,"toInternalMessage");
- *    active(D);
- *    step();
- *    inactive(C);
+ *#    active(C);
+ *   message(C,D,"toInternalMessage");
+ *   active(D);
+ *   step();
+ *   inactive(D);
  *
- *    message(C,D,"toSOAPMessage");
- *    complete(D);
+ *   message(C,D,"toSOAPMessage");
+ *   active(D);
+ *   step();
+ *   inactive(D);
  *
- *    message(C,F,"setHeaders");
- *    active(F);
- *    step();
- *    inactive(C);
+ *   message(C,C,"invokeHandlers");
+ *   active(C);
+ *   step();
+ *   inactive(C);
  *
- *    message(C,F,"getOutput");
- *    active(F);
- *    step();
- *    inactive(C);
+ *   message(C,F,"setHeaders");
+ *   active(F);
+ *   step();
+ *   inactive(F);
  *
- *    message(C,F,"writeTo");
- *    active(F);
- *    step();
- *    inactive(C);
+ *   message(C,F,"getOutput");
+ *   active(F);
+ *   step();
+ *   inactive(F);
  *
- *    active(D);
- *    message(C,C,"receive");
- *    inactive(C);
+ *   message(C,F,"writeTo");
+ *   active(F);
+ *   step();
+ *   inactive(F);
  *
- *    active(C);
- *    message(C,C,"doSendAsync");
- *    inactive(C);
+ *#    message(C,C,"receive");
+ *#    active(C);
+ *#    step();
+ *#    inactive(C);
  *
- *    active(C);
- *    message(C,C,"sendAsyncReceive");
- *    inactive(C);
+ *   message(C,F,"readSOAPMessage");
+ *   active(F);
+ *   step();
+ *   inactive(F);
  *
- *    complete(A);
+ *   message(C,C,"mustUnderstand");
+ *   active(C);
+ *   step();
+ *   inactive(C);
+ *
+ *  message(C,C,"invokeHandlers");
+ *  active(C);
+ *  step();
+ *  inactive(C);
+ *
+ *  message(C,D,"toInternalMessage");
+ *  active(D);
+ *  step();
+ *  inactive(D);
+ *
+ *#    message(C,C,"doSendAsync");
+ *#    active(C);
+ *#    step();
+ *#    inactive(C);
+ *
+ *#    message(C,C,"sendAsyncReceive");
+ *#    active(C);
+ *#    step();
+ *#    inactive(C);
+ *
+ *   rmessage(C,B,"response");
+ *   inactive(C);
+ *   
+ *   rmessage(B,A,"response");
+ *   inactive(B); 
+ * 
+ *   rmessage(A,U,"response");
+ *   complete(A);   
  * }
  *
  * <H3>Message Flow</H3>

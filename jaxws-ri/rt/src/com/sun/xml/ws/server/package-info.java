@@ -5,75 +5,104 @@
  *
  * <h3>JAX-WS 2.0 Server Runtime Sequence Diagram</h3>
  * {@SequenceDiagram
- *      pobject(U,"user");
- *      object(A,"WSConnection");
- *      object(B,"Tie");
- *      object(E,"MessageDispatcher");
- *      object(F,"EPTFactoryFactoryBase");
- *      object(G,"Endpoint");
- *      step();
- *
- *      message(U,A,"invoke Web Service");
- *      active(A);
- *      message(A,A,"getRuntimeEndpointInfo");
- *      active(A);
- *      step();
- *      inactive(A);
- *
- *      message(A,B,"handle");
- *      active(B);
- *      inactive(A);
- *
- *      message(B,B,"createMessageInfo");
- *      active(B);
- *      step();
- *      inactive(B);
- *
- *      message(B,B,"createRuntimeContext");
- *      active(B);
- *      step();
- *      inactive(B);
- *
- *
- *      message(B,F,"getEPTFactory");
- *      active(F);
- *      step();
- *      inactive(F);
- *      
- *      
- *      message(B,B,"getMessageDispatcher");
- *      active(B);
- *      step();
- *      inactive(B);
- *
- *      message(B,E,"receive");
- *      active(E);
- *      inactive(B);
- *      complete(B);
- *      step();
- *      
- *      active(E);
- *      message(E,E,"createSOAPMessage");
- *      inactive(E);
- *      step();
- *
- *      active(E);
- *      message(E,E,"createInternalMessage");
- *      inactive(E);
- *
- *      message(E,G,"invoke endpoint");
- *      active(G);
- *      step();
- *      rmessage(G,E,"response");
- *      inactive(G);
- *
- *      rmessage(E,A, "response");
- *      active(A);
- *      inactive(E);
- *
- *      rmessage(A,U, "response");
- * 
- *      complete(A);
+      pobject(U,"user");
+      object(A,"WSConnection");
+      object(B,"Tie");
+      object(E,"MessageDispatcher");
+      object(F,"EPTFactoryFactoryBase");
+      object(G,"Endpoint");
+      step();
+
+      message(U,A,"invoke Web Service");
+      active(A);
+      message(A,A,"getRuntimeEndpointInfo");
+      active(A);
+      step();
+      inactive(A);
+
+      message(A,B,"handle");
+      active(B);
+#      inactive(A);
+
+      message(B,B,"createMessageInfo");
+      active(B);
+      step();
+      inactive(B);
+
+      message(B,B,"createRuntimeContext");
+      active(B);
+      step();
+      inactive(B);
+
+      message(B,F,"getEPTFactory");
+      active(F);
+      step();
+      inactive(F);
+        
+      message(B,B,"getMessageDispatcher");
+      active(B);
+      step();
+      inactive(B);
+
+      message(B,E,"receive");
+      active(E);
+      inactive(B);
+#      complete(B);
+
+      message(E,E,"mustUnderstand");
+      active(E);
+      step();
+      inactive(E);
+
+      message(E,E,"createSOAPMessage");
+      active(E);
+      step();
+      inactive(E);
+ 
+      message(E,E,"invokeHandlers");
+      active(E);
+      step();
+      inactive(E);
+ 
+      message(E,E,"createInternalMessage");
+      active(E);
+      step();
+      inactive(E);
+
+      message(E,G,"invoke endpoint");
+      active(G);
+#      step();
+      rmessage(G,E,"response");
+#      complete(G);
+      inactive(G);
+
+      message(E,E,"createInternalMessage");
+      active(E);
+      step();
+      inactive(E);
+
+      message(E,E,"createSOAPMessage");
+      active(E);
+      step();
+      inactive(E);
+
+      message(E,E,"invokeHandlers");
+      active(E);
+      step();
+      inactive(E);
+
+#      active(A);
+      rmessage(E,A,"response");
+#      complete(E);
+#inactive(E);
+
+      active(A);
+#      complete(E);
+inactive(E);
+#      rmessage(A,U,"response");
+#      complete(E);
+#      complete(A);
+      complete(A);  
  * }
  *
  *

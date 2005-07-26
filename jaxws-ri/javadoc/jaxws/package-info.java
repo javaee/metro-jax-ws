@@ -54,9 +54,14 @@
  *  <dd>
  *    An APT AnnotationProcossor for processing JavaSource files with javax.jws.* annotations and making them web services.
  *
- *  <dt>{@link com.sun.tools.ws.spi SPI}
+ *  <dt>{@link com.sun.xml.ws.spi.runtime Runtime SPI}
  *  <dd>
- *    A part of JAX-WS that defines the contract between the JAX-WS RI and
+ *    A part of JAX-WS that defines the contract between the JAX-WS RI runtime and
+ *    Java EE.
+
+ *  <dt>{@link com.sun.tools.ws.spi Tools SPI}
+ *  <dd>
+ *    A part of JAX-WS that defines the contract between the JAX-WS RI tools and
  *    Java EE.
  *
  *  <dt>{@link com.sun.tools.xjc.api JAXB XJC-API}
