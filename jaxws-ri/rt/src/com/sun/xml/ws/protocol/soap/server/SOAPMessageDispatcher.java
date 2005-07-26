@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.5 2005-07-26 16:07:54 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.6 2005-07-26 18:30:07 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -29,6 +29,7 @@ import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
+import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.soap.SOAPBinding;
@@ -89,9 +90,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
                         messageInfo, context, true);
                 //peekOneWay = checkHeadersPeekBody(messageInfo, context);
-            } catch (Exception e) {
-                logger.log(Level.FINE,
-                    "exception caught in SOAPMessageDispatcher", e);
+            } catch (SOAPFaultException e) {
                 skipEndpoint = true;
                 InternalMessage internalMessage =
                     SOAPRuntimeModel.createFaultInBody(e, null, null, null);
