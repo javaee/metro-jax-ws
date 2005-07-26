@@ -4,8 +4,11 @@
  * <h2>JAX-WS RI Major Modules and Libraries</h2>
  * {@DotDiagram
      digraph G {
-       // 
-       APT; "Java EE";
+       // tools
+       APT; 
+       // Products
+       node [style=filled,color=lightyellow];
+       "Java EE";
  
        // libraries
        node [style=filled,color=lightblue];
@@ -29,7 +32,7 @@
      }
  * }
  * <div align=right>
- * <b>Legend:</b> blue: external library, pink: module, white: external tool
+ * <b>Legend:</b> blue: external library, pink: module, white: external tool, yellow: external products
  * </div>
  * 
  *
@@ -52,7 +55,7 @@
  *
  *  <dt>{@link com.sun.istack.ws Annotation Processor}
  *  <dd>
- *    An APT AnnotationProcossor for processing JavaSource files with javax.jws.* annotations and making them web services.
+ *    An APT AnnotationProcessor for processing Java source files with javax.jws.* annotations and making them web services.
  *
  *  <dt>{@link com.sun.xml.ws.spi.runtime Runtime SPI}
  *  <dd>
