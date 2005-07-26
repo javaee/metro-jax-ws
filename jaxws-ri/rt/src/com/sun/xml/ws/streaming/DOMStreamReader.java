@@ -1,5 +1,5 @@
 /*
- * $Id: DOMStreamReader.java,v 1.7 2005-07-26 20:11:36 spericas Exp $
+ * $Id: DOMStreamReader.java,v 1.8 2005-07-26 20:19:05 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -208,8 +208,11 @@ public class DOMStreamReader implements XMLStreamReader {
     public String getAttributeValue(String namespaceURI, String localName) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            return _namedNodeMap == null ? null :
-                   _namedNodeMap.getNamedItemNS(namespaceURI, localName).getNodeValue();
+            if (_namedNodeMap != null) {
+                Node attr = _namedNodeMap.getNamedItemNS(namespaceURI, localName);
+                return attr != null ? attr.getNodeValue() : null;
+            }
+            return null;
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeValue() called in illegal state");
     }
