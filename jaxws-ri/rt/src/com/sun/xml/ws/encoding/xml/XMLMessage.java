@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.3 2005-07-25 18:28:23 jitu Exp $
+ * $Id: XMLMessage.java,v 1.4 2005-07-26 00:41:49 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -111,6 +111,8 @@ public class XMLMessage {
     
     public XMLMessage(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.headers = new MimeHeaders();
+        headers.addHeader("Content-Type", dataSource.getContentType());
     }
     
     public Source getSource() {
@@ -211,8 +213,7 @@ public class XMLMessage {
                     log.severe("xml.content-type.mustbe.multipart");
                     throw new WebServiceException(
                         "Content-Type needs to be Multipart/Related "
-                            + "and with \"type=text/xml\" "
-                            + "or \"type=application/soap+xml\"");
+                            + "and with \"type=text/xml\" ");
                 }
             } else {
                 log.severe("xml.invalid.content-type");
