@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.9 2005-07-25 23:00:11 arungupta Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.10 2005-07-27 13:15:45 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Map;
 
 public class EndpointIFInvocationHandler
     extends EndpointIFBase
@@ -129,11 +130,15 @@ public class EndpointIFInvocationHandler
 
         messageStruct.setMethod(method);
         messageStruct.setData(parameters);
-        ((BindingProvider) _proxy).getRequestContext().put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
+        RequestContext requestContext = (RequestContext) ((BindingProvider) _proxy).getRequestContext();
+        requestContext.put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
-        messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, ((BindingProvider) _proxy).getRequestContext());
+        messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, requestContext);
 
         messageStruct.setMEP(mmep);
+        
+        // Initialize content negotiation property
+        ContentNegotiation.initialize(requestContext, messageStruct);
 
         //set mtom processing
         if (_rtcontext != null && _rtcontext.getModel() != null) {

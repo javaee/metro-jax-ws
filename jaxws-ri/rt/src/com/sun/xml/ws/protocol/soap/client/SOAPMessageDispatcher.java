@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.14 2005-07-26 23:43:45 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.15 2005-07-27 13:15:48 spericas Exp $
  */
 
 /*
@@ -62,17 +62,7 @@ import java.util.concurrent.FutureTask;
 
 import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
 import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_TYPE_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
-import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_CONTENT_TYPE_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
-import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.client.ContextMap;
@@ -164,6 +154,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerResult = systemHandlerDelegate.processRequest((com.sun.xml.ws.spi.runtime.SOAPMessageContext)
                     new SOAPMessageContextImpl(new HandlerContext(messageInfo, im, sm)));
             }
+            
+            // Setting encoder here is necessary for calls to getBindingId()
+            messageInfo.setEncoder(encoder);
             Map<String, Object> context = processMetadata(messageInfo, sm);
 
             // set the MIME headers on connection headers
@@ -211,14 +204,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         Map<String, Object> messageContext = new HashMap<String, Object>();
         List<String> header = new ArrayList<String>();
 
-        ContextMap properties = (ContextMap) messageInfo
-            .getMetaData(JAXWS_CONTEXT_PROPERTY);
+        ContextMap properties = (ContextMap) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
 
         if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
             messageContext.put(ONE_WAY_OPERATION, "true");
 
-        boolean acceptPropertySet = false;
-        boolean encodingPropertySet = false;
         // process the properties
         if (properties != null) {
             for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
@@ -227,37 +217,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // consume PEPT-specific properties
                 if (propName.equals(ClientTransportFactory.class.getName())) {
                     messageContext.put(CLIENT_TRANSPORT_FACTORY, (ClientTransportFactory) properties.get(propName));
-                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
+                } 
+                else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
                     Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
                     if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
                         Object cookieJar = properties.get(HTTP_COOKIE_JAR);
                         if (cookieJar != null)
                             messageContext.put(HTTP_COOKIE_JAR, cookieJar);
                     }
-//                } else if (propName.equals(XMLFAST_ENCODING_PROPERTY)) {
-//                    encodingPropertySet = true;
-//                    String encoding = (String) properties.get(XMLFAST_ENCODING_PROPERTY);
-//                    if (encoding != null) {
-//                        if (encoding.equals(FAST_ENCODING_VALUE)) {
-//                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
-//                        } else {
-//                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType(messageInfo));
-//                        }
-//                    } else { // default is XML encoding
-//                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    }
-//                } else if (propName.equals(ACCEPT_ENCODING_PROPERTY)) {
-//                    acceptPropertySet = true;
-//                    String accept = (String) properties.get(ACCEPT_ENCODING_PROPERTY);
-//                    if (accept != null) {
-//                        if (accept.equals(FAST_ENCODING_VALUE))
-//                            mimeHeaders.addHeader(ACCEPT_PROPERTY, FAST_ACCEPT_VALUE);
-//                        else
-//                            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    } else { // default is XML encoding
-//                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    }
-                } else if (propName.equals(USERNAME_PROPERTY)) {
+                }
+                else if (propName.equals(USERNAME_PROPERTY)) {
                     String credentials = (String) properties.get(USERNAME_PROPERTY);
                     if (credentials != null) {
                         credentials += ":";
@@ -272,28 +241,27 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         }
                         soapMessage.getMimeHeaders().addHeader("Authorization", "Basic " + credentials);
                     }
-                } else {
+                } 
+                else {
                     messageContext.put(propName, properties.get(propName));
                 }
             }
         }
 
-        // default Content-Type is XML encoding: MIME header
-//        if (!encodingPropertySet) {
-//            soapMessage.getMimeHeaders().addHeader(XML_CONTENT_TYPE_VALUE, CONTENT_TYPE_PROPERTY);
-//        }
-
-        // default Accept is XML encoding: MIME header
-        if (!acceptPropertySet) {
-            header.clear();
-            if (getBindingId(messageInfo).equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-                soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, SOAP12_XML_ACCEPT_VALUE);
-            } else {
-                soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-            }
+        // Set accept header depending on content negotiation property
+        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);        
+        
+        String bindingId = getBindingId(messageInfo);
+        if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+                contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
+        } 
+        else {
+            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+                contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
 
-        messageContext.put(BINDING_ID_PROPERTY, getBindingId(messageInfo));
+        messageContext.put(BINDING_ID_PROPERTY, bindingId);
 
         // SOAPAction: MIME header
         RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData(JAXWS_RUNTIME_CONTEXT);

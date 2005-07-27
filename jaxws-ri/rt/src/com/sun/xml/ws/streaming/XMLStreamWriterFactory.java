@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterFactory.java,v 1.6 2005-07-18 19:06:11 spericas Exp $
+ * $Id: XMLStreamWriterFactory.java,v 1.7 2005-07-27 13:15:51 spericas Exp $
  */
 
 /*
@@ -36,6 +36,11 @@ public class XMLStreamWriterFactory {
     static Constructor fiStAXDocumentSerializer_new;
     
     /**
+     * FI <code>StAXDocumentSerializer.reset()</code> method via reflection.
+     */
+    static Method fiStAXDocumentSerializer_reset;
+    
+    /**
      * FI <code>StAXDocumentSerializer.setOutputStream()</code> method via reflection.
      */
     static Method fiStAXDocumentSerializer_setOutputStream;
@@ -58,7 +63,7 @@ public class XMLStreamWriterFactory {
         try {
             Class clazz =
                 Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer");
-            fiStAXDocumentSerializer_new = clazz.getConstructor((Class) null);
+            fiStAXDocumentSerializer_new = clazz.getConstructor();
             fiStAXDocumentSerializer_setOutputStream =
                 clazz.getMethod("setOutputStream", java.io.OutputStream.class);
             fiStAXDocumentSerializer_setEncoding =
@@ -120,9 +125,8 @@ public class XMLStreamWriterFactory {
             Object sds = fiStreamWriter.get();
             if (sds == null) {
                 // Do not use StAX pluggable layer for FI
-                fiStreamWriter.set(sds = fiStAXDocumentSerializer_new.newInstance((Class) null));
-            } 
-            
+                fiStreamWriter.set(sds = fiStAXDocumentSerializer_new.newInstance());
+            }            
             fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
             fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
             return (XMLStreamWriter) sds;

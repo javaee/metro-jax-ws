@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.6 2005-07-20 20:28:22 kwalsh Exp $
+ * $Id: ContextMap.java,v 1.7 2005-07-27 13:15:45 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -75,7 +75,6 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
         temp.add(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
         //implementation specific
-        temp.add(BindingProviderProperties.XMLFAST_ENCODING_PROPERTY);
         temp.add(BindingProviderProperties.ACCEPT_ENCODING_PROPERTY);
         temp.add(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
         //used to get stub in runtime for handler chain

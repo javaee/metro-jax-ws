@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.10 2005-07-26 23:43:41 vivekp Exp $
+ * $Id: DispatchBase.java,v 1.11 2005-07-27 13:15:46 spericas Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -376,6 +376,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
             messageStruct.setData(new Object[]{msg});
             setMetadata(getRequestContext(), msg, messageStruct);
+            
+            // Initialize content negotiation property
+            ContentNegotiation.initialize(getRequestContext(), messageStruct);
 
         } else {
             throw new WebServiceException("No Message to Send to web service");

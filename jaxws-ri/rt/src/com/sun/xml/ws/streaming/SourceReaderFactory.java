@@ -1,5 +1,5 @@
 /**
- * $Id: SourceReaderFactory.java,v 1.4 2005-07-18 19:06:10 spericas Exp $
+ * $Id: SourceReaderFactory.java,v 1.5 2005-07-27 13:15:51 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -46,7 +46,7 @@ public class SourceReaderFactory {
             fastInfosetSourceClass =
                 Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
             fastInfosetSource_getInputStream = 
-                fastInfosetSourceClass.getMethod("getInputStream", (Class) null);
+                fastInfosetSourceClass.getMethod("getInputStream");
         } 
         catch (Exception e) {
             fastInfosetSourceClass = null;

@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.6 2005-07-21 19:45:14 kwalsh Exp $
+ * $Id: DispatchDelegate.java,v 1.7 2005-07-27 13:15:46 spericas Exp $
  */
 
 /*
@@ -94,28 +94,10 @@ public class DispatchDelegate extends DelegateBase {
         return contactInfo;
     }
  */
-    //TODO: kw-map
-
-     private boolean isFastEncoding(RequestContext requestContext) {
-         //fast can only be used with jaxb objects
-         if (requestContext.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY) == null)
-             return false;
-
-         String xmlFastEncoding =
-                 (String) requestContext.get(BindingProviderProperties.XMLFAST_ENCODING_PROPERTY);
-         String acceptEncoding =
-                 (String) requestContext.get(BindingProviderProperties.ACCEPT_ENCODING_PROPERTY);
-         return xmlFastEncoding != null && BindingProviderProperties.FAST_ENCODING_VALUE.equalsIgnoreCase(xmlFastEncoding) &&
-                 (acceptEncoding != null && BindingProviderProperties.FAST_ENCODING_VALUE.equalsIgnoreCase(acceptEncoding));
-
-     }
 
      private void setDefaultEncoding(RequestContext requestContext) {
-         requestContext.put(BindingProviderProperties.XMLFAST_ENCODING_PROPERTY,
-                 BindingProviderProperties.XML_ENCODING_VALUE);
          requestContext.put(BindingProviderProperties.ACCEPT_ENCODING_PROPERTY,
                  BindingProviderProperties.XML_ENCODING_VALUE);
-
      }
 
 }

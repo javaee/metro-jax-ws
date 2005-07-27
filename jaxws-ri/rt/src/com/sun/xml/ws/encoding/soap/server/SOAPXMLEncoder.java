@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.2 2005-07-23 04:10:07 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-27 13:15:47 spericas Exp $
  */
 
 /*
@@ -37,6 +37,8 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import com.sun.xml.ws.server.*;
 
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
+
 /**
  * @author WS Development Team
  */
@@ -55,12 +57,21 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         try {
             setAttachmentsMap(messageInfo, response);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+
+            // Create writer based on content negotiation property
+            writer = 
+                (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") ?
+                    XMLStreamWriterFactory.createFIStreamWriter(baos) :
+                    XMLStreamWriterFactory.createXMLStreamWriter(baos);
+            
+            writer.writeStartDocument();
             startEnvelope(writer);
             writeHeaders(writer, response, messageInfo);
             writeBody(writer, response, messageInfo);
             endEnvelope(writer);
-            writer.flush();
+            writer.writeEndDocument();
+            writer.close();
+            
             byte[] buf = baos.toByteArray();
             ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
             MimeHeaders mh = new MimeHeaders();
@@ -73,7 +84,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         } finally {
             if (writer != null) {
                 try {
-                    writer.writeEndDocument();                    
                     writer.close();
                 }
                 catch (XMLStreamException e) {
@@ -82,18 +92,32 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }
         }
     }
+    
+    /**
+     * If both FI and XOP are enabled, use MIME type:
+     *
+     *   application/xop+xml;type="application/fastinfoset"
+     *
+     * until we figure out if this mode will be supported or not.
+     */
+    protected String getContentType(MessageInfo messageInfo) {
+        String contentNegotiation = (String)
+            messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
 
-    protected String getContentType(MessageInfo messageInfo){
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if(rtc != null){
-            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
-            if(bc != null){
-                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
-                if(am.isXopped())
-                    return "application/xop+xml;type=\"text/xml\"";
-                }
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
+                if (am.isXopped()) {
+                    return contentNegotiation == "optimistic" ? 
+                           XOP_SOAP11_FI_TYPE_VALUE : XOP_SOAP11_XML_TYPE_VALUE;
+                }                
+            }
         }
-        return "text/xml";
+        
+        return (contentNegotiation == "optimistic") ? 
+            FAST_INFOSET_TYPE_SOAP11 : XML_CONTENT_TYPE_VALUE;
     }
 
     /*

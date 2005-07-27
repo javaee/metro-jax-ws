@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.4 2005-07-18 19:06:11 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.5 2005-07-27 13:15:51 spericas Exp $
  */
 
 /*
@@ -38,6 +38,11 @@ public class XMLStreamReaderFactory {
     static Constructor fiStAXDocumentParser_new;
     
     /**
+     * FI <code>StAXDocumentParser.reset()</code> method via reflection.
+     */
+    static Method fiStAXDocumentParser_reset;
+    
+    /**
      * FI <code>StAXDocumentParser.setInputStream()</code> method via reflection.
      */
     static Method fiStAXDocumentParser_setInputStream;
@@ -56,7 +61,7 @@ public class XMLStreamReaderFactory {
         try {
             Class clazz =
                 Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
-            fiStAXDocumentParser_new = clazz.getConstructor((Class) null);
+            fiStAXDocumentParser_new = clazz.getConstructor();
             fiStAXDocumentParser_setInputStream =
                 clazz.getMethod("setInputStream", java.io.InputStream.class);
         } 
@@ -130,7 +135,7 @@ public class XMLStreamReaderFactory {
             Object sdp = fiStreamReader.get();
             if (sdp == null) {
                 // Do not use StAX pluggable layer for FI
-                fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance((Class) null));
+                fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance());
             } 
             fiStAXDocumentParser_setInputStream.invoke(sdp, in);
             return (XMLStreamReader) sdp;

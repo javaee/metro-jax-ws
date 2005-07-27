@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.7 2005-07-26 23:43:46 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-27 13:15:49 spericas Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -42,6 +42,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
+import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
@@ -73,6 +74,17 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 return;
             }
 
+            // Content negotiation logic (TODO: remove dep with SAAJ RI)
+            try {
+                // If FI is accepted by client, set property to optimistic
+                if (((com.sun.xml.messaging.saaj.soap.MessageImpl) soapMessage).acceptFastInfoset()) {
+                    messageInfo.setMetaData(CONTENT_NEGOTIATION_PROPERTY, "optimistic");
+                }                
+            }
+            catch (ClassCastException e) {
+                // Content negotiation fails
+            }
+            
             HandlerContext context = new HandlerContext(messageInfo, null,
                 soapMessage);
             updateContextPropertyBag(messageInfo, context);

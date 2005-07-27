@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.3 2005-07-26 23:43:44 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.4 2005-07-27 13:15:47 spericas Exp $
  */
 
 /*
@@ -33,6 +33,8 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.streaming.DOMStreamReader;
+
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     /*
@@ -90,22 +92,32 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             return;
         ((SOAP12FaultInfo)faultInfo).write(writer, messageInfo);
     }
-
-    /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.server.SOAPXMLEncoder#getContentType()
+    
+    /**
+     * If both FI and XOP are enabled, use MIME type:
+     *
+     *   application/xop+xml;type="application/fastinfoset"
+     *
+     * until we figure out if this mode will be supported or not.
      */
-    @Override
     protected String getContentType(MessageInfo messageInfo) {
+        String contentNegotiation = (String)
+            messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
+
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if(rtc != null){
-            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
-            if(bc != null){
-                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
-                if(am.isXopped())
-                    return "application/xop+xml;type=\"application/soap+xml\"";
-                }
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
+                if (am.isXopped()) {
+                    return contentNegotiation == "optimistic" ? 
+                           XOP_SOAP12_FI_TYPE_VALUE : XOP_SOAP12_XML_TYPE_VALUE;
+                }                
+            }
         }
-        return "application/soap+xml";                
+        
+        return (contentNegotiation == "optimistic") ? 
+            FAST_INFOSET_TYPE_SOAP12 : SOAP12_XML_CONTENT_TYPE_VALUE;
     }
 
     /**

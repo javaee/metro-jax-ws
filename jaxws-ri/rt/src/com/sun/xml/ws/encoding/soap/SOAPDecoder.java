@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.17 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: SOAPDecoder.java,v 1.18 2005-07-27 13:15:46 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -360,6 +360,7 @@ public abstract class SOAPDecoder implements Decoder {
         boolean oneway = false;
         Source source = soapMessage.getSOAPPart().getContent();
         ByteInputStream bis = null;
+        
         if (source instanceof StreamSource) {
             StreamSource streamSource = (StreamSource) source;
             InputStream is = streamSource.getInputStream();
@@ -368,7 +369,13 @@ public abstract class SOAPDecoder implements Decoder {
             } else {
                 System.out.println("****** NOT ByteInputStream **** "+is);
             }
-        } else {
+        }
+        // Temporarily for FI (TODO: must remove static dep if this code stays)
+        else if (source instanceof org.jvnet.fastinfoset.FastInfosetSource) {
+            bis = (ByteInputStream) 
+                ((org.jvnet.fastinfoset.FastInfosetSource) source).getInputStream();
+        } 
+        else {
             System.out.println("****** NOT StreamSource **** ");
         }
 
@@ -384,6 +391,7 @@ public abstract class SOAPDecoder implements Decoder {
         if (bis != null) {
             bis.close();            // resets stream; SAAJ has whole stream
         }
+        
         return oneway;
     }
 
