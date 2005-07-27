@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.5 2005-07-26 18:54:46 jitu Exp $
+ * $Id: XMLMessage.java,v 1.6 2005-07-27 01:31:22 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -10,6 +10,7 @@ import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
+import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +27,8 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.protocol.xml.XMLMessageException;
 
 /**
  *
@@ -34,7 +37,7 @@ import javax.xml.transform.TransformerException;
 public class XMLMessage {
     
     private static final Logger log = Logger.getLogger(
-        com.sun.xml.ws.util.Constants.LoggingDomain + ".encoding.xml");
+        com.sun.xml.ws.util.Constants.LoggingDomain + ".protocol.xml");
 
     private static final int PLAIN_XML_FLAG = 1;
     private static final int MIME_MULTIPART_FLAG = 2;
@@ -53,17 +56,14 @@ public class XMLMessage {
         throws IOException {
         this.headers = headers;
         final String ct;
-        if (headers != null)
+        if (headers != null) {
             ct = getContentType(headers);
-        else {
-            log.severe("xml.null.headers");
-            throw new WebServiceException("Cannot create message: " +
-                                        "Headers can't be null");
+        } else {
+            throw new XMLMessageException("xml.null.headers");
         }
 
         if (ct == null) {
-            log.severe("xml.no.Content-Type");
-            throw new WebServiceException("Absent Content-Type");
+            throw new XMLMessageException("xml.no.Content-Type");
         }
 
         try {
@@ -72,8 +72,9 @@ public class XMLMessage {
             // In the absence of type attribute we assume it to be text/xml.
             // That would mean we're easy on accepting the message and 
             // generate the correct thing
-            if(contentType.getParameter("type") == null)
+            if(contentType.getParameter("type") == null) {
                 contentType.setParameter("type", "text/xml");
+            }
 
             int contentTypeId = identifyContentType(contentType);
 
@@ -98,12 +99,11 @@ public class XMLMessage {
                     }
                 };
             } else {
-                log.severe("xml.unknown.Content-Type");
-                throw new WebServiceException("Unrecognized Content-Type");
+                throw new XMLMessageException("xml.unknown.Content-Type");
             }
-        } catch (Throwable ex) {
-            log.severe("xml.cannot.internalize.message");
-            throw new WebServiceException("Unable to internalize message", ex);
+        } catch (Exception ex) {
+            throw new XMLMessageException("xml.cannot.internalize.message",
+                    new LocalizableExceptionAdapter(ex));
         }
     }
     
@@ -132,18 +132,17 @@ public class XMLMessage {
             ContentType ctype = new ContentType(sourcePart.getContentType());
             String baseType = ctype.getBaseType();
             if (!(isXMLType(baseType))) {
-                log.log(Level.SEVERE, 
+                throw new XMLMessageException(
                         "xml.root.part.invalid.Content-Type",
                         new Object[] {baseType});
-                throw new WebServiceException(
-                        "Bad Content-Type for Root Part : " +
-                        baseType);
             }
             return new StreamSource(sourcePart.getInputStream());
         } catch (MessagingException ex) {
-            throw new WebServiceException("Cannot return source", ex);
+            throw new XMLMessageException("xml.get.source.err",
+                    new LocalizableExceptionAdapter(ex));
         } catch (IOException ioe) {
-            throw new WebServiceException("cannot return source", ioe);
+            throw new XMLMessageException("xml.get.source.err",
+                    new LocalizableExceptionAdapter(ioe));
         }
     }
     
@@ -154,13 +153,17 @@ public class XMLMessage {
                 dataSource = null;
             }
             if (multipart != null) {
-                MimeBodyPart sourcePart = new MimeBodyPart(source.getInputStream());
+                // TODO: some more work, setting headers 
+                multipart.removeBodyPart(0);
+                MimeBodyPart sourcePart = new MimeBodyPart(
+                        source.getInputStream());
                 multipart.addBodyPart(sourcePart, 0);
             } else {
                 this.source = source;
             }
         } catch (MessagingException ex) {
-            throw new WebServiceException("Cannot set payload source", ex);
+            throw new XMLMessageException("xml.set.payload.err",
+                    new LocalizableExceptionAdapter(ex));
         }
     }
     
@@ -174,9 +177,11 @@ public class XMLMessage {
                         bos.close();
                         return new ByteArrayInputStream(bos.toByteArray());
                     } catch(MessagingException me) {
-                        throw new WebServiceException("Cannot give DataSource", me);
+                        throw new XMLMessageException("xml.get.ds.err",
+                                new LocalizableExceptionAdapter(me));
                     } catch(IOException ioe) {
-                        throw new WebServiceException("Cannot give DataSource", ioe);
+                        throw new XMLMessageException("xml.get.ds.err",
+                                new LocalizableExceptionAdapter(ioe));
                     }
                 }
 
@@ -202,8 +207,6 @@ public class XMLMessage {
      * @return PLAIN_XML_CODE for plain XML and MIME_MULTIPART_CODE for MIME multipart
      */
     private static int identifyContentType(ContentType contentType) {
-        // TBD
-        //    Is there anything else we need to verify here?
 
         String primary = contentType.getPrimaryType();
         String sub = contentType.getSubType();
@@ -214,25 +217,18 @@ public class XMLMessage {
                 if (isXMLType(type)) {
                     return MIME_MULTIPART_FLAG;
                 } else {
-                    log.severe("xml.content-type.mustbe.multipart");
-                    throw new WebServiceException(
-                        "Content-Type needs to be Multipart/Related "
-                            + "and with \"type=text/xml\" ");
+                    throw new XMLMessageException(
+                            "xml.content-type.mustbe.multipart");
                 }
             } else {
-                log.severe("xml.invalid.content-type");
-                throw new WebServiceException(
-                    "Invalid Content-Type: " + primary + "/" + sub);
+                throw new XMLMessageException("xml.invalid.content-type",
+                        new Object[] { primary+"/"+sub } );
             }
         } else if (isXMLType(primary, sub)) {
             return PLAIN_XML_FLAG;
         } else {
-            log.severe("xml.invalid.content-type");
-            throw new WebServiceException(
-                "Invalid Content-Type:"
-                    + primary
-                    + "/"
-                    + sub);
+            throw new XMLMessageException("xml.invalid.content-type",
+                    new Object[] { primary+"/"+sub } );
         }
     }
     
@@ -248,12 +244,9 @@ public class XMLMessage {
         return this.headers;
     }
 
-    final static String getContentType(MimeHeaders headers) {
+    private static final String getContentType(MimeHeaders headers) {
         String[] values = headers.getHeader("Content-Type");
-        if (values == null)
-            return null;
-        else
-            return values[0];
+        return (values == null) ? null : values[0];
     }
     
     /*
@@ -268,48 +261,13 @@ public class XMLMessage {
     }
 
     private ContentType ContentType() {
-        ContentType ct = null;
         try {
-            ct = new ContentType(getContentType());
-        } catch (Exception e) {
-            // what to do here?
+            return new ContentType(getContentType());
+        } catch (ParseException e) {
+            throw new XMLMessageException("xml.Content-Type.parse.err",
+                    new LocalizableExceptionAdapter(e));
         }
-        return ct;
     }
-
-    /*
-     * Return the MIME type string, without the parameters.
-     */
-    public String getBaseType() {
-        return ContentType().getBaseType();
-    }
-
-    public void setBaseType(String type) {
-        ContentType ct = ContentType();
-        ct.setParameter("type", type);
-        headers.setHeader("Content-Type", ct.toString());
-    }
-
-    public String getAction() {
-        return ContentType().getParameter("action");
-    }
-
-    public void setAction(String action) {
-        ContentType ct = ContentType();
-        ct.setParameter("action", action);
-        headers.setHeader("Content-Type", ct.toString());
-    }
-
-    public String getCharset() {
-        return ContentType().getParameter("charset");
-    }
-
-    public void setCharset(String charset) {
-        ContentType ct = ContentType();
-        ct.setParameter("charset", charset);
-        headers.setHeader("Content-Type", ct.toString());
-    }
-
 
     public void writeTo(OutputStream out)
     throws MessagingException, IOException, TransformerException {
