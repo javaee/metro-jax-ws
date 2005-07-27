@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.14 2005-07-26 23:43:41 vivekp Exp $
+ * $Id: WebService.java,v 1.15 2005-07-27 14:08:16 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -122,12 +122,8 @@ public class WebService
         return createEndpointIFBaseProxy(null, portInterface);
     }
 
-    public void addPort(QName qName, URI uri, String s) {
-        //TODO
-    }
-
     //todo: rename addPort :spec tbd
-    public void createPort(QName portName, URI bindingId, String endpointAddress) throws WebServiceException {
+    public void addPort(QName portName, URI bindingId, String endpointAddress) throws WebServiceException {
 
         if (!dispatchPorts.containsKey(portName)) {
             dispatchPorts.put(portName, new PortInfoBase(endpointAddress, portName, bindingId));
