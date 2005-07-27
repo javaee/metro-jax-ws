@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.4 2005-07-23 04:10:05 kohlert Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.5 2005-07-27 00:38:44 arungupta Exp $
  */
 
 /*
@@ -15,43 +15,24 @@ import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROP
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.BindingProvider;
 import javax.xml.bind.JAXBContext;
-import javax.xml.transform.Source;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.MimeHeaders;
 
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
-import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.transport.Connection;
-import com.sun.pept.presentation.MessageStruct;
 
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.client.dispatch.DispatchContext;
-import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 import java.util.logging.Logger;
-import java.util.List;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.lang.reflect.Method;
 
-
+/**
+ * @author WS Development Team
+ */
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
 
 
@@ -79,7 +60,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      * @see SOAPEncoder#startBody(XMLStreamWriter)
      */
     @Override
-        protected void startBody(XMLStreamWriter writer) {
+    protected void startBody(XMLStreamWriter writer) {
         try {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE);
@@ -92,7 +73,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
      * @see SOAPEncoder#startHeader(XMLStreamWriter)
      */
     @Override
-        protected void startHeader(XMLStreamWriter writer) {
+    protected void startHeader(XMLStreamWriter writer) {
         try {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_HEADER,

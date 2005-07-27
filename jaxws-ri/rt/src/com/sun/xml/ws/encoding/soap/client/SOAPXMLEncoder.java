@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-23 04:10:05 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.4 2005-07-27 00:38:44 arungupta Exp $
  */
 
 /*
@@ -46,7 +46,7 @@ import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 
 /**
- * @author WS RI Development Team
+ * @author WS Development Team
  */
 public class SOAPXMLEncoder extends SOAPEncoder {
     
@@ -73,6 +73,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return false;
     }
     
+    @Override
     public InternalMessage toInternalMessage (MessageInfo messageInfo) {
         InternalMessage internalMessage = new InternalMessage ();
         DispatchContext context = (DispatchContext) messageInfo.getMetaData (BindingProviderProperties.DISPATCH_CONTEXT);
@@ -106,6 +107,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return internalMessage;
     }
     
+    @Override
     public SOAPMessage toSOAPMessage (InternalMessage internalMessage,
         MessageInfo messageInfo) {
         setAttachmentsMap (messageInfo, internalMessage);

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.5 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.6 2005-07-27 00:38:44 arungupta Exp $
  */
 
 /*
@@ -10,9 +10,13 @@ package com.sun.xml.ws.encoding.soap.client;
 
 import static com.sun.pept.presentation.MessageStruct.UNCHECKED_EXCEPTION_RESPONSE;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
@@ -21,41 +25,33 @@ import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.message.*;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
 import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
+import com.sun.xml.ws.encoding.soap.message.FaultCode;
+import com.sun.xml.ws.encoding.soap.message.FaultCodeEnum;
+import com.sun.xml.ws.encoding.soap.message.FaultReason;
+import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
+import com.sun.xml.ws.encoding.soap.message.FaultSubcode;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
+import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.namespace.QName;
-import javax.xml.bind.JAXBContext;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Logger;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
+
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.WebServiceException;
-import javax.xml.soap.*;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamSource;
 
-import org.w3c.dom.Document;
-
+/**
+ * @author WS Development Team
+ */
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 
     //needs further cleanup
@@ -321,17 +317,6 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return SOAP12Constants.QNAME_SOAP_ENVELOPE;
     }
     
-//    /* (non-Javadoc)
-//     * @see com.sun.xml.rpc.rt.client.SOAPXMLDecoder#toSOAPMessage(com.sun.pept.ept.MessageInfo)
-//     */
-//    @Override
-//    public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
-//        SOAPConnection connection = (SOAPConnection) messageInfo.getConnection();
-//        SOAPMessage sm = connection.getSOAPMessage(messageInfo);
-//
-//        return sm;
-//    }
-//
     /* (non-Javadoc)
      * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getHeaderTag()
      */

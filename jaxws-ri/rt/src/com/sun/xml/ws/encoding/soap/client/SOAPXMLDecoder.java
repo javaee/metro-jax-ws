@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.5 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.6 2005-07-27 00:38:44 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -29,7 +29,6 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.streaming.*;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -46,7 +45,6 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
@@ -54,6 +52,10 @@ import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
@@ -84,12 +86,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return DispatchSerializer.getInstance();
     }
 
-
+    @Override
     public SOAPMessage toSOAPMessage(MessageInfo messageInfo) {
         WSConnection connection = (WSConnection) messageInfo.getConnection();
-        return SOAPConnectionUtil.getSOAPMessage(connection, messageInfo, getBindingId(messageInfo));
+        return SOAPConnectionUtil.getSOAPMessage(connection, messageInfo, getBindingId());
     }
 
+    @Override
     protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
         DispatchContext context = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
         if (context != null) {
@@ -125,6 +128,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             super.decodeBody(reader, response, messageInfo);
     }
 
+    @Override
     public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
 
         RuntimeContext rtContext =
@@ -173,6 +177,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return response;
     }
 
+    @Override
     public InternalMessage toInternalMessage(SOAPMessage soapMessage, MessageInfo messageInfo) {
         // TODO handle exceptions, attachments
         XMLStreamReader reader = null;
@@ -196,6 +201,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return null;
     }
 
+    @Override
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
                                              InternalMessage response, MessageInfo messageInfo) {
         // TODO handle exceptions, attachments
@@ -230,6 +236,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return SOAPBinding.SOAP11HTTP_BINDING;
     }
 
+    @Override
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
                                         MessageInfo messageInfo) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
