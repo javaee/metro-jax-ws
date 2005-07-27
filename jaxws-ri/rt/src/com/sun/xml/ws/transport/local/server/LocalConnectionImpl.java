@@ -1,5 +1,5 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.5 2005-07-19 18:10:07 arungupta Exp $
+ * $Id: LocalConnectionImpl.java,v 1.6 2005-07-27 13:13:20 spericas Exp $
  */
 
 /*
@@ -47,16 +47,13 @@ public class LocalConnectionImpl extends WSConnectionImpl {
     }
     
     public InputStream getInput () {
-        ByteArrayInputStream bis = new ByteArrayInputStream (lm.getOutput ().toByteArray ());
-        
+        ByteArrayInputStream bis = new ByteArrayInputStream (lm.getOutput ().toByteArray ());        
         return bis;
     }
     
     public OutputStream getOutput () {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-        
-        lm.setOutput (baos);
-        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream ();   
+        lm.setOutput (baos);        
         return baos;
     }
 }

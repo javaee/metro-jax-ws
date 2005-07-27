@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.3 2005-07-22 23:04:29 arungupta Exp $
+ * $Id: LocalClientTransport.java,v 1.4 2005-07-27 13:13:20 spericas Exp $
  */
 
 /*
@@ -54,18 +54,32 @@ public class LocalClientTransport extends WSConnectionImpl {
         debugStream = logStream;
     }
 
+    
     @Override
     public OutputStream getOutput() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        lm.setOutput(baos);
-
-        return lm.getOutput();
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            lm.setOutput(baos);
+            return lm.getOutput();
+        }
+        catch (Exception ex) {
+            if (ex instanceof Localizable) {
+                throw new ClientTransportException("local.client.failed",
+                        (Localizable) ex);
+            } else {
+                throw new ClientTransportException("local.client.failed",
+                        new LocalizableExceptionAdapter(ex));
+            }
+        }
     }
     
     @Override
     public void closeOutput() {
         super.closeOutput();
         WSConnection con = new LocalConnectionImpl(lm);
+        
+        // Copy headers for content negotiation
+        con.setHeaders(getHeaders());
      
         try {
             tie.handle(con, endpointInfo);
@@ -83,10 +97,10 @@ public class LocalClientTransport extends WSConnectionImpl {
     @Override
     public InputStream getInput() {
         try {
-            ByteArrayInputStream bis = new ByteArrayInputStream(lm.getOutput().toByteArray ());
-            
+            ByteArrayInputStream bis = new ByteArrayInputStream(lm.getOutput().toByteArray());
             return bis;
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) {
             if (ex instanceof Localizable) {
                 throw new ClientTransportException("local.client.failed",
                         (Localizable) ex);
