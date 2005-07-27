@@ -57,26 +57,27 @@
  * <h2>Command-line Tools</h2>
    <d1>   
  *  <dt><a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>
-     <dd>A Java SE tool and framework for processing annotations. APT will invoke a JAX-WS AnnotationProcossor for processing Java source 
- *   files with javax.jws.* annotations and making them web services.
- *   APT will compile the Java source files and generate any additional classes needed to make an javax.jws.WebService annotated
- *   class a Web service.  
+     <dd>A Java SE tool and framework for processing annotations. APT will invoke a JAX-WS AnnotationProcossor for 
+ *   processing Java source  files with javax.jws.* annotations and making them web services.
+ *   APT will compile the Java source files and generate any additional classes needed to make an javax.jws.WebService 
+ *   annotated class a Web service.  
  *
  *  <dt>{@link com.sun.tools.ws.WsGen WsGen}
- *  <dd>
- *    Tool to process a compiled javax.jws.WebService annotated class and to generate the necessary classes to make it a Web service.  
+ *  <dd>Tool to process a compiled javax.jws.WebService annotated class and to generate the necessary classes to make 
+ *  it a Web service.  
  
  *  <dt>{@link com.sun.tools.ws.ant.WsImport WsImport}
  *  <dd>
- *    Tool to import a WSDL and to generate an SEI (a javax.jws.WebService) interface that can be either implemented on the server
- *    to build a web service, or can be used on the client to invoke the web service.
+ *    Tool to import a WSDL and to generate an SEI (a javax.jws.WebService) interface that can be either implemented 
+ *    on the server to build a web service, or can be used on the client to invoke the web service.
  *  </d1>
  * <h2>Implementation Classes</h2>
  *  <d1>
       <dt>{@link com.sun.tools.ws.wscompile.CompileTool CompileTool}
- *    <dd>
- *
-      <dt>{@link com.sun.tools.ws.processor.Processor Processor}
+ *    <dd> This is the real implementation class for both WsGen and WsImport. 
+ * 
+ * 
+ * <dt>{@link com.sun.tools.ws.processor.Processor Processor}
  *    <dd>
 
  *    <dt>{@link com.sun.tools.ws.processor.model.Model Model}
