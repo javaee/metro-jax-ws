@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPBindingImpl.java,v 1.1 2005-07-25 18:28:22 jitu Exp $
+ * $Id: HTTPBindingImpl.java,v 1.2 2005-07-27 00:27:32 vivekp Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -49,11 +49,11 @@ public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
         super.setHandlerChain(chain);
     }
     
-    public void setHttpMethod(javax.xml.ws.http.HTTPBinding.HTTP_METHOD method) {
-        
-    }
-
-    public javax.xml.ws.http.HTTPBinding.HTTP_METHOD getHttpMethod() {
-        return null;
-    }
+//    public void setHttpMethod(javax.xml.ws.http.HTTPBinding.HTTP_METHOD method) {
+//
+//    }
+//
+//    public javax.xml.ws.http.HTTPBinding.HTTP_METHOD getHttpMethod() {
+//        return null;
+//    }
 }
