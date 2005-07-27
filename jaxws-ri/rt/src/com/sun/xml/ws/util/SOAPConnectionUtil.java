@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.7 2005-07-26 23:43:47 vivekp Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.8 2005-07-27 01:06:47 jitu Exp $
  */
 
 /*
@@ -14,7 +14,6 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.binding.soap.BindingImpl;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
-import com.sun.xml.ws.server.SOAPConnection;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 
@@ -36,9 +35,6 @@ import java.util.*;
 public class SOAPConnectionUtil {
 
     public static SOAPMessage getSOAPMessage(WSConnection con, MessageInfo mi, String bindingId) {
-        if (con instanceof SOAPConnection) {
-            return ((SOAPConnection) con).getSOAPMessage();
-        }
         try {
             Map<String, List<String>> headers = con.getHeaders();
             MimeHeaders mh = new MimeHeaders();
@@ -65,10 +61,6 @@ public class SOAPConnectionUtil {
     }
 
     private static void send(WSConnection con, SOAPMessage soapMessage) {
-        if (con instanceof SOAPConnection) {
-            ((SOAPConnection) con).sendResponse(soapMessage);
-            return;
-        }
         try {
             if (soapMessage.saveRequired()) {
                 soapMessage.saveChanges();
@@ -101,10 +93,6 @@ public class SOAPConnectionUtil {
     }
 
     public static void sendResponseOneway(WSConnection con) {
-        if (con instanceof SOAPConnection) {
-            ((SOAPConnection) con).sendResponseOneway();
-            return;
-        }
         ByteBuffer buf = ByteBuffer.wrap(new byte[0]);
         setStatus(con, STATUS.ONEWAY);
         //con.write(buf);
