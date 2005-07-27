@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.1 2005-07-19 18:10:04 arungupta Exp $
+ * $Id: WSConnectionImpl.java,v 1.2 2005-07-27 13:12:44 spericas Exp $
  */
 
 /*
@@ -16,7 +16,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
+
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  * Abstract class for WSConnection. All client-side and server-side
@@ -94,6 +99,82 @@ public abstract class WSConnectionImpl implements WSConnection {
 
     public int read (ByteBuffer byteBuffer) {
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Write connection headers in HTTP syntax using \r\n as a
+     * separator.
+     */
+    public void writeHeaders(OutputStream os) {
+        try {
+            byte[] newLine = "\r\n".getBytes("us-ascii");
+
+            // Write all headers ala HTTP (only first list entry serialized)
+            Map<String, List<String>> headers = getHeaders();
+            for (String header : headers.keySet()) {
+                os.write((header + ":" + 
+                    headers.get(header).get(0)).getBytes("us-ascii"));
+                os.write(newLine);
+            }
+
+            // Write empty line as in HTTP
+            os.write(newLine);
+        }
+        catch (Exception ex) {
+            throw new ClientTransportException("local.client.failed",
+                new LocalizableExceptionAdapter(ex));
+        }
+    } 
+
+    /**
+     * Read and consume connection headers in HTTP syntax using 
+     * \r\n as a separator.
+     */
+    public void readHeaders(InputStream is) {
+        try {
+            int c1, c2;
+            StringBuffer line = new StringBuffer();
+            
+            if (headers == null) {
+                headers = new HashMap<String, List<String>>();
+            }
+            else {
+                headers.clear();            
+            }
+            
+            // Read headers until finding a \r\n line
+            while ((c1 = is.read()) != -1) {         
+                if (c1 == '\r') {
+                    c2 = is.read();
+                    assert c2 != -1;
+
+                    if (c2 == '\n') {
+                        String s = line.toString();
+                        if (s.length() == 0) {
+                            break;  // found \r\n line
+                        }
+                        else {
+                            int k  = s.indexOf(':');
+                            assert k > 0;
+                            ArrayList<String> value = new ArrayList<String>();
+                            value.add(s.substring(k + 1));
+                            headers.put(s.substring(0, k), value); 
+                            line.setLength(0);      // clear line buffer
+                        }
+                    }
+                    else {
+                        line.append((char) c1).append((char) c2);   
+                    }
+                }
+                else {
+                    line.append((char) c1);
+                }                
+            }
+        }
+        catch (Exception ex) {
+            throw new ClientTransportException("local.client.failed",
+                new LocalizableExceptionAdapter(ex));            
+        }            
     }
     
     public void closeOutput() {
