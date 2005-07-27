@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.8 2005-07-27 01:06:47 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.9 2005-07-27 18:50:06 jitu Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.util;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.spi.runtime.WSConnection;

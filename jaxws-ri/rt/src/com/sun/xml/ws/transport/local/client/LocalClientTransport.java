@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.4 2005-07-27 13:13:20 spericas Exp $
+ * $Id: LocalClientTransport.java,v 1.5 2005-07-27 18:50:05 jitu Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import java.io.OutputStream;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;

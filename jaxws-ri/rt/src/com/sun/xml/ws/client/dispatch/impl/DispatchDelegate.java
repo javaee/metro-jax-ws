@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.7 2005-07-27 13:15:46 spericas Exp $
+ * $Id: DispatchDelegate.java,v 1.8 2005-07-27 18:50:02 jitu Exp $
  */
 
 /*
@@ -21,7 +21,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 
 /**
  * @author WS Development Team

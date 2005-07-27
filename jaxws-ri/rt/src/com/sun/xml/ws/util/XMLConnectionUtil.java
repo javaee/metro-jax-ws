@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.1 2005-07-23 00:21:28 jitu Exp $
+ * $Id: XMLConnectionUtil.java,v 1.2 2005-07-27 18:50:06 jitu Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.server.*;

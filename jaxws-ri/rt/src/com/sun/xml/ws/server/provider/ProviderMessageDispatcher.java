@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMessageDispatcher.java,v 1.5 2005-07-24 01:34:57 kohlert Exp $
+ * $Id: ProviderMessageDispatcher.java,v 1.6 2005-07-27 18:50:05 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -15,7 +15,7 @@ import javax.xml.transform.Source;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.handler.LogicalMessageImpl;

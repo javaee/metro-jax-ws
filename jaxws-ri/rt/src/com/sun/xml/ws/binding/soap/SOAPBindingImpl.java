@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.3 2005-07-26 23:43:40 vivekp Exp $
+ * $Id: SOAPBindingImpl.java,v 1.4 2005-07-27 18:50:00 jitu Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
+import com.sun.xml.ws.binding.BindingImpl;
 
 
 

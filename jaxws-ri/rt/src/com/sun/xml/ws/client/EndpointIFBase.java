@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.6 2005-07-23 04:09:59 kohlert Exp $
+ * $Id: EndpointIFBase.java,v 1.7 2005-07-27 18:50:01 jitu Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import java.net.URI;
 import java.util.Map;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 
 
 /**

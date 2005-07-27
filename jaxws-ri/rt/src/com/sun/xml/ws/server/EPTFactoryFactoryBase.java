@@ -1,5 +1,5 @@
 /**
- * $Id: EPTFactoryFactoryBase.java,v 1.8 2005-07-25 18:28:25 jitu Exp $
+ * $Id: EPTFactoryFactoryBase.java,v 1.9 2005-07-27 18:50:04 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,7 +23,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.server.provider.ProviderSED;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 import com.sun.xml.ws.encoding.soap.server.SOAP12XMLDecoder;
 import com.sun.xml.ws.encoding.soap.server.SOAP12XMLEncoder;

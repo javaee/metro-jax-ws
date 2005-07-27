@@ -1,11 +1,11 @@
 /*
- * $Id: BindingImpl.java,v 1.1 2005-07-14 02:01:17 arungupta Exp $
+ * $Id: BindingImpl.java,v 1.1 2005-07-27 18:49:58 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
-package com.sun.xml.ws.binding.soap;
+package com.sun.xml.ws.binding;
 
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
@@ -38,7 +38,7 @@ public abstract class BindingImpl implements
     com.sun.xml.ws.spi.runtime.Binding {
 
     // caller ignored on server side
-    HandlerChainCaller chainCaller;
+    public HandlerChainCaller chainCaller;
     List<Handler> handlers;
     private String bindingId;
     private SystemHandlerDelegate systemHandlerDelegate;

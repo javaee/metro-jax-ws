@@ -1,5 +1,5 @@
 /*
- * $Id: MessageDispatcherHelper.java,v 1.4 2005-07-18 16:52:09 kohlert Exp $
+ * $Id: MessageDispatcherHelper.java,v 1.5 2005-07-27 18:50:03 jitu Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.client.dispatch.impl.protocol;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.handler.HandlerChainCaller;

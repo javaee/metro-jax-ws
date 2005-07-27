@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.5 2005-07-26 00:40:26 jitu Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.6 2005-07-27 18:50:01 jitu Exp $
  */
 
 /*
@@ -20,7 +20,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.http.HTTPBinding;
 import java.net.URI;
 import java.util.*;
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 /**

@@ -1,5 +1,5 @@
 /**
- * $Id: InternalBindingProvider.java,v 1.4 2005-07-23 04:10:00 kohlert Exp $
+ * $Id: InternalBindingProvider.java,v 1.5 2005-07-27 18:50:01 jitu Exp $
  */
 
 /*
@@ -8,7 +8,7 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.binding.soap.BindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 
 
 /**
