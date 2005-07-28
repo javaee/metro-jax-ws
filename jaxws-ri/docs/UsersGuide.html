@@ -478,7 +478,7 @@ Service Endpoint Interface</h4>
 a service endpoint interface and value classes mapped from imported XML
 schemas.</p>
 <p>Below is a sample <code>wsimport</code> Ant target:</p>
-<pre style="margin-left: 40px;">&lt;wsimport<br>  fork="true"<br>  debug="${debug}"<br>  verbose="${verbose}"<br>  keep="${keep}"<br>  import="true"<br>  base="${build.classes.home}"<br>  wsdlFile="${server.wsdl}"&gt;<br>  &lt;classpath refid="jax-ws.classpath"/&gt;<br>  &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
+<pre style="margin-left: 40px;">&lt;wsimport<br>  fork="true"<br>  debug="${debug}"<br>  verbose="${verbose}"<br>  keep="${keep}"<br>  import="true"<br>  base="${build.classes.home}"<br>  wsdlFile="${server.wsdl}"&gt;<br> &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
 <p>Its commandline equivalent is:</p>
 <pre>wsimport.sh etc/AddNumbers.wsdl -b custom-server.xml<br></pre>
 <p>Lets look at the excerpt of <code><a
