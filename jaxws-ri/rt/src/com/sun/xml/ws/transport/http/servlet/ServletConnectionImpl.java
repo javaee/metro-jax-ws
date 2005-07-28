@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.6 2005-07-22 00:13:35 jitu Exp $
+ * $Id: ServletConnectionImpl.java,v 1.7 2005-07-28 00:24:36 jitu Exp $
  */
 
 /*
@@ -95,6 +95,8 @@ public class ServletConnectionImpl extends WSConnectionImpl {
                 return HttpURLConnection.HTTP_BAD_REQUEST;
             case INTERNAL_ERR :
                 return HttpURLConnection.HTTP_INTERNAL_ERROR;
+            case OTHER :
+                return getStatus();
         }
         return HttpURLConnection.HTTP_OK;
     }

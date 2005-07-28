@@ -1,5 +1,5 @@
 /**
- * $Id: WSConnection.java,v 1.4 2005-07-19 18:10:03 arungupta Exp $
+ * $Id: WSConnection.java,v 1.5 2005-07-28 00:24:36 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -38,7 +38,7 @@ public interface WSConnection extends Connection {
      *
      */
     enum STATUS { OK, ONEWAY, UNSUPPORTED_MEDIA, MALFORMED_XML, 
-                  INCORRECT_FORMAT, INTERNAL_ERR };
+                  INTERNAL_ERR, OTHER };
     
     /**
      * returns request headers. can we use javax.net.http.Headers ?

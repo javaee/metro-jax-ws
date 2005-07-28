@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.9 2005-07-27 18:50:06 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.10 2005-07-28 00:24:37 jitu Exp $
  */
 
 /*
@@ -78,7 +78,6 @@ public class SOAPConnectionUtil {
                 }
                 values.add(mh.getValue());
             }
-            con.setStatus(STATUS.OK);
             con.setHeaders(headers);
             soapMessage.writeTo(con.getOutput());
             con.closeOutput();
@@ -93,9 +92,9 @@ public class SOAPConnectionUtil {
     }
 
     public static void sendResponseOneway(WSConnection con) {
-        ByteBuffer buf = ByteBuffer.wrap(new byte[0]);
         setStatus(con, STATUS.ONEWAY);
-        //con.write(buf);
+        con.getOutput();
+        con.closeOutput();
     }
 
     public static void sendResponseError(WSConnection con, String bindingId) {

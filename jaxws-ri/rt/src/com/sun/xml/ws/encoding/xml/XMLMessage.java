@@ -1,11 +1,12 @@
 /*
- * $Id: XMLMessage.java,v 1.6 2005-07-27 01:31:22 jitu Exp $
+ * $Id: XMLMessage.java,v 1.7 2005-07-28 00:24:35 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 
 package com.sun.xml.ws.encoding.xml;
+import javax.xml.soap.MimeHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
@@ -16,19 +17,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.activation.DataSource;
-import javax.xml.soap.MimeHeaders;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.protocol.xml.XMLMessageException;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import javax.xml.ws.http.HTTPException;
 
 /**
  *
@@ -46,6 +46,11 @@ public class XMLMessage {
     protected DataSource dataSource;
     protected MimeMultipart multipart;
     protected Source source;
+    protected Exception err;
+    private static final String DEFAULT_SERVER_ERROR =
+        "<?xml version='1.0' encoding='UTF-8'?>"
+        + "<err>Internal Server Error: Unknown content in XMLMessage</err>";
+
 
     /**
      * Construct a message from an input stream. When messages are
@@ -109,6 +114,12 @@ public class XMLMessage {
     
     public XMLMessage(Source source) {
         this.source = source;
+        this.headers = new MimeHeaders();
+        headers.addHeader("Content-Type", "text/xml");
+    }
+    
+    public XMLMessage(Exception err) {
+        this.err = err;
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", "text/xml");
     }
@@ -268,17 +279,42 @@ public class XMLMessage {
                     new LocalizableExceptionAdapter(e));
         }
     }
+    
+    public WSConnection.STATUS getStatus() {
+        if (err != null) {     
+            if (err instanceof HTTPException) {
+                return WSConnection.STATUS.OTHER;
+            }
+            return WSConnection.STATUS.INTERNAL_ERR;
+        }
+        return WSConnection.STATUS.OK;
+    }
+    
+    public int getStatusCode() {
+        if (err != null && err instanceof HTTPException) {
+            return ((HTTPException)err).getStatusCode();
+        }
+        return -1;
+    }
 
     public void writeTo(OutputStream out)
     throws MessagingException, IOException, TransformerException {
         if (dataSource != null) {
             MimeMultipart multipart = new MimeMultipart(dataSource);
             multipart.writeTo(out);
-        } else {
+        } else if (source != null) {
             Transformer transformer = XmlUtil.newTransformer();
             transformer.transform(source, new StreamResult(out));
+        } else if (err != null) {
+            String msg = err.getMessage();
+            if (msg == null) {
+                msg = err.toString();
+            }
+            msg = "<err>"+msg+"</err>";
+            out.write(msg.getBytes());
+        } else {
+            out.write(DEFAULT_SERVER_ERROR.getBytes());
         }
     }
-
     
 }

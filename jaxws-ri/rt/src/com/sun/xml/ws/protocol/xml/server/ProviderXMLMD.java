@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderXMLMD.java,v 1.2 2005-07-24 01:34:56 kohlert Exp $
+ * $Id: ProviderXMLMD.java,v 1.3 2005-07-28 00:24:36 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -99,10 +99,7 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
                 ? new XMLMessage((DataSource)obj) 
                 : new XMLMessage((Source)obj);
         } else {
-            String err = "<err>"+((Exception)obj).getMessage()+"</err>";
-            StreamSource source = new StreamSource(
-                    new ByteArrayInputStream(err.getBytes()));
-            XMLMessage message = new XMLMessage(source);
+            xmlMessage = new XMLMessage((Exception)obj);
         }
         context.setXMLMessage(xmlMessage);
         context.setInternalMessage(null);

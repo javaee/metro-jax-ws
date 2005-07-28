@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.2 2005-07-27 18:50:06 jitu Exp $
+ * $Id: XMLConnectionUtil.java,v 1.3 2005-07-28 00:24:37 jitu Exp $
  */
 
 /*
@@ -70,7 +70,6 @@ public class XMLConnectionUtil {
                 }
                 values.add(mh.getValue());
             }
-            con.setStatus(STATUS.OK);
             con.setHeaders(headers);
             xmlMessage.writeTo(con.getOutput());
             con.closeOutput();
@@ -80,14 +79,15 @@ public class XMLConnectionUtil {
     }
     
     public static void sendResponse(WSConnection con, XMLMessage xmlMessage) {
-        setStatus(con, STATUS.OK);
+        setStatus(con, xmlMessage.getStatus());
+        con.setStatus(xmlMessage.getStatusCode());
         send(con, xmlMessage);
     }
     
     public static void sendResponseOneway(WSConnection con) {
-        ByteBuffer buf = ByteBuffer.wrap(new byte[0]);
         setStatus(con, STATUS.ONEWAY);
-        //con.write(buf);
+        con.getOutput();
+        con.closeOutput();
     }
         
     public static void sendResponseError(WSConnection con) {
