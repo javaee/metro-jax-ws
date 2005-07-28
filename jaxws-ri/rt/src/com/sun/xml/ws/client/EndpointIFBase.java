@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.7 2005-07-27 18:50:01 jitu Exp $
+ * $Id: EndpointIFBase.java,v 1.8 2005-07-28 21:03:05 kwalsh Exp $
  */
 
 /*
@@ -23,7 +23,7 @@ import com.sun.xml.ws.binding.BindingImpl;
  * @author WS Development Team
  */
 public class EndpointIFBase implements com.sun.pept.presentation.Stub,
-    BindingProvider, InternalBindingProvider {
+    com.sun.xml.ws.spi.runtime.StubBase,BindingProvider, InternalBindingProvider {
 
     protected Map _requestContext;
     protected Map _responseContext;
@@ -38,7 +38,6 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
 
     void setResponseContext(ResponseContext context) {
         _responseContext = (ContextMap) context;
-
     }
 
     public void _setDelegate(Delegate delegate) {

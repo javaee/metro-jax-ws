@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.4 2005-07-20 20:28:23 kwalsh Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.5 2005-07-28 21:03:05 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,6 +11,7 @@ import javax.xml.ws.WebServiceException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Set;
 
 
 /**
@@ -33,13 +34,13 @@ public class ServiceInvocationHandler extends WebService
                 return method.invoke(this, args);
             }
         } catch (java.lang.reflect.UndeclaredThrowableException ex) {
-             throw new WebServiceException(ex.getMessage(), ex.getCause());
+            throw new WebServiceException(ex.getMessage(), ex.getCause());
         } catch (java.lang.reflect.InvocationTargetException ex) {
-              throw new WebServiceException(ex.getMessage(), ex.getCause());
+            throw new WebServiceException(ex.getMessage(), ex.getCause());
         } catch (java.lang.reflect.GenericSignatureFormatError ex) {
-             throw new WebServiceException(ex.getMessage(), ex);
+            throw new WebServiceException(ex.getMessage(), ex);
         } catch (java.lang.reflect.MalformedParameterizedTypeException ex) {
-             throw new WebServiceException(ex.getMessage(), ex);
+            throw new WebServiceException(ex.getMessage(), ex);
         }
     }
 
@@ -55,13 +56,13 @@ public class ServiceInvocationHandler extends WebService
     private Object getXXXPort(Method method) throws WebServiceException {
         String methodName = method.getName();
         Class returnType = method.getReturnType();
-        String portName = null;
+        String portLocalName = null;
 
         if (returnType != null) {
-            portName = getPortName(methodName, returnType.getSimpleName());
+            portLocalName = getPortName(methodName, returnType.getSimpleName());
 
-            if (portName != null) {
-                return getPort(returnType, portName);
+            if (portLocalName != null) {
+                return getPort(returnType, portLocalName);
             } else {
                 throw new WebServiceException("port name undefined, must have port name");
             }
@@ -76,6 +77,8 @@ public class ServiceInvocationHandler extends WebService
         Class sei = null;
         Object port = null;
 
+        QName portQName = validatePortName(portName);
+
         if (returnType.isInterface()) {
             try {
                 sei = Thread.currentThread().getContextClassLoader().loadClass(returnType.getName());
@@ -85,7 +88,8 @@ public class ServiceInvocationHandler extends WebService
 
             try {
                 if (sei != null) {
-                    port = getPort(new QName("", portName), sei);
+                    String ns = serviceContext.getServiceName().getNamespaceURI();
+                    port = getPort(portQName, sei);
 
                     if (port == null) {
                         throw new WebServiceException("Unable to create Port");
@@ -94,7 +98,7 @@ public class ServiceInvocationHandler extends WebService
                     throw new WebServiceException("No serviceEndpointInterface Class found, Unable to create Port.");
                 }
             } catch (RuntimeException rex) {
-                throw new WebServiceException("Error creating dynamic stub");
+                throw new WebServiceException("Error creating dynamic stub", rex);
             }
         }
 
@@ -120,10 +124,29 @@ public class ServiceInvocationHandler extends WebService
         if (rtName.indexOf(mName) != 0) {
             //just check to make sure method is a getter
             if (mName.startsWith(GET, 0)) {
-                return rtName;
+                return mName.substring(3, mName.length());
             }
         }
 
         return rtName;
+    }
+
+    QName validatePortName(String portName) {
+        Set<QName> validPort = serviceContext.getWsdlContext().contains(serviceContext.getServiceName(),
+            new QName(serviceContext.getServiceName().getNamespaceURI(), portName));
+
+        if (validPort.size() == 0) {
+            throw new WebServiceException("Port with name " + portName + " is not a valid Port");
+        }
+
+        if (validPort.size() == 1) {
+            return serviceContext.getWsdlContext().getPortName();
+        }
+
+        if (validPort.size() > 1) {
+            String portNS = serviceContext.getWsdlContext().getPortName().getNamespaceURI();
+            return new QName(portNS, portName);
+        }
+        return null;
     }
 }
