@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.5 2005-07-27 13:15:45 spericas Exp $
+ * $Id: BindingProviderProperties.java,v 1.6 2005-07-28 21:56:53 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -48,6 +48,9 @@ public interface BindingProviderProperties {
 
     public static final String CLIENT_TRANSPORT_FACTORY = 
         "com.sun.xml.ws.client.ClientTransportFactory";
+    
+    public static final String JAXB_OUTPUTSTREAM =
+        "com.sun.xml.bind.api.Bridge.outputStream";
 
     public static final String XML_ENCODING_VALUE = "xml.encoding";                 // deprecated
     public static final String ACCEPT_ENCODING_PROPERTY = "accept.encoding";

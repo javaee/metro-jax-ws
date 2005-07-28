@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.6 2005-07-28 00:28:36 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.7 2005-07-28 21:56:55 spericas Exp $
  */
 
 /*
@@ -109,22 +109,24 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
     @Override
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
-                                     MessageInfo messageInfo) {
-        setAttachmentsMap(messageInfo, internalMessage);
-        
-        String contentNegotiation = 
-            (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
-        // Create writer based on value of content negotiation property
-        XMLStreamWriter writer = 
-            (contentNegotiation == "optimistic") ? 
-                XMLStreamWriterFactory.createFIStreamWriter(baos) :
-                XMLStreamWriterFactory.createXMLStreamWriter(baos);
-
+                                     MessageInfo messageInfo) 
+    {
         SOAPMessage message = null;
+        XMLStreamWriter writer = null;
+        
         try {
+            setAttachmentsMap(messageInfo, internalMessage);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+                writer = XMLStreamWriterFactory.createFIStreamWriter(baos);                
+            }
+            else {
+                // Store output stream to use in JAXB bridge (not with FI)
+                messageInfo.setMetaData(JAXB_OUTPUTSTREAM, baos);
+                writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+            }
+
             writer.writeStartDocument();
             startEnvelope(writer);
             writeHeaders(writer, internalMessage, messageInfo);
@@ -141,12 +143,25 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             mh.addHeader ("Content-Type", getContentType (messageInfo));
             message = SOAPUtil.createMessage (mh, bis, getBindingId ());
             processAttachments (internalMessage, message);
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             throw new SenderException ("sender.request.messageNotReady", new LocalizableExceptionAdapter (e));
-        } catch (SOAPException e) {
+        } 
+        catch (SOAPException e) {
             throw new SenderException (new LocalizableExceptionAdapter (e));
-        } catch (XMLStreamException e) {
+        } 
+        catch (XMLStreamException e) {
             throw new SenderException (new LocalizableExceptionAdapter (e));
+        }
+        finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                }
+                catch (XMLStreamException e) {
+                    throw new SenderException(new LocalizableExceptionAdapter(e));            
+                }
+            }
         }
         
         return message;

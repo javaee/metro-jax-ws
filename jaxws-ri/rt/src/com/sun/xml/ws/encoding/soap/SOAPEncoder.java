@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.17 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.18 2005-07-28 21:56:54 spericas Exp $
  */
 
 /*
@@ -8,6 +8,7 @@
 */
 package com.sun.xml.ws.encoding.soap;
 
+import java.io.OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -58,6 +59,8 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.util.DOMUtil;
+
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 
 /**
  * @author WS Development Team
@@ -132,12 +135,38 @@ public abstract class SOAPEncoder implements Encoder {
         XMLStreamWriter writer) {        
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, writer);
+        RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, messageInfo, writer);
     }
 
-    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, XMLStreamWriter writer) {
-        JAXBTypeSerializer.getInstance().serialize(
-                beanInfo.getBean(), writer, beanInfo.getJAXBContext());
+    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
+        XMLStreamWriter writer) 
+    {
+        // Pass output stream directly to JAXB when available
+        OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
+        
+        if (os != null) {
+            try {
+                /*
+                 * Make sure that current element is closed before passing the
+                 * output stream to JAXB. Using Zephyr, it suffices to write
+                 * an empty string (TODO: other StAX impls?).
+                 */
+                writer.writeCharacters("");
+                
+                // Flush output of StAX serializer
+                writer.flush();
+            }
+            catch (XMLStreamException e) {
+                throw new WebServiceException(e);
+            }
+            
+            JAXBTypeSerializer.getInstance().serialize(
+                    beanInfo.getBean(), os, beanInfo.getJAXBContext());            
+        }
+        else {
+            JAXBTypeSerializer.getInstance().serialize(
+                    beanInfo.getBean(), writer, beanInfo.getJAXBContext());
+        }
     }
 
     /*
@@ -161,7 +190,30 @@ public abstract class SOAPEncoder implements Encoder {
         MessageInfo messageInfo, XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
+        
+        // Pass output stream directly to JAXB when available
+        OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
+        if (os != null) {
+            try {
+                /*
+                 * Make sure that current element is closed before passing the
+                 * output stream to JAXB. Using Zephyr, it suffices to write
+                 * an empty string (TODO: other StAX impls?).
+                 */
+                writer.writeCharacters("");
+                
+                // Flush output of StAX serializer
+                writer.flush();
+            }
+            catch (XMLStreamException e) {
+                throw new WebServiceException(e);
+            }
+            
+            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, os);            
+        }
+        else {
+            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
+        }
     }
 
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage, MessageInfo messageInfo) {
@@ -374,16 +426,16 @@ public abstract class SOAPEncoder implements Encoder {
             // BodyBlock can be null if there is no part in wsdl:message
             if (bodyBlock != null) {
                 Object value = bodyBlock.getValue();
-                if (value instanceof Source) {
+                if (value instanceof JAXBBridgeInfo) {
+                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                } else if (value instanceof RpcLitPayload) {
+                    writeRpcLitPayload((RpcLitPayload)value, messageInfo, writer);
+                } else if (value instanceof Source) {
                     serializeSource((Source)value, writer);
                 } else if (value instanceof SOAPFaultInfo) {
                     writeFault((SOAPFaultInfo)value, messageInfo, writer);
-                } else if (value instanceof RpcLitPayload) {
-                    writeRpcLitPayload((RpcLitPayload)value, messageInfo, writer);
                 } else if (value instanceof JAXBBeanInfo) {
-                    writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
-                } else if (value instanceof JAXBBridgeInfo) {
-                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                    writeJAXBBeanInfo((JAXBBeanInfo)value, messageInfo, writer);
                 }else {
                     System.out.println("Unknown object in BodyBlock:"+value.getClass());
                 }

@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.5 2005-05-31 19:26:26 jitu Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.6 2005-07-28 21:56:54 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -9,6 +9,7 @@ package com.sun.xml.ws.encoding.jaxb;
 
 import com.sun.xml.bind.api.BridgeContext;
 import java.util.List;
+import java.io.OutputStream;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -16,12 +17,15 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
+import com.sun.pept.ept.MessageInfo;
 
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 
 public class RpcLitPayloadSerializer {
     
@@ -30,7 +34,7 @@ public class RpcLitPayloadSerializer {
      * the operation, and then it serializes each parameter
      */
     public static void serialize(RpcLitPayload obj, BridgeContext bridgeContext,
-        XMLStreamWriter writer) 
+        MessageInfo messageInfo, XMLStreamWriter writer) 
     {
         try {
             QName op = obj.getOperation();
@@ -40,10 +44,33 @@ public class RpcLitPayloadSerializer {
             writer.setPrefix("ans", opURI);
             writer.writeNamespace("ans", opURI);
             
-            for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
-                JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
-                    writer);
+
+            // Pass output stream directly to JAXB when available
+            OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
+            if (os != null) {
+                /*
+                 * Make sure that current element is closed before passing the
+                 * output stream to JAXB. Using Zephyr, it suffices to write
+                 * an empty string (TODO: other StAX impls?).
+                 */
+                writer.writeCharacters("");
+
+                // Flush output of StAX serializer
+                writer.flush();
+
+                // Let JAXB serialize each param to the output stream
+                for (JAXBBridgeInfo param : obj.getBridgeParameters()) {                
+                    JAXBTypeSerializer.getInstance().serialize(param, bridgeContext, os);
+                }
             }
+            else {
+                // Otherwise, use a StAX writer
+                for (JAXBBridgeInfo param : obj.getBridgeParameters()) {                
+                    JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
+                        writer);
+                }
+            }
+            
             writer.writeEndElement();            // </ans:operation>
         }
         catch (XMLStreamException e) {

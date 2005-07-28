@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.7 2005-07-23 04:10:02 kohlert Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.8 2005-07-28 21:56:53 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,7 @@
 
 package com.sun.xml.ws.encoding.jaxb;
 
+import java.io.OutputStream;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import javax.xml.bind.JAXBContext;
@@ -52,8 +53,20 @@ public class JAXBTypeSerializer {
         } catch (Exception e) {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-    }
+    }    
     
+    public void serialize(Object obj, OutputStream os, JAXBContext context) {
+        try {
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
+            marshaller.marshal(obj, os);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
+        }
+    }
+        
     /*
      * Marshalls arbitrary type object with the given tag name
      */
@@ -69,7 +82,6 @@ public class JAXBTypeSerializer {
         }
     }
     
-
     /*
      * @see JAXBTypeSerializerIf#deserialize(XMLStreamReader,JAXBContext)
      */
@@ -140,6 +152,22 @@ public class JAXBTypeSerializer {
             Bridge bridge = bridgeInfo.getBridge();
             Object value = bridgeInfo.getValue();
             bridge.marshal(bridgeContext, value, writer);
+        } catch (JAXBException e) {
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
+        }
+    }
+    
+    /*
+     * JAXB object is serialized. Note that the BridgeContext is cached per
+     * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
+     * current thread.
+     */
+    public void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
+        OutputStream os) {
+        try {
+            Bridge bridge = bridgeInfo.getBridge();
+            Object value = bridgeInfo.getValue();
+            bridge.marshal(bridgeContext, value, os);
         } catch (JAXBException e) {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }

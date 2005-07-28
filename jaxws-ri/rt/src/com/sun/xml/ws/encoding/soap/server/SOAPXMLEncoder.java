@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.3 2005-07-27 13:15:47 spericas Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.4 2005-07-28 21:56:55 spericas Exp $
  */
 
 /*
@@ -57,12 +57,15 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         try {
             setAttachmentsMap(messageInfo, response);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            // Create writer based on content negotiation property
-            writer = 
-                (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") ?
-                    XMLStreamWriterFactory.createFIStreamWriter(baos) :
-                    XMLStreamWriterFactory.createXMLStreamWriter(baos);
+            
+            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+                writer = XMLStreamWriterFactory.createFIStreamWriter(baos);                
+            }
+            else {
+                // Store output stream to use in JAXB bridge (not with FI)
+                messageInfo.setMetaData(JAXB_OUTPUTSTREAM, baos);
+                writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+            }
             
             writer.writeStartDocument();
             startEnvelope(writer);
@@ -79,9 +82,11 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             SOAPMessage msg = SOAPUtil.createMessage(mh, bis, getBindingId());
             processAttachments(response, msg);
             return msg;
-        } catch(Exception e) {
+        } 
+        catch (Exception e) {
             throw new ServerRtException("soapencoder.err", new Object[]{e});
-        } finally {
+        } 
+        finally {
             if (writer != null) {
                 try {
                     writer.close();
