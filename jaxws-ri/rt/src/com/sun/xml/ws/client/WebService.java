@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.15 2005-07-27 14:08:16 kwalsh Exp $
+ * $Id: WebService.java,v 1.16 2005-07-28 21:05:00 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -116,7 +116,6 @@ public class WebService
 
         return seiProxy;
     }
-
 
     public Object getPort(Class portInterface) throws WebServiceException {
         return createEndpointIFBaseProxy(null, portInterface);
@@ -292,7 +291,8 @@ public class WebService
         Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),
             new Class[]{
                 portInterface, Remote.class, BindingProvider.class,
-                BindingProviderProperties.class, AnnotatedElement.class
+                BindingProviderProperties.class, AnnotatedElement.class,
+                com.sun.xml.ws.spi.runtime.StubBase.class
             }, handler);
         handler.setProxy((Object) proxy);
         return (BindingProvider) proxy;
