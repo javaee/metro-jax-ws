@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.5 2005-07-27 13:15:47 spericas Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.6 2005-07-28 00:28:36 jitu Exp $
  */
 
 /*
@@ -43,6 +43,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.util.SOAPUtil;
 
 /**
  * @author WS Development Team
@@ -138,7 +139,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             // TODO: Copy the mime headers from messageInfo.METADATA
             MimeHeaders mh = new MimeHeaders ();
             mh.addHeader ("Content-Type", getContentType (messageInfo));
-            message = new SOAPMessageContext ().createMessage (mh, bis, getBindingId ());
+            message = SOAPUtil.createMessage (mh, bis, getBindingId ());
             processAttachments (internalMessage, message);
         } catch (IOException e) {
             throw new SenderException ("sender.request.messageNotReady", new LocalizableExceptionAdapter (e));
