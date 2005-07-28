@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.4 2005-07-24 01:35:09 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.5 2005-07-28 21:16:19 vivekp Exp $
  */
 
 /**
@@ -87,7 +87,13 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
     private void write(Service service, Port port) throws Exception{
         JavaInterface intf = port.getJavaInterface();
         String className = env.getNames().customJavaTypeClassName(intf);
-        JDefinedClass cls = cm._class(className, ClassType.INTERFACE);
+        JDefinedClass cls = null;
+        try{
+            cls = cm._class(className, ClassType.INTERFACE);
+        }catch(JClassAlreadyExistsException e){
+            //if class already exists, we just exit
+            return;
+        }
 
         //write class comment - JAXWS warning
         JDocComment comment = cls.javadoc();
