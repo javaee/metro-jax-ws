@@ -55,7 +55,8 @@
  *
  *  <dt>{@link com.sun.istack.ws Annotation Processor}
  *  <dd>
- *    An APT AnnotationProcessor for processing Java source files with javax.jws.* annotations and making them web services.
+ *    An APT {@com.sun.mirror.apt.AnnotationProcessor AnnotationProcessor} for 
+ *    processing Java source files with javax.jws.* annotations and making them web services.
  *
  *  <dt>{@link com.sun.xml.ws.spi.runtime Runtime SPI}
  *  <dd>

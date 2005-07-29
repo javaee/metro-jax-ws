@@ -208,24 +208,29 @@
  * </UL>
  * <H4>JAXB API</H4>
  * <P>JAX-WS RI uses the JAXB API to marshall/unmarshall user created
- * JAXB objects with user created JAXBContext.Handler, Dispatch in
- * JAX-WS API provide ways for the user to specify his/her own
- * JAXBContext. JAXBTypeSerializer class uses all these methods.</P>
+ * JAXB objects with user created {@link javax.xml.bind.JAXBContext JAXBContext}. 
+ * Handler, Dispatch in JAX-WS API provide ways for the user to specify his/her own
+ * JAXBContext. {@link com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer JAXBTypeSerializer} class uses all these methods.</P>
  * <UL>
- * 	<LI><p>Marshaller.marshal(Object,XMLStreamWriter)</p>
- * 	<LI><P>Marshaller.marshal(Object, DomResult)</P>
- * 	<LI><P>Object Unmarshaller.unmarshal(XMLStreamReader)</P>
- * 	<LI><P><Object Unmarshaller.unmarshal(Source)</P>
+ * 	<LI><p>{@link javax.xml.bind.Marshaller#marshal(Object,XMLStreamWriter) Marshaller.marshal(Object,XMLStreamWriter)}</p>
+ * 	<LI><P>{@link javax.xml.bind.Marshaller#marshal(Object,Result) Marshaller.marshal(Object, DomResult)}</P>
+ * 	<LI><P>{@link javax.xml.bind.Unmarshaller#unmarshal(XMLStreamReader) Object Unmarshaller.unmarshal(XMLStreamReader)}</P>
+ * 	<LI><P>{@link javax.xml.bind.Unmarshaller#unmarshal(Source) Object Unmarshaller.unmarshal(Source)}</P>
+ * </UL>
+ * The following two JAXB classes are implemented by JAX-WS to enable/implement MTOM and XOP
+ * <UL>
+ *      <LI><P>{@link javax.xml.bind.attachment.AttachmentMarshaller AttachmentMarshaller}</P>
+ *      <LI><P>{@link javax.xml.bind.attachment.AttachmentUnmarshaller AttachmentUnmarshaller}</P>
  * </UL>
  * <H4>JAXB Runtime-API (private contract)</H4>
  * <P>JAX-WS RI uses these private API for serialization/deserialization
  * purposes. This private API is used to serialize/deserialize method
- * parameters at the time of binding.JAXBTypeSerializer class uses all
+ * parameters at the time of JAXBTypeSerializer class uses all
  * these methods.</P>
  * <UL>
- * 	<LI><P>Bridge.marshal(BridgeContext, Object, XMLStreamWriter)</P>
- * 	<LI><P>Bridge.marshal(BridgeContext, Object, Node)</P>
- * 	<LI><P>Bridge.unmarshal(BridgeContext, XMLStreamReader)</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#marshal(BridgeContext, Object, XMLStreamWriter) Bridge.marshal(BridgeContext, Object, XMLStreamWriter)}</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#marshal(BridgeContext, Object, Node) Bridge.marshal(BridgeContext, Object, Node)}</P>
+ * 	<LI><P>{@link com.sun.xml.bind.api.Bridge#unmarshal(BridgeContext, XMLStreamReader) Object Bridge.unmarshal(BridgeContext, XMLStreamReader)}</P>
  * </UL>
  * 
  * @ArchitectureDocument

@@ -1,5 +1,5 @@
 /*
- * $Id: ModelInfo.java,v 1.2 2005-07-18 18:13:56 kohlert Exp $
+ * $Id: ModelInfo.java,v 1.3 2005-07-29 19:54:48 kohlert Exp $
  */
 
 /*
@@ -15,6 +15,8 @@ import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.modeler.Modeler;
 
 /**
+ * This class contiains information used by {@link com.sun.tools.ws.processor.modeler.Modeler
+ * Modelers to build {@link com.sun.tools.ws.processor.model.Model Models.
  *
  * @author WS Development Team
  */
@@ -42,14 +44,6 @@ public abstract class ModelInfo {
         return _parent;
     }
 
-//    public TypeMappingRegistryInfo getTypeMappingRegistry() {
-//        return _typeMappingRegistryInfo;
-//    }
-//
-//    public void setTypeMappingRegistry(TypeMappingRegistryInfo i) {
-//        _typeMappingRegistryInfo = i;
-//    }
-
     public HandlerChainInfo getClientHandlerChainInfo() {
         return _clientHandlerChainInfo;
     }
@@ -65,16 +59,6 @@ public abstract class ModelInfo {
     public void setServerHandlerChainInfo(HandlerChainInfo i) {
         _serverHandlerChainInfo = i;
     }
-
-/*    public NamespaceMappingRegistryInfo getNamespaceMappingRegistry() {
-        return _namespaceMappingRegistryInfo;
-    }
-
-    public void setNamespaceMappingRegistry(
-        com.sun.xml.rpc.spi.tools.NamespaceMappingRegistryInfo i) {
-
-        _namespaceMappingRegistryInfo = (NamespaceMappingRegistryInfo) i;
-    }*/
 
     public String getJavaPackageName() {
         return _javaPackageName;
@@ -93,8 +77,6 @@ public abstract class ModelInfo {
     private Configuration _parent;
     private String _name;
     private String _javaPackageName;
-//    private TypeMappingRegistryInfo _typeMappingRegistryInfo;
     private HandlerChainInfo _clientHandlerChainInfo;
     private HandlerChainInfo _serverHandlerChainInfo;
-//    private NamespaceMappingRegistryInfo _namespaceMappingRegistryInfo;
 }

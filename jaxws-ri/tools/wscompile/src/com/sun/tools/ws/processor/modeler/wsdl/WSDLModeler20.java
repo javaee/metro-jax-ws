@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.10 2005-07-24 01:35:10 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.11 2005-07-29 19:54:50 kohlert Exp $
  */
 
 /*
@@ -87,9 +87,9 @@ import com.sun.codemodel.JClass;
 
 
 /**
- * @author Vivek Pandey
+ * The WSDLModeler processes a WSDL to create a Model.
  *
- * WSDLModeler for JAXWS 2.0, build jaxws model from jaxbModel
+ * @author WS Development Team
  */
 public class WSDLModeler20 extends WSDLModelerBase {
 

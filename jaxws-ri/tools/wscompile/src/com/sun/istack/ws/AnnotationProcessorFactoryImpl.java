@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorFactoryImpl.java,v 1.2 2005-07-21 23:13:23 kohlert Exp $
+ * $Id: AnnotationProcessorFactoryImpl.java,v 1.3 2005-07-29 19:54:47 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,9 +16,9 @@ import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 
 
 /*
- * Returns an annotation processor that lists class names.  The
- * functionality of the processor is analogous to the ListClass doclet
- * in the Doclet Overview.
+ * The JAX-WS {@com.sun.mirror.apt.AnnotationProcessorFactory AnnotationProcessorFactory}
+ * class used by the <a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>
+ * framework.
  */
 public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactory {
 
@@ -31,16 +31,16 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
 
 
     /*
-     * All annotation types are supported.
+     * Supportes javax.jws.*, javax.jws.soap.* and javax.xml.ws.* annotations.
      */
     static Collection<String> supportedAnnotations;
     static {
-       Collection<String> types = new HashSet<String>();
-	   types.add("javax.jws.*");
-	   types.add("javax.jws.soap.*");
-	   types.add("javax.xml.ws.*");
-	   types.add("com.sun.xml.ws.*");
-	   supportedAnnotations = Collections.unmodifiableCollection(types);
+        Collection<String> types = new HashSet<String>();
+        types.add("javax.jws.*");
+        types.add("javax.jws.soap.*");
+        types.add("javax.xml.ws.*");
+        types.add("com.sun.xml.ws.*");
+        supportedAnnotations = Collections.unmodifiableCollection(types);
     }
 
     public AnnotationProcessorFactoryImpl() {
@@ -48,16 +48,15 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
 
     
     public Collection<String> supportedOptions() {
-	   return supportedOptions;
+        return supportedOptions;
     }
 
-    public Collection<String> supportedAnnotationTypes() {
-	   return supportedAnnotations;
+    public Collection<String> supportedAnnotationTypes() { 
+        return supportedAnnotations;
     }
     
     /*
-     * Return the same processor independent of what annotations are
-     * present, if any.
+     * Return an instance of the {@link com.sun.istack.ws.WSAP WSAP} AnnotationProcesor.
      */
     public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> atds,
 					AnnotationProcessorEnvironment apEnv) {

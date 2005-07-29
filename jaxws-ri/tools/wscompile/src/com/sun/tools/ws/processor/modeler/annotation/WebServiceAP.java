@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.4 2005-07-21 01:59:10 vivekp Exp $
+ * $Id: WebServiceAP.java,v 1.5 2005-07-29 19:54:49 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -59,6 +59,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+
+
+/**
+ * WebServiceAP is a APT AnnotationProcessor for processing javax.jws.* and 
+ * javax.xml.ws.* annotations. This class is used either by the WsGen (CompileTool) tool or 
+ *    idirectly via the {@link com.sun.istack.ws.WSAP WSAP} when invoked by APT.
+ *
+ * @author WS Development Team
+ */
 public class WebServiceAP extends ToolBase implements AnnotationProcessor, ModelBuilder, WebServiceConstants,
     ProcessorNotificationListener {
 
@@ -358,11 +367,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return new WebServiceWrapperGenerator(this, context);
     }
 
-//    protected WebServiceVisitor createModeler() {
-        //return new WebServiceModeler(this, context);
-//        return null;
-//    }
-
     protected WebServiceVisitor createReferenceCollector() {
         return new WebServiceReferenceCollector(this, context);
     }
@@ -377,7 +381,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         JavaCompiler javaC = XJC.createJavaCompiler();
         JAXBModel jaxBModel;
         WebServiceVisitor referenceCollector = createReferenceCollector();
-       // WebServiceVisitor webServiceModeler = createModeler();
         for (SEIContext seiContext : context.getSEIContexts()) {
             log("completing model for endpoint: "+seiContext.getSEIImplName());
             TypeDeclaration decl = apEnv.getTypeDeclaration(seiContext.getSEIImplName());

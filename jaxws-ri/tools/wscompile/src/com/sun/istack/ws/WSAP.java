@@ -1,5 +1,5 @@
 /**
- * $Id: WSAP.java,v 1.1 2005-07-21 23:13:23 kohlert Exp $
+ * $Id: WSAP.java,v 1.2 2005-07-29 19:54:47 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -22,6 +22,12 @@ import javax.jws.*;
 
 
 
+/**
+ * This is the entry point for the WebServiceAP when APT is invoked on a SEI
+ * annotated with the javax.jws.WebService annotation.
+ *
+ * @author WS Development Team
+ */
 public class WSAP extends WebServiceAP {
              
     public WSAP(AnnotationProcessorContext context) {         

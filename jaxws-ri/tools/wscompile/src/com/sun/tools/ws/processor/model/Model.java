@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.3 2005-07-23 04:10:58 kohlert Exp $
+ * $Id: Model.java,v 1.4 2005-07-29 19:54:49 kohlert Exp $
  */
 
 /*
@@ -24,6 +24,8 @@ import com.sun.tools.ws.processor.ProcessorActionVersion;
 //import com.sun.xml.rpc.processor.config.ImportedDocumentInfo;
 
 /**
+ * The model is used to represent the entire Web Service.  The JAX-WS ProcessorActions can process
+ * this Model to generate Java artifacts such as the service interface.
  *
  * @author WS Development Team
  */
@@ -114,27 +116,6 @@ public class Model extends ModelObject {
         extraTypes = s;
     }
 
-//    public Iterator getImportedDocuments() {
-//        return importedDocuments.values().iterator();
-//    }
-//
-//    public ImportedDocumentInfo getImportedDocument(String namespace) {
-//        return (ImportedDocumentInfo) importedDocuments.get(namespace);
-//    }
-//
-//    public void addImportedDocument(ImportedDocumentInfo i) {
-//        importedDocuments.put(i.getNamespace(), i);
-//    }
-//
-//    /* serialization */
-//    public Map getImportedDocumentsMap() {
-//        return importedDocuments;
-//    }
-//
-//    /* serialization */
-//    public void setImportedDocumentsMap(Map m) {
-//        importedDocuments = m;
-//    }
 
     public void accept(ModelVisitor visitor) throws Exception {
         visitor.visit(this);

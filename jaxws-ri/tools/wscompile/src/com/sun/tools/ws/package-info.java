@@ -74,30 +74,40 @@
  * <h2>Implementation Classes</h2>
  *  <d1>
       <dt>{@link com.sun.tools.ws.wscompile.CompileTool CompileTool}
- *    <dd> This is the real implementation class for both WsGen and WsImport. 
+ *    <dd> This is the main implementation class for both WsGen and WsImport. 
  * 
  * 
  * <dt>{@link com.sun.tools.ws.processor.Processor Processor}
- *    <dd>
+ *    <dd>This abstract class is used to process a particular {@link com.sun.tools.ws.processor.config.Configuration
+ *    Configuration} to build a {@link com.sun.tools.ws.processor.model Model| and to run
+ *   {@link com.sun.tools.ws.processor.ProcessorActions ProcessorActions} on that model.
 
  *    <dt>{@link com.sun.tools.ws.processor.model.Model Model}
- *    <dd>
+ *    <dd>The model is used to represent the entire Web Service.  The JAX-WS ProcessorActions can process
+ *    this Model to generate Java artifacts such as the service interface.
  *
       <dt>{@link com.sun.tools.ws.processor.ProcessorAction ProcessorActions}
- *    <dd>
+ *    <dd>A ProcessorAction is used to perform some operation on a Model object such as
+ *    generating a Java source file.
  *
  *    <dt>{@link com.sun.tools.ws.processor.modeler.Modeler Modeler}
- *    <dd>
+ *    <dd>A Modeler is used to create a Model of a Web Service from a particular Web 
+ *    Web Service description such as a WSDL
+ *    file.
  *
  *    <dt>{@link com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler20 WSDLModeler}
- *    <dd>
+ *    <dd>The WSDLModeler processes a WSDL to create a Model.
  *
  *    <dt>{@link com.sun.tools.ws.processor.modeler.annotation.WebServiceAP WebServiceAP}
- *    <dd>
+ *    <dd>WebServiceAP is a APT AnnotationProcessor for processing javax.jws.* and 
+ *    javax.xml.ws.* annotations. This class is used either by the WsGen (CompileTool) tool or 
+ *    idirectly via the {@link com.sun.istack.ws.WSAP WSAP} when invoked by APT.
  *
  *    <dt>{@link com.sun.istack.ws.WSAP WSAP}
- *    <dd>
+ *    <dd>This is the entry point for the WebServiceAP when APT is invoked on a SEI
+ *    annotated with the javax.jws.WebService annotation.
  *   </d1>
+ *
  * @ArchitectureDocument
  **/
 package com.sun.tools.ws;

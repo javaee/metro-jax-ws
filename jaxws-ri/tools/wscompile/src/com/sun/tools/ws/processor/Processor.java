@@ -1,5 +1,5 @@
 /*
- * $Id: Processor.java,v 1.3 2005-07-18 18:13:54 kohlert Exp $
+ * $Id: Processor.java,v 1.4 2005-07-29 19:54:48 kohlert Exp $
  */
 
 /*
@@ -22,8 +22,12 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
+ * This abstract class contains methods for getting a Modeler and creating a model
+ * from that Modeler given a particular configuration. ProcessorActions can also
+ * be registered and run with instances of this class.
  *
  * @author WS Development Team
+ *
  */
 public class Processor {
 

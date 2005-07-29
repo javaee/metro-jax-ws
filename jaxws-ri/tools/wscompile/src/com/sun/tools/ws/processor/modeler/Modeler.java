@@ -1,5 +1,5 @@
 /*
- * $Id: Modeler.java,v 1.2 2005-07-18 18:14:02 kohlert Exp $
+ * $Id: Modeler.java,v 1.3 2005-07-29 19:54:49 kohlert Exp $
  */
 
 /*
@@ -13,6 +13,8 @@ package com.sun.tools.ws.processor.modeler;
 import com.sun.tools.ws.processor.model.Model;
 
 /**
+ * A Modeler is used to create a Model of a Web Service from a particular Web 
+ * Web Service description such as a WSDL
  *
  * @author WS Development Team
 */

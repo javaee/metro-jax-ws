@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorAction.java,v 1.2 2005-07-18 18:13:54 kohlert Exp $
+ * $Id: ProcessorAction.java,v 1.3 2005-07-29 19:54:48 kohlert Exp $
  */
 
 /*
@@ -15,6 +15,9 @@ import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.config.Configuration;
 
 /**
+ * A ProcessorAction is used to perform some operation on a
+ * {@link com.sun.tools.ws.processor.model.Model Model} such as
+ * generating a Java source file.
  *
  * @author WS Development Team
  */
