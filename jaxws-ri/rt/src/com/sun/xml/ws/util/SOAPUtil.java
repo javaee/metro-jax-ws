@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPUtil.java,v 1.3 2005-07-26 23:43:47 vivekp Exp $
+ * $Id: SOAPUtil.java,v 1.4 2005-07-29 20:18:05 kohlert Exp $
  */
 
 /*
@@ -80,7 +80,7 @@ public class SOAPUtil {
      * @param code
      * @param actor
      * @param detail
-     * @return
+     * @return the created SOAPFault
      */
     public static SOAPFault createSOAPFault(String msg, QName code, String actor, Detail detail, String bindingId){
         if(bindingId == null)

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPFaultInfo.java,v 1.3 2005-07-26 23:43:44 vivekp Exp $
+ * $Id: SOAPFaultInfo.java,v 1.4 2005-07-29 20:18:05 kohlert Exp $
  */
 
 /*
@@ -35,7 +35,7 @@ public class SOAPFaultInfo {
     /**
      * Accessor method to get the fault bean
      *
-     * @return
+     * @return the JAXBBidgeInfo for this fault
      */
     public JAXBBridgeInfo getFaultBean() {
         return faultBean;

@@ -1,5 +1,5 @@
 /*
- * $Id: ModelInfo.java,v 1.3 2005-07-29 19:54:48 kohlert Exp $
+ * $Id: ModelInfo.java,v 1.4 2005-07-29 20:18:07 kohlert Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.tools.ws.processor.modeler.Modeler;
 
 /**
  * This class contiains information used by {@link com.sun.tools.ws.processor.modeler.Modeler
- * Modelers to build {@link com.sun.tools.ws.processor.model.Model Models.
+ * Modelers} to build {@link com.sun.tools.ws.processor.model.Model Models}.
  *
  * @author WS Development Team
  */

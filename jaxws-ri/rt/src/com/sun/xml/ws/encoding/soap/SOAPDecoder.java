@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.18 2005-07-27 13:15:46 spericas Exp $
+ * $Id: SOAPDecoder.java,v 1.19 2005-07-29 20:18:05 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -99,7 +99,7 @@ public abstract class SOAPDecoder implements Decoder {
      * @param soapMessage
      * @param internalMessage
      * @param messageInfo
-     * @return
+     * @return the InternalMessage representation of the SOAPMessage
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
             InternalMessage internalMessage, MessageInfo messageInfo) {

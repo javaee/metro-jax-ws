@@ -79,8 +79,8 @@
  * 
  * <dt>{@link com.sun.tools.ws.processor.Processor Processor}
  *    <dd>This abstract class is used to process a particular {@link com.sun.tools.ws.processor.config.Configuration
- *    Configuration} to build a {@link com.sun.tools.ws.processor.model Model| and to run
- *   {@link com.sun.tools.ws.processor.ProcessorActions ProcessorActions} on that model.
+ *    Configuration} to build a {@link com.sun.tools.ws.processor.model Model} and to run
+ *   {@link com.sun.tools.ws.processor.ProcessorAction ProcessorActions} on that model.
 
  *    <dt>{@link com.sun.tools.ws.processor.model.Model Model}
  *    <dd>The model is used to represent the entire Web Service.  The JAX-WS ProcessorActions can process
