@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.7 2005-07-23 04:10:01 kohlert Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.8 2005-07-29 00:15:53 vivekp Exp $
  */
 
 /*
@@ -60,24 +60,59 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         return cid;
     }
 
-    /*
-     * @see AttachmentMarshaller#addMtomAttachment(byte[], String, String)
+    /**
+     * <p>Consider binary <code>data</code> for optimized binary storage as an attachment.
+     * <p/>
+     * <p>Since content type is not known, the attachment's MIME content type must be set to "application/octet-stream".</p>
+     * <p/>
+     * <p/>
+     * The <code>elementNamespace</code> and <code>elementLocalName</code>
+     * parameters provide the
+     * context that contains the binary data. This information could
+     * be used by the MIME-based package processor to determine if the
+     * binary data should be inlined or optimized as an attachment.
+     *
+     * @param data             represents the data to be attached. Must be non-null. The actual data region is
+     *                         specified by <tt>(data,offset,len)</tt> tuple.
+     * @param mimeType         If the data has an associated MIME type known to JAXB, that is passed
+     *                         as this parameter. If none is known, "application/octet-stream".
+     *                         This parameter may never be null.
+     * @param elementNamespace the namespace URI of the element that encloses the base64Binary data.
+     *                         Can be empty but never null.
+     * @param elementLocalName The local name of the element. Always a non-null valid string.
+     * @return content-id URI, cid, to the attachment containing
+     *         <code>data</code> or null if data should be inlined.
+     * @see #addMtomAttachment(javax.activation.DataHandler, String, String)
      */
-    public String addMtomAttachment(byte[] data, String elementNamespace, String elementName) {
-        if(!isXOP || data == null)
+    public String addMtomAttachment(byte[] data, int offset, int len, String mimeType, String elementNamespace, String elementLocalName) {
+        if(!isXOP)
             return null;
 
         //TODO: With performance results we need to find out what length would need optimization
-        if(data.length < 1000)
+        if(len < 1000)
             return null;
+
+        //this will not be needed if saaj exposes api that takes
+        byte[] actualData = getActualData(data, offset, len);
 
         String cid = encodeCid(elementNamespace);
         if(cid != null){
-            attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, "application/octet-stream"));
+            attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", actualData, "application/octet-stream"));
             isXopped = true;
             cid = "cid:"+cid;
         }
         return cid;
+
+    }
+
+    private byte[] getActualData(byte[] data, int offset, int len) {
+        if((offset == 0) && (len == data.length))
+            return data;
+        byte[] actualData = new byte[len];
+        for(int i = 0; i < len; i++){
+            actualData[i] = data[offset + i];
+        }
+        return actualData;
     }
 
     /*

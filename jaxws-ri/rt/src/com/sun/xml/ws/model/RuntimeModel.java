@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.12 2005-07-23 04:10:09 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.13 2005-07-29 00:15:53 vivekp Exp $
  */
 
 /*
@@ -125,7 +125,7 @@ public abstract class RuntimeModel {
             cls[i++] = (Class) type.type;
         }
         try {
-            jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace);
+            jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
             createBridgeMap(types);
         } catch (JAXBException e) {
             throw new WebServiceException(e.getMessage(), e);
