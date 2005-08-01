@@ -8,7 +8,7 @@
   <display-name>fromwsdl</display-name>
   <description>fromwsdl</description>
   <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSContextListener</listener-class>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>fromwsdl</servlet-name>

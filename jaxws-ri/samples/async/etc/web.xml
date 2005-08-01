@@ -8,7 +8,7 @@
   <display-name>async</display-name>
   <description>async</description>
   <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSContextListener</listener-class>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>async</servlet-name>

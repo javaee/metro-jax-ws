@@ -8,7 +8,7 @@
   <display-name>inline_customize</display-name>
   <description>inline_customize</description>
   <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSContextListener</listener-class>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>inline_customize</servlet-name>

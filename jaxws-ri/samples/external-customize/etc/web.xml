@@ -8,7 +8,7 @@
   <display-name>external_customize</display-name>
   <description>external_customize</description>
   <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSContextListener</listener-class>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>external_customize</servlet-name>
