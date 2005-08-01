@@ -14,7 +14,7 @@
     <servlet-name>provider</servlet-name>
     <display-name>provider</display-name>
     <description>JAX-WS endpoint - provider</description>
-    <servlet-class>com.sun.xml.ws.transport.http.servlet.JAXRPCServlet</servlet-class>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>

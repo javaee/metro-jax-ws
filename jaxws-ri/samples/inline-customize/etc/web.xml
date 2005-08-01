@@ -14,7 +14,7 @@
     <servlet-name>inline_customize</servlet-name>
     <display-name>inline_customize</display-name>
     <description>JAX-WS endpoint - inline_customize</description>
-    <servlet-class>com.sun.xml.ws.transport.http.servlet.JAXRPCServlet</servlet-class>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>

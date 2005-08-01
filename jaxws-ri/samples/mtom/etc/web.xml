@@ -14,7 +14,7 @@
     <servlet-name>hello</servlet-name>
     <display-name>hello</display-name>
     <description>JAX-WS endpoint - mtom.hello</description>
-    <servlet-class>com.sun.xml.ws.transport.http.servlet.JAXRPCServlet</servlet-class>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
