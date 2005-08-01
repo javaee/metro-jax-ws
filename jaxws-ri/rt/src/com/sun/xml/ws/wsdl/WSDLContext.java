@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.4 2005-07-20 20:58:50 kwalsh Exp $
+ * $Id: WSDLContext.java,v 1.5 2005-08-01 15:47:03 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,7 +12,10 @@ import javax.xml.ws.soap.SOAPBinding;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * $author: JAXWS Development Team
@@ -90,13 +93,19 @@ public class WSDLContext {
     public QName getPortName() {
         String endpoint = null;
         QName portName = null;
-        HashMap portsLocationMap = null;
-        if (!portsLocationMap.isEmpty()) {
-            Set<QName> keys = portsLocationMap.keySet();
-            Iterator<QName> iter = keys.iterator();
+        //iterates in insertion order
+        if (!service2portsLocationMap.isEmpty()) {
+            LinkedHashMap portsLocationMap =
+                service2portsLocationMap.values().iterator().next();
+            if (portsLocationMap != null) {
+                if (!portsLocationMap.isEmpty()) {
+                    Set<QName> keys = portsLocationMap.keySet();
+                    Iterator<QName> iter = keys.iterator();
 
-            if (iter.hasNext()) {
-                portName = iter.next();
+                    if (iter.hasNext()) {
+                        portName = iter.next();
+                    }
+                }
             }
         }
         return portName;
@@ -161,10 +170,10 @@ public class WSDLContext {
         HashSet<QName> names = new HashSet<QName>(portsMap.size());
         if ((portsMap != null) && (!portsMap.isEmpty())) {
             Set<QName> portNames = portsMap.keySet();
-            for (QName portNam: portNames){
-                if (portNam.equals(portName)){
-                   names.add(portNam);
-                   return names;
+            for (QName portNam : portNames) {
+                if (portNam.equals(portName)) {
+                    names.add(portNam);
+                    return names;
                 }
             }
             return portNames;
@@ -172,12 +181,19 @@ public class WSDLContext {
         return null;
     }
 
-    public QName getFirstServiceName(){
-        if (!service2portsLocationMap.isEmpty()){
+    public QName getFirstServiceName() {
+        if (!service2portsLocationMap.isEmpty()) {
             Set<QName> serviceNames = service2portsLocationMap.keySet();
             Iterator iter = serviceNames.iterator();
             if (iter.hasNext())
-                return (QName)iter.next();
+                return (QName) iter.next();
+        }
+        return null;
+    }
+
+    public Set<QName> getAllServiceNames() {
+        if (!service2portsLocationMap.isEmpty()) {
+            return service2portsLocationMap.keySet();
         }
         return null;
     }
