@@ -1,5 +1,5 @@
 /*
- * $Id: XMLHandlerContext.java,v 1.2 2005-07-23 04:10:08 kohlert Exp $
+ * $Id: XMLHandlerContext.java,v 1.3 2005-08-01 23:47:30 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -34,7 +34,7 @@ public class XMLHandlerContext extends MessageContextImpl {
 
     public LogicalMessageContext getLogicalMessageContext() {
         if (logicalContext == null) {
-            //logicalContext = new LogicalMessageContextImpl(this);
+            logicalContext = new XMLLogicalMessageContextImpl(this);
         }
         return logicalContext;
     }
