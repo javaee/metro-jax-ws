@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.3 2005-06-24 18:04:32 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
  */
 
 /*
@@ -41,7 +41,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
  * Exceptions are logged in many cases here before being rethrown. This
  * is to help primarily with server side handlers.
  *
- * @author JAX-WS RI Development Team
+ * @author WS Development Team
  */
 public class HandlerChainCaller {
 
@@ -226,7 +226,33 @@ public class HandlerChainCaller {
            MessageContext.Scope.APPLICATION);
     }
 
-    /*
+    /**
+     * Method used to call handlers with a HandlerContext that
+     * may contain logical and protocol handlers.
+     */
+    public boolean callHandlers(Direction direction,
+        RequestOrResponse messageType,
+        HandlerContext context,
+        boolean responseExpected) {
+        
+        return internalCallHandlers(direction, messageType,
+            new ContextHolder(context), responseExpected);
+    }
+    
+    /**
+     * Method used to call handlers with a HandlerContext that
+     * may contain logical and protocol handlers.
+     */
+    public boolean callHandlers(Direction direction,
+        RequestOrResponse messageType,
+        XMLHandlerContext context,
+        boolean responseExpected) {
+        
+        return internalCallHandlers(direction, messageType,
+            new ContextHolder(context), responseExpected);
+    }
+    
+    /**
      * The boolean passed in is whether or not a response is required
      * for the current message. See section 5.3.2. (todo: this section
      * is going to change). The RequestOrResponse
@@ -237,15 +263,16 @@ public class HandlerChainCaller {
      * take care of execution once called and return true or false or
      * throw an exception.
      */
-    public boolean callHandlers(Direction direction,
+    private boolean internalCallHandlers(Direction direction,
         RequestOrResponse messageType,
-        HandlerContext context,
+        ContextHolder ch,
         boolean responseExpected) {
 
-        ContextHolder ch = new ContextHolder(context);
-        ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,
-            (direction == Direction.OUTBOUND));
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+        if (ch.getSMC() != null) {
+            ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,
+                (direction == Direction.OUTBOUND));
+            ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+        }
 
         // call handlers
         if (direction == Direction.OUTBOUND) {
@@ -725,21 +752,35 @@ public class HandlerChainCaller {
      * Used to hold the context objects that get passed around
      * so that the caller class doesn't have instance variables
      * (which will get clobbered by different threads).
+     *
+     * If a HandlerContext is passed in, both logical and soap
+     * handlers are used. If XMLHandlerContext is passed in,
+     * only logical handlers are assumed to be present.
      */
     static class ContextHolder {
 
+        boolean logicalOnly;
         HandlerContext context;
+        XMLHandlerContext xmlContext;
 
         ContextHolder(HandlerContext context) {
             this.context = context;
+            logicalOnly = false;
+        }
+        
+        ContextHolder(XMLHandlerContext xmlContext) {
+            this.xmlContext = xmlContext;
+            logicalOnly = true;
         }
 
         LogicalMessageContext getLMC() {
-            return context.createLogicalMessageContext();
+            return (logicalOnly ? xmlContext.getLogicalMessageContext() :
+                context.createLogicalMessageContext());
         }
 
         SOAPMessageContext getSMC() {
-            return context.createSOAPMessageContext();
+            return (logicalOnly ? null : context.createSOAPMessageContext());
         }
     }
+    
 }

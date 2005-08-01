@@ -1,17 +1,22 @@
 /*
- * $Id: HTTPBindingImpl.java,v 1.3 2005-07-27 18:49:59 jitu Exp $
+ * $Id: HTTPBindingImpl.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.binding.http;
 
-import com.sun.xml.ws.binding.BindingImpl;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
-import java.util.List;
+import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.http.HTTPBinding;
 
+import java.util.List;
 
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
+import com.sun.xml.ws.util.localization.Localizer;
 
 /**
  * @author WS Development Team
@@ -28,10 +33,23 @@ public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
     }
 
     /*
-     * Sets the handler chain
+     * Sets the handler chain. Only logical handlers are
+     * allowed with HTTPBinding.
      */
     @Override
     public void setHandlerChain(List<Handler> chain) {
+        for (Handler handler : chain) {
+            if (!(handler instanceof LogicalHandler)) {
+                LocalizableMessageFactory messageFactory =
+                    new LocalizableMessageFactory(
+                    "com.sun.xml.ws.resources.client");
+                Localizer localizer = new Localizer();
+                Localizable locMessage =
+                    messageFactory.getMessage("non.logical.handler.set",
+                    handler.getClass().toString());
+                throw new WebServiceException(localizer.localize(locMessage));
+            }
+        }
         super.setHandlerChain(chain);
     }
     

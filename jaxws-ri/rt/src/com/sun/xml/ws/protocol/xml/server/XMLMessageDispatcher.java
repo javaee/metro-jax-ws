@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.3 2005-07-26 23:43:46 vivekp Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.4 2005-08-01 19:40:03 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -20,6 +20,8 @@ import com.sun.xml.ws.encoding.xml.XMLEPTFactory;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
+import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.XMLHandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -284,20 +286,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             getCallerFromMessageInfo(messageInfo);
 
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
-            try {
-                /*
-                skipEndpoint = !handlerCaller.callHandlers(Direction.INBOUND,
-                    RequestOrResponse.REQUEST, context, responseExpected);
-                 */
-            } catch(ProtocolException pe) {
-                skipEndpoint = true;
-            } catch(RuntimeException re) {
-                skipEndpoint = true;
-                InternalMessage internalMessage =
-                    SOAPRuntimeModel.createFaultInBody(re, null, null, null);
-                context.setInternalMessage(internalMessage);
-                context.setXMLMessage(null);
-            }
+            skipEndpoint = !handlerCaller.callHandlers(Direction.INBOUND,
+                RequestOrResponse.REQUEST, context, responseExpected);
         }
         return skipEndpoint;
     }
@@ -316,11 +306,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     protected boolean callHandlersOnResponse(HandlerChainCaller caller,
         XMLHandlerContext context) {
-/*
+        
         return caller.callHandlers(Direction.OUTBOUND,
             RequestOrResponse.RESPONSE, context, false);
- */
-        return false;
     }
 
     /*

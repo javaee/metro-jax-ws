@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.3 2005-07-15 21:46:49 jitu Exp $
+ * $Id: HandlerContext.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,7 +15,7 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import java.lang.reflect.Method;
 
 /**
- * @author JAX-WS RI Development Team
+ * @author WS Development Team
  */
 public class HandlerContext extends MessageContextImpl {
 
