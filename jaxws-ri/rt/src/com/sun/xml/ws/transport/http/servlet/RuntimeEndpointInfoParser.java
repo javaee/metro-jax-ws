@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.2 2005-07-25 18:28:25 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.3 2005-08-02 20:04:19 jitu Exp $
  */
 
 /*
@@ -418,7 +418,7 @@ public class RuntimeEndpointInfoParser {
     public static final String ATTR_WSDL = "wsdl";
     public static final String ATTR_SERVICE = "service";
     public static final String ATTR_PORT = "port";
-    public static final String ATTR_URL_PATTERN = "urlpattern";
+    public static final String ATTR_URL_PATTERN = "url-pattern";
     public static final String ATTR_ENABLE_MTOM = "enable-mtom";
     public static final String ATTR_BINDING = "binding";
 
