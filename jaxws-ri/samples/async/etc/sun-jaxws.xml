@@ -9,5 +9,5 @@
     <endpoint
         name='async'
         implementation='async.server.AddNumbersImpl'
-        urlpattern='/addnumbers'/>
+        url-pattern='/addnumbers'/>
 </endpoints>

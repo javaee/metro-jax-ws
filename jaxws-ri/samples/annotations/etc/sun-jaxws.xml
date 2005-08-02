@@ -9,5 +9,5 @@
     <endpoint
         name='annotations'
         implementation='annotations.server.AddNumbersImpl'
-        urlpattern='/addnumbers'/>
+        url-pattern='/addnumbers'/>
 </endpoints>

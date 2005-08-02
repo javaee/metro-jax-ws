@@ -14,6 +14,6 @@
         wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"
         service="{http://duke.org}AddNumbersService"
         port="{http://duke.org}AddNumbersPort"
-        urlpattern="/addnumbers" />
+        url-pattern="/addnumbers" />
 
 </endpoints>

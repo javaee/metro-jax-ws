@@ -12,6 +12,6 @@
     <endpoint
         name="fromjavahandler"
         implementation="fromjavahandler.server.AddNumbersImpl"
-        urlpattern="/addnumbers" />
+        url-pattern="/addnumbers" />
 
 </endpoints>

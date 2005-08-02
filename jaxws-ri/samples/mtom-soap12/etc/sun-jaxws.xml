@@ -13,6 +13,6 @@
         service='{http://example.org/mtom}HelloService'
         port='{http://example.org/mtom}HelloPort'
         binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"
-        urlpattern="/hello" enable-mtom="true"/>
+        url-pattern="/hello" enable-mtom="true"/>
 </endpoints>
 

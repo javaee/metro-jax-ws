@@ -9,5 +9,5 @@
     <endpoint
         name='fromjava'
         implementation='supplychain.server.WarehouseImpl'
-        urlpattern='/submitpo'/>
+        url-pattern='/submitpo'/>
 </endpoints>

@@ -9,5 +9,5 @@
     <endpoint
         name='external_customize'
         implementation='external_customize.server.AddNumbersImpl'
-        urlpattern='/addnumbers'/>
+        url-pattern='/addnumbers'/>
 </endpoints>
