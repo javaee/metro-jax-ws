@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.7 2005-07-28 00:24:35 jitu Exp $
+ * $Id: XMLMessage.java,v 1.8 2005-08-02 02:25:04 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -139,7 +139,11 @@ public class XMLMessage {
                 multipart = new MimeMultipart(dataSource);
                 dataSource = null;
             }
-            MimeBodyPart sourcePart = (MimeBodyPart)multipart.getBodyPart(0);
+            ContentType contentType = new ContentType(multipart.getContentType());
+            String startParam = contentType.getParameter("start");
+            MimeBodyPart sourcePart = (startParam == null)
+                ? (MimeBodyPart)multipart.getBodyPart(0)
+                : (MimeBodyPart)multipart.getBodyPart(startParam);
             ContentType ctype = new ContentType(sourcePart.getContentType());
             String baseType = ctype.getBaseType();
             if (!(isXMLType(baseType))) {
@@ -164,8 +168,14 @@ public class XMLMessage {
                 dataSource = null;
             }
             if (multipart != null) {
-                // TODO: some more work, setting headers 
-                multipart.removeBodyPart(0);
+                ContentType contentType = new ContentType(multipart.getContentType());
+                String startParam = contentType.getParameter("start");
+                if (startParam == null) {
+                    multipart.removeBodyPart(0);
+                } else {
+                    MimeBodyPart part = (MimeBodyPart)multipart.getBodyPart(startParam);
+                    multipart.removeBodyPart(part);
+                }
                 MimeBodyPart sourcePart = new MimeBodyPart(
                         source.getInputStream());
                 multipart.addBodyPart(sourcePart, 0);
