@@ -53,7 +53,7 @@
            "wsdl" - the name of a resource corresponding to the WSDL document for the endpoint
            "service" - the QName of the WSDL service that owns this endpoint;
            "port" - the QName of the WSDL port for this endpoint;
-           "urlpattern" - the URL pattern this endpoint is mapped to.
+           "url-pattern" - the URL pattern this endpoint is mapped to.
            "binding" - specify binding id for SOAP1.1 or SOAP1.2
            "enable-mtom" - Enables MTOM optimization
         "wsdl", "service", "port" attributes are required for provider based endpoints
@@ -68,7 +68,7 @@
     <xsd:attribute name="wsdl" type="xsd:anyURI"/>
     <xsd:attribute name="service" type="xsd:anyURI"/>
     <xsd:attribute name="port" type="xsd:anyURI"/>
-    <xsd:attribute name="urlpattern" type="xsd:anyURI" use="required"/>
+    <xsd:attribute name="url-pattern" type="xsd:anyURI" use="required"/>
     <xsd:attribute name="binding" type="xsd:string"/>
     <xsd:attribute name="enable-mtom" type="xsd:boolean"/>
   </xsd:complexType>

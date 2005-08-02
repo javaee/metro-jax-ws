@@ -439,7 +439,7 @@ together to make a raw WAR file. To learn more about creating a WAR
 file and the deployment descriptor, click <a href="jaxws-war.html">here</a>.&nbsp;
 The deployment descriptor used in fromjava sample is given below and
 can be found <a href="../samples/fromjava/etc/sun-jaxws.xml">here:</a></p>
-<pre style="margin-left: 0.5in;">&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='fromjava'<br>    implementation='fromjava.server.AddNumbersImpl'<br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+<pre style="margin-left: 0.5in;">&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='fromjava'<br>    implementation='fromjava.server.AddNumbersImpl'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
 <p>The attributes of the &lt;endpoint&gt; element are described below:</p>
 <ul>
   <li>
@@ -520,7 +520,7 @@ endpoint interface, value classes generated in the first step mentioned
 in <a href="#2.1.2.1_Generate_a_service_endpoint">3.1.2.1</a>.</p>
 <p>Let's look at <code><a href="../samples/fromwsdl/etc/sun-jaxwsi.xml">sun-jaxws.xml</a></code>
 from the sample application <code>fromwsdl</code>:</p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>   xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>   version="2.0"&gt;<br><br>   &lt;endpoint<br>       name="fromwsdl"<br>       interface="fromwsdl.server.AddNumbersPortType"<br>       implementation="fromwsdl.server.AddNumbersImpl"<br>       wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"<br>       service="{http://duke.org}AddNumbersService"<br>       port="{http://duke.org}AddNumbersPort"<br>       urlpattern="/addnumbers" /&gt;<br><br>&lt;/endpoints&gt;<br><br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>   xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>   version="2.0"&gt;<br><br>   &lt;endpoint<br>       name="fromwsdl"<br>       interface="fromwsdl.server.AddNumbersPortType"<br>       implementation="fromwsdl.server.AddNumbersImpl"<br>       wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"<br>       service="{http://duke.org}AddNumbersService"<br>       port="{http://duke.org}AddNumbersPort"<br>       url-pattern="/addnumbers" /&gt;<br><br>&lt;/endpoints&gt;<br><br></pre>
 <p>It defines the deployment-related configuration information for the <code>fromwsdl</code>
 endpoint.&nbsp; You will notice that this deployment descriptor
 contains additional attributes than the deployment<br>

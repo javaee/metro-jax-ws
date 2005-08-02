@@ -24,12 +24,12 @@ tools.</p>
 File</h4>
 <p>The <code>&lt;endpoints&gt;</code> element contain one or more <code>&lt;endpoint&gt;</code>
 elements. Each endpoint represents a port in the WSDL and it contains
-all information about implementation class, servlet urlpattern,
+all information about implementation class, servlet url-pattern,
 binding, WSDL, service, port QNames.&nbsp; The following shows a <code>sun-jaxws.xml</code>
 file for a simple <code>HelloWorld</code> service. sun-jaxws.xml is
 the schema instance of <a href="sun-jaxws.xsd">sun-jaxws.xsd</a>.<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>  xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>  version="2.0"&gt;<br>  &lt;endpoint<br>    name="MyHello"<br><code>    implementation="hello.HelloImpl"</code><br>    urlpattern="/<code>hello"/&gt;<br>&lt;/endpoints&gt;<br><br></code></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints<br>  xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"<br>  version="2.0"&gt;<br>  &lt;endpoint<br>    name="MyHello"<br><code>    implementation="hello.HelloImpl"</code><br>    url-pattern="/<code>hello"/&gt;<br>&lt;/endpoints&gt;<br><br></code></pre>
 <ul>
   <li>
     <pre>endpoint can have the following attributes</pre>
@@ -101,7 +101,7 @@ this annotation.<br>
         </tr>
         <tr>
           <td style="vertical-align: top;">
-          <pre>urlpattern</pre>
+          <pre>url-pattern</pre>
           </td>
           <td style="vertical-align: top;">N<br>
           </td>

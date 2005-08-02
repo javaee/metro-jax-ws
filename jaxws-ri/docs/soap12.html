@@ -30,7 +30,7 @@ javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING which is:
 <br>
 Here is the sun-jaxws.xml from fromjava-soap1.2 sample:<br>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br><br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='fromjava-soap12'<br>    implementation='fromjava_soap12.server.AddNumbersImpl'<br>    <span
- style="font-weight: bold;">binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"</span>  <br>    urlpattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+ style="font-weight: bold;">binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"</span>  <br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
 JAXWS 2.0 generates WSDL on the fly when requested by a client. If this
 binding attribute is present and is equal to SOAP 1.2 HTTP binding WSDL
 with SOAP 1.2 binding is generated. Based on this binding descriptor
