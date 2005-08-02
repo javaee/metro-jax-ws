@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.2 2005-07-24 01:35:14 kohlert Exp $
+ * $Id: Internalizer.java,v 1.3 2005-08-02 23:03:17 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,12 +8,10 @@ package com.sun.tools.ws.wsdl.parser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -28,6 +26,7 @@ import org.w3c.dom.NodeList;
 
 import com.sun.tools.xjc.util.DOMUtils;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -45,28 +44,28 @@ public class Internalizer {
     private final XPath xpath = xpf.newXPath();
     private final  LocalizableMessageFactory messageFactory = new LocalizableMessageFactory("com.sun.tools.ws.resources.wsdl");;
     private ProcessorEnvironment env;
-    public  void transform(Set<Element> jaxwsBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
-        if(jaxwsBindings == null)
+    public  void transform(Set<Element> JAXWSBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
+        if(JAXWSBindings == null)
             return;
         this.env = env;
         this.wsdlDocuments = wsdlDocuments;
         Map targetNodes = new HashMap<Element, Node>();
 
-        // identify target nodes for all <jaxws:bindings>
-        for(Element jaxwsBinding : jaxwsBindings) {
+        // identify target nodes for all <JAXWS:bindings>
+        for(Element JAXWSBinding : JAXWSBindings) {
             // initially, the inherited context is itself
-            buildTargetNodeMap( jaxwsBinding, jaxwsBinding, targetNodes );
+            buildTargetNodeMap( JAXWSBinding, JAXWSBinding, targetNodes );
         }
 
         // then move them to their respective positions.
-        for( Element jaxwsBinding : jaxwsBindings) {
-            move( jaxwsBinding, targetNodes );
+        for( Element JAXWSBinding : JAXWSBindings) {
+            move( JAXWSBinding, targetNodes );
         }
 
     }
 
     /**
-     * Validates attributes of a <JAXWS:bindings> element.
+     * Validates attributes of a &lt;JAXWS:bindings> element.
      */
     private void validate( Element bindings ) {
         NamedNodeMap atts = bindings.getAttributes();
@@ -132,51 +131,104 @@ public class Internalizer {
             target = get(wsdlLocation);
             if(target==null) {
                 error("internalizer.targetNotFound", new Object[]{wsdlLocation});
-                return; // abort processing this <jaxws:bindings>
+                return; // abort processing this <JAXWS:bindings>
             }
         }
 
-        // look for @node
-        if( bindings.getAttributeNode("node")!=null ) {
-            String nodeXPath = bindings.getAttribute("node");
+        //process global bindings
 
-            // evaluate this XPath
-            NodeList nlst;
-            try {
-                xpath.setNamespaceContext(new NamespaceContextImpl(bindings));
-                nlst = (NodeList)xpath.evaluate(nodeXPath,target,XPathConstants.NODESET);
-            } catch (XPathExpressionException e) {
-                error("internalizer.XPathEvaluationError", new Object[]{e.getMessage()});
-                if(env.verbose())
-                    e.printStackTrace();
-                return; // abort processing this <jaxb:bindings>
-            }
 
-            if( nlst.getLength()==0 ) {
-                error("internalizer.XPathEvaluatesToNoTarget", new Object[]{nodeXPath});
-                return; // abort
-            }
-
-            if( nlst.getLength()!=1 ) {
-                error("internalizer.XPathEvaulatesToTooManyTargets", new Object[]{nodeXPath, nlst.getLength()});
-                return; // abort
-            }
-
-            Node rnode = nlst.item(0);
-            if(!(rnode instanceof Element )) {
-                error("internalizer.XPathEvaluatesToNonElement", new Object[]{nodeXPath});
-                return; // abort
-            }
-            target = (Element)rnode;
+        // look for @node, if not found just check for global customizations
+        if(isGlobalBinding(bindings) && !isWSDLDefinition(target)){           
+                target = evaluateXPathNode(target, "wsdl:definitions",
+                            new javax.xml.namespace.NamespaceContext(){
+                                public String getNamespaceURI(String prefix){
+                                    return "http://schemas.xmlsoap.org/wsdl/";
+                                }
+                                public String getPrefix(String nsURI){
+                                    throw new UnsupportedOperationException();
+                                }
+                                public Iterator getPrefixes(String namespaceURI) {
+                                    throw new UnsupportedOperationException();
+                                }});
+        }else if(isJAXWSBindings(bindings) && bindings.getAttributeNode("node")!=null ) {
+            target = evaluateXPathNode(target, bindings.getAttribute("node"), new NamespaceContextImpl(bindings));
         }
 
         // update the result map
         result.put( bindings, target );
 
-        // look for child <jaxws:bindings> and process them recursively
-        Element[] children = DOMUtils.getChildElements( bindings, JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "bindings" );
+        // look for child <JAXWS:bindings> and process them recursively
+        Element[] children = getChildElements( bindings, JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
         for( int i=0; i<children.length; i++ )
             buildTargetNodeMap( children[i], target, result );
+    }
+
+    private boolean isWSDLDefinition(Node target){
+        if(target == null)
+            return false;
+        String localName = target.getLocalName();
+        String nsURI = target.getNamespaceURI();
+        if(((localName != null) && localName.equals("definitions")) &&
+            (nsURI != null && nsURI.equals("http://schemas.xmlsoap.org/wsdl/")))
+            return true;
+        return false;
+
+    }
+
+    private boolean isJAXWSBindings(Node bindings){
+        return (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) && bindings.getLocalName().equals("bindings"));
+    }
+
+    private boolean isGlobalBinding(Node bindings){
+        return (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) &&
+                (bindings.getLocalName().equals("package") ||
+                bindings.getLocalName().equals("enableAsyncMapping") ||
+                bindings.getLocalName().equals("enableAdditionalSOAPHeaderMapping") ||
+                bindings.getLocalName().equals("enableMIMEContent")));
+    }
+
+    private static Element[] getChildElements(Element parent, String nsUri) {
+        ArrayList a = new ArrayList();
+        NodeList children = parent.getChildNodes();
+        for( int i=0; i<children.getLength(); i++ ) {
+            Node item = children.item(i);
+            if(!(item instanceof Element ))     continue;
+
+            if(nsUri.equals(item.getNamespaceURI()))
+                a.add(item);
+        }
+        return (Element[]) a.toArray(new Element[a.size()]);
+    }
+
+    private Node evaluateXPathNode(Node target, String expression, NamespaceContext namespaceContext) {
+        NodeList nlst;
+        try {
+            xpath.setNamespaceContext(namespaceContext);
+            nlst = (NodeList)xpath.evaluate(expression, target, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            error("internalizer.XPathEvaluationError", new Object[]{e.getMessage()});
+            if(env.verbose())
+                e.printStackTrace();
+            return target; // abort processing this <jaxb:bindings>
+        }
+
+        if( nlst.getLength()==0 ) {
+            error("internalizer.XPathEvaluatesToNoTarget", new Object[]{expression});
+            return target; // abort
+        }
+
+        if( nlst.getLength()!=1 ) {
+            error("internalizer.XPathEvaulatesToTooManyTargets", new Object[]{expression, nlst.getLength()});
+            return target; // abort
+        }
+
+        Node rnode = nlst.item(0);
+        if(!(rnode instanceof Element )) {
+            error("internalizer.XPathEvaluatesToNonElement", new Object[]{expression});
+            return target; // abort
+        }
+        return (Element)rnode;
     }
 
     /**
@@ -193,14 +245,15 @@ public class Internalizer {
         for( int i=0; i<children.length; i++ ) {
             Element item = children[i];
 
-            if("bindings".equals(item.getLocalName())){
-                target = targetNodes.get(item);
-                if(!(target instanceof Element )) {
-                    //warn("internalizer.targetNotAnElement", new Object[]{});
-                    return; // abort
-                }
-
-
+            target = targetNodes.get(item);
+            if(!(target instanceof Element )) {
+                //warn("internalizer.targetNotAnElement", new Object[]{});
+                return; // abort
+            }
+            if(isGlobalBinding(item)){
+                //its global customization
+                moveUnder(item, (Element)target);
+            }else if("bindings".equals(item.getLocalName())){
                 Element[] bindingChild = getBindingChildren(item);
                 for(int j = 0; j< bindingChild.length; j++){
                     // move this node under the target
@@ -264,7 +317,7 @@ public class Internalizer {
      * Moves the "decl" node under the "target" node.
      *
      * @param decl
-     *      A JAXWS customization element (e.g., <jaxws:class>)
+     *      A JAXWS customization element (e.g., &lt;JAXWS:class>)
      *
      * @param target
      *      XML wsdl element under which the declaration should move.
@@ -290,12 +343,13 @@ public class Internalizer {
             copyInscopeNSAttributes(decl);
         }else if(isJAXWSBindingElement(decl)){
             //add jaxb namespace declaration
-            if(!target.hasAttributeNS(Constants.NS_XMLNS, "jaxws")){
-                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxws", JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
+            if(!target.hasAttributeNS(Constants.NS_XMLNS, "JAXWS")){
+                target.setAttributeNS(Constants.NS_XMLNS, "xmlns:JAXWS", JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
             }
 
             //insert xs:annotation/xs:appinfo where in jaxb:binding will be put
-            target = refineWSDLTarget(target);
+            if(!isGlobalBinding(decl))
+                target = refineWSDLTarget(target);
         }else{
             return;
         }
@@ -371,11 +425,11 @@ public class Internalizer {
 
     public Element refineWSDLTarget(Element target) {
         // look for existing xs:annotation
-        Element jaxwsBindings = DOMUtils.getFirstChildElement(target, JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "bindings");
-        if(jaxwsBindings==null)
+        Element JAXWSBindings = DOMUtils.getFirstChildElement(target, JAXWSBindingsConstants.NS_JAXWS_BINDINGS, "bindings");
+        if(JAXWSBindings==null)
             // none exists. need to make one
-            jaxwsBindings = insertJAXWSBindingsElement(target, "bindings" );
-        return jaxwsBindings;
+            JAXWSBindings = insertJAXWSBindingsElement(target, "bindings" );
+        return JAXWSBindings;
     }
 
     /**
@@ -406,7 +460,7 @@ public class Internalizer {
     }
 
     private Element insertJAXWSBindingsElement( Element parent, String localName ) {
-        String qname = "jaxws:"+localName;
+        String qname = "JAXWS:"+localName;
 
         Element child = parent.getOwnerDocument().createElementNS(JAXWSBindingsConstants.NS_JAXWS_BINDINGS, qname );
 
