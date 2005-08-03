@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.3 2005-07-24 01:34:58 kohlert Exp $
+ * $Id: WSServletContextListener.java,v 1.4 2005-08-03 22:54:07 jitu Exp $
  */
 
 /*
@@ -21,6 +21,8 @@ import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
@@ -95,6 +97,9 @@ public class WSServletContextListener
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, endpoints);
             
+            // Create WebServiceContext
+            createWebServiceContext(endpoints);
+            
             // Creates WSDL & schema metadata and runtime model
             createModelAndMetadata(endpoints, docs);
 
@@ -127,6 +132,19 @@ public class WSServletContextListener
                     docs.put(docPath, new ServletDocInfo(context, docPath));
                 }
             }
+        }
+    }
+    
+    /*
+     * Setting the WebServiceContext for each endpoint. WebServiceContextImpl
+     * contains servlet specific code, hence the initialization is done here
+     * (instead of doing in RuntimeEndpointInfoParser)
+     */
+    private void createWebServiceContext(List<RuntimeEndpointInfo> endpoints) {
+
+        for(RuntimeEndpointInfo endpoint : endpoints) {
+            WebServiceContext wsContext = new WebServiceContextImpl();
+            endpoint.setWebServiceContext(wsContext);
         }
     }
     

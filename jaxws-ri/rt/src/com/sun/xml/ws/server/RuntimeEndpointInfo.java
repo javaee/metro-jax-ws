@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.25 2005-07-27 18:50:04 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.26 2005-08-03 22:54:08 jitu Exp $
  */
 
 /*
@@ -8,8 +8,6 @@
  */
 
 package com.sun.xml.ws.server;
-
-import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
@@ -26,8 +24,12 @@ import javax.xml.namespace.QName;
 import com.sun.xml.ws.spi.runtime.Binding;
 import javax.xml.ws.Provider;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.handler.Handler;
 import javax.xml.transform.Source;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import javax.xml.ws.BeginService;
+import javax.xml.ws.EndService;
 
 
 /**
@@ -54,6 +56,9 @@ public class RuntimeEndpointInfo
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
     private boolean enableMtom;
+    private WebServiceContext wsContext;
+    private boolean beginService;
+    private boolean endService;
 
     public Exception getException() {
         return exception;
@@ -255,6 +260,14 @@ public class RuntimeEndpointInfo
             query2Doc.put(docInfo.getQueryString(), docInfo);
         }
     }
+    
+    public WebServiceContext getWebServiceContext() {
+        return wsContext;
+    }
+    
+    public void setWebServiceContext(WebServiceContext wsContext) {
+        this.wsContext = wsContext;
+    }
      
     
     /*
@@ -280,6 +293,48 @@ public class RuntimeEndpointInfo
     public String getPath(String queryString) {
         DocInfo docInfo = query2Doc.get(queryString);
         return (docInfo == null) ? null : docInfo.getPath();
+    }
+    
+    /*
+     * Calls the first method in the implementor object that has @BeginService
+     * annotation. Servlet.init(), or Endpoint.publish() may call this. Used
+     * synchronized because multiple servlet instances may call this in their
+     * init()
+     */
+    public synchronized void beginService()
+    throws IllegalAccessException, InvocationTargetException {
+        if (!beginService) {
+            Class c = implementor.getClass();
+            Method[] methods = c.getMethods();
+            for(Method method : methods) {
+                if (method.getAnnotation(BeginService.class) != null) {
+                    method.invoke(implementor, new Object[]{ });
+                    break;
+                }
+            }
+            beginService = true;
+        }
+    }
+    
+    /*
+     * Calls the first method in the implementor object that has @EndService
+     * annotation. Servlet.destory(), or Endpoint.stop() may call this. Used
+     * synchronized because multiple servlet instances may call this in their
+     * destroy()
+     */
+    public synchronized void endService()
+    throws IllegalAccessException, InvocationTargetException {
+        if (!endService) {
+            Class c = implementor.getClass();
+            Method[] methods = c.getMethods();
+            for(Method method : methods) {
+                if (method.getAnnotation(EndService.class) != null) {
+                    method.invoke(implementor, new Object[]{ });
+                    break;
+                }
+            }
+            endService = true;
+        }
     }
 
 }

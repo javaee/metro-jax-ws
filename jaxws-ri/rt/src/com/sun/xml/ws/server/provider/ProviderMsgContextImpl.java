@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMsgContextImpl.java,v 1.2 2005-06-15 01:23:11 jitu Exp $
+ * $Id: ProviderMsgContextImpl.java,v 1.3 2005-08-03 22:54:09 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,6 +7,7 @@
 package com.sun.xml.ws.server.provider;
 
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.MessageContextImpl;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.xml.ws.handler.MessageContext.Scope;
 
-public class ProviderMsgContextImpl implements Map<String, Object> {
+public class ProviderMsgContextImpl extends MessageContextImpl {
 
     private HandlerContext ctxt;
     private Map<String, Object> appContext; // properties in APPLICATION scope

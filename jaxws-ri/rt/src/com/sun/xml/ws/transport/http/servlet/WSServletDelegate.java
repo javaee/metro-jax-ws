@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.2 2005-07-24 01:34:59 kohlert Exp $
+ * $Id: WSServletDelegate.java,v 1.3 2005-08-03 22:54:07 jitu Exp $
  *
  */
 
@@ -9,6 +9,7 @@
  */
 
 package com.sun.xml.ws.transport.http.servlet;
+import com.sun.xml.ws.handler.MessageContextImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -52,13 +55,9 @@ public class WSServletDelegate implements ServletDelegate {
     private com.sun.xml.ws.server.Tie tie =
         new com.sun.xml.ws.server.Tie();
 
-    public void init(ServletConfig servletConfig) throws ServletException {
-        init(servletConfig, SOAPVersion.SOAP_11);
-    }
-
-    public void init(ServletConfig servletConfig, SOAPVersion ver)
+    public void init(ServletConfig servletConfig)
         throws ServletException {
-        //init(ver); //Initialize SOAP constants
+
         defaultLocalizer = new Localizer();
         localizerMap = new HashMap();
         localizerMap.put(defaultLocalizer.getLocale(), defaultLocalizer);
@@ -94,6 +93,14 @@ public class WSServletDelegate implements ServletDelegate {
                 } else {
                     endpointsByName.put(info.getName(), info);
                     registerEndpointUrlPattern(info);
+                    // TODO Inject WebServiceContext
+
+                    try {
+                        info.beginService();
+                    } catch(Exception e) {
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        throw new ServletException(e.getMessage());
+                    }
                 }
             }
         }
@@ -105,13 +112,7 @@ public class WSServletDelegate implements ServletDelegate {
             (publishWSDLParam == null
                 ? true
                 : Boolean.valueOf(publishWSDLParam).booleanValue());
-        String publishModelParam =
-            servletContext.getInitParameter(
-                WSServlet.JAXWS_RI_PROPERTY_PUBLISH_MODEL);
-        publishModel =
-            (publishModelParam == null
-                ? true
-                : Boolean.valueOf(publishModelParam).booleanValue());
+
         String publishStatusPageParam =
             servletContext.getInitParameter(
                 WSServlet.JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE);
@@ -131,6 +132,15 @@ public class WSServletDelegate implements ServletDelegate {
             logger.info(
                 defaultLocalizer.localize(
                     messageFactory.getMessage("servlet.info.destroy")));
+        }
+        if (jaxwsInfo != null) {
+            for(RuntimeEndpointInfo info : jaxwsInfo) {
+                try {
+                    info.endService();
+                } catch(Exception e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -335,9 +345,6 @@ public class WSServletDelegate implements ServletDelegate {
         throws ServletException {
         
         try {
-            WebServiceContext.setServletContext(servletContext);
-            WebServiceContext.setServletRequest(request);
-            
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
             if (targetEndpoint != null) {
                 if (logger.isLoggable(Level.FINEST)) {
@@ -347,6 +354,13 @@ public class WSServletDelegate implements ServletDelegate {
                                 targetEndpoint.getName())));
                 }
             }
+            WebServiceContext wsCtxt = targetEndpoint.getWebServiceContext();
+            MessageContext msgCtxt = new MessageContextImpl();
+            wsCtxt.setMessageContext(msgCtxt);
+            msgCtxt.put("javax.xml.ws.servlet.context", servletContext);
+            msgCtxt.put("javax.xml.ws.servlet.session", request.getSession());
+            msgCtxt.put("javax.xml.ws.servlet.request", request);
+            msgCtxt.put("javax.xml.ws.servlet.response", response);
             WSConnection connection =
                 new ServletConnectionImpl(request, response);
             tie.handle(connection, targetEndpoint);
@@ -567,7 +581,6 @@ public class WSServletDelegate implements ServletDelegate {
     private Map localizerMap;
     private WSDLPublisher publisher;
     private boolean publishWSDL;
-    private boolean publishModel;
     private boolean publishStatusPage;
 
     private static final Logger logger =

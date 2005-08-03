@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.8 2005-07-27 13:15:49 spericas Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.9 2005-08-03 22:54:08 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -41,6 +41,8 @@ import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.server.provider.ProviderMsgContextImpl;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
@@ -143,6 +145,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     if (shd != null) {
                         shd.preInvokeEndpointHook(context);
                     }
+                    updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);
                 }
 
@@ -218,8 +221,22 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         WSConnection con = (WSConnection)messageInfo.getConnection();
         return SOAPConnectionUtil.getSOAPMessage(con, messageInfo, null);
     }
+    
+    /*
+     * Sets the WebServiceContext with correct MessageContext which contains
+     * APPLICATION scope properties
+     */
+    protected void updateWebServiceContext(MessageInfo messageInfo, HandlerContext hc) {
+        RuntimeEndpointInfo endpointInfo = 
+            MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+        if (wsContext != null) {
+            ProviderMsgContextImpl msgContext = new ProviderMsgContextImpl(hc);
+            wsContext.setMessageContext(msgContext);
+        }
+    }
 
-/*
+    /*
      * Invokes the endpoint.
      */
     protected void invokeEndpoint(MessageInfo messageInfo, HandlerContext hc) {

@@ -1,12 +1,10 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.5 2005-07-23 04:10:12 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.6 2005-08-03 22:54:06 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi.runtime;
-
-import com.sun.xml.ws.spi.runtime.Binding;
 
 /**
  * This captures all the required information (e.g: handlers, binding, endpoint
@@ -41,7 +39,7 @@ public interface RuntimeEndpointInfo {
     public void setImplementorProxy(Object servantProxy);
     
     /**
-     * Gets the endpoint implementation object
+     * @return Object Gets the endpoint implementation object
      */
     public Object getImplementor();
     
@@ -51,7 +49,7 @@ public interface RuntimeEndpointInfo {
     public Object getImplementorProxy();
 
     /**
-     * Returns the binding for this endpoint.
+     * @return Binding Returns the binding for this endpoint.
      */
     public Binding getBinding();
     
@@ -60,5 +58,15 @@ public interface RuntimeEndpointInfo {
      * the binding object.
      */
     public void setBinding(Binding binding);
+    
+    /**
+     * @return WebServiceContext Returns the WebServiceContext of this endpoint.
+     */
+    public WebServiceContext getWebServiceContext();
+    
+    /**
+     * sets the WebServiceContext for this endpoint.
+     */
+    public void setWebServiceContext(WebServiceContext wsContext);
 
 }
