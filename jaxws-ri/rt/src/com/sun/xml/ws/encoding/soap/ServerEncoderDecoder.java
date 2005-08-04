@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.7 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.8 2005-08-04 21:46:18 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -190,12 +190,14 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
 
     private Object createDetailFromUserDefinedException(CheckedException ce, Object exception) {
         Class detailBean = ce.getDetailBean();
-        Field[] fields = detailBean.getFields();
+        Field[] fields = detailBean.getDeclaredFields();
         try {
             Object detail = detailBean.newInstance();
             for(Field f : fields){
                 Method em = exception.getClass().getMethod(getReadMethod(f));
                 f.set(detail, em.invoke(exception));
+//                Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
+//                sm.invoke(detail, em.invoke(exception));
             }
             return detail;
         } catch (InstantiationException e) {
@@ -225,6 +227,10 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             return "is" + StringUtils.capitalize(f.getName());
         return "get" + StringUtils.capitalize(f.getName());
     }
+    
+    private String getWriteMethod(Field f){
+        return "set" + StringUtils.capitalize(f.getName());
+    }    
 
     /**
      * @return the actor
