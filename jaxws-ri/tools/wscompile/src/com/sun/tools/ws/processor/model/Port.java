@@ -1,5 +1,5 @@
 /*
- * $Id: Port.java,v 1.3 2005-08-04 22:08:16 kohlert Exp $
+ * $Id: Port.java,v 1.4 2005-08-04 22:09:37 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,6 @@ package com.sun.tools.ws.processor.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,8 +58,7 @@ public class Port extends ModelObject {
     private void initializeOperationsByName() {
         operationsByName = new HashMap();
         if (_operations != null) {
-            for (Iterator iter = _operations.iterator(); iter.hasNext();) {
-                Operation operation = (Operation) iter.next();
+            for (Operation operation : _operations) {
                 if (operation.getUniqueName() != null &&
                     operationsByName.containsKey(operation.getUniqueName())) {
 
