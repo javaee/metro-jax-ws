@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.1 2005-07-27 18:49:58 jitu Exp $
+ * $Id: BindingImpl.java,v 1.2 2005-08-04 04:30:13 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -37,11 +37,12 @@ import java.util.List;
 public abstract class BindingImpl implements 
     com.sun.xml.ws.spi.runtime.Binding {
 
+    protected final static String SHD_NAME= "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
     // caller ignored on server side
     public HandlerChainCaller chainCaller;
     List<Handler> handlers;
     private String bindingId;
-    private SystemHandlerDelegate systemHandlerDelegate;
+    protected SystemHandlerDelegate systemHandlerDelegate;
 
     // called by DispatchImpl
     public BindingImpl(String bindingId) {
@@ -76,7 +77,6 @@ public abstract class BindingImpl implements
 
     public SecurityConfiguration getSecurityConfiguration() {
         throw new WebServiceException("Security is not implemented for JAXWS 2.0 Early Access.");
-        //return null;
     }
 
     // used by client runtime before invoking handlers

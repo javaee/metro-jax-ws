@@ -1,10 +1,13 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.4 2005-07-27 18:50:00 jitu Exp $
+ * $Id: SOAPBindingImpl.java,v 1.5 2005-08-04 04:30:13 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.binding.soap;
+
+import static java.lang.Class.*;
+import static java.lang.Thread.currentThread;
 
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -22,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import com.sun.xml.ws.binding.BindingImpl;
-
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 
 
 /**
@@ -41,12 +44,14 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
     public SOAPBindingImpl(String bindingId) {
         super(bindingId);
         setup(bindingId);
+        setupSystemHandlerDelegate();
     }
 
     // created by HandlerRegistryImpl
     public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
         setup(bindingId);
+        setupSystemHandlerDelegate();
     }
 
     // if the binding id is unknown, no roles are added
@@ -143,6 +148,35 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
 
             // this should not happen with the strings in SOAPBindingImpl
             throw new RuntimeException(e);
+        }
+    }
+
+    private void setupSystemHandlerDelegate() {
+        ClassLoader classLoader = null;
+        Class shdClass = null;
+        try {
+            classLoader = currentThread().getContextClassLoader();
+        } catch (Exception x) {
+            throw new WebServiceException(x);
+        }
+
+        try {
+            if (classLoader == null) {
+                shdClass = forName(SHD_NAME);
+            } else {
+                shdClass = classLoader.loadClass(SHD_NAME);
+            }
+
+            if (shdClass != null) {
+                setSystemHandlerDelegate((SystemHandlerDelegate)
+                    shdClass.newInstance());
+            }
+        } catch (ClassNotFoundException e) {
+            //e.printStackTrace(); //todo:need to add log
+        } catch (IllegalAccessException e) {
+            throw new WebServiceException(e);
+        } catch (InstantiationException e) {
+            throw new WebServiceException(e);
         }
     }
 }
