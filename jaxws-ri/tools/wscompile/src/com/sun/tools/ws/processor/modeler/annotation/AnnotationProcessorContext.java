@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorContext.java,v 1.2 2005-08-04 21:53:23 kohlert Exp $
+ * $Id: AnnotationProcessorContext.java,v 1.3 2005-08-04 22:08:16 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -86,9 +86,9 @@ public class AnnotationProcessorContext {
     public static boolean isEncoded(Model model) {
         if (model == null)
             return false;
-        for (Service service : model.getServicesList()) {
+        for (Service service : model.getServices()) {
             for (Port port : service.getPorts()) {
-                for (Operation operation : port.getOperationsList()) {
+                for (Operation operation : port.getOperations()) {
                     if (operation.getUse() != null && operation.getUse().equals(SOAPUse.LITERAL))
                         return false;
                 }

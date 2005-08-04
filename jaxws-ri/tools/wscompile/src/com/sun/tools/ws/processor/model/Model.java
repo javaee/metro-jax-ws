@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.4 2005-07-29 19:54:49 kohlert Exp $
+ * $Id: Model.java,v 1.5 2005-08-04 22:08:16 kohlert Exp $
  */
 
 /*
@@ -62,10 +62,6 @@ public class Model extends ModelObject {
         servicesByName.put(service.getName(), service);
     }
 
-    public Iterator getServices() {
-        return services.iterator();
-    }
-
     public Service getServiceByName(QName name) {
         if (servicesByName.size() != services.size()) {
             initializeServicesByName();
@@ -74,20 +70,19 @@ public class Model extends ModelObject {
     }
 
     /* serialization */
-    public List<Service> getServicesList() {
+    public List<Service> getServices() {
         return services;
     }
 
     /* serialization */
-    public void setServicesList(List<Service> l) {
+    public void setServices(List<Service> l) {
         services = l;
     }
 
     private void initializeServicesByName() {
         servicesByName = new HashMap();
         if (services != null) {
-            for (Iterator iter = services.iterator(); iter.hasNext();) {
-                Service service = (Service)iter.next();
+            for (Service service : services) {
                 if (service.getName() != null &&
                     servicesByName.containsKey(service.getName())) {
 

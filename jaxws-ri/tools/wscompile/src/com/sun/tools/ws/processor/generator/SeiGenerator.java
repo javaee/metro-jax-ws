@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.6 2005-08-04 21:53:22 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.7 2005-08-04 22:08:15 kohlert Exp $
  */
 
 /**
@@ -112,7 +112,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
         //@SOAPBinding
         writeSOAPBinding(port, cls);
 
-        for (Operation operation: port.getOperationsList()) {
+        for (Operation operation: port.getOperations()) {
             JavaMethod method = operation.getJavaMethod();
 
             //@WebMethod
@@ -319,7 +319,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
         if(isDocStyle){
             boolean first = true;
             boolean isWrapper = true;
-            for(Operation operation:port.getOperationsList()){
+            for(Operation operation:port.getOperations()){
                 if(first){
                     isWrapper = operation.isWrapped();
                     first = false;
@@ -376,7 +376,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
 
 
     public void visit(Model model) throws Exception {
-        for(Service s:model.getServicesList()){
+        for(Service s:model.getServices()){
             s.accept(this);
         }
     }

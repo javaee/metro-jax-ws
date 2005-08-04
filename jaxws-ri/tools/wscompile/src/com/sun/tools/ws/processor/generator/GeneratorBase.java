@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.2 2005-08-04 21:53:22 kohlert Exp $
+ * $Id: GeneratorBase.java,v 1.3 2005-08-04 22:08:15 kohlert Exp $
  */
 
 /*
@@ -164,10 +164,8 @@ public abstract class GeneratorBase
 
     protected void visitModel(Model model) throws Exception {
         env.getNames().resetPrefixFactory();
-//        writerFactory = new SerializerWriterFactoryImpl(env.getNames());
-        Iterator services = model.getServices();
-        while (services.hasNext()) {
-            ((Service) services.next()).accept(this);
+        for (Service service : model.getServices()) {
+            service.accept(this);
         }
     }
 
@@ -212,9 +210,8 @@ public abstract class GeneratorBase
     }
 
     protected void visitPort(Port port) throws Exception {
-        Iterator operations = port.getOperations();
-        while (operations.hasNext()) {
-            ((Operation) operations.next()).accept(this);
+        for (Operation operation : port.getOperations()) {
+            operation.accept(this);
         }
     }
 

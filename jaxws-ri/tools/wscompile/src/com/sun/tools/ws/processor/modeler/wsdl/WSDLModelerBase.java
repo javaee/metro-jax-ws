@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.5 2005-07-24 01:35:10 kohlert Exp $
+ * $Id: WSDLModelerBase.java,v 1.6 2005-08-04 22:08:17 kohlert Exp $
  */
 
 /*
@@ -576,7 +576,7 @@ public abstract class WSDLModelerBase implements Modeler {
                 // this binding has been processed before
                 Port existingPort =
                     (Port)_bindingNameToPortMap.get(bindingName);
-                port.setOperationsList(existingPort.getOperationsList());
+                port.setOperations(existingPort.getOperations());
                 port.setJavaInterface(existingPort.getJavaInterface());
             } else {
                 // find out the SOAP binding extension, if any
@@ -2701,8 +2701,7 @@ public abstract class WSDLModelerBase implements Modeler {
         Set methodNames = new HashSet();
         Set methodSignatures = new HashSet();
 
-        for (Iterator iter = port.getOperations(); iter.hasNext();) {
-            Operation operation = (Operation)iter.next();
+        for (Operation operation : port.getOperations()) {
             createJavaMethodForOperation(
                 port,
                 operation,

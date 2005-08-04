@@ -1,5 +1,5 @@
 /**
- * $Id: ExtendedModelVisitor.java,v 1.4 2005-08-04 21:57:29 kohlert Exp $
+ * $Id: ExtendedModelVisitor.java,v 1.5 2005-08-04 22:08:16 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -20,16 +20,12 @@ public class ExtendedModelVisitor {
 
     public void visit(Model model) throws Exception {
         preVisit(model);
-        for (Iterator iter = model.getServices(); iter.hasNext();) {
-            Service service = (Service) iter.next();
+        for (Service service : model.getServices()) {
             preVisit(service);
             for (Port port : service.getPorts()) {
                 preVisit(port);
                 if (shouldVisit(port)) {
-                    for (Iterator iter3 = port.getOperations();
-                        iter3.hasNext();) {
-
-                        Operation operation = (Operation) iter3.next();
+                    for (Operation operation : port.getOperations()) {                        
                         preVisit(operation);
                         Request request = operation.getRequest();
                         if (request != null) {

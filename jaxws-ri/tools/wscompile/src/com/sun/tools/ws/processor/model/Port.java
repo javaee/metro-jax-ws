@@ -1,5 +1,5 @@
 /*
- * $Id: Port.java,v 1.2 2005-07-18 18:14:00 kohlert Exp $
+ * $Id: Port.java,v 1.3 2005-08-04 22:08:16 kohlert Exp $
  */
 
 /*
@@ -49,10 +49,6 @@ public class Port extends ModelObject {
         operationsByName.put(operation.getUniqueName(), operation);
     }
 
-    public Iterator getOperations() {
-        return _operations.iterator();
-    }
-
     public Operation getOperationByUniqueName(String name) {
         if (operationsByName.size() != _operations.size()) {
             initializeOperationsByName();
@@ -76,12 +72,12 @@ public class Port extends ModelObject {
     }
 
     /* serialization */
-    public List<Operation> getOperationsList() {
+    public List<Operation> getOperations() {
         return _operations;
     }
 
     /* serialization */
-    public void setOperationsList(List<Operation> l) {
+    public void setOperations(List<Operation> l) {
         _operations = l;
     }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.11 2005-07-29 19:54:50 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.12 2005-08-04 22:08:17 kohlert Exp $
  */
 
 /*
@@ -319,7 +319,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 // this binding has been processed before
                 Port existingPort =
                     _bindingNameToPortMap.get(bindingName);
-                port.setOperationsList(existingPort.getOperationsList());
+                port.setOperations(existingPort.getOperations());
                 port.setJavaInterface(existingPort.getJavaInterface());
                 port.setStyle(existingPort.getStyle());
                 port.setWrapped(existingPort.isWrapped());
