@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.16 2005-07-27 18:50:04 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.17 2005-08-04 23:09:08 kwalsh Exp $
  */
 
 /*
@@ -13,7 +13,8 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.*;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -29,6 +30,7 @@ import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.handler.SOAPMessageContextImpl;
 import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -37,42 +39,27 @@ import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.ws.Binding;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Response;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-
-import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.client.ClientTransportFactory;
-import com.sun.xml.ws.client.ContextMap;
-import com.sun.xml.ws.client.RequestContext;
-import com.sun.xml.ws.client.ResponseContext;
-import javax.xml.soap.Detail;
+import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
+import javax.xml.ws.*;
+import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
+import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Proxy;
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 
 /**
@@ -123,11 +110,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             sm = (SOAPMessage) messageInfo.getData()[0];
         }
         try {
+            HandlerContext handlerContext = null;
             InternalMessage im = encoder.toInternalMessage(messageInfo);
 
             HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
             if (caller.hasHandlers()) {
-                HandlerContext handlerContext = new HandlerContext(messageInfo, im, sm);
+                handlerContext = new HandlerContext(messageInfo, im, sm);
                 updateMessageContext(messageInfo, handlerContext);
                 handlerResult = callHandlersOnRequest(handlerContext);
                 sm = handlerContext.getSOAPMessage();
@@ -149,12 +137,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
             SystemHandlerDelegate systemHandlerDelegate =
                 ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
-                getSystemHandlerDelegate();
+                    getSystemHandlerDelegate();
             if (systemHandlerDelegate != null) {
-                handlerResult = systemHandlerDelegate.processRequest((com.sun.xml.ws.spi.runtime.SOAPMessageContext)
-                    new SOAPMessageContextImpl(new HandlerContext(messageInfo, im, sm)));
+                if (handlerContext == null) {
+                    handlerContext = new HandlerContext(messageInfo, im, sm);
+                    updateMessageContext(messageInfo, handlerContext);
+                }
+                handlerResult =
+                    systemHandlerDelegate.processRequest(
+                        (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
+                            new SOAPMessageContextImpl(handlerContext));
             }
-            
+
             // Setting encoder here is necessary for calls to getBindingId()
             messageInfo.setEncoder(encoder);
             Map<String, Object> context = processMetadata(messageInfo, sm);
@@ -217,16 +211,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // consume PEPT-specific properties
                 if (propName.equals(ClientTransportFactory.class.getName())) {
                     messageContext.put(CLIENT_TRANSPORT_FACTORY, (ClientTransportFactory) properties.get(propName));
-                } 
-                else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
+                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
                     Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
                     if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
                         Object cookieJar = properties.get(HTTP_COOKIE_JAR);
                         if (cookieJar != null)
                             messageContext.put(HTTP_COOKIE_JAR, cookieJar);
                     }
-                }
-                else if (propName.equals(USERNAME_PROPERTY)) {
+                } else if (propName.equals(USERNAME_PROPERTY)) {
                     String credentials = (String) properties.get(USERNAME_PROPERTY);
                     if (credentials != null) {
                         credentials += ":";
@@ -241,23 +233,21 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         }
                         soapMessage.getMimeHeaders().addHeader("Authorization", "Basic " + credentials);
                     }
-                } 
-                else {
+                } else {
                     messageContext.put(propName, properties.get(propName));
                 }
             }
         }
 
         // Set accept header depending on content negotiation property
-        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);        
-        
+        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+
         String bindingId = getBindingId(messageInfo);
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
-        } 
-        else {
-            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+        } else {
+            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
 
@@ -336,7 +326,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         SystemHandlerDelegate systemHandlerDelegate =
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
-            getSystemHandlerDelegate();
+                getSystemHandlerDelegate();
         if (systemHandlerDelegate != null) {
             systemHandlerDelegate.processResponse((com.sun.xml.ws.spi.runtime.SOAPMessageContext)
                 new SOAPMessageContextImpl(handlerContext));
@@ -353,7 +343,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             closeAllHandlers(handlerContext);
             throw sfe;
         }
-
 
         // TODO Check for null context in Dispatch and then uncomment
         // TODO the if/else for inbound handlers infrastructure
@@ -389,7 +378,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         decoder.toMessageInfo(im, messageInfo);
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
-            Service.Mode.MESSAGE) {           
+            Service.Mode.MESSAGE) {
             messageInfo.setResponse(sm);
             postReceiveAndDecodeHook(messageInfo);
         }
@@ -458,7 +447,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             public Object call() throws Exception {
                 // get connection and do http.invoke()
                 try {
-                    final WSConnection connection  = (WSConnection) messageInfo.getConnection();
+                    final WSConnection connection = (WSConnection) messageInfo.getConnection();
                     logRequestMessage(sm, messageInfo);
                     SOAPConnectionUtil.sendResponse(connection, sm);
                 } catch (Throwable t) {
@@ -530,6 +519,25 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             String name = (String) i.next();
             Object value = ctxt.get(name);
             messageContext.put(name, value);
+        }
+
+        BindingProvider provider = (BindingProvider) context
+            .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
+        if (provider != null) {
+            if (Proxy.isProxyClass(provider.getClass())) {
+                EndpointIFInvocationHandler invocationHandler = (EndpointIFInvocationHandler) Proxy.getInvocationHandler(provider);
+                EndpointIFContext endpointContext = invocationHandler.getEndpointContext();
+                messageContext.put(MessageContext.WSDL_SERVICE, invocationHandler.getServiceQName());
+                messageContext.put(MessageContext.WSDL_PORT, endpointContext.getPortName());
+                //this should already be in messageContext String endpointAddress = endpointContext.getEndpointAddress();
+            }
+        }
+        RuntimeContext rtContext = (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if (rtContext != null) {
+            RuntimeModel model = rtContext.getModel();
+            JavaMethod javaMethod = model.getJavaMethod(messageInfo.getMethod());
+            if (javaMethod != null)
+                messageContext.put(MessageContext.WSDL_OPERATION, javaMethod.getOperationName());
         }
     }
 
@@ -627,7 +635,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
                     if (jbe != null)
                         sfe.initCause(jbe);
-                    messageInfo.setResponse((SOAPFaultException)sfe);
+                    messageInfo.setResponse((SOAPFaultException) sfe);
                 }
                 return;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
@@ -635,9 +643,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     messageInfo.setResponse((SOAPFaultException) response);
                 } else {
                     WebServiceException jex = null;
-                    if (response instanceof Exception){
-                         jex = new WebServiceException((Exception) response);
-                         messageInfo.setResponse(jex);
+                    if (response instanceof Exception) {
+                        jex = new WebServiceException((Exception) response);
+                        messageInfo.setResponse(jex);
                     }
                     messageInfo.setResponse(response);
                 }
@@ -761,8 +769,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
             s =
                 "Http Status Code: "
-                + ((WSConnection) messageInfo.getConnection()).getStatus()
-                + "\n\n";
+                    + ((WSConnection) messageInfo.getConnection()).getStatus()
+                    + "\n\n";
             out.write(s.getBytes());
             for (Iterator iter =
                 response.getMimeHeaders().getAllHeaders();
