@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.9 2005-07-27 15:53:42 kohlert Exp $
+ * $Id: CompileTool.java,v 1.10 2005-08-04 21:50:29 kohlert Exp $
  */
 
 /*
@@ -28,6 +28,7 @@ import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
 import com.sun.xml.ws.util.Version;
+import com.sun.xml.ws.util.VersionUtil;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
@@ -438,7 +439,20 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         }
 
     }
-
+    /**
+     * @return the SourceVersion string
+     */
+    protected String getSourceVersion() {
+        if (targetVersion == null) {
+            
+            /* no target specified, defaulting to the default version,
+             * which is the latest version
+             */
+            return VersionUtil.JAXWS_VERSION_DEFAULT;
+        }
+        return targetVersion;
+    }
+    
     protected void withModelHook() {
     }
 
@@ -566,6 +580,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 (verbose ? TRUE : FALSE));
         properties.setProperty(ProcessorOptions.PROTOCOL, protocol);
         properties.setProperty(ProcessorOptions.TRANSPORT, transport);
+        properties.setProperty(ProcessorOptions.JAXWS_SOURCE_VERSION, getSourceVersion());
     }
 
     protected String getGenericErrorMessage() {
@@ -687,4 +702,5 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected static final String SOAP12_ID = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
     protected static final String VALID_PROTOCOLS = "soap11, soap12";
     protected static final String VALID_TRANSPORTS = "http";
+    protected String  targetVersion = null;
 }
