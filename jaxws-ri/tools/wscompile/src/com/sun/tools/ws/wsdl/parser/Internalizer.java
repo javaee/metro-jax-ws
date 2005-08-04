@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.4 2005-08-04 01:03:26 vivekp Exp $
+ * $Id: Internalizer.java,v 1.5 2005-08-04 23:15:55 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -191,6 +191,7 @@ public class Internalizer {
                 (bindings.getLocalName().equals("package") ||
                 bindings.getLocalName().equals("enableAsyncMapping") ||
                 bindings.getLocalName().equals("enableAdditionalSOAPHeaderMapping") ||
+                bindings.getLocalName().equals("enableWrapperStyle") ||
                 bindings.getLocalName().equals("enableMIMEContent")));
     }
 
@@ -248,43 +249,22 @@ public class Internalizer {
             return;
 
         Element[] children = DOMUtils.getChildElements(bindings);
-        for( int i=0; i<children.length; i++ ) {
-            Element item = children[i];
 
-            target = targetNodes.get(item);
-            if(!(target instanceof Element )) {
-                //warn("internalizer.targetNotAnElement", new Object[]{});
-                return; // abort
-            }
-            if(isGlobalBinding(item)){
-                //its global customization
-                moveUnder(item, (Element)target);
-            }else if("bindings".equals(item.getLocalName())){
-                Element[] bindingChild = getBindingChildren(item);
-                for(int j = 0; j< bindingChild.length; j++){
-                    // move this node under the target
-                    moveUnder(bindingChild[j], (Element)target );
+        for (Element item : children) {
+            if ("bindings".equals(item.getLocalName())){
+            // process child <jaxws:bindings> recursively
+                move(item, targetNodes);
+            }else if(isGlobalBinding(item)){
+                target = targetNodes.get(item);
+                moveUnder(item,(Element)target);
+            }else {
+                if (!(target instanceof Element)) {
+                    return; // abort
                 }
+                // move this node under the target
+                moveUnder(item,(Element)target);
             }
         }
-    }
-
-    private Element getChildElement(Element e, QName item){
-        Element[] children = DOMUtils.getChildElements(e);
-        for(int i = 0; i < children.length; i++){
-            if(XmlUtil.matchesTagNS(children[i], item))
-                return children[i];
-        }
-        return null;
-    }
-
-    private boolean hasJAXBBindingElement(Element e){
-        Element[] children = DOMUtils.getChildElements(e);
-        for(int i = 0; i < children.length; i++){
-            if(children[i].getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXB_BINDINGS))
-                return true;
-        }
-        return false;
     }
 
     private boolean isJAXBBindingElement(Element e){
@@ -297,26 +277,6 @@ public class Internalizer {
         if((e.getNamespaceURI() != null ) && e.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS))
             return true;
         return false;
-    }
-
-
-    private Element getJAXBBindingElement(Element e){
-        if(e.getAttributeNode("node") != null){
-            Element[] children = DOMUtils.getChildElements(e);
-            for(int i = 0; i < children.length; i++){
-                if(children[i].getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXB_BINDINGS)){
-                    return children[i];
-                }
-            }
-        }
-        return null;
-    }
-
-    private Element[] getBindingChildren(Element e){
-        if(e.getAttributeNode("node") != null){
-            return DOMUtils.getChildElements(e);
-        }
-        return null;
     }
 
     /**
