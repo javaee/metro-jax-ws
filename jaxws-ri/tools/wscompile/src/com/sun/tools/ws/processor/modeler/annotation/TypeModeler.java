@@ -1,5 +1,5 @@
 /**
- * $Id: TypeModeler.java,v 1.2 2005-07-18 18:14:04 kohlert Exp $
+ * $Id: TypeModeler.java,v 1.3 2005-08-04 21:49:18 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -228,7 +228,7 @@ public class TypeModeler implements WebServiceConstants {
             }
             TypeMirror resultType = method.getReturnType();
             Collection<ParameterDeclaration> params = method.getParameters();
-        if (params.size() == 0) {
+            if (params.size() == 0) {
                 if (name.startsWith(GET_PREFIX) &&
                     !(resultType instanceof PrimitiveType &&
                            ((PrimitiveType)resultType).getKind() == PrimitiveType.Kind.BOOLEAN)) {
