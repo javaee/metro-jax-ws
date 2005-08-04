@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoBase.java,v 1.4 2005-07-20 20:28:22 kwalsh Exp $
+ * $Id: ContactInfoBase.java,v 1.5 2005-08-04 02:32:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -14,7 +14,6 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.transport.Connection;
-
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
@@ -38,8 +37,8 @@ public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
     private String bindingId;
 
     public ContactInfoBase(Connection connection,
-        MessageDispatcher messageDispatcher, Encoder encoder, Decoder decoder,
-        String bindingId) {
+                           MessageDispatcher messageDispatcher, Encoder encoder, Decoder decoder,
+                           String bindingId) {
         _connection = connection;
         _messageDispatcher = messageDispatcher;
         _encoder = encoder;

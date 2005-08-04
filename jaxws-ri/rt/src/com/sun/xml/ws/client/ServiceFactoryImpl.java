@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.4 2005-07-20 20:28:22 kwalsh Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.5 2005-08-04 02:32:21 kwalsh Exp $
  */
 /*
  * Copyright (c) 2005 Sun Microsystems. All Rights Reserved.
@@ -30,8 +30,8 @@ import javax.xml.ws.WebServiceException;
 public class ServiceFactoryImpl extends ServiceFactory {
     public Service createService(java.net.URL wsdlDocumentLocation, QName name)
         throws WebServiceException {
-        //if (name == null)
-        //    throw new WebServiceException("QName for the service must not be null");
+        if (name == null)
+            throw new WebServiceException("QName for the service must not be null");
         ServiceContextBuilder builder = new ServiceContextBuilder();
         ServiceContext serviceContext = builder.buildServiceContext(wsdlDocumentLocation,
                 (Class) null, name);

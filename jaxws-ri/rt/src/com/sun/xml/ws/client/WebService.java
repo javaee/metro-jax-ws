@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.16 2005-07-28 21:05:00 kwalsh Exp $
+ * $Id: WebService.java,v 1.17 2005-08-04 02:32:21 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,7 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.client.dispatch.DispatchBase;
+import com.sun.xml.ws.wsdl.WSDLContext;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -77,11 +78,12 @@ public class WebService
     protected URL wsdlLocation;
     protected ServiceContext serviceContext;
     protected Executor executor;
-    private Object seiProxy;
+    private HashSet<Object> seiProxies;
 
     public WebService(ServiceContext scontext) {
         serviceContext = scontext;
         this.dispatchPorts = new HashMap();
+        seiProxies = new HashSet();
     }
 
     private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
@@ -109,7 +111,8 @@ public class WebService
 
     public Object getPort(QName portName, Class portInterface)
         throws WebServiceException {
-        seiProxy = createEndpointIFBaseProxy(portName, portInterface);
+        Object seiProxy = createEndpointIFBaseProxy(portName, portInterface);
+        seiProxies.add(seiProxy);
         if (portName != null) {
             addPort(portName);
         }
@@ -284,8 +287,11 @@ public class WebService
 
     private Object buildEndpointIFProxy(QName portQName, Class portInterface)
         throws WebServiceException {
+
+        EndpointIFContext eif = completeEndpointIFContext(serviceContext, portQName, portInterface);
+        //needs cleaning up
         EndpointIFInvocationHandler handler = new EndpointIFInvocationHandler(portInterface,
-            serviceContext.getRuntimeContext(), serviceContext.getWsdlContext(), getServiceName()); //need handler registry passed in here
+            eif, getServiceName()); //need handler registry passed in here
         setBindingOnProvider(handler, portQName, handler._getBindingId());
 
         Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),
@@ -296,5 +302,18 @@ public class WebService
             }, handler);
         handler.setProxy((Object) proxy);
         return (BindingProvider) proxy;
+    }
+
+    private EndpointIFContext completeEndpointIFContext(ServiceContext serviceContext, QName portQName, Class portInterface) {
+
+        EndpointIFContext context = serviceContext.getEndpointIFContext(portInterface.getName());
+        WSDLContext wscontext = serviceContext.getWsdlContext();
+        if (wscontext != null) {
+            String endpoint = wscontext.getEndpoint(serviceContext.getServiceName(), portQName);
+            URI bindingID = wscontext.getBindingID();
+            context.setServiceName(serviceContext.getServiceName());
+            context.setPortInfo(portQName, endpoint, bindingID);
+        }
+        return context;
     }
 }

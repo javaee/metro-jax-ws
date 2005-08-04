@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.7 2005-07-27 13:15:45 spericas Exp $
+ * $Id: ContextMap.java,v 1.8 2005-08-04 02:32:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -11,6 +11,7 @@ import com.sun.xml.ws.util.Version;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.ws.BindingProvider;
+import static javax.xml.ws.BindingProvider.*;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import static javax.xml.ws.BindingProvider.*;
 
 public abstract class ContextMap extends HashMap<Object, Object>
     implements BindingProviderProperties {
@@ -132,7 +131,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object put(Object name, Object value) {
         if (doValidation()) {
-            validateProperty((String)name, value, true);
+            validateProperty((String) name, value, true);
             return super.put((Object) name, value);
         }
         return null;
@@ -140,7 +139,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object get(Object name) {
         if (doValidation()) {
-            validateProperty((String)name, null, false);
+            validateProperty((String) name, null, false);
             return super.get(name);
         }
         return null;
@@ -153,7 +152,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public Object remove(Object name) {
         if (doValidation()) {
-            validateProperty((java.lang.String)name, null, false);
+            validateProperty((java.lang.String) name, null, false);
             return super.remove(name);
         }
         return null;
@@ -229,9 +228,9 @@ public abstract class ContextMap extends HashMap<Object, Object>
         //is it alreadySet
         //Object currentPropValue = get(name);
         //if (currentPropValue != null) {
-          //  if (!isDynamic(name))
-          //      throw new WebServiceException("Property bound to Binding Instance",
-          //          new IllegalArgumentException("Cannot overwrite the Static Property"));
+        //  if (!isDynamic(name))
+        //      throw new WebServiceException("Property bound to Binding Instance",
+        //          new IllegalArgumentException("Cannot overwrite the Static Property"));
         //}
 
         if (isSetter) {

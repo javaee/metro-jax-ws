@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.10 2005-07-27 13:15:45 spericas Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.11 2005-08-04 02:32:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Map;
 
 public class EndpointIFInvocationHandler
     extends EndpointIFBase
@@ -40,37 +39,32 @@ public class EndpointIFInvocationHandler
     /**
      * public constructor
      */
-    public EndpointIFInvocationHandler(Class pi, RuntimeContext context, WSDLContext wscontext, QName serviceName) {
-        if (wscontext == null) {
+
+    public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, QName serviceName) {
+        if ((eif.getBindingID() == null) || (eif.getRuntimeContext() == null)) {
             failure = true;
             return;
         }
-        _portInterface = pi;
-        _rtcontext = context;
-        _wsdlContext = wscontext;
-        _bindingId = wscontext.getBindingID();
+        _portInterface = portInterface;
+        _rtcontext = eif.getRuntimeContext();
+        _bindingId = eif.getBindingID();
 
         if (serviceName != null) {
-            if (wscontext.getServiceQName(serviceName) != null)
+            if (eif.contains(serviceName))
                 _serviceQName = serviceName;
             else
                 throw new WebServiceException("Supplied service QName " +
                     serviceName + " does not exist in this wsdl.");
         } else
             _serviceQName =
-                wscontext.getServiceQName();
+                eif.getServiceName();
 
-        if (wscontext.getEndpoint(_serviceQName) != null)   //temp workaround for local transport kw
+        if (eif.getEndpointAddress() != null)   //temp workaround for local transport kw
             getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                wscontext.getEndpoint(_serviceQName));
+                eif.getEndpointAddress());
 
         ContactInfoListImpl cil = new ContactInfoListImpl();
         _delegate = new DelegateBase(cil);
-    }
-
-    public EndpointIFInvocationHandler(RuntimeContext context, Class si, URL wsdlLocation) {
-        this(si, context, null, null);
-        wsdlDocumentLocation = wsdlLocation;
     }
 
     public void setModel(RuntimeContext rtcontext) {
@@ -81,7 +75,7 @@ public class EndpointIFInvocationHandler
         _proxy = p;
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws WebServiceException, Throwable{
+    public Object invoke(Object proxy, Method method, Object[] args) throws WebServiceException, Throwable {
 
         try {
             if (isSEIMethod(method, _portInterface)) {
@@ -94,11 +88,11 @@ public class EndpointIFInvocationHandler
         } catch (InvocationTargetException e) {
             throw e.getCause();
         } catch (java.lang.reflect.UndeclaredThrowableException ex) {
-             throw new WebServiceException(ex.getMessage(), ex.getCause());
+            throw new WebServiceException(ex.getMessage(), ex.getCause());
         } catch (java.lang.reflect.GenericSignatureFormatError ex) {
-             throw new WebServiceException(ex.getMessage(), ex);
+            throw new WebServiceException(ex.getMessage(), ex);
         } catch (java.lang.reflect.MalformedParameterizedTypeException ex) {
-             throw new WebServiceException(ex.getMessage(), ex);
+            throw new WebServiceException(ex.getMessage(), ex);
         }
     }
 
@@ -113,12 +107,14 @@ public class EndpointIFInvocationHandler
         int mmep = 0;
         if (_rtcontext != null) {
             JavaMethod jmethod = _rtcontext.getModel().getJavaMethod(method);
-            int mep = jmethod.getMEP();
-            mmep = (mep == MessageStruct.REQUEST_RESPONSE_MEP) ?
-                MessageStruct.REQUEST_RESPONSE_MEP : (mep == MessageStruct.ONE_WAY_MEP) ?
-                MessageStruct.ONE_WAY_MEP : ((mep == MessageStruct.ASYNC_POLL_MEP) ?
-                MessageStruct.ASYNC_POLL_MEP : MessageStruct.ASYNC_CALLBACK_MEP);
-        }
+            if (jmethod != null) {
+                int mep = jmethod.getMEP();
+                mmep = (mep == MessageStruct.REQUEST_RESPONSE_MEP) ?
+                    MessageStruct.REQUEST_RESPONSE_MEP : (mep == MessageStruct.ONE_WAY_MEP) ?
+                    MessageStruct.ONE_WAY_MEP : ((mep == MessageStruct.ASYNC_POLL_MEP) ?
+                    MessageStruct.ASYNC_POLL_MEP : MessageStruct.ASYNC_CALLBACK_MEP);
+            } else throw new WebServiceException("runtime model information for java Method " + method.getName() + " is not known .");
+        } //need to check if this is dispatch invocation
 
         if (mmep == MessageStruct.ASYNC_CALLBACK_MEP) {
             for (Object param : parameters) {
@@ -136,7 +132,7 @@ public class EndpointIFInvocationHandler
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, requestContext);
 
         messageStruct.setMEP(mmep);
-        
+
         // Initialize content negotiation property
         ContentNegotiation.initialize(requestContext, messageStruct);
 

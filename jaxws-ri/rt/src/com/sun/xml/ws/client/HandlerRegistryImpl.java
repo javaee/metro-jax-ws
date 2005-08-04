@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.6 2005-07-27 18:50:01 jitu Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.7 2005-08-04 02:32:20 kwalsh Exp $
  */
 
 /*
@@ -8,6 +8,8 @@
  */
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
@@ -16,12 +18,10 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerRegistry;
 import javax.xml.ws.handler.LogicalHandler;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.SOAPBinding;
 import java.net.URI;
 import java.util.*;
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
 /**
  * Because this class is created even for binding providers that
@@ -155,9 +155,9 @@ public class HandlerRegistryImpl implements HandlerRegistry {
         // create binding
         logicalThenProtocolHandlers.addAll(protocolHandlers);
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             return new SOAPBindingImpl(logicalThenProtocolHandlers, bindingId.toString());
-        }else if(bindingId.toString().equals(HTTPBinding.HTTP_BINDING)){
+        } else if (bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
             //TODO: HTTPBindingImpl()
         }
 
@@ -210,14 +210,14 @@ public class HandlerRegistryImpl implements HandlerRegistry {
     // so far only supporting one binding
     private void checkBindingId(URI bindingId) {
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING) ||
-                bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
+            bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING) ||
+            bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
             return;
         }
 
         // binding id not valid
         Object[] messageArgs = new Object[]{bindingId.toString(),
-                                            SOAPBinding.SOAP11HTTP_BINDING};
+            SOAPBinding.SOAP11HTTP_BINDING};
 
         LocalizableMessageFactory messageFactory =
             new LocalizableMessageFactory("com.sun.xml.ws.resources.client");

@@ -1,5 +1,5 @@
 /**
- * $Id: InternalBindingProvider.java,v 1.5 2005-07-27 18:50:01 jitu Exp $
+ * $Id: InternalBindingProvider.java,v 1.6 2005-08-04 02:32:21 kwalsh Exp $
  */
 
 /*
@@ -16,7 +16,7 @@ import com.sun.xml.ws.binding.BindingImpl;
  * that implement BindingProvider.
  *
  * @see WebService#setBindingOnProvider(InternalBindingProvider,
- *                                       QName, URI)
+ *      QName, URI)
  */
 public interface InternalBindingProvider {
     public void _setBinding(BindingImpl binding);

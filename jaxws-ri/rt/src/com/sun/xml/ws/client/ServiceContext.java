@@ -8,6 +8,9 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -18,12 +21,12 @@ import javax.xml.namespace.QName;
 public class ServiceContext {
     private WSDLContext wsdlContext; //from wsdlParsing
     private HandlerRegistryImpl registry; //from HandlerAnnotationProcessing
-    private RuntimeContext runtimeContext; //from annotationPro ess
     private Class serviceInterface;
-    private Class sei;
     private QName serviceName; //supplied on creation of service
+    private HashSet<EndpointIFContext> seiContext;
 
     public ServiceContext(URL wsdlLocation, Class si, QName serviceName) {
+        seiContext = new HashSet();
     }
 
     public WSDLContext getWsdlContext() {
@@ -42,12 +45,26 @@ public class ServiceContext {
         this.registry = registry;
     }
 
-    public RuntimeContext getRuntimeContext() {
-        return runtimeContext;
+    public EndpointIFContext getEndpointIFContext(String className) {
+        for (EndpointIFContext eif: seiContext){
+            if (eif.getSei().getName().equals(className)){
+                //this is the one
+                return eif;
+            }
+        }
+        return null;
     }
 
-    public void setRuntimeContext(RuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
+    public HashSet<EndpointIFContext> getEndpointIFContext() {
+            return seiContext;
+        }
+
+    public void addEndpointIFContext(EndpointIFContext eifContext) {
+        this.seiContext.add(eifContext);
+    }
+
+     public void addEndpointIFContext(List<EndpointIFContext> eifContexts) {
+        this.seiContext.addAll(eifContexts);
     }
 
     public Class getServiceInterface() {
@@ -56,14 +73,6 @@ public class ServiceContext {
 
     public void setServiceInterface(Class serviceInterface) {
         this.serviceInterface = serviceInterface;
-    }
-
-    public Class getSei() {
-        return sei;
-    }
-
-    public void setSei(Class sei) {
-        this.sei = sei;
     }
 
     public QName getServiceName() {

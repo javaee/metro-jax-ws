@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.5 2005-07-28 21:03:05 kwalsh Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.6 2005-08-04 02:32:21 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -140,7 +140,7 @@ public class ServiceInvocationHandler extends WebService
         }
 
         if (validPort.size() == 1) {
-            return serviceContext.getWsdlContext().getPortName();
+            return validPort.iterator().next();
         }
 
         if (validPort.size() > 1) {

@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.6 2005-07-28 21:56:53 spericas Exp $
+ * $Id: BindingProviderProperties.java,v 1.7 2005-08-04 02:32:20 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -46,19 +46,19 @@ public interface BindingProviderProperties {
     public static final String JAXB_CONTEXT_PROPERTY =
         "com.sun.xml.ws.jaxbcontext";
 
-    public static final String CLIENT_TRANSPORT_FACTORY = 
+    public static final String CLIENT_TRANSPORT_FACTORY =
         "com.sun.xml.ws.client.ClientTransportFactory";
-    
+
     public static final String JAXB_OUTPUTSTREAM =
         "com.sun.xml.bind.api.Bridge.outputStream";
 
     public static final String XML_ENCODING_VALUE = "xml.encoding";                 // deprecated
     public static final String ACCEPT_ENCODING_PROPERTY = "accept.encoding";
-    
+
     public static final String CONTENT_TYPE_PROPERTY = "Content-Type";
     public static final String SOAP_ACTION_PROPERTY = "SOAPAction";
     public static final String ACCEPT_PROPERTY = "Accept";
-    
+
     // FI + SOAP 1.1
     public static final String FAST_INFOSET_TYPE_SOAP11 =
         "application/fastinfoset";
@@ -68,42 +68,42 @@ public interface BindingProviderProperties {
         "application/soap+fastinfoset";
 
     // XML + XOP + SOAP 1.1
-    public static final String XOP_SOAP11_XML_TYPE_VALUE = 
+    public static final String XOP_SOAP11_XML_TYPE_VALUE =
         "application/xop+xml;type=\"text/xml\"";
-    
+
     // FI + XOP + SOAP 1.1
-    public static final String XOP_SOAP11_FI_TYPE_VALUE  = 
+    public static final String XOP_SOAP11_FI_TYPE_VALUE =
         "application/xop+xml;type=\"application/fastinfoset\"";
-    
+
     // XML + XOP + SOAP 1.2
-    public static final String XOP_SOAP12_XML_TYPE_VALUE = 
+    public static final String XOP_SOAP12_XML_TYPE_VALUE =
         "application/xop+xml;type=\"application/soap+xml\"";
-    
+
     // FI + XOP + SOAP 1.2
-    public static final String XOP_SOAP12_FI_TYPE_VALUE  = 
+    public static final String XOP_SOAP12_FI_TYPE_VALUE =
         "application/xop+xml;type=\"application/soap+fastinfoset\"";
-    
+
     public static final String XML_CONTENT_TYPE_VALUE = "text/xml";
-    
+
     public static final String SOAP12_XML_CONTENT_TYPE_VALUE = "application/soap+xml";
-    
+
     public static final String STANDARD_ACCEPT_VALUE =
         "application/xop+xml, text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
-    
+
     public static final String SOAP12_XML_ACCEPT_VALUE =
-        "application/soap+xml"+ ", " + STANDARD_ACCEPT_VALUE;
-    
+        "application/soap+xml" + ", " + STANDARD_ACCEPT_VALUE;
+
     public static final String XML_ACCEPT_VALUE =
         XML_CONTENT_TYPE_VALUE + ", " + STANDARD_ACCEPT_VALUE;
-    
+
     public static final String XML_FI_ACCEPT_VALUE =
         FAST_INFOSET_TYPE_SOAP11 + ", " + XML_ACCEPT_VALUE;
-    
+
     public static final String SOAP12_XML_FI_ACCEPT_VALUE =
         FAST_INFOSET_TYPE_SOAP12 + ", " + SOAP12_XML_ACCEPT_VALUE;
-    
+
     public String DISPATCH_CONTEXT = "com.sun.xml.ws.client.dispatch.context";
-    
+
     public static final String BINDING_ID_PROPERTY = "com.sun.xml.ws.binding";
 
     // Content negotiation property: values "none", "pessimistic" and "optimistic"

@@ -20,8 +20,9 @@ import java.io.BufferedInputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * $author: WS Development Team
@@ -29,7 +30,6 @@ import java.util.HashSet;
 public class ServiceContextBuilder {
 
     ServiceContext serviceContext;
-
 
     //parses WSDL for service, Ports, endpoint, binding
     //returns wsdlcontext
@@ -40,7 +40,6 @@ public class ServiceContextBuilder {
 
     //runs RuntimeAnnotationProcessor
     //returns runtime model
-
 
 
     public ServiceContext buildServiceContext(URL wsdlLocation, Class si, QName serviceName) throws WebServiceException {
@@ -56,8 +55,13 @@ public class ServiceContextBuilder {
 
         if (si != null) {
             serviceContext.setServiceInterface(si);
-            serviceContext.setSei(getSEI(si));
-            processAnnotations(serviceContext.getSei());
+            ArrayList<Class> classez = getSEI(si);
+            if (classez != null){
+                for (Class clazz: classez){
+                    processAnnotations(clazz);
+                }
+            //processAnnotations();
+            }
         }
         return serviceContext;
     }
@@ -74,9 +78,9 @@ public class ServiceContextBuilder {
             serviceContext.setWsdlContext(parseWSDL(wsdlLocation));
         }
 
-        if ((serviceContext.getRuntimeContext() == null) && (portInterface != null)) {
-            processAnnotations(portInterface);
-        }
+        //if ((serviceContext.getRuntimeContext() == null) && (portInterface != null)) {
+        //    processAnnotations(portInterface);
+        //}
         return serviceContext;
     }
 
@@ -99,19 +103,27 @@ public class ServiceContextBuilder {
 
     //todo: valid port in wsdl
     private void processAnnotations(Class portInterface) throws WebServiceException {
+        EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
+        if ( (eifc == null) || ((eifc != null) && (eifc.getRuntimeContext()== null))){
 
-        if (serviceContext.getRuntimeContext() == null) {
-
+            if (eifc == null) {
+                eifc = new EndpointIFContext(portInterface);
+                serviceContext.addEndpointIFContext(eifc);
+            }
             RuntimeModeler processor =
                 new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
 
             RuntimeModel model = processor.buildRuntimeModel();
 
-            serviceContext.setRuntimeContext(new RuntimeContext(model));
+            eifc.setRuntimeContext(new RuntimeContext(model));
+            //serviceContext.addEndpointIFContext(eifc);
 
             // get handler information
             HandlerAnnotationInfo chainInfo =
                 HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
+            if (chainInfo != null)
+                eifc.setHandlers(chainInfo.getHandlers());
+
             if (serviceContext.getServiceName() == null)
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
 
@@ -137,7 +149,7 @@ public class ServiceContextBuilder {
     private HandlerRegistryImpl getHandlerRegistry(QName serviceName) {
         //need to return handlerRegistryImpl?
         if (serviceContext.getRegistry() == null) {
-            Set knownPorts =  serviceContext.getWsdlContext().getPortsAsSet(serviceName);
+            Set knownPorts = serviceContext.getWsdlContext().getPortsAsSet(serviceName);
             HashSet portz = new HashSet(knownPorts.size());
             portz.addAll(knownPorts);
             serviceContext.setRegistry(
@@ -154,7 +166,7 @@ public class ServiceContextBuilder {
         return serviceContext.getWsdlContext();
     }
 
-    private Class getSEI(Class si) {
+    private ArrayList<Class> getSEI(Class si) {
 
         if (si == null) {
             throw new WebServiceException();
@@ -166,21 +178,17 @@ public class ServiceContextBuilder {
                 si.getName());
         }
 
-        //get Methods on si-should only be one
         Method[] methods = si.getDeclaredMethods();
-
+        ArrayList classes = new ArrayList(methods.length);
         for (Method method : methods) {
             method.setAccessible(true);
-        }
-
-        if (methods.length > 0) {
-            //just assume one method-this will change once @WebEndpoint
-            Class seiClazz = methods[0].getReturnType();
+            Class seiClazz = method.getReturnType();
             if ((seiClazz != null) && (!seiClazz.equals("void"))) {
-                return seiClazz;
+                classes.add(seiClazz);
             }
         }
-        return null;
+
+        return classes;
     }
 
     /**
@@ -190,14 +198,28 @@ public class ServiceContextBuilder {
      * @return the URL of the location of the WSDL for the sei.
      */
     //this will change
+    public static URL getWSDLLocation(ArrayList<Class> seis) throws MalformedURLException {
+        if (seis != null) {
+            if (seis.size() > 0) {
+                javax.jws.WebService ws = (WebService) seis.get(0).getAnnotation(WebService.class);
+                if (ws == null)
+                    return null;
+                String wsdlLocation = ws.wsdlLocation();
+                if (wsdlLocation == null)
+                    return null;
+                return new URL(wsdlLocation);
+            }
+        }
+        return null;
+    }
+
     public static URL getWSDLLocation(Class sei) throws MalformedURLException {
-        javax.jws.WebService ws = (WebService) sei.getAnnotation(WebService.class);
-        if (ws == null)
-            return null;
-        String wsdlLocation = ws.wsdlLocation();
-        if (wsdlLocation == null)
-            return null;
-        return new URL(wsdlLocation);
+        if (sei != null) {
+            ArrayList<Class> list= new ArrayList();
+            list.add(sei);
+            return getWSDLLocation(list);
+        }
+        return null;
     }
 
 }

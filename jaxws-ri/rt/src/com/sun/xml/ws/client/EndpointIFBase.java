@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.8 2005-07-28 21:03:05 kwalsh Exp $
+ * $Id: EndpointIFBase.java,v 1.9 2005-08-04 02:32:20 kwalsh Exp $
  */
 
 /*
@@ -10,20 +10,20 @@ package com.sun.xml.ws.client;
 
 import com.sun.pept.Delegate;
 import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import java.net.URI;
 import java.util.Map;
-import com.sun.xml.ws.binding.BindingImpl;
 
 
 /**
  * @author WS Development Team
  */
 public class EndpointIFBase implements com.sun.pept.presentation.Stub,
-    com.sun.xml.ws.spi.runtime.StubBase,BindingProvider, InternalBindingProvider {
+    com.sun.xml.ws.spi.runtime.StubBase, BindingProvider, InternalBindingProvider {
 
     protected Map _requestContext;
     protected Map _responseContext;
@@ -116,9 +116,10 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
 
     /**
      * returns binding id from BindingImpl
+     *
      * @return the URI representing the BindingID
      */
-    public URI _getBindingId(){
+    public URI _getBindingId() {
         return _bindingId;
     }
 
