@@ -11,7 +11,7 @@
 <h1>JAX-WS 2.0 Early Access 2<br>
 Release Notes</h1>
 <hr>
-<p>Last Modified: 06/16/05</p>
+<p>Last Modified: 08/04/05</p>
 <h2>Online Documentation</h2>
 <p>The documentation for JAX-WS 2.0 as well as the sample applications
 will
@@ -23,12 +23,16 @@ latest documentation and samples.</p>
 <ul>
   <li>
     <p>Requires <a href="http://java.sun.com/j2se/1.5.0/download.jsp">JDK
-5.0 Update 2</a> or greater</p>
+5.0 Update 2</a> or later</p>
+  </li>
+  <li>
+    <p>Requires <a href="http://ant.apache.org/bindownload.cgi">Ant 1.6.2</a> or
+    later</p>
   </li>
   <li>
     <p>Requires <a
  href="http://java.sun.com/j2ee/1.4/download.html#sdk">Sun Java System
-Application Server 8.1 UR1</a> (Application Server) or greater (if you
+Application Server 8.1 UR1</a> (Application Server) or later (if you
 intend to deploy Web service endpoints)</p>
   </li>
 </ul>
@@ -47,15 +51,15 @@ Web Services
   <li>SOAP 1.2<br>
   </li>
   <li>
-    <p>purely dynamic runtime<br>
+    <p>purely dynamic runtime
     </p>
   </li>
   <li>
-    <p>removal of wsdeploy and wscompile<br>
+    <p>removal of wsdeploy and wscompile
     </p>
   </li>
   <li>
-    <p>introduction of wsimport and wsgen<br>
+    <p>introduction of wsimport and wsgen
     </p>
   </li>
   <li>
@@ -66,11 +70,11 @@ Web Services
 <h2>Installation Instructions</h2>
 <p>Once the JAX-WS 2.0 EA bundle is extracted, it needs to be installed
 on the
-Application Server. You need to invoke <code>ANT_HOME/bin/ant install</code>
+Application Server. Make sure <code>AS_HOME</code> is set to the installation
+directory of the Application Server. You need to invoke <code>ANT_HOME/bin/ant install</code>
 command from the root directory of the extracted bundle to install
 JAX-WS 2.0
-binaries on the Application Server, where <code>AS_HOME</code> is the
-installation directory of the Application Server. However this step is
+binaries on the Application Server. However this step is
 required
 if you intend to build and deploy a Web service on the Application
 Server.</p>
