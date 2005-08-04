@@ -1,5 +1,5 @@
 /**
- * $Id: MemberInfo.java,v 1.1 2005-05-23 23:23:50 bbissett Exp $
+ * $Id: MemberInfo.java,v 1.2 2005-08-04 21:48:37 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,14 +10,13 @@ import javax.xml.namespace.QName;
 import com.sun.tools.ws.processor.modeler.annotation.*;
 /**
  *
- * @author  dkohlert
+ * @author  WS Development Team
  */
 public class MemberInfo {
     int paramIndex;
     String paramType;
     String paramName;
     QName elementName;
-//    TypeMoniker typeMoniker;
 
     public MemberInfo(int paramIndex, String paramType, String paramName,
         QName elementName) {
