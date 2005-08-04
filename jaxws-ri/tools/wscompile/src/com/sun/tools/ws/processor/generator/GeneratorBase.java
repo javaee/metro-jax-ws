@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.1 2005-07-24 01:35:08 kohlert Exp $
+ * $Id: GeneratorBase.java,v 1.2 2005-08-04 21:53:22 kohlert Exp $
  */
 
 /*
@@ -9,6 +9,8 @@
 
 package com.sun.tools.ws.processor.generator;
 
+import com.sun.codemodel.ClassType;
+import com.sun.codemodel.JClassAlreadyExistsException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -38,6 +40,7 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
 
 /**
  *
@@ -183,9 +186,9 @@ public abstract class GeneratorBase
 
     protected void visitService(Service service) throws Exception {
         this.service = service;
-        Iterator ports = service.getPorts();
-        while (ports.hasNext()) {
-            ((Port) ports.next()).accept(this);
+//        Iterator ports = service.getPorts();
+        for (Port port : service.getPorts()) {
+            port.accept(this);
         }
         this.service = null;
     }
@@ -448,6 +451,17 @@ public abstract class GeneratorBase
             p.pln();
         }
     }
+    
+    
+    protected JDefinedClass getClass(String className, ClassType type) {
+        JDefinedClass cls = null;
+        try {
+            cls = cm._class(className, type);
+        } catch (JClassAlreadyExistsException e){
+            cls = cm._getClass(className);
+        }        
+        return cls;
+    }    
 
     protected void log(String msg) {
         if (env.verbose()) {

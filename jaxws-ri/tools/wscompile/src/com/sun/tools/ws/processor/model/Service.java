@@ -1,5 +1,5 @@
 /*
- * $Id: Service.java,v 1.2 2005-07-18 18:14:01 kohlert Exp $
+ * $Id: Service.java,v 1.3 2005-08-04 21:53:23 kohlert Exp $
  */
 
 /*
@@ -43,9 +43,6 @@ public class Service extends ModelObject {
         portsByName.put(port.getName(), port);
     }
 
-    public Iterator getPorts() {
-        return ports.iterator();
-    }
 
     public Port getPortByName(QName n) {
         if (portsByName.size() != ports.size()) {
@@ -55,12 +52,12 @@ public class Service extends ModelObject {
     }
 
     /* serialization */
-    public List<Port> getPortsList() {
+    public List<Port> getPorts() {
         return ports;
     }
 
     /* serialization */
-    public void setPortsList(List<Port> m) {
+    public void setPorts(List<Port> m) {
         ports = m;
 //        initializePortsByName();
     }
