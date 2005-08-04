@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.2 2005-08-02 23:03:18 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.3 2005-08-04 01:03:26 vivekp Exp $
  */
 
 /*
@@ -57,7 +57,6 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
         return JAXWSBindingsConstants.NS_JAXWS_BINDINGS;
     }
 
-
     /**
      * @param context
      * @param parent
@@ -66,74 +65,65 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     private boolean parseGlobalJAXWSBindings(ParserContext context, Extensible parent, Element e) {
         context.push();
         context.registerNamespaces(e);
-        JAXWSBinding jaxwsBinding = new JAXWSBinding();
 
-        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.PACKAGE)){
-            parsePackage(context, jaxwsBinding, e);
-        }else if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
-            parseWrapperStyle(context, jaxwsBinding, e);
-        }else if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
-            parseAsynMapping(context, jaxwsBinding, e);
-        }else if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-            parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e);
-        }else if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
-            parseMimeContent(context, jaxwsBinding, e);
-        }else{
-            Util.fail(
-                "parsing.invalidExtensionElement",
-                e.getTagName(),
-                e.getNamespaceURI());
-            return false;
+        JAXWSBinding jaxwsBinding =  getJAXWSExtension(parent);
+        if(jaxwsBinding == null)
+            jaxwsBinding = new JAXWSBinding();
+        String attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.WSDL_LOCATION_ATTR);
+        if (attr != null) {
+            jaxwsBinding.setWsdlLocation(attr);
         }
 
-//        String attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.WSDL_LOCATION_ATTR);
-//        if (attr != null) {
-//            jaxwsBinding.setWsdlLocation(attr);
-//        }
-//
-//        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NODE_ATTR);
-//        if (attr != null) {
-//            jaxwsBinding.setNode(attr);
-//        }
-//
-//        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.VERSION_ATTR);
-//        if (attr != null) {
-//            jaxwsBinding.setVersion(attr);
-//        }
-//
-//        for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
-//            Element e2 = Util.nextElement(iter);
-//            if (e2 == null)
-//                break;
-//
-//            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PACKAGE)){
-//                parsePackage(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
-//                parseWrapperStyle(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
-//                parseAsynMapping(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-//                parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
-//                parseMimeContent(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PROVIDER)){
-//                parseProvider(context, jaxwsBinding, e2);
-//            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.JAXB_BINDINGS)){
-//                parseJAXBBindings(context, jaxwsBinding, e2);
-//            }else{
-//                Util.fail(
-//                    "parsing.invalidExtensionElement",
-//                    e2.getTagName(),
-//                    e2.getNamespaceURI());
-//                return false;
-//            }
-//        }
+        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NODE_ATTR);
+        if (attr != null) {
+            jaxwsBinding.setNode(attr);
+        }
+
+        attr = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.VERSION_ATTR);
+        if (attr != null) {
+            jaxwsBinding.setVersion(attr);
+        }
+
+        for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
+            Element e2 = Util.nextElement(iter);
+            if (e2 == null)
+                break;
+
+            if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PACKAGE)){
+                parsePackage(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
+                parseWrapperStyle(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
+                parseAsynMapping(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+                parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+                parseMimeContent(context, jaxwsBinding, e2);
+            }else{
+                Util.fail(
+                    "parsing.invalidExtensionElement",
+                    e2.getTagName(),
+                    e2.getNamespaceURI());
+                return false;
+            }
+        }
         parent.addExtension(jaxwsBinding);
         context.pop();
         context.fireDoneParsingEntity(
                 JAXWSBindingsConstants.JAXWS_BINDINGS,
                 jaxwsBinding);
         return true;
+    }
+
+    private static JAXWSBinding getJAXWSExtension(Extensible extensible) {
+        for (Iterator iter = extensible.extensions(); iter.hasNext();) {
+            Extension extension = (Extension)iter.next();
+            if (extension.getClass().equals(JAXWSBinding.class)) {
+                return (JAXWSBinding)extension;
+            }
+        }
+
+        return null;
     }
 
     /**

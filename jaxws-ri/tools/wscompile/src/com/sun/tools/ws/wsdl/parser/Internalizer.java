@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.3 2005-08-02 23:03:17 vivekp Exp $
+ * $Id: Internalizer.java,v 1.4 2005-08-04 01:03:26 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -134,25 +134,13 @@ public class Internalizer {
                 return; // abort processing this <JAXWS:bindings>
             }
         }
-
-        //process global bindings
-
-
-        // look for @node, if not found just check for global customizations
-        if(isGlobalBinding(bindings) && !isWSDLDefinition(target)){           
-                target = evaluateXPathNode(target, "wsdl:definitions",
-                            new javax.xml.namespace.NamespaceContext(){
-                                public String getNamespaceURI(String prefix){
-                                    return "http://schemas.xmlsoap.org/wsdl/";
-                                }
-                                public String getPrefix(String nsURI){
-                                    throw new UnsupportedOperationException();
-                                }
-                                public Iterator getPrefixes(String namespaceURI) {
-                                    throw new UnsupportedOperationException();
-                                }});
-        }else if(isJAXWSBindings(bindings) && bindings.getAttributeNode("node")!=null ) {
+        
+        if(isJAXWSBindings(bindings) && bindings.getAttributeNode("node")!=null ) {
             target = evaluateXPathNode(target, bindings.getAttribute("node"), new NamespaceContextImpl(bindings));
+        }else if(isJAXWSBindings(bindings) && (bindings.getAttributeNode("node")==null) && isGlobalBinding(bindings)) {
+            target = getWSDLDefintionNode(target);
+        }else if(isGlobalBinding(bindings) && !isWSDLDefinition(target) && isTopLevelBinding(bindings.getParentNode())){
+            target = getWSDLDefintionNode(target);
         }
 
         // update the result map
@@ -162,6 +150,20 @@ public class Internalizer {
         Element[] children = getChildElements( bindings, JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
         for( int i=0; i<children.length; i++ )
             buildTargetNodeMap( children[i], target, result );
+    }
+
+    private Node getWSDLDefintionNode(Node target){
+        return evaluateXPathNode(target, "wsdl:definitions",
+            new javax.xml.namespace.NamespaceContext(){
+                public String getNamespaceURI(String prefix){
+                    return "http://schemas.xmlsoap.org/wsdl/";
+                }
+                public String getPrefix(String nsURI){
+                    throw new UnsupportedOperationException();
+                }
+                public Iterator getPrefixes(String namespaceURI) {
+                    throw new UnsupportedOperationException();
+                }});
     }
 
     private boolean isWSDLDefinition(Node target){
@@ -176,12 +178,16 @@ public class Internalizer {
 
     }
 
+    private boolean isTopLevelBinding(Node node){
+        return ((node != null) && (((Element)node).getAttributeNode("wsdlLocation") != null));
+    }
+
     private boolean isJAXWSBindings(Node bindings){
         return (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) && bindings.getLocalName().equals("bindings"));
     }
 
     private boolean isGlobalBinding(Node bindings){
-        return (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) &&
+        return  (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) &&
                 (bindings.getLocalName().equals("package") ||
                 bindings.getLocalName().equals("enableAsyncMapping") ||
                 bindings.getLocalName().equals("enableAdditionalSOAPHeaderMapping") ||
@@ -348,8 +354,7 @@ public class Internalizer {
             }
 
             //insert xs:annotation/xs:appinfo where in jaxb:binding will be put
-            if(!isGlobalBinding(decl))
-                target = refineWSDLTarget(target);
+            target = refineWSDLTarget(target);
         }else{
             return;
         }
