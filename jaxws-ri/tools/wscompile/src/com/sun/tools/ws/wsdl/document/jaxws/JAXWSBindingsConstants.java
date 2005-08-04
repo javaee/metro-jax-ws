@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingsConstants.java,v 1.1 2005-07-24 01:48:49 kohlert Exp $
+ * $Id: JAXWSBindingsConstants.java,v 1.2 2005-08-04 23:19:05 vivekp Exp $
  */
 
 /*
@@ -119,7 +119,7 @@ public interface JAXWSBindingsConstants {
      * </jaxws:enableAsyncMapping>?
      *
      * <jaxws:parameter part="xs:string"
-     *      element="xs:QName"?
+     *      childElementName="xs:QName"?
      *      name="xs:string"/>*
      */
 
@@ -128,7 +128,7 @@ public interface JAXWSBindingsConstants {
     public static QName METHOD = new QName(NS_JAXWS_BINDINGS, "method");
     public static QName PARAMETER = new QName(NS_JAXWS_BINDINGS, "parameter");
     public static String PART_ATTR = "part";
-    public static String ELEMENT_ATTR = "element";
+    public static String ELEMENT_ATTR = "childElementName";
 
     /*
      * Binding
