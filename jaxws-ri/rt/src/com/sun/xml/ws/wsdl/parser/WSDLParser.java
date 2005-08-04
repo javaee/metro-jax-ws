@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParser.java,v 1.8 2005-07-21 17:06:47 bbissett Exp $
+ * $Id: WSDLParser.java,v 1.9 2005-08-04 02:34:03 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -88,6 +88,8 @@ public class WSDLParser {
                     QName name = reader.getName();
                     if (WSDLConstants.QNAME_DEFINITIONS.equals(name)) {
                         tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
+                        if (wsdlcontext.getTargetNamespace() == null)
+                            wsdlcontext.setTargetNamespace(tns);
                         reader.nextElementContent();
                     } else if (WSDLConstants.QNAME_IMPORT.equals(name)) {
                         parseWSDLImport(reader, wsdlcontext);
@@ -255,7 +257,7 @@ public class WSDLParser {
                 //if (reader.getName().equals(WSDLConstants.QNAME_SERVICE))
                 //     break;
             } while (reader.getState() != EOF);
-            wsdlcontext.addService2Ports(new QName(tns, serviceName), portsMap);
+            wsdlcontext.addService2Ports(new QName(wsdlcontext.getTargetNamespace(), serviceName), portsMap);
             serviceDone = true;
             reader.next();
             reader.nextElementContent();
@@ -276,7 +278,7 @@ public class WSDLParser {
                         if (WSDLConstants.NS_SOAP_BINDING_ADDRESS.equals(reader.getName()) ||
                             WSDLConstants.NS_SOAP12_BINDING_ADDRESS.equals(reader.getName())) {
                             String endpoint = ParserUtil.getMandatoryAttribute(reader, WSDLConstants.ATTR_LOCATION);
-                            portsMap.put(new QName(tns, portName), endpoint);
+                            portsMap.put(new QName(wsdlcontext.getTargetNamespace(), portName), endpoint);
                             locationDone = true;
                             reader.next();
                             reader.nextElementContent();

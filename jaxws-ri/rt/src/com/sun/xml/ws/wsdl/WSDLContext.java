@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.5 2005-08-01 15:47:03 kwalsh Exp $
+ * $Id: WSDLContext.java,v 1.6 2005-08-04 02:34:03 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -195,6 +195,32 @@ public class WSDLContext {
         if (!service2portsLocationMap.isEmpty()) {
             return service2portsLocationMap.keySet();
         }
+        return null;
+    }
+
+    public String getEndpoint(QName serviceName, QName portQName) {
+
+        if (serviceName != null) {
+            //iterates in insertion order
+            LinkedHashMap portsLocationMap = service2portsLocationMap.get(serviceName);
+            if (portsLocationMap != null) {
+                if (!portsLocationMap.isEmpty()) {
+                    Set<QName> keys = portsLocationMap.keySet();
+                    for (QName portName: keys) {
+                        if (portName.equals(portQName)){
+                            return (String)portsLocationMap.get(portQName);
+
+                        }
+                    }
+                }
+            } else {
+                throw new WebServiceException("No ports found for service " + serviceName);
+            }
+        } else {
+            //service QName unknown throw exception
+            throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
+        }
+        
         return null;
     }
 }
