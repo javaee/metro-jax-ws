@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderMessageDispatcher.java,v 1.6 2005-07-27 18:50:05 jitu Exp $
+ * $Id: ProviderMessageDispatcher.java,v 1.7 2005-08-05 19:03:14 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -28,7 +28,7 @@ import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
-import java.util.Map;
+
 
 public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
 
@@ -39,8 +39,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      */
     @Override
     protected void toMessageInfo(MessageInfo messageInfo, HandlerContext context) {
-        Object[] data = new Object[2];
-        data[1] = new ProviderMsgContextImpl(context);
+        Object[] data = new Object[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
@@ -80,8 +79,6 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
                 messageInfo.setResponse(e);
             }
         }
-        ProviderMsgContextImpl providerContext = new ProviderMsgContextImpl(context);
-        data[1] = providerContext;
         messageInfo.setData(data);
         messageInfo.setMethod(ProviderPeptTie.invoke_Method);
     }
@@ -161,7 +158,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      */
     private static boolean isSource(Class c) {
         try {
-            c.getMethod("invoke",  Source.class, Map.class);
+            c.getMethod("invoke",  Source.class);
             return true;
         } catch(NoSuchMethodException ne) {
             // ignoring intentionally
@@ -174,7 +171,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      */
     private static boolean isSoapMessage(Class c) {
         try {
-            c.getMethod("invoke",  SOAPMessage.class, Map.class);
+            c.getMethod("invoke",  SOAPMessage.class);
             return true;
         } catch(NoSuchMethodException ne) {
             // ignoring intentionally

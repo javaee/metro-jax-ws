@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderPeptTie.java,v 1.3 2005-07-23 04:10:12 kohlert Exp $
+ * $Id: ProviderPeptTie.java,v 1.4 2005-08-05 19:03:15 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,7 +8,6 @@ package com.sun.xml.ws.server.provider;
 
 import java.lang.reflect.Method;
 import javax.xml.ws.Provider;
-import java.util.Map;
 import javax.xml.ws.WebServiceException;
 
 import com.sun.pept.ept.MessageInfo;
@@ -32,7 +31,7 @@ public class ProviderPeptTie extends PeptTie {
     public static final Method invoke_Method;
     static {
         try {
-            Class[] methodParams = { Object.class, Map.class };
+            Class[] methodParams = { Object.class };
             invoke_Method = (Provider.class).getMethod("invoke", methodParams);
         } catch (NoSuchMethodException e) {
             throw new WebServiceException(e.getMessage(), e);
@@ -44,7 +43,6 @@ public class ProviderPeptTie extends PeptTie {
      */
     public void _invoke(MessageInfo messageInfo) {
         Object[] oa = messageInfo.getData();
-        Map<String, Object> context = (Map<String, Object>) oa[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider servant = (Provider)endpointInfo.getImplementorProxy();
@@ -52,7 +50,7 @@ public class ProviderPeptTie extends PeptTie {
             servant = (Provider)endpointInfo.getImplementor();
         }
         try {
-            Object response = servant.invoke(oa[0], context);
+            Object response = servant.invoke(oa[0]);
             messageInfo.setResponse(response);
             messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
             if (response == null) {

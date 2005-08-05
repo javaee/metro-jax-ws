@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderXMLMD.java,v 1.3 2005-07-28 00:24:36 jitu Exp $
+ * $Id: ProviderXMLMD.java,v 1.4 2005-08-05 19:03:14 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,25 +9,18 @@ package com.sun.xml.ws.protocol.xml.server;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
-import com.sun.xml.ws.handler.LogicalMessageImpl;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
-import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.XMLHandlerContext;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import java.io.ByteArrayInputStream;
-import java.util.Map;
 import javax.activation.DataSource;
-import javax.xml.transform.stream.StreamSource;
+
 
 /**
  * @author WS Development Team
@@ -43,8 +36,7 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
      */
     @Override
     protected void toMessageInfo(MessageInfo messageInfo, XMLHandlerContext context) {
-        Object[] data = new Object[2];
-        data[1] = null;
+        Object[] data = new Object[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
@@ -71,8 +63,6 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
             messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
             messageInfo.setResponse(e);
         }
-        
-        data[1] = null;
         messageInfo.setData(data);
         messageInfo.setMethod(ProviderPeptTie.invoke_Method);
     }
@@ -134,7 +124,7 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
      */
     private static boolean isSource(Class c) {
         try {
-            c.getMethod("invoke",  Source.class, Map.class);
+            c.getMethod("invoke",  Source.class);
             return true;
         } catch(NoSuchMethodException ne) {
             // ignoring intentionally
@@ -147,7 +137,7 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
      */
     private static boolean isDataSource(Class c) {
         try {
-            c.getMethod("invoke",  DataSource.class, Map.class);
+            c.getMethod("invoke",  DataSource.class);
             return true;
         } catch(NoSuchMethodException ne) {
             // ignoring intentionally
