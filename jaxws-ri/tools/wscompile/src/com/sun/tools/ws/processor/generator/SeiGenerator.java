@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.7 2005-08-04 22:08:15 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.8 2005-08-05 22:11:10 vivekp Exp $
  */
 
 /**
@@ -160,7 +160,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
 
     private void writeWebMethod(Operation operation, JMethod m) {
         Response response = operation.getResponse();
-        JAnnotationUse webMethodAnn = m.annotate(cm.ref(WebMethod.class));
+        JAnnotationUse webMethodAnn = m.annotate(cm.ref(WebMethod.class));;
         String operationName = (operation instanceof AsyncOperation)?
                 ((AsyncOperation)operation).getNormalOperation().getName().getLocalPart():
                 operation.getName().getLocalPart();
@@ -169,7 +169,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
             webMethodAnn.param("operationName", operationName);
         }
 
-        if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0){
+        if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0){               
             webMethodAnn.param("action", operation.getSOAPAction());
         }
 

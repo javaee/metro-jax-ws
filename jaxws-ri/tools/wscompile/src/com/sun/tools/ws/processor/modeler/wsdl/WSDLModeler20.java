@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.13 2005-08-05 18:40:37 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.14 2005-08-05 22:11:10 vivekp Exp $
  */
 
 /*
@@ -1049,8 +1049,10 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.customizedOperationName", new Object[]{info.operation.getName(), operationName});
                 return false;
             }
-            info.operation.setName(new QName(info.operation.getName().getNamespaceURI(), operationName));
-            info.operation.setUniqueName(operationName);
+
+            //Name(new QName(info.operation.getName().getNamespaceURI(), operationName));
+//            info.operation.setUniqueName(operationName);
+            info.operation.setCustomizedName(operationName);
         }
 
         if(getEnvironment().getNames().isJavaReservedWord(info.operation.getName().getLocalPart())){
@@ -2803,8 +2805,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
     /* (non-Javadoc)
      * @see WSDLModelerBase#getJavaNameForOperation(Operation)
      */
+    @Override
     protected String getJavaNameForOperation(Operation operation) {
-        String name = XJC.mangleNameToVariableName(operation.getName().getLocalPart());
+        String name = operation.getJavaMethodName();
         if(getEnvironment().getNames().isJavaReservedWord(name)){
             name = "_"+name;
         }

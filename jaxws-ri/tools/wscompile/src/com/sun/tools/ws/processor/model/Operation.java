@@ -1,5 +1,5 @@
 /*
- * $Id: Operation.java,v 1.3 2005-07-21 01:59:08 vivekp Exp $
+ * $Id: Operation.java,v 1.4 2005-08-05 22:11:10 vivekp Exp $
  */
 
 /*
@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import com.sun.tools.ws.processor.model.java.JavaMethod;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
+import com.sun.tools.xjc.api.XJC;
 
 /**
  *
@@ -187,6 +188,25 @@ public class Operation extends ModelObject {
         visitor.visit(this);
     }
 
+    public void setCustomizedName(String name){
+        this.customizedName = name;
+    }
+
+    public String getJavaMethodName(){
+        //if JavaMethod is created return the name
+        if(_javaMethod != null){
+            return _javaMethod.getName();
+        }
+
+        //return the customized operation name if any without mangling
+        if(customizedName != null){
+            return customizedName;
+        }
+
+        return XJC.mangleNameToVariableName(_name.getLocalPart());
+    }
+
+    private String customizedName;
     private boolean _isWrapped = true;
     private QName _name;
     private String _uniqueName;
