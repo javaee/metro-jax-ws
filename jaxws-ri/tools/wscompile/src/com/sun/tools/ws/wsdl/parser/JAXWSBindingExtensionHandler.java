@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.4 2005-08-05 01:08:28 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.5 2005-08-05 21:07:53 vivekp Exp $
  */
 
 /*
@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.io.IOException;
 
 import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -255,37 +256,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
      * @param e
      */
     private void parseParameter(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
+
         String part = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.PART_ATTR);
-
-        //evaluate this XPath
-        NodeList nlst;
-        xpath.setNamespaceContext(new NamespaceContextImpl(e));
-        try {
-            nlst = (NodeList)xpath.evaluate(part, e.getOwnerDocument(), XPathConstants.NODESET);
-        } catch (XPathExpressionException e1) {
-            e1.printStackTrace();
-            return;
-        }
-        //nlst = XPathAPI.selectNodeList(e.getOwnerDocument(), part, e.getOwnerDocument().getFirstChild());
-
-        if( nlst.getLength()==0 ) {
-            //System.out.println("ERROR: XPATH evaluated node lenght is 0!");
-            return; // abort
-        }
-
-        if( nlst.getLength()!=1 ) {
-            //System.out.println("ERROR: XPATH has more than one evaluated target!");
-            return; // abort
-        }
-
-        Node rnode = nlst.item(0);
-        if(!(rnode instanceof Element )) {
-            //System.out.println("ERROR:XPATH evaluated node is not instanceof Element!");
-            return; // abort
-        }
-
-        Element msgPartElm = (Element)rnode;
-
+        Element msgPartElm = evaluateXPathNode(e.getOwnerDocument(), part, new NamespaceContextImpl(e));
         MessagePart msgPart = new MessagePart();
 
         String partName = XmlUtil.getAttributeOrNull(msgPartElm, "name");
@@ -307,8 +280,42 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
         String element = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.ELEMENT_ATTR);
         String name = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
-        QName elementName = context.translateQualifiedName(element);
+
+        QName elementName = null;
+        if(element != null){
+            String uri = e.lookupNamespaceURI(XmlUtil.getPrefix(element));
+            elementName = (uri == null)?null:new QName(uri, XmlUtil.getLocalPart(element));
+        }
+
         jaxwsBinding.addParameter(new Parameter(msgPart.getName(), elementName, name));
+    }
+
+    private Element evaluateXPathNode(Node target, String expression, NamespaceContext namespaceContext) {
+        NodeList nlst;
+        try {
+            xpath.setNamespaceContext(namespaceContext);
+            nlst = (NodeList)xpath.evaluate(expression, target, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            Util.fail("internalizer.XPathEvaluationError", e.getMessage());
+            return null; // abort processing this <jaxb:bindings>
+        }
+
+        if( nlst.getLength()==0 ) {
+            Util.fail("internalizer.XPathEvaluatesToNoTarget", new Object[]{expression});
+            return null; // abort
+        }
+
+        if( nlst.getLength()!=1 ) {
+            Util.fail("internalizer.XPathEvaulatesToTooManyTargets", new Object[]{expression, nlst.getLength()});
+            return null; // abort
+        }
+
+        Node rnode = nlst.item(0);
+        if(!(rnode instanceof Element )) {
+            Util.fail("internalizer.XPathEvaluatesToNonElement", new Object[]{expression});
+            return null; // abort
+        }
+        return (Element)rnode;
     }
 
     /**
