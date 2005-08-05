@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.11 2005-08-04 02:32:20 kwalsh Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.12 2005-08-05 00:01:27 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -28,6 +28,11 @@ public class EndpointIFInvocationHandler
 
     Object _proxy;
     DelegateBase _delegate;
+
+
+
+    EndpointIFContext _endpointContext;
+
     Class _portInterface;
     QName _serviceQName;
 
@@ -41,10 +46,12 @@ public class EndpointIFInvocationHandler
      */
 
     public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, QName serviceName) {
+
         if ((eif.getBindingID() == null) || (eif.getRuntimeContext() == null)) {
             failure = true;
             return;
         }
+        _endpointContext = eif;
         _portInterface = portInterface;
         _rtcontext = eif.getRuntimeContext();
         _bindingId = eif.getBindingID();
@@ -160,5 +167,17 @@ public class EndpointIFInvocationHandler
 
     boolean isSEIMethod(Method method, Class sei) {
         return (sei.equals(method.getDeclaringClass())) ? true : false;
+    }
+
+    public EndpointIFContext getEndpointContext() {
+        return _endpointContext;
+    }
+
+    public QName getServiceQName() {
+        return _serviceQName;
+    }
+
+    public Class getPortInterface(){
+        return _portInterface;
     }
 }
