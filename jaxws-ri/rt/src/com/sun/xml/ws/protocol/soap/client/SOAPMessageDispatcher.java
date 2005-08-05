@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.18 2005-08-05 01:03:35 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.19 2005-08-05 18:27:08 bbissett Exp $
  */
 
 /*
@@ -117,6 +117,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (caller.hasHandlers()) {
                 handlerContext = new HandlerContext(messageInfo, im, sm);
                 updateMessageContext(messageInfo, handlerContext);
+
                 handlerResult = callHandlersOnRequest(handlerContext);
                 sm = handlerContext.getSOAPMessage();
                 if (sm == null) {
@@ -143,6 +144,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerContext = new HandlerContext(messageInfo, im, sm);
                     updateMessageContext(messageInfo, handlerContext);
                 }
+                handlerContext.getMessageContext().put(
+                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 handlerResult =
                     systemHandlerDelegate.processRequest(
                         (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
@@ -328,6 +331,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
                 getSystemHandlerDelegate();
         if (systemHandlerDelegate != null) {
+            handlerContext.getMessageContext().put(
+                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
             systemHandlerDelegate.processResponse((com.sun.xml.ws.spi.runtime.SOAPMessageContext)
                 new SOAPMessageContextImpl(handlerContext));
         }
