@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.11 2005-08-05 18:27:08 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.12 2005-08-05 21:09:40 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -94,6 +94,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             boolean skipEndpoint = false;
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             if (shd != null) {
+                context.createSOAPMessageContext();
                 context.getSOAPMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
                 skipEndpoint = !shd.processRequest(
