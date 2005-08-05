@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.3 2005-07-24 01:35:08 kohlert Exp $
+ * $Id: Reader.java,v 1.4 2005-08-05 23:51:50 vivekp Exp $
  */
 
 /*
@@ -13,14 +13,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import com.sun.tools.ws.processor.ProcessorOptions;
-import com.sun.tools.ws.processor.config.ConfigurationException;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
-import com.sun.xml.ws.streaming.XMLReader;
-import com.sun.xml.ws.streaming.XMLReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
+
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * @author Vivek Pandey
@@ -64,7 +63,8 @@ public class Reader {
         JAXWSUtils.checkAbsoluteness(file);
         URL url = new URL(file);
 
-        XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(url.openStream());
+        XMLStreamReader reader =
+                XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
 
         reader.next();
         if(reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){

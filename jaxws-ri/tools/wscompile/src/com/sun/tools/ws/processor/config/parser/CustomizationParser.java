@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.3 2005-07-24 01:35:07 kohlert Exp $
+ * $Id: CustomizationParser.java,v 1.4 2005-08-05 23:51:49 vivekp Exp $
  */
 
 /*
@@ -22,10 +22,11 @@ import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.streaming.XMLReader;
-import com.sun.xml.ws.streaming.XMLReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
+
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * @author Vivek Pandey
@@ -81,8 +82,8 @@ public class CustomizationParser extends InputParser {
     private void addBinding(String bindingLocation) throws Exception{
         JAXWSUtils.checkAbsoluteness(bindingLocation);
         URL url = new URL(bindingLocation);
-
-        XMLReader reader = XMLReaderFactory.newInstance().createXMLReader(url.openStream());
+        XMLStreamReader reader =
+                XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
         reader.next();
         if(reader.getName().equals(JAXWSBindingsConstants.JAXWS_BINDINGS)){
             jaxwsBindings.add(bindingLocation);
