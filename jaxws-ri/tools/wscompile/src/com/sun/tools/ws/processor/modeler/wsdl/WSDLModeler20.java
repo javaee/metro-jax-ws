@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.12 2005-08-04 22:08:17 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.13 2005-08-05 18:40:37 vivekp Exp $
  */
 
 /*
@@ -1089,6 +1089,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
      */
     private Operation createAsyncOperation(Operation syncOperation, StyleAndUse styleAndUse, AsyncOperationType asyncType) {
         boolean isRequestResponse = info.portTypeOperation.getStyle() == OperationStyle.REQUEST_RESPONSE;
+        if(!isRequestResponse)
+            return null;
         Request request = new Request();
         Response response = new Response();
 
