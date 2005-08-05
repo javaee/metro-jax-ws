@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.4 2005-08-05 01:03:35 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.5 2005-08-05 21:08:36 jitu Exp $
  *
  */
 
@@ -357,14 +357,14 @@ public class WSServletDelegate implements ServletDelegate {
             WebServiceContext wsCtxt = targetEndpoint.getWebServiceContext();
             MessageContext msgCtxt = new MessageContextImpl();
             wsCtxt.setMessageContext(msgCtxt);
-            msgCtxt.put("javax.xml.ws.servlet.context", servletContext);
-            msgCtxt.setScope("javax.xml.ws.servlet.context", Scope.APPLICATION);
-            msgCtxt.put("javax.xml.ws.servlet.session", request.getSession());
-            msgCtxt.setScope("javax.xml.ws.servlet.session", Scope.APPLICATION);
-            msgCtxt.put("javax.xml.ws.servlet.request", request);
-            msgCtxt.setScope("javax.xml.ws.servlet.request", Scope.APPLICATION);
-            msgCtxt.put("javax.xml.ws.servlet.response", response);
-            msgCtxt.setScope("javax.xml.ws.servlet.response", Scope.APPLICATION);
+            msgCtxt.put(MessageContext.SERVLET_CONTEXT, servletContext);
+            msgCtxt.setScope(MessageContext.SERVLET_CONTEXT, Scope.APPLICATION);
+            msgCtxt.put(MessageContext.SERVLET_SESSION, request.getSession());
+            msgCtxt.setScope(MessageContext.SERVLET_SESSION, Scope.APPLICATION);
+            msgCtxt.put(MessageContext.SERVLET_REQUEST, request);
+            msgCtxt.setScope(MessageContext.SERVLET_REQUEST, Scope.APPLICATION);
+            msgCtxt.put(MessageContext.SERVLET_RESPONSE, response);
+            msgCtxt.setScope(MessageContext.SERVLET_RESPONSE, Scope.APPLICATION);
             WSConnection connection =
                 new ServletConnectionImpl(request, response);
             tie.handle(connection, targetEndpoint);
