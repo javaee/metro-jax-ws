@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.5 2005-07-27 18:50:05 jitu Exp $
+ * $Id: LocalClientTransport.java,v 1.6 2005-08-05 19:25:53 jitu Exp $
  */
 
 /*
@@ -8,29 +8,21 @@
  */
 
 package com.sun.xml.ws.transport.local.client;
-
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.MimeHeaders;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
+import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.xml.soap.MimeHeader;
 import com.sun.xml.ws.transport.local.server.LocalConnectionImpl;
 import com.sun.xml.ws.transport.local.LocalMessage;
 
@@ -82,6 +74,9 @@ public class LocalClientTransport extends WSConnectionImpl {
         con.setHeaders(getHeaders());
      
         try {
+            // Set a MessageContext per invocation
+            WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+            wsContext.setMessageContext(new MessageContextImpl());
             tie.handle(con, endpointInfo);
         } catch (Exception ex) {
             if (ex instanceof Localizable) {
