@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.5 2005-08-04 23:15:55 vivekp Exp $
+ * $Id: Internalizer.java,v 1.6 2005-08-05 01:08:28 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -315,6 +315,7 @@ public class Internalizer {
 
             //insert xs:annotation/xs:appinfo where in jaxb:binding will be put
             target = refineWSDLTarget(target);
+            copyInscopeNSAttributes(decl);
         }else{
             return;
         }

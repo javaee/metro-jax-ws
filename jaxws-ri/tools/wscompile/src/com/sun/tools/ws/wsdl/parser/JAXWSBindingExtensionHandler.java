@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.3 2005-08-04 01:03:26 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.4 2005-08-05 01:08:28 vivekp Exp $
  */
 
 /*
@@ -12,18 +12,18 @@ import java.util.Iterator;
 import java.io.IOException;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
 import com.sun.tools.ws.wsdl.document.BindingOperation;
-import com.sun.tools.ws.wsdl.document.Documentation;
 import com.sun.tools.ws.wsdl.document.MessagePart;
 import com.sun.tools.ws.wsdl.document.Operation;
-import com.sun.tools.ws.wsdl.document.Service;
 import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
@@ -43,6 +43,9 @@ import com.sun.tools.ws.util.xml.XmlUtil;
  *
  */
 public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
+
+    private static final XPathFactory xpf = XPathFactory.newInstance();
+    private final XPath xpath = xpf.newXPath();
 
     /**
      *
@@ -128,8 +131,8 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
     /**
      * @param context
-     * @param jaxwsBinding
-     * @param e2
+     * @param parent
+     * @param e
      */
     private void parseProvider(ParserContext context, Extensible parent, Element e) {
         String val = e.getTextContent();
@@ -144,12 +147,12 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     }
 
     /**
+     *
      * @param context
-     * @param jaxwsBinding
-     * @param e2
+     * @param parent
+     * @param e
      */
     private void parseJAXBBindings(ParserContext context, Extensible parent, Element e) {
-        //System.out.println("In handleJAXBBindingsExtension: " + e.getNodeName());
         JAXWSBinding binding = (JAXWSBinding)parent;
         binding.addJaxbBindings(e);
     }
@@ -221,7 +224,6 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
      * @param context
      * @param parent
      * @param e
-     * @return TODO
      */
     private void parseMimeContent(ParserContext context, Extensible parent, Element e) {
         //System.out.println("In handleMimeContentExtension: " + e.getNodeName());
@@ -238,7 +240,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     /**
      * @param context
      * @param jaxwsBinding
-     * @param e2
+     * @param e
      */
     private void parseMethod(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
         String methodName = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
@@ -250,19 +252,21 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     /**
      * @param context
      * @param jaxwsBinding
-     * @param e2
+     * @param e
      */
     private void parseParameter(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
         String part = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.PART_ATTR);
 
         //evaluate this XPath
         NodeList nlst;
+        xpath.setNamespaceContext(new NamespaceContextImpl(e));
         try {
-            nlst = XPathAPI.selectNodeList(e.getOwnerDocument(), part, e.getOwnerDocument().getFirstChild());
-        } catch( TransformerException ex ) {
-            ex.printStackTrace();
-            return; // abort processing this <jaxws:bindings>
+            nlst = (NodeList)xpath.evaluate(part, e.getOwnerDocument(), XPathConstants.NODESET);
+        } catch (XPathExpressionException e1) {
+            e1.printStackTrace();
+            return;
         }
+        //nlst = XPathAPI.selectNodeList(e.getOwnerDocument(), part, e.getOwnerDocument().getFirstChild());
 
         if( nlst.getLength()==0 ) {
             //System.out.println("ERROR: XPATH evaluated node lenght is 0!");
@@ -310,7 +314,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     /**
      * @param context
      * @param jaxwsBinding
-     * @param e2
+     * @param e
      */
     private void parseClass(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
         String className = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
@@ -322,7 +326,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
     /**
      * @param context
      * @param jaxwsBinding
-     * @param e2
+     * @param e
      */
     private void parseException(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
         for(Iterator iter = XmlUtil.getAllChildren(e); iter.hasNext();){
@@ -342,16 +346,6 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
      */
     protected boolean handleDefinitionsExtension(ParserContext context, Extensible parent, Element e) {
         return parseGlobalJAXWSBindings(context, parent, e);
-//        if(XmlUtil.matchesTagNS(e, JAXWSBindingsConstants.JAXWS_BINDINGS)){
-//            parseGlobalJAXWSBindings(context, parent, e);
-//        }else {
-//            Util.fail(
-//                "parsing.invalidExtensionElement",
-//                e.getTagName(),
-//                e.getNamespaceURI());
-//            return false;
-//        }
-//        return false;
     }
 
     /* (non-Javadoc)
@@ -477,7 +471,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
     /**
      * @param context
-     * @param operation
+     * @param parent
      * @param e
      * @return
      */
@@ -711,7 +705,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
     public void doHandleExtension(WriterContext context, Extension extension)
         throws IOException {
-//System.out.println("JAXWSBindingExtensionHandler doHandleExtension: "+extension);
+        //System.out.println("JAXWSBindingExtensionHandler doHandleExtension: "+extension);
         // NOTE - this ugliness can be avoided by moving all the XML parsing/writing code
         // into the document classes themselves
         if (extension instanceof JAXWSBinding) {
