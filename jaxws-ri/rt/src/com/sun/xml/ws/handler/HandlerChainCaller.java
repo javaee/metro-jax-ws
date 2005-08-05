@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.5 2005-08-05 21:53:34 jitu Exp $
  */
 
 /*
@@ -775,11 +775,11 @@ public class HandlerChainCaller {
 
         LogicalMessageContext getLMC() {
             return (logicalOnly ? xmlContext.getLogicalMessageContext() :
-                context.createLogicalMessageContext());
+                context.getLogicalMessageContext());
         }
 
         SOAPMessageContext getSMC() {
-            return (logicalOnly ? null : context.createSOAPMessageContext());
+            return (logicalOnly ? null : context.getSOAPMessageContext());
         }
     }
     

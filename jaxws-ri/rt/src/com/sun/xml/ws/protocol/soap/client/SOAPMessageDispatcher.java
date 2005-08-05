@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.19 2005-08-05 18:27:08 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.20 2005-08-05 21:53:36 jitu Exp $
  */
 
 /*
@@ -515,7 +515,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateMessageContext(MessageInfo messageInfo, HandlerContext context) {
-        SOAPMessageContext messageContext = context.createSOAPMessageContext();
+        SOAPMessageContext messageContext = context.getSOAPMessageContext();
         messageInfo.setMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY, context);
         RequestContext ctxt = (RequestContext) messageInfo
             .getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);

@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.5 2005-08-05 01:03:29 jitu Exp $
+ * $Id: HandlerContext.java,v 1.6 2005-08-05 21:53:36 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -36,14 +36,14 @@ public class HandlerContext {
         this.msgContext = new MessageContextImpl();
     }
 
-    public SOAPMessageContext createSOAPMessageContext() {
+    public SOAPMessageContext getSOAPMessageContext() {
         if (soapContext == null) {
             soapContext = new SOAPMessageContextImpl(this);
         }
         return soapContext;
     }
 
-    public LogicalMessageContext createLogicalMessageContext() {
+    public LogicalMessageContext getLogicalMessageContext() {
         if (logicalContext == null) {
             logicalContext = new LogicalMessageContextImpl(this);
         }
@@ -55,13 +55,6 @@ public class HandlerContext {
      */
     public SOAPMessage getSOAPMessage() {
         return soapMessage;
-    }
-
-    /**
-     * @return Returns the soapMessage.
-     */
-    public SOAPMessageContext getSOAPMessageContext() {
-        return soapContext;
     }
     
     /**
@@ -104,38 +97,5 @@ public class HandlerContext {
     public void setMessageInfo(MessageInfo messageInfo) {
         this.messageInfo = messageInfo;
     }
-    
-    /*
-    @Override
-    public Method getMethod() {
-        return messageInfo.getMethod();
-    }
-     */
-
-    /*
-     * Makes body as JAXBBean with the provided JAXBContext
-     *
-    public void toJAXBBean(JAXBContext newCtxt) {
-        if (internalMessage == null) {
-            return;
-        }
-        BodyBlock bodyBlock = internalMessage.getBody();
-        if (bodyBlock != null) {
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-            LogicalEncoder encoder = eptf.getLogicalEncoder();
-            Object value = bodyBlock.getValue();
-            if (value instanceof Source) {
-                Object bean = encoder.toJAXBBean((Source)value, newCtxt);
-                bodyBlock.setJaxbBean(bean, newCtxt);
-            } else if (value instanceof SOAPFaultInfo) {
-                // TODO
-            } else {
-                JAXBContext oldCtxt = bodyBlock.getJAXBContext();
-                Object bean = encoder.toJAXBBean(value, oldCtxt, newCtxt);
-                bodyBlock.setJaxbBean(bean, newCtxt);
-            }
-        }
-    }
-     */
 
 }
