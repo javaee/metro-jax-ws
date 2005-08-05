@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.6 2005-07-16 01:38:40 kohlert Exp $
+ * $Id: Tie.java,v 1.7 2005-08-05 01:03:31 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -47,13 +47,10 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
     public void handle(WSConnection connection,
         com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo endpoint)
     throws Exception {
-                
+        
+        // Create MessageInfo. MessageInfo holds all the info for this request
         Delegate delegate = new DelegateBase();
         MessageInfo messageInfo = (MessageInfo)delegate.getMessageStruct();
-        
-        // TODO remove the hack
-        MessageContext context = new SOAPMessageContext();
-        messageInfo.setMetaData("MESSAGE_CONTEXT", context);
         
         // Create runtime context, runtime model for dynamic runtime
         RuntimeEndpointInfo endpointInfo = (RuntimeEndpointInfo)endpoint;

@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
+ * $Id: HandlerContext.java,v 1.5 2005-08-05 01:03:29 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,7 @@ package com.sun.xml.ws.handler;
 
 import javax.xml.ws.handler.LogicalMessageContext;
 import com.sun.xml.ws.spi.runtime.SOAPMessageContext;
+import com.sun.xml.ws.spi.runtime.MessageContext;
 import javax.xml.soap.SOAPMessage;
 
 import com.sun.pept.ept.MessageInfo;
@@ -17,13 +18,14 @@ import java.lang.reflect.Method;
 /**
  * @author WS Development Team
  */
-public class HandlerContext extends MessageContextImpl {
+public class HandlerContext {
 
     private MessageInfo messageInfo;
     private InternalMessage internalMessage;
     private SOAPMessage soapMessage;
     private SOAPMessageContext soapContext;
     private LogicalMessageContext logicalContext;
+    private MessageContext msgContext;
 
     public HandlerContext(MessageInfo messageInfo,
             InternalMessage internalMessage,
@@ -31,6 +33,7 @@ public class HandlerContext extends MessageContextImpl {
         this.messageInfo = messageInfo;
         this.internalMessage = internalMessage;
         this.soapMessage = soapMessage;
+        this.msgContext = new MessageContextImpl();
     }
 
     public SOAPMessageContext createSOAPMessageContext() {
@@ -60,6 +63,18 @@ public class HandlerContext extends MessageContextImpl {
     public SOAPMessageContext getSOAPMessageContext() {
         return soapContext;
     }
+    
+    /**
+     * @return Returns the soapMessage.
+     */
+    public MessageContext getMessageContext() {
+        return msgContext;
+    }
+    
+    public void setMessageContext(MessageContext msgContext) {
+        this.msgContext = msgContext;
+    }
+
 
     /**
      * @param soapMessage The soapMessage to set.
@@ -90,10 +105,12 @@ public class HandlerContext extends MessageContextImpl {
         this.messageInfo = messageInfo;
     }
     
+    /*
     @Override
     public Method getMethod() {
         return messageInfo.getMethod();
     }
+     */
 
     /*
      * Makes body as JAXBBean with the provided JAXBContext

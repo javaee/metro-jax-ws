@@ -6,7 +6,7 @@
 <project xmlns="http://www.netbeans.org/ns/project/1">
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
-        <data xmlns="http://www.netbeans.org/ns/profiler/1" profile-file-target="" profile-target="" version="0.4"/>
+        <data profile-file-target="" profile-target="" version="0.4" xmlns="http://www.netbeans.org/ns/profiler/1"/>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!--Do not use Project Properties customizer when editing this file manually.-->
             <name>JAXWS-RI</name>
@@ -94,7 +94,7 @@
             <compilation-unit>
                 <package-root>rt/src</package-root>
                 <package-root>tools/wscompile/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/http.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/http.jar:lib/jsr250-api.jar</classpath>
                 <built-to>build/lib/jaxws-rt.jar</built-to>
                 <built-to>build/lib/jaxws-tools.jar</built-to>
                 <source-level>1.5</source-level>

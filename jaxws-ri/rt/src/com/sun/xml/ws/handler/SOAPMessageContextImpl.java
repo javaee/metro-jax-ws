@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.3 2005-07-13 00:45:32 jitu Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.4 2005-08-05 01:03:30 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -51,13 +51,15 @@ import java.lang.reflect.Method;
 public class SOAPMessageContextImpl implements SOAPMessageContext,
     com.sun.xml.ws.spi.runtime.SOAPMessageContext {
 
-    private HandlerContext ctxt;
+    private HandlerContext handlerCtxt;
+    private MessageContext ctxt;
     private Set<String> roles;
     private static Map<String, Class> allowedTypes = null;
     private boolean failure;
 
-    public SOAPMessageContextImpl(HandlerContext ctxt) {
-        this.ctxt = ctxt;
+    public SOAPMessageContextImpl(HandlerContext handlerCtxt) {
+        this.handlerCtxt = handlerCtxt;
+        this.ctxt = handlerCtxt.getMessageContext();
         if (allowedTypes == null) {
             allowedTypes = new HashMap<String, Class>();
             allowedTypes.put(MessageContext.MESSAGE_ATTACHMENTS, Map.class);
@@ -72,19 +74,19 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
     }
 
     public SOAPMessage getMessage() {
-        SOAPMessage soap = ctxt.getSOAPMessage();
-        InternalMessage intr = ctxt.getInternalMessage();
+        SOAPMessage soap = handlerCtxt.getSOAPMessage();
+        InternalMessage intr = handlerCtxt.getInternalMessage();
         if (intr == null && soap != null) {
             // Not much to do
         } else if (intr != null && soap != null) {
             // Overlay BodyBlock of InternalMessage on top of existing SOAPMessage
-            MessageInfo messageInfo = ctxt.getMessageInfo();
+            MessageInfo messageInfo = handlerCtxt.getMessageInfo();
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
             soap = eptf.getSOAPEncoder().toSOAPMessage(intr, soap);
             setMessage(soap);        // It also sets InernalMessage to null
         } else if (intr != null && soap == null) {
             // Convert InternalMessage to a SOAPMessage
-            MessageInfo messageInfo = ctxt.getMessageInfo();
+            MessageInfo messageInfo = handlerCtxt.getMessageInfo();
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
             soap = eptf.getSOAPEncoder().toSOAPMessage(intr, messageInfo);
             setMessage(soap);        // It also sets InernalMessage to null
@@ -95,9 +97,9 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
     }
 
     public void setMessage(SOAPMessage soapMessage) {
-        ctxt.setSOAPMessage(soapMessage);
+        handlerCtxt.setSOAPMessage(soapMessage);
         // current InternalMessage is not valid anymore. So reset it.
-        ctxt.setInternalMessage(null);
+        handlerCtxt.setInternalMessage(null);
     }
 
     /*
@@ -118,7 +120,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
                 Source source = new DOMSource(child);
-                MessageInfo messageInfo = ctxt.getMessageInfo();
+                MessageInfo messageInfo = handlerCtxt.getMessageInfo();
                 LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
                 LogicalEncoder encoder = eptf.getLogicalEncoder();
                 JAXBBeanInfo beanInfo = encoder.toJAXBBeanInfo(source, jaxbContext);

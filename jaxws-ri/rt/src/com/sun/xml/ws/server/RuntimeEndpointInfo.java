@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.26 2005-08-03 22:54:08 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.27 2005-08-05 01:03:31 jitu Exp $
  */
 
 /*
@@ -8,6 +8,8 @@
  */
 
 package com.sun.xml.ws.server;
+
+import javax.annotation.Resource;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
@@ -26,6 +28,7 @@ import javax.xml.ws.Provider;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.xml.ws.BeginService;
@@ -59,6 +62,7 @@ public class RuntimeEndpointInfo
     private WebServiceContext wsContext;
     private boolean beginService;
     private boolean endService;
+    private boolean injectedContext;
 
     public Exception getException() {
         return exception;
@@ -293,6 +297,42 @@ public class RuntimeEndpointInfo
     public String getPath(String queryString) {
         DocInfo docInfo = query2Doc.get(queryString);
         return (docInfo == null) ? null : docInfo.getPath();
+    }
+    
+    /*
+     * Injects the WebServiceContext. Called from Servlet.init(), or
+     * Endpoint.publish(). Used synchronized because multiple servlet
+     * instances may call this in their init()
+     */
+    public synchronized void injectContext()
+    throws IllegalAccessException, InvocationTargetException {
+        if (!injectedContext) {
+            Class c = implementor.getClass();
+            Field[] fields = c.getFields();
+            for(Field field: fields) {
+                Resource resource = field.getAnnotation(Resource.class);
+                if (resource != null) {
+                    Class cl = resource.type();
+                    if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        field.set(implementor, wsContext);
+                        injectedContext = true;
+                        return;
+                    }
+                }
+            }
+            Method[] methods = c.getMethods();
+            for(Method method : methods) {
+                Resource resource = method.getAnnotation(Resource.class);
+                if (resource != null) {
+                    Class cl = resource.type();
+                    if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        method.invoke(implementor, new Object[]{ wsContext });
+                        injectedContext = true;
+                        return;
+                    }
+                }
+            }
+        }
     }
     
     /*

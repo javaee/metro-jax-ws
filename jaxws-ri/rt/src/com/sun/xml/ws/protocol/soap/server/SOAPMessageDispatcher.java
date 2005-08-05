@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.9 2005-08-03 22:54:08 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.10 2005-08-05 01:03:30 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -143,7 +143,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 if (!isFailure(messageInfo)) {
                     if (shd != null) {
-                        shd.preInvokeEndpointHook(context);
+                        shd.preInvokeEndpointHook(context.getMessageContext());
                     }
                     updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);
@@ -154,7 +154,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         // Just log the error. Not much to do
                     }
                 } else {
-                    updateContextPropertyBag(messageInfo, context);
+                    //updateContextPropertyBag(messageInfo, context);
                     soapMessage = getResponse(messageInfo, context);
                     if (shd != null) {
                         shd.processResponse(
@@ -207,10 +207,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                             null, null, bindingId);
                 messageInfo.setResponse(faultInfo);
             } else {
+                /* TODO
                 context.put(MessageContext.WSDL_OPERATION,
                     messageInfo.getMetaData("METHOD_QNAME"));
+                 */
             }
-            updateMessageInfoPropertyBag(context, messageInfo);
+            //updateMessageInfoPropertyBag(context, messageInfo);
         }
     }
 
@@ -405,30 +407,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 */
 
+
     // copy from message info to handler context
     private void updateContextPropertyBag(MessageInfo messageInfo,
             HandlerContext context) {
-        MessageContext msgCtxt =
-            (MessageContext) messageInfo.getMetaData("MESSAGE_CONTEXT");
-        Set<String> keys = msgCtxt.keySet();
-        for (String name : keys) {
-            Object value = msgCtxt.get(name);
-            context.put(name, value);
-            context.setScope(name, Scope.APPLICATION);
-        }
-    }
-
-    // copy from handler context to message info
-    private void updateMessageInfoPropertyBag(HandlerContext context,
-            MessageInfo messageInfo) {
-        MessageContext msgCtxt =
-            (MessageContext) messageInfo.getMetaData("MESSAGE_CONTEXT");
-        Set<String> keys = context.keySet();
-        for (String name : keys) {
-            if (context.getScope(name) == Scope.APPLICATION) {
-                msgCtxt.put(name, context.get(name));
-                msgCtxt.setScope(name, Scope.APPLICATION);
-            }
+        
+        RuntimeEndpointInfo endpointInfo = 
+            MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+        if (wsContext != null) {
+            context.setMessageContext(wsContext.getMessageContext());
         }
     }
 

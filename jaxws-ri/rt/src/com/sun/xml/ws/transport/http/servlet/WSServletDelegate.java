@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.3 2005-08-03 22:54:07 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.4 2005-08-05 01:03:35 jitu Exp $
  *
  */
 
@@ -33,7 +33,6 @@ import javax.xml.soap.MimeHeaders;
 
 import com.sun.xml.ws.spi.runtime.ServletDelegate;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.SOAPVersion;
 //import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
@@ -44,6 +43,7 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import javax.xml.ws.handler.MessageContext.Scope;
 
 /**
  * Servlet for WS invocations
@@ -93,9 +93,9 @@ public class WSServletDelegate implements ServletDelegate {
                 } else {
                     endpointsByName.put(info.getName(), info);
                     registerEndpointUrlPattern(info);
-                    // TODO Inject WebServiceContext
-
+                    
                     try {
+                        info.injectContext();
                         info.beginService();
                     } catch(Exception e) {
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -358,9 +358,13 @@ public class WSServletDelegate implements ServletDelegate {
             MessageContext msgCtxt = new MessageContextImpl();
             wsCtxt.setMessageContext(msgCtxt);
             msgCtxt.put("javax.xml.ws.servlet.context", servletContext);
+            msgCtxt.setScope("javax.xml.ws.servlet.context", Scope.APPLICATION);
             msgCtxt.put("javax.xml.ws.servlet.session", request.getSession());
+            msgCtxt.setScope("javax.xml.ws.servlet.session", Scope.APPLICATION);
             msgCtxt.put("javax.xml.ws.servlet.request", request);
+            msgCtxt.setScope("javax.xml.ws.servlet.request", Scope.APPLICATION);
             msgCtxt.put("javax.xml.ws.servlet.response", response);
+            msgCtxt.setScope("javax.xml.ws.servlet.response", Scope.APPLICATION);
             WSConnection connection =
                 new ServletConnectionImpl(request, response);
             tie.handle(connection, targetEndpoint);

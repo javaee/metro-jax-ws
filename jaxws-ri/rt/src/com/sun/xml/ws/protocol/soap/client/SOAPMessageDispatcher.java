@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.17 2005-08-04 23:09:08 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.18 2005-08-05 01:03:35 jitu Exp $
  */
 
 /*
@@ -521,7 +521,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             messageContext.put(name, value);
         }
 
-        BindingProvider provider = (BindingProvider) context
+        BindingProvider provider = (BindingProvider) context.getMessageContext()
             .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
         if (provider != null) {
             if (Proxy.isProxyClass(provider.getClass())) {
