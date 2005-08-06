@@ -1,5 +1,5 @@
 /*
- * $Id: XMLHandlerContext.java,v 1.3 2005-08-01 23:47:30 jitu Exp $
+ * $Id: XMLHandlerContext.java,v 1.4 2005-08-06 01:35:18 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,7 @@
 package com.sun.xml.ws.handler;
 
 import javax.xml.ws.handler.LogicalMessageContext;
+import com.sun.xml.ws.spi.runtime.MessageContext;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -17,12 +18,13 @@ import java.lang.reflect.Method;
 /**
  * @author WS Development Team
  */
-public class XMLHandlerContext extends MessageContextImpl {
+public class XMLHandlerContext {
 
     private MessageInfo messageInfo;
     private InternalMessage internalMessage;
     private XMLMessage xmlMessage;
     private LogicalMessageContext logicalContext;
+    private MessageContext msgContext;
 
     public XMLHandlerContext(MessageInfo messageInfo,
             InternalMessage internalMessage,
@@ -30,6 +32,7 @@ public class XMLHandlerContext extends MessageContextImpl {
         this.messageInfo = messageInfo;
         this.internalMessage = internalMessage;
         this.xmlMessage = xmlMessage;
+        this.msgContext = new MessageContextImpl();
     }
 
     public LogicalMessageContext getLogicalMessageContext() {
@@ -38,7 +41,15 @@ public class XMLHandlerContext extends MessageContextImpl {
         }
         return logicalContext;
     }
-
+    
+    public MessageContext getMessageContext() {
+        return msgContext;
+    }
+    
+    public void setMessageContext(MessageContext msgContext) {
+        this.msgContext = msgContext;
+    }
+    
     /**
      * @return Returns XMLMessage
      */
@@ -73,11 +84,6 @@ public class XMLHandlerContext extends MessageContextImpl {
     */
     public void setMessageInfo(MessageInfo messageInfo) {
         this.messageInfo = messageInfo;
-    }
-    
-    @Override
-    public Method getMethod() {
-        return messageInfo.getMethod();
     }
 
 }

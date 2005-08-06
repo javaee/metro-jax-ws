@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.4 2005-08-01 19:40:03 bbissett Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.5 2005-08-06 01:35:19 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,9 +12,7 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.xml.XMLDecoder;
 import com.sun.xml.ws.encoding.xml.XMLEPTFactory;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
@@ -29,14 +27,12 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import javax.xml.ws.Binding;
-import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.MessageContext.Scope;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 
 /**
@@ -113,8 +109,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
                 if (!isFailure(messageInfo)) {
                     if (shd != null) {
-                        shd.preInvokeEndpointHook(context);
+                        shd.preInvokeEndpointHook(context.getMessageContext());
                     }
+                    updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);
                 }
 
@@ -176,10 +173,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //                    null, null);
 //                messageInfo.setResponse(faultInfo);
             } else {
+                /*
                 context.put(MessageContext.WSDL_OPERATION,
                     messageInfo.getMetaData("METHOD_QNAME"));
+                 */
             }
-            updateMessageInfoPropertyBag(context, messageInfo);
         }
     }
 
@@ -347,31 +345,29 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
 
-
+        /*
+     * Sets the WebServiceContext with correct MessageContext which contains
+     * APPLICATION scope properties
+     */
+    protected void updateWebServiceContext(MessageInfo messageInfo, XMLHandlerContext hc) {
+        RuntimeEndpointInfo endpointInfo = 
+            MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+        if (wsContext != null) {
+            AppMsgContextImpl appCtxt = new AppMsgContextImpl(hc.getMessageContext());
+            wsContext.setMessageContext(appCtxt);
+        }
+    }
+    
     // copy from message info to handler context
     private void updateContextPropertyBag(MessageInfo messageInfo,
             XMLHandlerContext context) {
-        MessageContext msgCtxt =
-            (MessageContext) messageInfo.getMetaData("MESSAGE_CONTEXT");
-        Set<String> keys = msgCtxt.keySet();
-        for (String name : keys) {
-            Object value = msgCtxt.get(name);
-            context.put(name, value);
-            context.setScope(name, Scope.APPLICATION);
-        }
-    }
-
-    // copy from handler context to message info
-    private void updateMessageInfoPropertyBag(XMLHandlerContext context,
-            MessageInfo messageInfo) {
-        MessageContext msgCtxt =
-            (MessageContext) messageInfo.getMetaData("MESSAGE_CONTEXT");
-        Set<String> keys = context.keySet();
-        for (String name : keys) {
-            if (context.getScope(name) == Scope.APPLICATION) {
-                msgCtxt.put(name, context.get(name));
-                msgCtxt.setScope(name, Scope.APPLICATION);
-            }
+        
+        RuntimeEndpointInfo endpointInfo = 
+            MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+        if (wsContext != null) {
+            context.setMessageContext(wsContext.getMessageContext());
         }
     }
     

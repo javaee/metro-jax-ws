@@ -1,5 +1,5 @@
 /*
- * $Id: XMLLogicalMessageContextImpl.java,v 1.1 2005-07-28 20:53:16 jitu Exp $
+ * $Id: XMLLogicalMessageContextImpl.java,v 1.2 2005-08-06 01:35:18 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
+import com.sun.xml.ws.spi.runtime.MessageContext;
 
 /**
  * Class has to defer information to HandlerContext so that properties
@@ -24,18 +25,20 @@ import javax.xml.ws.handler.MessageContext.Scope;
  */
 public class XMLLogicalMessageContextImpl implements LogicalMessageContext {
     
-    private XMLHandlerContext ctxt;
+    private MessageContext ctxt;
+    private XMLHandlerContext handlerCtxt;
 
-    public XMLLogicalMessageContextImpl(XMLHandlerContext ctxt) {
-        this.ctxt = ctxt;
+    public XMLLogicalMessageContextImpl(XMLHandlerContext handlerCtxt) {
+        this.handlerCtxt = handlerCtxt;
+        ctxt = handlerCtxt.getMessageContext();
     }
 
     public XMLHandlerContext getHandlerContext() {
-        return ctxt;
+        return handlerCtxt;
     }
 
     public LogicalMessage getMessage() {
-        return new XMLLogicalMessageImpl(ctxt);
+        return new XMLLogicalMessageImpl(handlerCtxt);
     }
 
     public void setScope(String name, Scope scope) {
