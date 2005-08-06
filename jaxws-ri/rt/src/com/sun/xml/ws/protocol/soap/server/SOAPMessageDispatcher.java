@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.13 2005-08-05 21:53:36 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.14 2005-08-06 01:06:37 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -42,7 +42,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.server.provider.ProviderMsgContextImpl;
+import com.sun.xml.ws.server.AppMsgContextImpl;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
@@ -237,8 +237,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
         if (wsContext != null) {
-            ProviderMsgContextImpl msgContext = new ProviderMsgContextImpl(hc);
-            wsContext.setMessageContext(msgContext);
+            AppMsgContextImpl appCtxt = new AppMsgContextImpl(hc.getMessageContext());
+            wsContext.setMessageContext(appCtxt);
         }
     }
 

@@ -1,14 +1,12 @@
 /**
- * $Id: ProviderMsgContextImpl.java,v 1.4 2005-08-05 01:03:32 jitu Exp $
+ * $Id: AppMsgContextImpl.java,v 1.1 2005-08-06 01:06:37 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.sun.xml.ws.server.provider;
-
-import com.sun.xml.ws.handler.HandlerContext;
-import com.sun.xml.ws.handler.MessageContextImpl;
+package com.sun.xml.ws.server;
 import com.sun.xml.ws.spi.runtime.MessageContext;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,15 +15,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.xml.ws.handler.MessageContext.Scope;
 
-public class ProviderMsgContextImpl extends MessageContextImpl {
+public class AppMsgContextImpl implements MessageContext {
 
-    private HandlerContext handlerCtxt;
     private MessageContext ctxt;
     private Map<String, Object> appContext; // properties in APPLICATION scope
 
-    public ProviderMsgContextImpl(HandlerContext handlerCtxt) {
-        this.handlerCtxt = handlerCtxt;
-        ctxt = handlerCtxt.getMessageContext();        
+    public AppMsgContextImpl(MessageContext ctxt) {
+        this.ctxt = ctxt;     
         appContext = new HashMap<String, Object>();
         
         Iterator<Entry<String, Object>> i = ctxt.entrySet().iterator();
@@ -115,6 +111,18 @@ public class ProviderMsgContextImpl extends MessageContextImpl {
 
     public Collection<Object> values() {
         return appContext.values();
+    }
+    
+    public Method getMethod() {
+        return null;
+    }
+    
+    public void setScope(String name, Scope scope) {
+
+    }
+
+    public Scope getScope(String name) {
+        return null;
     }
 
 }
