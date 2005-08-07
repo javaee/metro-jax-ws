@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.6 2005-08-04 02:34:03 kwalsh Exp $
+ * $Id: WSDLContext.java,v 1.7 2005-08-07 20:16:42 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -91,7 +91,6 @@ public class WSDLContext {
 
     //just get the first one for now
     public QName getPortName() {
-        String endpoint = null;
         QName portName = null;
         //iterates in insertion order
         if (!service2portsLocationMap.isEmpty()) {
@@ -219,8 +218,7 @@ public class WSDLContext {
         } else {
             //service QName unknown throw exception
             throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
-        }
-        
+        }        
         return null;
     }
 }

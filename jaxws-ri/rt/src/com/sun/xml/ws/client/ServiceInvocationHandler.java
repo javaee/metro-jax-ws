@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInvocationHandler.java,v 1.6 2005-08-04 02:32:21 kwalsh Exp $
+ * $Id: ServiceInvocationHandler.java,v 1.7 2005-08-07 20:16:42 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -132,21 +132,27 @@ public class ServiceInvocationHandler extends WebService
     }
 
     QName validatePortName(String portName) {
-        Set<QName> validPort = serviceContext.getWsdlContext().contains(serviceContext.getServiceName(),
-            new QName(serviceContext.getServiceName().getNamespaceURI(), portName));
+        if (portName != null) {
 
-        if (validPort.size() == 0) {
-            throw new WebServiceException("Port with name " + portName + " is not a valid Port");
-        }
+            if ((serviceContext != null) && (serviceContext.getWsdlContext() != null)) {
+                Set<QName> validPort = serviceContext.getWsdlContext().contains(serviceContext.getServiceName(),
+                    new QName(serviceContext.getServiceName().getNamespaceURI(), portName));
 
-        if (validPort.size() == 1) {
-            return validPort.iterator().next();
-        }
+                if (validPort.size() == 0) {
+                    throw new WebServiceException("Port with name " + portName + " is not a valid Port");
+                }
 
-        if (validPort.size() > 1) {
-            String portNS = serviceContext.getWsdlContext().getPortName().getNamespaceURI();
-            return new QName(portNS, portName);
+                if (validPort.size() == 1) {
+                    return validPort.iterator().next();
+                }
+
+                if (validPort.size() > 1) {
+                    String portNS = serviceContext.getWsdlContext().getPortName().getNamespaceURI();
+                    return new QName(portNS, portName);
+                }
+                return new QName(portName);
+            }          
         }
-        return null;
+       return null;
     }
 }

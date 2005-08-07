@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
@@ -23,7 +24,17 @@ public class ServiceContext {
     private HandlerRegistryImpl registry; //from HandlerAnnotationProcessing
     private Class serviceInterface;
     private QName serviceName; //supplied on creation of service
+    private SIAnnotations siAnnotations;
     private HashSet<EndpointIFContext> seiContext;
+
+
+    public SIAnnotations getSiAnnotations() {
+        return siAnnotations;
+    }
+
+    public void setSiAnnotations(SIAnnotations siAnnotations) {
+        this.siAnnotations = siAnnotations;
+    }
 
     public ServiceContext(URL wsdlLocation, Class si, QName serviceName) {
         seiContext = new HashSet();
@@ -87,3 +98,11 @@ public class ServiceContext {
         this.serviceName = serviceName;
     }
 }
+class SIAnnotations {
+        public SIAnnotations(){}
+        String tns;
+        QName serviceQName;
+        ArrayList<QName> portQNames = new ArrayList<QName>();
+        ArrayList<Class> classes = new ArrayList<Class>();
+        String wsdlLocation;
+    }

@@ -15,6 +15,8 @@ import com.sun.xml.ws.wsdl.parser.WSDLParser;
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebEndpoint;
+import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceException;
 import java.io.BufferedInputStream;
 import java.lang.reflect.Method;
@@ -45,22 +47,30 @@ public class ServiceContextBuilder {
     public ServiceContext buildServiceContext(URL wsdlLocation, Class si, QName serviceName) throws WebServiceException {
 
         serviceContext = new ServiceContext(wsdlLocation, si, serviceName);
-        if ((wsdlLocation == null) && (si != null))
-            try {
-                wsdlLocation = getWSDLLocation(getSEI(si));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        serviceContext.setWsdlContext(parseWSDL(wsdlLocation));
-
+        SIAnnotations serviceIFAnnotations;
         if (si != null) {
-            serviceContext.setServiceInterface(si);
-            ArrayList<Class> classez = getSEI(si);
-            if (classez != null){
-                for (Class clazz: classez){
-                    processAnnotations(clazz);
+
+            serviceIFAnnotations = getSIAnnotations(si);
+            if (serviceIFAnnotations == null )
+                throw new WebServiceException("Service Interface Annotations required, exiting...");
+            else serviceContext.setSiAnnotations(serviceIFAnnotations);
+            
+            if(wsdlLocation == null)
+                try {
+                    wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
+                } catch (MalformedURLException e) {
+                    throw new WebServiceException(e);
                 }
-            //processAnnotations();
+            serviceContext.setWsdlContext(parseWSDL(wsdlLocation));
+
+            if (si != null) {
+                serviceContext.setServiceInterface(si);
+                ArrayList<Class> classez = serviceIFAnnotations.classes;
+                if (classez != null) {
+                    for (Class clazz : classez) {
+                        processAnnotations(clazz);
+                    }
+                }
             }
         }
         return serviceContext;
@@ -104,7 +114,7 @@ public class ServiceContextBuilder {
     //todo: valid port in wsdl
     private void processAnnotations(Class portInterface) throws WebServiceException {
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
-        if ( (eifc == null) || ((eifc != null) && (eifc.getRuntimeContext()== null))){
+        if ((eifc == null) || ((eifc != null) && (eifc.getRuntimeContext() == null))) {
 
             if (eifc == null) {
                 eifc = new EndpointIFContext(portInterface);
@@ -179,7 +189,7 @@ public class ServiceContextBuilder {
         }
 
         Method[] methods = si.getDeclaredMethods();
-        ArrayList classes = new ArrayList(methods.length);
+        ArrayList<Class> classes = new ArrayList<Class>(methods.length);
         for (Method method : methods) {
             method.setAccessible(true);
             Class seiClazz = method.getReturnType();
@@ -213,13 +223,53 @@ public class ServiceContextBuilder {
         return null;
     }
 
+    //this will change
+    public SIAnnotations getSIAnnotations(Class si) {
+       
+        SIAnnotations siAnnotations = new SIAnnotations();
+        ArrayList<QName> portQNames = new ArrayList<QName>();
+        if (si != null) {
+            WebServiceClient wsc = (WebServiceClient) si.getAnnotation(WebServiceClient.class);
+            if (wsc != null) {
+                String name = wsc.name();
+                String tns = wsc.targetNamespace();
+                siAnnotations.tns = tns;
+                if (name != null)
+                    siAnnotations.serviceQName = new QName(tns, name);
+                siAnnotations.wsdlLocation = wsc.wsdlLocation();
+
+                Method[] methods = si.getDeclaredMethods();
+                if (methods != null) {
+                    ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
+                    for (Method method : methods) {
+                        method.setAccessible(true);
+                        WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
+                        if (webEndpoint != null) {
+                            String endpointName = webEndpoint.name();
+                            QName portQName = new QName(tns, endpointName);
+                            portQNames.add(portQName);
+                        }
+                        Class<?> seiClazz = method.getReturnType();
+                        if ((seiClazz != null) && (!seiClazz.equals("void"))) {
+                            classes.add(seiClazz);
+                        }
+                    }
+                    siAnnotations.portQNames.addAll(portQNames);
+                    siAnnotations.classes.addAll(classes);
+                }
+            }
+        }
+        return siAnnotations;
+    }
+
     public static URL getWSDLLocation(Class sei) throws MalformedURLException {
         if (sei != null) {
-            ArrayList<Class> list= new ArrayList();
+            ArrayList<Class> list = new ArrayList<Class>();
             list.add(sei);
             return getWSDLLocation(list);
         }
         return null;
     }
+
 
 }
