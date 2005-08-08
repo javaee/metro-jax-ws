@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.24 2005-07-21 02:19:34 vivekp Exp $
+ * $Id: WSDLGenerator.java,v 1.25 2005-08-08 22:17:02 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -268,7 +268,7 @@ public class WSDLGenerator {
 
     protected void generateRpcParameterOrder(Operation operation, JavaMethod method) {
         String partName = "";
-        String paramOrder = "";
+        StringBuffer paramOrder = new StringBuffer();
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
         int i = 0;
@@ -277,19 +277,19 @@ public class WSDLGenerator {
                partName = parameter.getName().getLocalPart();
                 if (!partNames.contains(partName)) {
                     if (i++ > 0)
-                        paramOrder += " ";
-                    paramOrder += partName;
+                        paramOrder.append(' ');
+                    paramOrder.append(partName);
                     partNames.add(partName);
                 }
             }
         }
-        operation.parameterOrder(paramOrder);
+        operation.parameterOrder(paramOrder.toString());
     }
 
 
     protected void generateDocumentParameterOrder(Operation operation, JavaMethod method) {
         String partName = "";
-        String paramOrder = "";
+        StringBuffer paramOrder = new StringBuffer();
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
         boolean isWrapperStyle = isWrapperStyle(method);
@@ -312,14 +312,14 @@ public class WSDLGenerator {
 //            System.out.println("partName: "+ partName);
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
-                    paramOrder += " ";
-                paramOrder += partName;
+                    paramOrder.append(' ');
+                paramOrder.append(partName);
                 partNames.add(partName);
             }
 //            System.out.println("paramOrder: "+paramOrder);
         }
         if (i>1) {
-            operation.parameterOrder(paramOrder);
+            operation.parameterOrder(paramOrder.toString());
         }
     }
 
@@ -440,14 +440,14 @@ public class WSDLGenerator {
                 if (headerParams.size() > 0) {
                     Parameter param = bodyParams.iterator().next();
                     if (isRpc) {
-                        String parts = "";
+                        StringBuffer parts = new StringBuffer();
                         int i=0;
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
-                                parts += " ";
-                            parts += parameter.getName().getLocalPart();
+                                parts.append(' ');
+                            parts.append(parameter.getName().getLocalPart());
                         }
-                        body.parts(parts);
+                        body.parts(parts.toString());
                     } else if (param.isWrapperStyle()) {
                         body.parts(PARAMETERS);
                     } else {
@@ -530,14 +530,14 @@ public class WSDLGenerator {
                 if (headerParams.size() > 0) {
                     Parameter param = bodyParams.iterator().next();
                     if (isRpc) {
-                        String parts = "";
+                        StringBuffer parts = new StringBuffer();
                         int i=0;
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
-                                parts += " ";
-                            parts += parameter.getName().getLocalPart();
+                                parts.append(' ');
+                            parts.append(parameter.getName().getLocalPart());
                         }
-                        body.parts(parts);
+                        body.parts(parts.toString());
                     } else if (param.isWrapperStyle()) {
                         body.parts(PARAMETERS);
                     } else {
