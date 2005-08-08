@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.17 2005-07-21 15:57:26 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.18 2005-08-08 22:02:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -214,14 +214,15 @@ public class RuntimeModeler {
                 tokens[i] = tokenizer.nextToken();
             }
         }
-        String namespace = "http://";
+        StringBuffer namespace = new StringBuffer("http://");
         String dot = "";
         for (int i=0; i<tokens.length; i++) {
             if (i==1)
                 dot = ".";
-            namespace += dot+tokens[i];
+            namespace.append(dot+tokens[i]);
         }
-        return namespace + "/jaxws";
+        namespace.append("/jaxws");
+        return namespace.toString();
     }
 
     /**
@@ -230,7 +231,6 @@ public class RuntimeModeler {
      * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
      */
     protected void processMethod(Method method, WebService webService) {
-//System.out.println("processing Method: "+method.getName());
 
         JavaMethod javaMethod;
         if (method.getDeclaringClass().equals(portClass))
@@ -328,15 +328,11 @@ public class RuntimeModeler {
     protected void processDocWrappedMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
-//System.out.println("processing Method: "+method.getName());
-        // processParameters(method);
-        //WebWrapper webWrapper = method.getAnnotation(WebWrapper.class);
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName.length() == 0)
             beanPackage = JAXWS_PACKAGE_PD;
-        //String requestClassName = beanPackage + capitalize(method.getName());
         String requestClassName = null;
         if(reqWrapper != null && reqWrapper.type().length()>0){
             requestClassName = reqWrapper.type();
@@ -354,12 +350,10 @@ public class RuntimeModeler {
 
         Class requestClass = getClass(requestClassName);
         QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.namespace(),reqWrapper.name()):getWrapperElementName(requestClass);
-//        QName reqElementName = getWrapperElementName(requestClass);
         Class responseClass = null;
         QName resElementName = null;
         if (!isOneway) {
             responseClass = getClass(responseClassName);
-//            resElementName = getWrapperElementName(responseClass);
             resElementName = (resWrapper != null)?new QName(resWrapper.namespace(),resWrapper.name()):getWrapperElementName(responseClass);
         }
 
@@ -396,10 +390,7 @@ public class RuntimeModeler {
             resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
                   resultQName = new QName(targetNamespace,RETURN);
-//                throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
-//                    new Object[] {"-1", responseClass.getName(), method.getName()});
             }
-
         }
 
         if(javaMethod.isAsync()){
@@ -421,7 +412,6 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        TypeVariable<Method>[] typeVariables = method.getTypeParameters();
         Annotation[][] pannotations = method.getParameterAnnotations();
         int pos = 0;
         QName paramQName = null;
@@ -483,7 +473,6 @@ public class RuntimeModeler {
                         new Object[] {String.valueOf(pos), responseClass.getName(), method.getName()});
                 }
             }
-//            System.out.println("paramName: "+ paramQName);
             typeRef =
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
             param = new Parameter(typeRef, paramMode, pos++);
@@ -566,9 +555,6 @@ public class RuntimeModeler {
     protected void processRpcMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
-        String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
-        if (packageName.length() == 0)
-            beanPackage = JAXWS_PACKAGE_PD;
         QName reqElementName = new QName(targetNamespace, operationName);
         QName resElementName = null;
         if (!isOneway) {
@@ -619,7 +605,6 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        TypeVariable<Method>[] typeVariables = method.getTypeParameters();
         Annotation[][] pannotations = method.getParameterAnnotations();
         int pos = 0;
         QName paramQName = null;
@@ -670,7 +655,6 @@ public class RuntimeModeler {
                     paramNamespace = targetNamespace;
                 paramQName = new QName(paramNamespace, paramName);
             }
-//            System.out.println("paramName: "+ paramQName);
             typeRef =
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
             param = new Parameter(typeRef, paramMode, pos++);
@@ -711,10 +695,7 @@ public class RuntimeModeler {
             String namespace = targetNamespace;
             String name = ((Class)exception).getSimpleName();
             if (faultInfoMethod == null)  {
-//                String packageName = ((Class)exception).getPackage().getName();
                 String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
-//                if (packageName.length() == 0)
-//                    beanPackage = JAXWS_PACKAGE_PD;
                 String className = beanPackage+ name + BEAN;
                 exceptionBean = getClass(className);
                 exceptionType = ExceptionType.UserDefined;
@@ -804,7 +785,6 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        TypeVariable<Method>[] typeVariables = method.getTypeParameters();
         Annotation[][] pannotations = method.getParameterAnnotations();
         QName requestQName = null;
         int pos = 0;
@@ -819,7 +799,6 @@ public class RuntimeModeler {
                 continue;
             }
 
-//            com.sun.xml.rpc.rt.model.Mode paramMode = com.sun.xml.rpc.rt.model.Mode.IN;
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
             if (isHolder) {
