@@ -1,5 +1,5 @@
 /**
- * $Id: Fault.java,v 1.3 2005-07-21 01:59:08 vivekp Exp $
+ * $Id: Fault.java,v 1.4 2005-08-08 16:51:51 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -69,9 +69,9 @@ public class Fault extends ModelObject {
 
             throw new ModelException("model.parent.fault.already.set",
                 new Object[] {
-                    getName().toString(),
-                    this.parentFault.getName().toString(),
-                    parentFault.getName().toString()
+                    getName(),
+                    this.parentFault.getName(),
+                    parentFault.getName()
             });
         }
         this.parentFault = parentFault;
