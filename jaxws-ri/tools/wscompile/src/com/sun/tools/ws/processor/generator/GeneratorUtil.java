@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorUtil.java,v 1.4 2005-07-18 18:18:20 kohlert Exp $
+ * $Id: GeneratorUtil.java,v 1.5 2005-08-08 16:28:22 kohlert Exp $
  */
 
 /*
@@ -11,9 +11,6 @@ package com.sun.tools.ws.processor.generator;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -23,10 +20,7 @@ import com.sun.tools.ws.processor.model.Operation;
 import com.sun.tools.ws.processor.model.java.JavaStructureType;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.SOAPVersion;
+
 
 /**
  *
@@ -34,32 +28,14 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
  */
 public class GeneratorUtil implements GeneratorConstants {
 
-    private static QName QNAME_SOAP_FAULT = null;
-    private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
-        "SOAP must understand error";
-
-    protected GeneratorUtil() {
-    }
-
-    protected GeneratorUtil(SOAPVersion ver) {
-    }
-/*
-    public static String getQNameConstant(QName name) {
-        return (String) typeMap.get(name);
-    }*/
     public static void writeNewQName(IndentingWriter p, QName name)
         throws IOException {
-/*        String qnameConstant = getQNameConstant(name);
-        if (qnameConstant != null) {
-            p.p(qnameConstant);
-        } else {*/
-            p.p(
-                "new QName(\""
-                    + name.getNamespaceURI()
-                    + "\", \""
-                    + name.getLocalPart()
-                    + "\")");
-//        }
+        p.p(
+            "new QName(\""
+                + name.getNamespaceURI()
+                + "\", \""
+                + name.getLocalPart()
+                + "\")");
     }
 
 
@@ -105,8 +81,7 @@ public class GeneratorUtil implements GeneratorConstants {
         String className) {
         try {
             // Takes care of inner classes.
-            String name = getLoadableClassName(className,
-                env.getClassLoader());
+            getLoadableClassName(className, env.getClassLoader());
             return true;
         } catch(ClassNotFoundException ce) {
         }
@@ -119,7 +94,7 @@ public class GeneratorUtil implements GeneratorConstants {
         throws ClassNotFoundException {
 
         try {
-            Class seiClass = Class.forName(className, true, classLoader);
+            Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             int idx = className.lastIndexOf(DOTC);
             if (idx > -1) {
@@ -131,32 +106,6 @@ public class GeneratorUtil implements GeneratorConstants {
         }
         return className;
     }    
-    
-    public static Hashtable ht = null;
-    static {
-        /* the primitive types have been preloaded */
-        ht = new Hashtable();
-        ht.put("int", "Integer.TYPE");
-        ht.put("boolean", "Boolean.TYPE");
-        ht.put("char", "Character.TYPE");
-        ht.put("byte", "Byte.TYPE");
-        ht.put("short", "Short.TYPE");
-        ht.put("long", "Long.TYPE");
-        ht.put("float", "Float.TYPE");
-        ht.put("double", "Double.TYPE");
-        ht.put("void", "Void.TYPE");
-
-        /* here we load the condition for the primitive Array type */
-        ht.put("int[]", "I");
-        ht.put("boolean[]", "Z");
-        ht.put("char[]", "C");
-        ht.put("byte[]", "B");
-        ht.put("short[]", "S");
-        ht.put("long[]", "J");
-        ht.put("float[]", "F");
-        ht.put("double[]", "D");
-
-    }
 
     public static class FaultComparator implements Comparator {
         private boolean sortName = false;
@@ -215,32 +164,4 @@ public class GeneratorUtil implements GeneratorConstants {
             return type1.getName().compareTo(type2.getName());
         }
     }
-/*
-    public static class SubclassComparator implements Comparator {
-        public SubclassComparator() {
-        }
-
-        public int compare(Object o1, Object o2) {
-            JavaStructureType type1 = (JavaStructureType) o1;
-            JavaStructureType type2 = (JavaStructureType) o2;
-            return sort(type1, type2);
-        }
-
-        protected int sort(JavaStructureType type1, JavaStructureType type2) {
-            JavaStructureType parent = type1;
-            while (parent.getSuperclass() != null) {
-                parent = parent.getSuperclass();
-                if (parent.equals(type2))
-                    return -1;
-            }
-            parent = type2;
-            while (parent.getSuperclass() != null) {
-                parent = parent.getSuperclass();
-                if (parent.equals(type1))
-                    return 1;
-            }
-            return type1.getName().compareTo(type2.getName());
-        }
-    }
-*/
 }
