@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.14 2005-08-05 22:11:10 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.15 2005-08-08 17:10:41 vivekp Exp $
  */
 
 /*
@@ -1055,7 +1055,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             info.operation.setCustomizedName(operationName);
         }
 
-        if(getEnvironment().getNames().isJavaReservedWord(info.operation.getName().getLocalPart())){
+        if(getEnvironment().getNames().isJavaReservedWord(info.operation.getJavaMethodName())){
             if(extension)
                 warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.operationName", new Object[]{info.operation.getName()});
             else
