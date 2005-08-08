@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.8 2005-08-04 21:46:18 kohlert Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.9 2005-08-08 19:59:17 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -195,9 +195,9 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             Object detail = detailBean.newInstance();
             for(Field f : fields){
                 Method em = exception.getClass().getMethod(getReadMethod(f));
-                f.set(detail, em.invoke(exception));
-//                Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
-//                sm.invoke(detail, em.invoke(exception));
+//                f.set(detail, em.invoke(exception));
+                Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
+                sm.invoke(detail, em.invoke(exception));
             }
             return detail;
         } catch (InstantiationException e) {
