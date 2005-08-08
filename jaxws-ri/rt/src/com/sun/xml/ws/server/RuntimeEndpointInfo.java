@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.27 2005-08-05 01:03:31 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.28 2005-08-08 23:36:13 jitu Exp $
  */
 
 /*
@@ -308,24 +308,26 @@ public class RuntimeEndpointInfo
     throws IllegalAccessException, InvocationTargetException {
         if (!injectedContext) {
             Class c = implementor.getClass();
-            Field[] fields = c.getFields();
+            Field[] fields = c.getDeclaredFields();
             for(Field field: fields) {
                 Resource resource = field.getAnnotation(Resource.class);
                 if (resource != null) {
                     Class cl = resource.type();
                     if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        field.setAccessible(true);
                         field.set(implementor, wsContext);
                         injectedContext = true;
                         return;
                     }
                 }
             }
-            Method[] methods = c.getMethods();
+            Method[] methods = c.getDeclaredMethods();
             for(Method method : methods) {
                 Resource resource = method.getAnnotation(Resource.class);
                 if (resource != null) {
                     Class cl = resource.type();
                     if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        method.setAccessible(true);
                         method.invoke(implementor, new Object[]{ wsContext });
                         injectedContext = true;
                         return;
@@ -345,9 +347,10 @@ public class RuntimeEndpointInfo
     throws IllegalAccessException, InvocationTargetException {
         if (!beginService) {
             Class c = implementor.getClass();
-            Method[] methods = c.getMethods();
+            Method[] methods = c.getDeclaredMethods();
             for(Method method : methods) {
                 if (method.getAnnotation(BeginService.class) != null) {
+                    method.setAccessible(true);
                     method.invoke(implementor, new Object[]{ });
                     break;
                 }
@@ -366,9 +369,10 @@ public class RuntimeEndpointInfo
     throws IllegalAccessException, InvocationTargetException {
         if (!endService) {
             Class c = implementor.getClass();
-            Method[] methods = c.getMethods();
+            Method[] methods = c.getDeclaredMethods();
             for(Method method : methods) {
                 if (method.getAnnotation(EndService.class) != null) {
+                    method.setAccessible(true);
                     method.invoke(implementor, new Object[]{ });
                     break;
                 }
