@@ -1,5 +1,5 @@
 /*
- * $Id: XMLEncoder.java,v 1.1 2005-07-23 00:21:27 jitu Exp $
+ * $Id: XMLEncoder.java,v 1.2 2005-08-08 19:13:04 arungupta Exp $
  */
 
 /*
@@ -19,20 +19,25 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.server.ServerRtException;
 
 
+
 /**
  * @author WS Development Team
  */
-public abstract class XMLEncoder implements Encoder {
+public class XMLEncoder implements Encoder {
 
     /*
      * @see com.sun.pept.encoding.Encoder#encodeAndSend(com.sun.pept.ept.MessageInfo)
      */
-    public abstract void encodeAndSend(MessageInfo messageInfo);
+    public void encodeAndSend(MessageInfo messageInfo) {
+        throw new UnsupportedOperationException();
+    }
 
     /*
      * @see com.sun.pept.encoding.Encoder#encode(com.sun.pept.ept.MessageInfo)
      */
-    public abstract ByteBuffer encode(MessageInfo messageInfo);
+    public ByteBuffer encode(MessageInfo messageInfo) {
+        throw new UnsupportedOperationException();
+    }
 
     public InternalMessage toInternalMessage(MessageInfo messageInfo) {
         return null;

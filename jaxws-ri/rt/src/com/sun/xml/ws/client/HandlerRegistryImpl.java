@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerRegistryImpl.java,v 1.7 2005-08-04 02:32:20 kwalsh Exp $
+ * $Id: HandlerRegistryImpl.java,v 1.8 2005-08-08 19:13:01 arungupta Exp $
  */
 
 /*
@@ -9,6 +9,7 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
@@ -158,7 +159,7 @@ public class HandlerRegistryImpl implements HandlerRegistry {
             bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             return new SOAPBindingImpl(logicalThenProtocolHandlers, bindingId.toString());
         } else if (bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
-            //TODO: HTTPBindingImpl()
+            return new HTTPBindingImpl();
         }
 
         //we dont support any other binding so return null???

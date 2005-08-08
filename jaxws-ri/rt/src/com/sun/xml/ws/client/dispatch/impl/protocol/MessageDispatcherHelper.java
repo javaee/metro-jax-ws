@@ -1,5 +1,5 @@
 /*
- * $Id: MessageDispatcherHelper.java,v 1.5 2005-07-27 18:50:03 jitu Exp $
+ * $Id: MessageDispatcherHelper.java,v 1.6 2005-08-08 19:13:03 arungupta Exp $
  */
 
 /*
@@ -15,6 +15,7 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
@@ -23,8 +24,8 @@ import java.util.logging.Logger;
 /**
  * @author WS Development Team
  */
-public class MessageDispatcherHelper extends com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher
-    implements MessageDispatcher, BindingProviderProperties {
+public class MessageDispatcherHelper extends SOAPMessageDispatcher
+    implements BindingProviderProperties {
 
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
@@ -33,6 +34,7 @@ public class MessageDispatcherHelper extends com.sun.xml.ws.protocol.soap.client
         super();
     }
 
+    @Override
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {
         if (e instanceof RuntimeException) {
             //leave for now- fix later
@@ -45,6 +47,7 @@ public class MessageDispatcherHelper extends com.sun.xml.ws.protocol.soap.client
         }
     }
 
+    @Override
     protected HandlerChainCaller getHandlerChainCaller(MessageInfo messageInfo) {
         ContextMap context = (ContextMap)
             messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);

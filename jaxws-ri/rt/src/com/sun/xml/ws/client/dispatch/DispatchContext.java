@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContext.java,v 1.2 2005-05-25 20:44:10 kohlert Exp $
+ * $Id: DispatchContext.java,v 1.3 2005-08-08 19:13:01 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -49,11 +49,11 @@ public class DispatchContext {
     //public static final int SOAPMESSAGE = 500;
 
     public enum MessageClass {
-        SOURCE ,JAXBOBJECT, SOAPMESSAGE
+        SOURCE ,JAXBOBJECT, SOAPMESSAGE, DATASOURCE
     }
 
     public enum MessageType {
-        JAXB_PAYLOAD, SOURCE_PAYLOAD, JAXB_MESSAGE, SOURCE_MESSAGE , SOAPMESSAGE_MESSAGE
+        JAXB_PAYLOAD, SOURCE_PAYLOAD, JAXB_MESSAGE, SOURCE_MESSAGE , SOAPMESSAGE_MESSAGE, DATASOURCE_PAYLOAD, DATASOURCE_MESSAGE
     }
 
 }

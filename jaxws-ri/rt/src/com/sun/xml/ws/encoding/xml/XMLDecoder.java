@@ -1,5 +1,5 @@
 /*
- * $Id: XMLDecoder.java,v 1.2 2005-07-23 04:10:08 kohlert Exp $
+ * $Id: XMLDecoder.java,v 1.3 2005-08-08 19:13:03 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -19,10 +19,11 @@ import javax.xml.soap.SOAPMessage;
 import java.util.logging.Logger;
 
 
+
 /**
  * @author WS Development Team
  */
-public abstract class XMLDecoder implements Decoder {
+public class XMLDecoder implements Decoder {
     
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".xml.decoder");
@@ -30,12 +31,16 @@ public abstract class XMLDecoder implements Decoder {
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
      */
-    public abstract void decode(MessageInfo arg0);
+    public void decode(MessageInfo arg0) {
+        throw new UnsupportedOperationException();
+    }
 
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#receieveAndDecode(com.sun.pept.ept.MessageInfo)
      */
-    public abstract void receiveAndDecode(MessageInfo arg0);
+    public void receiveAndDecode(MessageInfo arg0) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * parses and binds body from xmlMessage.

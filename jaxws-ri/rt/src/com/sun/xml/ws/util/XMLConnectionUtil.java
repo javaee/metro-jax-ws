@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.3 2005-07-28 00:24:37 jitu Exp $
+ * $Id: XMLConnectionUtil.java,v 1.4 2005-08-08 19:13:05 arungupta Exp $
  */
 
 /*
@@ -43,11 +43,11 @@ public class XMLConnectionUtil {
                         mh.addHeader(name, value);
                     }
                 }
-            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
-            XMLMessage xmlMessage =  new XMLMessage(mh,
-                    con.getInput());
+//            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+//            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
+//            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
+            XMLMessage xmlMessage =  new XMLMessage(mh, con.getInput());
+            
             return xmlMessage;
         } catch(Exception e) {
             e.printStackTrace();

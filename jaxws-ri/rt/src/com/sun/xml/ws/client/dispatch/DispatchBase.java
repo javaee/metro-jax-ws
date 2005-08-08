@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.12 2005-07-27 18:50:02 jitu Exp $
+ * $Id: DispatchBase.java,v 1.13 2005-08-08 19:13:01 arungupta Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -8,21 +8,6 @@
 
 package com.sun.xml.ws.client.dispatch;
 
-import com.sun.pept.Delegate;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.xml.ws.client.*;
-import com.sun.xml.ws.client.dispatch.impl.DispatchContactInfoList;
-import com.sun.xml.ws.client.dispatch.impl.DispatchDelegate;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.soap.*;
-import javax.xml.transform.Source;
-import javax.xml.ws.*;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.SOAPFaultException;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -30,9 +15,46 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import com.sun.pept.Delegate;
+import com.sun.pept.presentation.MessageStruct;
+
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.client.ContentNegotiation;
+import com.sun.xml.ws.client.InternalBindingProvider;
+import com.sun.xml.ws.client.PortInfoBase;
+import com.sun.xml.ws.client.RequestContext;
+import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.dispatch.impl.DispatchContactInfoList;
+import com.sun.xml.ws.client.dispatch.impl.DispatchDelegate;
+import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
+
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.Source;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import static com.sun.xml.ws.client.BindingProviderProperties.DISPATCH_CONTEXT;
 import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CLASS;
-import com.sun.xml.ws.binding.BindingImpl;
+
+import javax.activation.DataSource;
+
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.Binding;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.Response;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.http.HTTPBinding;
 
 
 /**
@@ -484,6 +506,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         } else if (_jaxbContext != null) {
             context.setProperty(DISPATCH_MESSAGE_CLASS,
                 DispatchContext.MessageClass.JAXBOBJECT);
+        } else if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING) && (_clazz != null) && (_clazz.isAssignableFrom(DataSource.class))) {
+            context.setProperty(DISPATCH_MESSAGE_CLASS,
+                DispatchContext.MessageClass.DATASOURCE);
         } else {
             throw new WebServiceException("Object is not a javax.xml.transform.Source or there is no JAXB Context");
         }
@@ -499,6 +524,11 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     throw new WebServiceException("SOAPMessages must be Service.Mode.MESSAGE. ");
                 } else if (mode == Service.Mode.MESSAGE)
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOAPMESSAGE_MESSAGE);
+            } else if (_clazz.isAssignableFrom(DataSource.class)) {
+                if (mode == Service.Mode.PAYLOAD)
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.DATASOURCE_PAYLOAD);
+                else if (mode == Service.Mode.MESSAGE)
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.DATASOURCE_MESSAGE);
             }
         } else if (hasJAXBContext(obj, null)) {
             if (mode == Service.Mode.PAYLOAD)
