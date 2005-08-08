@@ -1,5 +1,5 @@
 /**
- * $Id: WSAP.java,v 1.2 2005-07-29 19:54:47 kohlert Exp $
+ * $Id: WSAP.java,v 1.3 2005-08-08 15:23:21 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -93,9 +93,8 @@ public class WSAP extends WebServiceAP {
             throw new RuntimeException(message);
         } else {
             message = localizer.localize(getMessage("webserviceap.error", localizer.localize(msg)));            
-//            report(message);
-//            throw new RuntimeException("modeler.error", message);
+            report(message);
+            throw new RuntimeException(message);        
         }
-//        throw new RuntimeException(message);        
     }         
 }
