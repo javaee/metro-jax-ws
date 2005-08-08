@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.4 2005-07-24 01:35:07 kohlert Exp $
+ * $Id: WsImport.java,v 1.5 2005-08-08 15:34:00 kohlert Exp $
  */
 
 /*
@@ -313,7 +313,7 @@ public class WsImport extends MatchingTask {
         Commandline cmd = new Commandline();
 
         // d option
-        if (null != getBase() && !getBase().equals("")) {
+        if (null != getBase() && !getBase().getName().equals("")) {
             cmd.createArgument().setValue("-d");
             cmd.createArgument().setFile(getBase());
         }
@@ -342,7 +342,7 @@ public class WsImport extends MatchingTask {
         }
 
         // nd option
-        if (null != getNonClassDir() && !getNonClassDir().equals("")) {
+        if (null != getNonClassDir() && !getNonClassDir().getName().equals("")) {
             cmd.createArgument().setValue("-nd");
             cmd.createArgument().setFile(getNonClassDir());
         }
@@ -353,7 +353,7 @@ public class WsImport extends MatchingTask {
         }
 
         // s option
-        if (null != getSourceBase() && !getSourceBase().equals("")) {
+        if (null != getSourceBase() && !getSourceBase().getName().equals("")) {
             cmd.createArgument().setValue("-s");
             cmd.createArgument().setFile(getSourceBase());
         }

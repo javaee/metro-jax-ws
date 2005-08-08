@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.3 2005-08-08 15:22:48 kohlert Exp $
+ * $Id: Apt.java,v 1.4 2005-08-08 15:34:00 kohlert Exp $
  */
 
 /*
@@ -157,12 +157,12 @@ public class Apt extends Task {
     public void setDebugLevel(String debugLevel) { this.debugLevel = debugLevel; }
 	
     /** -nowarn option: generate no warnings */
-	protected boolean nowarn = false;
+    protected boolean nowarn = false;
     public boolean isNowarn() { return nowarn; }
     public void setNowarn(boolean nowarn) { this.nowarn = nowarn; }
 
     /** -deprecation option: output source locations where deprecated APIs are used */
-	protected boolean deprecation = false;
+    protected boolean deprecation = false;
     public boolean isDeprecation() { return deprecation; }
     public void setDeprecation(boolean deprecation) { this.deprecation = deprecation; }
 
@@ -172,34 +172,34 @@ public class Apt extends Task {
     public void setBootclassPath(Path bootclassPath) { this.bootclassPath = bootclassPath; }
 
     /** -extdirs option: override location of installed extensions */
-	protected String extdirs = null;
+    protected String extdirs = null;
     public String getExtdirs() { return extdirs; }
     public void setExtdirs(String extdirs) { this.extdirs = extdirs; }
 
     /** -endorseddirs option: override location of endorsed standards path */
-	protected String endorseddirs = null;
+    protected String endorseddirs = null;
     public String getEndorseddirs() { return endorseddirs; }
     public void setEndorseddirs(String endorseddirs) { this.endorseddirs = endorseddirs; }
 
-	/** -verbose option: output messages about what the compiler is doing */
-	protected boolean verbose = false;
+    /** -verbose option: output messages about what the compiler is doing */
+    protected boolean verbose = false;
     public boolean isVerbose() { return verbose; }
     public void setVerbose(boolean verbose) { this.verbose = verbose; }
 	
     /** -sourcepath option: Specify where to find input source files */
-	protected Path sourcePath = null;
+    protected Path sourcePath = null;
     public Path getSourcePath() { return sourcePath; }
     public void setSourcePath(Path sourcePath) { this.sourcePath = sourcePath; }
 
     /** -encoding option: character encoding used by the source files */
-	protected String encoding = null;
+    protected String encoding = null;
     public String getEncoding() { return encoding; }
     public void setEncoding(String encoding) { this.encoding = encoding; }
 
     /** -target option: generate class files for specific VM version */
-	protected String target = null;
-    public String getTarget() { return target; }
-    public void setTarget(String target) { this.target = target; }
+    protected String targetVM = null;
+    public String getTarget() { return targetVM; }
+    public void setTarget(String target) { this.targetVM = target; }
 
 
 //    /** -failonerror option */
@@ -210,7 +210,7 @@ public class Apt extends Task {
 	/** Others */
 	
     /** -fork option: */
-	protected boolean fork = false;
+    protected boolean fork = false;
     public boolean isFork() { return fork; }
     public void setFork(boolean fork) { this.fork = fork; }
 	
@@ -331,12 +331,12 @@ public class Apt extends Task {
     private Commandline setupAptArgs() {
         Commandline cmd = new Commandline();
         
-        if (null != getBase() && !getBase().equals("")) {
+        if (null != getBase() && !getBase().getName().equals("")) {
             cmd.createArgument().setValue("-d");
             cmd.createArgument().setFile(getBase());
         }
         
-        if (null != getSourceBase() && !getSourceBase().equals("")) {
+        if (null != getSourceBase() && !getSourceBase().getName().equals("")) {
             cmd.createArgument().setValue("-s");
             cmd.createArgument().setFile(getSourceBase());
         }
@@ -349,12 +349,12 @@ public class Apt extends Task {
         if (getSourcePath() == null)
             throw new BuildException("\"sourcePath\" attribute must be set.");
         
-        if (getSourcePath() != null && !getSourcePath().equals("")) {
+        if (getSourcePath() != null && !getSourcePath().toString().equals("")) {
             cmd.createArgument().setValue("-sourcepath");
             cmd.createArgument().setValue(getSourcePath().toString());
         }
         
-        if (getBootclassPath() != null && !getBootclassPath().equals("")) {
+        if (getBootclassPath() != null && !getBootclassPath().toString().equals("")) {
             cmd.createArgument().setValue("-bootclasspath");
             cmd.createArgument().setValue(getBootclassPath().toString());
         }
