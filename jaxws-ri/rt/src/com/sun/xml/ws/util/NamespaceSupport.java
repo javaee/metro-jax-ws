@@ -1,5 +1,5 @@
 /*
- * $Id: NamespaceSupport.java,v 1.3 2005-07-23 04:10:14 kohlert Exp $
+ * $Id: NamespaceSupport.java,v 1.4 2005-08-08 22:04:21 kohlert Exp $
  */
 
 /*
@@ -166,7 +166,6 @@ public class NamespaceSupport {
         if (contextPos >= max) {
             Context newContexts[] = new Context[max * 2];
             System.arraycopy(contexts, 0, newContexts, 0, max);
-            max *= 2;
             contexts = newContexts;
         }
 
