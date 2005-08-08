@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.5 2005-08-04 21:45:30 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.6 2005-08-08 19:58:54 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -288,7 +288,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                                ArrayList<MemberInfo> responseMembers) {
                                    
         WebResult webResult = method.getAnnotation(WebResult.class);
-        String responseName = builder.getResponseName(operationName);
         String responseElementName = RETURN;
         String responseNamespace = typeNamespace;
         if (webResult != null && webResult.name().length() > 0) {
@@ -373,7 +372,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     private void writeMembers(IndentingWriter out, ArrayList<MemberInfo> members) throws IOException {
         if (out == null)
             return;
-/*        for (MemberInfo memInfo : members) {
+        for (MemberInfo memInfo : members) {
             QName elementName = memInfo.getElementName();
             if (elementName != null) {
                 if (soapStyle.equals(SOAPStyle.DOCUMENT)) {
@@ -393,7 +392,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 out.pln("@ParameterIndex(value="+memInfo.getParamIndex()+")");
             
             out.pln("private "+memInfo.getParamType()+" "+memInfo.getParamName()+";");            
-        }*/
+        }
         for (MemberInfo memInfo : members) {
             writeMember(out, memInfo.getParamIndex(), memInfo.getParamType(), 
                         memInfo.getParamName(), memInfo.getElementName());
@@ -532,7 +531,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (out == null)
             return;
         out.pln();
-        if (elementName != null) {
+/*        if (elementName != null) {
             if (soapStyle.equals(SOAPStyle.DOCUMENT)) {
                 if (wrapped)
                     out.pln("@XmlElement(namespace=\""+
@@ -549,8 +548,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (paramIndex >= -1)
             out.pln("@ParameterIndex(value="+paramIndex+")");
         out.pln("public "+paramType+" "+paramName+";");            
-        
-/*        String capPropName = StringUtils.capitalize(paramName);
+        */
+        String capPropName = StringUtils.capitalize(paramName);
         String getterPrefix = paramType.equals("boolean") || paramType.equals("java.lang.Boolean") ? "is" : "get";
         out.plnI("public "+paramType+" "+getterPrefix+capPropName+"() {");
         out.pln("return "+paramName+";");            
@@ -558,7 +557,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         out.pln();
         out.plnI("public void set"+capPropName+"("+paramType+" "+paramName+") {");
         out.pln("this."+paramName+" = "+paramName+";");
-        out.pOln("}");*/
+        out.pOln("}");
     }
 
     private void writeDefaultConstructor(IndentingWriter out, String className) throws IOException {
