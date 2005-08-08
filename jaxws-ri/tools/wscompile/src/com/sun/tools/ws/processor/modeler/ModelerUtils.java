@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.4 2005-07-23 04:10:59 kohlert Exp $
+ * $Id: ModelerUtils.java,v 1.5 2005-08-08 16:57:08 kohlert Exp $
  */
 
 /*
@@ -82,7 +82,6 @@ public class ModelerUtils {
         block.setType(type);
         List memberList = jaxbType.getWrapperChildren();
         Iterator props = memberList.iterator();
-        java.util.Set<String> propNames = new java.util.HashSet<String>();
         while (props.hasNext()) {
             JAXBProperty prop = (JAXBProperty) props.next();
             paramList.add(createUnwrappedParameter(prop, jaxbType, block, type,
