@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.5 2005-08-04 22:08:16 kohlert Exp $
+ * $Id: Model.java,v 1.6 2005-08-08 16:53:02 kohlert Exp $
  */
 
 /*
@@ -21,7 +21,6 @@ import javax.xml.namespace.QName;
 
 import com.sun.tools.ws.processor.model.jaxb.JAXBModel;
 import com.sun.tools.ws.processor.ProcessorActionVersion;
-//import com.sun.xml.rpc.processor.config.ImportedDocumentInfo;
 
 /**
  * The model is used to represent the entire Web Service.  The JAX-WS ProcessorActions can process
@@ -168,7 +167,6 @@ public class Model extends ModelObject {
     private List<Service> services = new ArrayList<Service>();
     private Map<QName, Service> servicesByName = new HashMap<QName, Service>();
     private Set<AbstractType> extraTypes = new HashSet<AbstractType>();
-    private Map importedDocuments = new HashMap();
     private String source;
     private JAXBModel jaxBModel = null;
     private ProcessorActionVersion processorActionVersion = ProcessorActionVersion.VERSION_20;
