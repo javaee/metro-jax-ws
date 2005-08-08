@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.4 2005-08-08 16:47:39 kohlert Exp $
+ * $Id: Names.java,v 1.5 2005-08-08 16:49:58 kohlert Exp $
  */
 
 /*
@@ -12,7 +12,6 @@ package com.sun.tools.ws.processor.generator;
 import com.sun.tools.ws.processor.model.*;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.processor.model.java.JavaStructureMember;
-import com.sun.tools.ws.processor.model.java.JavaType;
 import com.sun.tools.ws.processor.model.jaxb.JAXBProperty;
 import com.sun.tools.ws.processor.util.DirectoryUtil;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
