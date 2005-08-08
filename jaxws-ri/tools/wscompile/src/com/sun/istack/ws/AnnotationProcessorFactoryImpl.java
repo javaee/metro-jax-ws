@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorFactoryImpl.java,v 1.3 2005-07-29 19:54:47 kohlert Exp $
+ * $Id: AnnotationProcessorFactoryImpl.java,v 1.4 2005-08-08 15:14:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -22,7 +22,6 @@ import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
  */
 public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactory {
 
-    private static int round = 0; 
     private static WSAP wsAP;
     /*
      * Processor doesn't examine any options.
