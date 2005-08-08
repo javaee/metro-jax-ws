@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBModel.java,v 1.2 2005-07-21 01:59:09 vivekp Exp $
+ * $Id: JAXBModel.java,v 1.3 2005-08-08 16:54:09 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -88,7 +88,6 @@ public class JAXBModel {
         this.mappings = mappings;
         byQName.clear();
         byClassName.clear();
-        Iterator iter = mappings.iterator();
         for( JAXBMapping m : mappings ) {
             byQName.put(m.getElementName(),m);
             byClassName.put(m.getType().getName(),m);
