@@ -4,7 +4,7 @@
  */
 
 /*
- * $Id: DirectoryUtil.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
+ * $Id: DirectoryUtil.java,v 1.3 2005-08-08 21:42:18 kohlert Exp $
  */
 
 package com.sun.tools.ws.processor.util;
@@ -28,9 +28,7 @@ public class DirectoryUtil  {
         String qualifiedClassName = theClass;
         String packagePath = null;
         String packageName = ClassNameInfo.getQualifier(qualifiedClassName);
-        if (packageName == null) {
-            packageName = "";
-        } else if (packageName.length() > 0) {
+        if (packageName != null && packageName.length() > 0) {
             packagePath = packageName.replace('.', File.separatorChar);
         }
 
