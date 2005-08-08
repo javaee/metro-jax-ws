@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.3 2005-07-23 04:10:57 kohlert Exp $
+ * $Id: Names.java,v 1.4 2005-08-08 16:47:39 kohlert Exp $
  */
 
 /*
@@ -37,13 +37,6 @@ public class Names implements GeneratorConstants{
     public Names() {
     }
 
-    /**
-     * Return stub class name for impl class name.
-     */
-    public String stubFor(Port port) {
-        return stubFor((Port) port, null);
-    }
-
     public String stubFor(Port port, String infix) {
         String result =
             (String) port.getProperty(ModelProperties.PROPERTY_STUB_CLASS_NAME);
@@ -55,59 +48,6 @@ public class Names implements GeneratorConstants{
                     infix);
         }
         return result;
-    }
-
-    public String clientContactInfoFor(Port port) {
-        return clientContactInfoFor((Port) port, null);
-    }
-
-    public String clientContactInfoFor(Port port, String infix) {
-        String result =
-            (String) port.getProperty(
-                ModelProperties.PROPERTY_CLIENT_CONTACTINFOLIST_CLASS_NAME);
-        if (result == null) {
-            result =
-                makeDerivedClassName(
-                    port.getJavaInterface(),
-                    CLIENT_CONTACTINFOLIST_SUFFIX,
-                    infix);
-        }
-        return result;
-    }
-
-    public String delegateFor(Port port) {
-        return delegateFor((Port) port, null);
-    }
-
-    public String delegateFor(Port port, String infix) {
-        String result =
-            (String) port.getProperty(
-                ModelProperties.PROPERTY_DELEGATE_CLASS_NAME);
-        if (result == null) {
-            result =
-                makeDerivedClassName(
-                    port.getJavaInterface(),
-                    CLIENT_DELEGATE_SUFFIX,
-                    infix);
-        }
-        return result;
-    }
-
-
-    /**
-     * Return skeleton class name for impl class name.
-     */
-//    public String skeletonFor(JavaInterface javaInterface) {
-//        String name =
-//            ClassNameInfo.replaceInnerClassSym(javaInterface.getRealName());
-//        return name + SKELETON_SUFFIX;
-//    }
-
-    /**
-     * Return tie class name for impl class name.
-     */
-    public String tieFor(Port port) {
-        return tieFor(port, serializerNameInfix);
     }
 
     public String tieFor(Port port, String infix) {
@@ -188,11 +128,6 @@ public class Names implements GeneratorConstants{
         return new File(packageDir, outputFileName);
     }
 
-    public String typeClassName(JavaType type) {
-        String typeName = type.getName();
-        return typeName;
-    }
-
     public static String getPackageName(Service service) {
         String portPackage =
             getPackageName(service.getJavaInterface().getName());
@@ -204,15 +139,6 @@ public class Names implements GeneratorConstants{
         return intName;
     }
 
-    public String customJavaTypeClassName(AbstractType type) {
-        String typeName = type.getJavaType().getName();
-        return typeName;
-    }
-
-    private String customJavaTypeClassName(String typeName) {
-        return typeName;
-    }
-
     public String customExceptionClassName(Fault fault) {
         String typeName = fault.getJavaException().getName();
         return typeName;
@@ -220,110 +146,6 @@ public class Names implements GeneratorConstants{
 
     public String getExceptionClassMemberName(){
         return FAULT_CLASS_MEMBER_NAME;
-    }
-
-    public String interfaceImplClassName(
-        JavaInterface intf) {
-        String intName = intf.getName() + IMPL_SUFFIX;
-        return intName;
-    }
-
-    /* (non-Javadoc)
-     * @see Names#holderClassName(Port, AbstractType)
-     */
-    public String holderClassName(Port port, AbstractType type) {
-        String typeName = SimpleToBoxedUtil.getBoxedClassName(type.getJavaType().getName());
-        return "javax.xml.ws.Holder<"+typeName+">";
-    }
-
-    /* (non-Javadoc)
-     * @see Names#holderClassName(Port, JavaType)
-     */
-    public String holderClassName(Port port, JavaType type) {
-        String typeName = SimpleToBoxedUtil.getBoxedClassName(type.getName());
-        return "javax.xml.ws.Holder<"+typeName+">";
-    }
-    /* (non-Javadoc)
-     * @see Names#holderClassName(Port, String)
-     */
-    protected String holderClassName(Port port, String typeName) {
-        typeName = SimpleToBoxedUtil.getBoxedClassName(typeName);
-        return "javax.xml.ws.Holder<"+typeName+">";
-    }
-    public static boolean isInJavaOrJavaxPackage(String typeName) {
-        return typeName.startsWith(JAVA_PACKAGE_PREFIX)
-            || typeName.startsWith(JAVAX_PACKAGE_PREFIX);
-    }
-
-    public String memberName(String name) {
-        return (MEMBER_PREFIX + name).replace('.', '$');
-    }
-
-    public String getClassMemberName(String className) {
-        className = getUnqualifiedClassName(className);
-        return memberName(className);
-    }
-
-    public String getClassMemberName(
-        String className,
-        AbstractType type,
-        String suffix) {
-        className = getUnqualifiedClassName(className);
-        String additionalClassName =
-            type.getJavaType().getName().replace('.', '_');
-        int idx = additionalClassName.indexOf('[');
-        if (idx > 0)
-            additionalClassName = additionalClassName.substring(0, idx);
-        return memberName(
-            getPrefix(type.getName())
-                + UNDERSCORE
-                + validJavaName(type.getName().getLocalPart())
-                + "__"
-                + additionalClassName
-                + UNDERSCORE
-                + className
-                + suffix);
-    }
-
-    public String getClassMemberName(String className, AbstractType type) {
-        className = getUnqualifiedClassName(className);
-        return getClassMemberName(
-            getPrefix(type.getName())
-                + UNDERSCORE
-                + validJavaName(type.getName().getLocalPart())
-                + "__"
-                + className);
-    }
-
-    public String getTypeMemberName(AbstractType type) {
-        return getTypeMemberName(type.getJavaType());
-    }
-
-    public String getTypeMemberName(JavaType javaType) {
-        String typeName = javaType.getRealName();
-        return getTypeMemberName(typeName);
-    }
-
-    /* this fix was implemented with respect to the fact that
-       for StringArray ... when wsdl -> javamapping happens and
-       the generated code would create variables[]name : which
-       which were wrong */
-    public String getTypeMemberName(String typeName) {
-        typeName = getUnqualifiedClassName(typeName);
-        int i = 0;
-        while (typeName.endsWith(BRACKETS)) {
-            typeName = typeName.substring(0, typeName.length() - 2);
-            i++;
-        }
-        for (; i < 0; i--)
-            typeName += ARRAY;
-
-        return memberName(typeName);
-    }
-
-    public String getOPCodeName(String name) {
-        String qname = name + OPCODE_SUFFIX;
-        return validInternalJavaIdentifier(qname);
     }
 
     public String getQNameName(QName name) {
@@ -338,20 +160,6 @@ public class Names implements GeneratorConstants{
         if (operation != null)
             qname += UNDERSCORE + operation.getUniqueName();
         qname += UNDERSCORE + blockName.getLocalPart() + QNAME_SUFFIX;
-        return validInternalJavaIdentifier(qname);
-    }
-
-    public void setJavaStructureMemberMethodNames(JavaStructureMember javaMember) {
-        javaMember.setReadMethod(getJavaMemberReadMethod(javaMember));
-        javaMember.setWriteMethod(getJavaMemberWriteMethod(javaMember));
-    }
-
-    public String getBlockUniqueName(Operation operation, Block block) {
-        QName blockName = block.getName();
-        String qname = getPrefix(blockName);
-        if (operation != null)
-            qname += UNDERSCORE + operation.getUniqueName();
-        qname += UNDERSCORE + blockName.getLocalPart();
         return validInternalJavaIdentifier(qname);
     }
 
@@ -378,13 +186,6 @@ public class Names implements GeneratorConstants{
         return com.sun.tools.xjc.api.XJC.mangleNameToVariableName(name);    
     }
 
-    public String validJavaPackageName(String name) {
-        return validJavaName(StringUtils.decapitalize(name));
-    }
-
-    public String getIDObjectResolverName(String name) {
-        return validJavaClassName(name) + "IDObjectResolver";
-    }
     public String validInternalJavaIdentifier(String name) {
         // return a valid java identifier without dropping characters (i.e. do not apply
         // the mapping of XML names to Java identifiers in the spec); it's only meant
@@ -462,7 +263,7 @@ public class Names implements GeneratorConstants{
 
 
     public String getJavaReadMethod(JAXBProperty prop){
-        if(prop.getType().equals("boolean"))
+        if(prop.getType().getName().equals("boolean"))
             return IS + StringUtils.capitalize(prop.getName());
         return getJavaReadMethod(prop.getName());
     }
@@ -542,36 +343,6 @@ public class Names implements GeneratorConstants{
             && (serializerNameInfix.charAt(0) == '_'))
             str = serializerNameInfix.substring(1);
         return str;
-    }
-
-    //bug fix: 4865124
-    public static String getAdjustedURI(String namespaceURI, String pkgName) {
-        if (pkgName == null)
-            return namespaceURI;
-        else if (namespaceURI == null)
-            return pkgName;
-
-        int length = namespaceURI.length();
-        int i = namespaceURI.lastIndexOf('/');
-        if (i == -1) {
-            //check if its URN
-            i = namespaceURI.lastIndexOf(':');
-            if (i == -1) {
-                //not a URI or URN pattern, return pkgName
-                return pkgName;
-            }
-
-        }
-
-        if ((i != -1) && (i + 1 == length)) {
-            return namespaceURI + pkgName;
-        } else {
-            int j = namespaceURI.indexOf('.', i);
-            if (j != -1)
-                return namespaceURI.substring(0, i + 1) + pkgName;
-            else
-                return namespaceURI + "/" + pkgName;
-        }
     }
 
     protected String serializerNameInfix = null;
