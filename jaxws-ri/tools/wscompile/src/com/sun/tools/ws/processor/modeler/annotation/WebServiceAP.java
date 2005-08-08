@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.5 2005-07-29 19:54:49 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.6 2005-08-08 17:20:07 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -74,10 +74,8 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     protected AnnotationProcessorEnvironment apEnv;
     protected ProcessorEnvironment env;
 
-    private String wsdlUri;
+//    private String wsdlUri;
     private File sourceDir;
-    private Properties options;
-    private String sourceVersion;
 
     // the model being build
     private Model model;
@@ -88,16 +86,13 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     private TypeDeclaration defHolderDecl;
     private Service service;
     private Port port;
-    private Operation operation;
     protected AnnotationProcessorContext context;
-    private List<String> sourceFiles = new ArrayList<String>();
     private Set<TypeDeclaration> processedTypeDecls = new HashSet<TypeDeclaration>();
     protected Messager messager;
     private ByteArrayOutputStream output;
     private ToolBase tool;
     private boolean donotOverride = false;
     private boolean wrapperGenerated = false;
-    private Types types;
 
 
     public void run() {
@@ -111,11 +106,9 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
 
         super(System.out, "WebServiceAP");
         this.context = context;
-        this.options = options;
         this.tool = tool;
         this.env = env;
         if (options != null) {
-            sourceVersion = options.getProperty(ProcessorOptions.JAXWS_SOURCE_VERSION);
             sourceDir = new File(options.getProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY));
             String key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
             this.donotOverride =
@@ -129,7 +122,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         remoteExceptionDecl = this.apEnv.getTypeDeclaration(REMOTE_EXCEPTION_CLASSNAME);
         exceptionDecl = this.apEnv.getTypeDeclaration(EXCEPTION_CLASSNAME);
         defHolderDecl = this.apEnv.getTypeDeclaration(HOLDER_CLASSNAME);
-        types = apEnv.getTypeUtils();
 
         if (env == null) {
             Map<String, String> apOptions = apEnv.getOptions();
@@ -176,20 +168,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return env;
     }
 
-    public void setPortProperties(Port port) {
-        // set WSDL-related properties
-        String portName = port.getName().getLocalPart();
-        port.setProperty(
-            ModelProperties.PROPERTY_WSDL_PORT_NAME,
-            getWSDLPortName(portName));
-        port.setProperty(
-            ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME,
-            getWSDLPortTypeName(portName));
-        port.setProperty(
-            ModelProperties.PROPERTY_WSDL_BINDING_NAME,
-            getWSDLBindingName(portName));
-    }
-
     public ProcessorEnvironment getProcessorEnvironment() {
         return env;
     }
@@ -206,14 +184,8 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         onError(new LocalizableMessage(getResourceBundleName(), key, args));
     }
 
-    private void onError(LocalizableExceptionAdapter adapter) {
-        onError((Localizable)adapter);
-    }
-
     public void onError(Localizable msg) throws ModelerException {
-        String message;
         if (messager != null) {
-            message = localizer.localize(msg);
             messager.printError(localizer.localize(msg));
         } else {
             throw new ModelerException(msg);
@@ -333,7 +305,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public void addOperation(Operation operation) {
-        this.operation = operation;
         port.addOperation(operation);
     }
 
@@ -452,16 +423,17 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
 
 
     public static String getMethodSig(MethodDeclaration method) {
-        String sig = method.getSimpleName() + "(";
+        StringBuffer buf = new StringBuffer(method.getSimpleName() + "(");
         Iterator<TypeParameterDeclaration> params = method.getFormalTypeParameters().iterator();
         TypeParameterDeclaration param;
         for (int i =0; params.hasNext(); i++) {
             if (i > 0)
-                sig += ", ";
+                buf.append(", ");
             param = params.next();
-            sig += param.getSimpleName();
+            buf.append(param.getSimpleName());
         }
-        return sig + ")";
+        buf.append(")");
+        return buf.toString();
     }
 
     public String getOperationName(String messageName) {
@@ -494,7 +466,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     // these methods added so that the WebService modeler can pick the names
     // it wants for the WSDL artifacts associated with ports and operations
 
-    public QName getWSDLPortName(String portName) {
+/*    public QName getWSDLPortName(String portName) {
         return new QName(wsdlUri, getXMLName(portName + PORT));
     }
 
@@ -504,7 +476,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
 
     public QName getWSDLPortTypeName(String portName) {
         return new QName(wsdlUri, getXMLName(portName));
-    }
+    }*/
 }
 
 
