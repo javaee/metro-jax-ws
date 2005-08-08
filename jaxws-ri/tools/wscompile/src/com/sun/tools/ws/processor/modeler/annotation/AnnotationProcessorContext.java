@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorContext.java,v 1.3 2005-08-04 22:08:16 kohlert Exp $
+ * $Id: AnnotationProcessorContext.java,v 1.4 2005-08-08 17:05:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -105,7 +105,7 @@ public class AnnotationProcessorContext {
         return modelCompleted;
     }
 
-    public class SEIContext {
+    public static class SEIContext {
         private Map<String, WrapperInfo> reqOperationWrapperMap;
         private Map<String, WrapperInfo> resOperationWrapperMap;
         private Map<String, FaultInfo> exceptionBeanMap;
@@ -185,10 +185,10 @@ public class AnnotationProcessorContext {
         }
 
         public String methodToString(MethodDeclaration method) {
-            String str = method.getSimpleName();
+            StringBuffer buf = new StringBuffer(method.getSimpleName());
             for (ParameterDeclaration param : method.getParameters())
-                str += ";"+param.getType().toString();
-            return str;
+                buf.append(";"+param.getType().toString());
+            return buf.toString();
         }
 
         public void setModel(Model model) {
