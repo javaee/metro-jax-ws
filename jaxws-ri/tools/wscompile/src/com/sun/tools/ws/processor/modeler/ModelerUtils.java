@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.5 2005-08-08 16:57:08 kohlert Exp $
+ * $Id: ModelerUtils.java,v 1.6 2005-08-08 18:58:29 kohlert Exp $
  */
 
 /*
@@ -159,10 +159,6 @@ public class ModelerUtils {
         parameter.setType(jaxbType);        
         parameter.setTypeName(jaxbType.getJavaType().getType().getName());
         parameter.setBlock(block);
-        //add jaxb type annotations
-        if(jaxbType instanceof JAXBType){
-            JAXBMapping jaxbMapping = ((JAXBType)jaxbType).getJaxbMapping();
-        }
         return parameter;
     }
 
