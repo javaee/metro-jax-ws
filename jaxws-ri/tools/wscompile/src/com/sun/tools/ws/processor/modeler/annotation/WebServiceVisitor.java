@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.4 2005-05-26 01:27:00 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.5 2005-08-08 23:46:34 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -164,9 +164,19 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         }
     }
 
+    public static boolean sameStyle(SOAPBinding.Style style, SOAPStyle soapStyle) {
+        if (style.equals(SOAPBinding.Style.DOCUMENT) &&
+            soapStyle.equals(SOAPStyle.DOCUMENT))
+            return true;
+        if (style.equals(SOAPBinding.Style.RPC) &&
+            soapStyle.equals(SOAPStyle.RPC))
+            return true;
+        return false;
+    }
+    
     protected boolean pushSOAPBinding(SOAPBinding soapBinding, TypeDeclaration d) {
         boolean changed = false;
-        if (!soapBinding.style().equals(soapStyle))
+        if (!sameStyle(soapBinding.style(), soapStyle))
             changed = true;
         if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
             soapStyle = SOAPStyle.RPC;
@@ -187,7 +197,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
            builder.onError("webserviceap.rpc.encoded.not.supported",
                     new Object[] {d.getQualifiedName()});
         }
-        if (changed) {
+        if (changed || soapBindingStack.empty()) {
             soapBindingStack.push(soapBinding);
         }
         return changed;
@@ -225,16 +235,17 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 tokens[i] = tokenizer.nextToken();
             }
         }
-        String namespace = HTTP_PREFIX;
+        StringBuffer namespace = new StringBuffer(HTTP_PREFIX);
         String dot = "";
         for (int i=0; i<tokens.length; i++) {
             if (i==1)
                 dot = PD;
-            namespace += dot+tokens[i];
+            namespace.append(dot+tokens[i]);
         }
         if (tokens.length > 0)
-            namespace += "/";
-        return namespace + JAXWS;
+            namespace.append('/');
+        namespace.append(JAXWS);
+        return namespace.toString();
     }
 
 
@@ -281,6 +292,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             if (endpointInterfaceName.equals(interfaceType.toString())) {
                 intTypeDecl = interfaceType.getDeclaration();
                 seiContext = context.getSEIContext(intTypeDecl.getQualifiedName());
+                assert(seiContext != null);
                 seiContext.setImplementsSEI(true);
                 break;
             }
@@ -291,7 +303,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (intTypeDecl == null)
             builder.onError("webserviceap.endpointinterface.class.not.found",
                             new Object[] {endpointInterfaceName});
-        intTypeDecl.accept((DeclarationVisitor)this);
+        else                            
+            intTypeDecl.accept((DeclarationVisitor)this);
     }
 
     public void visitMethodDeclaration(MethodDeclaration method) {
@@ -394,14 +407,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         }
         if (!hasInParam && soapStyle.equals(SOAPStyle.DOCUMENT) && !isDocLitWrapped) {
             QName paramQName = new QName(wsdlNamespace, method.getSimpleName());
-            AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
-            TypeMirror voidType = apEnv.getTypeUtils().getVoidType();
             seiContext.addSchemaElement(paramQName, null);
         }
     }
 
     public void addReturnSchemaElement(MethodDeclaration method) {
-        Oneway oneway = method.getAnnotation(Oneway.class);
         TypeMirror returnType = method.getReturnType();
         WebResult webResult = method.getAnnotation(WebResult.class);
         String responseName = builder.getResponseName(method.getSimpleName());
@@ -424,7 +434,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         String paramName = param.getSimpleName();
         String paramNamespace = wsdlNamespace;
         TypeMirror paramType = param.getType();
-        TypeMirror holderType = holderType = builder.getHolderValueType(paramType);
+        TypeMirror holderType = builder.getHolderValueType(paramType);
         boolean isHeader = false;
         if (soapStyle.equals(SOAPStyle.DOCUMENT) && !wrapped) {
             paramName = method.getSimpleName();

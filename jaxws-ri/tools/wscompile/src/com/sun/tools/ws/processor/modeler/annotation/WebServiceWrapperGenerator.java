@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.6 2005-08-08 19:58:54 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.7 2005-08-08 23:46:43 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -202,10 +202,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
             WebResult webResult = method.getAnnotation(WebResult.class);
             String responseName = builder.getResponseName(operationName);
-            String responseElementName = RETURN;
-            if (webResult != null && webResult.name().length() > 0) {
-                responseElementName = webResult.name();
-            }  
 
             // package declaration
             String version = builder.getVersionString();
@@ -272,7 +268,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                                     field.getSimpleName(), 
                                     new QName(namespace, elementName));
             int j=0;
-            while (j<members.size() && members.get(j).getParamIndex() < index) {
+            while (j<members.size() && members.get(j++).getParamIndex() < index) {
                 break;
             }
             members.add(j, member);
