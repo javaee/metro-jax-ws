@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.10 2005-08-04 21:50:29 kohlert Exp $
+ * $Id: CompileTool.java,v 1.11 2005-08-08 21:54:00 kohlert Exp $
  */
 
 /*
@@ -223,10 +223,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     value = value.substring(1);
                     index = value.indexOf('/');
                     if (index == -1) {
-                        protocol = value;
+                        protocol = value.toLowerCase();
                         transport = HTTP;
                     } else {
-                        protocol = value.substring(0, index);
+                        protocol = value.substring(0, index).toLowerCase();
                         transport = value.substring(index + 1);
                     }
                     if (!isValidProtocol(protocol)) {
@@ -282,7 +282,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     }
     
     static public boolean isValidTransport(String transport) {
-        return (transport.equals(HTTP));
+        return (transport.equalsIgnoreCase(HTTP));
     }
     
     public Localizable getVersion() {
@@ -356,7 +356,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
 
         String classpath = environment.getClassPath();
 
-        String key = ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY;
         String[] args = new String[8];
         args[0] = "-d";
         args[1] = destDir.getAbsolutePath();
@@ -433,10 +432,9 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         withModelHook();
         registerProcessorActions(processor);
         processor.runActions();
-        if (environment.getErrorCount() != 0) {
-            // TODO throw an error
-            // compileGeneratedClasses();
-        }
+       // TODO throw an error
+//        if (environment.getErrorCount() != 0) {
+//        }
 
     }
     /**
@@ -695,12 +693,12 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected boolean genWsdl = false;
     protected String protocol = SOAP11;
     protected String transport = HTTP;
-    protected static final String SOAP11 = "soap11";
-    protected static final String SOAP12 = "soap12";
+    protected static final String SOAP11 = "soap1.1";
+    protected static final String SOAP12 = "soap1.2";
     protected static final String HTTP   = "http";    
     protected static final String SOAP11_ID = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
     protected static final String SOAP12_ID = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
-    protected static final String VALID_PROTOCOLS = "soap11, soap12";
+    protected static final String VALID_PROTOCOLS = "soap1.1, soap1.2";
     protected static final String VALID_TRANSPORTS = "http";
     protected String  targetVersion = null;
 }
