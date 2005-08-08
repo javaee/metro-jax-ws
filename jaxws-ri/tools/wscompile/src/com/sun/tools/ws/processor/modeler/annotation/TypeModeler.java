@@ -1,5 +1,5 @@
 /**
- * $Id: TypeModeler.java,v 1.3 2005-08-04 21:49:18 kohlert Exp $
+ * $Id: TypeModeler.java,v 1.4 2005-08-08 17:07:19 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -185,7 +185,7 @@ public class TypeModeler implements WebServiceConstants {
             if (superIntf.getDeclaration().equals(d2)) {
                 return true;
             }
-            if (superIntf != null && isSubtype(superIntf.getDeclaration(), d2)) {
+            if (isSubtype(superIntf.getDeclaration(), d2)) {
                 return true;
             } else if (superClassDecl != null && isSubtype(superClassDecl, d2)) {
                 return true;
