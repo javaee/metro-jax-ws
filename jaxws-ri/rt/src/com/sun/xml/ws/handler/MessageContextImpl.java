@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContextImpl.java,v 1.2 2005-07-15 02:09:03 jitu Exp $
+ * $Id: MessageContextImpl.java,v 1.3 2005-08-08 19:32:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -13,7 +13,10 @@ import java.lang.reflect.Method;
 import javax.xml.ws.handler.MessageContext.Scope;
 
 /**
- * @author JAX-WS RI Development Team
+ * Implementation of MessageContext. This class holds properties as
+ * well as keeping track of their scope.
+ *
+ * @author WS Development Team
  */
 public class MessageContextImpl extends HashMap<String, Object>
     implements MessageContext {

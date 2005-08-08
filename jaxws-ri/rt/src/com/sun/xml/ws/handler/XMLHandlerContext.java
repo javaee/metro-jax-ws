@@ -1,5 +1,5 @@
 /*
- * $Id: XMLHandlerContext.java,v 1.4 2005-08-06 01:35:18 jitu Exp $
+ * $Id: XMLHandlerContext.java,v 1.5 2005-08-08 19:32:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,6 +16,15 @@ import java.lang.reflect.Method;
 
 
 /**
+ * Version of {@link HandlerContext} for XML/HTTP binding that
+ * only deals with logical messages.
+ *
+ * <p>Class has to defer information to HandlerContext so that properties
+ * are shared between this and SOAPMessageContext.
+ *
+ * @see HandlerContext
+ *
+ * @author WS Development Team
  * @author WS Development Team
  */
 public class XMLHandlerContext {

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.4 2005-08-05 01:03:30 jitu Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.5 2005-08-08 19:32:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -46,7 +46,12 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import java.lang.reflect.Method;
 
 /**
- * @author JAX-WS RI Development Team
+ * Implementation of SOAPMessageContext. This class is used at runtime
+ * to pass to the handlers for processing soap messages.
+ *
+ * @see MessageContextImpl
+ *
+ * @author WS Development Team
  */
 public class SOAPMessageContextImpl implements SOAPMessageContext,
     com.sun.xml.ws.spi.runtime.SOAPMessageContext {

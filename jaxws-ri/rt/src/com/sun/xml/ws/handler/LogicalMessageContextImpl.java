@@ -1,5 +1,5 @@
 /*
- * $Id: LogicalMessageContextImpl.java,v 1.2 2005-08-05 01:03:29 jitu Exp $
+ * $Id: LogicalMessageContextImpl.java,v 1.3 2005-08-08 19:32:30 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -18,10 +18,15 @@ import javax.xml.ws.handler.MessageContext.Scope;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 
 /**
- * Class has to defer information to HandlerContext so that properties
+ * Implementation of LogicalMessageContext. This class is used at runtime
+ * to pass to the handlers for processing logical messages.
+ *
+ * <p>Class has to defer information to HandlerContext so that properties
  * are shared between this and SOAPMessageContext.
  *
- * @author JAX-WS RI Development Team
+ * @see MessageContextImpl
+ *
+ * @author WS Development Team
  */
 public class LogicalMessageContextImpl implements LogicalMessageContext {
     

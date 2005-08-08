@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerContext.java,v 1.6 2005-08-05 21:53:36 jitu Exp $
+ * $Id: HandlerContext.java,v 1.7 2005-08-08 19:32:30 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -16,6 +16,21 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import java.lang.reflect.Method;
 
 /**
+ * The HandlerContext is used in the client and server runtime
+ * in {@link com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher} and 
+ * {@link com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher} to hold
+ * information about the current message.
+ *
+ * <p>It stores a {@link com.sun.pept.ept.MessageInfo} and
+ * {@link com.sun.xml.ws.encoding.soap.internal.InternalMessage}
+ * which are used by the rest of the runtime, and provides a bridge
+ * between these and the soap and logical message contexts that
+ * are used by the handlers.
+ *
+ * @see LogicalMessageContextImpl
+ * @see MessageContextImpl
+ * @see SOAPMessageContextImpl
+ *
  * @author WS Development Team
  */
 public class HandlerContext {

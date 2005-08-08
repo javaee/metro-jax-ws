@@ -1,8 +1,6 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.5 2005-08-05 21:53:34 jitu Exp $
- */
-
-/*
+ * $Id: HandlerChainCaller.java,v 1.6 2005-08-08 19:32:29 bbissett Exp $
+ *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
@@ -35,11 +33,32 @@ import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
- * Used in BindingImpl to handler calls to the hander chain. This is
- * a replacement in 2.0 for the HandlerChainImpl class.
+ * The class stores the actual "chain" of handlers that is called
+ * during a request or response. On the client side, it is created
+ * by a {@link com.sun.xml.ws.binding.BindingImpl} class when a
+ * binding provider is created. On the server side, where a Binding
+ * object may be passed from an outside source, the handler chain
+ * caller is created by the
+ * {@link com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher}
+ * or {@link com.sun.xml.ws.protocol.xml.server.XMLMessageDispatcher}.
  *
- * Exceptions are logged in many cases here before being rethrown. This
+ * <p>When created, a java.util.List of Handlers is passed in. This list
+ * is sorted into logical and protocol handlers, so the handler order
+ * that is returned from getHandlerChain() may be different from the
+ * original that was passed in.
+ *
+ * <p>At runtime, one of the callHandlers() methods is invoked by the
+ * soap or xml message dispatchers, passing in a {@link HandlerContext}
+ * or {@link XMLHandlerContext} object along with other information
+ * about the current message that is required for proper handler flow.
+ *
+ * <p>Exceptions are logged in many cases here before being rethrown. This
  * is to help primarily with server side handlers.
+ *
+ * @see com.sun.xml.ws.binding.BindingImpl
+ * @see com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher
+ * @see com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher
+ * @see com.sun.xml.ws.protocol.xml.server.XMLMessageDispatcher
  *
  * @author WS Development Team
  */
@@ -64,11 +83,9 @@ public class HandlerChainCaller {
     
     private Set<URI> roles;
 
-    /*
+    /**
      * The handlers that are passed in will be sorted into
-     * logical and soap handlers. The handler chain caller cannot
-     * sort them into service, port, or protocol lists. The list
-     * must already be ordered appropriately when passed in.
+     * logical and soap handlers.
      */
     public HandlerChainCaller(List<Handler> chain) {
         if (chain == null) { // should only happen in testing
@@ -113,6 +130,11 @@ public class HandlerChainCaller {
         return understoodHeaders;
     }
 
+    /**
+     * This method separates the logical and protocol handlers. When
+     * this method returns, the original "handlers" List has been
+     * resorted.
+     */
     private void sortHandlers() {
         for (Handler handler : handlers) {
             if (LogicalHandler.class.isAssignableFrom(handler.getClass())) {
@@ -133,7 +155,7 @@ public class HandlerChainCaller {
         handlers.addAll(soapHandlers);
     }
 
-    /*
+    /**
      * Called before losing instance of this handler chain caller.
      */
     public void cleanup() {
@@ -142,10 +164,13 @@ public class HandlerChainCaller {
         }
     }
 
-    /*
+    /**
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
+     *
+     * //todo still needs to be finished to account for soap 1.1,
+     * soap 1.2, and xml bindings.
      */
     private void insertFaultMessage(ContextHolder holder,
         ProtocolException exception) {
@@ -215,7 +240,7 @@ public class HandlerChainCaller {
         }
     }
 
-    /*
+    /**
      * This method is used to set a property so that the runtime
      * knows to ignore a fault in a message. It is used when there
      * is a new exception thrown during handle fault processing.
@@ -253,11 +278,13 @@ public class HandlerChainCaller {
     }
     
     /**
+     * Main runtime method, called internally by the callHandlers()
+     * methods that may be called with HandlerContext or 
+     * XMLHandlerContext objects.
+     *
      * The boolean passed in is whether or not a response is required
      * for the current message. See section 5.3.2. (todo: this section
-     * is going to change). The RequestOrResponse
-     * value is so handleRequest or handleResponse can be called on
-     * handlers that implement Handler.
+     * is going to change). 
      *
      * The callLogicalHandlers and callProtocolHandlers methods will
      * take care of execution once called and return true or false or
@@ -306,7 +333,7 @@ public class HandlerChainCaller {
         return true;
     }
 
-    /*
+    /**
      * This method called by the server when an endpoint has thrown
      * an exception. This method calls handleFault on the handlers
      * and closes them. Because this method is called only during
@@ -345,7 +372,7 @@ public class HandlerChainCaller {
         return true;
     }
 
-    /*
+    /**
      * Called from the main callHandlers() method.
      * Logical message context updated before this method is called.
      */
@@ -452,7 +479,7 @@ public class HandlerChainCaller {
         return true;
     }
 
-    /*
+    /**
      * Called from the main callHandlers() method.
      * SOAP message context updated before this method is called.
      */
@@ -556,7 +583,7 @@ public class HandlerChainCaller {
         return true;
     }
 
-    /*
+    /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
      * Start and end indices are inclusive.
@@ -580,7 +607,7 @@ public class HandlerChainCaller {
         }
     }
 
-    /*
+    /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
      * Start and end indices are inclusive.
@@ -603,7 +630,7 @@ public class HandlerChainCaller {
         }
     }
 
-    /*
+    /**
      * Utility method for calling handleMessage and ignoring
      * the result.
      */
@@ -627,7 +654,7 @@ public class HandlerChainCaller {
             holder.getLMC(), start, end);
     }
 
-    /*
+    /**
      * Calls handleFault on the protocol handlers. Indices are
      * inclusive. Exceptions get passed up the chain, and an
      * exception or return of 'false' ends processing.
@@ -683,13 +710,16 @@ public class HandlerChainCaller {
         return true;
     }
 
-    // util method. change order if spec changes
+    /**
+     * Utility method that closes protocol handlers and then
+     * logical handlers.
+     */
     private void closeHandlers(ContextHolder holder) {
         closeProtocolHandlers(holder, soapHandlers.size()-1, 0);
         closeLogicalHandlers(holder, logicalHandlers.size()-1, 0);
     }
 
-    /*
+    /**
      * This version is called by the server code once it determines
      * that an incoming message is a one-way request. Or it is called
      * by the client when an MU fault occurs since the handler chain
@@ -716,7 +746,7 @@ public class HandlerChainCaller {
         closeGenericHandlers(logicalHandlers, holder.getLMC(), start, end);
     }
     
-    /*
+    /**
      * Calls close on the handlers from the starting
      * index through the ending index (inclusive). Made indices
      * inclusive to allow both directions more easily.
@@ -749,9 +779,8 @@ public class HandlerChainCaller {
     }
 
     /**
-     * Used to hold the context objects that get passed around
-     * so that the caller class doesn't have instance variables
-     * (which will get clobbered by different threads).
+     * Used to hold the context objects that are used to get
+     * and set the current message.
      *
      * If a HandlerContext is passed in, both logical and soap
      * handlers are used. If XMLHandlerContext is passed in,

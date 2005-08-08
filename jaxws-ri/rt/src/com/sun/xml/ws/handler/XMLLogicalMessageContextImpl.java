@@ -1,5 +1,5 @@
 /*
- * $Id: XMLLogicalMessageContextImpl.java,v 1.2 2005-08-06 01:35:18 jitu Exp $
+ * $Id: XMLLogicalMessageContextImpl.java,v 1.3 2005-08-08 19:32:31 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -18,8 +18,18 @@ import javax.xml.ws.handler.MessageContext.Scope;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 
 /**
- * Class has to defer information to HandlerContext so that properties
+ * Implementation of LogicalMessageContext that is used in
+ * the XML/HTTP binding. It is similar to LogicalMessageContextImpl
+ * except that the message impl class it uses is a
+ * {@link XMLLogicalMessageImpl} rather than a
+ * {@link LogicalMessageImpl}.
+ *
+ * <p>Class has to defer information to HandlerContext so that properties
  * are shared between this and SOAPMessageContext.
+ *
+ * @see LogicalMessageImpl
+ * @see XMLHandlerContext
+ * @see XMLLogicalMessageImpl
  *
  * @author WS Development Team
  */

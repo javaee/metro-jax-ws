@@ -1,5 +1,5 @@
 /*
- * $Id: XMLLogicalMessageImpl.java,v 1.1 2005-07-28 20:53:16 jitu Exp $
+ * $Id: XMLLogicalMessageImpl.java,v 1.2 2005-08-08 19:32:32 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -25,6 +25,18 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.encoding.xml.XMLEPTFactory;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 
+/**
+ * Implementation of LogicalMessage that is used in the
+ * XML/HTTP binding. It is similar to LogicalMessageImpl
+ * except that the context object passed in is an
+ * {@link XMLHandlerContext} rather than a {@link HandlerContext}.
+ *
+ * @see LogicalMessageImpl
+ * @see XMLHandlerContext
+ * @see XMLLogicalMessageContextImpl
+ *
+ * @author WS Development Team
+ */
 public class XMLLogicalMessageImpl implements LogicalMessage {
 
     private XMLHandlerContext ctxt;

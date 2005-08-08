@@ -1,5 +1,5 @@
 /*
- * $Id: LogicalMessageImpl.java,v 1.2 2005-07-18 18:21:49 kohlert Exp $
+ * $Id: LogicalMessageImpl.java,v 1.3 2005-08-08 19:32:30 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,6 +31,19 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 
+/**
+ * Implementation of LogicalMessage. This class implements the methods
+ * used by LogicalHandlers to get/set the request or response either
+ * as a JAXB object or as javax.xml.transform.Source.
+ *
+ * <p>The {@link HandlerContext} that is passed into the constructor
+ * is used to retrieve the payload of the request or response.
+ *
+ * @see HandlerContext
+ * @see LogicalMessageContextImpl
+ *
+ * @author WS Development Team
+ */
 public class LogicalMessageImpl implements LogicalMessage {
 
     private HandlerContext ctxt;
