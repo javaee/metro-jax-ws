@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.4 2005-08-08 15:40:12 kohlert Exp $
+ * $Id: GeneratorBase.java,v 1.5 2005-08-08 23:51:58 kohlert Exp $
  */
 
 /*
@@ -58,14 +58,9 @@ public abstract class GeneratorBase
     protected ProcessorEnvironment env;
     protected Model model;
     protected Service service;
-    protected IndentingWriter out;
-    protected boolean encodeTypes;
-    protected boolean multiRefEncoding;
-    protected boolean serializeInterfaces;
     protected SOAPVersion curSOAPVersion;
     protected String WSVersion;
     protected String targetVersion;
-    protected boolean generateSerializableIf;
     protected boolean donotOverride;
     protected String servicePackage;
     protected JCodeModel cm;
@@ -78,7 +73,6 @@ public abstract class GeneratorBase
         nonclassDestDir = null;
         env = null;
         model = null;
-        out = null;
     }
 
     public void perform(
