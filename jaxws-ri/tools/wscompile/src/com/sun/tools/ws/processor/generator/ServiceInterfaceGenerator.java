@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.6 2005-08-08 18:55:02 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.7 2005-08-08 20:02:56 kohlert Exp $
  */
 
 /*
@@ -80,13 +80,6 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
                 log("Class " + className + " exists. Not overriding.");
                 return;
             }
-//            log("creating service interface: " + className);
-            File classFile =
-                env.getNames().sourceFileForClass(
-                    className,
-                    className,
-                    sourceDir,
-                    env);
 
             JDefinedClass cls = getClass(className, ClassType.INTERFACE);
 
