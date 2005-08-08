@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.2 2005-07-24 01:35:06 kohlert Exp $
+ * $Id: Apt.java,v 1.3 2005-08-08 15:22:48 kohlert Exp $
  */
 
 /*
@@ -370,7 +370,7 @@ public class Apt extends Task {
         }
         
         if (isDebug()) {
-            String debugOption = new String();
+            String debugOption = "";
             debugOption = "-g";
             if (getDebugLevel() != null && !getDebugLevel().equals(""))
                     debugOption += ":" + getDebugLevel();
@@ -383,7 +383,7 @@ public class Apt extends Task {
 		
         if (getEncoding() != null && !getEncoding().equals("")) {
             cmd.createArgument().setValue("-encoding");
-            cmd.createArgument().setValue(getEncoding().toString());
+            cmd.createArgument().setValue(getEncoding());
         }
         
         if (getTarget() != null && !getTarget().equals("")) {
@@ -545,7 +545,7 @@ public class Apt extends Task {
         }
     }
     
-    public class Option {
+    public static class Option {
         protected String key;
         protected String value;
 
@@ -556,7 +556,7 @@ public class Apt extends Task {
         public void setValue(String value) { this.value = value; }
     }
 
-    public class Jvmarg {
+    public static class Jvmarg {
         protected String value;
 
         public String getValue() { return value; }
