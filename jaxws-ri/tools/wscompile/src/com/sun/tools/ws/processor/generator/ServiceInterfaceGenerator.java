@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.4 2005-08-04 21:53:22 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.5 2005-08-08 16:50:25 kohlert Exp $
  */
 
 /*
@@ -11,7 +11,6 @@ package com.sun.tools.ws.processor.generator;
 import com.sun.codemodel.ClassType;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCommentPart;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JDocComment;
@@ -33,6 +32,7 @@ import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.io.File;
+import java.io.IOException;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 
@@ -125,7 +125,7 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
                 cw = new ProgressCodeWriter(cw, System.out);
             cm.build(cw);            
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new GeneratorException(
                 "generator.nestedGeneratorError",
                 new LocalizableExceptionAdapter(e));
