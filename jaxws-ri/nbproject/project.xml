@@ -39,6 +39,9 @@
                 <action name="compile.single">
                     <target>tools-compile</target>
                 </action>
+                <action name="javadoc">
+                    <target>javadocs</target>
+                </action>
             </ide-actions>
             <export>
                 <type>jar</type>
@@ -65,9 +68,6 @@
                     </source-file>
                 </items>
                 <context-menu>
-                    <ide-action name="build"/>
-                    <ide-action name="clean"/>
-                    <ide-action name="rebuild"/>
                     <!--
                     <separator/>
                     <action>
@@ -86,6 +86,11 @@
                         <property name="classname">${test.classname}</property>
                     </action>
                     -->
+                    <ide-action name="build"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="compile.single"/>
+                    <ide-action name="javadoc"/>
                 </context-menu>
             </view>
             <subprojects/>
