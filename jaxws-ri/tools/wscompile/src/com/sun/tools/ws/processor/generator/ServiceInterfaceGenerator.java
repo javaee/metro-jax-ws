@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.5 2005-08-08 16:50:25 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.6 2005-08-08 18:55:02 kohlert Exp $
  */
 
 /*
@@ -9,7 +9,7 @@
 
 package com.sun.tools.ws.processor.generator;
 import com.sun.codemodel.ClassType;
-import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.CodeWriter; 
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JCommentPart;
 import com.sun.codemodel.JDefinedClass;
@@ -88,12 +88,6 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
                     sourceDir,
                     env);
 
-            // the implementation of the Service Generated is
-            //   added in 
-            GeneratedFileInfo fi = new GeneratedFileInfo();
-            fi.setFile(classFile);
-            fi.setType(GeneratorConstants.FILE_TYPE_SERVICE);
-            env.addGeneratedFile(fi);
             JDefinedClass cls = getClass(className, ClassType.INTERFACE);
 
             cls._implements(javax.xml.ws.Service.class);
@@ -109,6 +103,9 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
             writeWebServiceClientAnnotation(service, webServiceClientAnn);
         
             for (Port port: service.getPorts()) {
+                if (port.isProvider()) {
+                    continue;  // No getXYZPort() for porvider based endpoint
+                }                
                 //@WebEndpoint
                 JMethod m = null;
                 JDocComment methodDoc = null;
