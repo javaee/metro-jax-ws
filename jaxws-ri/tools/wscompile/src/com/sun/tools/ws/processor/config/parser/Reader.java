@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.5 2005-08-08 15:36:24 kohlert Exp $
+ * $Id: Reader.java,v 1.6 2005-08-08 17:19:31 vivekp Exp $
  */
 
 /*
@@ -18,6 +18,7 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -65,7 +66,7 @@ public class Reader {
         XMLStreamReader reader =
                 XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
 
-        reader.next();
+        XMLStreamReaderUtil.nextElementContent(reader);
         if(!reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
             //we are here, means invalid element
             ParserUtil.failWithFullName("configuration.invalidElement", file, reader);
