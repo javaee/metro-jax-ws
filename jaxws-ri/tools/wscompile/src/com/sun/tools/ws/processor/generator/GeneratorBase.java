@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.3 2005-08-04 22:08:15 kohlert Exp $
+ * $Id: GeneratorBase.java,v 1.4 2005-08-08 15:40:12 kohlert Exp $
  */
 
 /*
@@ -71,7 +71,6 @@ public abstract class GeneratorBase
     protected JCodeModel cm;
 
     private LocalizableMessageFactory messageFactory;
-    private Set visitedTypes;
 
     public GeneratorBase() {
         sourceDir = null;
@@ -86,8 +85,6 @@ public abstract class GeneratorBase
         Model model,
         Configuration config,
         Properties properties) {
-        ProcessorEnvironment env =
-            (ProcessorEnvironment) config.getEnvironment();
 
         GeneratorBase generator = getGenerator(model, config, properties);
 
@@ -153,7 +150,6 @@ public abstract class GeneratorBase
     }
 
     public void visit(Model model) throws Exception {
-        visitedTypes = new HashSet();
         preVisitModel(model);
         visitModel(model);
         postVisitModel(model);
@@ -390,10 +386,6 @@ public abstract class GeneratorBase
     }
 
     protected void visitFault(Fault fault) throws Exception {
-        AbstractType type = fault.getBlock().getType();
-//        if (type.isSOAPType()) {
-//            ((SOAPType) type).accept(this);
-//        }
     }
 
     protected void postVisitFault(Fault fault) throws Exception {
