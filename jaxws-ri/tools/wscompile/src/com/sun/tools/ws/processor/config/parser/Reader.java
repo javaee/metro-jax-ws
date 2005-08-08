@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.4 2005-08-05 23:51:50 vivekp Exp $
+ * $Id: Reader.java,v 1.5 2005-08-08 15:36:24 kohlert Exp $
  */
 
 /*
@@ -40,7 +40,6 @@ public class Reader {
             throws Exception {
         //reset the input type flags before parsing
         isClassFile = false;
-        isWSDLFile = false;;
 
         InputParser parser = null;
         //now its just the first file. do we expect more than one input files?
@@ -67,9 +66,7 @@ public class Reader {
                 XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
 
         reader.next();
-        if(reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
-            isWSDLFile = true;
-        }else{
+        if(!reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
             //we are here, means invalid element
             ParserUtil.failWithFullName("configuration.invalidElement", file, reader);
         }
@@ -87,7 +84,6 @@ public class Reader {
     }
 
     private boolean isClassFile;
-    private boolean isWSDLFile;
 
     protected ProcessorEnvironment _env;
 
