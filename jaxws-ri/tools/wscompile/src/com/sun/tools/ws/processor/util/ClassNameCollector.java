@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameCollector.java,v 1.2 2005-07-18 18:14:05 kohlert Exp $
+ * $Id: ClassNameCollector.java,v 1.3 2005-08-08 21:40:11 kohlert Exp $
  */
 
 /*
@@ -43,13 +43,10 @@ public class ClassNameCollector extends ExtendedModelVisitor
 
     public void process(Model model) {
         try {
-            this._model = model;
             _allClassNames = new HashSet();
             _exceptions = new HashSet();
             _wsdlBindingNames = new HashSet();
             _conflictingClassNames = new HashSet();
-            _visitedTypes = new HashSet();
-            _visitedFaults = new HashSet();
             _seiClassNames = new HashSet<String>();
             _jaxbGeneratedClassNames = new HashSet<String>();
             _exceptionClassNames = new HashSet<String>();
@@ -61,11 +58,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
         } finally {
             _allClassNames = null;
             _exceptions = null;
-            _visitedTypes = null;
-            _visitedFaults = null;
-//            _seiClassNames = null;
-//            _jaxbGeneratedClassNames = null;
-//            _exceptionClassNames = null;
         }
     }
 
@@ -178,34 +170,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
     }
 
     protected void visitFaultBlock(Block block) throws Exception {
-        AbstractType type = block.getType();
-/*        if (type instanceof SOAPStructureType) {
-            for (Iterator iter = ((SOAPStructureType)type).getMembers();
-                iter.hasNext();) {
-
-                SOAPStructureMember member = (SOAPStructureMember) iter.next();
-                visitType(member.getType());
-            }
-        } else if (type instanceof SOAPArrayType) {
-            visitType(((SOAPArrayType)type).getElementType());
-        } else if (type instanceof LiteralStructuredType) { // bug fix: 5025492
-            for (Iterator iter = ((LiteralStructuredType)type).getAttributeMembers();
-                 iter.hasNext();) {
-                LiteralAttributeMember attribute =
-                    (LiteralAttributeMember) iter.next();
-                visitType(attribute.getType());
-            }
-            for (Iterator iter = ((LiteralStructuredType)type).getElementMembers();
-                 iter.hasNext();) {
-                LiteralElementMember element =
-                    (LiteralElementMember) iter.next();
-                visitType(element.getType());
-            }
-        } else if (type instanceof LiteralArrayType) {
-            visitType(((LiteralArrayType)type).getElementType());
-        } else if (type instanceof LiteralArrayWrapperType) {
-            visitType(((LiteralArrayWrapperType)type).getElementMember().getType());
-        }  // end bugfix: 5025492*/
     }
 
     protected void visitBlock(Block block) throws Exception {
@@ -218,16 +182,10 @@ public class ClassNameCollector extends ExtendedModelVisitor
 
     private void visitType(AbstractType type) throws Exception {
         if (type != null) {
-//            if (type.isLiteralType()) {
             if (type instanceof JAXBType)
                 visitType((JAXBType)type);
             else if (type instanceof RpcLitStructure)
                 visitType((RpcLitStructure)type);
-//                else
-//                    visitType((LiteralType) type);
-//            } else if (type.isSOAPType()) {
-//                visitType((SOAPType) type);
-//            }
         }
     }
 
@@ -299,9 +257,5 @@ public class ClassNameCollector extends ExtendedModelVisitor
     private Set _exceptions;
     private Set _wsdlBindingNames;
     private Set _conflictingClassNames;
-    private Set _visitedTypes;
-    private Set _visitedFaults;
     private Set<QName> _portTypeNames;
-    private Model _model;
-
 }
