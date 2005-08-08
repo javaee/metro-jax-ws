@@ -1,5 +1,5 @@
 /*
- * $Id: NodeListIterator.java,v 1.2 2005-07-18 18:14:08 kohlert Exp $
+ * $Id: NodeListIterator.java,v 1.3 2005-08-08 21:49:25 kohlert Exp $
  */
 
 /*
@@ -10,6 +10,7 @@
 package com.sun.tools.ws.util.xml;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.w3c.dom.NodeList;
 
@@ -32,7 +33,9 @@ public class NodeListIterator implements Iterator {
         return _index < _list.getLength();
     }
 
-    public Object next() {
+    public Object next() throws NoSuchElementException {
+        if (_list.getLength() == 0)
+            throw new NoSuchElementException();
         Object obj = _list.item(_index);
         if (obj != null)
             ++_index;
