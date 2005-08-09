@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.3 2005-08-09 00:35:24 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.4 2005-08-09 00:55:05 jitu Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import javax.xml.ws.soap.SOAPBinding;
 public class WSRtObjectFactoryImpl
     extends com.sun.xml.ws.spi.runtime.WSRtObjectFactory {
     
+    @Override
     public com.sun.xml.ws.spi.runtime.ClientTransportFactory
         createClientTransportFactory(int type, OutputStream outputStream) {
         
@@ -48,6 +49,7 @@ public class WSRtObjectFactoryImpl
         return null;
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo createRuntimeEndpointInfo() {
         return new RuntimeEndpointInfo();
     }
@@ -55,27 +57,33 @@ public class WSRtObjectFactoryImpl
     /**
      * Creates a connection for servlet transport
      */
+    @Override
     public WSConnection createWSConnection(HttpServletRequest req,
             HttpServletResponse res) {
         return new ServletConnectionImpl(req, res);
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.SOAPMessageContext createSOAPMessageContext() {
         return null;
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.ServletDelegate createServletDelegate() {
         return new WSServletDelegate();
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.Tie createTie() {
         return new Tie();
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.MessageContext createMessageContext() {
         return new MessageContextImpl();
     }
     
+    @Override
     public com.sun.xml.ws.spi.runtime.Binding createBinding(String bindingId) {
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
                 bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {

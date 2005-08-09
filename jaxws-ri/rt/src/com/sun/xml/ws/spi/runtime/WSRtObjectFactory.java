@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.3 2005-07-23 04:10:13 kohlert Exp $
+ * $Id: WSRtObjectFactory.java,v 1.4 2005-08-09 00:55:04 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -57,22 +57,19 @@ public abstract class WSRtObjectFactory {
         OutputStream logStream);
 
     /**
-     * Delete it ?? 
-     *
-    public abstract CompileTool createCompileTool(
-        OutputStream out,
-        String program);
-     */
-
-    /**
      * Delete it? not used
      */
     public abstract ServletDelegate createServletDelegate();
     
     /**
-     * creates the Tie object, entry point to JAXWS runtime.
+     * creates a Tie object, entry point to JAXWS runtime.
      */
     public abstract Tie createTie();
+    
+    /**
+     * creates a MesageContext object. Create it for each MEP.
+     */
+    public abstract MessageContext createMessageContext();
     
     /**
      * creates the Binding object implementation. Set the object on
