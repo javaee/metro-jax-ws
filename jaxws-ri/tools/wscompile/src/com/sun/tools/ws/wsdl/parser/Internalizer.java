@@ -1,5 +1,5 @@
 /*
- * $Id: Internalizer.java,v 1.6 2005-08-05 01:08:28 vivekp Exp $
+ * $Id: Internalizer.java,v 1.7 2005-08-09 14:46:08 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -187,6 +187,10 @@ public class Internalizer {
     }
 
     private boolean isGlobalBinding(Node bindings){
+        if((bindings.getNamespaceURI() == null)){
+            error("invalid.customization.namespace", new Object[]{bindings.getLocalName()});
+            return false;
+        }
         return  (bindings.getNamespaceURI().equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS) &&
                 (bindings.getLocalName().equals("package") ||
                 bindings.getLocalName().equals("enableAsyncMapping") ||
