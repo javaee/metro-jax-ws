@@ -7,7 +7,6 @@ package mtom.server;
 import javax.jws.WebService;
 import javax.xml.ws.Holder;
 import javax.activation.DataHandler;
-import java.rmi.RemoteException;
 import java.awt.Image;
 
 @WebService (endpointInterface = "mtom.server.Hello")
