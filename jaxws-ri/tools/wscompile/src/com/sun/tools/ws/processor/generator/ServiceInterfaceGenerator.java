@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.7 2005-08-08 20:02:56 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.8 2005-08-09 22:29:47 vivekp Exp $
  */
 
 /*
@@ -124,8 +124,7 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
 
     
     private void writeWebServiceClientAnnotation(Service service, JAnnotationUse wsa) {
-        String serviceName = Names.stripQualifier(env.getNames()
-            .customJavaTypeClassName(service.getJavaInterface()));
+        String serviceName = service.getName().getLocalPart();
         serviceNS = service.getName().getNamespaceURI();
         wsa.param("name", serviceName);
         wsa.param("targetNamespace", serviceNS);

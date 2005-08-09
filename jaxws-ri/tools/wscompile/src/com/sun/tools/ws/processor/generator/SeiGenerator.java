@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.9 2005-08-08 19:32:05 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.10 2005-08-09 22:29:47 vivekp Exp $
  */
 
 /**
@@ -42,6 +42,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Holder;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -366,12 +367,10 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
     }
 
     private void writeWebServiceAnnotation(Service service, Port port, JAnnotationUse wsa) {
-        String serviceName = Names.stripQualifier(env.getNames()
-            .customJavaTypeClassName(service.getJavaInterface()));
-        String name = Names.stripQualifier(env.getNames()
-            .customJavaTypeClassName(port.getJavaInterface()));
+        String serviceName = service.getName().getLocalPart();
+        QName name = (QName) port.getProperty(ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
         serviceNS = service.getName().getNamespaceURI();
-        wsa.param("name", name);
+        wsa.param("name", name.getLocalPart());
         wsa.param("serviceName", serviceName);
         wsa.param("targetNamespace", serviceNS);
         wsa.param("wsdlLocation", wsdlLocation);
