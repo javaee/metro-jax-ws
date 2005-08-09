@@ -8,12 +8,11 @@ import javax.jws.WebService;
 import javax.xml.ws.Holder;
 import javax.activation.DataHandler;
 import java.rmi.RemoteException;
-import java.awt.*;
+import java.awt.Image;
 
 @WebService (endpointInterface = "mtom.server.Hello")
-
 public class HelloImpl implements Hello {
-    public void detail (Holder<byte[]> photo, Holder<Image> image) throws RemoteException {
+    public void detail (Holder<byte[]> photo, Holder<Image> image) {
     }
     
     public DataHandler claimForm (DataHandler data){
@@ -21,6 +20,5 @@ public class HelloImpl implements Hello {
     }
     
     public void echoData (Holder<byte[]> data){
-        
     }
 }
