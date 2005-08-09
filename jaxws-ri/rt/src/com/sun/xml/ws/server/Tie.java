@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.7 2005-08-05 01:03:31 jitu Exp $
+ * $Id: Tie.java,v 1.8 2005-08-09 02:01:38 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,17 +8,14 @@
 package com.sun.xml.ws.server;
 
 import javax.xml.ws.handler.MessageContext;
-
+import javax.xml.ws.handler.MessageContext.Scope;
 import com.sun.pept.Delegate;
 import com.sun.pept.ept.EPTFactory;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
-import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.util.MessageInfoUtil;
 
 /**
@@ -58,6 +55,11 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         RuntimeContext runtimeContext = new RuntimeContext(runtimeModel);
         runtimeContext.setRuntimeEndpointInfo(endpointInfo);
         
+        // Update MessageContext
+        MessageContext msgCtxt =
+            endpointInfo.getWebServiceContext().getMessageContext();
+        updateMessageContext(endpointInfo, msgCtxt);
+        
         // Set runtime context on MessageInfo
         MessageInfoUtil.setRuntimeContext(messageInfo, runtimeContext);
         messageInfo.setConnection(connection);
@@ -70,6 +72,18 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         MessageDispatcher messageDispatcher =
             messageInfo.getEPTFactory().getMessageDispatcher(messageInfo);
         messageDispatcher.receive(messageInfo);
+    }
+    
+    /**
+     * Updates MessageContext object with Service, and Port QNames
+     */
+    private void updateMessageContext( RuntimeEndpointInfo endpoint,
+        MessageContext ctxt) {
+   
+        ctxt.put(MessageContext.WSDL_SERVICE, endpoint.getServiceName());
+        ctxt.setScope(MessageContext.WSDL_SERVICE, Scope.APPLICATION);
+        ctxt.put(MessageContext.WSDL_PORT, endpoint.getPortName());          
+        ctxt.setScope(MessageContext.WSDL_PORT, Scope.APPLICATION);
     }
     
 }
