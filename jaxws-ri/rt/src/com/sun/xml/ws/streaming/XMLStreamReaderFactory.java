@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.5 2005-07-27 13:15:51 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.6 2005-08-09 19:30:33 spericas Exp $
  */
 
 /*
@@ -48,25 +48,54 @@ public class XMLStreamReaderFactory {
     static Method fiStAXDocumentParser_setInputStream;
     
     /**
+     * FI <code>StAXDocumentParser.setStringInterning()</code> method via reflection.
+     */
+    static Method fiStAXDocumentParser_setStringInterning;
+    
+    /**
+     * FI <code>XMLReaderImpl.setInputStream()</code> method via reflection.
+     */
+    static Method XMLReaderImpl_setInputStream;
+    
+    /**
+     * FI <code>XMLReaderImpl.setReader()</code> method via reflection.
+     */
+    static Method XMLReaderImpl_setReader;
+    
+    /**
      * FI stream reader for each thread.
      */
     static ThreadLocal fiStreamReader = new ThreadLocal();
+    
+    /**
+     * Zephyr's stream reader for each thread.
+     */
+    static ThreadLocal xmlStreamReader = new ThreadLocal();
     
     static {
         // Use StAX pluggability layer to get factory instance
         xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
         
-        // Use reflection to avoid static dependency with FI jar
+        // Use reflection to avoid static dependency with FI and Zephyr jar
         try {
-            Class clazz =
-                Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
+            Class clazz;
+            
+            clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
             fiStAXDocumentParser_new = clazz.getConstructor();
             fiStAXDocumentParser_setInputStream =
                 clazz.getMethod("setInputStream", java.io.InputStream.class);
+            fiStAXDocumentParser_setStringInterning =
+                clazz.getMethod("setStringInterning", boolean.class);
+                        
+            clazz = Class.forName("com.sun.xml.stream.XMLReaderImpl");
+            XMLReaderImpl_setInputStream = 
+                clazz.getMethod("setInputStream", java.io.InputStream.class);
+            XMLReaderImpl_setReader = 
+                clazz.getMethod("setReader", java.io.Reader.class);
         } 
         catch (Exception e) {
-            fiStAXDocumentParser_new = null;
+            // Falls through
         }
     }
     
@@ -80,15 +109,29 @@ public class XMLStreamReaderFactory {
     /**
      * Returns a fresh StAX parser. StAX does not support a reset() method, but Zephyr does.
      *
-     * TODO: Use reflection to call reset() method on Zephyr?
      * TODO: Reject DTDs?
      */
     public static XMLStreamReader createXMLStreamReader(InputStream in,
         boolean rejectDTDs) {
         try {
-            // Assume StAX factory implementation is not thread-safe
-            synchronized (xmlInputFactory) {
-                return xmlInputFactory.createXMLStreamReader(in);
+            // If using Zephyr, try re-using the last instance
+            if (XMLReaderImpl_setInputStream != null) {
+                Object xsr = xmlStreamReader.get();                
+                if (xsr == null) {
+                    synchronized (xmlInputFactory) {
+                        xmlStreamReader.set(xsr = xmlInputFactory.createXMLStreamReader(in));
+                    }
+                }              
+                else {
+                    // setInputStream() implies reset()
+                    XMLReaderImpl_setInputStream.invoke(xsr, in);
+                }                
+                return (XMLStreamReader) xsr;
+            }
+            else {
+                synchronized (xmlInputFactory) {
+                    return xmlInputFactory.createXMLStreamReader(in);
+                }                
             }
         } catch (Exception e) {
             throw new XMLReaderException("stax.cantCreate",
@@ -99,19 +142,33 @@ public class XMLStreamReaderFactory {
     /**
      * Returns a fresh StAX parser. StAX does not support a reset() method, but Zephyr does.
      *
-     * TODO: Use reflection to call reset() method on Zephyr?
      * TODO: Reject DTDs?
      */
     public static XMLStreamReader createXMLStreamReader(Reader reader,
         boolean rejectDTDs) {
         try {
-            // Assume StAX factory implementation is not thread-safe
-            synchronized (xmlInputFactory) {
-                return xmlInputFactory.createXMLStreamReader(reader);
+            // If using Zephyr, try re-using the last instance
+            if (XMLReaderImpl_setReader != null) {
+                Object xsr = xmlStreamReader.get();                
+                if (xsr == null) {
+                    synchronized (xmlInputFactory) {
+                        xmlStreamReader.set(xsr = xmlInputFactory.createXMLStreamReader(reader));
+                    }
+                }              
+                else {
+                    // setReader() implies reset()
+                    XMLReaderImpl_setReader.invoke(xsr, reader);
+                }                
+                return (XMLStreamReader) xsr;
+            }
+            else {
+                synchronized (xmlInputFactory) {
+                    return xmlInputFactory.createXMLStreamReader(reader);
+                }                
             }
         } 
         catch (Exception e) {
-            throw new XMLReaderException("stax.cantCreate", 
+            throw new XMLReaderException("stax.cantCreate",
                 new LocalizableExceptionAdapter(e));
         }
     }
@@ -138,6 +195,7 @@ public class XMLStreamReaderFactory {
                 fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance());
             } 
             fiStAXDocumentParser_setInputStream.invoke(sdp, in);
+            fiStAXDocumentParser_setStringInterning.invoke(sdp, Boolean.TRUE);
             return (XMLStreamReader) sdp;
         } 
         catch (Exception e) {
