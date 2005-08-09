@@ -4,17 +4,6 @@
 */
 package dispatch.client;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +13,30 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
+
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.ProtocolException;
+import javax.xml.ws.Response;
+import javax.xml.ws.Service;
+import javax.xml.ws.ServiceFactory;
+import javax.xml.ws.WebServiceException;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 
 public class AddNumbersClient {
 
@@ -46,7 +59,7 @@ public class AddNumbersClient {
             soapBindingURI = new URI(SOAPBinding.SOAP11HTTP_BINDING);
             ServiceFactory serviceFactory = ServiceFactory.newInstance();
             service = serviceFactory.createService(serviceQName);
-            service.createPort(portQName, soapBindingURI, endpointAddress);
+            service.addPort(portQName, soapBindingURI, endpointAddress);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
