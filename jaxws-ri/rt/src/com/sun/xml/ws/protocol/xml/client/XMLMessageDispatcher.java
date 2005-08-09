@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.1 2005-08-08 19:13:04 arungupta Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.2 2005-08-09 19:23:16 arungupta Exp $
  */
 
 /*
@@ -91,7 +91,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
      * Default constructor
      */
     public XMLMessageDispatcher() {
-        System.out.println(getClass().getName());
     }
 
     /*
