@@ -65,16 +65,20 @@
         inheritrefs="true"/>
   </target>
 
+  <path id="spi-path">
+     <pathelement path="${basedir}/rt/src"/>
+     <pathelement path="${basedir}/tools/wscompile/src"/>
+  </path>
   <target name="javadocs-spi" depends="image">
-    <javadoc packagenames="com.sun.xml.ws.spi.*"
-         sourcepath="${basedir}/rt/src"
+    <javadoc packagenames="com.sun.xml.ws.spi.*, com.sun.tools.ws.spi.*"
+         sourcepathref="spi-path"
          destdir="${build.home}/javadocs/spi"
          author="false"
          version="false"
          windowtitle="${Name} Generated Documentation"
          doctitle="${Name}"
          bottom="Copyright &#169; 2005 Sun Microsystems, Inc. All Rights Reserved.">
-        <classpath refid="runtime.compile.classpath"/>
+        <classpath refid="tools.compile.classpath"/>
     </javadoc>
   </target>
 
