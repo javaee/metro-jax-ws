@@ -13,7 +13,6 @@
     xmlns="http://java.sun.com/xml/ns/jaxws">    
     <bindings node="wsdl:definitions" >
         <package name="provider.server"/>
-        <provider>true</provider>
     </bindings>
 </bindings>
 

@@ -19,36 +19,34 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Node;
 
-@ServiceMode (value=Service.Mode.PAYLOAD)
+@ServiceMode(value=Service.Mode.PAYLOAD)
 public class AddNumbersImpl implements Provider<Source> {
-    
-    public Source invoke (Source source, Map<String, Object> context)
-    throws RemoteException {
+    public Source invoke(Source source) {
         try {
-            DOMResult dom = new DOMResult ();
-            Transformer trans = TransformerFactory.newInstance ().newTransformer ();
-            trans.transform (source, dom);
-            Node node = dom.getNode ();
-            Node root = node.getFirstChild ();
-            Node first = root.getFirstChild ();
-            int number1 = Integer.decode (first.getFirstChild ().getNodeValue ());
-            Node second = first.getNextSibling ();
-            int number2 = Integer.decode (second.getFirstChild ().getNodeValue ());
-            return sendSource (number1, number2);
+            DOMResult dom = new DOMResult();
+            Transformer trans = TransformerFactory.newInstance().newTransformer();
+            trans.transform(source, dom);
+            Node node = dom.getNode();
+            Node root = node.getFirstChild();
+            Node first = root.getFirstChild();
+            int number1 = Integer.decode(first.getFirstChild().getNodeValue());
+            Node second = first.getNextSibling();
+            int number2 = Integer.decode(second.getFirstChild().getNodeValue());
+            return sendSource(number1, number2);
         } catch(Exception e) {
-            e.printStackTrace ();
-            throw new RemoteException ("Error in provider endpoint");
+            e.printStackTrace();
+            throw new RuntimeException("Error in provider endpoint", e);
         }
     }
     
-    private Source sendSource (int number1, int number2) {
+    private Source sendSource(int number1, int number2) {
         int sum = number1+number2;
         String body =
             "<ns:addNumbersResponse xmlns:ns=\"http://duke.org\"><ns:return>"
             +sum
             +"</ns:return></ns:addNumbersResponse>";
-        Source source = new StreamSource (
-            new ByteArrayInputStream (body.getBytes ()));
+        Source source = new StreamSource(
+            new ByteArrayInputStream(body.getBytes()));
         return source;
     }
     
