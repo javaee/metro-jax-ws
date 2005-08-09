@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.15 2005-08-08 17:10:41 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.16 2005-08-09 23:10:17 vivekp Exp $
  */
 
 /*
@@ -660,7 +660,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             // only to wsdl:part element(s) that have been defined using the element attribute.
 
             // R2203   An rpc-literal binding in a DESCRIPTION MUST refer, in its soapbind:body element(s),
-            // only to wsdl:part element(s) that have been defined using the type attribute.
+            // only to wsdNl:part element(s) that have been defined using the type attribute.
             if(isOperationDocumentLiteral(styleAndUse))
                 if(extension)
                     warn("wsdlmodeler.warning.ignoringOperation.cannotHandleTypeMessagePart", info.portTypeOperation.getName());
@@ -900,15 +900,14 @@ public class WSDLModeler20 extends WSDLModelerBase {
     private boolean validateParameterName(List<Parameter> inParameters, List<Parameter> outParameters, String resultParameterName) {
         Message msg = getInputMessage();
         for(Parameter param : inParameters){
-            MessagePart part = msg.getPart(param.getName());
             if(param.getCustomName() != null){
                 if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
                     if(extension)
                         warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.customName",
-                                new Object[]{info.operation.getName(), param.getCustomName(), part.getName(), msg.getName()});
+                                new Object[]{info.operation.getName(), param.getCustomName()});
                     else
                         fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.customName",
-                                new Object[]{info.operation.getName(), param.getCustomName(), part.getName(), msg.getName()});
+                                new Object[]{info.operation.getName(), param.getCustomName()});
                     return false;
                 }
                 return true;
@@ -917,9 +916,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if(param.isEmbedded() && !(param.getBlock().getType() instanceof RpcLitStructure)){
                 if(getEnvironment().getNames().isJavaReservedWord(param.getName())){
                     if(extension)
-                        warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{msg.getName(), part.getName(), param.getBlock().getName(), param.getName(), info.operation.getName()});
+                        warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                     else
-                        fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{msg.getName(), part.getName(), param.getBlock().getName(), param.getName(), info.operation.getName()});
+                        fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                     return false;
                 }
             }else{
@@ -938,15 +937,14 @@ public class WSDLModeler20 extends WSDLModelerBase {
         if(isRequestResponse){
             msg = getOutputMessage();
             for(Parameter param : outParameters){
-                MessagePart part = msg.getPart(param.getName());
                 if(param.getCustomName() != null){
                     if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
                         if(extension)
                             warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.customName",
-                                    new Object[]{info.operation.getName(), param.getCustomName(), part.getName(), msg.getName()});
+                                    new Object[]{info.operation.getName(), param.getCustomName()});
                         else
                             fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.customName",
-                                    new Object[]{info.operation.getName(), param.getCustomName(), part.getName(), msg.getName()});
+                                    new Object[]{info.operation.getName(), param.getCustomName()});
                         return false;
                     }
                     return true;
@@ -957,11 +955,11 @@ public class WSDLModeler20 extends WSDLModelerBase {
                         continue;
                     if(!param.getName().equals("return") && getEnvironment().getNames().isJavaReservedWord(param.getName())){
                         if(extension)
-                            warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{msg.getName(), part.getName(), param.getBlock().getName(), param.getName(), info.operation.getName()});
+                            warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle",
+                                    new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                         else
                             fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.wrapperStyle",
-                                    new Object[]{msg.getName(), part.getName(), param.getBlock().getName(),
-                                    param.getName(), info.operation.getName()});
+                                    new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                         return false;
                     }
                 }else{
