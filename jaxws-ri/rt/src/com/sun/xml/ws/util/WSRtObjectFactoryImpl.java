@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.2 2005-07-20 21:36:13 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.3 2005-08-09 00:35:24 jitu Exp $
  */
 
 /*
@@ -8,10 +8,12 @@
  */
 package com.sun.xml.ws.util;
 
+import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import java.io.OutputStream;
 
 import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
@@ -70,12 +72,16 @@ public class WSRtObjectFactoryImpl
         return new Tie();
     }
     
+    public com.sun.xml.ws.spi.runtime.MessageContext createMessageContext() {
+        return new MessageContextImpl();
+    }
+    
     public com.sun.xml.ws.spi.runtime.Binding createBinding(String bindingId) {
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
                 bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             return new SOAPBindingImpl(bindingId);
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
-            return null;        // TODO
+            return new HTTPBindingImpl();
         }
         return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
     }
