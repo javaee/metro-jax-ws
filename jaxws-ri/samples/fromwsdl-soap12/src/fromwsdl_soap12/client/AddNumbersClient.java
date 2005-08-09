@@ -6,8 +6,6 @@ package fromwsdl_soap12.client;
 
 import javax.xml.ws.ServiceFactory;
 
-import java.rmi.RemoteException;
-
 public class AddNumbersClient {
     public static void main (String[] args) {
         try {
@@ -27,8 +25,6 @@ public class AddNumbersClient {
             result = port.addNumbers (number1, number2);
             System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
             
-        } catch (RemoteException ex) {
-            ex.printStackTrace ();
         } catch (AddNumbersFault_Exception ex) {
             System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo ().getFaultInfo ());
         }
