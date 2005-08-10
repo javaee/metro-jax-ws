@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.19 2005-07-29 20:18:05 kohlert Exp $
+ * $Id: SOAPDecoder.java,v 1.20 2005-08-10 17:14:18 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -56,10 +56,10 @@ import javax.xml.transform.stream.StreamSource;
  */
 public abstract class SOAPDecoder implements Decoder {
 
-    private static final Logger logger = Logger.getLogger(
+    protected static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".soap.decoder");
 
-    private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
+    protected final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
 
     /* (non-Javadoc)
@@ -417,7 +417,9 @@ public abstract class SOAPDecoder implements Decoder {
 
     /*
      * Does MU processing. reader is on <Envelope>, at the end of this method
-     * leaves it on <Body>
+     * leaves it on <Body>. Once the roles and understood headers are
+     * known, this calls a separate method to check the message headers
+     * since a different behavior is expected with different bindings.
      *
      * Also assume handler chain caller is null unless one is found.
      */
@@ -483,24 +485,42 @@ public abstract class SOAPDecoder implements Decoder {
             }
         }
 
+        checkHeadersAgainstKnown(reader, roles, understoodHeaders);
+        
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+
+    /*
+     * This method is overridden for other bindings
+     */
+    protected void checkHeadersAgainstKnown(XMLStreamReader reader,
+        Set<String> roles, Set<QName> understoodHeaders) {
+        
         while (true) {
             if (reader.getEventType() == START_ELEMENT) {
                 // check MU header for each role
                 QName qName = reader.getName();
                 String mu = reader.getAttributeValue(
-                        getMUAttrQName().getNamespaceURI(),
-                        getMUAttrQName().getLocalPart());
+                    getMUAttrQName().getNamespaceURI(),
+                    getMUAttrQName().getLocalPart());
                 if (mu != null && (mu.equals("1") ||
                     mu.equalsIgnoreCase("true"))) {
                     String role = reader.getAttributeValue(
                         getRoleAttrQName().getNamespaceURI(),
                         getRoleAttrQName().getLocalPart());
                     if (role != null && roles.contains(role)) {
-                        logger.finest("Element="+qName+" targeted at="+role);
-                        if (understoodHeaders == null || !understoodHeaders.contains(qName)) {
-                            logger.finest("Element not understood="+qName);
-                            SOAPFault sf = SOAPUtil.createSOAPFault(MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
-                                    SOAPConstants.FAULT_CODE_MUST_UNDERSTAND, role, null, SOAPBinding.SOAP11HTTP_BINDING);
+                        logger.finest("Element=" + qName +
+                            " targeted at=" + role);
+                        if (understoodHeaders == null ||
+                            !understoodHeaders.contains(qName)) {
+                            logger.finest("Element not understood=" + qName);
+                            
+                            SOAPFault sf = SOAPUtil.createSOAPFault(
+                                MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
+                                SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
+                                role, null, SOAPBinding.SOAP11HTTP_BINDING);
                             throw new SOAPFaultException(sf);
                         }
                     }
@@ -511,11 +531,8 @@ public abstract class SOAPDecoder implements Decoder {
                 break;
             }
         }
-        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
-        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
-        XMLStreamReaderUtil.nextElementContent(reader);
     }
-
+    
     /*
      * @throws ServerRtException using this any known error is thrown
      */

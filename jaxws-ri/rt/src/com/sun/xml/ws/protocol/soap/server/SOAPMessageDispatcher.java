@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.14 2005-08-06 01:06:37 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.15 2005-08-10 17:14:19 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -109,8 +109,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 //peekOneWay = checkHeadersPeekBody(messageInfo, context);
             } catch (SOAPFaultException e) {
                 skipEndpoint = true;
-                InternalMessage internalMessage =
-                    SOAPRuntimeModel.createFaultInBody(e, null, null, null);
+                RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
+                    messageInfo).getRuntimeEndpointInfo();
+                String id = ((SOAPBindingImpl)
+                    rei.getBinding()).getBindingId();
+                InternalMessage internalMessage = null;
+                if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+                    internalMessage = SOAPRuntimeModel.createFaultInBody(
+                        e, null, null, null);
+                } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                    internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
+                        e, null, null, null, null);
+                }
                 context.setInternalMessage(internalMessage);
                 context.setSOAPMessage(null);
             }

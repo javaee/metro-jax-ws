@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.6 2005-07-27 00:38:44 arungupta Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.7 2005-08-10 17:14:18 bbissett Exp $
  */
 
 /*
@@ -110,7 +110,10 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         }
 
         if(name.equals (SOAP12Constants.QNAME_FAULT_ROLE)){
+            XMLStreamReaderUtil.nextContent (reader);
             role = reader.getText ();
+            XMLStreamReaderUtil.nextElementContent (reader);
+            XMLStreamReaderUtil.nextElementContent (reader);
         }
 
         if(name.equals (SOAP12Constants.QNAME_FAULT_DETAIL)){
