@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.9 2005-08-10 01:36:45 jitu Exp $
+ * $Id: XMLMessage.java,v 1.10 2005-08-10 02:45:08 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -49,8 +49,8 @@ public class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;
     
     protected MimeHeaders headers;
-    protected XMLDataSource dataSource;
-    protected XMLSource source;
+    protected XMLDataSource xmlDataSource;
+    protected XMLSource xmlSource;
     protected Exception err;
     private static final String DEFAULT_SERVER_ERROR =
         "<?xml version='1.0' encoding='UTF-8'?>"
@@ -89,9 +89,9 @@ public class XMLMessage {
             int contentTypeId = identifyContentType(contentType);
 
             if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                source = new XMLSource(in);
+                xmlSource = new XMLSource(in);
             } else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                dataSource = new XMLDataSource(ct, in);
+                xmlDataSource = new XMLDataSource(ct, in);
             } else {
                 throw new XMLMessageException("xml.unknown.Content-Type");
             }
@@ -102,7 +102,7 @@ public class XMLMessage {
     }
     
     public XMLMessage(Source source) {
-        this.source = new XMLSource(source);
+        this.xmlSource = new XMLSource(source);
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", "text/xml");
     }
@@ -114,23 +114,23 @@ public class XMLMessage {
     }
     
     public XMLMessage(DataSource dataSource) {
-        this.dataSource = new XMLDataSource(dataSource);
+        this.xmlDataSource = new XMLDataSource(dataSource);
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", dataSource.getContentType());
     }
     
     public Source getSource() {
-        if (source != null) {
-            return source.getSource();
-        } else if (dataSource != null) {
-            return dataSource.getSource();
+        if (xmlSource != null) {
+            return xmlSource.getSource();
+        } else if (xmlDataSource != null) {
+            return xmlDataSource.getSource();
         } else {
             return null;
         }
     }
     
     public DataSource getDataSource() {
-        return dataSource.getDataSource();
+        return xmlDataSource.getDataSource();
 
     }
 
@@ -221,10 +221,10 @@ public class XMLMessage {
 
     public void writeTo(OutputStream out)
     throws MessagingException, IOException, TransformerException {
-        if (dataSource != null) {
-            dataSource.writeTo(out);
-        } else if (source != null) {
-            source.writeTo(out);
+        if (xmlDataSource != null) {
+            xmlDataSource.writeTo(out);
+        } else if (xmlSource != null) {
+            xmlSource.writeTo(out);
 
         } else if (err != null) {
             String msg = err.getMessage();
@@ -239,38 +239,38 @@ public class XMLMessage {
     }
     
     public Source getPayload() {
-        if (dataSource != null) {
-            return dataSource.getPayload();
-        } else if (source != null) {
-            return source.getPayload();
+        if (xmlDataSource != null) {
+            return xmlDataSource.getPayload();
+        } else if (xmlSource != null) {
+            return xmlSource.getPayload();
         } else {
             return null;
         } 
     }
 
     public void setPayload(Source payload) {
-        if (dataSource != null) {
-            dataSource.setPayload(payload);
-        } else if (source != null) {
-            source.setPayload(payload);
+        if (xmlDataSource != null) {
+            xmlDataSource.setPayload(payload);
+        } else if (xmlSource != null) {
+            xmlSource.setPayload(payload);
         }
     }
 
     public Object getPayload(JAXBContext context) {
-        if (dataSource != null) {
-            return dataSource.getPayload(context);
-        } else if (source != null) {
-            return source.getPayload(context);
+        if (xmlDataSource != null) {
+            return xmlDataSource.getPayload(context);
+        } else if (xmlSource != null) {
+            return xmlSource.getPayload(context);
         } else {
             return null;
         }
     }
 
     public void setPayload(Object jaxbObj, JAXBContext context) {
-        if (dataSource != null) {
-            dataSource.setPayload(jaxbObj, context);
-        } else if (source != null) {
-            source.setPayload(jaxbObj, context);
+        if (xmlDataSource != null) {
+            xmlDataSource.setPayload(jaxbObj, context);
+        } else if (xmlSource != null) {
+            xmlSource.setPayload(jaxbObj, context);
         }
     }
     
