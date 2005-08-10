@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.10 2005-08-09 22:29:47 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.11 2005-08-10 03:54:06 kohlert Exp $
  */
 
 /**
@@ -99,7 +99,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
         
         // If the class has methods it has already been defined
         // so skip it.
-        if (cls.methods().hasNext())
+        if (cls.methods().iterator().hasNext())
             return;
 
         //write class comment - JAXWS warning
