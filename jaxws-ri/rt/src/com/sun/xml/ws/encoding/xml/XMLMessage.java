@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.8 2005-08-02 02:25:04 jitu Exp $
+ * $Id: XMLMessage.java,v 1.9 2005-08-10 01:36:45 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -9,9 +9,12 @@ package com.sun.xml.ws.encoding.xml;
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
+import com.sun.xml.messaging.saaj.packaging.mime.internet.InternetHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +31,9 @@ import javax.xml.transform.TransformerException;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.protocol.xml.XMLMessageException;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPException;
 
 /**
@@ -43,9 +49,8 @@ public class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;
     
     protected MimeHeaders headers;
-    protected DataSource dataSource;
-    protected MimeMultipart multipart;
-    protected Source source;
+    protected XMLDataSource dataSource;
+    protected XMLSource source;
     protected Exception err;
     private static final String DEFAULT_SERVER_ERROR =
         "<?xml version='1.0' encoding='UTF-8'?>"
@@ -84,25 +89,9 @@ public class XMLMessage {
             int contentTypeId = identifyContentType(contentType);
 
             if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                source = new StreamSource(in);
+                source = new XMLSource(in);
             } else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                dataSource = new DataSource() {
-                    public InputStream getInputStream() {
-                        return in;
-                    }
-
-                    public OutputStream getOutputStream() {
-                        return null;
-                    }
-
-                    public String getContentType() {
-                        return ct;
-                    }
-
-                    public String getName() {
-                        return "";
-                    }
-                };
+                dataSource = new XMLDataSource(ct, in);
             } else {
                 throw new XMLMessageException("xml.unknown.Content-Type");
             }
@@ -113,7 +102,7 @@ public class XMLMessage {
     }
     
     public XMLMessage(Source source) {
-        this.source = source;
+        this.source = new XMLSource(source);
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", "text/xml");
     }
@@ -125,101 +114,24 @@ public class XMLMessage {
     }
     
     public XMLMessage(DataSource dataSource) {
-        this.dataSource = dataSource;
+        this.dataSource = new XMLDataSource(dataSource);
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", dataSource.getContentType());
     }
     
     public Source getSource() {
         if (source != null) {
-            return source;
-        }
-        try {
-            if (dataSource != null) {
-                multipart = new MimeMultipart(dataSource);
-                dataSource = null;
-            }
-            ContentType contentType = new ContentType(multipart.getContentType());
-            String startParam = contentType.getParameter("start");
-            MimeBodyPart sourcePart = (startParam == null)
-                ? (MimeBodyPart)multipart.getBodyPart(0)
-                : (MimeBodyPart)multipart.getBodyPart(startParam);
-            ContentType ctype = new ContentType(sourcePart.getContentType());
-            String baseType = ctype.getBaseType();
-            if (!(isXMLType(baseType))) {
-                throw new XMLMessageException(
-                        "xml.root.part.invalid.Content-Type",
-                        new Object[] {baseType});
-            }
-            return new StreamSource(sourcePart.getInputStream());
-        } catch (MessagingException ex) {
-            throw new XMLMessageException("xml.get.source.err",
-                    new LocalizableExceptionAdapter(ex));
-        } catch (IOException ioe) {
-            throw new XMLMessageException("xml.get.source.err",
-                    new LocalizableExceptionAdapter(ioe));
-        }
-    }
-    
-    public void setPayloadSource(StreamSource source) {
-        try {
-            if (dataSource != null) {
-                multipart = new MimeMultipart(dataSource);
-                dataSource = null;
-            }
-            if (multipart != null) {
-                ContentType contentType = new ContentType(multipart.getContentType());
-                String startParam = contentType.getParameter("start");
-                if (startParam == null) {
-                    multipart.removeBodyPart(0);
-                } else {
-                    MimeBodyPart part = (MimeBodyPart)multipart.getBodyPart(startParam);
-                    multipart.removeBodyPart(part);
-                }
-                MimeBodyPart sourcePart = new MimeBodyPart(
-                        source.getInputStream());
-                multipart.addBodyPart(sourcePart, 0);
-            } else {
-                this.source = source;
-            }
-        } catch (MessagingException ex) {
-            throw new XMLMessageException("xml.set.payload.err",
-                    new LocalizableExceptionAdapter(ex));
+            return source.getSource();
+        } else if (dataSource != null) {
+            return dataSource.getSource();
+        } else {
+            return null;
         }
     }
     
     public DataSource getDataSource() {
-        if (dataSource == null) {
-            return new DataSource() {
-                public InputStream getInputStream() {
-                    try {
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        multipart.writeTo(bos);
-                        bos.close();
-                        return new ByteArrayInputStream(bos.toByteArray());
-                    } catch(MessagingException me) {
-                        throw new XMLMessageException("xml.get.ds.err",
-                                new LocalizableExceptionAdapter(me));
-                    } catch(IOException ioe) {
-                        throw new XMLMessageException("xml.get.ds.err",
-                                new LocalizableExceptionAdapter(ioe));
-                    }
-                }
+        return dataSource.getDataSource();
 
-                public OutputStream getOutputStream() {
-                    return null;
-                }
-
-                public String getContentType() {
-                    return multipart.getContentType();
-                }
-
-                public String getName() {
-                    return "";
-                }
-            };
-        }
-        return dataSource;
     }
 
     /**
@@ -310,11 +222,10 @@ public class XMLMessage {
     public void writeTo(OutputStream out)
     throws MessagingException, IOException, TransformerException {
         if (dataSource != null) {
-            MimeMultipart multipart = new MimeMultipart(dataSource);
-            multipart.writeTo(out);
+            dataSource.writeTo(out);
         } else if (source != null) {
-            Transformer transformer = XmlUtil.newTransformer();
-            transformer.transform(source, new StreamResult(out));
+            source.writeTo(out);
+
         } else if (err != null) {
             String msg = err.getMessage();
             if (msg == null) {
@@ -326,5 +237,338 @@ public class XMLMessage {
             out.write(DEFAULT_SERVER_ERROR.getBytes());
         }
     }
+    
+    public Source getPayload() {
+        if (dataSource != null) {
+            return dataSource.getPayload();
+        } else if (source != null) {
+            return source.getPayload();
+        } else {
+            return null;
+        } 
+    }
+
+    public void setPayload(Source payload) {
+        if (dataSource != null) {
+            dataSource.setPayload(payload);
+        } else if (source != null) {
+            source.setPayload(payload);
+        }
+    }
+
+    public Object getPayload(JAXBContext context) {
+        if (dataSource != null) {
+            return dataSource.getPayload(context);
+        } else if (source != null) {
+            return source.getPayload(context);
+        } else {
+            return null;
+        }
+    }
+
+    public void setPayload(Object jaxbObj, JAXBContext context) {
+        if (dataSource != null) {
+            dataSource.setPayload(jaxbObj, context);
+        } else if (source != null) {
+            source.setPayload(jaxbObj, context);
+        }
+    }
+    
+    public static class XMLDataSource {
+        private DataSource dataSource;
+        private MimeMultipart multipart;
+        private XMLSource xmlSource;
+        
+        public XMLDataSource(final String contentType, final InputStream is) {
+            dataSource = new DataSource() {
+                public InputStream getInputStream() {
+                    return is;
+                }
+
+                public OutputStream getOutputStream() {
+                    return null;
+                }
+
+                public String getContentType() {
+                    return contentType;
+                }
+
+                public String getName() {
+                    return "";
+                }
+            };
+        }
+        
+        public XMLDataSource(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+        
+        public DataSource getDataSource() {
+            if (dataSource != null) {
+                return dataSource;
+            } else if (multipart != null) {
+                return new DataSource() {
+                    public InputStream getInputStream() {
+                        try {
+                            if (xmlSource != null) {
+                                replaceRootPart();
+                            }
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            multipart.writeTo(bos);
+                            bos.close();
+                            return new ByteArrayInputStream(bos.toByteArray());
+                        } catch(MessagingException me) {
+                            throw new XMLMessageException("xml.get.ds.err",
+                                    new LocalizableExceptionAdapter(me));
+                        } catch(IOException ioe) {
+                            throw new XMLMessageException("xml.get.ds.err",
+                                    new LocalizableExceptionAdapter(ioe));
+                        }
+                    }
+
+                    public OutputStream getOutputStream() {
+                        return null;
+                    }
+
+                    public String getContentType() {
+                        return multipart.getContentType();
+                    }
+
+                    public String getName() {
+                        return "";
+                    }
+                };
+            }
+            return null;
+        }
+        
+        private MimeBodyPart getRootPart() {
+            try {
+                ContentType contentType = new ContentType(multipart.getContentType());
+                String startParam = contentType.getParameter("start");
+                MimeBodyPart sourcePart = (startParam == null)
+                    ? (MimeBodyPart)multipart.getBodyPart(0)
+                    : (MimeBodyPart)multipart.getBodyPart(startParam);
+                return sourcePart;
+            } catch (MessagingException ex) {
+                throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ex));
+            }
+        }
+        
+        private void replaceRootPart() {
+            if (xmlSource == null) {
+                return;
+            }
+            try {
+                MimeBodyPart sourcePart = getRootPart();
+                String ctype = sourcePart.getContentType();
+                multipart.removeBodyPart(sourcePart);
+                
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                xmlSource.writeTo(baos);
+                baos.close();
+                InternetHeaders headers = new InternetHeaders();
+                headers.addHeader("Content-Type", ctype);
+                sourcePart = new MimeBodyPart(headers, baos.toByteArray());
+                multipart.addBodyPart(sourcePart, 0);
+            } catch (MessagingException ex) {
+                throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ex));
+            } catch (IOException ioe) {
+                throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ioe));
+            }
+        }
+        
+        private void convertToMultipart() {
+            if (dataSource != null) {
+                try {
+                    multipart = new MimeMultipart(dataSource);
+                    dataSource = null;
+                } catch (MessagingException ex) {
+                    throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ex));
+                }
+            }
+        }
+        
+        /*
+         *
+         * Returns root part of the MIME message
+         */
+        public Source getSource() {
+            try {
+                if (xmlSource != null) {
+                    return xmlSource.getPayload();
+                }
+                convertToMultipart();
+                MimeBodyPart sourcePart = getRootPart();
+                ContentType ctype = new ContentType(sourcePart.getContentType());
+                String baseType = ctype.getBaseType();
+                if (!(isXMLType(baseType))) {
+                    throw new XMLMessageException(
+                            "xml.root.part.invalid.Content-Type",
+                            new Object[] {baseType});
+                }
+                return new StreamSource(sourcePart.getInputStream());
+            } catch (MessagingException ex) {
+                throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ex));
+            } catch (IOException ioe) {
+                throw new XMLMessageException("xml.get.source.err",
+                        new LocalizableExceptionAdapter(ioe));
+            }
+        }
+        
+        public Source getPayload() {
+            return getSource();
+        }
+        
+        public void setPayload(Source source) {
+            xmlSource = new XMLSource(source);
+        }
+        
+        public Object getPayload(JAXBContext ctxt) {
+            return JAXBTypeSerializer.getInstance().deserialize(getPayload(),
+                ctxt);
+        }
+        
+        public void setPayload(Object jaxbObj, JAXBContext ctxt) {
+            xmlSource = new XMLSource((Source)null);
+            xmlSource.setPayload(jaxbObj, ctxt);
+        }
+        
+        public void writeTo(OutputStream out) {
+            try {
+                if (xmlSource != null) {
+                    convertToMultipart();
+                }
+                if (dataSource != null) {
+                    InputStream is = dataSource.getInputStream();
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = is.read(buf)) != -1) {
+                        out.write(buf, 0, len);
+                    }
+                } else {
+                    replaceRootPart();
+                    multipart.writeTo(out);
+                }
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+    }
+    
+    public static class XMLSource {
+        private Source source;
+        
+        public XMLSource(InputStream in) {
+            this.source = new StreamSource(in);
+        }
+
+        public XMLSource(Source source) {
+            this.source = source;
+        }
+        
+        /*
+         * If there is a StreamSource with ByteInputStream, write the underlying
+         * buffer to stream. Otherwise, use Transformer to write Source to the
+         * ouput stream.
+         */
+        public void writeTo(OutputStream out) {
+            try {
+                if (source instanceof StreamSource) {
+                    InputStream is = ((StreamSource)source).getInputStream();
+                    if (is != null && is instanceof ByteInputStream) {
+                        ByteInputStream bis = (ByteInputStream)is;
+                        bis.close();                // Reset the stream
+                        byte[] buf = bis.getBytes();
+                        out.write(buf);
+                        return;
+                    }
+                }
+                Transformer transformer = XmlUtil.newTransformer();
+                transformer.transform(source, new StreamResult(out));
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+        
+        public Source getSource() {
+            return source;
+        }
+        
+        /*
+         * Usually called from logical handler
+         * If there is a DOMSource, return that. Otherwise, return a copy of
+         * the existing source. 
+         */
+        public Source getPayload() {
+            try {
+                if (source instanceof DOMSource) {
+                    return source;
+                } else if (source instanceof StreamSource) {
+                    InputStream is = ((StreamSource)source).getInputStream();
+                    if (is != null && is instanceof ByteInputStream) {
+                        ByteInputStream bis = (ByteInputStream)is;
+                        bis.close();                // Reset the stream
+                        byte[] buf = bis.getBytes();
+                        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                        return new StreamSource(bais);
+                    }
+                }
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Transformer transformer = XmlUtil.newTransformer();
+                transformer.transform(source, new StreamResult(baos));
+                baos.close();
+                byte[] buf = baos.toByteArray();
+                source = new StreamSource(new ByteInputStream(buf, buf.length));
+                ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                return new StreamSource(bais);
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+        
+        /*
+         * Usually called from logical handler
+         */
+        public void setPayload(Source source) {
+            this.source = source;
+        }
+        
+        /*
+         * Usually called from logical handler
+         */
+        public Object getPayload(JAXBContext ctxt) {
+            // Get a copy of Source using getPayload() and use it to deserialize
+            // to JAXB object
+            return JAXBTypeSerializer.getInstance().deserialize(getPayload(), 
+                ctxt);
+        }
+        
+        /*
+         * Usually called from logical handler
+         *
+         * Convert to StreamSource. In the process of converting, if there is a
+         * JAXB exception, propagate it
+         */
+        public void setPayload(Object jaxbObj, JAXBContext ctxt) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                JAXBTypeSerializer.getInstance().serialize(jaxbObj, baos, ctxt);
+                baos.close();
+                byte[] buf = baos.toByteArray();
+                source = new StreamSource(new ByteInputStream(buf, buf.length));
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+        
+    }
+
     
 }
