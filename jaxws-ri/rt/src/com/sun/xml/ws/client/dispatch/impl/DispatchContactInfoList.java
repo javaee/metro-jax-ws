@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContactInfoList.java,v 1.7 2005-08-08 19:13:02 arungupta Exp $
+ * $Id: DispatchContactInfoList.java,v 1.8 2005-08-10 22:36:46 arungupta Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -14,6 +14,7 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.pept.ept.ContactInfoList;
 import com.sun.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.client.ContactInfoBase;
 import com.sun.xml.ws.client.ContactInfoListIteratorBase;
 import com.sun.xml.ws.client.dispatch.impl.protocol.MessageDispatcherHelper;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLDecoder;
@@ -32,17 +33,15 @@ public class DispatchContactInfoList implements ContactInfoList {
     public ContactInfoListIterator iterator() {
         ArrayList<Object> arrayList = new ArrayList<Object>();
 
-        //todo:currently do not need DispatchContactInfo- remove later if not
-        //needed
-        arrayList.add(new DispatchContactInfo(null,
+        arrayList.add(new ContactInfoBase(null,
             new MessageDispatcherHelper(),
             new SOAPXMLEncoder(),
             new SOAPXMLDecoder(),SOAPBinding.SOAP11HTTP_BINDING));
-        arrayList.add(new DispatchContactInfo(null,
+        arrayList.add(new ContactInfoBase(null,
             new MessageDispatcherHelper(),
             new SOAP12XMLEncoder(),
             new SOAP12XMLDecoder(), SOAPBinding.SOAP12HTTP_BINDING));
-        arrayList.add(new DispatchContactInfo(null,
+        arrayList.add(new ContactInfoBase(null,
                 new XMLMessageDispatcher(),
                 new XMLEncoder(),
                 new XMLDecoder(), HTTPBinding.HTTP_BINDING));
