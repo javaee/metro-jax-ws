@@ -149,6 +149,10 @@
     </target>
 
 
+    <tstamp>
+       <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+    </tstamp>
+    <property name="build.id" value="${now}(${user.name})" />
     
   <target name="runtime-build" depends="runtime-compile">
     <!-- Copy resource files etc -->
@@ -157,6 +161,10 @@
         <include name="**/*.properties" />
       </fileset>
     </copy>
+
+    <manifest mode="update" file="${basedir}/rt/etc/manifest">
+      <attribute name="Build-Id" value="${build.id}" />
+    </manifest>
     
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/etc/manifest">
@@ -172,6 +180,10 @@
         <include name="**/*.properties" />
       </fileset>
     </copy>
+
+    <manifest mode="update" file="${basedir}/rt/etc/manifest">
+      <attribute name="Build-Id" value="${build.id}" />
+    </manifest>
     
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/etc/manifest">
@@ -206,6 +218,10 @@
                includes="**/*.jar" 
                excludes="ant.jar, ant-junit.jar, ant-launcher.jar, ant-nodeps.jar, ant-trax.jar, junit.jar, servlet.jar"/>
     </copy>
+
+    <manifest mode="update" file="${basedir}/tools/etc/manifest">
+      <attribute name="Build-Id" value="${build.id}" />
+    </manifest>
         
     <jar jarfile="${build.home}/lib/jaxws-tools.jar"
         manifest="${basedir}/tools/etc/manifest">
