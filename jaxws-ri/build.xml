@@ -263,15 +263,15 @@
     <pathelement location="${basedir}/xjc"/>
   </path>
   
-  <target name="debug-wscompile"
+  <target name="debug-wsimport"
       depends="image"
       if="netbeans.home"
-      description="Debug wscompile">
+      description="Debug wscimport">
       
-    <echo message="starting wscompile with arguments: ${args}"/>
+    <echo message="starting wsimport with arguments: ${args}"/>
     
     <!-- "jpda.address" can be any property name -->
-    <nbjpdastart name="wscompile"
+    <nbjpdastart name="wsimport"
         addressproperty="jpda.address"
         transport="dt_socket">
       <classpath refid="debug.classpath"/>

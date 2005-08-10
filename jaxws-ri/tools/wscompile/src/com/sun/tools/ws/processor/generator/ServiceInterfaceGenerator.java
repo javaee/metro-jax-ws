@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.8 2005-08-09 22:29:47 vivekp Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.9 2005-08-10 23:48:25 kohlert Exp $
  */
 
 /*
@@ -8,6 +8,8 @@
  */
 
 package com.sun.tools.ws.processor.generator;
+
+import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.ClassType;
 import com.sun.codemodel.CodeWriter; 
 import com.sun.codemodel.JAnnotationUse;
@@ -27,7 +29,7 @@ import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
-import com.sun.tools.ws.processor.util.GeneratedFileInfo;
+//import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -103,6 +105,7 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
                 JMethod m = null;
                 JDocComment methodDoc = null;
                 JType retType = getClass(port.getJavaInterface().getName(), ClassType.INTERFACE);
+//                JType retType = cm.ref(port.getJavaInterface().getName());
                 m = cls.method(JMod.PUBLIC, retType, port.getPortGetter());
                 methodDoc = m.javadoc();
                 JCommentPart ret = methodDoc.addReturn();
@@ -122,6 +125,15 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
         }
     }
 
+    protected JDefinedClass getClass(String className, ClassType type) {
+        JDefinedClass cls = null;
+        try {
+            cls = cm._class(className, type);
+        } catch (JClassAlreadyExistsException e){
+            cls = cm._getClass(className);
+        }        
+        return cls;
+    }      
     
     private void writeWebServiceClientAnnotation(Service service, JAnnotationUse wsa) {
         String serviceName = service.getName().getLocalPart();

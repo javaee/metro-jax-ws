@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.7 2005-08-08 23:46:43 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.8 2005-08-10 23:48:26 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,10 +16,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.sun.tools.ws.processor.generator.GeneratorBase;
-import com.sun.tools.ws.processor.generator.GeneratorConstants;
 import com.sun.tools.ws.processor.modeler.ModelerException;
-import com.sun.tools.ws.processor.util.GeneratedFileInfo;
-import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.Version;
@@ -34,21 +31,47 @@ import javax.xml.bind.annotation.*;
 import javax.xml.ws.WebFault;
 import javax.xml.ws.ParameterIndex;
 
+import static com.sun.codemodel.ClassType.CLASS;
+import com.sun.codemodel.CodeWriter; 
+import com.sun.codemodel.JAnnotationArrayMember;
+import com.sun.codemodel.JAnnotatable;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JCommentPart;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JDocComment;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JExpression;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
+import com.sun.codemodel.writer.ProgressCodeWriter;
+import com.sun.tools.ws.wscompile.FilerCodeWriter;
+
+
 import javax.jws.*;
 import javax.jws.soap.*;
 import com.sun.tools.ws.processor.modeler.annotation.*;
 
 
 /**
+ * This class generates the request/response and Exception Beans
+ * used by the JAX-WS runtime.  
  *
- * @author  dkohlert
+ * @author  WS Development Team
  */
 public class WebServiceWrapperGenerator extends WebServiceVisitor {
     protected Set<String> wrapperNames;
     protected Set<String> processedExceptions;
+    protected JCodeModel cm;
+    
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
+        cm =  new JCodeModel();
     }
  
     protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
@@ -71,6 +94,23 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         wrapperNames = new HashSet<String>();
         processedExceptions = new HashSet<String>();
     }
+    
+    protected void postProcessWebService(WebService webService, TypeDeclaration d) {
+        super.postProcessWebService(webService, d);
+        if (cm != null) {
+            File sourceDir = builder.getSourceDir();
+            ProcessorEnvironment env = builder.getProcessorEnvironment();          
+            try {
+                CodeWriter cw = new FilerCodeWriter(sourceDir, env);
+
+                if(env.verbose())
+                    cw = new ProgressCodeWriter(cw, System.out);
+                cm.build(cw);            
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }    
 
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
         return !hasWebMethods || webMethod != null;
@@ -190,57 +230,34 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 return false;
             }
  
-            IndentingWriter reqOut = null;
+            JDefinedClass reqCls = null;
             if (canOverwriteRequest) {
-                reqOut = createWriter(requestClassName, GeneratorConstants.FILE_TYPE_WRAPPER_BEAN);
+                reqCls = getCMClass(requestClassName, CLASS);
             }
 
-            IndentingWriter resOut = null;
-            if (!isOneway && canOverwriteResponse) {
-                resOut = createWriter(responseClassName, GeneratorConstants.FILE_TYPE_WRAPPER_BEAN);
+            JDefinedClass resCls = null;
+            if (!isOneway && canOverwriteResponse) {                
+                resCls = getCMClass(responseClassName, CLASS);
             }
 
             WebResult webResult = method.getAnnotation(WebResult.class);
             String responseName = builder.getResponseName(operationName);
-
             // package declaration
             String version = builder.getVersionString();
-            GeneratorBase.writePackage(reqOut, requestClassName, version, Version.VERSION_NUMBER);                                
-            reqOut.pln();
-            if (resOut != null) {
-                GeneratorBase.writePackage(resOut, responseClassName, version, Version.VERSION_NUMBER);                                
-                resOut.pln();
-            }
-
-            // imports
-            writeImport(reqOut);
-            writeImport(resOut);
 
             // XMLElement Declarations
-            writeXmlElementDeclaration(reqOut, operationName, typeNamespace);
-            writeXmlElementDeclaration(resOut, responseName, typeNamespace);
+            writeXmlElementDeclaration(reqCls, operationName, typeNamespace);
+            writeXmlElementDeclaration(resCls, responseName, typeNamespace);
                         
             collectMembers(method, operationName, typeNamespace, reqMembers, resMembers);            
 
             // XmlType
-            writeXmlTypeDeclaration(reqOut, operationName, typeNamespace, reqMembers);
-            writeXmlTypeDeclaration(resOut, responseName, typeNamespace, resMembers);
-            
-            // Class Declarations
-            writeClassDeclaration(reqOut, requestClassName);
-            writeClassDeclaration(resOut, responseClassName);
-       
+            writeXmlTypeDeclaration(reqCls, operationName, typeNamespace, reqMembers);
+            writeXmlTypeDeclaration(resCls, responseName, typeNamespace, resMembers);
+                 
             // class members
-            writeMembers(reqOut, reqMembers);
-            writeMembers(resOut, resMembers);
-            
-            // default constructors
-//            writeDefaultConstructor(reqOut, requestClassName);
-//            writeDefaultConstructor(resOut, responseClassName);
-
-            // endclass close writer
-            writeClassClose(reqOut);
-            writeClassClose(resOut);
+            writeMembers(reqCls, reqMembers);
+            writeMembers(resCls, resMembers);            
         } catch (Exception e) {
             throw new ModelerException(
                 "modeler.nestedGeneratorError",
@@ -344,56 +361,59 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }
         }
     }
-    
-    private void writeXmlTypeDeclaration(IndentingWriter out, String typeName, String namespaceUri,
-                                         ArrayList<MemberInfo> members) throws IOException {
-        if (out == null)
-            return;
-        out.p("@XmlType(name=\""+typeName+"\", namespace=\""+namespaceUri+"\"");
-        int i = 0;
-        for (MemberInfo memInfo : members) {
-            if (i++ == 0) {
-                out.p(", propOrder={");                   
-            } else {
-                out.p(", ");                
-            }
-           out.p("\""+memInfo.getParamName()+"\"");
-        }
-        if (i > 0 )
-            out.p("}");
-        out.pln(")");
-    }
 
+    private JType getType(String typeName) throws IOException {
+        JType type;
+        try {
+            type = cm.parseType(typeName);
+            return type;
+        } catch (ClassNotFoundException e) {
+//            type = cm.ref(typeName);
+//            builder.onError("webserviceap.class.not.found",
+//                                   new Object[]{typeName});
+//            ex.initCause(e);
+//            throw ex;
+        }
+        return null;
+    }
     
-    private void writeMembers(IndentingWriter out, ArrayList<MemberInfo> members) throws IOException {
-        if (out == null)
+    private void writeMembers(JDefinedClass cls, ArrayList<MemberInfo> members) throws IOException {
+        if (cls == null)
             return;
         for (MemberInfo memInfo : members) {
+            JType type = getType(memInfo.getParamType());
+            JFieldVar field = cls.field(JMod.PRIVATE, type, memInfo.getParamName());
             QName elementName = memInfo.getElementName();
             if (elementName != null) {
-                if (soapStyle.equals(SOAPStyle.DOCUMENT)) {
-                    if (wrapped)
-                        out.pln("@XmlElement(namespace=\""+
-                            elementName.getNamespaceURI()+"\", name=\""+
-                            elementName.getLocalPart()+"\")");
-                    else
-                        out.pln("@XmlValue");
+                if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {                   
+                    JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
+                    xmlElementAnn.param("name", elementName.getLocalPart());
+                    xmlElementAnn.param("namespace", elementName.getNamespaceURI());
                 } else {
-                    out.pln("@XmlElement(namespace=\""+
-                        elementName.getNamespaceURI()+"\", name=\""+
-                        elementName.getLocalPart()+"\")");
-                }        
+                    System.out.println("WARNING using XmlValue");
+                    JAnnotationUse xmlValueAnnn = field.annotate(XmlValue.class);                    
+                }
             }
-            if (memInfo.getParamIndex() >= -1)
-                out.pln("@ParameterIndex(value="+memInfo.getParamIndex()+")");
-            
-            out.pln("private "+memInfo.getParamType()+" "+memInfo.getParamName()+";");            
+            if (memInfo.getParamIndex() >= -1) {
+                JAnnotationUse parameterIndex = field.annotate(cm.ref(ParameterIndex.class));
+                parameterIndex.param("value", memInfo.getParamIndex());
+            }
         }
         for (MemberInfo memInfo : members) {
-            writeMember(out, memInfo.getParamIndex(), memInfo.getParamType(), 
+            writeMember(cls, memInfo.getParamIndex(), memInfo.getParamType(), 
                         memInfo.getParamName(), memInfo.getElementName());
         }
     }
+    
+    protected JDefinedClass getCMClass(String className, com.sun.codemodel.ClassType type) {
+        JDefinedClass cls = null;
+        try {
+            cls = cm._class(className, type);
+        } catch (com.sun.codemodel.JClassAlreadyExistsException e){
+            cls = cm._getClass(className);
+        }        
+        return cls;
+    }      
 
     private boolean generateExceptionBean(ClassDeclaration thrownDecl, String beanPackage) throws IOException {
         if (builder.isRemoteException(thrownDecl))
@@ -403,6 +423,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             return false;
         processedExceptions.add(exceptionName);
         String className = beanPackage+ exceptionName + BEAN;
+        
         Map<String, TypeMirror> propertyToTypeMap;
         propertyToTypeMap = TypeModeler.getExceptionProperties(thrownDecl);
         WebFault webFault = isWSDLException(propertyToTypeMap, thrownDecl);
@@ -418,6 +439,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             seiContext.addExceptionBeanEntry(thrownDecl.getQualifiedName(), faultInfo, builder);
             return false;
         } 
+        JDefinedClass cls = getCMClass(className, CLASS);
         faultInfo = new FaultInfo(className, false);
 
         if (duplicateName(className)) {
@@ -443,26 +465,21 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (seiContext.getExceptionBeanName(thrownDecl.getQualifiedName()) != null)
             return false;
  
-        IndentingWriter out =  createWriter(className, GeneratorConstants.FILE_TYPE_EXCEPTION_BEAN);
+        //write class comment - JAXWS warning
+        JDocComment comment = cls.javadoc();
+        for (String doc : GeneratorBase.getJAXWSClassComment(
+                builder.getVersionString(), Version.VERSION_NUMBER)) {
+            comment.add(doc);
+        }
         
-        // package declaration
-        String version = builder.getVersionString();
-        GeneratorBase.writePackage(out, className, version, Version.VERSION_NUMBER);                                
-        out.pln();
-
-        // imports
-        writeImport(out);
-
         // XmlElement Declarations
-        writeXmlElementDeclaration(out, exceptionName, typeNamespace);
+        writeXmlElementDeclaration(cls, exceptionName, typeNamespace);
         
         // XmlType Declaration
-        writeXmlTypeDeclaration(out, exceptionName, typeNamespace, members);
+        writeXmlTypeDeclaration(cls, exceptionName, typeNamespace, members);
         
-        // Class Declarations
-        writeClassDeclaration(out, className);
-        writeMembers(out, members);
-        writeClassClose(out);       
+        writeMembers(cls, members);
+
         seiContext.addExceptionBeanEntry(thrownDecl.getQualifiedName(), faultInfo, builder);
         return true;
     }
@@ -474,100 +491,59 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return webFault;
     }
 
-    private IndentingWriter createWriter(String className, String type) throws IOException {
-        ProcessorEnvironment env = builder.getProcessorEnvironment();
-        IndentingWriter out = new IndentingWriter(env.getFiler().createSourceFile(className));
-
-        File classFile =
-            env.getNames().sourceFileForClass(
-                className,
-                className,
-                builder.getSourceDir(),
-                env);                
-        GeneratedFileInfo fi = new GeneratedFileInfo();
-        fi.setFile(classFile);
-        fi.setType(type);
-        env.addGeneratedFile(fi);            
-        return out;
-    }
-
-    private void writeImport(IndentingWriter out) throws IOException {
-        if (out == null)
-            return;
-        out.pln("import javax.xml.bind.annotation.*;");
-        out.pln("import javax.xml.ws.ParameterIndex;");
-        out.pln();
-    }
-
-    private void writeXmlElementDeclaration(IndentingWriter out, String elementName, String namespaceUri)
+    private void writeXmlElementDeclaration(JDefinedClass cls, String elementName, String namespaceUri)
         throws IOException {
 
-        if (out == null)
+       if (cls == null)
             return;
-        out.p("@XmlRootElement(name=\""+elementName+"\"");       
+        JAnnotationUse xmlRootElementAnn = cls.annotate(XmlRootElement.class);
+        xmlRootElementAnn.param("name", elementName);
         if (namespaceUri.length() > 0) {
-            out.plnI(",");
-            out.pln("namespace=\""+namespaceUri+"\")");
-            out.pO();            
-        } else {
-            out.pln(")");
+            xmlRootElementAnn.param("namespace", namespaceUri);
         }
-        out.pln("@XmlAccessorType(AccessType.FIELD)");
+        JAnnotationUse xmlAccessorTypeAnn = cls.annotate(cm.ref(XmlAccessorType.class));
+        xmlAccessorTypeAnn.param("value", AccessType.FIELD);
     }
-
-    private void writeClassDeclaration(IndentingWriter out, String className) throws IOException {
-        if (out == null)
+   
+    private void writeXmlTypeDeclaration(JDefinedClass cls, String typeName, String namespaceUri,
+                                         ArrayList<MemberInfo> members) throws IOException {
+        if (cls == null)
             return;
-        out.plnI("public class "+ClassNameInfo.getName(className)+" {");            
+        JAnnotationUse xmlTypeAnn = cls.annotate(cm.ref(XmlType.class));
+        xmlTypeAnn.param("name", typeName);
+        xmlTypeAnn.param("namespace", namespaceUri);
+        if (members.size() > 1) {
+            JAnnotationArrayMember paramArray = xmlTypeAnn.paramArray("propOrder");
+            for (MemberInfo memInfo : members) {
+                paramArray.param(memInfo.getParamName());
+            }
+        }
     }
 
-    private void writeMember(IndentingWriter out, int paramIndex, String paramType, 
+    private void writeMember(JDefinedClass cls, int paramIndex, String paramType, 
         String paramName, QName elementName) throws IOException {
 
-        if (out == null)
+        if (cls == null)
             return;
-        out.pln();
-/*        if (elementName != null) {
-            if (soapStyle.equals(SOAPStyle.DOCUMENT)) {
-                if (wrapped)
-                    out.pln("@XmlElement(namespace=\""+
-                        elementName.getNamespaceURI()+"\", name=\""+
-                        elementName.getLocalPart()+"\")");
-                else
-                    out.pln("@XmlValue");
-            } else {
-                out.pln("@XmlElement(namespace=\""+
-                    elementName.getNamespaceURI()+"\", name=\""+
-                    elementName.getLocalPart()+"\")");
-            }        
-        }
-        if (paramIndex >= -1)
-            out.pln("@ParameterIndex(value="+paramIndex+")");
-        out.pln("public "+paramType+" "+paramName+";");            
-        */
         String capPropName = StringUtils.capitalize(paramName);
         String getterPrefix = paramType.equals("boolean") || paramType.equals("java.lang.Boolean") ? "is" : "get";
-        out.plnI("public "+paramType+" "+getterPrefix+capPropName+"() {");
-        out.pln("return "+paramName+";");            
-        out.pOln("}");        
-        out.pln();
-        out.plnI("public void set"+capPropName+"("+paramType+" "+paramName+") {");
-        out.pln("this."+paramName+" = "+paramName+";");
-        out.pOln("}");
-    }
-
-    private void writeDefaultConstructor(IndentingWriter out, String className) throws IOException {
-        if (out == null)
-            return;
-        out.pln();
-        out.pln("public "+ClassNameInfo.getName(className)+"(){}");
-    }        
-
-    private void writeClassClose(IndentingWriter out) throws IOException {
-        if (out == null)
-            return;
-        out.pOln("}"); // class                                
-        out.close();            
+        JMethod m = null;
+        JDocComment methodDoc = null;
+        JType propType = getType(paramType);
+        m = cls.method(JMod.PUBLIC, propType, getterPrefix+capPropName);
+        methodDoc = m.javadoc();
+        JCommentPart ret = methodDoc.addReturn();
+        ret.add("returns "+propType.name());
+        JBlock body = m.body();
+        body._return( JExpr._this().ref(paramName) );        
+        
+        m = cls.method(JMod.PUBLIC, cm.VOID, "set"+capPropName); 
+        JVar param = m.param(propType, paramName);
+        methodDoc = m.javadoc();
+        JCommentPart part = methodDoc.addParam(paramName);
+        part.add("the value for the "+ paramName+" property");
+        body = m.body();
+        body.assign( JExpr._this().ref(paramName), param );        
     }
 }      
     
