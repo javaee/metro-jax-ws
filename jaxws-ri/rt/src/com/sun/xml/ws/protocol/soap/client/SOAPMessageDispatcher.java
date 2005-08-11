@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.20 2005-08-05 21:53:36 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.21 2005-08-11 14:59:24 kwalsh Exp $
  */
 
 /*
@@ -149,7 +149,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerResult =
                     systemHandlerDelegate.processRequest(
                         (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
-                            new SOAPMessageContextImpl(handlerContext));
+                            handlerContext.getSOAPMessageContext());
+                sm = handlerContext.getSOAPMessage();
             }
 
             // Setting encoder here is necessary for calls to getBindingId()
