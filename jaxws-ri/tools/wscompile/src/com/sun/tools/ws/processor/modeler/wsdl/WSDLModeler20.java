@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.17 2005-08-11 00:42:59 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.18 2005-08-11 02:01:37 vivekp Exp $
  */
 
 /*
@@ -1065,8 +1065,11 @@ public class WSDLModeler20 extends WSDLModelerBase {
         return true;
     }
 
-    protected String getAsyncOperationName(com.sun.tools.ws.wsdl.document.Operation wsdlOperation, Operation operation){
-        return operation.getUniqueName() + "Async";
+    protected String getAsyncOperationName(Operation operation){
+        String name = operation.getCustomizedName();
+        if(name == null)
+            name = operation.getUniqueName();
+        return name;
     }
 
     /**
@@ -1100,7 +1103,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         AsyncOperation operation = new AsyncOperation(info.operation);
 
         //creation the async operation name: operationName+Async or customized name
-        operation.setName(new QName(operation.getName().getNamespaceURI(), getAsyncOperationName(info.portTypeOperation, operation)));
+        //operation.setName(new QName(operation.getName().getNamespaceURI(), getAsyncOperationName(info.portTypeOperation, operation)));
         if(asyncType.equals(AsyncOperationType.CALLBACK))
             operation.setUniqueName(info.operation.getUniqueName()+"_async_callback");
         else if(asyncType.equals(AsyncOperationType.POLLING))
@@ -1220,12 +1223,12 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 //create response bean
                 //String nspace = document.getDefinitions().getTargetNamespaceURI()+"?"+info.port.resolveBinding(document).resolvePortType(document).getName()+"?" + info.portTypeOperation.getName();
                 String nspace = "";
-                QName responseBeanName = new QName(nspace,info.operation.getName()+"Response");
+                QName responseBeanName = new QName(nspace,getAsyncOperationName(info.operation) +"Response");
                 JAXBType responseBeanType = getJAXBType(responseBeanName);
                 operation.setResponseBean(responseBeanType);
             }
         }
-        QName respBeanName = new QName(soapResponseBody.getNamespace(),info.operation.getName()+"Response");
+        QName respBeanName = new QName(soapResponseBody.getNamespace(),getAsyncOperationName(info.operation)+"Response");
         Block block = new Block(respBeanName, operation.getResponseBeanType());
         JavaType respJavaType = operation.getResponseBeanJavaType();
         JAXBType respType = new JAXBType(respBeanName, respJavaType);

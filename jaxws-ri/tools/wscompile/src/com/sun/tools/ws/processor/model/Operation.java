@@ -1,5 +1,5 @@
 /*
- * $Id: Operation.java,v 1.4 2005-08-05 22:11:10 vivekp Exp $
+ * $Id: Operation.java,v 1.5 2005-08-11 02:01:38 vivekp Exp $
  */
 
 /*
@@ -32,6 +32,7 @@ public class Operation extends ModelObject {
         this(operation._name);
         this._style = operation._style;
         this._use = operation._use;
+        this.customizedName = operation.customizedName;
     }
     public Operation(QName name) {
         _name = name;
@@ -190,6 +191,10 @@ public class Operation extends ModelObject {
 
     public void setCustomizedName(String name){
         this.customizedName = name;
+    }
+
+    public String getCustomizedName(){
+        return customizedName;
     }
 
     public String getJavaMethodName(){

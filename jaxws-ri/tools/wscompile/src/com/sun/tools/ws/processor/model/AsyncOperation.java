@@ -1,5 +1,5 @@
 /*
- * $Id: AsyncOperation.java,v 1.2 2005-07-21 19:53:23 vivekp Exp $
+ * $Id: AsyncOperation.java,v 1.3 2005-08-11 02:01:38 vivekp Exp $
  */
 
 /*
@@ -101,6 +101,10 @@ public class AsyncOperation extends Operation {
 
     public void setNormalOperation(Operation operation){
         this.operation = operation;
+    }
+
+    @Override public String getJavaMethodName() {
+        return super.getJavaMethodName() + "Async";
     }
 
     //Normal operation

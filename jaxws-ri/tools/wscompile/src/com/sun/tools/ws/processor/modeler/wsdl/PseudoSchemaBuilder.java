@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.3 2005-06-15 01:35:59 vivekp Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.4 2005-08-11 02:01:37 vivekp Exp $
  */
 
 /*
@@ -32,6 +32,7 @@ import com.sun.tools.ws.wsdl.document.Service;
 import com.sun.tools.ws.wsdl.document.WSDLDocument;
 import com.sun.tools.ws.wsdl.document.Binding;
 import com.sun.tools.ws.wsdl.document.BindingOperation;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
 import com.sun.tools.ws.wsdl.document.soap.SOAPOperation;
 import com.sun.tools.ws.wsdl.document.soap.SOAPHeader;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
@@ -127,7 +128,9 @@ public class PseudoSchemaBuilder {
      * @param bindingOperation
      */
     private void buildAsync(PortType portType, Operation operation, BindingOperation bindingOperation) {
-        String operationName = operation.getName();
+        String operationName = getCustomizedOperationName(operation);//operation.getName();
+        if(operationName == null)
+            return;
         Message outputMessage = null;
         if(operation.getOutput() != null)
             outputMessage = operation.getOutput().resolveMessage(wsdlDocument);
@@ -140,6 +143,19 @@ public class PseudoSchemaBuilder {
                 build(getOperationName(portType, operationName, bindingOperation.getOutput()), allParts);
         }
 
+    }
+
+    private String getCustomizedOperationName(Operation operation) {
+        JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(operation, JAXWSBinding.class);
+        String operationName = (jaxwsCustomization != null)?((jaxwsCustomization.getMethodName() != null)?jaxwsCustomization.getMethodName().getName():null):null;
+        if(operationName != null){
+            if(wsdlModeler.getEnvironment().getNames().isJavaReservedWord(operationName)){
+                return null;
+            }
+
+            return operationName;
+        }
+        return operation.getName();
     }
 
     private void writeImports(QName elementName, List<MessagePart> parts){
