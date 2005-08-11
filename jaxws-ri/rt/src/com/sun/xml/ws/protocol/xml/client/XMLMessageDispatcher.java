@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.2 2005-08-09 19:23:16 arungupta Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.3 2005-08-11 05:52:10 arungupta Exp $
  */
 
 /*
@@ -65,6 +65,7 @@ import com.sun.xml.ws.client.ResponseContext;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -118,8 +119,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         boolean handlerResult = true;
         boolean isRequestResponse = (messageInfo.getMEP() == MessageStruct.REQUEST_RESPONSE_MEP);
 
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_CLASS) != Source.class && 
-            messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_CLASS) != DataSource.class) {
+        DispatchContext dispatchContext = (DispatchContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
+        
+        if (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.SOURCE && 
+            dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.DATASOURCE &&
+            dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.JAXBOBJECT) {
             throw new WebServiceException ();
         }
         XMLMessage xm = null;
@@ -127,8 +131,10 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         Object object = messageInfo.getData()[0];
         if (object instanceof Source)
             xm = new XMLMessage((Source)object);
-        else
+        else if (object instanceof DataSource)
             xm = new XMLMessage((DataSource)object);
+        else
+            xm = new XMLMessage(object, getJAXBContext(messageInfo));
         
         try {
 //            InternalMessage im = encoder.toInternalMessage(messageInfo);
@@ -394,11 +400,21 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //            messageInfo.setResponse(sm);
 //            postReceiveAndDecodeHook(messageInfo);
 //        }
-        Object obj = messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_CLASS);
-        if (obj == Source.class)
-            messageInfo.setResponse(xm.getSource());
-        else
-            messageInfo.setResponse(xm.getDataSource());
+        DispatchContext dispatchContext = (DispatchContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
+        
+        switch ((DispatchContext.MessageClass)dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS)) {
+            case SOURCE:
+                messageInfo.setResponse(xm.getSource());
+                break;
+            case DATASOURCE:
+                messageInfo.setResponse(xm.getDataSource());
+                break;
+            case JAXBOBJECT:
+                messageInfo.setResponse(xm.getPayload(getJAXBContext(messageInfo)));
+                break;
+            default:
+                throw new WebServiceException();
+        }
     }
 
     private HandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {
@@ -792,5 +808,14 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         WSConnection con = (WSConnection)messageInfo.getConnection();
         return XMLConnectionUtil.getXMLMessage(con, messageInfo);
     }
+    
+    protected JAXBContext getJAXBContext (MessageInfo messageInfo) {
+        JAXBContext jc = null;
+        RequestContext context = (RequestContext)messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        if (context != null)
+            jc = (JAXBContext)context.get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
+        
+        return jc;
+    }    
 
 }

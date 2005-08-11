@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.10 2005-08-10 02:45:08 jitu Exp $
+ * $Id: XMLMessage.java,v 1.11 2005-08-11 05:52:10 arungupta Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -14,6 +14,7 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +52,7 @@ public class XMLMessage {
     protected MimeHeaders headers;
     protected XMLDataSource xmlDataSource;
     protected XMLSource xmlSource;
+    protected XMLJaxb jaxbObject;
     protected Exception err;
     private static final String DEFAULT_SERVER_ERROR =
         "<?xml version='1.0' encoding='UTF-8'?>"
@@ -117,6 +119,12 @@ public class XMLMessage {
         this.xmlDataSource = new XMLDataSource(dataSource);
         this.headers = new MimeHeaders();
         headers.addHeader("Content-Type", dataSource.getContentType());
+    }
+    
+    public XMLMessage(Object object, JAXBContext context) {
+        this.jaxbObject = new XMLJaxb(object, context);
+        this.headers = new MimeHeaders();
+        headers.addHeader("Content-Type", "text/xml");
     }
     
     public Source getSource() {
@@ -226,6 +234,8 @@ public class XMLMessage {
         } else if (xmlSource != null) {
             xmlSource.writeTo(out);
 
+        } else if (jaxbObject != null) {
+            jaxbObject.writeTo(out);
         } else if (err != null) {
             String msg = err.getMessage();
             if (msg == null) {
@@ -567,8 +577,66 @@ public class XMLMessage {
                 throw new WebServiceException(e);
             }
         }
-        
     }
 
-    
+    public static class XMLJaxb {
+        private Object object;
+        private JAXBContext jaxbContext;
+        private ByteArrayOutputStream baos;
+        
+        public XMLJaxb(Object object, JAXBContext jaxbContext) {
+            this.object = object;
+            this.jaxbContext = jaxbContext;
+            
+            JAXBBeanInfo beanInfo = new JAXBBeanInfo(object, jaxbContext);
+            baos = new ByteArrayOutputStream();
+            JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(), baos, beanInfo.getJAXBContext());
+        }
+        
+        public void writeTo(OutputStream out) {
+            try {
+                out.write(baos.toByteArray());
+            } catch(Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+        
+        public Source getSource() {
+            return null;
+        }
+        
+        /*
+         * Usually called from logical handler
+         * If there is a DOMSource, return that. Otherwise, return a copy of
+         * the existing source. 
+         */
+        public Object getPayload() {
+            return object;
+        }
+        
+        /*
+         * Usually called from logical handler
+         */
+        public void setPayload(Object object) {
+            this.object = object;
+        }
+        
+        /*
+         * Usually called from logical handler
+         */
+        public Object getPayload(JAXBContext ctxt) {
+            return object;
+        }
+        
+        /*
+         * Usually called from logical handler
+         *
+         * Convert to StreamSource. In the process of converting, if there is a
+         * JAXB exception, propagate it
+         */
+        public void setPayload(Object jaxbObj, JAXBContext ctxt) {
+            this.object = jaxbObj;
+            this.jaxbContext = ctxt;
+        }
+    }
 }
