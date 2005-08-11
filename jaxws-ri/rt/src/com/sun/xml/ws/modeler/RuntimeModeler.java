@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.19 2005-08-11 00:53:03 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.20 2005-08-11 21:59:17 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -45,6 +45,7 @@ public class RuntimeModeler {
     private boolean isWrapped = true;
     private boolean usesWebMethod = false;
     private ClassLoader classLoader = null;
+    private Object implementor;
     /**
      * 
      */
@@ -64,11 +65,26 @@ public class RuntimeModeler {
     /**
      * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
      * @param portClass The SEI class to be modeled.
+     * @param implementor The object on which service methods are invoked
      * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
      */
     public RuntimeModeler(Class portClass, String bindingId) {
         this.portClass = portClass;
         this.bindingId = bindingId;
+    }
+    
+    /**
+     * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
+     * implementor object's class may not be portClass, as it could be proxy to
+     * portClass webmethods.
+     *
+     * @param portClass The SEI class to be modeled.
+     * @param implementor The object on which service methods are invoked
+     * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
+     */
+    public RuntimeModeler(Class portClass, Object implementor, String bindingId) {
+        this(portClass, bindingId);
+        this.implementor = implementor;
     }
 
     /**
@@ -231,13 +247,24 @@ public class RuntimeModeler {
      * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
      */
     protected void processMethod(Method method, WebService webService) {
+        
+        WebMethod webMethod = method.getAnnotation(WebMethod.class);
+        // If one WebMethod is used, then only methods with WebMethod will be
+        // processed.
+        if (usesWebMethod && webMethod == null) {
+            return;
+        }
 
+        // Use implementor to find the exact invocation method as implementor
+        // could be a proxy to portClass object
         JavaMethod javaMethod;
-        if (method.getDeclaringClass().equals(portClass))
+        Class implementorClass = (implementor != null)
+            ? implementor.getClass() : portClass;
+        if (method.getDeclaringClass().equals(implementorClass)) {
             javaMethod = new JavaMethod(method);
-        else {
+        } else {
             try {
-                Method tmpMethod = portClass.getMethod(method.getName(), 
+                Method tmpMethod = implementorClass.getMethod(method.getName(), 
                     method.getParameterTypes());
                 javaMethod = new JavaMethod(tmpMethod);
             } catch (NoSuchMethodException e) {
@@ -252,14 +279,6 @@ public class RuntimeModeler {
          //set MEP -oneway, async, req/resp
         int mep = getMEP(method);
         javaMethod.setMEP(mep);
-
-
-        WebMethod webMethod = method.getAnnotation(WebMethod.class);
-        // If one WebMethod is used, then only methods with WebMethod will be
-        // processed.
-        if (usesWebMethod && webMethod == null) {
-            return;
-        }
 
         String action = null;
         String operationName = method.getName();
