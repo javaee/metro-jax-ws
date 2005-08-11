@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.3 2005-08-11 00:53:05 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.4 2005-08-11 01:12:49 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -26,7 +26,7 @@ import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.ClassNameInfo;
-import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
+import javax.jws.soap.SOAPBinding.Style;
 
 import javax.xml.namespace.QName;
 
@@ -77,6 +77,11 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
         SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         boolean newBinding = false;
         if (soapBinding != null) {
+            if (soapBinding.style().equals(Style.RPC)) {
+                builder.onError("webserviceap.rpc.soapbinding.not.allowed.on.method",
+                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            }
+            
             newBinding = pushSOAPBinding(soapBinding, typeDecl);
         }
         try {
