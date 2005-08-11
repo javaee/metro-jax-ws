@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.8 2005-08-10 23:48:26 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.9 2005-08-11 00:53:05 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -118,11 +118,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         boolean generatedWrapper = false;
-        com.sun.xml.ws.SOAPBinding soapBinding = method.getAnnotation(com.sun.xml.ws.SOAPBinding.class);
+        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         builder.log("method: "+method);
         boolean newBinding = false;
         if (soapBinding != null) {
-            newBinding = pushSOAPBinding(new com.sun.xml.ws.SOAPBinding.MySOAPBinding(soapBinding), typeDecl);
+            newBinding = pushSOAPBinding(soapBinding, typeDecl);
         }
         try {
             if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {

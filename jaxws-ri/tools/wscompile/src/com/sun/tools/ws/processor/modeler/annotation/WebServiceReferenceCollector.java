@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.2 2005-06-01 00:38:30 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.3 2005-08-11 00:53:05 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -74,10 +74,10 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         boolean generatedWrapper = false;
-        com.sun.xml.ws.SOAPBinding soapBinding = method.getAnnotation(com.sun.xml.ws.SOAPBinding.class);
+        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         boolean newBinding = false;
         if (soapBinding != null) {
-            newBinding = pushSOAPBinding(new com.sun.xml.ws.SOAPBinding.MySOAPBinding(soapBinding), typeDecl);
+            newBinding = pushSOAPBinding(soapBinding, typeDecl);
         }
         try {
             collectTypes(method, webMethod, seiContext.getReqOperationWrapper(method) != null);
@@ -113,7 +113,6 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
                 } else {
                     TypeMirror bean = faultInfo.beanTypeMoniker.create(apEnv);
                     Reference ref = seiContext.addReference(((DeclaredType)bean).getDeclaration(), apEnv);
-//                    seiContext.addSchemaElement(faultInfo.getElementName(), new Reference(((DeclaredType)bean).getDeclaration(), apEnv));
                     seiContext.addSchemaElement(faultInfo.getElementName(), ref);
                 }
             }

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.18 2005-08-08 22:02:38 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.19 2005-08-11 00:53:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,6 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.RequestWrapper;
 import com.sun.xml.ws.ResponseWrapper;
-import com.sun.xml.ws.SOAPBinding;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBlock;
@@ -19,6 +18,7 @@ import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.model.soap.Style;
 
 import javax.jws.*;
+import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -270,18 +270,16 @@ public class RuntimeModeler {
                 operationName;
         }
         javaMethod.setOperationName(operationName);
-        com.sun.xml.ws.SOAPBinding methodBinding =
-            method.getAnnotation(com.sun.xml.ws.SOAPBinding.class);
-        SOAPBinding.MySOAPBinding myMethodBinding = null;
+        SOAPBinding methodBinding =
+            method.getAnnotation(SOAPBinding.class);
         boolean methodIsWrapped = isWrapped;
         Style style = defaultBinding.getStyle();
         if (methodBinding != null) {
-            myMethodBinding = new SOAPBinding.MySOAPBinding(methodBinding);
-            com.sun.xml.ws.model.soap.SOAPBinding mySOAPBinding = createBinding(myMethodBinding);
+            com.sun.xml.ws.model.soap.SOAPBinding mySOAPBinding = createBinding(methodBinding);
             style = mySOAPBinding.getStyle();
             if (action != null)
                 mySOAPBinding.setSOAPAction(action);
-            methodIsWrapped = myMethodBinding.parameterStyle().equals(
+            methodIsWrapped = methodBinding.parameterStyle().equals(
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
             javaMethod.setBinding(mySOAPBinding);
         } else {
@@ -443,8 +441,6 @@ public class RuntimeModeler {
                         paramNamespace = webParam.targetNamespace();
                     }
                     isHeader = webParam.header();
-//                    if (isHeader && paramNamespace.length() == 0)
-//                        paramNamespace = targetNamespace;
                     WebParam.Mode mode = webParam.mode();
                     if (isHolder && mode == javax.jws.WebParam.Mode.IN)
                         mode = javax.jws.WebParam.Mode.INOUT;
@@ -454,8 +450,6 @@ public class RuntimeModeler {
                     break;
                 }
             }
-//            if (isHeader && paramMode == com.sun.xml.rpc.rt.model.Mode.IN)
-//                paramMode = com.sun.xml.rpc.rt.model.Mode.INOUT;
             if (paramName.length() != 0) {
                 paramQName = new QName(paramNamespace, paramName);
             } else {  // go get it from the wrappers

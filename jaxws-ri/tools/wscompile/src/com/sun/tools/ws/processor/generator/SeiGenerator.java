@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.12 2005-08-10 23:48:24 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.13 2005-08-11 00:53:04 kohlert Exp $
  */
 
 /**
@@ -50,7 +50,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Properties;
 
-public class SeiGenerator extends GeneratorBase implements ProcessorAction, ModelVisitor{
+public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private String wsdlLocation;
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
@@ -215,8 +215,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
         //DOC/BARE
         if (!sameParamStyle) {
             if(!operation.isWrapped()) {
-               JAnnotationUse sb = m.annotate(com.sun.xml.ws.SOAPBinding.class);
-               sb.param("parameterStyle", com.sun.xml.ws.SOAPBinding.ParameterStyle.BARE);
+               JAnnotationUse sb = m.annotate(SOAPBinding.class);
+               sb.param("parameterStyle", SOAPBinding.ParameterStyle.BARE);
             }
         }
 
@@ -444,33 +444,5 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction, Mode
                     "generator.nestedGeneratorError",
                     new LocalizableExceptionAdapter(e));
         }
-    }
-
-    public void visit(Port port) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Operation operation) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Request request) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Response response) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Fault fault) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Block block) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void visit(Parameter parameter) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
