@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.Writer;
 
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JPackage;
@@ -27,7 +27,7 @@ public class FilerCodeWriter extends WSCodeWriter {
     /** The Filer used to create files. */
     private final Filer filer;
     
-    private OutputStream out;
+    private Writer w;
     
     public FilerCodeWriter(File outDir, ProcessorEnvironment env ) throws IOException {
         super(outDir, env);
@@ -35,20 +35,17 @@ public class FilerCodeWriter extends WSCodeWriter {
     }
     
     
-    public OutputStream open(JPackage pkg, String fileName) throws IOException {
-        File file = getFile(pkg, fileName);
-        String tmp = file.getName().substring(0, file.getName().length()-5);
-        PrintWriter pw = filer.createSourceFile(pkg.name()+"."+tmp);
-        pw.close();
-        out = new FileOutputStream(file);
-        return out;
+    public Writer openSource(JPackage pkg, String fileName) throws IOException {
+        String tmp = fileName.substring(0, fileName.length()-5);
+        w = filer.createSourceFile(pkg.name()+"."+tmp);
+        return w;
     }
     
 
     public void close() throws IOException {
         super.close();
-        if (out != null)
-            out.close();
-        out = null;
+        if (w != null)
+            w.close();
+        w = null;
     }
 }
