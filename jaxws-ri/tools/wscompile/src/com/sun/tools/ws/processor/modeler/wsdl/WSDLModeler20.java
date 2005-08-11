@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.16 2005-08-09 23:10:17 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.17 2005-08-11 00:42:59 vivekp Exp $
  */
 
 /*
@@ -54,6 +54,7 @@ import com.sun.tools.ws.processor.modeler.ModelerUtils;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.ClassNameInfo;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.Binding;
 import com.sun.tools.ws.wsdl.document.BindingFault;
 import com.sun.tools.ws.wsdl.document.BindingOperation;
@@ -109,7 +110,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
         try {
 
             parser = createWSDLParser();
-            InputSource inputSource = new InputSource(_modelInfo.getLocation());
+            String wsdlLoc = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(_modelInfo.getLocation()));
+            InputSource inputSource = new InputSource(wsdlLoc);
             parser.addParserListener(new ParserListener() {
                 public void ignoringExtension(QName name, QName parent) {
                     if (parent.equals(WSDLConstants.QNAME_TYPES)) {
@@ -2121,9 +2123,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
                  return isWrappable;
         }
 
-        //then into wsdl:portType
-        com.sun.tools.ws.wsdl.document.Port port = info.port;
-        jaxwsBinding = (JAXWSBinding)getExtensionOfType(port, JAXWSBinding.class);
+        //then into wsdl:portType        
+        PortType portType = info.port.resolveBinding(document).resolvePortType(document);
+        jaxwsBinding = (JAXWSBinding)getExtensionOfType(portType, JAXWSBinding.class);
         if(jaxwsBinding != null){
              Boolean isWrappable = jaxwsBinding.isEnableWrapperStyle();
              if(isWrappable != null)
