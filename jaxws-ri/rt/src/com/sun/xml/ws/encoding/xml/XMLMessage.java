@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.11 2005-08-11 05:52:10 arungupta Exp $
+ * $Id: XMLMessage.java,v 1.12 2005-08-12 18:12:29 kohsuke Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -12,8 +12,8 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.InternetHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import java.io.ByteArrayInputStream;
@@ -64,8 +64,7 @@ public class XMLMessage {
      * received, there's two parts -- the transport headers and the
      * message content in a transport specific stream.
      */
-    public XMLMessage(MimeHeaders headers, final InputStream in)
-        throws IOException {
+    public XMLMessage(MimeHeaders headers, final InputStream in) {
         this.headers = headers;
         final String ct;
         if (headers != null) {
@@ -201,14 +200,14 @@ public class XMLMessage {
         headers.setHeader("Content-Type", type);
     }
 
-    private ContentType ContentType() {
-        try {
-            return new ContentType(getContentType());
-        } catch (ParseException e) {
-            throw new XMLMessageException("xml.Content-Type.parse.err",
-                    new LocalizableExceptionAdapter(e));
-        }
-    }
+//    private ContentType ContentType() {
+//        try {
+//            return new ContentType(getContentType());
+//        } catch (ParseException e) {
+//            throw new XMLMessageException("xml.Content-Type.parse.err",
+//                    new LocalizableExceptionAdapter(e));
+//        }
+//    }
     
     public WSConnection.STATUS getStatus() {
         if (err != null) {     
@@ -323,10 +322,9 @@ public class XMLMessage {
                             if (xmlSource != null) {
                                 replaceRootPart();
                             }
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            ByteOutputStream bos = new ByteOutputStream();
                             multipart.writeTo(bos);
-                            bos.close();
-                            return new ByteArrayInputStream(bos.toByteArray());
+                            return bos.newInputStream();
                         } catch(MessagingException me) {
                             throw new XMLMessageException("xml.get.ds.err",
                                     new LocalizableExceptionAdapter(me));
@@ -341,7 +339,7 @@ public class XMLMessage {
                     }
 
                     public String getContentType() {
-                        return multipart.getContentType();
+                        return multipart.getContentType().toString();
                     }
 
                     public String getName() {
@@ -354,7 +352,7 @@ public class XMLMessage {
         
         private MimeBodyPart getRootPart() {
             try {
-                ContentType contentType = new ContentType(multipart.getContentType());
+                ContentType contentType = multipart.getContentType();
                 String startParam = contentType.getParameter("start");
                 MimeBodyPart sourcePart = (startParam == null)
                     ? (MimeBodyPart)multipart.getBodyPart(0)
@@ -375,26 +373,22 @@ public class XMLMessage {
                 String ctype = sourcePart.getContentType();
                 multipart.removeBodyPart(sourcePart);
                 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                xmlSource.writeTo(baos);
-                baos.close();
+                ByteOutputStream bos = new ByteOutputStream();
+                xmlSource.writeTo(bos);
                 InternetHeaders headers = new InternetHeaders();
                 headers.addHeader("Content-Type", ctype);
-                sourcePart = new MimeBodyPart(headers, baos.toByteArray());
+                sourcePart = new MimeBodyPart(headers, bos.getBytes(),bos.getCount());
                 multipart.addBodyPart(sourcePart, 0);
             } catch (MessagingException ex) {
                 throw new XMLMessageException("xml.get.source.err",
                         new LocalizableExceptionAdapter(ex));
-            } catch (IOException ioe) {
-                throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ioe));
             }
         }
         
         private void convertToMultipart() {
             if (dataSource != null) {
                 try {
-                    multipart = new MimeMultipart(dataSource);
+                    multipart = new MimeMultipart(dataSource,null);
                     dataSource = null;
                 } catch (MessagingException ex) {
                     throw new XMLMessageException("xml.get.source.err",
