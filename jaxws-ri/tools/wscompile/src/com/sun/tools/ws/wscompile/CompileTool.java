@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.12 2005-08-12 18:07:53 kohlert Exp $
+ * $Id: CompileTool.java,v 1.13 2005-08-12 21:30:19 kohlert Exp $
  */
 
 /*
@@ -237,7 +237,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     }               
                 }
                 args[i] = null;
-            } else if (args[i].equals("-extensions")) {
+            } else if (args[i].equals("-extension")) {
                 extensions = true;
                 args[i] = null;
             } else if (args[i].startsWith("-help")) {
@@ -284,7 +284,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
 
     protected boolean hasExtensions() {
         if (protocol.equalsIgnoreCase(X_SOAP12)) {
-            onError(getMessage("wsgen.soap12.without.extensions"));
+            onError(getMessage("wsgen.soap12.without.extension"));
             return true;
         }
         return false;
@@ -589,7 +589,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 .getAbsolutePath());
         properties.setProperty(ProcessorOptions.NONCLASS_DESTINATION_DIRECTORY_PROPERTY,
                 nonclassDestDir.getAbsolutePath());
-        properties.setProperty(ProcessorOptions.EXTENSIONS, (extensions ? "true" : "false"));
+        properties.setProperty(ProcessorOptions.EXTENSION, (extensions ? "true" : "false"));
         properties.setProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY,
                 (verbose ? TRUE : FALSE));
         properties.setProperty(ProcessorOptions.PROTOCOL, protocol);

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.19 2005-08-12 18:07:52 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.20 2005-08-12 21:30:19 kohlert Exp $
  */
 
 /*
@@ -129,7 +129,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             });
             hSet = parser.getUse();
 
-            extensions = Boolean.valueOf(_options.getProperty(ProcessorOptions.EXTENSIONS));
+            extensions = Boolean.valueOf(_options.getProperty(ProcessorOptions.EXTENSION));
             
             useWSIBasicProfile = !extensions;
 //                Boolean
