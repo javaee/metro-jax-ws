@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.29 2005-08-12 02:55:13 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.30 2005-08-12 04:15:50 kohlert Exp $
  */
 
 /*
@@ -107,7 +107,7 @@ public class RuntimeEndpointInfo
     
     public void createModel() {
         // Create runtime model for non Provider endpoints            
-        RuntimeModeler rap = new RuntimeModeler(implementorClass,
+        RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
             getImplementor(), ((BindingImpl)binding).getBindingId());
         runtimeModel = rap.buildRuntimeModel();
     }
