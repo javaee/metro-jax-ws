@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPExtensionHandler.java,v 1.3 2005-07-23 04:11:07 kohlert Exp $
+ * $Id: SOAPExtensionHandler.java,v 1.4 2005-08-12 16:46:32 vivekp Exp $
  */
 
 /*
@@ -68,6 +68,10 @@ public class SOAPExtensionHandler extends ExtensionHandlerBase {
         return false; // keep compiler happy
     }
 
+    protected SOAPBinding getSOAPBinding(){
+        return new SOAPBinding();
+    }
+
     protected boolean handleBindingExtension(
         ParserContext context,
         Extensible parent,
@@ -76,7 +80,7 @@ public class SOAPExtensionHandler extends ExtensionHandlerBase {
             context.push();
             context.registerNamespaces(e);
 
-            SOAPBinding binding = new SOAPBinding();
+            SOAPBinding binding = getSOAPBinding();
 
             // NOTE - the "transport" attribute is required according to section 3.3 of the WSDL 1.1 spec,
             // but optional according to the schema in appendix A 4.2 of the same document!

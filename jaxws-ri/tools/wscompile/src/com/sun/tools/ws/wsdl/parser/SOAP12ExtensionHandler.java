@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12ExtensionHandler.java,v 1.2 2005-07-23 04:11:06 kohlert Exp $
+ * $Id: SOAP12ExtensionHandler.java,v 1.3 2005-08-12 16:46:32 vivekp Exp $
  */
 
 /*
@@ -11,6 +11,8 @@ package com.sun.tools.ws.wsdl.parser;
 import javax.xml.namespace.QName;
 
 import com.sun.tools.ws.wsdl.document.soap.SOAP12Constants;
+import com.sun.tools.ws.wsdl.document.soap.SOAPBinding;
+import com.sun.tools.ws.wsdl.document.soap.SOAP12Binding;
 
 
 public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
@@ -39,7 +41,11 @@ public class SOAP12ExtensionHandler extends SOAPExtensionHandler {
         return SOAP12Constants.QNAME_BINDING;
     }
 
-    /* 
+    @Override protected SOAPBinding getSOAPBinding() {
+        return new SOAP12Binding();
+    }
+
+    /*
      * @see SOAPExtensionHandler#getBodyQName()
      */
     @Override
