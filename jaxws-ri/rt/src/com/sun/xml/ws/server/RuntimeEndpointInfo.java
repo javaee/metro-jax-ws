@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.28 2005-08-08 23:36:13 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.29 2005-08-12 02:55:13 jitu Exp $
  */
 
 /*
@@ -28,11 +28,16 @@ import javax.xml.ws.Provider;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
+
 
 
 /**
@@ -55,13 +60,13 @@ public class RuntimeEndpointInfo
     private Binding binding;
     private RuntimeModel runtimeModel;
     private Object implementor;
-    private Object implementorProxy;
+    private Class implementorClass;
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
     private boolean enableMtom;
     private WebServiceContext wsContext;
-    private boolean beginService;
-    private boolean endService;
+    private boolean beginServiceDone;
+    private boolean endServiceDone;
     private boolean injectedContext;
 
     public Exception getException() {
@@ -102,9 +107,9 @@ public class RuntimeEndpointInfo
     
     public void createModel() {
         // Create runtime model for non Provider endpoints            
-        RuntimeModeler rap = new RuntimeModeler(getImplementor().getClass(),
-                ((BindingImpl)binding).getBindingId());
-        runtimeModel = rap.buildRuntimeModel();     
+        RuntimeModeler rap = new RuntimeModeler(implementorClass,
+            getImplementor(), ((BindingImpl)binding).getBindingId());
+        runtimeModel = rap.buildRuntimeModel();
     }
     
     /**
@@ -116,6 +121,10 @@ public class RuntimeEndpointInfo
     public void deploy() {
         if (implementor == null) {
             // TODO throw exception
+        }
+        
+        if (implementorClass == null) {
+            setImplementorClass(getImplementor().getClass());
         }
         
         // setting a default binding
@@ -173,7 +182,7 @@ public class RuntimeEndpointInfo
             if (getBinding().getHandlerChain() == null) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
-                        getImplementor().getClass());
+                        implementorClass);
                 if (chainInfo != null) {
                     getBinding().setHandlerChain(chainInfo.getHandlers());
                     if (getBinding() instanceof SOAPBinding) {
@@ -242,12 +251,15 @@ public class RuntimeEndpointInfo
         this.implementor = implementor;
     }
     
-    public Object getImplementorProxy() {
-        return implementorProxy;
+    public Class getImplementorClass() {
+        if (implementorClass == null) {
+            implementorClass = implementor.getClass();
+        }
+        return implementorClass;
     }
     
-    public void setImplementorProxy(Object implementorProxy) {
-        this.implementorProxy = implementorProxy;
+    public void setImplementorClass(Class implementorClass) {
+        this.implementorClass = implementorClass;
     }
     
     public void setMetadata(Map<String, DocInfo> docs) {
@@ -306,34 +318,108 @@ public class RuntimeEndpointInfo
      */
     public synchronized void injectContext()
     throws IllegalAccessException, InvocationTargetException {
-        if (!injectedContext) {
-            Class c = implementor.getClass();
-            Field[] fields = c.getDeclaredFields();
-            for(Field field: fields) {
-                Resource resource = field.getAnnotation(Resource.class);
-                if (resource != null) {
-                    Class cl = resource.type();
-                    if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+        if (injectedContext) {
+            return;
+        }
+        try {
+            doFieldsInjection();
+            doMethodsInjection();
+        } finally {
+            injectedContext = true;
+        }
+    }
+    
+    private void doFieldsInjection() {
+        Class c = getImplementorClass();
+        Field[] fields = c.getDeclaredFields();
+        for(final Field field: fields) {
+            Resource resource = field.getAnnotation(Resource.class);
+            if (resource != null) {
+                Class resourceType = resource.type();
+                Class fieldType = field.getType();                  
+                if (resourceType.equals(Object.class)) {                    
+                    if (fieldType.equals(javax.xml.ws.WebServiceContext.class)) {      
+                        injectField(field);
+                    }
+                } else if (resourceType.equals(javax.xml.ws.WebServiceContext.class)) {
+                    if (fieldType.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        injectField(field);
+                    } else {
+                        throw new ServerRtException("wrong.field.type",
+                            field.getName());
+                    }
+                }
+            }
+        }
+    }
+    
+    private void doMethodsInjection() {
+        Class c = getImplementorClass();
+        Method[] methods = c.getDeclaredMethods();
+        for(final Method method : methods) {
+            Resource resource = method.getAnnotation(Resource.class);
+            if (resource != null) {
+                Class[] paramTypes = method.getParameterTypes();
+                if (paramTypes.length != 1) {
+                    throw new ServerRtException("wrong.no.parameters",
+                        method.getName());
+                }
+                Class resourceType = resource.type();
+                Class argType = paramTypes[0];
+                if (resourceType.equals(Object.class)
+                    && argType.equals(javax.xml.ws.WebServiceContext.class)) {
+                    invokeMethod(method, new Object[] { wsContext });
+                } else if (resourceType.equals(javax.xml.ws.WebServiceContext.class)) {
+                    if (argType.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+                        invokeMethod(method, new Object[] { wsContext });
+                    } else {
+                        throw new ServerRtException("wrong.parameter.type",
+                            method.getName());
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
+     * injects a resource into a Field
+     */
+    private void injectField(final Field field) {
+        try {
+            AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                public Object run() throws IllegalAccessException,
+                    InvocationTargetException {
+                    if (!field.isAccessible()) {                        
                         field.setAccessible(true);
-                        field.set(implementor, wsContext);
-                        injectedContext = true;
-                        return;
                     }
+                    field.set(implementor, wsContext);
+                    return null;
                 }
-            }
-            Method[] methods = c.getDeclaredMethods();
-            for(Method method : methods) {
-                Resource resource = method.getAnnotation(Resource.class);
-                if (resource != null) {
-                    Class cl = resource.type();
-                    if (cl.isAssignableFrom(javax.xml.ws.WebServiceContext.class)) {
+            });
+        } catch(PrivilegedActionException e) {
+            throw new ServerRtException("server.rt.err",
+                new LocalizableExceptionAdapter(e.getException()));
+        }
+    }
+    
+    /*
+     * Helper method to invoke a Method
+     */
+    private void invokeMethod(final Method method, final Object[] args) {
+        try {
+            AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                public Object run() throws IllegalAccessException,
+                InvocationTargetException {
+                    if (!method.isAccessible()) {
                         method.setAccessible(true);
-                        method.invoke(implementor, new Object[]{ wsContext });
-                        injectedContext = true;
-                        return;
                     }
+                    method.invoke(implementor, args);
+                    return null;
                 }
-            }
+            });
+        } catch(PrivilegedActionException e) {
+            throw new ServerRtException("server.rt.err",
+                new LocalizableExceptionAdapter(e.getException()));
         }
     }
     
@@ -343,19 +429,14 @@ public class RuntimeEndpointInfo
      * synchronized because multiple servlet instances may call this in their
      * init()
      */
-    public synchronized void beginService()
-    throws IllegalAccessException, InvocationTargetException {
-        if (!beginService) {
-            Class c = implementor.getClass();
-            Method[] methods = c.getDeclaredMethods();
-            for(Method method : methods) {
-                if (method.getAnnotation(BeginService.class) != null) {
-                    method.setAccessible(true);
-                    method.invoke(implementor, new Object[]{ });
-                    break;
-                }
-            }
-            beginService = true;
+    public synchronized void beginService() {
+        if (beginServiceDone) {
+            return;                 // Already called for this endpoint object
+        }
+        try {
+            invokeLifeCycleMethod(BeginService.class);
+        } finally {
+            beginServiceDone = true;
         }
     }
     
@@ -365,19 +446,37 @@ public class RuntimeEndpointInfo
      * synchronized because multiple servlet instances may call this in their
      * destroy()
      */
-    public synchronized void endService()
-    throws IllegalAccessException, InvocationTargetException {
-        if (!endService) {
-            Class c = implementor.getClass();
-            Method[] methods = c.getDeclaredMethods();
-            for(Method method : methods) {
-                if (method.getAnnotation(EndService.class) != null) {
-                    method.setAccessible(true);
-                    method.invoke(implementor, new Object[]{ });
-                    break;
+    public synchronized void endService() {
+        if (endServiceDone) {
+            return;                 // Already called for this endpoint object
+        }
+        try {
+            invokeLifeCycleMethod(EndService.class);
+        } finally {
+            endServiceDone = true;
+        }
+    }
+    
+    /*
+     * Helper method to invoke any lifecycle method
+     */
+    private void invokeLifeCycleMethod(Class annType) {
+        Class c = getImplementorClass();
+        Method[] methods = c.getDeclaredMethods();
+        boolean once = false;
+        for(final Method method : methods) {
+            if (method.getAnnotation(annType) != null) {
+                if (once) {
+                    // Err: Multiple methods have @xxxService annotation
+                    throw new ServerRtException("more.begin.or.end.service");
                 }
-            }
-            endService = true;
+                if (method.getParameterTypes().length != 0) {              
+                    throw new ServerRtException("not.zero.parameters",
+                        method.getName());
+                }
+                invokeMethod(method, new Object[]{ });
+                once = true;
+            } 
         }
     }
 

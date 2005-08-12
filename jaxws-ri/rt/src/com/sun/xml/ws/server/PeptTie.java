@@ -1,5 +1,5 @@
 /**
- * $Id: PeptTie.java,v 1.3 2005-07-23 04:10:11 kohlert Exp $
+ * $Id: PeptTie.java,v 1.4 2005-08-12 02:55:13 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -40,10 +40,7 @@ public class PeptTie implements Tie {
         Method method = messageInfo.getMethod();
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-        Object servant = endpointInfo.getImplementorProxy();
-        if (servant == null) {     // If no proxy object, use actual implementor
-            servant = endpointInfo.getImplementor();
-        }
+        Object servant = endpointInfo.getImplementor();
         try {
             Object ret = method.invoke(servant, oa);
             messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);

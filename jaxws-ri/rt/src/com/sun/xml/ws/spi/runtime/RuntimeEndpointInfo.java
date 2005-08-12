@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.6 2005-08-03 22:54:06 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.7 2005-08-12 02:55:14 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -25,28 +25,28 @@ public interface RuntimeEndpointInfo {
     public void deploy();
     
     /**
-     * Sets the endpoint implementation object. This servant object should have
-     * <code>@WebService</code> annotation. Provider endpoints need not have @WebService
-     * annotation. Dynamic model is created using this object.
+     * This object is used for method invocations. It could be actual
+     * implementor or a proxy object. This must be set before calling deploy().
      */
-    public void setImplementor(Object servant);
+    public void setImplementor(Object implementor);
     
     /**
-     * Sets a proxy object for actual implementor. If the proxy object is set,
-     * it is used for method invocation. Otherwise, actual implementor is used
-     * for method invocation.
+     * implementorClass should have <code>@WebService</code> or
+     * <code>@WebServiceProvider</code> annotation.
+     * Dynamic model is created using this object. If this is not set, implementor's
+     * class is used to create the model.
      */
-    public void setImplementorProxy(Object servantProxy);
+    public void setImplementorClass(Class implementorClass);
     
     /**
-     * @return Object Gets the endpoint implementation object
+     * @return Object Gets the endpoint implementation object or a proxy
      */
     public Object getImplementor();
     
     /**
-     * @return proxy object for the actual implementor object
+     * @return implementor's class that has the annotations
      */
-    public Object getImplementorProxy();
+    public Class getImplementorClass();
 
     /**
      * @return Binding Returns the binding for this endpoint.
