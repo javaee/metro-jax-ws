@@ -22,7 +22,7 @@
   <property name="docs.home" value="${basedir}/docs"/>
   <!-- The base directory for distribution targets -->
   <property name="dist.home" value="${basedir}/dist"/>
-  <property name="dist20.home" value="${dist.home}/jaxws-2.0ea2"/>
+  <property name="dist20.home" value="${dist.home}/jaxws-ri"/>
   
 <!-- ************ Per user local properties ******************************* -->
 
