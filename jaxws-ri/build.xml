@@ -434,6 +434,16 @@
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
 
+  <target name="integrate-saaj-hudson" depends="prepare"
+          description="integrate the last successful SAAJ RI Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/saaj-ri/dist/lib/saaj-impl.jar"
+         dest="lib/saaj-impl.jar" />
+    <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/saaj-ri/zip-dist/SAAJ-1.3.src.zip"
+         dest="lib/saaj-impl.src.zip" />
+    <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/saaj-ri/dist/lib/saaj-api.jar"
+         dest="lib/saaj-api.jar" />
+  </target>
+
     <taskdef name="installerBuilder"
         classname="com.sun.tools.xjc.installer.builder.BuilderTask">
       <classpath>
