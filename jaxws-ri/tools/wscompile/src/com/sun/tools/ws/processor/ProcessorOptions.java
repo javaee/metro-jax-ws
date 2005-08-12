@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorOptions.java,v 1.4 2005-08-04 21:57:28 kohlert Exp $
+ * $Id: ProcessorOptions.java,v 1.5 2005-08-12 18:07:51 kohlert Exp $
  */
 
 /*
@@ -33,7 +33,7 @@ public class ProcessorOptions {
     public final static String UNWRAP_DOC_LITERAL_WRAPPERS =
         "unwrapDocLitWrappers";
     public final static String BINDING_FILES = "bindingFiles";
-    public final static String EXTENSION = "extension";
+    public final static String EXTENSIONS = "extensions";
     public final static String PROTOCOL = "protocol";
     public final static String TRANSPORT = "transport";
 }

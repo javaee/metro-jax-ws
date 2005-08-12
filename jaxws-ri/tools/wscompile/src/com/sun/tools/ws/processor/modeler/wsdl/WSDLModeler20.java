@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.18 2005-08-11 02:01:37 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.19 2005-08-12 18:07:52 kohlert Exp $
  */
 
 /*
@@ -105,7 +105,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     private ClassNameCollector classNameCollector;
-    private boolean extension = false;
+    private boolean extensions = false;
     public Model buildModel() {
         try {
 
@@ -128,12 +128,15 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
             });
             hSet = parser.getUse();
-            useWSIBasicProfile =
-                Boolean
-                    .valueOf(
-                        _options.getProperty(
-                            ProcessorOptions.USE_WSI_BASIC_PROFILE))
-                    .booleanValue();
+
+            extensions = Boolean.valueOf(_options.getProperty(ProcessorOptions.EXTENSIONS));
+            
+            useWSIBasicProfile = !extensions;
+//                Boolean
+//                    .valueOf(
+//                        _options.getProperty(
+//                            ProcessorOptions.USE_WSI_BASIC_PROFILE))
+//                    .booleanValue();
 
             document =
                 parser.parse(inputSource, useWSIBasicProfile);
@@ -149,7 +152,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 document.validate(new SOAPEntityReferenceValidator());
             }
 
-            extension = Boolean.valueOf(_options.getProperty(ProcessorOptions.EXTENSION));
 
             Model model = internalBuildModel(document);
             //ClassNameCollector classNameCollector = new ClassNameCollector();
@@ -329,13 +331,25 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 // find out the SOAP binding extension, if any
                 SOAPBinding soapBinding =
                     (SOAPBinding)getExtensionOfType(binding, SOAPBinding.class);
-
+                
                 if (soapBinding == null) {
-                    // cannot deal with non-SOAP ports
-                    warn(
-                        "wsdlmodeler.warning.ignoringNonSOAPPort",
-                        wsdlPort.getName());
-                    return false;
+                    soapBinding = 
+                            (SOAPBinding)getExtensionOfType(binding, SOAP12Binding.class);
+                    if (soapBinding == null) {
+                        // cannot deal with non-SOAP ports
+                        warn(
+                            "wsdlmodeler.warning.ignoringNonSOAPPort",
+                            wsdlPort.getName());
+                        return false;
+                    }
+                    // we can only do soap1.2 if extensions are on
+                    if (extensions) {
+                        warn("wsdlmodeler.warning.port.SOAPBinding12", wsdlPort.getName());
+                    } else {
+                        fail("wsdlmodeler.warning.ignoringSOAPBinding12",
+                                wsdlPort.getName());
+                        return false;
+                    }                                        
                 }
 
                 if (soapBinding.getTransport() == null
@@ -354,7 +368,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                  * ref: WSI BP 1.1 R 2705
                  */
                 if(!validateWSDLBindingStyle(binding)){
-                    if(extension){
+                    if(extensions){
                         warn("wsdlmodeler.warning.port.SOAPBinding.mixedStyle", wsdlPort.getName());
                     }else{
                         fail("wsdlmodeler.warning.ignoringSOAPBinding.mixedStyle",
@@ -542,7 +556,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         if (info.portTypeOperation.getStyle()
             != OperationStyle.REQUEST_RESPONSE
             && info.portTypeOperation.getStyle() != OperationStyle.ONE_WAY) {
-            if(extension){
+            if(extensions){
                 warn(
                     "wsdlmodeler.warning.ignoringOperation.notSupportedStyle",
                     info.portTypeOperation.getName());
@@ -664,12 +678,12 @@ public class WSDLModeler20 extends WSDLModelerBase {
             // R2203   An rpc-literal binding in a DESCRIPTION MUST refer, in its soapbind:body element(s),
             // only to wsdNl:part element(s) that have been defined using the type attribute.
             if(isOperationDocumentLiteral(styleAndUse))
-                if(extension)
+                if(extensions)
                     warn("wsdlmodeler.warning.ignoringOperation.cannotHandleTypeMessagePart", info.portTypeOperation.getName());
                 else
                     fail("wsdlmodeler.invalid.doclitoperation", info.portTypeOperation.getName());
             else if(isOperationRpcLiteral(styleAndUse)) {
-                if(extension)
+                if(extensions)
                     warn("wsdlmodeler.warning.ignoringOperation.cannotHandleElementMessagePart", info.portTypeOperation.getName());
                 else
                     fail("wsdlmodeler.invalid.rpclitoperation", info.portTypeOperation.getName());
@@ -758,7 +772,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }else{
             Parameter resultParameter = ModelerUtils.getParameter(resultParameterName, outParameters);
             if(resultParameter == null){
-                if(extension)
+                if(extensions)
                     warn("wsdlmodeler.warning.ignoringOperation.partNotFound", new Object[]{info.operation.getName().getLocalPart(), resultParameterName});
                 else
                     fail("wsdlmodeler.error.partNotFound", new Object[]{info.operation.getName().getLocalPart(), resultParameterName});
@@ -795,7 +809,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if(isInput){
                 inParameter = ModelerUtils.getParameter(name, inParameters);
                 if(inParameter == null){
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.ignoringOperation.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
                     else
                         fail("wsdlmodeler.error.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
@@ -809,7 +823,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if(isOutput){
                 outParameter = ModelerUtils.getParameter(name, outParameters);
                 if(outParameter == null){
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.ignoringOperation.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
                     else
                         fail("wsdlmodeler.error.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
@@ -904,7 +918,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         for(Parameter param : inParameters){
             if(param.getCustomName() != null){
                 if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.customName",
                                 new Object[]{info.operation.getName(), param.getCustomName()});
                     else
@@ -917,7 +931,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             //process doclit wrapper style
             if(param.isEmbedded() && !(param.getBlock().getType() instanceof RpcLitStructure)){
                 if(getEnvironment().getNames().isJavaReservedWord(param.getName())){
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                     else
                         fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.wrapperStyle", new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
@@ -926,7 +940,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             }else{
                 //non-wrapper style and rpclit
                 if(getEnvironment().getNames().isJavaReservedWord(param.getName())){
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.nonWrapperStyle", new Object[]{info.operation.getName(), msg.getName(), param.getName()});
                     else
                         fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.nonWrapperStyle", new Object[]{info.operation.getName(), msg.getName(), param.getName()});
@@ -941,7 +955,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             for(Parameter param : outParameters){
                 if(param.getCustomName() != null){
                     if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
-                        if(extension)
+                        if(extensions)
                             warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.customName",
                                     new Object[]{info.operation.getName(), param.getCustomName()});
                         else
@@ -956,7 +970,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     if(resultParameterName != null && param.getName().equals(resultParameterName))
                         continue;
                     if(!param.getName().equals("return") && getEnvironment().getNames().isJavaReservedWord(param.getName())){
-                        if(extension)
+                        if(extensions)
                             warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.wrapperStyle",
                                     new Object[]{info.operation.getName(), param.getName(), param.getBlock().getName()});
                         else
@@ -970,7 +984,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
                     //non-wrapper style and rpclit
                     if(getEnvironment().getNames().isJavaReservedWord(param.getName())){
-                        if(extension)
+                        if(extensions)
                             warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.nonWrapperStyle", new Object[]{info.operation.getName(), msg.getName(), param.getName()});
                         else
                             fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.nonWrapperStyle",
@@ -1043,7 +1057,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         String operationName = (jaxwsCustomization != null)?((jaxwsCustomization.getMethodName() != null)?jaxwsCustomization.getMethodName().getName():null):null;
         if(operationName != null){
             if(getEnvironment().getNames().isJavaReservedWord(operationName)){
-                if(extension)
+                if(extensions)
                     warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.customizedOperationName", new Object[]{info.operation.getName(), operationName});
                 else
                     fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.customizedOperationName", new Object[]{info.operation.getName(), operationName});
@@ -1056,7 +1070,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
 
         if(getEnvironment().getNames().isJavaReservedWord(info.operation.getJavaMethodName())){
-            if(extension)
+            if(extensions)
                 warn("wsdlmodeler.warning.ignoringOperation.javaReservedWordNotAllowed.operationName", new Object[]{info.operation.getName()});
             else
                 fail("wsdlmodeler.invalid.operation.javaReservedWordNotAllowed.operationName", new Object[]{info.operation.getName()});
@@ -1245,7 +1259,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
             inParameter = ModelerUtils.getParameter(name, inParameters);
             if(inParameter == null){
-                if(extension)
+                if(extensions)
                     warn("wsdlmodeler.warning.ignoringOperation.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
                 else
                     fail("wsdlmodeler.error.partNotFound", new Object[]{info.operation.getName().getLocalPart(), name});
@@ -1407,7 +1421,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
             //the soapbind:fault must have use="literal" or no use attribute, in that case its assumed "literal"
             if(!soapFault.isLiteral()){
-                if(extension)
+                if(extensions)
                 warn("wsdlmodeler.warning.ignoringFault.notLiteral",
                     new Object[]{bindingFault.getName(), info.bindingOperation.getName()});
                 else
@@ -1657,7 +1671,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 if(mimeParts.contains(mPart) || headerParts.contains(mPart) || boundToFault(mPart.getName())){
                     //throw error that a part cant be bound multiple times, not ignoring operation, if there
                     //is conflict it will fail latter
-                    if(extension)
+                    if(extensions)
                         warn("wsdlmodeler.warning.bindingOperation.multiplePartBinding",
                                 new Object[]{info.bindingOperation.getName(), mPart.getName()});
                     else
@@ -1686,7 +1700,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
 
         if(isOperationDocumentLiteral(styleAndUse) && bodyParts.size() > 1){
-            if(extension)
+            if(extensions)
                 warn("wsdlmodeler.warning.operation.MoreThanOnePartInMessage",
                             info.portTypeOperation.getName());
             else
@@ -2770,6 +2784,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
             (SOAPBinding)getExtensionOfType(binding, SOAPBinding.class);
 
         //dont process the binding
+        if(soapBinding == null)
+            soapBinding =
+                (SOAPBinding)getExtensionOfType(binding, SOAP12Binding.class);
         if(soapBinding == null)
             return false;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.11 2005-08-08 21:54:00 kohlert Exp $
+ * $Id: CompileTool.java,v 1.12 2005-08-12 18:07:53 kohlert Exp $
  */
 
 /*
@@ -223,10 +223,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     value = value.substring(1);
                     index = value.indexOf('/');
                     if (index == -1) {
-                        protocol = value.toLowerCase();
+                        protocol = value; //.toLowerCase();
                         transport = HTTP;
                     } else {
-                        protocol = value.substring(0, index).toLowerCase();
+                        protocol = value.substring(0, index);//.toLowerCase();
                         transport = value.substring(index + 1);
                     }
                     if (!isValidProtocol(protocol)) {
@@ -236,6 +236,9 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                         onError(getMessage("wsgen.invalid.transport", transport, VALID_TRANSPORTS));
                     }               
                 }
+                args[i] = null;
+            } else if (args[i].equals("-extensions")) {
+                extensions = true;
                 args[i] = null;
             } else if (args[i].startsWith("-help")) {
                 help();
@@ -269,16 +272,29 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         if (inputFiles.isEmpty()) {
             onError(getMessage(program+".missingFile"));
             usage();
-            return false;
+            return false; 
         }
+        if (!extensions && hasExtensions())
+            return false;
+        
         // put jaxws and jaxb binding files
         properties.put(ProcessorOptions.BINDING_FILES, bindingFiles);
         return true;
     }
 
+    protected boolean hasExtensions() {
+        if (protocol.equalsIgnoreCase(X_SOAP12)) {
+            onError(getMessage("wsgen.soap12.without.extensions"));
+            return true;
+        }
+        return false;
+    }
+    
+    
     static public boolean isValidProtocol(String protocol) {
-        return (protocol.equals(SOAP11) ||   
-                protocol.equals(SOAP12));
+        System.out.println("protocol: "+protocol);
+        return (protocol.equalsIgnoreCase(SOAP11) ||   
+                protocol.equalsIgnoreCase(X_SOAP12));
     }
     
     static public boolean isValidTransport(String transport) {
@@ -415,7 +431,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     static public String getBindingID(String protocol) {
         if (protocol.equals(SOAP11))
             return SOAP11_ID;
-        if (protocol.equals(SOAP12))
+        if (protocol.equals(X_SOAP12))
             return SOAP12_ID;
         return null;
     }
@@ -573,7 +589,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 .getAbsolutePath());
         properties.setProperty(ProcessorOptions.NONCLASS_DESTINATION_DIRECTORY_PROPERTY,
                 nonclassDestDir.getAbsolutePath());
-        properties.setProperty(ProcessorOptions.EXTENSION, (extension ? "true" : "false"));
+        properties.setProperty(ProcessorOptions.EXTENSIONS, (extensions ? "true" : "false"));
         properties.setProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY,
                 (verbose ? TRUE : FALSE));
         properties.setProperty(ProcessorOptions.PROTOCOL, protocol);
@@ -687,18 +703,18 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected boolean compilerOptimize = false;
     protected boolean verbose = false;
     protected boolean keepGenerated = false;
-    protected boolean extension = false;
+    protected boolean extensions = false;
     protected String userClasspath = null;
     protected Set<String> bindingFiles = new HashSet<String>();
     protected boolean genWsdl = false;
     protected String protocol = SOAP11;
     protected String transport = HTTP;
     protected static final String SOAP11 = "soap1.1";
-    protected static final String SOAP12 = "soap1.2";
+    protected static final String X_SOAP12 = "Xsoap1.2";
     protected static final String HTTP   = "http";    
     protected static final String SOAP11_ID = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
     protected static final String SOAP12_ID = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
-    protected static final String VALID_PROTOCOLS = "soap1.1, soap1.2";
+    protected static final String VALID_PROTOCOLS = SOAP11 +", "+X_SOAP12;
     protected static final String VALID_TRANSPORTS = "http";
     protected String  targetVersion = null;
 }

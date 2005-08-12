@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.6 2005-08-04 22:08:17 kohlert Exp $
+ * $Id: WSDLModelerBase.java,v 1.7 2005-08-12 18:07:52 kohlert Exp $
  */
 
 /*
@@ -110,16 +110,6 @@ public abstract class WSDLModelerBase implements Modeler {
         reqResNames = new HashSet();
     }
 
-    /*
-     * Creates multiple versions of the SOAPWSDLConstants class
-     * to use with different versions of SOAP.
-     */
-//    private void init() {
-//        soap11WSDLConstants =
-//            SOAPConstantsFactory.getSOAPWSDLConstants(SOAPVersion.SOAP_11);
-//        soap12WSDLConstants =
-//            SOAPConstantsFactory.getSOAPWSDLConstants(SOAPVersion.SOAP_12);
-//    }
 
     protected WSDLParser createWSDLParser(){
         return new WSDLParser();
@@ -152,27 +142,12 @@ public abstract class WSDLModelerBase implements Modeler {
                 }
             });
             hSet = parser.getUse();
-            useWSIBasicProfile =
+/*            useWSIBasicProfile =
                 Boolean
                     .valueOf(
                         _options.getProperty(
                             ProcessorOptions.USE_WSI_BASIC_PROFILE))
-                    .booleanValue();
-
-            unwrap =
-                Boolean
-                    .valueOf(
-                        _options.getProperty(
-                            ProcessorOptions.UNWRAP_DOC_LITERAL_WRAPPERS,
-                            "true"))
-                    .booleanValue();
-            strictCompliance =
-                Boolean
-                    .valueOf(
-                        _options.getProperty(
-                            ProcessorOptions.STRICT_COMPLIANCE))
-                    .booleanValue();
-            //          doNotUnwrap = strictCompliance || (useWSIBasicProfile && !unwrap);
+                    .booleanValue();*/
 
             // Added parameters to tell WSDLParser so that it
             // can generate warnings when f:wsi is set to true
@@ -182,21 +157,6 @@ public abstract class WSDLModelerBase implements Modeler {
                 parser.parse(inputSource, useWSIBasicProfile);
             document.validateLocally();
 
-/*            literalOnly =
-                useWSIBasicProfile
-                    || Boolean
-                        .valueOf(
-                            _options.getProperty(
-                                ProcessorOptions
-                                    .USE_DOCUMENT_LITERAL_ENCODING))
-                        .booleanValue();
-            literalOnly =
-                literalOnly
-                    || Boolean
-                        .valueOf(
-                            _options.getProperty(
-                                ProcessorOptions.USE_RPC_LITERAL_ENCODING))
-                        .booleanValue();*/
             boolean validateWSDL =
                 Boolean
                     .valueOf(
@@ -290,13 +250,6 @@ public abstract class WSDLModelerBase implements Modeler {
         theModel = model;
 
         _javaTypes = new JavaSimpleTypeCreator();
-//        _analyzer =
-//            getSchemaAnalyzerInstance(
-//                document,
-//                _modelInfo,
-//                _options,
-//                _conflictingClassNames,
-//                _javaTypes);
 
         _javaExceptions = new HashMap();
         _faultTypeToStructureMap = new HashMap();
@@ -309,24 +262,6 @@ public abstract class WSDLModelerBase implements Modeler {
         setDocumentationIfPresent(
             model,
             document.getDefinitions().getDocumentation());
-
-        /**
-         * -f:searchschema option processing.
-         *
-         * With this option we look for all the schema types under
-         * <wsdl:types> ..</wsdl:types>.
-         *
-         */
-
-//        boolean searchSchema =
-//            Boolean
-//                .valueOf(
-//                    _options.getProperty(
-//                        ProcessorOptions.SEARCH_SCHEMA_FOR_SUBTYPES))
-//                .booleanValue();
-//        if (searchSchema) {
-//            processSearchSchemaOption(document, model);
-//        }
 
         boolean hasServices = document.getDefinitions().services().hasNext();
         if (hasServices) {
@@ -370,61 +305,6 @@ public abstract class WSDLModelerBase implements Modeler {
     protected WSDLModelInfo getWSDLModelInfo(){
         return _modelInfo;
     }
-
-//    /**
-//     * Should be called for -f:searchschema option processing.
-//     *
-//     * With this option we look for all the schema types under
-//     * <wsdl:types> ..</wsdl:types>.
-//     *
-//     * @param document WSDL document
-//     * @param model Model which will be used by the generators to generate code.
-//     */
-//    protected void processSearchSchemaOption(
-//        WSDLDocument document,
-//        Model model) {
-//        // embark on a very aggressive search for types defined in this document
-//        Map typeMap = document.getMap(SchemaKinds.XSD_TYPE);
-//        int errorcount = 0;
-//        for (Iterator iter = typeMap.keySet().iterator(); iter.hasNext();) {
-//            QName typeName = (QName)iter.next();
-//            try {
-//                // just looking up the type is enough to trigger the subtyping behavior of the analyzer!
-//                AbstractType extraType = null;
-//                /* Here we retrieve from the wsdl the use defined for the operations in
-//                   a binding in a WSDl */
-//                //hSet = parser.getUse();
-//
-//                if (hSet.contains("encoded") && !hSet.contains("literal")) {
-////                    extraType = _analyzer.schemaTypeToSOAPType(typeName);
-//                } else if (
-//                    !hSet.contains("encoded") && hSet.contains("literal")) {
-////                    extraType = _analyzer.schemaTypeToLiteralType(typeName);
-//                } else {
-//                    throw new ModelerException("wsdlmodler.warning.operation.use");
-//                    //throw new ModelerException("wsdlmodeler.invalid.bindingOperation.notFound");
-//                }
-//
-//                if (extraType != null) {
-//                    //if (soapType instanceof SOAPStructureType) {
-//                    // the original idea was to add only those types that can participate in inheritance,
-//                    // but that seems wrong
-//                    model.addExtraType(extraType);
-//                    //}
-//                } else {
-//                    ++errorcount;
-//                }
-//            } catch (ModelException e) {
-//                ++errorcount;
-//            }
-//        }
-//        if (errorcount > 0) {
-//            warn(
-//                "wsdlmodeler.warning.searchSchema.unrecognizedTypes",
-//                Integer.toString(errorcount));
-//        }
-//
-//    }
 
     protected Documentation getDocumentationFor(Element e) {
         String s = XmlUtil.getTextForNode(e);
@@ -1604,6 +1484,7 @@ public abstract class WSDLModelerBase implements Modeler {
         if (portTypeName != null) {
             structureNamePrefix = getNonQualifiedNameFor(portTypeName);
         } else {
+
             structureNamePrefix =
                 getNonQualifiedNameFor(info.modelPort.getName());
         }
@@ -3345,7 +3226,6 @@ public abstract class WSDLModelerBase implements Modeler {
 
     protected WSDLModelInfo _modelInfo;
     protected Properties _options;
-    //private SchemaAnalyzerBase _analyzer;
     protected LocalizableMessageFactory _messageFactory;
     private Set _conflictingClassNames;
     protected Map _javaExceptions;
@@ -3353,13 +3233,7 @@ public abstract class WSDLModelerBase implements Modeler {
     private ProcessorEnvironment _env;
     protected JavaSimpleTypeCreator _javaTypes;
     protected Map<QName, Port> _bindingNameToPortMap;
-    protected static SOAPConstants soap11WSDLConstants = null;
-    //protected static SOAPWSDLConstants soap12WSDLConstants = null;
-    protected boolean useWSIBasicProfile = false;
-//    private boolean literalOnly = false;
-    private boolean unwrap = true;
-    protected boolean strictCompliance = false;
-    //    private boolean doNotUnwrap = false;
+    protected boolean useWSIBasicProfile = true;
 
     private Model theModel;
     private Set reqResNames;

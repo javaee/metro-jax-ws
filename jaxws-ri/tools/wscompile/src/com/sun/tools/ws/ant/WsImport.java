@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.5 2005-08-08 15:34:00 kohlert Exp $
+ * $Id: WsImport.java,v 1.6 2005-08-12 18:07:51 kohlert Exp $
  */
 
 /*
@@ -104,6 +104,19 @@ public class WsImport extends MatchingTask {
         this.jvmargs = jvmargs;
     }
 
+    /********************  -extensions option **********************/
+    protected boolean extensions;
+
+    /** Gets the "extensions" flag. **/
+    public boolean getExtensions() {
+        return extensions;
+    }
+
+    /** Sets the "extensions" flag. **/
+    public void setExtensions(boolean extensions) {
+        this.extensions = extensions;
+    }    
+    
     /*************************  -keep option *************************/
     private boolean keep = false;
 
@@ -120,7 +133,7 @@ public class WsImport extends MatchingTask {
     /*************************  -fork option *************************/
     private boolean fork = false;
 
-    /** Gets the "keep" flag. **/
+    /** Gets the "fork" flag. **/
     public boolean getFork() {
         return fork;
     }
@@ -318,6 +331,11 @@ public class WsImport extends MatchingTask {
             cmd.createArgument().setFile(getBase());
         }
 
+        // extensions flag
+        if (getExtensions()) {
+            cmd.createArgument().setValue("-extensions");
+        }
+        
         // g option
         if (getDebug()) {
             cmd.createArgument().setValue("-g");
