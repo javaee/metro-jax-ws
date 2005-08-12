@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.6 2005-08-12 18:07:51 kohlert Exp $
+ * $Id: WsGen.java,v 1.7 2005-08-12 21:34:28 kohlert Exp $
  */
 
 /*
@@ -118,16 +118,16 @@ public class WsGen extends MatchingTask {
     }
 
     /********************  -extensions option **********************/
-    protected boolean extensions;
+    protected boolean extension;
 
-    /** Gets the "extensions" flag. **/
-    public boolean getExtensions() {
-        return extensions;
+    /** Gets the "extension" flag. **/
+    public boolean getExtension() {
+        return extension;
     }
 
-    /** Sets the "extensions" flag. **/
-    public void setExtensions(boolean extensions) {
-        this.extensions = extensions;
+    /** Sets the "extension" flag. **/
+    public void setExtension(boolean extension) {
+        this.extension = extension;
     }    
     
     /*************************  -keep option *************************/
@@ -352,9 +352,9 @@ public class WsGen extends MatchingTask {
             cmd.createArgument().setValue("-g");
         }
 
-        // extensions flag
-        if (getExtensions()) {
-            cmd.createArgument().setValue("-extensions");
+        // extension flag
+        if (getExtension()) {
+            cmd.createArgument().setValue("-extension");
         }
         
         // keep option
