@@ -155,6 +155,9 @@
     <property name="build.id" value="${now}(${user.name})" />
     
   <target name="runtime-build" depends="runtime-compile">
+    <!-- Copying the manifest -->
+    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
+
     <!-- Copy resource files etc -->
     <copy todir="${basedir}/rt/build/classes">
       <fileset dir="${basedir}/rt/src">
@@ -162,18 +165,21 @@
       </fileset>
     </copy>
 
-    <manifest mode="update" file="${basedir}/rt/etc/manifest">
+    <manifest mode="update" file="${basedir}/rt/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
     
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
-        manifest="${basedir}/rt/etc/manifest">
+        manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
     </jar>
   </target>
 
 
   <target name="runtime-build-mustang" depends="runtime-compile-mustang">
+    <!-- Copying the manifest -->
+    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
+
     <!-- Copy resource files etc -->
     <copy todir="${basedir}/rt/build/classes">
       <fileset dir="${basedir}/rt/src">
@@ -181,12 +187,12 @@
       </fileset>
     </copy>
 
-    <manifest mode="update" file="${basedir}/rt/etc/manifest">
+    <manifest mode="update" file="${basedir}/rt/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
     
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
-        manifest="${basedir}/rt/etc/manifest">
+        manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
     </jar>
   </target>
@@ -219,12 +225,15 @@
                excludes="ant.jar, ant-junit.jar, ant-launcher.jar, ant-nodeps.jar, ant-trax.jar, junit.jar, servlet.jar"/>
     </copy>
 
-    <manifest mode="update" file="${basedir}/tools/etc/manifest">
+    <!-- Copying the manifest -->
+    <copy file="${basedir}/tools/etc/manifest" todir="${basedir}/tools/wscompile/build"/>
+
+    <manifest mode="update" file="${basedir}/tools/wscompile/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
         
     <jar jarfile="${build.home}/lib/jaxws-tools.jar"
-        manifest="${basedir}/tools/etc/manifest">
+        manifest="${basedir}/tools/wscompile/build/manifest">
       <fileset dir="${basedir}/tools/wscompile/build/classes"/>
     </jar>
   </target>
