@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.13 2005-08-11 00:53:04 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.14 2005-08-12 04:20:32 kohlert Exp $
  */
 
 /**
@@ -222,17 +222,17 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
 
         if (operation.isWrapped() && operation.getStyle().equals(SOAPStyle.DOCUMENT)) {
             Block reqBlock = operation.getRequest().getBodyBlocks().next();
-            JAnnotationUse reqW = m.annotate(com.sun.xml.ws.RequestWrapper.class);
-            reqW.param("name", reqBlock.getName().getLocalPart());
-            reqW.param("namespace", reqBlock.getName().getNamespaceURI());
-            reqW.param("type", reqBlock.getType().getJavaType().getName());
+            JAnnotationUse reqW = m.annotate(javax.xml.ws.RequestWrapper.class);
+            reqW.param("localName", reqBlock.getName().getLocalPart());
+            reqW.param("targetNamespace", reqBlock.getName().getNamespaceURI());
+            reqW.param("className", reqBlock.getType().getJavaType().getName());
 
             if (response != null) {
-                JAnnotationUse resW = m.annotate(com.sun.xml.ws.ResponseWrapper.class);
+                JAnnotationUse resW = m.annotate(javax.xml.ws.ResponseWrapper.class);
                 Block resBlock = response.getBodyBlocks().next();
-                resW.param("name", resBlock.getName().getLocalPart());
-                resW.param("namespace", resBlock.getName().getNamespaceURI());
-                resW.param("type", resBlock.getType().getJavaType().getName());
+                resW.param("localName", resBlock.getName().getLocalPart());
+                resW.param("targetNamespace", resBlock.getName().getNamespaceURI());
+                resW.param("className", resBlock.getType().getJavaType().getName());
             }
         }
     }

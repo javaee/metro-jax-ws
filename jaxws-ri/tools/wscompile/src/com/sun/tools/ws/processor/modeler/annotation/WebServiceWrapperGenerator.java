@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.11 2005-08-12 03:45:52 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.12 2005-08-12 04:20:33 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,13 +23,13 @@ import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.xml.ws.RequestWrapper;
-import com.sun.xml.ws.ResponseWrapper;
 
 import javax.xml.namespace.QName;
 import javax.xml.bind.annotation.*;
 import javax.xml.ws.WebFault;
 import javax.xml.ws.ParameterIndex;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.ResponseWrapper;
 
 import static com.sun.codemodel.ClassType.CLASS;
 import com.sun.codemodel.CodeWriter; 
@@ -182,8 +182,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             beanPackage = JAXWS_PACKAGE_PD;
         String requestClassName = beanPackage + StringUtils.capitalize(method.getSimpleName());
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
-        if(reqWrapper != null && (reqWrapper.type().length() > 0)){
-            requestClassName = reqWrapper.type();
+        if(reqWrapper != null && (reqWrapper.className().length() > 0)){
+            requestClassName = reqWrapper.className();
         }
         builder.log("requestWrapper: "+requestClassName);
         if (duplicateName(requestClassName)) {
@@ -199,8 +199,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (!isOneway) {
             responseClassName = beanPackage+StringUtils.capitalize(method.getSimpleName())+RESPONSE;
             ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
-            if(resWrapper != null && (resWrapper.type().length() > 0)){
-                responseClassName = resWrapper.type();
+            if(resWrapper != null && (resWrapper.className().length() > 0)){
+                responseClassName = resWrapper.className();
             }           
             if (duplicateName(responseClassName)) {
                 builder.onError("webserviceap.method.respone.wrapper.bean.name.not.unique",

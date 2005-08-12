@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.21 2005-08-12 03:45:51 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.22 2005-08-12 04:20:31 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,8 +9,6 @@ package com.sun.xml.ws.modeler;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.model.nav.Navigator;
-import com.sun.xml.ws.RequestWrapper;
-import com.sun.xml.ws.ResponseWrapper;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBlock;
@@ -103,7 +101,6 @@ public class RuntimeModeler {
      */
     public RuntimeModel buildRuntimeModel() {
         runtimeModel = new SOAPRuntimeModel();
-
         if (!portClass.isAnnotationPresent(javax.jws.WebService.class))
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                                        new Object[] {portClass.getCanonicalName()});
@@ -351,27 +348,27 @@ public class RuntimeModeler {
         if (packageName.length() == 0)
             beanPackage = JAXWS_PACKAGE_PD;
         String requestClassName = null;
-        if(reqWrapper != null && reqWrapper.type().length()>0){
-            requestClassName = reqWrapper.type();
+        if(reqWrapper != null && reqWrapper.className().length()>0){
+            requestClassName = reqWrapper.className();
         }else{
             requestClassName = beanPackage + capitalize(method.getName());
         }
             
 
         String responseClassName = null;
-        if(resWrapper != null && resWrapper.type().length()>0){
-            responseClassName = resWrapper.type();
+        if(resWrapper != null && resWrapper.className().length()>0){
+            responseClassName = resWrapper.className();
         }else{
             responseClassName = beanPackage + capitalize(method.getName()) + RESPONSE;
         }
 
         Class requestClass = getClass(requestClassName);
-        QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.namespace(),reqWrapper.name()):getWrapperElementName(requestClass);
+        QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
         Class responseClass = null;
         QName resElementName = null;
         if (!isOneway) {
             responseClass = getClass(responseClassName);
-            resElementName = (resWrapper != null)?new QName(resWrapper.namespace(),resWrapper.name()):getWrapperElementName(responseClass);
+            resElementName = (resWrapper != null)?new QName(resWrapper.targetNamespace(),resWrapper.localName()):getWrapperElementName(responseClass);
         }
 
         TypeReference typeRef =
