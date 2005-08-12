@@ -29,17 +29,7 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../lib/jaxb-impl.src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxb-libs.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/jaxb-libs.src.zip!/" />
+          <root url="jar://$MODULE_DIR$/../lib/jaxb-xjc.src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -79,7 +69,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../saaj-ws/tag/src/java" />
+          <root url="jar://$MODULE_DIR$/../lib/saaj-impl.src.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -128,6 +118,24 @@
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../lib/jsr173_1.0_src.zip!/src" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/jsr250-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/http.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntryProperties />
