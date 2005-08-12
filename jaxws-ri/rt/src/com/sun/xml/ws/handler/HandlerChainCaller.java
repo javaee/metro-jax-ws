@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.6 2005-08-08 19:32:29 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.7 2005-08-12 19:20:48 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -177,6 +177,13 @@ public class HandlerChainCaller {
 
         try {
             SOAPMessageContext context = holder.getSMC();
+            
+            // avoid NPE in xml binding until this is done
+            if (context == null) {
+                return;
+            }
+            // end hack
+            
             SOAPMessage message = context.getMessage();
             SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
             SOAPBody body = envelope.getBody();
@@ -295,9 +302,12 @@ public class HandlerChainCaller {
         ContextHolder ch,
         boolean responseExpected) {
 
+        // set outbound property
+        ch.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,
+            (direction == Direction.OUTBOUND));
+        
+        // if there is as soap message context, set roles
         if (ch.getSMC() != null) {
-            ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,
-                (direction == Direction.OUTBOUND));
             ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
         }
 
@@ -731,6 +741,18 @@ public class HandlerChainCaller {
         // only called after an inbound request
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
         ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+        closeHandlers(ch);
+    }
+
+    /**
+     * Version of forceCloseHandlers(HandlerContext) that is used
+     * by XML binding.
+     */
+    public void forceCloseHandlers(XMLHandlerContext context) {
+        ContextHolder ch = new ContextHolder(context);
+
+        // only called after an inbound request
+        ch.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
         closeHandlers(ch);
     }
 

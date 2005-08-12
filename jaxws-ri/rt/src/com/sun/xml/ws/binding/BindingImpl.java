@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.2 2005-08-04 04:30:13 kwalsh Exp $
+ * $Id: BindingImpl.java,v 1.3 2005-08-12 19:20:46 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -17,32 +17,32 @@ import javax.xml.ws.security.SecurityConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * Instances are created by HandlerRegistryImpl, which then
  * sets the handler chain on the binding impl. The handler
  * caller class actually creates and manages the handlers.
  *
- * Also used on the server side, where non-api calls such as
+ * <p>Also used on the server side, where non-api calls such as
  * getHandlerChainCaller cannot be used. So the binding impl
  * now stores the handler list rather than deferring to the
  * handler chain caller.
- */
-
-/**
- * This class is made abstract as we dont see a situation when a BindingImpl has much meaning without binding id.
+ *
+ * <p>This class is made abstract as we dont see a situation when a BindingImpl has much meaning without binding id.
  * IOw, for a specific binding there will be a class extending BindingImpl, for example SOAPBindingImpl.
  *
- * The spi Binding interface extends Binding.
+ * <p>The spi Binding interface extends Binding.
+ *
+ * @author WS Development Team
  */
 public abstract class BindingImpl implements 
     com.sun.xml.ws.spi.runtime.Binding {
 
-    protected final static String SHD_NAME= "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
     // caller ignored on server side
-    public HandlerChainCaller chainCaller;
-    List<Handler> handlers;
+    protected HandlerChainCaller chainCaller;
+
+    private SystemHandlerDelegate systemHandlerDelegate;
+    private List<Handler> handlers;
     private String bindingId;
-    protected SystemHandlerDelegate systemHandlerDelegate;
 
     // called by DispatchImpl
     public BindingImpl(String bindingId) {
@@ -55,14 +55,19 @@ public abstract class BindingImpl implements
         this.bindingId = bindingId;
     }
 
-    /*
-     * Return a copy of the list.
+    /**
+     * Return a copy of the list. If there is a handler chain caller,
+     * this is the proper list. Otherwise, return a copy of 'handlers'
+     * or null if list is null.
      */
     public List<Handler> getHandlerChain() {
         if (chainCaller != null) {
             return new ArrayList(chainCaller.getHandlerChain());
         }
-        return handlers;
+        if (handlers == null) {
+            return null;
+        }
+        return new ArrayList(handlers);
     }
 
     public void setHandlerChain(List<Handler> chain) {

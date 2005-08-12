@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.21 2005-08-11 14:59:24 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.22 2005-08-12 19:20:48 bbissett Exp $
  */
 
 /*
@@ -64,6 +64,8 @@ import java.util.concurrent.FutureTask;
 
 /**
  * Client-side SOAP protocol-specific {@link com.sun.pept.protocol.MessageDispatcher}
+ *
+ * @author WS Development Team
  */
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
@@ -324,8 +326,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        // HandlerContext handlerContext = new HandlerContext(messageInfo,
-        // null, sm);
         HandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
 
         SystemHandlerDelegate systemHandlerDelegate =
@@ -340,7 +340,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         try {
             decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
-            //checkMustUnderstandHeaders(handlerContext);
         } catch (SOAPException se) { // unusual saaj error
             throw new RuntimeException(se);
         } catch (IOException ie) { // unusual saaj error
@@ -349,26 +348,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             closeAllHandlers(handlerContext);
             throw sfe;
         }
-
-        // TODO Check for null context in Dispatch and then uncomment
-        // TODO the if/else for inbound handlers infrastructure
-//        HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
-//        if (caller.hasHandlers()) {
-//            callHandlersOnResponse(handlerContext);
-//            updateResponseContext(messageInfo, handlerContext);
-//            // handlerContext.toJAXBBean(util.getJAXBContext());
-//            InternalMessage im = handlerContext.getInternalMessage();
-//            if (im == null) {
-//                im = decoder.toInternalMessage(sm, messageInfo);
-//            } else {
-//                im = decoder.toInternalMessage(sm, im, messageInfo);
-//            }
-//            decoder.toMessageInfo(im, messageInfo);
-//        } else {
-//            decoder.receiveAndDecode(messageInfo);
-//            postReceiveAndDecodeHook(messageInfo);
-//        }
-
 
         HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
         if (caller.hasHandlers()) {
@@ -667,61 +646,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             caller.forceCloseHandlers(context);
         }
     }
-
-    /*
-     * Try to create as few objects as possible, thus carry around null sets
-     * when possible and check if MU headers are found. Also assume handler
-     * chain caller is null unless one is found.
-     *
-     * todo -- cleanup
-     *
-    private void checkMustUnderstandHeaders(HandlerContext context) throws SOAPException {
-        SOAPMessage message = context.getSOAPMessage();
-        SOAPHeader header = message.getSOAPHeader();
-        if (header == null) {
-            return;
-        }
-
-        // start with the mandatory roles
-        Set<String> roles = new HashSet<String>();
-        roles.add("http://schemas.xmlsoap.org/soap/actor/next");
-        roles.add("");
-        HandlerChainCaller hcCaller = getHandlerChainCaller(context.getMessageInfo());
-        if (hcCaller != null) {
-            roles.addAll(hcCaller.getRoles());
-        }
-
-        // keep set=null if there are no understood headers
-        Set<QName> understoodHeaders = null;
-        RuntimeContext rtContext = (RuntimeContext) context.getMessageInfo().getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if (rtContext != null && rtContext.getModel() != null) {
-            understoodHeaders = new HashSet<QName>(((SOAPRuntimeModel) rtContext.getModel()).getKnownHeaders());
-        }
-        if (understoodHeaders == null) {
-            if (hcCaller != null) {
-                understoodHeaders = hcCaller.getUnderstoodHeaders();
-            }
-        } else {
-            if (hcCaller != null) {
-                understoodHeaders.addAll(hcCaller.getUnderstoodHeaders());
-            }
-        }
-
-        // check MU headers for each role
-        for (String role : roles) {
-            Iterator<SOAPHeaderElement> iter = header.examineMustUnderstandHeaderElements(role);
-            while (iter.hasNext()) {
-                SOAPHeaderElement element = iter.next();
-                QName qName = new QName(element.getNamespaceURI(), element.getLocalName());
-                if (understoodHeaders == null || !understoodHeaders.contains(qName)) {
-                    throw new SOAPFaultException(SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
-
-                        MUST_UNDERSTAND_FAULT_MESSAGE_STRING, role, null);
-                }
-            }
-        }
-    }
-     */
 
     /**
      * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
