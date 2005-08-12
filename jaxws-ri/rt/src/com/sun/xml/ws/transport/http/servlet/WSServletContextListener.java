@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.4 2005-08-03 22:54:07 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.5 2005-08-12 22:34:38 jitu Exp $
  */
 
 /*
@@ -154,8 +154,12 @@ public class WSServletContextListener
      */
     private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints,
             Map<String, DocInfo> docs)  throws UnsupportedEncodingException {
-        
+                    
+                    
         for(RuntimeEndpointInfo endpoint : endpoints) {
+            
+            endpoint.deploy();
+            
             // Set queryString for the document
             Set<Entry<String, DocInfo>> entries = docs.entrySet();
             for(Entry<String, DocInfo> entry : entries) {
@@ -186,9 +190,7 @@ public class WSServletContextListener
                 }
                 docInfo.setQueryString(query);
             }
-
             endpoint.setMetadata(docs);
-            endpoint.deploy();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.30 2005-08-12 04:15:50 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.31 2005-08-12 22:34:38 jitu Exp $
  */
 
 /*
@@ -29,6 +29,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,6 +38,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
+import javax.xml.ws.WebServiceProvider;
+
 
 
 
@@ -112,6 +115,13 @@ public class RuntimeEndpointInfo
         runtimeModel = rap.buildRuntimeModel();
     }
     
+    
+    public boolean isProviderEndpoint() {
+        Annotation ann = getImplementorClass().getAnnotation(
+            WebServiceProvider.class);
+        return (ann != null);
+    }
+    
     /**
      * creates a RuntimeModel using @link com.sun.xml.ws.modeler.RuntimeModeler. 
      * The modeler creates the model by reading annotations on Implementor object. 
@@ -132,21 +142,8 @@ public class RuntimeEndpointInfo
             setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
         }
         
-        if (implementor instanceof Provider) {
-            // No runtime model is required
-            if (getWSDLFileName() == null) {
-                // TODO throw exception
-            } else {
-                if (serviceName == null) {
-                    // If WSDL has only one service, then it is okay
-                    // else error
-                } else {
-                    if (portName == null) {
-                        // If service has only one port, then it is okay
-                        // else error
-                    }
-                }
-            }
+        if (isProviderEndpoint()) {
+            deployProvider();
         } else {
             // Create runtime model for non Provider endpoints    
             createModel();
@@ -196,6 +193,34 @@ public class RuntimeEndpointInfo
             runtimeModel.enableMtom(enableMtom);
         }
         deployed = true;
+    }
+    
+    /*
+     * Provider endpoint validation
+     */
+    private void deployProvider() {
+        if (!Provider.class.isAssignableFrom(getImplementorClass())) {
+            throw new ServerRtException("not.implement.provider",
+                new Object[] {getImplementorClass()});
+        }
+        WebServiceProvider wsProvider =
+            (WebServiceProvider)getImplementorClass().getAnnotation(
+                WebServiceProvider.class);
+        if (getWSDLFileName() == null) {
+            setWSDLFileName(wsProvider.wsdlLocation());
+        }
+        if (serviceName == null) {
+            //setServiceName(wsProvider.serviceName());
+        }
+        if (getWSDLFileName() == null) {
+            throw new ServerRtException("wsdl.required");
+        }
+        if (getServiceName() == null) {
+            throw new ServerRtException("service.name.required");
+        }
+        if (getPortName() == null) {
+            throw new ServerRtException("port.name.required");
+        }
     }
 
     public QName getPortName() {
