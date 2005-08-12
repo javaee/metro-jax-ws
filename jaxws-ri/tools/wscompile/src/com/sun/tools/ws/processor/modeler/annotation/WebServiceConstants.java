@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceConstants.java,v 1.3 2005-06-01 00:38:30 kohlert Exp $
+ * $Id: WebServiceConstants.java,v 1.4 2005-08-12 03:45:52 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -29,6 +29,7 @@ public interface WebServiceConstants { //extends RmiConstants {
     public static final String GET_FAULT_INFO               = "getFaultInfo";
     public static final String HTTP_PREFIX                  = "http://";
     public static final String JAVA_LANG_OBJECT             = "java.lang.Object";
+    public static final String EMTPY_NAMESPACE_ID           = "";
     
 
     public static final char SIGC_INNERCLASS  = '$';

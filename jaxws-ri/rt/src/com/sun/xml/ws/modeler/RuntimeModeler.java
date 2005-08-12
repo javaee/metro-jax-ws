@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.20 2005-08-11 21:59:17 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.21 2005-08-12 03:45:51 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -392,21 +392,22 @@ public class RuntimeModeler {
 
         // return value
         String resultName = null;
-        String resultTNS = null;
+        String resultTNS = "";
         QName resultQName = null;
         WebResult webResult = method.getAnnotation(WebResult.class);
         Class returnType = method.getReturnType();
         if (webResult != null) {
             resultName = webResult.name();
             resultTNS = webResult.targetNamespace();
-            //is this right?
-            if (resultTNS.length() == 0)
-                resultTNS = targetNamespace;
-            resultQName = new QName(resultTNS, resultName);
+            if (resultTNS.length() == 0)  // TODO need check that it is not a header
+//                resultTNS = ""; //targetNamespace;
+                resultQName = new QName(resultName);
+            else
+                resultQName = new QName(resultTNS, resultName);
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
-                  resultQName = new QName(targetNamespace,RETURN);
+                  resultQName = new QName(resultTNS, RETURN);
             }
         }
 
@@ -435,7 +436,7 @@ public class RuntimeModeler {
         for (Class clazzType : parameterTypes) {
             Parameter param = null;
             String paramName = "";
-            String paramNamespace = targetNamespace;
+            String paramNamespace = "";//targetNamespace;
             boolean isHeader = false;
 
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
@@ -456,10 +457,12 @@ public class RuntimeModeler {
                 if (annotation.annotationType() == javax.jws.WebParam.class) {
                     javax.jws.WebParam webParam = (javax.jws.WebParam) annotation;
                     paramName = webParam.name();
+                    isHeader = webParam.header();
+                    if (isHeader) // headers cannot be in empty namespace
+                        paramNamespace = targetNamespace;
                     if (!webParam.targetNamespace().equals("")) {
                         paramNamespace = webParam.targetNamespace();
                     }
-                    isHeader = webParam.header();
                     WebParam.Mode mode = webParam.mode();
                     if (isHolder && mode == javax.jws.WebParam.Mode.IN)
                         mode = javax.jws.WebParam.Mode.INOUT;

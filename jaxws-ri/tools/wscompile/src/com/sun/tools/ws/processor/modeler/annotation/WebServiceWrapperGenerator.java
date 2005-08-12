@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.10 2005-08-11 01:12:49 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.11 2005-08-12 03:45:52 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -306,7 +306,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                                    
         WebResult webResult = method.getAnnotation(WebResult.class);
         String responseElementName = RETURN;
-        String responseNamespace = typeNamespace;
+        String responseNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
         if (webResult != null && webResult.name().length() > 0) {
             responseElementName = webResult.name();
             responseNamespace = webResult.targetNamespace().length() > 1 ? 
@@ -336,7 +336,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             holderType = builder.getHolderValueType(param.getType());
             webParam = param.getAnnotation(WebParam.class);
             paramType = param.getType().toString();
-            paramNamespace = typeNamespace;
+            paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
             if (holderType != null) {
                 paramType = holderType.toString();
             }
@@ -348,7 +348,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 mode = webParam.mode(); 
                 paramName =  webParam.name().length() > 0 ? webParam.name() : paramName;
                 paramNamespace = webParam.targetNamespace().length() > 0 ?
-                    webParam.targetNamespace() : typeNamespace;
+                    webParam.targetNamespace() : paramNamespace;
             }
             MemberInfo memInfo = new MemberInfo(paramIndex, paramType, paramName, 
                 new QName(paramNamespace, paramName));
@@ -367,18 +367,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     }
 
     private JType getType(String typeName) throws IOException {
-        JType type;
+        JType type = null;
         try {
             type = cm.parseType(typeName);
             return type;
         } catch (ClassNotFoundException e) {
-//            type = cm.ref(typeName);
-//            builder.onError("webserviceap.class.not.found",
-//                                   new Object[]{typeName});
-//            ex.initCause(e);
-//            throw ex;
+            type = cm.ref(typeName);
         }
-        return null;
+        return type;
     }
     
     private void writeMembers(JDefinedClass cls, ArrayList<MemberInfo> members) throws IOException {
@@ -392,9 +388,9 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {                   
                     JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
                     xmlElementAnn.param("name", elementName.getLocalPart());
+//                    if (elementName.getNamespaceURI().length() > 0)
                     xmlElementAnn.param("namespace", elementName.getNamespaceURI());
                 } else {
-                    System.out.println("WARNING using XmlValue");
                     JAnnotationUse xmlValueAnnn = field.annotate(XmlValue.class);                    
                 }
             }
