@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.13 2005-08-13 20:49:01 bbissett Exp $
+ * $Id: XMLMessage.java,v 1.14 2005-08-13 21:33:03 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -589,14 +589,14 @@ public class XMLMessage {
         public XMLJaxb(Object object, JAXBContext jaxbContext) {
             this.object = object;
             this.jaxbContext = jaxbContext;
-            
-            JAXBBeanInfo beanInfo = new JAXBBeanInfo(object, jaxbContext);
-            baos = new ByteArrayOutputStream();
-            JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(), baos, beanInfo.getJAXBContext());
         }
         
         public void writeTo(OutputStream out) {
             try {
+                JAXBBeanInfo beanInfo = new JAXBBeanInfo(object, jaxbContext);
+                baos = new ByteArrayOutputStream();
+                JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+                    baos, beanInfo.getJAXBContext());
                 out.write(baos.toByteArray());
             } catch(Exception e) {
                 throw new WebServiceException(e);
@@ -604,7 +604,8 @@ public class XMLMessage {
         }
         
         public Source getSource() {
-            return null;
+            return JAXBTypeSerializer.getInstance().serialize(
+                object, jaxbContext);
         }
         
         /*
@@ -612,15 +613,16 @@ public class XMLMessage {
          * If there is a DOMSource, return that. Otherwise, return a copy of
          * the existing source. 
          */
-        public Object getPayload() {
-            return object;
+        public Source getPayload() {
+            return getSource();
         }
         
         /*
          * Usually called from logical handler
          */
-        public void setPayload(Object object) {
-            this.object = object;
+        public void setPayload(Source source) {
+            object = JAXBTypeSerializer.getInstance().deserialize(
+                source, jaxbContext);
         }
         
         /*
