@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLConstants.java,v 1.5 2005-07-20 20:58:52 kwalsh Exp $
+ * $Id: WSDLConstants.java,v 1.6 2005-08-13 19:32:44 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -38,14 +38,20 @@ public interface WSDLConstants {
 
     //public static QName QNAME_INPUT = new QName(NS_WSDL, "input");
     public static QName QNAME_MESSAGE = new QName(NS_WSDL, "message");
+    public static QName QNAME_PART = new QName(NS_WSDL, "part");
     public static QName QNAME_OPERATION = new QName(NS_WSDL, "operation");
+    public static QName QNAME_INPUT = new QName(NS_WSDL, "input");
+    public static QName QNAME_OUTPUT = new QName(NS_WSDL, "output");
 
     //public static QName QNAME_OUTPUT = new QName(NS_WSDL, "output");
     //public static QName QNAME_PART = new QName(NS_WSDL, "part");
     public static QName QNAME_PORT = new QName(NS_WSDL, "port");
+    public static QName QNAME_ADDRESS = new QName(NS_WSDL, "address");
     public static QName QNAME_PORT_TYPE = new QName(NS_WSDL, "portType");
+    public static QName QNAME_FAULT = new QName(NS_WSDL, "fault");
     public static QName QNAME_SERVICE = new QName(NS_WSDL, "service");
     public static QName QNAME_TYPES = new QName(NS_WSDL, "types");
+
     public static String ATTR_TRANSPORT = "transport";
     public static String ATTR_LOCATION = "location";
     public static String ATTR_NAME = "name";

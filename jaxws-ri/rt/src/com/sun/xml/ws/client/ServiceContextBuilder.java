@@ -11,6 +11,9 @@ import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import com.sun.xml.ws.wsdl.parser.WSDLParser;
+import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.java_cup.internal.parser;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
@@ -101,10 +104,15 @@ public class ServiceContextBuilder {
         if (wsdlDocumentLocation == null)
             throw new WebServiceException("No WSDL location Information present, error");
 
-        WSDLParser parser = new WSDLParser();
+        //WSDLParser parser = new WSDLParser();
+        RuntimeWSDLParser parser = new RuntimeWSDLParser();
+
         getWSDLContext().setOrigWSDLLocation(wsdlDocumentLocation);
         try {
-            return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
+            //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
+            WSDLDocument wsdlDoc = parser.parse(wsdlDocumentLocation);
+            WSDLContext wsdlContext = getWSDLContext();
+            wsdlContext.setWSDLDocument(wsdlDoc);
         } catch (Exception e) {
             e.printStackTrace();
         }

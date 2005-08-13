@@ -1,5 +1,5 @@
 /**
- * $Id: ParserUtil.java,v 1.4 2005-07-20 20:58:52 kwalsh Exp $
+ * $Id: ParserUtil.java,v 1.5 2005-08-13 19:32:44 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,6 +17,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
 
 
 /**
@@ -46,6 +47,13 @@ public class ParserUtil {
         }
     }
 
+    public static QName getQName(XMLStreamReader reader, String tag){
+        String localName = XmlUtil.getLocalPart(tag);
+        String pfix = XmlUtil.getPrefix(tag);
+        String uri = reader.getNamespaceURI(pfix);
+        return new QName(uri, localName);
+    }
+
     public static String getMandatoryNonEmptyAttribute(XMLReader reader,
         String name) {
         String value = getAttribute(reader, name);
@@ -59,9 +67,22 @@ public class ParserUtil {
         return value;
     }
 
+     public static String getMandatoryNonEmptyAttribute(XMLStreamReader reader,
+        String name) {
+//        String value = getAttribute(reader, name);
+        String value = reader.getAttributeValue(null, name);
+
+        if (value == null) {
+            failWithLocalName("client.missing.attribute", reader, name);
+        } else if (value.equals("")) {
+            failWithLocalName("client.invalidAttributeValue", reader, name);
+        }
+
+        return value;
+    }
+
     public static QName getQNameAttribute(XMLReader reader, String name) {
         String value = getAttribute(reader, name);
-
         if (value == null) {
             return null;
         }
@@ -160,7 +181,14 @@ public class ParserUtil {
         //  reader.getName().toString()});
     }
 
-    public static void failWithLocalName(String key, XMLReader reader) {
+    public static void failWithFullName(String key, XMLStreamReader reader) {
+//        throw new WebServicesClientException(key,
+//        new Object[]{
+//          Integer.toString(reader.getLineNumber()),
+//          reader.getName().toString()});
+    }
+
+    public static void failWithLocalName(String key, XMLStreamReader reader) {
         //throw new WebServicesClientException(key,
         //        new Object[]{
         //           Integer.toString(reader.getLineNumber()),
@@ -168,6 +196,15 @@ public class ParserUtil {
     }
 
     public static void failWithLocalName(String key, XMLReader reader,
+        String arg) {
+        //throw new WebServicesClientException(key,
+        //      new Object[]{
+        //          Integer.toString(reader.getLineNumber()),
+        //          reader.getLocalName(),
+        //          arg});
+    }
+
+    public static void failWithLocalName(String key, XMLStreamReader reader,
         String arg) {
         //throw new WebServicesClientException(key,
         //      new Object[]{

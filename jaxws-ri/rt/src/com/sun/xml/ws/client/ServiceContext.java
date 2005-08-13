@@ -89,8 +89,10 @@ public class ServiceContext {
     public QName getServiceName() {
         if (serviceName != null)
             return serviceName;
-        if (wsdlContext != null)
-            return wsdlContext.getFirstServiceName();
+        if (wsdlContext != null){
+            serviceName = wsdlContext.getFirstServiceName();
+            return serviceName;
+        }
         return null;
     }
 

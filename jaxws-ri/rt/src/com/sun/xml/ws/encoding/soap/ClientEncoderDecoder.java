@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.10 2005-07-26 23:43:42 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.11 2005-08-13 19:32:43 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -319,7 +319,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 im.setBody(new BodyBlock(obj));
             } else if (paramBinding.equals(SOAPBlock.HEADER)) {
                 im.addHeader(new HeaderBlock((JAXBBridgeInfo)obj));
-            } else if (paramBinding.equals(SOAPBlock.ATTACHMENT)) {
+            } else if (paramBinding.equals(SOAPBlock.MIME)) {
                 // TODO Attachment
             }
         }

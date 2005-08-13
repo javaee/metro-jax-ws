@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBlock.java,v 1.2 2005-07-12 23:32:52 kohlert Exp $
+ * $Id: SOAPBlock.java,v 1.3 2005-08-13 19:32:43 vivekp Exp $
  */
 
 /*
@@ -14,7 +14,7 @@ package com.sun.xml.ws.model.soap;
  * @author Vivek Pandey
  */
 public enum SOAPBlock {
-    BODY(0), HEADER(1), ATTACHMENT(2);
+    BODY(0), HEADER(1), MIME(2), UNBOUND(3);
     
     SOAPBlock(int type){
         this.type = type;
@@ -33,7 +33,7 @@ public enum SOAPBlock {
     }
 
     public boolean isAttachment(){
-        return type == ATTACHMENT.value();
+        return type == MIME.value();
     }
     
     private final int type;

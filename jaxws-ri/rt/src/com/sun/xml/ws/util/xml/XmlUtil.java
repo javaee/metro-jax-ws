@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.2 2005-07-18 16:52:35 kohlert Exp $
+ * $Id: XmlUtil.java,v 1.3 2005-08-13 19:32:44 vivekp Exp $
  */
 
 /*
@@ -54,6 +54,8 @@ public class XmlUtil {
         return s.substring(i + 1);
     }
 
+
+
     public static String getAttributeOrNull(Element e, String name) {
         Attr a = e.getAttributeNode(name);
         if (a == null)
@@ -107,8 +109,8 @@ public class XmlUtil {
         return new NamedNodeMapIterator(element.getAttributes());
     }
 
-    public static List parseTokenList(String tokenList) {
-        List result = new ArrayList();
+    public static List<String> parseTokenList(String tokenList) {
+        List<String> result = new ArrayList<String>();
         StringTokenizer tokenizer = new StringTokenizer(tokenList, " ");
         while (tokenizer.hasMoreTokens()) {
             result.add(tokenizer.nextToken());

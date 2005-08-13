@@ -1,10 +1,14 @@
 /**
- * $Id: WSDLContext.java,v 1.7 2005-08-07 20:16:42 kwalsh Exp $
+ * $Id: WSDLContext.java,v 1.8 2005-08-13 19:32:09 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.wsdl;
+
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.parser.Service;
+import com.sun.xml.ws.wsdl.parser.Port;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
@@ -12,10 +16,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * $author: JAXWS Development Team
@@ -26,6 +27,7 @@ public class WSDLContext {
     private URI bindingId;
     private String defaultBindingId = SOAPBinding.SOAP11HTTP_BINDING;
     private LinkedHashMap<QName, LinkedHashMap> service2portsLocationMap;   //service2
+    private WSDLDocument wsdlDoc;
 
     public WSDLContext() {
         service2portsLocationMap = new LinkedHashMap<QName, LinkedHashMap>();
@@ -44,70 +46,36 @@ public class WSDLContext {
     }
 
     public QName getServiceQName() {
-
-        Set<QName> serviceKeys = service2portsLocationMap.keySet();
-        Iterator<QName> iter = serviceKeys.iterator();
-        if (iter.hasNext()) {
-            return iter.next();
-        }
-        return null;
+        return wsdlDoc.getFirstServiceName();
     }
 
     public QName getServiceQName(QName serviceName) {
-
-        Set<QName> serviceKeys = service2portsLocationMap.keySet();
-        if (serviceKeys.contains(serviceName))
+        if(wsdlDoc.getServices().containsKey(serviceName))
             return serviceName;
-        else
-            throw new WebServiceException("Error supplied serviceQName is not correct.");
+        throw new WebServiceException("Error supplied serviceQName is not correct.");
     }
 
     //just get the first one for now
     public String getEndpoint(QName serviceName) {
-        String endpoint = null;
-        if (serviceName != null) {
-            //iterates in insertion order
-            LinkedHashMap portsLocationMap = service2portsLocationMap.get(serviceName);
-            if (portsLocationMap != null) {
-                if (!portsLocationMap.isEmpty()) {
-                    Set<QName> keys = portsLocationMap.keySet();
-                    Iterator<QName> iter = keys.iterator();
-                    if (iter.hasNext()) {
-                        endpoint = (String) portsLocationMap.get(iter.next());
-                    }
-                }
-            } else {
-                throw new WebServiceException("No ports found for service " + serviceName);
-            }
-        } else {
-            //service QName unknown throw exception
+        if(serviceName == null)
             throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
+        Service service = wsdlDoc.getService(serviceName);
+        String endpoint = null;
+        if(service != null){
+            Iterator<Map.Entry<QName, Port>> iter = service.entrySet().iterator();
+            if(iter.hasNext()){
+                Port port = iter.next().getValue();
+                endpoint = port.getAddress();
+            }
         }
-        if (endpoint == null)
+        if(endpoint == null)
             throw new WebServiceException("Endpoint not found. Check WSDL file to verify endpoint was provided.");
-
         return endpoint;
     }
 
     //just get the first one for now
     public QName getPortName() {
-        QName portName = null;
-        //iterates in insertion order
-        if (!service2portsLocationMap.isEmpty()) {
-            LinkedHashMap portsLocationMap =
-                service2portsLocationMap.values().iterator().next();
-            if (portsLocationMap != null) {
-                if (!portsLocationMap.isEmpty()) {
-                    Set<QName> keys = portsLocationMap.keySet();
-                    Iterator<QName> iter = keys.iterator();
-
-                    if (iter.hasNext()) {
-                        portName = iter.next();
-                    }
-                }
-            }
-        }
-        return portName;
+        return wsdlDoc.getFirstPortName();
     }
 
     public URI getBindingID() {
@@ -118,6 +86,13 @@ public class WSDLContext {
                 e.printStackTrace();
             }
         return bindingId;
+    }
+
+    public void setWSDLDocument(WSDLDocument wsdlDoc){
+        this.wsdlDoc = wsdlDoc;
+        String bId = wsdlDoc.getBindingId();
+        if(bId != null)
+            setBindingID(bId);
     }
 
     public void setBindingID(String id) {
@@ -140,85 +115,101 @@ public class WSDLContext {
         service2portsLocationMap.put(serviceName, portsMap);
     }
 
-    public Set getPortsAsSet(QName serviceName) {
-
-        LinkedHashMap portsMap = service2portsLocationMap.get(serviceName);
-        if ((portsMap != null) && (!portsMap.isEmpty())) {
-            Set<QName> keys = portsMap.keySet();
-            return keys;
+    public Set<QName> getPortsAsSet(QName serviceName) {
+        Service service = wsdlDoc.getService(serviceName);
+        if(service != null){
+            return service.keySet();
         }
         return null;
     }
 
+    //whats the purpose of this method??? a HashMap doesnt contain duplicate keys.
     public Set<QName> contains(QName serviceName) {
-
-        Set<QName> serviceNames = service2portsLocationMap.keySet();
-        HashSet names = new HashSet(serviceNames.size());
-        for (QName serviceNam : serviceNames) {
-            if (serviceNam.equals(serviceName)) {
-                names.add(serviceNam);
-                return names;
-            }
-        }
-        return serviceNames;
-    }
-
-    public Set<QName> contains(QName serviceName, QName portName) {
-
-        LinkedHashMap portsMap = service2portsLocationMap.get(serviceName);
-        HashSet<QName> names = new HashSet<QName>(portsMap.size());
-        if ((portsMap != null) && (!portsMap.isEmpty())) {
-            Set<QName> portNames = portsMap.keySet();
-            for (QName portNam : portNames) {
-                if (portNam.equals(portName)) {
-                    names.add(portNam);
-                    return names;
-                }
-            }
-            return portNames;
+        Service service = wsdlDoc.getService(serviceName);
+        if(service != null){
+            Set<QName> services = new HashSet<QName>();
+            services.add(serviceName);
+            return services;
         }
         return null;
+
+//        Set<QName> serviceNames = service2portsLocationMap.keySet();
+//        HashSet names = new HashSet(serviceNames.size());
+//        for (QName serviceNam : serviceNames) {
+//            if (serviceNam.equals(serviceName)) {
+//                names.add(serviceNam);
+//                return names;
+//            }
+//        }
+//        return serviceNames;
+    }
+
+    //Not sure whats the purpose of return Set when all you can have is only one port for
+    //the given set of service and port QName
+    public Set<QName> contains(QName serviceName, QName portName) {
+        Service service = wsdlDoc.getService(serviceName);
+        if(service != null){
+            Port p = service.get(portName);
+            Set<QName> ports = new HashSet<QName>();
+            ports.add(serviceName);
+            return ports;
+        }
+        return null;
+//        LinkedHashMap portsMap = service2portsLocationMap.get(serviceName);
+//        HashSet<QName> names = new HashSet<QName>(portsMap.size());
+//        if ((portsMap != null) && (!portsMap.isEmpty())) {
+//            Set<QName> portNames = portsMap.keySet();
+//            for (QName portNam : portNames) {
+//                if (portNam.equals(portName)) {
+//                    names.add(portNam);
+//                    return names;
+//                }
+//            }
+//            return portNames;
+//        }
+//        return null;
     }
 
     public QName getFirstServiceName() {
-        if (!service2portsLocationMap.isEmpty()) {
-            Set<QName> serviceNames = service2portsLocationMap.keySet();
-            Iterator iter = serviceNames.iterator();
-            if (iter.hasNext())
-                return (QName) iter.next();
-        }
-        return null;
+        return wsdlDoc.getFirstServiceName();
     }
 
     public Set<QName> getAllServiceNames() {
-        if (!service2portsLocationMap.isEmpty()) {
-            return service2portsLocationMap.keySet();
-        }
-        return null;
+        return wsdlDoc.getServices().keySet();
     }
 
     public String getEndpoint(QName serviceName, QName portQName) {
-
-        if (serviceName != null) {
-            //iterates in insertion order
-            LinkedHashMap portsLocationMap = service2portsLocationMap.get(serviceName);
-            if (portsLocationMap != null) {
-                if (!portsLocationMap.isEmpty()) {
-                    Set<QName> keys = portsLocationMap.keySet();
-                    for (QName portName: keys) {
-                        if (portName.equals(portQName)){
-                            return (String)portsLocationMap.get(portQName);
-
-                        }
-                    }
-                }
-            } else {
+        Service service = wsdlDoc.getService(serviceName);
+        if(service != null){
+            Port p = service.get(portQName);
+            if(p != null)
+                return p.getAddress();
+            else
                 throw new WebServiceException("No ports found for service " + serviceName);
-            }
-        } else {
-            //service QName unknown throw exception
+        }else{
             throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
-        }        
-        return null;
+        }
+
+//        if (serviceName != null) {
+//            //iterates in insertion order
+//            LinkedHashMap portsLocationMap = service2portsLocationMap.get(serviceName);
+//            if (portsLocationMap != null) {
+//                if (!portsLocationMap.isEmpty()) {
+//                    Set<QName> keys = portsLocationMap.keySet();
+//                    for (QName portName: keys) {
+//                        if (portName.equals(portQName)){
+//                            return (String)portsLocationMap.get(portQName);
+//
+//                        }
+//                    }
+//                }
+//            } else {
+//                throw new WebServiceException("No ports found for service " + serviceName);
+//            }
+//        } else {
+//            //service QName unknown throw exception
+//            throw new WebServiceException("Service unknown, can not identify ports for an unknown Service.");
+//        }
+//        return null;
     }
 }
