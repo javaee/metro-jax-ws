@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.12 2005-08-12 18:12:29 kohsuke Exp $
+ * $Id: XMLMessage.java,v 1.13 2005-08-13 20:49:01 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -252,9 +252,11 @@ public class XMLMessage {
             return xmlDataSource.getPayload();
         } else if (xmlSource != null) {
             return xmlSource.getPayload();
+        } else if (jaxbObject != null) {
+            return jaxbObject.getSource();
         } else {
             return null;
-        } 
+        }
     }
 
     public void setPayload(Source payload) {
@@ -262,6 +264,8 @@ public class XMLMessage {
             xmlDataSource.setPayload(payload);
         } else if (xmlSource != null) {
             xmlSource.setPayload(payload);
+        } else if (jaxbObject != null) {
+            jaxbObject.setPayload(payload);
         }
     }
 
@@ -270,6 +274,8 @@ public class XMLMessage {
             return xmlDataSource.getPayload(context);
         } else if (xmlSource != null) {
             return xmlSource.getPayload(context);
+        } else if (jaxbObject != null) {
+            return jaxbObject.getPayload(context);
         } else {
             return null;
         }
@@ -280,6 +286,8 @@ public class XMLMessage {
             xmlDataSource.setPayload(jaxbObj, context);
         } else if (xmlSource != null) {
             xmlSource.setPayload(jaxbObj, context);
+        } else if (jaxbObject != null) {
+            jaxbObject.setPayload(jaxbObj, context);
         }
     }
     
