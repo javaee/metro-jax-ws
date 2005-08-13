@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.1 2005-08-13 19:30:36 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.2 2005-08-13 19:58:40 vivekp Exp $
  */
 
 /**
@@ -12,7 +12,6 @@ package com.sun.xml.ws.wsdl.parser;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.InputSource;
 
@@ -21,38 +20,34 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.soap.SOAPBinding;
-import java.io.InputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class RuntimeWSDLParser {
 
-    private Set<String> importedWSDLs;
-    private URL wsdlLocation;
-
-    public RuntimeWSDLParser() {
-        importedWSDLs = new HashSet<String>();
-    }
-
-    public WSDLDocument parse(URL wsdlLoc) throws Exception{
-        this.wsdlLocation = wsdlLoc;
-        return parse(new BufferedInputStream(wsdlLoc.openStream()));
-    }
-
-    public WSDLDocument parse(InputStream is) throws Exception {
+    public static WSDLDocument parse(URL wsdlLoc) throws Exception{
         WSDLDocument wsdlDoc = new WSDLDocument();
         WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
+        parserContext.setOriginalWsdlURL(wsdlLoc);
+        InputSource source = new InputSource(wsdlLoc.openStream());
+        parseWSDL(source, parserContext);
+        return wsdlDoc;
+    }
+
+    public static WSDLDocument parse(InputStream is) throws Exception {
+        WSDLDocument wsdlDoc = new WSDLDocument();
+        WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
+        InputSource source = new InputSource(is);
+        parserContext.setOriginalWsdlURL(new URL(source.getSystemId()));
         try {
-            parseWSDL(is, parserContext);
+            parseWSDL(source, parserContext);
 
         } catch (XMLStreamException e) {
             throw new Exception("wsdl.xmlReader", e);
@@ -60,13 +55,12 @@ public class RuntimeWSDLParser {
         return wsdlDoc;
     }
 
-    private XMLStreamReader createReader(InputStream is) {
+    private static XMLStreamReader createReader(InputStream is) {
         return XMLStreamReaderFactory.createXMLStreamReader(is, true);
     }
 
-    public void parseWSDL(InputStream is, WSDLParserContext parserContext) throws XMLStreamException {
-        InputSource source = new InputSource(is);
-        XMLStreamReader reader = createReader(is);
+    private static void parseWSDL(InputSource source, WSDLParserContext parserContext) throws XMLStreamException {
+        XMLStreamReader reader = createReader(source.getByteStream());
         XMLStreamReaderUtil.nextElementContent(reader);
 
         //wsdl:definition
@@ -97,7 +91,7 @@ public class RuntimeWSDLParser {
         reader.close();
     }
 
-    private void parseService(XMLStreamReader reader, WSDLParserContext parserContext) {
+    private static void parseService(XMLStreamReader reader, WSDLParserContext parserContext) {
         String serviceName = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
         Service service = new Service(new QName(parserContext.getTargetNamespace(), serviceName));
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
@@ -112,7 +106,7 @@ public class RuntimeWSDLParser {
         parserContext.getWsdlDocument().addService(service);
     }
 
-    private void parsePort(XMLStreamReader reader, Service service) {
+    private static void parsePort(XMLStreamReader reader, Service service) {
         String portName = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
         String binding = ParserUtil.getMandatoryNonEmptyAttribute(reader, "binding");
         QName bindingName = ParserUtil.getQName(reader, binding);
@@ -130,7 +124,7 @@ public class RuntimeWSDLParser {
         service.put(portQName, new Port(portQName, bindingName, location));
     }
 
-    private void parseBinding(XMLStreamReader reader, WSDLParserContext parserContext) {
+    private static void parseBinding(XMLStreamReader reader, WSDLParserContext parserContext) {
         String bindingName = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
         String portTypeName = ParserUtil.getMandatoryNonEmptyAttribute(reader, "type");
         if((bindingName == null) || (portTypeName == null)){
@@ -161,7 +155,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    private void parseBindingOperation(XMLStreamReader reader, Binding binding) {
+    private static void parseBindingOperation(XMLStreamReader reader, Binding binding) {
         String bindingOpName = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
         if(bindingOpName == null){
             //TODO: throw exception?
@@ -188,7 +182,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    private void parseInputBinding(XMLStreamReader reader, BindingOperation bindingOp) {
+    private static void parseInputBinding(XMLStreamReader reader, BindingOperation bindingOp) {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -206,7 +200,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    private void parseOutputBinding(XMLStreamReader reader, BindingOperation bindingOp) {
+    private static void parseOutputBinding(XMLStreamReader reader, BindingOperation bindingOp) {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -231,7 +225,7 @@ public class RuntimeWSDLParser {
      * @return
      * Returns true if body has explicit parts declaration
      */
-    private boolean parseSOAPBodyBinding(XMLStreamReader reader, Map<String, SOAPBlock> parts){
+    private static boolean parseSOAPBodyBinding(XMLStreamReader reader, Map<String, SOAPBlock> parts){
         String partsString = reader.getAttributeValue(null, "parts");
         if(partsString != null){
             List<String> partsList = XmlUtil.parseTokenList(partsString);
@@ -259,7 +253,7 @@ public class RuntimeWSDLParser {
 //    }
 
 
-    private void parseMimeMultipartBinding(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
+    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
             if(MIMEConstants.QNAME_PART.equals(name)){
@@ -270,7 +264,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    private void parseMIMEPart(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
+    private static void parseMIMEPart(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -293,7 +287,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    protected void parseImport(XMLStreamReader reader, WSDLParserContext parserContext) {
+    protected static void parseImport(XMLStreamReader reader, WSDLParserContext parserContext) {
         String importLocation =
                 ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_LOCATION);
 
@@ -312,7 +306,7 @@ public class RuntimeWSDLParser {
                 e.printStackTrace();
             }
         } else {
-            String wsdlPath = wsdlLocation.getPath();
+            String wsdlPath = parserContext.getOriginalWsdlURL().getPath();
             int index = wsdlPath.lastIndexOf("/");
             String base = wsdlPath.substring(0, index);
 
@@ -321,7 +315,7 @@ public class RuntimeWSDLParser {
             int port = 0;
 
             try {
-                owsdlLoc = new URI(wsdlLocation.toExternalForm());
+                owsdlLoc = new URI(parserContext.getOriginalWsdlURL().toExternalForm());
                 host = owsdlLoc.getHost();
                 port = owsdlLoc.getPort();
             } catch (URISyntaxException e) {
@@ -356,10 +350,10 @@ public class RuntimeWSDLParser {
             }
         }
         try {
-            if(importedWSDLs.contains(importURL.toExternalForm()))
+            if(parserContext.isImportedWSDL(importURL.toExternalForm()))
                 return;
-            importedWSDLs.add(importURL.toExternalForm());
-            parseWSDL(importURL.openStream(), parserContext);
+            parserContext.addImportedWSDL(importURL.toExternalForm());
+            parseWSDL(new InputSource(importURL.openStream()), parserContext);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

@@ -105,12 +105,10 @@ public class ServiceContextBuilder {
             throw new WebServiceException("No WSDL location Information present, error");
 
         //WSDLParser parser = new WSDLParser();
-        RuntimeWSDLParser parser = new RuntimeWSDLParser();
-
         getWSDLContext().setOrigWSDLLocation(wsdlDocumentLocation);
         try {
             //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
-            WSDLDocument wsdlDoc = parser.parse(wsdlDocumentLocation);
+            WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(wsdlDocumentLocation);
             WSDLContext wsdlContext = getWSDLContext();
             wsdlContext.setWSDLDocument(wsdlDoc);
         } catch (Exception e) {
