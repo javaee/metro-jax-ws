@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.6 2005-08-10 23:48:24 kohlert Exp $
+ * $Id: GeneratorBase.java,v 1.7 2005-08-13 08:25:42 vivekp Exp $
  */
 
 /*
@@ -64,6 +64,7 @@ public abstract class GeneratorBase
     protected boolean donotOverride;
     protected String servicePackage;
     protected JCodeModel cm;
+    protected boolean printStackTrace;
 
     private LocalizableMessageFactory messageFactory;
 
@@ -128,6 +129,7 @@ public abstract class GeneratorBase
         key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
         this.donotOverride =
             Boolean.valueOf(properties.getProperty(key)).booleanValue();
+        this.printStackTrace = Boolean.valueOf(properties.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
 
     }
 

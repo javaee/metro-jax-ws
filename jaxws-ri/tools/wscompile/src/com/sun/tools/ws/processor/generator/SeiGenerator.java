@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.14 2005-08-12 04:20:32 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.15 2005-08-13 08:25:42 vivekp Exp $
  */
 
 /**
@@ -197,18 +197,33 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                         resultName = t.getName().getLocalPart();
                         nsURI = t.getName().getNamespaceURI();
                     }
+                    if(!(operation instanceof AsyncOperation)){
+                        JAnnotationUse wr = null;
+
+                        if(!resultName.equals("return")){
+                            if(wr == null)
+                                wr = m.annotate(javax.jws.WebResult.class);
+                            wr.param("name", resultName);
+                        }
+                        if (operation.getStyle().equals(SOAPStyle.DOCUMENT) && !(nsURI.equals(serviceNS))) {
+                            if(wr == null)
+                                wr = m.annotate(javax.jws.WebResult.class);
+                            wr.param("targetNamespace", nsURI);
+                        }
+                        if(!(isDocStyle && operation.isWrapped()) &&
+                                (parameter.getBlock().getLocation() != Block.HEADER)){
+                            if(wr == null)
+                                wr = m.annotate(javax.jws.WebResult.class);
+                            wr.param("partName", parameter.getName());
+                        }
+                        if(parameter.getBlock().getLocation() == Block.HEADER){
+                            if(wr == null)
+                                wr = m.annotate(javax.jws.WebResult.class);
+                            wr.param("header",true);
+                        }
+                    }
                 }
-            }
-            if(!(operation instanceof AsyncOperation) &&
-                    (!resultName.equals("return") || !nsURI.equals(serviceNS))){
-                JAnnotationUse wr = m.annotate(javax.jws.WebResult.class);
-                //temporarliy comment out the line below till 181 @WebResult annotation is fixed
-                // right now the @WebResult name element default value is "result" instead of "return"
-                //if(!resultName.equals("return"))
-                wr.param("name", resultName);
-                if (operation.getStyle().equals(SOAPStyle.DOCUMENT) && !(nsURI.equals(serviceNS))) {
-                    wr.param("targetNamespace", nsURI);
-                }
+
             }
         }
 
@@ -310,7 +325,11 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             paramAnno.param("mode", javax.jws.WebParam.Mode.OUT);
         }
 
-//        writeJAXBTypeAnnotations(p, param);
+        //dont generate partName element for doclit-wrapped and if the binding is HEADER
+        //because header=true is already there to tell the binding
+        if(!(isDocStyle && isWrapped) &&
+                (javaParameter.getParameter().getBlock().getLocation() != Block.HEADER))
+            paramAnno.param("partName", javaParameter.getParameter().getName());
     }
 
     boolean isDocStyle = true;

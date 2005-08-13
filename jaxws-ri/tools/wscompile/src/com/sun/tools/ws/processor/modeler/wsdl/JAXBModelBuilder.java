@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.4 2005-07-23 04:10:59 kohlert Exp $
+ * $Id: JAXBModelBuilder.java,v 1.5 2005-08-13 08:25:42 vivekp Exp $
  */
 
 /*
@@ -59,41 +59,14 @@ public class JAXBModelBuilder {
      * Builds model from WSDL document. Model contains abstraction which is used by the
      * generators to generate the stub/tie/serializers etc. code.
      *
-     * @see Modeler#buildModel()
+     * @see com.sun.tools.ws.processor.modeler.Modeler#buildModel()
      */
 
     private void internalBuildJAXBModel(List elements){
         try {
             schemaCompiler = XJC.createSchemaCompiler();
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
-            schemaCompiler.setErrorListener(new ErrorListener(){
-                public void error(SAXParseException e) {
-                    if(printstacktrace)
-                        e.printStackTrace();
-                    else
-                        fail("model.schema.jaxbException.message", new Object[]{e.getMessage()});
-                }
-
-                public void fatalError(SAXParseException e) {
-                    if(printstacktrace)
-                        e.printStackTrace();
-                    else
-                        fail("model.schema.jaxbException.message", new Object[]{e.getMessage()});
-                }
-
-                public void info(SAXParseException e) {
-                    if(printstacktrace)
-                        e.printStackTrace();
-                    else
-                        inform("model.schema.jaxbException.message", new Object[]{e.getMessage()});
-                }
-
-                public void warning(SAXParseException e) {
-                    if(printstacktrace)
-                        e.printStackTrace();
-                    else
-                        warn("model.schema.jaxbException.message", new Object[]{e.getMessage()});
-                }});
+            schemaCompiler.setErrorListener(new ConsoleErrorReporter(_env, printstacktrace));
             int schemaElementCount = 1;
             for(Iterator iter = elements.iterator(); iter.hasNext();){
                 Element schemaElement = (Element)iter.next();
@@ -140,6 +113,10 @@ public class JAXBModelBuilder {
 
     protected void fail(String key, Object[] arg) {
         throw new ModelException(key, arg);
+    }
+
+    protected void error(String key, Object[] args){
+        _env.error(_messageFactory.getMessage(key, args));
     }
 
     protected void warn(String key, Object[] args) {

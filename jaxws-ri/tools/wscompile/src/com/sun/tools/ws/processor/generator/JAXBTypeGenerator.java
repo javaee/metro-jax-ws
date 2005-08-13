@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.4 2005-07-24 01:35:09 kohlert Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.5 2005-08-13 08:25:42 vivekp Exp $
  */
 
 /*
@@ -23,6 +23,8 @@ import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
+import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
+import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 
@@ -160,7 +162,7 @@ public class JAXBTypeGenerator extends GeneratorBase {
             cm = model.generateCode(null, new JAXBErrorListener());
         }
          */
-        cm = model.generateCode(null, new JAXBErrorListener());
+        cm = model.generateCode(null, new ConsoleErrorReporter(env, printStackTrace));
         cm.build(cw);
         doneGeneration = true;
     }
