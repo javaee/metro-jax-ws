@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.31 2005-08-12 22:34:38 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.32 2005-08-13 02:44:37 jitu Exp $
  */
 
 /*
@@ -207,10 +207,16 @@ public class RuntimeEndpointInfo
             (WebServiceProvider)getImplementorClass().getAnnotation(
                 WebServiceProvider.class);
         if (getWSDLFileName() == null) {
-            setWSDLFileName(wsProvider.wsdlLocation());
+            if (!wsProvider.wsdlLocation().equals("")) {
+                setWSDLFileName(wsProvider.wsdlLocation());
+            }
         }
         if (serviceName == null) {
-            //setServiceName(wsProvider.serviceName());
+            String tns = wsProvider.targetNamespace();
+            String local = wsProvider.serviceName();
+            if (!local.equals("")) {
+                setServiceName(new QName(tns, local));
+            }
         }
         if (getWSDLFileName() == null) {
             throw new ServerRtException("wsdl.required");
