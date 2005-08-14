@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.22 2005-08-12 19:20:48 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.23 2005-08-14 17:55:18 kwalsh Exp $
  */
 
 /*
@@ -39,7 +39,6 @@ import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -56,10 +55,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 
 /**
@@ -69,11 +65,12 @@ import java.util.concurrent.FutureTask;
  */
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
-    protected static final int MAX_THREAD_POOL_SIZE = 2;
+    protected static final int MAX_THREAD_POOL_SIZE = 5;
 
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
-    protected ExecutorService executorService = null;
+    protected ExecutorService executorService;
+    protected CallbackQueue callbackQueue;
 
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING = "SOAP must understand error";
 
@@ -395,7 +392,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             //due to threading happens
             Response r = sendAsyncReceive(MessageInfoBase.copy(messageInfo), sm);
             if (executorService == null) {
-                executorService = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE);
+                executorService =
+                    Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE, new DaemonThreadFactory());
+
                 /*
                  * try {
                  * executorService.awaitTermination(AWAIT_TERMINATION_TIME,
@@ -404,14 +403,23 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                  */
             }
 
+            AsyncHandlerService service = (AsyncHandlerService) messageInfo
+                .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
+            if (service != null) {
+                ((ResponseImpl) r).setUID(service.getUID());
+                if (callbackQueue == null)
+                    callbackQueue = new CallbackQueue();
+                callbackQueue.addWaiter(service);
+                callbackQueue.addResponse((ResponseImpl) r);
+            }
+
+
             executorService.execute((FutureTask) r);
-            executorService.shutdown();
-            executorService = null;
+            //executorService.shutdown();
+            //executorService = null;
             messageInfo.setResponse(r);
         } catch (Throwable e) {
-            System.out.println("Exception is " + e.getClass().getName());
             messageInfo.setResponse(e);
-
         }
     }
 
@@ -420,7 +428,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      */
     protected Response<Object> sendAsyncReceive(final MessageInfo messageInfo, final SOAPMessage sm) {
 
-        final AsyncHandler handler = (AsyncHandler) messageInfo
+        final AsyncHandlerService handler = (AsyncHandlerService) messageInfo
             .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
         final boolean callback = (messageInfo.getMEP() == MessageStruct.ASYNC_CALLBACK_MEP) ? true
             : false;
@@ -447,19 +455,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     messageInfo.setResponse(ex);
                 }
                 postReceiveHook(messageInfo);
-
-                if (callback) {
-                    ResponseImpl res = new ResponseImpl(new Callable<Object>() {
-                        public Object call() {
-                            return null;
-                        }
-                    });
-                    setResponse(messageInfo, res);
-                    handler.handleResponse(res);
-                    return null;
-                }
-
-                // for poll case
+               
                 if (messageInfo.getResponse() instanceof Exception)
                     throw (Exception) messageInfo.getResponse();
                 return messageInfo.getResponse();
@@ -716,5 +712,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
         }
     }
-
+        class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread daemonThread = new Thread(r);
+            daemonThread.setDaemon(Boolean.TRUE);
+            return daemonThread;
+        }
+    }
 }

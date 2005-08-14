@@ -53,9 +53,9 @@
 			</output>
 		</operation>
 	</binding>
-	<service name="AddNumbersService">
+	<queue name="AddNumbersService">
 		<port name="AddNumbersPort" binding="tns:AddNumbersBinding">
 			<soap:address location="REPLACE_WITH_ACTUAL_URL" />
 		</port>
-	</service>
+	</queue>
 </definitions>

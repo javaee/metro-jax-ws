@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.12 2005-08-05 00:01:27 kwalsh Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.13 2005-08-14 17:55:16 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -17,10 +17,12 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.Service;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.concurrent.Executor;
 
 public class EndpointIFInvocationHandler
     extends EndpointIFBase
@@ -40,12 +42,13 @@ public class EndpointIFInvocationHandler
     WSDLContext _wsdlContext;
     boolean failure;
     URL wsdlDocumentLocation;
+    Service _service;
 
     /**
      * public constructor
      */
 
-    public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, QName serviceName) {
+    public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, Service service, QName serviceName) {
 
         if ((eif.getBindingID() == null) || (eif.getRuntimeContext() == null)) {
             failure = true;
@@ -55,6 +58,7 @@ public class EndpointIFInvocationHandler
         _portInterface = portInterface;
         _rtcontext = eif.getRuntimeContext();
         _bindingId = eif.getBindingID();
+        _service = service;
 
         if (serviceName != null) {
             if (eif.contains(serviceName))
@@ -71,7 +75,8 @@ public class EndpointIFInvocationHandler
                 eif.getEndpointAddress());
 
         ContactInfoListImpl cil = new ContactInfoListImpl();
-        _delegate = new DelegateBase(cil);
+        //not sure I need this service argument
+        _delegate = new DelegateBase(cil, service);
     }
 
     public void setModel(RuntimeContext rtcontext) {
@@ -126,7 +131,9 @@ public class EndpointIFInvocationHandler
         if (mmep == MessageStruct.ASYNC_CALLBACK_MEP) {
             for (Object param : parameters) {
                 if (AsyncHandler.class.isAssignableFrom(param.getClass())) {
-                    messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, param);
+                    //messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, param);
+                    messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER,
+                        new AsyncHandlerService((AsyncHandler)param, getCurrentExecutor()));
                 }
             }
         }
@@ -179,5 +186,9 @@ public class EndpointIFInvocationHandler
 
     public Class getPortInterface(){
         return _portInterface;
+    }
+
+     Executor getCurrentExecutor(){
+        return _service.getExecutor();
     }
 }

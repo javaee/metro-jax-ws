@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.6 2005-07-27 18:50:03 jitu Exp $
+ * $Id: DelegateBase.java,v 1.7 2005-08-14 17:55:18 kwalsh Exp $
  */
 
 /*
@@ -21,10 +21,12 @@ import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.ContactInfoBase;
+import com.sun.xml.ws.client.ContactInfoListImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.Service;
 import java.util.Iterator;
 
 /**
@@ -32,12 +34,18 @@ import java.util.Iterator;
  */
 public class DelegateBase implements Delegate {
     protected ContactInfoList contactInfoList;
+    protected Service service;
 
     public DelegateBase() {
     }
 
     public DelegateBase(ContactInfoList contactInfoList) {
         this.contactInfoList = contactInfoList;
+    }
+
+    public DelegateBase(ContactInfoList cil, Service service) {
+       this(cil);
+       this.service = service;
     }
 
     public MessageStruct getMessageStruct() {

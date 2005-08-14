@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.17 2005-08-04 02:32:21 kwalsh Exp $
+ * $Id: WebService.java,v 1.18 2005-08-14 17:55:17 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 /**
  * @author WS Development Team
@@ -102,7 +104,19 @@ public class WebService
     }
 
     public Executor getExecutor() {
-        return executor;
+        try {
+            if (executor != null)
+                //todo:this is only an Instance- need deepCopy
+                return (Executor)executor.getClass().newInstance();
+            else
+                //todo:make daemon thread factory for 2nd arg
+                return Executors.newFixedThreadPool(3);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setExecutor(Executor executor) {
@@ -262,7 +276,7 @@ public class WebService
     private Dispatch createDispatchClazz(QName port, Class clazz, Mode mode) throws WebServiceException {
         PortInfoBase dispatchPort = dispatchPorts.get(port);
         if (dispatchPort != null) {
-            DispatchBase dBase = new DispatchBase((PortInfoBase) dispatchPort, clazz, mode);
+            DispatchBase dBase = new DispatchBase((PortInfoBase) dispatchPort, clazz, mode, this);
             setBindingOnProvider(dBase, port, dBase._getBindingId());
             return dBase;
         } else {
@@ -273,7 +287,7 @@ public class WebService
     private Dispatch createDispatchJAXB(QName port, JAXBContext jaxbContext, Mode mode) throws WebServiceException {
         PortInfoBase dispatchPort = dispatchPorts.get(port);
         if (dispatchPort != null) {
-            DispatchBase dBase = new DispatchBase((PortInfoBase) dispatchPort, jaxbContext, mode);
+            DispatchBase dBase = new DispatchBase((PortInfoBase) dispatchPort, jaxbContext, mode, this);
             setBindingOnProvider(dBase, port, dBase._getBindingId());
             return dBase;
         } else {
@@ -290,8 +304,9 @@ public class WebService
 
         EndpointIFContext eif = completeEndpointIFContext(serviceContext, portQName, portInterface);
         //needs cleaning up
-        EndpointIFInvocationHandler handler = new EndpointIFInvocationHandler(portInterface,
-            eif, getServiceName()); //need handler registry passed in here
+        EndpointIFInvocationHandler handler =
+            new EndpointIFInvocationHandler(portInterface,
+            eif, this, getServiceName()); //need handler registry passed in here
         setBindingOnProvider(handler, portQName, handler._getBindingId());
 
         Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),

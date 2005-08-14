@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.6 2005-07-27 00:38:44 arungupta Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.7 2005-08-14 17:55:18 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -83,7 +83,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     protected SerializerIF getSerializerInstance(){
-        return DispatchSerializer.getInstance();
+        return new DispatchSerializer();
     }
 
     @Override

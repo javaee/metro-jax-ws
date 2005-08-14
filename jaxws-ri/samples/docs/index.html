@@ -43,7 +43,7 @@ directory in the bundle:</p>
     <tr>
       <td valign="top">fromjava</td>
       <td valign="top">Demonstrates how to build, deploy, and invoke a
-simple Web service starting from a Java service endpoint implementation
+simple Web queue starting from a Java queue endpoint implementation
 using annotations.</td>
     </tr>
     <tr>
@@ -54,7 +54,7 @@ simple logging handler on the client and server.</td>
     <tr>
       <td valign="top">fromwsdl</td>
       <td valign="top">Demonstrates how to build, deploy, and invoke a
-simple Web service starting from a WSDL using external customizations.</td>
+simple Web queue starting from a WSDL using external customizations.</td>
     </tr>
     <tr>
       <td valign="top">fromwsdlhandler&nbsp;</td>
@@ -64,11 +64,11 @@ simple logging handler on the client and server.</td>
     <tr>
       <td valign="top">dispatch</td>
       <td valign="top">Demonstrates how to dynamically invoke web
-service endpoints.</td>
+queue endpoints.</td>
     </tr>
     <tr>
       <td valign="top">provider</td>
-      <td valign="top">Demonstrates how to build, deploy, and invoke <code>javax.xml.ws.Provider</code> based Web service endpoint.</td>
+      <td valign="top">Demonstrates how to build, deploy, and invoke <code>javax.xml.ws.Provider</code> based Web queue endpoint.</td>
     </tr>
     <tr>
       <td valign="top">annotations</td>
@@ -169,7 +169,7 @@ targets:</p>
   <tbody>
     <tr>
       <td width="15%">server</td>
-      <td width="85%">Builds and deploy the service endpoint WAR</td>
+      <td width="85%">Builds and deploy the queue endpoint WAR</td>
     </tr>
     <tr>
       <td>client</td>
@@ -181,18 +181,18 @@ targets:</p>
     </tr>
   </tbody>
 </table>
-<p>It is essential for the service endpoint to be deployed on
+<p>It is essential for the queue endpoint to be deployed on
 Application Server
 before clients can be built because clients use the WSDL exposed from
 the
-service endpoint deployed in the Application Server. So please make
+queue endpoint deployed in the Application Server. So please make
 sure that
 your Application Server is either running before the <code>server</code>
 target
 is invoked or run it after the <code>server</code> target is invoked.
 You will
 have to wait a few minutes for the Application Server to deploy the
-service
+queue
 endpoint correctly before building the client. </p>
 <p>&nbsp;</p>
 <p>We appreciate your feedback, please send it to <a

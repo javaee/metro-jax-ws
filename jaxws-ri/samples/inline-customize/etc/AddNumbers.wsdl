@@ -97,10 +97,10 @@
     </operation>
   </binding>
 
-  <service name="AddNumbersService">
-    <!-- wsdl:service customization -->
+  <queue name="AddNumbersService">
+    <!-- wsdl:queue customization -->
     <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
-        <!-- change the generated service class -->
+        <!-- change the generated queue class -->
         <jaxws:class name="MathUtilService"/>        
     </jaxws:bindings>
 
@@ -111,5 +111,5 @@
       </jaxws:bindings>
       <soap:address location="http://localhost:8080/jaxws-inline-customize/addnumbers"/>
     </port>
-  </service>
+  </queue>
 </definitions>

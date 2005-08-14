@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.13 2005-08-08 19:13:01 arungupta Exp $
+ * $Id: DispatchBase.java,v 1.14 2005-08-14 17:55:17 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -11,6 +11,7 @@ package com.sun.xml.ws.client.dispatch;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -19,13 +20,7 @@ import com.sun.pept.Delegate;
 import com.sun.pept.presentation.MessageStruct;
 
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.client.ClientTransportFactory;
-import com.sun.xml.ws.client.ContentNegotiation;
-import com.sun.xml.ws.client.InternalBindingProvider;
-import com.sun.xml.ws.client.PortInfoBase;
-import com.sun.xml.ws.client.RequestContext;
-import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.dispatch.impl.DispatchContactInfoList;
 import com.sun.xml.ws.client.dispatch.impl.DispatchDelegate;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
@@ -64,27 +59,28 @@ import javax.xml.ws.http.HTTPBinding;
  * interface acts as a factory for the creation of <code>Dispatch</code>
  * instances.
  *
- * @author JAXWS Development Team
+ * @author WS Development Team
  * @version 1.0
  */
 
 public class DispatchBase implements BindingProvider, InternalBindingProvider,
     Dispatch {
 
-    public DispatchBase(PortInfoBase port, Class aClass, Service.Mode mode) {
-        this(port, mode, null, aClass);
+    public DispatchBase(PortInfoBase port, Class aClass, Service.Mode mode, Service service) {
+        this(port, mode, null, aClass, service);
     }
 
-    public DispatchBase(PortInfoBase port, JAXBContext jaxbContext, Service.Mode mode) {
-        this(port, mode, jaxbContext, null);
+    public DispatchBase(PortInfoBase port, JAXBContext jaxbContext, Service.Mode mode, Service service) {
+        this(port, mode, jaxbContext, null, service);
     }
 
-    DispatchBase(PortInfoBase port, Service.Mode mode, JAXBContext context, Class clazz) {
+    DispatchBase(PortInfoBase port, Service.Mode mode, JAXBContext context, Class clazz, Service service) {
         _delegate = new DispatchDelegate(new DispatchContactInfoList());
         _mode = mode;
         _portInfo = port;
         _jaxbContext = context;
         _clazz = clazz;
+        _service = service;
     }
 
     /**
@@ -196,9 +192,10 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     public Future<?> invokeAsync(java.lang.Object msg, AsyncHandler handler) {
 
         MessageStruct messageStruct = setupMessageStruct(msg);
-        if (handler != null)
-            messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, handler);
-        else
+        if (handler != null){
+            //messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, handler);
+            messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, (Object)new AsyncHandlerService(handler, getCurrentExecutor()));
+        } else
             throw new WebServiceException("AsyncHandler argument is null. " +
                 "AsyncHandler is required for asynchronous callback invocations ");
 
@@ -539,6 +536,10 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         return context;
     }
 
+    Executor getCurrentExecutor(){
+        return _service.getExecutor();
+    }
+
     private static ClientTransportFactory defaultTransportFactory = null;
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
@@ -546,6 +547,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     protected Map _requestContext;
     protected Map _responseContext;
     protected Service.Mode _mode;
+    protected Service _service;
     protected Class _clazz;
     protected JAXBContext _jaxbContext;
 

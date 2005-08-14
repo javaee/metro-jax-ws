@@ -47,14 +47,14 @@
         <class name="MathUtilException"/>
     </bindings>
     
-    <!-- wsdl:service customization -->
-    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']">
-        <!-- change the generated service class -->
+    <!-- wsdl:queue customization -->
+    <bindings node="wsdl:definitions/wsdl:queue[@name='AddNumbersService']">
+        <!-- change the generated queue class -->
         <class name="MathUtilService"/>
     </bindings>
     
     <!-- change the port accessor method -->
-    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImpl']">
+    <bindings node="wsdl:definitions/wsdl:queue[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImpl']">
         <method name="getMathUtil"/>
     </bindings>    
     

@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchSerializer.java,v 1.14 2005-07-18 16:52:09 kohlert Exp $
+ * $Id: DispatchSerializer.java,v 1.15 2005-08-14 17:55:17 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -43,15 +43,14 @@ public class DispatchSerializer implements SerializerIF{
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
     private final static int MAX_BUFFER_SIZE = 50;
-    private static final DispatchSerializer serializer = new DispatchSerializer();
-    private static JAXBTypeSerializer jaxbSerializer;
+    //private DispatchSerializer serializer = new DispatchSerializer();
+    private JAXBTypeSerializer jaxbSerializer = new JAXBTypeSerializer();
 
-    public static DispatchSerializer getInstance() {
-        return serializer;
-    }
+   // public DispatchSerializer getInstance() {
+        //return new DispatchSerializer();
+    //}
 
     public DispatchSerializer() {
-        jaxbSerializer = JAXBTypeSerializer.getInstance();
     }
 
     public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
@@ -59,7 +58,9 @@ public class DispatchSerializer implements SerializerIF{
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
             Object bean = ((JAXBBeanInfo) obj).getBean();
+
             jaxbSerializer.serialize(bean, writer, context);
+
         } else
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
         //should not happen
@@ -67,7 +68,9 @@ public class DispatchSerializer implements SerializerIF{
 
     public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         if (context != null)
+
             return jaxbSerializer.deserialize(reader, context);
+
         else
             return deserializeSource(reader, context);
     }

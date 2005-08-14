@@ -14,7 +14,7 @@
         interface="fromwsdl_soap12.server.AddNumbersPortType"
         implementation="fromwsdl_soap12.server.AddNumbersImpl"
         wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"
-        service="{http://duke.org}AddNumbersService"
+        queue="{http://duke.org}AddNumbersService"
         port="{http://duke.org}AddNumbersPort"
         binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"
         url-pattern="/addnumbers" />
