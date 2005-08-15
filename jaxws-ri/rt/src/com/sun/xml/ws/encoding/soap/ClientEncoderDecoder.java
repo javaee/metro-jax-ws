@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.11 2005-08-13 19:32:43 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.12 2005-08-15 22:58:13 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -13,10 +13,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.Map;
+import java.awt.*;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.transform.Source;
+import javax.activation.DataHandler;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -26,12 +33,14 @@ import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
+import com.sun.xml.ws.model.soap.MimeParameter;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.client.BindingProviderProperties;
@@ -51,14 +60,12 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
     public void toMessageInfo(Object intMessage, MessageInfo mi) {
         InternalMessage im = (InternalMessage) intMessage;
         BodyBlock bodyBlock = im.getBody();
-        // TODO what if bodyBlock is null, may be use NULL_BODY constant QNAME
         RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         JavaMethod jm = rtContext.getModel().getJavaMethod(mi.getMethod());
         mi.setMEP(jm.getMEP());
 
         Object bodyValue  = (bodyBlock == null) ? null : bodyBlock.getValue();
 
-        // TODO process exceptions
         if(bodyValue instanceof SOAPFaultInfo){
             SOAPFaultInfo sfi = (SOAPFaultInfo)bodyValue;
             Object detail = sfi.getDetail();
@@ -110,6 +117,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
 
         // process body/headers/attachments
         List<HeaderBlock> headers = im.getHeaders();
+        Map<String, AttachmentBlock> attachments = im.getAttachments();
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         Object[] data = mi.getData();
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
@@ -117,8 +125,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         //what happens when client receives unsolicited headers?
         int bBlocks = (bodyValue != null)?1:0;
         int hBlocks = (im.getHeaders() != null)?im.getHeaders().size():0;
+        int mBlocks = (im.getAttachments() != null)?im.getAttachments().size():0;
 
-        boolean isResponseAsynWrapper = ((bBlocks+hBlocks) > 1)?true:false;
+        boolean isResponseAsynWrapper = ((bBlocks+hBlocks+mBlocks) > 1)?true:false;
 
         //for rpclit there could be more than one parts but only one bodyblock
         // so we use different rule for rpclit
@@ -143,10 +152,22 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                     JAXBBridgeInfo value = (JAXBBridgeInfo)hb.getValue();
                     setAsyncResponseWrapperValue(rtContext, asyncWrapper, value.getValue(), value.getType().tagName);
                 }
+            }else if(im.getAttachments() != null){
+                attachments = im.getAttachments();
+                for(String id : attachments.keySet()){
+                    AttachmentBlock ab = attachments.get(id);
+                    if(ab == null)
+                        return;
+                    String part = getMimePart(id);
+                    Object val = ab.getValue();
+                    if((val == null)||(part == null))
+                        continue;
+                    setAsyncResponseWrapperValue(rtContext, asyncWrapper, val, new QName("", part));
+                }
             }
             mi.setResponse(asyncWrapper);
             return;
-        }else if(jm.isAsync() && ((bBlocks+hBlocks) == 1)){
+        }else if(jm.isAsync() && ((bBlocks+hBlocks+mBlocks) == 1)){
             //there is only 1 response part
             Object value = null;
             if(bodyValue instanceof RpcLitPayload){
@@ -173,6 +194,17 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                     }
                 }
             }
+
+            if(attachments != null){
+                for(String id:attachments.keySet()){
+                    AttachmentBlock ab = attachments.get(id);
+                    if((ab == null))
+                        continue;
+                    mi.setResponse(ab.getValue());
+                    return;
+                }
+            }
+
         }
 
 
@@ -186,6 +218,8 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (headers != null && paramBinding.equals(SOAPBlock.HEADER)) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
+            } else if((attachments.size() > 0) && paramBinding.isAttachment()){
+                obj = getAttachment(attachments, param);
             }
             Object resp = fillData(rtContext, param, obj, data, soapBinding);
             if(param.isResponse()){
@@ -320,7 +354,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (paramBinding.equals(SOAPBlock.HEADER)) {
                 im.addHeader(new HeaderBlock((JAXBBridgeInfo)obj));
             } else if (paramBinding.equals(SOAPBlock.MIME)) {
-                // TODO Attachment
+                addAttachmentPart(im, obj, (MimeParameter)param);
             }
         }
         return im;

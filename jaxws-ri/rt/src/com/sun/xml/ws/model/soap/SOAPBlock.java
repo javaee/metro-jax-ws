@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBlock.java,v 1.3 2005-08-13 19:32:43 vivekp Exp $
+ * $Id: SOAPBlock.java,v 1.4 2005-08-15 22:56:16 vivekp Exp $
  */
 
 /*
@@ -35,6 +35,10 @@ public enum SOAPBlock {
     public boolean isAttachment(){
         return type == MIME.value();
     }
-    
+
+    public boolean isUnbound(){
+        return type == UNBOUND.value();
+    }
+
     private final int type;
 }

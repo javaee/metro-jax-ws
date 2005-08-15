@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.4 2005-07-23 04:10:09 kohlert Exp $
+ * $Id: Parameter.java,v 1.5 2005-08-15 22:58:14 vivekp Exp $
  */
 
 /*
@@ -135,13 +135,19 @@ public class Parameter {
             obj = value;
     }
 
+    public String getPartName() {
+        return partName;
+    }
+
+    public void setPartName(String partName) {
+        this.partName = partName;
+    }
+
     protected Object binding;
-
     protected int index;
-
     protected Mode mode;
-
     protected TypeReference typeReference;
-
     protected QName name;
+    protected String partName;
+
 }

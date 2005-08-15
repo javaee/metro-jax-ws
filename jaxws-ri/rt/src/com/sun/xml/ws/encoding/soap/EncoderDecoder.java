@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.2 2005-07-23 04:10:03 kohlert Exp $
+ * $Id: EncoderDecoder.java,v 1.3 2005-08-15 22:58:14 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -9,6 +9,9 @@ package com.sun.xml.ws.encoding.soap;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.namespace.QName;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -20,7 +23,10 @@ import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
+import com.sun.xml.ws.model.soap.MimeParameter;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
@@ -91,6 +97,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      */
     protected Object createPayload(RuntimeContext context, Parameter param, Object[] data,
             Object result, SOAPBinding binding) {
+        if(((SOAPBlock)param.getBinding()).isAttachment()){
+            return data[param.getIndex()];
+        }
         if (binding.isRpcLit() && ((SOAPBlock)param.getBinding()).isBody()) {
             return createRpcLitPayload(context, (WrapperParameter) param, data, result);
         }
@@ -229,5 +238,73 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             payload.addParameter(bi);
         }
         return payload;
+    }
+
+    protected Object getAttachment(Map<String, AttachmentBlock> attachments, Parameter param){
+        for(String id:attachments.keySet()){
+            String part = getMimePart(id);
+            if(part.equals(param)){
+                AttachmentBlock ab = attachments.get(id);
+                if(ab == null)
+                    return null;
+                return ab.getValue();
+            }
+        }
+        return null;
+    }
+
+    protected void addAttachmentPart(InternalMessage im, Object obj, MimeParameter mimeParam){
+        if(obj == null)
+            return;
+
+        String mimeType = mimeParam.getMimeType();
+        String contentId = null;
+        try {
+            contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+        }
+
+        AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);
+        im.addAttachment(contentId, ab);
+    }
+
+    /**
+    * According to WSI AP 1.0
+    * 3.8 Value-space of Content-Id Header
+    *   Definition: content-id part encoding
+    *   The "content-id part encoding" consists of the concatenation of:
+     * The value of the name attribute of the wsdl:part element referenced by the mime:content, in which characters disallowed in content-id headers (non-ASCII characters as represented by code points above 0x7F) are escaped as follows:
+     *     o Each disallowed character is converted to UTF-8 as one or more bytes.
+     *     o Any bytes corresponding to a disallowed character are escaped with the URI escaping mechanism (that is, converted to %HH, where HH is the hexadecimal notation of the byte value).
+     *     o The original character is replaced by the resulting character sequence.
+     * The character '=' (0x3D).
+     * A globally unique value such as a UUID.
+     * The character '@' (0x40).
+     * A valid domain name under the authority of the entity constructing the message.
+     *
+     * So a wsdl:part fooPart will be encoded as:
+     *      <fooPart=somereallybignumberlikeauuid@example.com>
+     *
+     * @param cId
+     * @return
+     */
+    protected String getMimePart(String cId){
+        int index = cId.lastIndexOf('@', cId.length());
+        if(index == -1){
+            return null;
+        }
+        String localPart = cId.substring(0, index);
+        index = localPart.lastIndexOf('=', localPart.length());
+        if(index == -1){
+            return null;
+        }
+        try {
+            return java.net.URLDecoder.decode(localPart.substring(0, index), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
+        }
     }
 }

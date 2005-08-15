@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.10 2005-08-13 19:32:43 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.11 2005-08-15 22:58:14 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.xml.ws.Holder;
 
@@ -31,9 +32,11 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
+import com.sun.xml.ws.model.soap.MimeParameter;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
 /**
@@ -59,6 +62,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         JavaMethod jm = rtContext.getModel().getJavaMethod(mi.getMethod());
         mi.setMEP(jm.getMEP());
         List<HeaderBlock> headers = im.getHeaders();
+        Map<String, AttachmentBlock> attachments = im.getAttachments();
 
         Iterator<Parameter> iter = jm.getRequestParameters().iterator();
         Object bodyValue = (bodyBlock == null) ? null :  bodyBlock.getValue();
@@ -77,8 +81,8 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (headers != null && paramBinding.equals(SOAPBlock.HEADER)) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
-            } else if (paramBinding.equals(SOAPBlock.MIME)) {
-                // TODO Attachment
+            } else if (paramBinding.isAttachment()) {
+              obj = getAttachment(attachments, param);
             }
             fillData(rtContext, param, obj, data, soapBinding);
         }
@@ -97,7 +101,6 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
      */
     public Object toInternalMessage(MessageInfo mi) {
         RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        // TODO remove, we dont want enc/dec to have any state
         RuntimeModel model = rtContext.getModel();
         JavaMethod jm = model.getJavaMethod(mi.getMethod());
         Object[] data = mi.getData();
@@ -127,7 +130,6 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                 Object detail = getDetail(jm.getCheckedException(result.getClass()), result);
                 JAXBBridgeInfo di = new JAXBBridgeInfo(model.getBridge(ce.getDetailType()), detail);
                 if(ce.isHeaderFault())
-                    //TODO: handle SOAP 12 headerfault
                     SOAPRuntimeModel.createHeaderFault(result, null, di, im);
                 else {
                     if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
@@ -155,7 +157,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (paramBinding.equals(SOAPBlock.HEADER)) {
                 im.addHeader(new HeaderBlock((JAXBBridgeInfo)obj));
             } else if (paramBinding.equals(SOAPBlock.MIME)) {
-                // TODO Attachment
+                addAttachmentPart(im, obj, (MimeParameter)param);
             }
         }
         return im;
