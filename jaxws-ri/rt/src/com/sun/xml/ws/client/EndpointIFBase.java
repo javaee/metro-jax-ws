@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.9 2005-08-04 02:32:20 kwalsh Exp $
+ * $Id: EndpointIFBase.java,v 1.10 2005-08-15 21:20:03 kwalsh Exp $
  */
 
 /*
@@ -111,7 +111,7 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
 
 
     public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
-        _setTransportFactory((ClientTransportFactory) f);
+        _setTransportFactory((com.sun.xml.ws.spi.runtime.ClientTransportFactory) f);
     }
 
     /**
