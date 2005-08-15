@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.6 2005-08-15 02:09:43 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.7 2005-08-15 22:53:39 jitu Exp $
  */
 
 /*
@@ -157,6 +157,14 @@ public class WSServletContextListener
                     
                     
         for(RuntimeEndpointInfo endpoint : endpoints) {
+            
+            if (endpoint.getWSDLFileName() != null) {
+                try {
+                    endpoint.setWSDLURL(context.getResource(endpoint.getWSDLFileName()));
+                } catch(java.net.MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
             
             endpoint.deploy();
             if (endpoint.needWSDLGeneration()) {

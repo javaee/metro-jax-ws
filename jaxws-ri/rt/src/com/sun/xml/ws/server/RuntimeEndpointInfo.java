@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.33 2005-08-15 02:09:42 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.34 2005-08-15 22:53:39 jitu Exp $
  */
 
 /*
@@ -33,6 +33,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -72,6 +73,7 @@ public class RuntimeEndpointInfo
     private boolean endServiceDone;
     private boolean injectedContext;
     private boolean publishingDone;
+    private URL wsdlURL;
 
     public Exception getException() {
         return exception;
@@ -95,6 +97,14 @@ public class RuntimeEndpointInfo
 
     public void setWSDLFileName(String s) {
         wsdlFileName = s;
+    }
+    
+    public void setWSDLURL(URL url) {
+        wsdlURL = url;
+    }
+    
+    public URL getWSDLURL() {
+        return wsdlURL;
     }
 
     /**
