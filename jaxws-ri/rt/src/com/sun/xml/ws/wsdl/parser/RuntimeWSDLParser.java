@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.2 2005-08-13 19:58:40 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.3 2005-08-15 22:44:07 vivekp Exp $
  */
 
 /**
@@ -45,6 +45,7 @@ public class RuntimeWSDLParser {
         WSDLDocument wsdlDoc = new WSDLDocument();
         WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
         InputSource source = new InputSource(is);
+        System.out.println("system id: "+source.getSystemId());
         parserContext.setOriginalWsdlURL(new URL(source.getSystemId()));
         try {
             parseWSDL(source, parserContext);
@@ -164,9 +165,8 @@ public class RuntimeWSDLParser {
             return;
         }
 
-        QName opName = new QName(binding.getName().getNamespaceURI(), bindingOpName);
-        BindingOperation bindingOp = new BindingOperation(opName);
-        binding.put(opName, bindingOp);
+        BindingOperation bindingOp = new BindingOperation(bindingOpName);
+        binding.put(bindingOpName, bindingOp);
 
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -191,7 +191,7 @@ public class RuntimeWSDLParser {
                 bindingOp.setInputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getInputParts()));
                 XMLStreamReaderUtil.next(reader);
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
-                parseMimeMultipartBinding(reader, bindingOp.getInputParts());
+                parseMimeMultipartBinding(reader, bindingOp.getInputParts(), bindingOp.getOutputMimeTypes());
                 XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
@@ -209,7 +209,7 @@ public class RuntimeWSDLParser {
                 bindingOp.setOutputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getOutputParts()));
                 XMLStreamReaderUtil.next(reader);
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
-                parseMimeMultipartBinding(reader, bindingOp.getOutputParts());
+                parseMimeMultipartBinding(reader, bindingOp.getOutputParts(), bindingOp.getOutputMimeTypes());
                 XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
@@ -253,18 +253,20 @@ public class RuntimeWSDLParser {
 //    }
 
 
-    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
+    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String, SOAPBlock> parts,
+                                                  Map<String, String> mimeTypes) {
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
             if(MIMEConstants.QNAME_PART.equals(name)){
-                parseMIMEPart(reader, parts);
+                parseMIMEPart(reader, parts, mimeTypes);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
         }
     }
 
-    private static void parseMIMEPart(XMLStreamReader reader, Map<String,SOAPBlock> parts) {
+    private static void parseMIMEPart(XMLStreamReader reader, Map<String,SOAPBlock> parts,
+                                      Map<String,String> mimeTypes) {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -280,6 +282,7 @@ public class RuntimeWSDLParser {
                     continue;
                 }
                 parts.put(part, SOAPBlock.MIME);
+                mimeTypes.put(part, type);
                 XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);

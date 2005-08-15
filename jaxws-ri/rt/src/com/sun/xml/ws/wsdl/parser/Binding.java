@@ -1,5 +1,5 @@
 /**
- * $Id: Binding.java,v 1.1 2005-08-13 19:30:35 vivekp Exp $
+ * $Id: Binding.java,v 1.2 2005-08-15 22:44:07 vivekp Exp $
  */
 
 /**
@@ -14,7 +14,7 @@ import com.sun.xml.ws.model.Mode;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 
-public class Binding extends HashMap<QName, BindingOperation> {
+public class Binding extends HashMap<String, BindingOperation> {
     private QName name;
     private QName portTypeName;
     private PortType portType;
@@ -50,11 +50,20 @@ public class Binding extends HashMap<QName, BindingOperation> {
         this.bindingId = bindingId;
     }
 
-    public SOAPBlock getBinding(QName operation, String part, Mode mode){
+    public SOAPBlock getBinding(String operation, String part, Mode mode){
         BindingOperation op = get(operation);
         if(Mode.IN == mode)
             return op.getInputBinding(part);
         else
             return op.getOutputBinding(part);
     }
+
+    public String getMimeType(String operation, String part, Mode mode){
+        BindingOperation op = get(operation);
+        if(Mode.IN == mode)
+            return op.getMimeTypeForInputPart(part);
+        else
+            return op.getMimeTypeForOutputPart(part);
+    }
+
 }

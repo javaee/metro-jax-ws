@@ -1,5 +1,5 @@
 /**
- * $Id: BindingOperation.java,v 1.1 2005-08-13 19:30:35 vivekp Exp $
+ * $Id: BindingOperation.java,v 1.2 2005-08-15 22:44:07 vivekp Exp $
  */
 
 /**
@@ -17,11 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 public class BindingOperation {
-    private QName name;
+    private String name;
 
     // map of wsdl:part to the binding
     private Map<String, SOAPBlock> inputParts;
     private Map<String, SOAPBlock> outputParts;
+    private Map<String, String> inputMimeTypes;
+    private Map<String, String> outputMimeTypes;
 
     private boolean explicitInputSOAPBodyParts = false;
     private boolean explicitOutputSOAPBodyParts = false;
@@ -33,13 +35,15 @@ public class BindingOperation {
      *
      * @param name wsdl:operation name qualified value
      */
-    public BindingOperation(QName name) {
+    public BindingOperation(String name) {
         this.name = name;
         inputParts = new HashMap<String, SOAPBlock>();
         outputParts = new HashMap<String, SOAPBlock>();
+        inputMimeTypes = new HashMap<String, String>();
+        outputMimeTypes = new HashMap<String, String>();
     }
 
-    public QName getName(){
+    public String getName(){
         return name;
     }
 
@@ -49,6 +53,14 @@ public class BindingOperation {
 
     public Map<String, SOAPBlock> getOutputParts() {
         return outputParts;
+    }
+
+    public Map<String, String> getInputMimeTypes() {
+        return inputMimeTypes;
+    }
+
+    public Map<String, String> getOutputMimeTypes() {
+        return outputMimeTypes;
     }
 
     public SOAPBlock getInputBinding(String part){
@@ -75,7 +87,7 @@ public class BindingOperation {
             else
                 emptyOutputBody = false;
         }
-        SOAPBlock block = inputParts.get(part);
+        SOAPBlock block = outputParts.get(part);
         if(block == null){
             if(explicitOutputSOAPBodyParts || (boolean)emptyOutputBody)
                 return SOAPBlock.UNBOUND;
@@ -83,6 +95,14 @@ public class BindingOperation {
         }
 
         return block;
+    }
+
+    public String getMimeTypeForInputPart(String part){
+        return inputMimeTypes.get(part);
+    }
+
+    public String getMimeTypeForOutputPart(String part){
+        return outputMimeTypes.get(part);
     }
 
     public void setInputExplicitBodyParts(boolean b) {
