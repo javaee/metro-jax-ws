@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.5 2005-08-08 23:46:34 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.6 2005-08-15 21:52:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -44,7 +44,7 @@ import com.sun.tools.ws.processor.modeler.annotation.WebServiceConstants;
 
 /**
  *
- * @author  dkohlert
+ * @author  WS Development Team
  */
 public abstract class WebServiceVisitor extends SimpleDeclarationVisitor implements WebServiceConstants {
     protected ModelBuilder builder;

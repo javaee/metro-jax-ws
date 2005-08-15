@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.13 2005-08-12 21:30:19 kohlert Exp $
+ * $Id: CompileTool.java,v 1.14 2005-08-15 21:52:12 kohlert Exp $
  */
 
 /*
@@ -314,11 +314,11 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             beforeHook();
             environment = createEnvironment();
             configuration = (Configuration) createConfiguration();
+            setEnvironmentValues(environment);
             if (configuration.getModelInfo() instanceof ClassModelInfo) {
                 buildModel(((ClassModelInfo) configuration.getModelInfo()).getClassName());
             } else {
                 processor = new Processor(configuration, properties);
-                setEnvironmentValues(environment);
                 processor.runModeler();
                 withModelHook();
                 registerProcessorActions(processor);

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.12 2005-08-12 04:20:33 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.13 2005-08-15 21:52:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -180,10 +180,24 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName.length() == 0)
             beanPackage = JAXWS_PACKAGE_PD;
+        String methodName = method.getSimpleName();                
+        String operationName = builder.getOperationName(methodName);
+        operationName = webMethod != null && webMethod.operationName().length() > 0 ?
+                        webMethod.operationName() : operationName;
+        String reqName = operationName;
+        String resName = operationName+RESPONSE;
+        String reqNamespace = typeNamespace;
+        String resNamespace = typeNamespace;
+
         String requestClassName = beanPackage + StringUtils.capitalize(method.getSimpleName());
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
-        if(reqWrapper != null && (reqWrapper.className().length() > 0)){
-            requestClassName = reqWrapper.className();
+        if (reqWrapper != null) {
+            if (reqWrapper.className().length() > 0) 
+                requestClassName = reqWrapper.className();
+            if (reqWrapper.localName().length() > 0)
+                reqName = reqWrapper.localName();
+            if (reqWrapper.targetNamespace().length() > 0)
+                reqNamespace = reqWrapper.targetNamespace();
         }
         builder.log("requestWrapper: "+requestClassName);
         if (duplicateName(requestClassName)) {
@@ -199,8 +213,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (!isOneway) {
             responseClassName = beanPackage+StringUtils.capitalize(method.getSimpleName())+RESPONSE;
             ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
-            if(resWrapper != null && (resWrapper.className().length() > 0)){
-                responseClassName = resWrapper.className();
+            if(resWrapper != null) {
+                if (resWrapper.className().length() > 0)
+                    responseClassName = resWrapper.className();
+                if (resWrapper.localName().length() > 0)
+                    resName = resWrapper.localName();
+                if (resWrapper.targetNamespace().length() > 0)
+                    resNamespace = resWrapper.targetNamespace();                
             }           
             if (duplicateName(responseClassName)) {
                 builder.onError("webserviceap.method.respone.wrapper.bean.name.not.unique",
@@ -211,10 +230,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
             }    
         }
-        String methodName = method.getSimpleName();                
-        String operationName = builder.getOperationName(methodName);
-        operationName = webMethod != null && webMethod.operationName().length() > 0 ?
-                        webMethod.operationName() : methodName;
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
         WrapperInfo reqWrapperInfo = new WrapperInfo(requestClassName);
@@ -244,20 +259,18 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 resCls = getCMClass(responseClassName, CLASS);
             }
 
-            WebResult webResult = method.getAnnotation(WebResult.class);
-            String responseName = builder.getResponseName(operationName);
             // package declaration
             String version = builder.getVersionString();
 
             // XMLElement Declarations
-            writeXmlElementDeclaration(reqCls, operationName, typeNamespace);
-            writeXmlElementDeclaration(resCls, responseName, typeNamespace);
+            writeXmlElementDeclaration(reqCls, reqName,reqNamespace);
+            writeXmlElementDeclaration(resCls, resName, resNamespace);
                         
             collectMembers(method, operationName, typeNamespace, reqMembers, resMembers);            
 
             // XmlType
             writeXmlTypeDeclaration(reqCls, operationName, typeNamespace, reqMembers);
-            writeXmlTypeDeclaration(resCls, responseName, typeNamespace, resMembers);
+            writeXmlTypeDeclaration(resCls, operationName+RESPONSE, typeNamespace, resMembers);
                  
             // class members
             writeMembers(reqCls, reqMembers);

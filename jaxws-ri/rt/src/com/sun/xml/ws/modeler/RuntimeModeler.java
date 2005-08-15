@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.22 2005-08-12 04:20:31 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.23 2005-08-15 21:52:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -363,14 +363,36 @@ public class RuntimeModeler {
         }
 
         Class requestClass = getClass(requestClassName);
-        QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
+//        QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
+  
+        String reqName = operationName;
+        String reqNamespace = targetNamespace;
+        if (reqWrapper != null) {
+            if (reqWrapper.targetNamespace().length() > 0)
+                reqNamespace = reqWrapper.targetNamespace();
+            if (reqWrapper.localName().length() > 0)
+                reqName = reqWrapper.localName();
+        }
+        QName reqElementName = new QName(reqNamespace, reqName);  
+//        System.out.println("reqName: "+reqName);
+//                (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
+        
         Class responseClass = null;
         QName resElementName = null;
+        String resName = operationName+"Response";
+        String resNamespace = targetNamespace;
         if (!isOneway) {
             responseClass = getClass(responseClassName);
-            resElementName = (resWrapper != null)?new QName(resWrapper.targetNamespace(),resWrapper.localName()):getWrapperElementName(responseClass);
+//            resName = (resWrapper != null)?new QName(resWrapper.targetNamespace(),resWrapper.localName()):getWrapperElementName(responseClass);
+            if (resWrapper != null) {
+                if (resWrapper.targetNamespace().length() > 0)
+                    resNamespace = resWrapper.targetNamespace();
+                if (resWrapper.localName().length() > 0)
+                    resName = resWrapper.localName();
+            }
         }
-
+        resElementName = new QName(resNamespace, resName);
+        
         TypeReference typeRef =
                 new TypeReference(reqElementName, requestClass, new Annotation[0]);
         WrapperParameter requestWrapper = new WrapperParameter(typeRef,

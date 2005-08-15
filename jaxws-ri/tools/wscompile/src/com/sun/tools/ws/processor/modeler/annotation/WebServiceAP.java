@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.6 2005-08-08 17:20:07 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.7 2005-08-15 21:52:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -103,7 +103,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public WebServiceAP(ToolBase tool, ProcessorEnvironment env, Properties options,  AnnotationProcessorContext context) {
-
         super(System.out, "WebServiceAP");
         this.context = context;
         this.tool = tool;
