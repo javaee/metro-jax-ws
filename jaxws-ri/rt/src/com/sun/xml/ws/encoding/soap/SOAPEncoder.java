@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.18 2005-07-28 21:56:54 spericas Exp $
+ * $Id: SOAPEncoder.java,v 1.19 2005-08-15 21:55:40 kwalsh Exp $
  */
 
 /*
@@ -227,6 +227,8 @@ public abstract class SOAPEncoder implements Encoder {
             SOAPMessage soapMessage) {
         try {
             BodyBlock bodyBlock = internalMessage.getBody();
+            if (bodyBlock == null)
+                return soapMessage;
             Object value = bodyBlock.getValue();
             if (value == null) {
                 return soapMessage;
