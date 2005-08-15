@@ -74,7 +74,6 @@
             <path refid="jaxws.classpath"/>
             <pathelement location="${build.classes.home}"/>
         </classpath>
-        <jvmarg value="-Djavax.xml.ws.EndpointFactory=com.sun.xml.ws.transport.http.server.EndpointFactoryImpl"/>
     </java>
 
 </target>
