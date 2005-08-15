@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.32 2005-08-13 02:44:37 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.33 2005-08-15 02:09:42 jitu Exp $
  */
 
 /*
@@ -71,6 +71,7 @@ public class RuntimeEndpointInfo
     private boolean beginServiceDone;
     private boolean endServiceDone;
     private boolean injectedContext;
+    private boolean publishingDone;
 
     public Exception getException() {
         return exception;
@@ -124,19 +125,17 @@ public class RuntimeEndpointInfo
     
     /**
      * creates a RuntimeModel using @link com.sun.xml.ws.modeler.RuntimeModeler. 
-     * The modeler creates the model by reading annotations on Implementor object. 
+     * The modeler creates the model by reading annotations on ImplementorClassobject. 
      * RuntimeModel is read only and is accessed from multiple threads afterwards.
-     * Generates the WSDL and XML Schemam for the endpoint if necessary
+
      */
     public void deploy() {
         if (implementor == null) {
-            // TODO throw exception
+            throw new ServerRtException("null.implementor");
         }
-        
         if (implementorClass == null) {
             setImplementorClass(getImplementor().getClass());
         }
-        
         // setting a default binding
         if (binding == null) {
             setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
@@ -147,35 +146,12 @@ public class RuntimeEndpointInfo
         } else {
             // Create runtime model for non Provider endpoints    
             createModel();
-            if (getWSDLFileName() == null) {
-                // Generate WSDL and schema documents using runtime model
-                WSDLGenResolver wsdlResolver = new WSDLGenResolver();
-                WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver,
-                        ((BindingImpl)binding).getBindingId());
-                try {
-                    wsdlGen.doGeneration();
-                } catch(Exception e) {
-                    // TODO
-                    e.printStackTrace();
-                }
-                setMetadata(wsdlResolver.getDocs());
-                setWSDLFileName(wsdlResolver.getWSDLFile());      
-                setServiceName(runtimeModel.getServiceQName());       
-                setPortName(runtimeModel.getPortQName());
-            } else {
-                if (serviceName == null) {
-                    // If WSDL has only one service, then it is okay
-                    // else error
-                } else {
-                    if (portName == null) {
-                        // If service has only one port, then it is okay
-                        // else error
-                    } else {
-                        // WSD
-                    }
-                }
+            if (getServiceName() == null) {
+                setServiceName(runtimeModel.getServiceQName());
             }
-            
+            if (getPortName() == null) {
+                setPortName(runtimeModel.getPortQName());
+            }
             if (getBinding().getHandlerChain() == null) {
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
@@ -188,11 +164,52 @@ public class RuntimeEndpointInfo
                     }
                 }
             }
-            
             //set Tmomt processing
             runtimeModel.enableMtom(enableMtom);
         }
         deployed = true;
+    }
+    
+    public boolean needWSDLGeneration() {
+        return (getWSDLFileName() == null);
+    }
+    
+    public boolean isPublishingDone() {
+        return publishingDone;
+    }
+    
+    public void setPublishingDone(boolean publishingDone) {
+        this.publishingDone = publishingDone;
+    }
+    
+    /*
+     * Generates the WSDL and XML Schema for the endpoint if necessary
+     * It generates WSDL only for SOAP1.1, and for XSOAP1.2 bindings
+     */
+    public void generateWSDL() {
+        String bindingId = ((BindingImpl)getBinding()).getBindingId();
+        if (!bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) &&
+            !bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            throw new ServerRtException("can.not.generate.wsdl", bindingId);
+        }
+        /*
+        if (bindingId.equals("XXX")) {
+            // Log a warning for Generating non standard SOAP 1.2 WSDL
+        }
+         */
+        // Generate WSDL and schema documents using runtime model
+        WSDLGenResolver wsdlResolver = new WSDLGenResolver();
+        WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver,
+                ((BindingImpl)binding).getBindingId());
+        try {
+            wsdlGen.doGeneration();
+        } catch(Exception e) {
+            throw new ServerRtException("server.rt.err",
+                    new LocalizableExceptionAdapter(e));
+        }
+        setMetadata(wsdlResolver.getDocs());
+        setWSDLFileName(wsdlResolver.getWSDLFile());
+        setPublishingDone(true);
     }
     
     /*

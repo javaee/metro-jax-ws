@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.5 2005-08-12 22:34:38 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.6 2005-08-15 02:09:43 jitu Exp $
  */
 
 /*
@@ -159,6 +159,12 @@ public class WSServletContextListener
         for(RuntimeEndpointInfo endpoint : endpoints) {
             
             endpoint.deploy();
+            if (endpoint.needWSDLGeneration()) {
+                endpoint.generateWSDL();
+            }
+            if (endpoint.isPublishingDone()) {
+                continue;
+            }
             
             // Set queryString for the document
             Set<Entry<String, DocInfo>> entries = docs.entrySet();
