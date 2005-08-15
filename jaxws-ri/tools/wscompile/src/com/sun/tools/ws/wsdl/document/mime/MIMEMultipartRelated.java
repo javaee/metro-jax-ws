@@ -1,5 +1,5 @@
 /*
- * $Id: MIMEMultipartRelated.java,v 1.2 2005-07-18 18:14:15 kohlert Exp $
+ * $Id: MIMEMultipartRelated.java,v 1.3 2005-08-15 22:41:44 vivekp Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import com.sun.tools.ws.wsdl.framework.ExtensionVisitor;
 public class MIMEMultipartRelated extends Extension {
 
     public MIMEMultipartRelated() {
-        _parts = new ArrayList();
+        _parts = new ArrayList<MIMEPart>();
     }
 
     public QName getElementName() {
@@ -39,7 +39,7 @@ public class MIMEMultipartRelated extends Extension {
         _parts.add(part);
     }
 
-    public Iterator getParts() {
+    public Iterator<MIMEPart> getParts() {
         return _parts.iterator();
     }
 
@@ -59,5 +59,5 @@ public class MIMEMultipartRelated extends Extension {
     public void validateThis() {
     }
 
-    private List _parts;
+    private List<MIMEPart> _parts;
 }

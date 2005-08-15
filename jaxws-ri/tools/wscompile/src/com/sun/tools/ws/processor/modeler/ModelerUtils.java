@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.6 2005-08-08 18:58:29 kohlert Exp $
+ * $Id: ModelerUtils.java,v 1.7 2005-08-15 22:41:43 vivekp Exp $
  */
 
 /*
@@ -122,7 +122,7 @@ public class ModelerUtils {
 
         List<Parameter> parameters = new ArrayList<Parameter>();
         for(MessagePart part : message.getParts()){
-            if(part.getBindingExtensibilityElementKind() == MessagePart.PART_NOT_BOUNDED)
+            if(!ModelerUtils.isBoundToSOAPBody(part))
                 continue;
             QName name = part.getDescriptor();
             TypeAndAnnotation typeAndAnn = jaxbModel.getJavaType(name);
@@ -207,6 +207,42 @@ public class ModelerUtils {
                 return false;
             }
         }
+        return false;
+    }
+
+    /**
+     * @param part
+     * @return true if part is bound to Mime content
+     */
+    public static boolean isBoundToMimeContent(MessagePart part) {
+        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.WSDL_MIME_BINDING)
+            return true;
+        return false;
+    }
+
+    /**
+     * @param part
+     * @return true if part is bound to SOAPBody
+     */
+    public static boolean isBoundToSOAPBody(MessagePart part) {
+        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_BODY_BINDING)
+            return true;
+        return false;
+    }
+
+    /**
+     * @param part
+     * @return true if part is bound to SOAPHeader
+     */
+    public static boolean isBoundToSOAPHeader(MessagePart part) {
+        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_HEADER_BINDING)
+            return true;
+        return false;
+    }
+
+    public static boolean isUnbound(MessagePart part) {
+        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.PART_NOT_BOUNDED)
+            return true;
         return false;
     }
 }

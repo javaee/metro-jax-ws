@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.20 2005-08-12 21:30:19 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.21 2005-08-15 22:41:43 vivekp Exp $
  */
 
 /*
@@ -65,6 +65,7 @@ import com.sun.tools.ws.wsdl.document.OperationStyle;
 import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.tools.ws.wsdl.document.WSDLDocument;
+import com.sun.tools.ws.wsdl.document.mime.MIMEContent;
 import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
@@ -85,6 +86,7 @@ import com.sun.tools.xjc.api.XJC;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JClass;
+import com.sun.codemodel.JType;
 
 
 /**
@@ -891,7 +893,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             }
         }
         //process all the headerfaults
-        handleHeaderFaults(info, response);
+        //handleHeaderFaults(info, response);
 
         info.operation.setProperty(
                 WSDL_PARAMETER_ORDER,
@@ -1656,9 +1658,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
 
         //As of now WSDL MIME binding is not supported, so throw the exception when such binding is encounterd
-        if(mimeParts.size() > 0){
-            fail("wsdlmodeler.unsupportedBinding.mime", new Object[]{});
-        }
+//        if(mimeParts.size() > 0){
+//            fail("wsdlmodeler.unsupportedBinding.mime", new Object[]{});
+//        }
 
         //if soap:body parts attribute not there, then all unbounded message parts will
         // belong to the soap body
@@ -1862,11 +1864,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 if(unwrappable && isRequestResponse && jaxbResType.isUnwrappable()){
                     JAXBStructuredType jaxbResponseType = ModelerUtils.createJAXBStructureType(jaxbResType);
                     resBlock = new Block(resBodyName, jaxbResponseType);
-                    if(isBoundToSOAPBody(part))
+                    if(ModelerUtils.isBoundToSOAPBody(part))
                         response.addBodyBlock(resBlock);
-                    else if(isBoundToSOAPHeader(part))
-                        response.addHeaderBlock(resBlock);
-                    else if(isUnbound(part))
+                    else if(ModelerUtils.isUnbound(part))
                         response.addUnboundBlock(resBlock);
                     outParameters = ModelerUtils.createUnwrappedParameters(jaxbResponseType, resBlock);
                     for(Parameter param: outParameters){
@@ -1874,12 +1874,18 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     }
                 }else if(isRequestResponse && outputMessage != null){
                     resBlock = new Block(resBodyName, jaxbResType);
-                    if(isBoundToSOAPBody(part) && !doneSOAPBody){
+                    if(ModelerUtils.isBoundToSOAPBody(part) && !doneSOAPBody){
                         response.addBodyBlock(resBlock);
                         doneSOAPBody = true;
-                    }else if(isBoundToSOAPHeader(part)){
+                    }else if(ModelerUtils.isBoundToSOAPHeader(part)){
                         response.addHeaderBlock(resBlock);
-                    }else if(isUnbound(part)){
+                    }else if(ModelerUtils.isBoundToMimeContent(part)){
+                        List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getOutput(),
+                                getOutputMessage(), part.getName());
+                        jaxbResType = getAttachmentType(mimeContents, part);
+                        resBlock = new Block(new QName(part.getName()), jaxbResType);
+                        response.addAttachmentBlock(resBlock);
+                    }else if(ModelerUtils.isUnbound(part)){
                         response.addUnboundBlock(resBlock);
                     }
                     Parameter param = ModelerUtils.createParameter(part.getName(), jaxbResType, resBlock);
@@ -1935,11 +1941,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 //So build body and header blocks and set to request and response
                 JAXBStructuredType jaxbRequestType = ModelerUtils.createJAXBStructureType(jaxbReqType);
                 reqBlock = new Block(reqBodyName, jaxbRequestType);
-                if(isBoundToSOAPBody(part)){
+                if(ModelerUtils.isBoundToSOAPBody(part)){
                     request.addBodyBlock(reqBlock);
-                }else if(isBoundToSOAPHeader(part)){
-                    request.addHeaderBlock(reqBlock);
-                }else if(isUnbound(part)){
+                }else if(ModelerUtils.isUnbound(part)){
                     request.addUnboundBlock(reqBlock);
                 }
                 inParameters = ModelerUtils.createUnwrappedParameters(jaxbRequestType, reqBlock);
@@ -1948,12 +1952,18 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
             }else{
                 reqBlock = new Block(reqBodyName, jaxbReqType);
-                if(isBoundToSOAPBody(part) && !doneSOAPBody){
+                if(ModelerUtils.isBoundToSOAPBody(part) && !doneSOAPBody){
                     doneSOAPBody = true;
                     request.addBodyBlock(reqBlock);
-                }else if(isBoundToSOAPHeader(part)){
+                }else if(ModelerUtils.isBoundToSOAPHeader(part)){
                     request.addHeaderBlock(reqBlock);
-                }else if(isUnbound(part)){
+                }else if(ModelerUtils.isBoundToMimeContent(part)){
+                    List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getInput(),
+                        getInputMessage(), part.getName());
+                    jaxbReqType = getAttachmentType(mimeContents, part);
+                    reqBlock = new Block(new QName(part.getName()), jaxbReqType);
+                    request.addAttachmentBlock(reqBlock);
+                }else if(ModelerUtils.isUnbound(part)){
                     request.addUnboundBlock(reqBlock);
                 }
                 if(inParameters == null)
@@ -2196,7 +2206,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             MessagePart part = message.getPart(paramName);
             if(part == null)
                 continue;
-            if(isBoundToSOAPHeader(part)){
+            if(ModelerUtils.isBoundToSOAPHeader(part)){
                 if(parameters == null)
                     parameters = new ArrayList<Parameter>();
                 QName headerName = part.getDescriptor();
@@ -2207,7 +2217,21 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 if(param != null){
                     parameters.add(param);
                 }
-            }else if(isUnbound(part)){
+            }else if(ModelerUtils.isBoundToMimeContent(part)){
+                if(parameters == null)
+                    parameters = new ArrayList<Parameter>();
+                List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getInput(),
+                        getInputMessage(), paramName);
+
+                JAXBType type = getAttachmentType(mimeContents, part);
+                //create Parameters in request or response
+                Block mimeBlock = new Block(new QName(part.getName()), type);
+                request.addAttachmentBlock(mimeBlock);
+                Parameter param = ModelerUtils.createParameter(part.getName(), type, mimeBlock);
+                if(param != null){
+                    parameters.add(param);
+                }
+            }else if(ModelerUtils.isUnbound(part)){
                 if(parameters == null)
                     parameters = new ArrayList<Parameter>();
                 QName name = part.getDescriptor();
@@ -2219,15 +2243,12 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     parameters.add(param);
                 }
             }
-            //TODO: create mime parameters
         }
         for(Parameter param : parameters){
             setCustomizedParameterName(info.portTypeOperation, message.getPart(param.getName()), param, false);
         }
         return parameters;
     }
-
-
 
     private List<Parameter> createRpcLitResponseParameters(Response response, Block block) {
 
@@ -2246,7 +2267,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         for(MessagePart part: msgParts){
             if(part == null)
                 continue;
-            if(isBoundToSOAPHeader(part)){
+            if(ModelerUtils.isBoundToSOAPHeader(part)){
                 if(parameters == null)
                     parameters = new ArrayList<Parameter>();
                 QName headerName = part.getDescriptor();
@@ -2257,7 +2278,21 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 if(param != null){
                     parameters.add(param);
                 }
-            }else if(isUnbound(part)){
+            }else if(ModelerUtils.isBoundToMimeContent(part)){
+                if(parameters == null)
+                    parameters = new ArrayList<Parameter>();
+                List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getOutput(),
+                        getOutputMessage(), part.getName());
+
+                JAXBType type = getAttachmentType(mimeContents, part);
+                //create Parameters in request or response
+                Block mimeBlock = new Block(new QName(part.getName()), type);
+                response.addAttachmentBlock(mimeBlock);
+                Parameter param = ModelerUtils.createParameter(part.getName(), type, mimeBlock);
+                if(param != null){
+                    parameters.add(param);
+                }
+            }else if(ModelerUtils.isUnbound(part)){
                 if(parameters == null)
                     parameters = new ArrayList<Parameter>();
                 QName name = part.getDescriptor();
@@ -2269,12 +2304,62 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     parameters.add(param);
                 }
             }
-            //TODO: create mime parameters
         }
         for(Parameter param : parameters){
             setCustomizedParameterName(info.portTypeOperation, message.getPart(param.getName()), param, false);
         }
         return parameters;
+    }
+
+    private String getJavaTypeForMimeType(String mimeType){
+        if(mimeType.equals("image/jpeg") || mimeType.equals("image/gif")){
+            return "java.awt.Image";
+        }else if(mimeType.equals("text/xml") || mimeType.equals("application/xml")){
+            return "javax.xml.transform.Source";
+        }
+        return "javax.activation.DataHandler";
+    }
+
+    /**
+     * @param mimeContents
+     * @return
+     */
+    private JAXBType getAttachmentType(List<MIMEContent> mimeContents, MessagePart part) {
+        String javaType = null;
+        List<String> mimeTypes = getAlternateMimeTypes(mimeContents);
+        if(mimeTypes.size() > 1) {
+            javaType = "javax.activation.DataHandler";
+        }else{
+           javaType = getJavaTypeForMimeType(mimeTypes.get(0));
+        }
+
+        JCodeModel cm = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel().generateCode(null,
+                    new ConsoleErrorReporter(getEnvironment(), false));
+        JType jt= cm.ref(javaType);;
+        QName desc = part.getDescriptor();
+        if (part.getDescriptorKind() == SchemaKinds.XSD_TYPE) {
+            desc = new QName("", part.getName());
+        } else if (part.getDescriptorKind()== SchemaKinds.XSD_ELEMENT) {
+            for(Iterator mimeTypeIter = mimeTypes.iterator(); mimeTypeIter.hasNext();) {
+                String mimeType = (String)mimeTypeIter.next();
+                if((!mimeType.equals("text/xml") &&
+                        !mimeType.equals("applicatioon/xml"))){
+                    //According to AP 1.0,
+                    //RZZZZ: In a DESCRIPTION, if a wsdl:part element refers to a
+                    //global element declaration (via the element attribute of the wsdl:part
+                    //element) then the value of the type attribute of a mime:content element
+                    //that binds that part MUST be a content type suitable for carrying an
+                    //XML serialization.
+                    //should we throw warning?
+                    //type = MimeHelper.javaType.DATA_HANDLER_JAVATYPE;
+                    warn("mimemodeler.elementPart.invalidElementMimeType",
+                            new Object[] {
+                            part.getName(), mimeType});
+                }
+            }
+        }
+        return new JAXBType(desc, new JavaSimpleType(new JAXBTypeAndAnnotation(jt)),
+                null, getJAXBModelBuilder().getJAXBModel());
     }
 
     protected void buildJAXBModel(WSDLDocument wsdlDocument, WSDLModelInfo modelInfo, ClassNameCollector classNameCollector) {

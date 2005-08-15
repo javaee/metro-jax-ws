@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.7 2005-08-12 18:07:52 kohlert Exp $
+ * $Id: WSDLModelerBase.java,v 1.8 2005-08-15 22:41:43 vivekp Exp $
  */
 
 /*
@@ -40,11 +40,8 @@ import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Request;
 import com.sun.tools.ws.processor.model.Response;
 import com.sun.tools.ws.processor.model.Service;
-import com.sun.tools.ws.processor.model.java.JavaException;
-import com.sun.tools.ws.processor.model.java.JavaInterface;
-import com.sun.tools.ws.processor.model.java.JavaMethod;
-import com.sun.tools.ws.processor.model.java.JavaParameter;
-import com.sun.tools.ws.processor.model.java.JavaType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBType;
+import com.sun.tools.ws.processor.model.java.*;
 import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.modeler.Modeler;
 import com.sun.tools.ws.processor.modeler.ModelerException;
@@ -87,6 +84,7 @@ import com.sun.tools.ws.wsdl.parser.Constants;
 import com.sun.tools.ws.wsdl.parser.SOAPEntityReferenceValidator;
 import com.sun.tools.ws.wsdl.parser.Util;
 import com.sun.tools.ws.wsdl.parser.WSDLParser;
+import com.sun.tools.xjc.api.XJC;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -1151,20 +1149,14 @@ public abstract class WSDLModelerBase implements Modeler {
     }
 
     //List of mimeTypes
-    private List getAlternateMimeTypes(List mimeContents) {
-        List mimeTypes = new ArrayList();
+    protected List<String> getAlternateMimeTypes(List<MIMEContent> mimeContents) {
+        List<String> mimeTypes = new ArrayList<String>();
         //validateMimeContentPartNames(mimeContents.iterator());
-        String mimeType = null;
-        for(Iterator iter = mimeContents.iterator();iter.hasNext();){
-            MIMEContent mimeContent = (MIMEContent)iter.next();
-            if(mimeType == null) {
-                mimeType = getMimeContentType(mimeContent);
+//        String mimeType = null;
+        for(MIMEContent mimeContent:mimeContents){
+            String mimeType = getMimeContentType(mimeContent);
+            if(!mimeTypes.contains(mimeType))
                 mimeTypes.add(mimeType);
-
-            }
-            String newMimeType = getMimeContentType(mimeContent);
-            if(!newMimeType.equals(mimeType))
-                mimeTypes.add(newMimeType);
         }
         return mimeTypes;
     }
@@ -1199,20 +1191,20 @@ public abstract class WSDLModelerBase implements Modeler {
         return true;
     }
 
-    protected Iterator getMimeParts(Extensible ext) {
+    protected Iterator<MIMEPart> getMimeParts(Extensible ext) {
         MIMEMultipartRelated multiPartRelated =
             (MIMEMultipartRelated) getAnyExtensionOfType(ext,
                     MIMEMultipartRelated.class);
         if(multiPartRelated == null) {
-            ArrayList parts = new ArrayList();
+            List<MIMEPart> parts = new ArrayList<MIMEPart>();
             return parts.iterator();
         }
         return multiPartRelated.getParts();
     }
 
     //returns MIMEContents
-    protected List getMimeContents(MIMEPart part) {
-        ArrayList mimeContents = new ArrayList();
+    protected List<MIMEContent> getMimeContents(MIMEPart part) {
+        List<MIMEContent> mimeContents = new ArrayList<MIMEContent>();
         Iterator parts = part.extensions();
         while(parts.hasNext()) {
             Extension mimeContent = (Extension) parts.next();
@@ -1490,477 +1482,6 @@ public abstract class WSDLModelerBase implements Modeler {
         }
         structureNamePrefix += "_";
         return structureNamePrefix;
-    }
-
-//    protected Operation processSOAPOperationRPCLiteralStyle() {
-//        boolean isRequestResponse =
-//            info.portTypeOperation.getStyle()
-//                == OperationStyle.REQUEST_RESPONSE;
-//        Request request = new Request();
-//        Response response = new Response();
-//
-//        info.operation.setUse(SOAPUse.LITERAL);
-//
-//        SOAPBody soapRequestBody = getSOAPRequestBody();
-//
-//        if(soapRequestBody != null && isRequestMimeMultipart()) {
-//            request.setProperty(
-//                    MESSAGE_HAS_MIME_MULTIPART_RELATED_BINDING,
-//            "true");
-//        }
-//
-//        SOAPBody soapResponseBody = null;
-//        com.sun.xml.rpc.wsdl.document.Message outputMessage = null;
-//        if (isRequestResponse) {
-//            soapResponseBody = getSOAPResponseBody();
-//            outputMessage = getOutputMessage();
-//            // code added for 109
-//            if (outputMessage != null)
-//                response.setProperty(
-//                    ModelProperties.PROPERTY_WSDL_MESSAGE_NAME,
-//                    getQNameOf(outputMessage));
-//
-//            if(soapResponseBody != null && isResponseMimeMultipart()) {
-//                response.setProperty(
-//                        MESSAGE_HAS_MIME_MULTIPART_RELATED_BINDING,
-//                "true");
-//            }
-//        }
-//        // set the use attribute, it can be Encoded or Literal
-//        setSOAPUse();
-//
-//        if (!soapRequestBody.isLiteral()
-//            || (soapResponseBody != null && !soapResponseBody.isLiteral())) {
-//            warn(
-//                "wsdlmodeler.warning.ignoringOperation.notLiteral",
-//                info.portTypeOperation.getName());
-//            return null;
-//        }
-//
-//        //bug fix: 5024020, ignore operation if there are more than one root part
-//        if(!validateMimeParts(getMimeParts(info.bindingOperation.getInput())) ||
-//                !validateMimeParts(getMimeParts(info.bindingOperation.getOutput())))
-//            return null;
-//
-//        com.sun.xml.rpc.wsdl.document.Message inputMessage = getInputMessage();
-//
-//        setJavaOperationNameProperty(inputMessage);
-//
-//        // code added for 109
-//        if (inputMessage != null)
-//            request.setProperty(
-//                ModelProperties.PROPERTY_WSDL_MESSAGE_NAME,
-//                getQNameOf(inputMessage));
-//
-//        // Process parameterOrder and get the parameterList
-//        Set inputParameterNames = new HashSet();
-//        Set outputParameterNames = new HashSet();
-//        Set mimeContentParameterNames = new HashSet();
-//        String resultParameterName = null;
-//        StringBuffer result = new StringBuffer();
-//        java.util.List parameterList =
-//            processParameterOrder(
-//                inputParameterNames,
-//                outputParameterNames,
-//                result);
-//        if (result.length() > 0)
-//            resultParameterName = result.toString();
-//        // get request/response namespace uris. These uris are used to
-//        // get the respective body attributes.
-//        String requestNamespaceURI = getRequestNamespaceURI(soapRequestBody);
-//        String responseNamespaceURI = null;
-//        if (isRequestResponse) {
-//            responseNamespaceURI = getResponseNamespaceURI(soapResponseBody);
-//        }
-//
-//        // Get the structure prefix. This prefix is used to name the
-//        // request/response class.
-//        String structureNamePrefix = getStructureNamePrefix();
-//
-//        // setup the request Block
-//        QName reqBodyName =
-//            new QName(requestNamespaceURI, info.portTypeOperation.getName());
-//        LiteralSequenceType reqType = new LiteralSequenceType(reqBodyName);
-//        reqType.setRpcWrapper(true);
-//        Block reqBlock = new Block(reqBodyName, reqType);
-//        JavaStructureType requestBodyJavaType =
-//            new JavaStructureType(
-//                getUniqueClassName(
-//                    makePackageQualified(
-//                        StringUtils.capitalize(
-//                            structureNamePrefix
-//                                + _env.getNames().validExternalJavaIdentifier(
-//                                    info.uniqueOperationName))
-//                            + "_RequestStruct",
-//                        reqBodyName)),
-//                false,
-//                reqType);
-//        reqType.setJavaType(requestBodyJavaType);
-//        request.addBodyBlock(reqBlock);
-//
-//        // setup the response block
-//        LiteralSequenceType resType = null;
-//        Block resBlock = null;
-//        JavaStructureType responseBodyJavaType = null;
-//        if (isRequestResponse) {
-//            QName resBodyName =
-//                new QName(
-//                    responseNamespaceURI,
-//                    info.portTypeOperation.getName() + "Response");
-//            resType = new LiteralSequenceType(resBodyName);
-//            resType.setRpcWrapper(true);
-//            resBlock = new Block(resBodyName, resType);
-//            //            responseBodyJavaType = new JavaStructureType(makePackageQualified(StringUtils.capitalize(structureNamePrefix + _env.getNames().validExternalJavaIdentifier(info.uniqueOperationName)) + "_ResponseStruct", resBodyName), false, resType);
-//            responseBodyJavaType =
-//                new JavaStructureType(
-//                    getUniqueClassName(
-//                        makePackageQualified(
-//                            StringUtils.capitalize(
-//                                structureNamePrefix
-//                                    + _env
-//                                        .getNames()
-//                                        .validExternalJavaIdentifier(
-//                                        info.uniqueOperationName))
-//                                + "_ResponseStruct",
-//                            resBodyName)),
-//                    false,
-//                    resType);
-//            resType.setJavaType(responseBodyJavaType);
-//            response.addBodyBlock(resBlock);
-//        }
-//
-//        if (resultParameterName == null) {
-//            // this is ugly, but we need to save information about the return type
-//            // being void at this stage, so that when we later create a Java interface
-//            // for the port this operation belongs to, we'll do the right thing
-//            info.operation.setProperty(OPERATION_HAS_VOID_RETURN_TYPE, "true");
-//        } else {
-//            // handle result parameter a bit specially
-//            MessagePart part = outputMessage.getPart(resultParameterName);
-//            if(isBoundToMimeContent(part)){
-//                //handle mime:part
-//                List mimeContents = getMimeContents(info.bindingOperation.getOutput(),
-//                        getOutputMessage(), resultParameterName);
-//                LiteralAttachmentType mimeModelType = getAttachmentType(mimeContents, part);
-//                //create Parameters in request or response
-//                Block block = new Block(new QName(part.getName()),
-//                        mimeModelType);
-//                response.addAttachmentBlock(block);
-//                Parameter outParameter =
-//                    new Parameter(
-//                            getEnvironment()
-//                            .getNames()
-//                            .validJavaMemberName(
-//                                    part.getName()));
-//                outParameter.setEmbedded(false);
-//                outParameter.setType(mimeModelType);
-//                outParameter.setBlock(block);
-//                outParameter.setProperty(
-//                        ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                        part.getName());
-//                response.addParameter(outParameter);
-//                info.operation.setProperty(
-//                        WSDL_RESULT_PARAMETER,
-//                        outParameter.getName());
-//            }else if(isBoundToSOAPBody(part)) {
-//                LiteralType literalType=null;
-//                if (part.getDescriptorKind() == SchemaKinds.XSD_TYPE) {
-////                    literalType =
-////                        _analyzer.schemaTypeToLiteralType(part.getDescriptor());
-//                } else {
-//                    literalType = getElementTypeToLiteralType(part.getDescriptor());
-//                }
-//
-////                // bug fix: 4923650
-////                literalType =
-////                    (LiteralType)verifyResultType(literalType, info.operation);
-//
-//                LiteralElementMember member =
-//                    new LiteralElementMember(
-//                        new QName(null, part.getName()),
-//                        literalType);
-//                // bug: 4860484, set RPC/LIT param with implicit assumption
-//                // of minOccurs=maxOccurs=1, nillable=false.
-//                member.setRequired(RPCLIT_PARAM_REQUIRED);
-//                JavaStructureMember javaMember =
-//                    getJavaMember(part, literalType, member);
-//                member.setJavaStructureMember(javaMember);
-//                resType.add(member);
-//                responseBodyJavaType.add(javaMember);
-//                Parameter parameter = getParameter(part, literalType, resBlock);
-//                response.addParameter(parameter);
-//                info.operation.setProperty(
-//                    WSDL_RESULT_PARAMETER,
-//                    parameter.getName());
-//            }
-//        }
-//
-//        // create a definitive list of parameters to match what we'd like to get
-//        // in the java interface (which is generated much later), parameterOrder
-//        List definitiveParameterList = new ArrayList();
-//
-//        Parameter inParameter, outParameter;
-//        for (Iterator iter = parameterList.iterator(); iter.hasNext();) {
-//            String name = (String)iter.next();
-//            boolean isInput = inputParameterNames.contains(name);
-//            boolean isOutput = outputParameterNames.contains(name);
-//            boolean isBoundToSoapBody = isBoundToSOAPBody(inputMessage.getPart(name));
-//            boolean isBoundToMimeContent = isBoundToMimeContent(inputMessage.getPart(name));
-//
-//            inParameter = outParameter = null;
-//
-//            if (isInput && isOutput && isBoundToSOAPBody(inputMessage.getPart(name))) {
-//                // make sure types match
-//                if (!inputMessage
-//                    .getPart(name)
-//                    .getDescriptor()
-//                    .equals(outputMessage.getPart(name).getDescriptor())) {
-//                    throw new ModelerException(
-//                        "wsdlmodeler.invalid.parameter.differentTypes",
-//                        new Object[] {
-//                            name,
-//                            info.operation.getName().getLocalPart()});
-//                }
-//            }
-//
-//            if (isInput && isBoundToSOAPBody(inputMessage.getPart(name))) {
-//                MessagePart part = inputMessage.getPart(name);
-//                LiteralType literalType;
-//                if (part.getDescriptorKind() == SchemaKinds.XSD_TYPE) {
-////                    literalType =
-////                        _analyzer.schemaTypeToLiteralType(part.getDescriptor());
-//                } else {
-//                    literalType =
-//                        getElementTypeToLiteralType(part.getDescriptor());
-//                }
-//
-//                // bug fix: 4923650
-//                literalType =
-//                    (LiteralType)verifyParameterType(literalType,
-//                        part.getName(),
-//                        info.operation);
-//
-//                inParameter =
-//                    new Parameter(
-//                        _env.getNames().validJavaMemberName(part.getName()));
-//                // bug fix: 4931493
-//                inParameter.setProperty(
-//                    ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                    part.getName());
-//                inParameter.setEmbedded(true);
-//                inParameter.setType(literalType);
-//                inParameter.setBlock(reqBlock);
-//                request.addParameter(inParameter);
-//                definitiveParameterList.add(inParameter.getName());
-//                addParameterToStructures(
-//                    part,
-//                    inParameter,
-//                    reqType,
-//                    requestBodyJavaType);
-//            }else if(isInput && isBoundToMimeContent(inputMessage.getPart(name))) {
-//                //handle mime:part
-//                MessagePart part = inputMessage.getPart(name);
-//                List mimeContents = getMimeContents(info.bindingOperation.getInput(),
-//                                    getInputMessage(), name);
-//
-//                LiteralAttachmentType mimeModelType = getAttachmentType(mimeContents, part);
-//                //create Parameters in request or response
-//                Block block = new Block(new QName(part.getName()),
-//                        mimeModelType);
-//                    request.addAttachmentBlock(block);
-//                    inParameter =
-//                    new Parameter(
-//                            getEnvironment()
-//                            .getNames()
-//                            .validJavaMemberName(
-//                                    part.getName()));
-//                inParameter.setEmbedded(false);
-//                inParameter.setType(mimeModelType);
-//                inParameter.setBlock(block);
-//                inParameter.setProperty(
-//                    ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                    part.getName());
-//                request.addParameter(inParameter);
-//                definitiveParameterList.add(inParameter.getName());
-//            }
-//            if (isOutput && isBoundToSOAPBody(outputMessage.getPart(name))) {
-//                MessagePart part = outputMessage.getPart(name);
-//                LiteralType literalType;
-//                if (part.getDescriptorKind() == SchemaKinds.XSD_TYPE) {
-////                    literalType =
-////                        _analyzer.schemaTypeToLiteralType(part.getDescriptor());
-//                } else {
-//                    literalType =
-//                        getElementTypeToLiteralType(part.getDescriptor());
-//                }
-//                // bug fix: 4923650
-////                literalType =
-////                    (LiteralType)verifyParameterType(literalType,
-////                        part.getName(),
-////                        info.operation);
-//
-//                outParameter =
-//                    new Parameter(
-//                        _env.getNames().validJavaMemberName(part.getName()));
-//                // bug fix: 4931493
-//                outParameter.setProperty(
-//                    ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                    part.getName());
-//                outParameter.setEmbedded(true);
-//                outParameter.setType(literalType);
-//                outParameter.setBlock(resBlock);
-//                response.addParameter(outParameter);
-//                addParameterToStructures(
-//                    part,
-//                    outParameter,
-//                    resType,
-//                    responseBodyJavaType);
-//
-//                if (inParameter == null) {
-//                    definitiveParameterList.add(outParameter.getName());
-//                } else {
-//                    inParameter.setLinkedParameter(outParameter);
-//                    outParameter.setLinkedParameter(inParameter);
-//                }
-//            }else if(isOutput && isBoundToMimeContent(outputMessage.getPart(name))) {
-//                //handle mime:part
-//                MessagePart part = outputMessage.getPart(name);
-//                if(part != null) {
-//                    List mimeContents = getMimeContents(info.bindingOperation.getOutput(),
-//                            getOutputMessage(), name);
-//                    LiteralAttachmentType mimeModelType = getAttachmentType(mimeContents, part);
-//                    //create Parameters in request or response
-//                    Block block = new Block(new QName(part.getName()),
-//                            mimeModelType);
-//                    response.addAttachmentBlock(block);
-//                    outParameter =
-//                        new Parameter(
-//                                getEnvironment()
-//                                .getNames()
-//                                .validJavaMemberName(
-//                                        part.getName()));
-//                    outParameter.setEmbedded(false);
-//                    outParameter.setType(mimeModelType);
-//                    outParameter.setBlock(block);
-//                    outParameter.setProperty(
-//                            ModelProperties.PROPERTY_PARAM_MESSAGE_PART_NAME,
-//                            part.getName());
-//                    response.addParameter(outParameter);
-//                    if (inParameter == null) {
-//                        definitiveParameterList.add(outParameter.getName());
-//                    } else {
-//                        Parameter inParam =
-//                            request.getParameterByName(
-//                                    inParameter.getName());
-//
-//                        List inMimeTypes = ((LiteralAttachmentType)inParameter.getType()).getAlternateMIMETypes();
-//                        List outMimeTypes = ((LiteralAttachmentType)outParameter.getType()).getAlternateMIMETypes();
-//                        boolean sameMimeTypes = true;
-//                        if(inMimeTypes.size() == outMimeTypes.size()) {
-//                            //now that alternate mimeTypes are same size, lets compare them
-//                            Iterator inTypesIter = inMimeTypes.iterator();
-//                            Iterator outTypesIter = outMimeTypes.iterator();
-//                            while(inTypesIter.hasNext()){
-//                                String inTypeName = (String)inTypesIter.next();
-//                                String outTypeName = (String)outTypesIter.next();
-//                                if(!inTypeName.equals(outTypeName)) {
-//                                    sameMimeTypes = false;
-//                                    break;
-//                                }
-//                            }
-//                        }
-//
-//                        String inMimeType = ((LiteralAttachmentType)inParam.getType()).getMIMEType();
-//                        String outMimeType = ((LiteralAttachmentType)outParameter.getType()).getMIMEType();
-//                        if(inParameter.getType().getName().equals(outParameter.getType().getName()) &&
-//                                sameMimeTypes) {
-//                            outParameter.setLinkedParameter(inParameter);
-//                            inParameter.setLinkedParameter(outParameter);
-//                        }
-//
-//                    }
-//                }
-//            }
-//        }
-//
-//        info.operation.setRequest(request);
-//
-//        // DOUG for one-way operations
-//        if (isRequestResponse) {
-//            info.operation.setResponse(response);
-//        }
-//
-//        // get fault names
-//        Set duplicateNames = getDuplicateFaultNames();
-//
-//        // handle soap:fault
-//        handleLiteralSOAPFault(response, duplicateNames);
-//
-//        // handle headers
-//        boolean explicitServiceContext =
-//            useExplicitServiceContextForRpcLit(inputMessage);
-//        if (explicitServiceContext) {
-//            handleLiteralSOAPHeaders(
-//                request,
-//                response,
-//                //info.bindingOperation.getInput().extensions(),
-//                getHeaderExtensions(info.bindingOperation.getInput()).iterator(),
-//                duplicateNames,
-//                definitiveParameterList,
-//                true);
-//            if (isRequestResponse) {
-//                handleLiteralSOAPHeaders(
-//                    request,
-//                    response,
-//                    //info.bindingOperation.getOutput().extensions(),
-//                    getHeaderExtensions(info.bindingOperation.getOutput()).iterator(),
-//                    duplicateNames,
-//                    definitiveParameterList,
-//                    false);
-//            }
-//        }
-//        info.operation.setProperty(
-//            WSDL_PARAMETER_ORDER,
-//            definitiveParameterList);
-//        return info.operation;
-//    }
-
-
-
-    /**
-     * @param part
-     * @return true if part is bound to Mime content
-     */
-    protected boolean isBoundToMimeContent(MessagePart part) {
-        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.WSDL_MIME_BINDING)
-            return true;
-        return false;
-    }
-
-    /**
-     * @param part
-     * @return true if part is bound to SOAPBody
-     */
-    protected boolean isBoundToSOAPBody(MessagePart part) {
-        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_BODY_BINDING)
-            return true;
-        return false;
-    }
-
-    /**
-     * @param part
-     * @return true if part is bound to SOAPHeader
-     */
-    protected boolean isBoundToSOAPHeader(MessagePart part) {
-        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.SOAP_HEADER_BINDING)
-            return true;
-        return false;
-    }
-
-    protected boolean isUnbound(MessagePart part) {
-        if((part != null) && part.getBindingExtensibilityElementKind() == MessagePart.PART_NOT_BOUNDED)
-            return true;
-        return false;
     }
 
 
@@ -2930,17 +2451,13 @@ public abstract class WSDLModelerBase implements Modeler {
      * @param name
      * @return List of MimeContents from ext
      */
-    protected List getMimeContents(Extensible ext, Message message, String name) {
+    protected List<MIMEContent> getMimeContents(Extensible ext, Message message, String name) {
         Iterator mimeParts = getMimeParts(ext);
-        String mimeContentPartName = null;
         while(mimeParts.hasNext()){
             MIMEPart mimePart = (MIMEPart)mimeParts.next();
-            List mimeContents = getMimeContents(mimePart);
-            Iterator mimeIter = mimeContents.iterator();
-            if(mimeIter.hasNext()) {
-                MIMEContent mimeContent = (MIMEContent)mimeIter.next();
-                mimeContentPartName = mimeContent.getPart();
-                if(mimeContentPartName.equals(name))
+            List<MIMEContent> mimeContents = getMimeContents(mimePart);
+            for(MIMEContent mimeContent:mimeContents){
+                if(mimeContent.getPart().equals(name))
                     return mimeContents;
             }
         }
