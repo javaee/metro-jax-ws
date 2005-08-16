@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.13 2005-08-15 21:52:12 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.14 2005-08-16 19:07:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -320,11 +320,15 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         WebResult webResult = method.getAnnotation(WebResult.class);
         String responseElementName = RETURN;
         String responseNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
-        if (webResult != null && webResult.name().length() > 0) {
-            responseElementName = webResult.name();
+        boolean isResultHeader = false;
+        if (webResult != null) { 
+            if (webResult.name().length() > 0) {
+                responseElementName = webResult.name();
+            }
             responseNamespace = webResult.targetNamespace().length() > 1 ? 
                 webResult.targetNamespace() :
                 responseNamespace;
+            isResultHeader = webResult.header();
         }  
 
         // class members 
@@ -338,7 +342,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         String retType = method.getReturnType() instanceof TypeDeclaration ? 
                     ((ClassDeclaration)method.getReturnType()).getQualifiedName() :
                     method.getReturnType().toString();                
-        if (!(method.getReturnType() instanceof VoidType)) {                    
+        if (!(method.getReturnType() instanceof VoidType) && !isResultHeader) {                    
             responseMembers.add(new MemberInfo(-1, retType, RETURN_VALUE, 
                 new QName(responseNamespace, responseElementName)));
         }

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.6 2005-08-15 21:52:12 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.7 2005-08-16 19:07:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -340,7 +340,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
     protected boolean hasLegalSEI(ClassDeclaration classDecl) {
         for (InterfaceType interfaceType : classDecl.getSuperinterfaces()) {
-            System.out.println("hasLegalSEI intefaceType:" +interfaceType);
             if (interfaceType.getDeclaration().getQualifiedName().equals(REMOTE_CLASSNAME)) {
                 if (isLegalSEI(interfaceType.getDeclaration()))
                     return true;
@@ -348,13 +347,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 return true;
             }
         }
-        System.out.println("has no legal sei: "+classDecl.getQualifiedName());
         return false;
     }
 
     protected boolean isLegalSEI(InterfaceDeclaration intf) {
         for (FieldDeclaration field : intf.getFields()) {
-            System.out.println("field: " +field.getSimpleName()+" constantvalue: "+field.getConstantValue());
             if (field.getConstantValue() != null) {
                 builder.onError("webserviceap.sei.cannot.contain.constant.values",
                                 new Object[] {intf.getQualifiedName(), field.getSimpleName()});
@@ -399,8 +396,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     public void addSchemaElements(MethodDeclaration method, boolean isDocLitWrapped) {
-        if (!isDocLitWrapped)
-            addReturnSchemaElement(method);
+//        if (!isDocLitWrapped)
+            addReturnSchemaElement(method, isDocLitWrapped);
         boolean hasInParam = false;
         for (ParameterDeclaration param : method.getParameters()) {
             hasInParam |= addParamSchemaElement(param, method, isDocLitWrapped);
@@ -411,17 +408,20 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         }
     }
 
-    public void addReturnSchemaElement(MethodDeclaration method) {
+    public void addReturnSchemaElement(MethodDeclaration method, boolean isDocLitWrapped) {
         TypeMirror returnType = method.getReturnType();
         WebResult webResult = method.getAnnotation(WebResult.class);
         String responseName = builder.getResponseName(method.getSimpleName());
         String responseNamespace = wsdlNamespace;
+        boolean isResultHeader = false;
         if (webResult != null) {
             responseName = webResult.name().length() > 0 ? webResult.name() : responseName;
             responseNamespace = webResult.targetNamespace().length() > 0 ? webResult.targetNamespace() : responseNamespace;
+            isResultHeader = webResult.header();
         }
         QName typeName = new QName(responseNamespace, responseName);
-        if (!(returnType instanceof VoidType)) {
+        if (!(returnType instanceof VoidType) &&
+            (!isDocLitWrapped || isResultHeader)) {
             Reference ref = seiContext.addReference(method);
             if (!soapStyle.equals(SOAPStyle.RPC))
                 seiContext.addSchemaElement(typeName, ref);
@@ -451,7 +451,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             if (isHeader || !isDocLitWrappped) {
                 QName paramQName = new QName(paramNamespace, paramName);
                 Reference ref = seiContext.addReference(paramType, param);
-//                seiContext.addSchemaElement(paramQName, new Reference(paramType, param));
                 seiContext.addSchemaElement(paramQName, ref);
             }
         } else

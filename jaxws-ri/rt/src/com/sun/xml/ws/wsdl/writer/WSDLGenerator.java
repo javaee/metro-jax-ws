@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.25 2005-08-08 22:17:02 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.26 2005-08-16 19:07:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -145,8 +145,12 @@ public class WSDLGenerator {
         Message message = definitions.message().name(method.getOperationName());
         com.sun.xml.ws.wsdl.writer.document.Part part;
         JAXBRIContext jaxbContext = model.getJAXBContext();
+//        System.out.println("javaMethod: "+method.getOperationName());
         boolean unwrappable = true;
         for (Parameter param : method.getRequestParameters()) {
+//            System.out.println("req param.getName: "+ param.getName());
+//            System.out.println("doclit: "+isDoclit);
+//            System.out.println("isWrapper: "+param.isWrapperStyle());
             if (isDoclit) {
                 if (isHeaderParameter(param))
                     unwrappable = false;
@@ -179,8 +183,11 @@ public class WSDLGenerator {
             }
 
             for (Parameter param : method.getResponseParameters()) {
+//                System.out.println("param.getName(): "+param.getName());
                 if (isDoclit) {
+//                    System.out.println("doclit");
                     if (param.isWrapperStyle()) {
+//                        System.out.println("isWrapper");
                         // if its not really wrapper style dont use the same name as input message
                         if (unwrappable)
                             part = message.part().name(RESULT);

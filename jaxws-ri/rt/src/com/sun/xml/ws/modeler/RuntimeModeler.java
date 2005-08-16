@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.26 2005-08-16 16:20:28 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.27 2005-08-16 19:06:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -450,13 +450,11 @@ public class RuntimeModeler {
             resultName = webResult.name();
             resultTNS = webResult.targetNamespace();
             isResultHeader = webResult.header();
-            if (resultTNS.length() == 0) { 
-                if (webResult.header())   
-                    resultTNS = targetNamespace;
-                resultQName = new QName(resultName);
-            } //else {
+            if (resultTNS.length() == 0 && webResult.header()) {   
+                // headers must have a namespace
+                resultTNS = targetNamespace;
+            } 
             resultQName = new QName(resultTNS, resultName);
-//            }
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
@@ -472,6 +470,7 @@ public class RuntimeModeler {
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             Class returnClazz = returnType;
             Annotation[] rann = method.getAnnotations();
+//            System.out.println("resultQName: "+resultQName);
             if (resultQName.getLocalPart() != null) {
                 TypeReference rTypeReference = new TypeReference(resultQName, returnType, rann);
                 Parameter returnParameter = new Parameter(rTypeReference, com.sun.xml.ws.model.Mode.OUT, -1);
@@ -870,7 +869,6 @@ public class RuntimeModeler {
         String resultPartName = null;
         boolean isResultHeader = false;
         WebResult webResult = method.getAnnotation(WebResult.class);
-
         if (webResult != null) {
             resultName = webResult.name();
             resultTNS = webResult.targetNamespace();
@@ -933,7 +931,7 @@ public class RuntimeModeler {
             Parameter param = null;
             String paramName = method.getName();
             String partName = null;
-            String targetNamespace = webService.targetNamespace();
+            String requestNamespace = targetNamespace;
             boolean isHeader = false;
 
             //async
@@ -957,8 +955,8 @@ public class RuntimeModeler {
                     paramName = webParam.name();
                     partName = webParam.partName();
                     if (!webParam.targetNamespace().equals("")) {
-                        targetNamespace = webParam.targetNamespace();
-                    }
+                        requestNamespace = webParam.targetNamespace();
+                    } 
                     isHeader = webParam.header();
                     WebParam.Mode mode = webParam.mode();
                     if (isHolder && mode == javax.jws.WebParam.Mode.IN)
@@ -970,7 +968,7 @@ public class RuntimeModeler {
                 }
             }
 
-            requestQName = new QName(targetNamespace, paramName);
+            requestQName = new QName(requestNamespace, paramName);
             //doclit/wrapped
             TypeReference typeRef = //operationName with upper 1 char
                 new TypeReference(requestQName, clazzType,
