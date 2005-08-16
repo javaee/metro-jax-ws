@@ -46,8 +46,6 @@ public class RetailerClient {
             for (Item responseItem : sn.getItemList ()) {
                 System.out.printf ("\t %s, %d, %f, %d\n", responseItem.getName (), responseItem.getItemID (), responseItem.getPrice (), responseItem.getQuantity ());
             }
-        } catch (RemoteException ex) {
-            ex.printStackTrace ();
         } catch (InvalidPOException_Exception ex) {
             System.out.printf ("Caught InvalidPOException_Exception: %s\n", ex.getFaultInfo ().getDetail ());
         }
