@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.4 2005-08-12 19:20:49 bbissett Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.5 2005-08-16 15:52:14 kwalsh Exp $
  */
 
 /*
@@ -8,60 +8,20 @@
  */
 package com.sun.xml.ws.protocol.xml.client;
 
-import javax.activation.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.soap.MimeHeader;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.Binding;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Response;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.SOAPFaultException;
-
-//import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-//import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.FutureTask;
-
 import com.sun.pept.ept.EPTFactory;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.client.ClientTransportFactory;
-import com.sun.xml.ws.client.ContextMap;
-import com.sun.xml.ws.client.RequestContext;
-import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.*;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.xml.XMLDecoder;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
@@ -74,7 +34,24 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.ws.*;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Client-side XML-based message dispatcher {@link com.sun.pept.protocol.MessageDispatcher}
@@ -83,11 +60,12 @@ import static com.sun.xml.ws.client.BindingProviderProperties.*;
  */
 public class XMLMessageDispatcher implements MessageDispatcher {
 
-    protected static final int MAX_THREAD_POOL_SIZE = 2;
+    protected static final int MAX_THREAD_POOL_SIZE = 3;
 
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
     protected ExecutorService executorService = null;
+    protected CallbackQueue callbackQueue;
 
     /**
      * Default constructor
@@ -120,23 +98,23 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         boolean handlerResult = true;
         boolean isRequestResponse = (messageInfo.getMEP() == MessageStruct.REQUEST_RESPONSE_MEP);
 
-        DispatchContext dispatchContext = (DispatchContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
-        
-        if (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.SOURCE && 
+        DispatchContext dispatchContext = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
+
+        if (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.SOURCE &&
             dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.DATASOURCE &&
             dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.JAXBOBJECT) {
-            throw new WebServiceException ();
+            throw new WebServiceException();
         }
         XMLMessage xm = null;
-        
+
         Object object = messageInfo.getData()[0];
         if (object instanceof Source)
-            xm = new XMLMessage((Source)object);
+            xm = new XMLMessage((Source) object);
         else if (object instanceof DataSource)
-            xm = new XMLMessage((DataSource)object);
+            xm = new XMLMessage((DataSource) object);
         else
             xm = new XMLMessage(object, getJAXBContext(messageInfo));
-        
+
         try {
             HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
             if (caller.hasHandlers()) {
@@ -155,7 +133,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                     return xm;
                 }
             }
-            
+
             // Setting encoder here is necessary for calls to getBindingId()
 //            messageInfo.setEncoder(encoder);
             Map<String, Object> context = processMetadata(messageInfo, xm);
@@ -218,31 +196,28 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 // consume PEPT-specific properties
                 if (propName.equals(ClientTransportFactory.class.getName())) {
                     messageContext.put(CLIENT_TRANSPORT_FACTORY, (ClientTransportFactory) properties.get(propName));
-                } 
-                else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
+                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
                     Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
                     if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
                         Object cookieJar = properties.get(HTTP_COOKIE_JAR);
                         if (cookieJar != null)
                             messageContext.put(HTTP_COOKIE_JAR, cookieJar);
                     }
-                }
-                else {
+                } else {
                     messageContext.put(propName, properties.get(propName));
                 }
             }
         }
 
         // Set accept header depending on content negotiation property
-        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);        
-        
+        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+
         String bindingId = getBindingId(messageInfo);
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+            xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
-        } 
-        else {
-            xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY, 
+        } else {
+            xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
 
@@ -316,7 +291,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        
+
         XMLHandlerContext handlerContext =
             getInboundHandlerContext(messageInfo, xm);
 
@@ -325,7 +300,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             callHandlersOnResponse(handlerContext);
             updateResponseContext(messageInfo, handlerContext);
         }
-        
+
 //        InternalMessage im = handlerContext.getInternalMessage();
 //        if (im == null) {
 //            im = decoder.toInternalMessage(sm, messageInfo);
@@ -333,22 +308,20 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //            im = decoder.toInternalMessage(sm, im, messageInfo);
 //        }
 //        decoder.toMessageInfo(im, messageInfo);
-        
+
         // if likely not required, since send would have faulted already
 //        if (messageInfo.getMetaData (DispatchContext.DISPATCH_MESSAGE_CLASS) instanceof Source) {
 //            throw new WebServiceException ();
 //        }
-        
-        
 
 //        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
 //            Service.Mode.MESSAGE) {           
 //            messageInfo.setResponse(sm);
 //            postReceiveAndDecodeHook(messageInfo);
 //        }
-        DispatchContext dispatchContext = (DispatchContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
-        
-        switch ((DispatchContext.MessageClass)dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS)) {
+        DispatchContext dispatchContext = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
+
+        switch ((DispatchContext.MessageClass) dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS)) {
             case SOURCE:
                 messageInfo.setResponse(xm.getSource());
                 break;
@@ -385,27 +358,27 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             XMLMessage xm = doSend(messageInfo);
             postSendHook(messageInfo);
 
-            //Response r = sendAsyncReceive(messageInfo, sm);
-
             //pass a copy of MessageInfo to the future task,so that no conflicts
             //due to threading happens
             Response r = sendAsyncReceive(MessageInfoBase.copy(messageInfo), xm);
             if (executorService == null) {
-                executorService = Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE);
-                /*
-                 * try {
-                 * executorService.awaitTermination(AWAIT_TERMINATION_TIME,
-                 * TimeUnit.MILLISECONDS); } catch (InterruptedException e) {
-                 * throw new JAXWSException(e); }
-                 */
+                executorService =
+                    Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE, new DaemonThreadFactory());
+            }
+
+            AsyncHandlerService service = (AsyncHandlerService) messageInfo
+                .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
+            if (service != null) {
+                ((ResponseImpl) r).setUID(service.getUID());
+                if (callbackQueue == null)
+                    callbackQueue = new CallbackQueue();
+                callbackQueue.addWaiter(service);
+                callbackQueue.addResponse((ResponseImpl) r);
             }
 
             executorService.execute((FutureTask) r);
-            executorService.shutdown();
-            executorService = null;
             messageInfo.setResponse(r);
         } catch (Throwable e) {
-            System.out.println("Exception is " + e.getClass().getName());
             messageInfo.setResponse(e);
 
         }
@@ -416,7 +389,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
      */
     protected Response<Object> sendAsyncReceive(final MessageInfo messageInfo, final XMLMessage xm) {
 
-        final AsyncHandler handler = (AsyncHandler) messageInfo
+        final AsyncHandlerService handler = (AsyncHandlerService) messageInfo
             .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
         final boolean callback = (messageInfo.getMEP() == MessageStruct.ASYNC_CALLBACK_MEP) ? true
             : false;
@@ -428,7 +401,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             public Object call() throws Exception {
                 // get connection and do http.invoke()
                 try {
-                    final WSConnection connection  = (WSConnection) messageInfo.getConnection();
+                    final WSConnection connection = (WSConnection) messageInfo.getConnection();
                     logRequestMessage(xm, messageInfo);
                     XMLConnectionUtil.sendResponse(connection, xm);
                 } catch (Throwable t) {
@@ -444,18 +417,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 }
                 postReceiveHook(messageInfo);
 
-                if (callback) {
-                    ResponseImpl res = new ResponseImpl(new Callable<Object>() {
-                        public Object call() {
-                            return null;
-                        }
-                    });
-                    setResponse(messageInfo, res);
-                    handler.handleResponse(res);
-                    return null;
-                }
-
-                // for poll case
                 if (messageInfo.getResponse() instanceof Exception)
                     throw (Exception) messageInfo.getResponse();
                 return messageInfo.getResponse();
@@ -494,8 +455,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateMessageContext(MessageInfo messageInfo,
-        XMLHandlerContext context) {
-        
+                                        XMLHandlerContext context) {
+
         MessageContext messageContext = context.getMessageContext();
         messageInfo.setMetaData(
             BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY, context);
@@ -510,7 +471,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateResponseContext(MessageInfo messageInfo,
-        XMLHandlerContext context) {
+                                         XMLHandlerContext context) {
 
         ResponseContext responseContext = new ResponseContext(null);
         MessageContext messageContext = context.getMessageContext();
@@ -603,7 +564,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                     SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
                     if (jbe != null)
                         sfe.initCause(jbe);
-                    messageInfo.setResponse((SOAPFaultException)sfe);
+                    messageInfo.setResponse((SOAPFaultException) sfe);
                 }
                 return;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
@@ -611,9 +572,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                     messageInfo.setResponse((SOAPFaultException) response);
                 } else {
                     WebServiceException jex = null;
-                    if (response instanceof Exception){
-                         jex = new WebServiceException((Exception) response);
-                         messageInfo.setResponse(jex);
+                    if (response instanceof Exception) {
+                        jex = new WebServiceException((Exception) response);
+                        messageInfo.setResponse(jex);
                     }
                     messageInfo.setResponse(response);
                 }
@@ -683,8 +644,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
             s =
                 "Http Status Code: "
-                + ((WSConnection) messageInfo.getConnection()).getStatus()
-                + "\n\n";
+                    + ((WSConnection) messageInfo.getConnection()).getStatus()
+                    + "\n\n";
             out.write(s.getBytes());
             for (Iterator iter =
                 response.getMimeHeaders().getAllHeaders();
@@ -700,22 +661,31 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
         }
     }
-    
+
     /*
-     * Gets XMLMessage from the connection
-     */
+    * Gets XMLMessage from the connection
+    */
     private XMLMessage getXMLMessage(MessageInfo messageInfo) {
-        WSConnection con = (WSConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection) messageInfo.getConnection();
         return XMLConnectionUtil.getXMLMessage(con, messageInfo);
     }
-    
-    protected JAXBContext getJAXBContext (MessageInfo messageInfo) {
+
+    protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         JAXBContext jc = null;
-        RequestContext context = (RequestContext)messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        RequestContext context = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         if (context != null)
-            jc = (JAXBContext)context.get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
-        
+            jc = (JAXBContext) context.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
+
         return jc;
-    }    
+    }
+
+
+    class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread daemonThread = new Thread(r);
+            daemonThread.setDaemon(Boolean.TRUE);
+            return daemonThread;
+        }
+    }
 
 }

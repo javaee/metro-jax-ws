@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.23 2005-08-14 17:55:18 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.24 2005-08-16 15:52:13 kwalsh Exp $
  */
 
 /*
@@ -65,7 +65,7 @@ import java.util.concurrent.*;
  */
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
-    protected static final int MAX_THREAD_POOL_SIZE = 5;
+    protected static final int MAX_THREAD_POOL_SIZE = 3;
 
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
@@ -414,9 +414,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
 
 
-            executorService.execute((FutureTask) r);
-            //executorService.shutdown();
-            //executorService = null;
+            executorService.execute((FutureTask) r);            
             messageInfo.setResponse(r);
         } catch (Throwable e) {
             messageInfo.setResponse(e);
@@ -455,7 +453,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     messageInfo.setResponse(ex);
                 }
                 postReceiveHook(messageInfo);
-               
+
                 if (messageInfo.getResponse() instanceof Exception)
                     throw (Exception) messageInfo.getResponse();
                 return messageInfo.getResponse();
@@ -712,7 +710,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             out.write(s.getBytes());
         }
     }
-        class DaemonThreadFactory implements ThreadFactory {
+
+    class DaemonThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
             Thread daemonThread = new Thread(r);
             daemonThread.setDaemon(Boolean.TRUE);
