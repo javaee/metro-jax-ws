@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.25 2005-08-16 04:15:16 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.26 2005-08-16 16:20:28 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -443,23 +443,24 @@ public class RuntimeModeler {
         String resultName = null;
         String resultTNS = "";
         QName resultQName = null;
-        boolean isResultHeader = false;
-
         WebResult webResult = method.getAnnotation(WebResult.class);
         Class returnType = method.getReturnType();
+        boolean isResultHeader = false;
         if (webResult != null) {
             resultName = webResult.name();
             resultTNS = webResult.targetNamespace();
             isResultHeader = webResult.header();
-            if (resultTNS.length() == 0)  // TODO need check that it is not a header
-//                resultTNS = ""; //targetNamespace;
+            if (resultTNS.length() == 0) { 
+                if (webResult.header())   
+                    resultTNS = targetNamespace;
                 resultQName = new QName(resultName);
-            else
-                resultQName = new QName(resultTNS, resultName);
+            } //else {
+            resultQName = new QName(resultTNS, resultName);
+//            }
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
             resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
-                  resultQName = new QName(resultTNS, RETURN);
+                resultQName = new QName(resultTNS, RETURN);
             }
         }
 
@@ -474,10 +475,10 @@ public class RuntimeModeler {
             if (resultQName.getLocalPart() != null) {
                 TypeReference rTypeReference = new TypeReference(resultQName, returnType, rann);
                 Parameter returnParameter = new Parameter(rTypeReference, com.sun.xml.ws.model.Mode.OUT, -1);
-                if(isResultHeader){
-                    returnParameter.setBinding(SOAPBlock.HEADER);
+                if (isResultHeader) {
+                    returnParameter.setBinding(SOAPBlock.HEADER);    
                     javaMethod.addParameter(returnParameter);
-                }else{
+                } else {
                     returnParameter.setBinding(SOAPBlock.BODY);
                     responseWrapper.addWrapperChild(returnParameter);
                 }
