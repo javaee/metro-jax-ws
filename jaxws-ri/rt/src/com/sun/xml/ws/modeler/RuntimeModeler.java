@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.24 2005-08-15 22:51:39 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.25 2005-08-16 04:15:16 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -443,11 +443,14 @@ public class RuntimeModeler {
         String resultName = null;
         String resultTNS = "";
         QName resultQName = null;
+        boolean isResultHeader = false;
+
         WebResult webResult = method.getAnnotation(WebResult.class);
         Class returnType = method.getReturnType();
         if (webResult != null) {
             resultName = webResult.name();
             resultTNS = webResult.targetNamespace();
+            isResultHeader = webResult.header();
             if (resultTNS.length() == 0)  // TODO need check that it is not a header
 //                resultTNS = ""; //targetNamespace;
                 resultQName = new QName(resultName);
@@ -471,8 +474,13 @@ public class RuntimeModeler {
             if (resultQName.getLocalPart() != null) {
                 TypeReference rTypeReference = new TypeReference(resultQName, returnType, rann);
                 Parameter returnParameter = new Parameter(rTypeReference, com.sun.xml.ws.model.Mode.OUT, -1);
-                returnParameter.setBinding(SOAPBlock.BODY);
-                responseWrapper.addWrapperChild(returnParameter);
+                if(isResultHeader){
+                    returnParameter.setBinding(SOAPBlock.HEADER);
+                    javaMethod.addParameter(returnParameter);
+                }else{
+                    returnParameter.setBinding(SOAPBlock.BODY);
+                    responseWrapper.addWrapperChild(returnParameter);
+                }
             }
         }
 
