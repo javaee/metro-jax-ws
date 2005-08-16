@@ -13,6 +13,7 @@ import com.sun.xml.ws.wsdl.WSDLContext;
 import com.sun.xml.ws.wsdl.parser.WSDLParser;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.parser.Binding;
 import com.sun.java_cup.internal.parser;
 
 import javax.jws.WebService;
@@ -126,8 +127,18 @@ public class ServiceContextBuilder {
                 eifc = new EndpointIFContext(portInterface);
                 serviceContext.addEndpointIFContext(eifc);
             }
-            RuntimeModeler processor =
-                new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
+
+//            Binding binding = serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(),
+//                                serviceContext.getWsdlContext().getPortName());
+
+
+
+            RuntimeModeler processor = new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
+//            RuntimeModeler processor = null;
+//            if(binding != null)
+//                processor = new RuntimeModeler(portInterface, binding);
+//            else
+//                processor = new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
 
             RuntimeModel model = processor.buildRuntimeModel();
 

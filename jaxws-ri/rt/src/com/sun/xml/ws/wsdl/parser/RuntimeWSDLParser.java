@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.3 2005-08-15 22:44:07 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.4 2005-08-16 06:09:02 vivekp Exp $
  */
 
 /**
@@ -71,8 +71,8 @@ public class RuntimeWSDLParser {
 
         //get the targetNamespace of the service
         String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
-        parserContext.pushContext(source.getSystemId(), tns);
 
+        parserContext.pushContext(source.getSystemId(), tns);
         while (XMLStreamReaderUtil.nextElementContent(reader) !=
                 XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -89,6 +89,7 @@ public class RuntimeWSDLParser {
                 XMLStreamReaderUtil.skipElement(reader);
             }
         }
+        parserContext.popContext();
         reader.close();
     }
 
@@ -356,6 +357,7 @@ public class RuntimeWSDLParser {
             if(parserContext.isImportedWSDL(importURL.toExternalForm()))
                 return;
             parserContext.addImportedWSDL(importURL.toExternalForm());
+
             parseWSDL(new InputSource(importURL.openStream()), parserContext);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

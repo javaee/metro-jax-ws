@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.8 2005-08-13 19:32:09 vivekp Exp $
+ * $Id: WSDLContext.java,v 1.9 2005-08-16 06:09:02 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,6 +9,7 @@ package com.sun.xml.ws.wsdl;
 import com.sun.xml.ws.wsdl.parser.WSDLDocument;
 import com.sun.xml.ws.wsdl.parser.Service;
 import com.sun.xml.ws.wsdl.parser.Port;
+import com.sun.xml.ws.wsdl.parser.Binding;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
@@ -151,7 +152,7 @@ public class WSDLContext {
         if(service != null){
             Port p = service.get(portName);
             Set<QName> ports = new HashSet<QName>();
-            ports.add(serviceName);
+            ports.add(p.getName());
             return ports;
         }
         return null;
@@ -176,6 +177,16 @@ public class WSDLContext {
 
     public Set<QName> getAllServiceNames() {
         return wsdlDoc.getServices().keySet();
+    }
+
+    public WSDLDocument getWsdlDocument(){
+        return wsdlDoc;
+    }
+
+    public Binding getWsdlBinding(QName service, QName port){
+        if(wsdlDoc == null)
+            return null;
+        return wsdlDoc.getBinding(service, port);
     }
 
     public String getEndpoint(QName serviceName, QName portQName) {
