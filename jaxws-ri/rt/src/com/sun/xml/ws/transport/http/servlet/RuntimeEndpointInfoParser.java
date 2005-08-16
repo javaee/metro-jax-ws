@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.3 2005-08-02 20:04:19 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.4 2005-08-16 01:59:53 jitu Exp $
  */
 
 /*
@@ -105,7 +105,8 @@ public class RuntimeEndpointInfoParser {
                 if(bindingId == null){
                     rei.setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
                 }else if(bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                        bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)){
+                        bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) ||
+                        bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)){
                     rei.setBinding(new SOAPBindingImpl(bindingId));
                 } else if(bindingId.equals(HTTPBinding.HTTP_BINDING)) {
                     rei.setBinding(new HTTPBindingImpl());

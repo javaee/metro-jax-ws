@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.34 2005-08-15 22:53:39 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.35 2005-08-16 01:59:53 jitu Exp $
  */
 
 /*
@@ -29,6 +29,8 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
+import com.sun.xml.ws.util.localization.Localizer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,6 +39,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.logging.Logger;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
 import javax.xml.ws.WebServiceProvider;
@@ -74,10 +77,12 @@ public class RuntimeEndpointInfo
     private boolean injectedContext;
     private boolean publishingDone;
     private URL wsdlURL;
+    private static final Logger logger = Logger.getLogger(
+        com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
+    private static final Localizer localizer = new Localizer();
+    private static final LocalizableMessageFactory messageFactory =
+        new LocalizableMessageFactory("com.sun.xml.ws.resources.server");
 
-    public Exception getException() {
-        return exception;
-    }
 
     public void setException(Exception e) {
         exception = e;
@@ -197,16 +202,19 @@ public class RuntimeEndpointInfo
      * It generates WSDL only for SOAP1.1, and for XSOAP1.2 bindings
      */
     public void generateWSDL() {
-        String bindingId = ((BindingImpl)getBinding()).getBindingId();
+        BindingImpl bindingImpl = (BindingImpl)getBinding();
+        String bindingId = bindingImpl.getActualBindingId();
         if (!bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) &&
-            !bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            !bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
             throw new ServerRtException("can.not.generate.wsdl", bindingId);
         }
-        /*
-        if (bindingId.equals("XXX")) {
-            // Log a warning for Generating non standard SOAP 1.2 WSDL
+        
+        if (bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {  
+            String msg = localizer.localize(
+                messageFactory.getMessage("generate.non.standard.wsdl"));
+            logger.warning(msg);
         }
-         */
+         
         // Generate WSDL and schema documents using runtime model
         WSDLGenResolver wsdlResolver = new WSDLGenResolver();
         WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver,

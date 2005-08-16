@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.3 2005-08-12 19:20:46 bbissett Exp $
+ * $Id: BindingImpl.java,v 1.4 2005-08-16 01:59:51 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -93,6 +93,10 @@ public abstract class BindingImpl implements
     }
 
     public String getBindingId(){
+        return bindingId;
+    }
+    
+    public String getActualBindingId() {
         return bindingId;
     }
 

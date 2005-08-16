@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.6 2005-08-12 19:20:46 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.7 2005-08-16 01:59:52 jitu Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -37,6 +37,8 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
     private final static String SHD_NAME =
         "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
     
+    public static final String X_SOAP12HTTP_BINDING = "X_SOAP12HTTP_BINDING";
+    
     private static URI ROLE_NONE;
 
     private Set<URI> requiredRoles;
@@ -46,14 +48,14 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
     // called by DispatchImpl
     public SOAPBindingImpl(String bindingId) {
         super(bindingId);
-        setup(bindingId);
+        setup(getBindingId());
         setupSystemHandlerDelegate();
     }
 
     // created by HandlerRegistryImpl
     public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
-        setup(bindingId);
+        setup(getBindingId());
         setupSystemHandlerDelegate();
     }
 
@@ -73,6 +75,26 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
         roles = new HashSet<URI>();
         addRequiredRoles();
         setRolesOnHandlerChain();
+    }
+    
+    /*
+     * For a non standard SOAP1.2 binding, return actual SOAP1.2 binding
+     */
+    @Override
+    public String getBindingId() {
+        String bindingId = super.getBindingId();
+        if (bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
+            return SOAP12HTTP_BINDING;
+        }
+        return bindingId;
+    }
+    
+    /*
+     * Use this to distinguish SOAP12HTTP_BINDING or X_SOAP12HTTP_BINDING
+     */ 
+    @Override
+    public String getActualBindingId() {
+        return super.getBindingId();
     }
 
     /*
