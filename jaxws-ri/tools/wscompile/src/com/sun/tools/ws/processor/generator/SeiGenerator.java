@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.15 2005-08-13 08:25:42 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.16 2005-08-16 00:22:31 kohlert Exp $
  */
 
 /**
@@ -192,6 +192,9 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                 if (parameter.getParameterOrderPosition() == -1) {
                     if(operation.isWrapped()||!isDocStyle){
                         resultName = parameter.getName();
+                        if (isDocStyle) {
+                            nsURI = parameter.getType().getName().getNamespaceURI();
+                        }
                     }else if(isDocStyle){
                         JAXBType t = (JAXBType)parameter.getType();
                         resultName = t.getName().getLocalPart();
