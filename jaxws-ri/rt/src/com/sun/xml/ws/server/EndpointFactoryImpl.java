@@ -13,7 +13,7 @@ import com.sun.xml.ws.transport.http.server.EndpointImpl;
 
 /**
  *
- * @author jitu
+ * @author WS Development Team
  */
 public class EndpointFactoryImpl extends EndpointFactory {
     
