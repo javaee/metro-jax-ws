@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.9 2005-08-16 06:09:02 vivekp Exp $
+ * $Id: WSDLContext.java,v 1.10 2005-08-16 19:37:17 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -152,7 +152,8 @@ public class WSDLContext {
         if(service != null){
             Port p = service.get(portName);
             Set<QName> ports = new HashSet<QName>();
-            ports.add(p.getName());
+            if(p != null)
+                ports.add(p.getName());
             return ports;
         }
         return null;
