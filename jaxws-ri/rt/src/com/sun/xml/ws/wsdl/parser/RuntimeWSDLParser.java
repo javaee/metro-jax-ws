@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.10 2005-08-17 22:39:26 kohsuke Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.11 2005-08-17 23:43:50 kohsuke Exp $
  */
 
 /**
@@ -45,6 +45,7 @@ public class RuntimeWSDLParser {
     private final EntityResolver resolver;
 
     public static WSDLDocument parse(URL wsdlLoc, EntityResolver resolver) throws IOException, XMLStreamException, SAXException {
+        assert resolver!=null;
         RuntimeWSDLParser parser = new RuntimeWSDLParser(resolver);
         parser.parseWSDL(wsdlLoc);
         return parser.wsdlDoc;
