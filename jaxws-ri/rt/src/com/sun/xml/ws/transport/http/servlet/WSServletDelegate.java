@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.5 2005-08-05 21:08:36 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.6 2005-08-17 01:49:54 jitu Exp $
  *
  */
 
@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 
-import com.sun.xml.ws.spi.runtime.ServletDelegate;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 //import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
@@ -50,7 +49,7 @@ import javax.xml.ws.handler.MessageContext.Scope;
  *
  * @author WS Development Team
  */
-public class WSServletDelegate implements ServletDelegate {
+public class WSServletDelegate {
     
     private com.sun.xml.ws.server.Tie tie =
         new com.sun.xml.ws.server.Tie();
@@ -123,8 +122,6 @@ public class WSServletDelegate implements ServletDelegate {
 
         publisher = new WSDLPublisher(servletContext, jaxwsInfo);
 
-        if (secondDelegate != null)
-            secondDelegate.postInit(servletConfig);
     }
 
     public void destroy() {
@@ -147,16 +144,6 @@ public class WSServletDelegate implements ServletDelegate {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
 
-        if (secondDelegate != null)
-            secondDelegate.doGet(request, response);
-        else
-            doGetDefault(request, response);
-    }
-
-    private void doGetDefault(
-        HttpServletRequest request,
-        HttpServletResponse response)
-        throws ServletException {
         try {
 
             MimeHeaders headers = getHeaders(request);
@@ -431,13 +418,10 @@ public class WSServletDelegate implements ServletDelegate {
     }
 
     protected void warnMissingContextInformation() {
-        if (secondDelegate != null)
-            secondDelegate.warnMissingContextInformation();
-        else
-            logger.warning(
-                defaultLocalizer.localize(
-                    messageFactory.getMessage(
-                        "servlet.warning.missingContextInformation")));
+        logger.warning(
+            defaultLocalizer.localize(
+                messageFactory.getMessage(
+                    "servlet.warning.missingContextInformation")));
     }
 
     protected static MimeHeaders getHeaders(HttpServletRequest req) {
@@ -570,11 +554,6 @@ public class WSServletDelegate implements ServletDelegate {
         return SOAPConstants.FAULT_CODE_SERVER;
     }
 
-    public void setSecondDelegate(
-        com.sun.xml.ws.spi.runtime.ServletSecondDelegate secondDelegate) {
-        this.secondDelegate = secondDelegate;
-    }
-
     private ServletConfig servletConfig;
     private ServletContext servletContext;
     private List<RuntimeEndpointInfo> jaxwsInfo;
@@ -589,9 +568,6 @@ public class WSServletDelegate implements ServletDelegate {
 
     private static final Logger logger =
         Logger.getLogger(
-            com.sun.xml.ws.util.Constants.LoggingDomain + ".server.http");
-
-    private com.sun.xml.ws.spi.runtime.ServletSecondDelegate secondDelegate =
-        null;
+            com.sun.xml.ws.util.Constants.LoggingDomain + ".servlet.http");
 
 }

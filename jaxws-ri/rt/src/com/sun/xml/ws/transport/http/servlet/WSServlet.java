@@ -1,5 +1,5 @@
 /*
- * $Id: WSServlet.java,v 1.3 2005-07-24 01:34:58 kohlert Exp $
+ * $Id: WSServlet.java,v 1.4 2005-08-17 01:49:54 jitu Exp $
  */
 
 /*
@@ -9,7 +9,6 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
-import com.sun.xml.ws.spi.runtime.ServletDelegate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,28 +36,8 @@ public class WSServlet extends HttpServlet {
             new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
 
         try {
-            String delegateClassName =
-                servletConfig.getInitParameter(DELEGATE_PROPERTY);
-
-            if (delegateClassName == null
-                && servletConfig.getInitParameter(EA_CONFIG_FILE_PROPERTY)
-                    != null) {
-                // use EA backward compatibility mode
-                delegateClassName = EA_DELEGATE_CLASS_NAME;
-            }
-
-            if (delegateClassName == null) {
-                delegateClassName = DEFAULT_DELEGATE_CLASS_NAME;
-            }
-
-            Class delegateClass =
-                Class.forName(
-                    delegateClassName,
-                    true,
-                    Thread.currentThread().getContextClassLoader());
-            delegate = (ServletDelegate) delegateClass.newInstance();
+            delegate = new WSServletDelegate();
             delegate.init(servletConfig);
-
         } catch (ServletException e) {
             logger.log(Level.SEVERE,e.getMessage(), e);
             throw e;
@@ -97,17 +76,9 @@ public class WSServlet extends HttpServlet {
         }
     }
 
-    protected ServletDelegate delegate = null;
+    protected WSServletDelegate delegate = null;
     private LocalizableMessageFactory messageFactory;
     private Localizer localizer;
-
-    private static final String DELEGATE_PROPERTY = "delegate";
-    private static final String DEFAULT_DELEGATE_CLASS_NAME =
-        "com.sun.xml.ws.transport.http.servlet.WSServletDelegate";
-
-    private static final String EA_CONFIG_FILE_PROPERTY = "configuration.file";
-    private static final String EA_DELEGATE_CLASS_NAME =
-        "com.sun.xml.rpc.server.http.ea.WSServletDelegate";
 
     public static final String JAXWS_RI_RUNTIME_INFO =
         "com.sun.xml.rpc.server.http.info";

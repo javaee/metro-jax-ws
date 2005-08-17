@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.4 2005-08-09 00:55:05 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.5 2005-08-17 01:49:55 jitu Exp $
  */
 
 /*
@@ -66,11 +66,6 @@ public class WSRtObjectFactoryImpl
     @Override
     public com.sun.xml.ws.spi.runtime.SOAPMessageContext createSOAPMessageContext() {
         return null;
-    }
-    
-    @Override
-    public com.sun.xml.ws.spi.runtime.ServletDelegate createServletDelegate() {
-        return new WSServletDelegate();
     }
     
     @Override

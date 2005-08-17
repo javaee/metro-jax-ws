@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.4 2005-08-09 00:55:04 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.5 2005-08-17 01:49:54 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -56,10 +56,6 @@ public abstract class WSRtObjectFactory {
         int type,
         OutputStream logStream);
 
-    /**
-     * Delete it? not used
-     */
-    public abstract ServletDelegate createServletDelegate();
     
     /**
      * creates a Tie object, entry point to JAXWS runtime.
