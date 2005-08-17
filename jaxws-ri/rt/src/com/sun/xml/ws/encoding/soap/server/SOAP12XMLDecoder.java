@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.2 2005-08-10 17:14:19 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.3 2005-08-17 16:45:15 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -82,10 +82,17 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     public Set<String> getRequiredRoles() {
         return requiredRoles;
     }
-    
+
+    /*
+     * Keep track of all not-understood headers to return
+     * with fault to client. In soap 1.1, the check fails 
+     * on the first not-understood header.
+     */
     @Override
     protected void checkHeadersAgainstKnown(XMLStreamReader reader,
         Set<String> roles, Set<QName> understoodHeaders) {
+        
+        Set<QName> notUnderstoodHeaders = new HashSet<QName>();
         
         while (true) {
             if (reader.getEventType() == START_ELEMENT) {
@@ -105,12 +112,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
                         if (understoodHeaders == null ||
                             !understoodHeaders.contains(qName)) {
                             logger.finest("Element not understood=" + qName);
-                            
-                            SOAPFault sf = SOAPUtil.createSOAPFault(
-                                MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
-                                SOAP12Constants.FAULT_CODE_MUST_UNDERSTAND,
-                                role, null, SOAPBinding.SOAP12HTTP_BINDING);
-                            throw new SOAPFaultException(sf);
+                            notUnderstoodHeaders.add(qName);
                         }
                     }
                 }
@@ -120,6 +122,17 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
                 break;
             }
         }
+        
+        if (notUnderstoodHeaders.isEmpty()) {
+            return;
+        }
+
+        // need to add headers to fault
+        SOAPFault sf = SOAPUtil.createSOAPFault(
+            MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
+            SOAP12Constants.FAULT_CODE_MUST_UNDERSTAND,
+            null, null, SOAPBinding.SOAP12HTTP_BINDING);
+        throw new SOAPFaultException(sf);
     }
     
 }
