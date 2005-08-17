@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.21 2005-08-15 22:41:43 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.22 2005-08-17 04:28:09 vivekp Exp $
  */
 
 /*
@@ -893,7 +893,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             }
         }
         //process all the headerfaults
-        //handleHeaderFaults(info, response);
+        handleHeaderFaults(info, response);
 
         info.operation.setProperty(
                 WSDL_PARAMETER_ORDER,
