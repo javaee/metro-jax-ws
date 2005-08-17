@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.5 2005-07-18 16:52:24 kohlert Exp $
+ * $Id: XMLStreamReaderUtil.java,v 1.6 2005-08-17 19:24:43 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -133,6 +133,23 @@ public class XMLStreamReaderUtil {
     public static String getElementText(XMLStreamReader reader) {
         try {
             return reader.getElementText();
+        } catch (XMLStreamException e) {
+            throw wrapException(e);
+        }
+    }
+    
+    /*
+     * Get a QName with 'someUri' and 'localname' from an
+     * element of qname type:
+     * <xyz xmlns:ns1="someUri">ns1:localname</xyz>
+     */
+    public static QName getElementQName(XMLStreamReader reader) {
+        try {
+            String namespaceURI = reader.getNamespaceURI(0);
+            String text = reader.getElementText();
+            String localPart =
+                text.substring(text.indexOf(':') + 1,  text.length());
+            return new QName(namespaceURI, localPart);
         } catch (XMLStreamException e) {
             throw wrapException(e);
         }
