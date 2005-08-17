@@ -9,7 +9,7 @@
 <project name="JAXWS-RI Runtime" default="compile" basedir=".">
 
     <!-- Should Java compilations set the 'debug' compiler option? -->
-    <property name="compile.debug" value="true"/>
+    <property name="compile.debug" value="false"/>
 
     <!-- Should Java compilations set the 'deprecation' compiler option? -->
     <property name="compile.deprecation" value="false"/>
