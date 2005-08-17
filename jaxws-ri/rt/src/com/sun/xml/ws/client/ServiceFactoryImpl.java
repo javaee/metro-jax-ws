@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.7 2005-08-17 22:29:47 kohsuke Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.8 2005-08-17 23:43:17 kohsuke Exp $
  */
 /*
  * Copyright (c) 2005 Sun Microsystems. All Rights Reserved.
@@ -111,7 +111,7 @@ public class ServiceFactoryImpl extends ServiceFactory {
      * accessing remote WSDLs.
      */
     public EntityResolver getResolver() {
-        if(resolver!=null) {
+        if(resolver==null) {
             // set up a manager
             CatalogManager manager = new CatalogManager();
             manager.setIgnoreMissingProperties(true);
