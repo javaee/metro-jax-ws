@@ -254,6 +254,12 @@
   </target>
 
   <target name="main" depends="image"/>
+  
+  <target name="main-debug">
+    <antcall target="tools-build">
+      <param name="compile.debug" value="true"/>
+    </antcall>
+  </target>
 
   <!-- ********** Targets added for running/debugging in NetBeans ********** -->
   

@@ -8,7 +8,8 @@
 
 <project name="JAXWS-RI Runtime" default="compile" basedir=".">
 
-    <!-- Should Java compilations set the 'debug' compiler option? -->
+    <!-- default is false. use "main-debug" target in top level file
+         for debugging information -->
     <property name="compile.debug" value="false"/>
 
     <!-- Should Java compilations set the 'deprecation' compiler option? -->

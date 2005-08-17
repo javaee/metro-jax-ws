@@ -27,14 +27,14 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>main</target>
+                    <target>main-debug</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>main</target>
+                    <target>main-debug</target>
                 </action>
                 <action name="compile.single">
                     <target>tools-compile</target>
