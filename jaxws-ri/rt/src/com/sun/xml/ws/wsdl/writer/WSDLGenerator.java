@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.26 2005-08-16 19:07:00 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.27 2005-08-17 06:26:54 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -481,25 +481,30 @@ public class WSDLGenerator {
                 body = output._element(Body.class);
                 body.use(LITERAL);
                 if (headerParams.size() > 0) {
-                    Parameter param = bodyParams.iterator().next();
+                    Parameter param = bodyParams.iterator().hasNext() ? bodyParams.iterator().next() : null;
+                    String parts = "";
                     if (isRpc) {
-                        String parts = "";
                         int i=0;
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
                                 parts += " ";
                             parts += parameter.getName().getLocalPart();
                         }
-                        body.parts(parts);
-                    } else if (param.isWrapperStyle()) {
-                        // if its not really wrapper style dont use the same name as input message
-                        if (unwrappable)
-                            body.parts(RESULT);
-                        else
-                            body.parts(UNWRAPPABLE_RESULT);
+//                        body.parts(parts);
                     } else {
-                        body.parts(param.getName().getLocalPart());
+                        if (param != null) {
+                            if (param.isWrapperStyle()) {
+                                // if its not really wrapper style dont use the same name as input message
+                                if (unwrappable)
+                                    parts = RESULT;
+                                else
+                                    parts = UNWRAPPABLE_RESULT;
+                            } else {
+                                parts = param.getName().getLocalPart();
+                            }
+                        } 
                     }
+                    body.parts(parts);
                     generateSOAPHeaders(output, headerParams, responseMessage);
                 }
                 if (isRpc) {

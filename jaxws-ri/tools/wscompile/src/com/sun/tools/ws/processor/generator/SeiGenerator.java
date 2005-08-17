@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.16 2005-08-16 00:22:31 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.17 2005-08-17 06:26:55 kohlert Exp $
  */
 
 /**
@@ -180,15 +180,29 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0){               
             webMethodAnn.param("action", operation.getSOAPAction());
         }
-
+//System.out.println("writing WebMethod");
         if (operation.getResponse() == null){
             m.annotate(javax.jws.Oneway.class);
         }else if (!operation.getJavaMethod().getReturnType().getName().equals("void") &&
-                 operation.getResponse().getBodyBlocks().hasNext()){
-            Block block = operation.getResponse().getBodyBlocks().next();
-            String resultName = block.getName().getLocalPart();
-            String nsURI = block.getName().getNamespaceURI();
+                 operation.getResponse().getParametersList().size() > 0){
+//                 operation.getResponse().getBodyBlocks().hasNext()){
+//            Block block = operation.getResponse().getBodyBlocks().next();
+//            String resultName = block.getName().getLocalPart();
+//            String nsURI = block.getName().getNamespaceURI();
+            Block block = null; //operation.getResponse().getBodyBlocks().next();
+            String resultName = null; // block.getName().getLocalPart();
+            String nsURI = null; //= block.getName().getNamespaceURI();
+            if (operation.getResponse().getBodyBlocks().hasNext()) {
+                block = operation.getResponse().getBodyBlocks().next();
+                resultName = block.getName().getLocalPart();
+                nsURI = block.getName().getNamespaceURI();                
+            }
             for (Parameter parameter : operation.getResponse().getParametersList()) {
+//                System.out.println("param: "+parameter.getName());
+//                System.out.println("header: "+parameter.getBlock().getLocation());
+//                System.out.println("headerblock: "+parameter.getBlock().equals(Block.HEADER));
+//                System.out.println("parameterOrderPos: "+parameter.getParameterOrderPosition());
+//                System.out.println("operation.isWrapped: "+operation.isWrapped()); 
                 if (parameter.getParameterOrderPosition() == -1) {
                     if(operation.isWrapped()||!isDocStyle){
                         resultName = parameter.getName();
