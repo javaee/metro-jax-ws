@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.12 2005-08-17 22:29:49 kohsuke Exp $
+ * $Id: WSDLContext.java,v 1.13 2005-08-17 23:43:41 kohsuke Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -46,6 +46,7 @@ public class WSDLContext {
      */
     public WSDLContext(URL wsdlDocumentLocation, EntityResolver entityResolver) throws WebServiceException {
         //must get binding information
+        assert entityResolver!=null;
 
         if (wsdlDocumentLocation == null)
             throw new WebServiceException("No WSDL location Information present, error");
