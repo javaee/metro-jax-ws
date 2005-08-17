@@ -1,23 +1,30 @@
 /**
- * $Id: WSDLContext.java,v 1.10 2005-08-16 19:37:17 vivekp Exp $
+ * $Id: WSDLContext.java,v 1.11 2005-08-17 21:44:41 kohsuke Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.wsdl;
 
-import com.sun.xml.ws.wsdl.parser.WSDLDocument;
-import com.sun.xml.ws.wsdl.parser.Service;
-import com.sun.xml.ws.wsdl.parser.Port;
 import com.sun.xml.ws.wsdl.parser.Binding;
+import com.sun.xml.ws.wsdl.parser.Port;
+import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+import com.sun.xml.ws.wsdl.parser.Service;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * $author: JAXWS Development Team
@@ -27,11 +34,29 @@ public class WSDLContext {
     private String targetNamespace;
     private URI bindingId;
     private String defaultBindingId = SOAPBinding.SOAP11HTTP_BINDING;
-    private LinkedHashMap<QName, LinkedHashMap> service2portsLocationMap;   //service2
+    private LinkedHashMap<QName, LinkedHashMap> service2portsLocationMap = new LinkedHashMap<QName, LinkedHashMap>();   //service2
     private WSDLDocument wsdlDoc;
 
-    public WSDLContext() {
-        service2portsLocationMap = new LinkedHashMap<QName, LinkedHashMap>();
+    /**
+     * Creates a {@link WSDLContext} by parsing the given wsdl file.
+     */
+    public WSDLContext(URL wsdlDocumentLocation) throws WebServiceException {
+        //must get binding information
+
+        if (wsdlDocumentLocation == null)
+            throw new WebServiceException("No WSDL location Information present, error");
+
+        //WSDLParser parser = new WSDLParser();
+        setOrigWSDLLocation(wsdlDocumentLocation);
+        try {
+            //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
+            WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(wsdlDocumentLocation);
+            setWSDLDocument(wsdlDoc);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        } catch (XMLStreamException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     public void setOrigWSDLLocation(URL wsdlLocation) {

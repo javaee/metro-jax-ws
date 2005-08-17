@@ -10,11 +10,6 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.WSDLContext;
-import com.sun.xml.ws.wsdl.parser.WSDLParser;
-import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
-import com.sun.xml.ws.wsdl.parser.WSDLDocument;
-import com.sun.xml.ws.wsdl.parser.Binding;
-import com.sun.java_cup.internal.parser;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
@@ -22,7 +17,6 @@ import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceException;
-import java.io.BufferedInputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,9 +27,8 @@ import java.util.Set;
 /**
  * $author: WS Development Team
  */
-public class ServiceContextBuilder {
-
-    ServiceContext serviceContext;
+public abstract class ServiceContextBuilder {
+    private ServiceContextBuilder() {}  // no instantication please
 
     //parses WSDL for service, Ports, endpoint, binding
     //returns wsdlcontext
@@ -47,17 +40,19 @@ public class ServiceContextBuilder {
     //runs RuntimeAnnotationProcessor
     //returns runtime model
 
+    /**
+     * Creates a new {@link ServiceContext}.
+     */
+    public static ServiceContext build(URL wsdlLocation, Class si, QName serviceName) throws WebServiceException {
 
-    public ServiceContext buildServiceContext(URL wsdlLocation, Class si, QName serviceName) throws WebServiceException {
-
-        serviceContext = new ServiceContext(wsdlLocation, si, serviceName);
+        ServiceContext serviceContext = new ServiceContext();
         SIAnnotations serviceIFAnnotations;
         if (si != null) {
 
             serviceIFAnnotations = getSIAnnotations(si);
             if (serviceIFAnnotations == null )
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
-            else serviceContext.setSiAnnotations(serviceIFAnnotations);
+            serviceContext.setSiAnnotations(serviceIFAnnotations);
             
             if(wsdlLocation == null)
                 try {
@@ -65,63 +60,41 @@ public class ServiceContextBuilder {
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-            serviceContext.setWsdlContext(parseWSDL(wsdlLocation));
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation));
 
             if (si != null) {
                 serviceContext.setServiceInterface(si);
-                ArrayList<Class> classez = serviceIFAnnotations.classes;
-                if (classez != null) {
-                    for (Class clazz : classez) {
-                        processAnnotations(clazz);
-                    }
+                for (Class clazz : serviceIFAnnotations.classes) {
+                    processAnnotations(serviceContext,clazz);
                 }
             }
         }
         return serviceContext;
     }
 
-    public ServiceContext completeServiceContext(ServiceContext serviceContext, QName portName, Class portInterface) {
-        URL wsdlLocation = null;
+    public static void completeServiceContext(ServiceContext serviceContext, QName portName, Class portInterface) {
         if (serviceContext.getWsdlContext() == null) {
+            URL wsdlLocation = null;
             try {
                 wsdlLocation = getWSDLLocation(portInterface);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
 
-            serviceContext.setWsdlContext(parseWSDL(wsdlLocation));
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation));
         }
 
         //if ((serviceContext.getRuntimeContext() == null) && (portInterface != null)) {
         //    processAnnotations(portInterface);
         //}
-        return serviceContext;
     }
 
     //does any necessagy checking and validation
-    public WSDLContext parseWSDL(URL wsdlDocumentLocation) {
-        //must get binding information
-
-        if (wsdlDocumentLocation == null)
-            throw new WebServiceException("No WSDL location Information present, error");
-
-        //WSDLParser parser = new WSDLParser();
-        getWSDLContext().setOrigWSDLLocation(wsdlDocumentLocation);
-        try {
-            //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
-            WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(wsdlDocumentLocation);
-            WSDLContext wsdlContext = getWSDLContext();
-            wsdlContext.setWSDLDocument(wsdlDoc);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return getWSDLContext();
-    }
 
     //todo: valid port in wsdl
-    private void processAnnotations(Class portInterface) throws WebServiceException {
+    private static void processAnnotations(ServiceContext serviceContext,Class portInterface) throws WebServiceException {
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
-        if ((eifc == null) || ((eifc != null) && (eifc.getRuntimeContext() == null))) {
+        if ((eifc == null) || (eifc.getRuntimeContext() == null)) {
 
             if (eifc == null) {
                 eifc = new EndpointIFContext(portInterface);
@@ -155,7 +128,7 @@ public class ServiceContextBuilder {
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
 
             if (chainInfo != null) {
-                HandlerRegistryImpl registry = getHandlerRegistry(serviceContext.getServiceName());
+                HandlerRegistryImpl registry = getHandlerRegistry(serviceContext,serviceContext.getServiceName());
                 registry.setHandlerChain(chainInfo.getHandlers());
                 serviceContext.setRegistry(registry);
 
@@ -173,7 +146,7 @@ public class ServiceContextBuilder {
 //        }
     }
 
-    private HandlerRegistryImpl getHandlerRegistry(QName serviceName) {
+    private static HandlerRegistryImpl getHandlerRegistry(ServiceContext serviceContext,QName serviceName) {
         //need to return handlerRegistryImpl?
         if (serviceContext.getRegistry() == null) {
             Set knownPorts = serviceContext.getWsdlContext().getPortsAsSet(serviceName);
@@ -183,14 +156,7 @@ public class ServiceContextBuilder {
                 new HandlerRegistryImpl(portz));
         }
 
-        return (HandlerRegistryImpl) serviceContext.getRegistry();
-    }
-
-    private WSDLContext getWSDLContext() {
-        if (serviceContext.getWsdlContext() == null)
-            serviceContext.setWsdlContext(new WSDLContext());
-
-        return serviceContext.getWsdlContext();
+        return serviceContext.getRegistry();
     }
 
     private ArrayList<Class> getSEI(Class si) {
@@ -221,27 +187,18 @@ public class ServiceContextBuilder {
     /**
      * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
      *
-     * @param sei
-     * @return the URL of the location of the WSDL for the sei.
+     * @return the URL of the location of the WSDL for the sei, or null if none was found.
      */
     //this will change
-    public static URL getWSDLLocation(ArrayList<Class> seis) throws MalformedURLException {
-        if (seis != null) {
-            if (seis.size() > 0) {
-                javax.jws.WebService ws = (WebService) seis.get(0).getAnnotation(WebService.class);
-                if (ws == null)
-                    return null;
-                String wsdlLocation = ws.wsdlLocation();
-                if (wsdlLocation == null)
-                    return null;
-                return new URL(wsdlLocation);
-            }
-        }
-        return null;
+    private static URL getWSDLLocation(Class<?> sei) throws MalformedURLException {
+        WebService ws = sei.getAnnotation(WebService.class);
+        if (ws == null)
+            return null;
+        return new URL(ws.wsdlLocation());
     }
 
     //this will change
-    public SIAnnotations getSIAnnotations(Class si) {
+    private static SIAnnotations getSIAnnotations(Class si) {
        
         SIAnnotations siAnnotations = new SIAnnotations();
         ArrayList<QName> portQNames = new ArrayList<QName>();
@@ -278,15 +235,4 @@ public class ServiceContextBuilder {
         }
         return siAnnotations;
     }
-
-    public static URL getWSDLLocation(Class sei) throws MalformedURLException {
-        if (sei != null) {
-            ArrayList<Class> list = new ArrayList<Class>();
-            list.add(sei);
-            return getWSDLLocation(list);
-        }
-        return null;
-    }
-
-
 }

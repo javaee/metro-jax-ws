@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.5 2005-08-04 02:32:21 kwalsh Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.6 2005-08-17 21:44:41 kohsuke Exp $
  */
 /*
  * Copyright (c) 2005 Sun Microsystems. All Rights Reserved.
@@ -9,10 +9,12 @@ package com.sun.xml.ws.client;
 import com.sun.xml.ws.server.RuntimeContext;
 
 import java.io.Serializable;
+import java.io.IOException;
 
 import java.lang.reflect.Proxy;
 
 import java.net.URL;
+import java.util.Enumeration;
 
 import javax.naming.Referenceable;
 
@@ -21,6 +23,10 @@ import javax.xml.ws.Service;
 import javax.xml.ws.ServiceFactory;
 import javax.xml.ws.WebServiceException;
 
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.apache.xml.resolver.CatalogManager;
+import org.xml.sax.EntityResolver;
+
 
 /**
  * <p> A concrete factory for Service objects. </p>
@@ -28,13 +34,18 @@ import javax.xml.ws.WebServiceException;
  * @author WS Development Team
  */
 public class ServiceFactoryImpl extends ServiceFactory {
-    public Service createService(java.net.URL wsdlDocumentLocation, QName name)
+
+    /**
+     * {@link CatalogResolver} to check META-INF/jaxws-catalog.xml.
+     * Lazily created.
+     */
+    private EntityResolver resolver;
+
+    public Service createService(URL wsdlDocumentLocation, QName name)
         throws WebServiceException {
         if (name == null)
             throw new WebServiceException("QName for the service must not be null");
-        ServiceContextBuilder builder = new ServiceContextBuilder();
-        ServiceContext serviceContext = builder.buildServiceContext(wsdlDocumentLocation,
-                (Class) null, name);
+        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,null,name);
 
         if (serviceContext.getWsdlContext().contains(name).size() > 1) {
             throw new WebServiceException(" Service " + name +
@@ -50,13 +61,29 @@ public class ServiceFactoryImpl extends ServiceFactory {
                 "QName for the service must not be null");
         }
 
-        ServiceContext serviceContext = new ServiceContext(null, null, name);
+        ServiceContext serviceContext = new ServiceContext();
         return new WebService(serviceContext);
     }
 
     public Service createService(URL wsdlDocumentLocation,
         Class serviceInterface) throws WebServiceException {
-        return (Service) bootStrap(serviceInterface, wsdlDocumentLocation);
+        //todo: for now just create the proxy-
+        //todo: process here or process on getPort
+
+        if (serviceInterface == null) {
+            throw new WebServiceException();
+        }
+
+        //check to make sure this is a service
+        if (!Service.class.isAssignableFrom(serviceInterface)) {
+            throw new WebServiceException("service.interface.required" +
+                serviceInterface.getName());
+        }
+
+        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,
+                serviceInterface, null);
+
+        return createServiceProxy(serviceContext);
     }
 
     public Service createService(Class serviceInterface)
@@ -68,11 +95,11 @@ public class ServiceFactoryImpl extends ServiceFactory {
         ServiceContext serviceContext) {
 
         ServiceInvocationHandler handler = new ServiceInvocationHandler(serviceContext);
-        Service serviceProxy = null;
+        WebServiceInterface serviceProxy = null;
 
         try {
-            serviceProxy = (Service) Proxy.newProxyInstance(serviceContext.getServiceInterface()
-                                                                          .getClassLoader(),
+            serviceProxy = (WebServiceInterface) Proxy.newProxyInstance(
+                serviceContext.getServiceInterface().getClassLoader(),
                     new Class[] {
                         serviceContext.getServiceInterface(),
                         com.sun.xml.ws.client.WebServiceInterface.class,
@@ -87,29 +114,55 @@ public class ServiceFactoryImpl extends ServiceFactory {
         if (serviceProxy == null) {
             throw new WebServiceException("Failed to create ServiceProxy.");
         }
-        return (com.sun.xml.ws.client.WebServiceInterface) serviceProxy;
+        return serviceProxy;
     }
 
-    private WebServiceInterface bootStrap(Class si, URL wsdlDocumentLocation)
-        throws WebServiceException {
-        //todo: for now just create the proxy-
-        //todo: process here or process on getPort
-        ServiceContextBuilder serviceContextBuilder = new ServiceContextBuilder();
+    /**
+     * Gets the resolver that this {@link ServiceFactory} uses before
+     * accessing remote WSDLs.
+     */
+    public EntityResolver getResolver() {
+        if(resolver!=null) {
+            // set up a manager
+            CatalogManager manager = new CatalogManager();
+            manager.setIgnoreMissingProperties(true);
+            try {
+                if(System.getProperty(getClass().getName()+".verbose")!=null)
+                    manager.setVerbosity(999);
+            } catch (SecurityException e) {
+                // recover by not setting the debug flag.
+            }
 
-        if (si == null) {
-            throw new WebServiceException();
+            // parse the catalog
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> catalogEnum;
+            try {
+                if(cl==null)
+                    catalogEnum = ClassLoader.getSystemResources("/META-INF/jaxws-catalog.xml");
+                else
+                    catalogEnum = cl.getResources("/META-INF/jaxws-catalog.xml");
+
+                while(catalogEnum.hasMoreElements()) {
+                    URL url = catalogEnum.nextElement();
+                    manager.getCatalog().parseCatalog(url);
+                }
+            } catch (IOException e) {
+                throw new WebServiceException(e);
+            }
+
+            resolver = new CatalogResolver(manager);
         }
 
-        //check to make sure this is a service
-        if (!Service.class.isAssignableFrom(si)) {
-            throw new WebServiceException("service.interface.required" +
-                si.getName());
-        }
+        return resolver;
+    }
 
-        ServiceContext serviceContext = serviceContextBuilder.buildServiceContext(wsdlDocumentLocation,
-                si, null);
-
-        return (WebServiceInterface) createServiceProxy(serviceContext);
+    /**
+     * Overrides the resolver that this {@link ServiceFactoryImpl} uses.
+     * To disable the catalog resolution, set a dummy entity resolver that
+     * always return null.
+     */
+    public void setResolver(EntityResolver resolver) {
+        this.resolver = resolver;
     }
 
     public String toString() {

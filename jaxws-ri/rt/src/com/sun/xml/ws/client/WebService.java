@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.18 2005-08-14 17:55:17 kwalsh Exp $
+ * $Id: WebService.java,v 1.19 2005-08-17 21:44:41 kohsuke Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -34,9 +34,6 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 /**
- * @author WS Development Team
- */
-/**
  *  <code>Service</code> objects provide the client view of a Web service.
  *  <p><code>Service</code> acts as a factory of the following:
  *  <ul>
@@ -65,7 +62,8 @@ import java.util.concurrent.Executors;
  *  @see javax.xml.ws.ServiceFactory
  *  @see javax.xml.ws.handler.HandlerRegistry
  *  @see java.util.concurrent.Executor
-**/
+ * @author WS Development Team
+ */
 public class WebService
     implements WebServiceInterface, Serializable, Referenceable {
 
@@ -78,7 +76,7 @@ public class WebService
 
     protected Object serviceProxy;
     protected URL wsdlLocation;
-    protected ServiceContext serviceContext;
+    protected final ServiceContext serviceContext;
     protected Executor executor;
     private HashSet<Object> seiProxies;
 
@@ -89,8 +87,7 @@ public class WebService
     }
 
     private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
-        ServiceContextBuilder builder = new ServiceContextBuilder();
-        serviceContext = builder.completeServiceContext(serviceContext, portName, portInterface);
+        ServiceContextBuilder.completeServiceContext(serviceContext, portName, portInterface);
     }
 
     public URL getWSDLLocation() {

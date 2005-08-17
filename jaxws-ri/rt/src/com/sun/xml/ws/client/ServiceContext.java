@@ -25,7 +25,7 @@ public class ServiceContext {
     private Class serviceInterface;
     private QName serviceName; //supplied on creation of service
     private SIAnnotations siAnnotations;
-    private HashSet<EndpointIFContext> seiContext;
+    private final HashSet<EndpointIFContext> seiContext = new HashSet<EndpointIFContext>();
 
 
     public SIAnnotations getSiAnnotations() {
@@ -34,10 +34,6 @@ public class ServiceContext {
 
     public void setSiAnnotations(SIAnnotations siAnnotations) {
         this.siAnnotations = siAnnotations;
-    }
-
-    public ServiceContext(URL wsdlLocation, Class si, QName serviceName) {
-        seiContext = new HashSet();
     }
 
     public WSDLContext getWsdlContext() {
@@ -101,10 +97,9 @@ public class ServiceContext {
     }
 }
 class SIAnnotations {
-        public SIAnnotations(){}
-        String tns;
-        QName serviceQName;
-        ArrayList<QName> portQNames = new ArrayList<QName>();
-        ArrayList<Class> classes = new ArrayList<Class>();
-        String wsdlLocation;
-    }
+    String tns;
+    QName serviceQName;
+    ArrayList<QName> portQNames = new ArrayList<QName>();
+    final ArrayList<Class> classes = new ArrayList<Class>();
+    String wsdlLocation;
+}

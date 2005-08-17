@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.7 2005-08-17 20:43:13 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.8 2005-08-17 21:44:41 kohsuke Exp $
  */
 
 /**
@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class RuntimeWSDLParser {
 
-    public static WSDLDocument parse(URL wsdlLoc) throws Exception{
+    public static WSDLDocument parse(URL wsdlLoc) throws IOException, XMLStreamException {
         WSDLDocument wsdlDoc = new WSDLDocument();
         WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
         parserContext.setOriginalWsdlURL(wsdlLoc);
