@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.5 2005-08-17 17:12:46 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.6 2005-08-17 19:26:53 vivekp Exp $
  */
 
 /**
@@ -73,10 +73,10 @@ public class RuntimeWSDLParser {
         String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
 
         parserContext.pushContext(source.getSystemId(), tns);
-         while ((XMLStreamReaderUtil.nextElementContent(reader) !=
-                XMLStreamConstants.END_ELEMENT) &&
-                (XMLStreamReaderUtil.nextElementContent(reader) !=
-                XMLStreamConstants.END_DOCUMENT)) {
+         while (XMLStreamReaderUtil.nextElementContent(reader) !=
+                XMLStreamConstants.END_ELEMENT) {
+             if(reader.getEventType() == XMLStreamConstants.END_DOCUMENT)
+                break;
             QName name = reader.getName();
             if (WSDLConstants.QNAME_IMPORT.equals(name)) {
                 parseImport(reader, parserContext);
