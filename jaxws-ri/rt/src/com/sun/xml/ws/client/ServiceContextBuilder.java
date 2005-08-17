@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.xml.sax.EntityResolver;
+
 /**
  * $author: WS Development Team
  */
@@ -43,9 +45,9 @@ public abstract class ServiceContextBuilder {
     /**
      * Creates a new {@link ServiceContext}.
      */
-    public static ServiceContext build(URL wsdlLocation, Class si, QName serviceName) throws WebServiceException {
+    public static ServiceContext build(URL wsdlLocation, Class si, EntityResolver er) throws WebServiceException {
 
-        ServiceContext serviceContext = new ServiceContext();
+        ServiceContext serviceContext = new ServiceContext(er);
         SIAnnotations serviceIFAnnotations;
         if (si != null) {
 
@@ -60,7 +62,7 @@ public abstract class ServiceContextBuilder {
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation));
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation,er));
 
             if (si != null) {
                 serviceContext.setServiceInterface(si);
@@ -72,7 +74,7 @@ public abstract class ServiceContextBuilder {
         return serviceContext;
     }
 
-    public static void completeServiceContext(ServiceContext serviceContext, QName portName, Class portInterface) {
+    public static void completeServiceContext(ServiceContext serviceContext, Class portInterface) {
         if (serviceContext.getWsdlContext() == null) {
             URL wsdlLocation = null;
             try {
@@ -81,7 +83,7 @@ public abstract class ServiceContextBuilder {
                 e.printStackTrace();
             }
 
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation));
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation,serviceContext.getEntityResolver()));
         }
 
         //if ((serviceContext.getRuntimeContext() == null) && (portInterface != null)) {

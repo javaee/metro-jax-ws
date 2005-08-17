@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLParserContext.java,v 1.2 2005-08-13 19:58:40 vivekp Exp $
+ * $Id: WSDLParserContext.java,v 1.3 2005-08-17 22:29:48 kohsuke Exp $
  */
 
 /**
@@ -8,23 +8,30 @@
  */
 package com.sun.xml.ws.wsdl.parser;
 
+import org.xml.sax.EntityResolver;
+
 import java.util.Stack;
 import java.util.Set;
 import java.util.HashSet;
 import java.net.URL;
 
 public class WSDLParserContext {
-    private WSDLDocument wsdlDoc;
-    private Stack<String> uris;
-    private Stack<String> wsdlProcessed;
-    private URL originalWsdlURL;
-    private Set<String> importedWSDLs;
+    private final WSDLDocument wsdlDoc;
+    private final Stack<String> uris;
+    private final Stack<String> wsdlProcessed;
+    private final Set<String> importedWSDLs;
+    /**
+     * Must not be null.
+     */
+    private final EntityResolver resolver;
 
-    public WSDLParserContext(WSDLDocument wsdlDoc) {
+    public WSDLParserContext(WSDLDocument wsdlDoc, EntityResolver resolver ) {
+        assert resolver!=null;
         this.wsdlDoc = wsdlDoc;
         this.uris =  new Stack<String>();
         this.wsdlProcessed = new Stack<String>();
         this.importedWSDLs = new HashSet<String>();
+        this.resolver = resolver;
     }
 
     public void pushContext(String systemId, String tns){
@@ -54,19 +61,15 @@ public class WSDLParserContext {
         return wsdlDoc;
     }
 
-    public URL getOriginalWsdlURL() {
-        return originalWsdlURL;
-    }
-
-    public void setOriginalWsdlURL(URL originalWsdlURL) {
-        this.originalWsdlURL = originalWsdlURL;
-    }
-
     public void addImportedWSDL(String location){
         importedWSDLs.add(location);
     }
 
     public boolean isImportedWSDL(String location){
         return importedWSDLs.contains(location);
+    }
+
+    public EntityResolver getResolver() {
+        return resolver;
     }
 }

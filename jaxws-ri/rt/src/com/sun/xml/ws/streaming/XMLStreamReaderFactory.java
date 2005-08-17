@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.6 2005-08-09 19:30:33 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.7 2005-08-17 22:29:47 kohsuke Exp $
  */
 
 /*
@@ -9,16 +9,18 @@
 
 package com.sun.xml.ws.streaming;
 
-import java.io.Reader;
-import java.io.InputStream;
-import org.xml.sax.InputSource;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLInputFactory;
-
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import org.xml.sax.InputSource;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.URL;
 
 /**
  * <p>A factory to create XML and FI parsers.</p>
@@ -103,7 +105,23 @@ public class XMLStreamReaderFactory {
     
     public static XMLStreamReader createXMLStreamReader(InputSource source,
         boolean rejectDTDs) {
-        return createXMLStreamReader(source.getByteStream(), rejectDTDs);
+        if(source.getByteStream()!=null)
+            return createXMLStreamReader(source.getByteStream(), rejectDTDs);
+        if(source.getCharacterStream()!=null)
+            return createXMLStreamReader(source.getCharacterStream(), rejectDTDs);
+
+        try {
+            synchronized (xmlInputFactory) {
+                return xmlInputFactory.createXMLStreamReader(source.getSystemId(),
+                        new URL(source.getSystemId()).openStream());
+            }
+        } catch (XMLStreamException e) {
+            throw new XMLReaderException("stax.cantCreate",
+                new LocalizableExceptionAdapter(e));
+        } catch (IOException e) {
+            throw new XMLReaderException("stax.cantCreate",
+                new LocalizableExceptionAdapter(e));
+        }
     }
     
     /**

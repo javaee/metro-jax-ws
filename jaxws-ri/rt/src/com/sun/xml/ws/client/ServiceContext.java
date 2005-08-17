@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
+import org.xml.sax.EntityResolver;
+
 
 /**
  * $author: WS Development Team
@@ -26,7 +28,14 @@ public class ServiceContext {
     private QName serviceName; //supplied on creation of service
     private SIAnnotations siAnnotations;
     private final HashSet<EndpointIFContext> seiContext = new HashSet<EndpointIFContext>();
+    /**
+     * To be used to resolve WSDL resources.
+     */
+    private final EntityResolver entityResolver;
 
+    public ServiceContext(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
 
     public SIAnnotations getSiAnnotations() {
         return siAnnotations;
@@ -94,6 +103,10 @@ public class ServiceContext {
 
     public void setServiceName(QName serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
     }
 }
 class SIAnnotations {

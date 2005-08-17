@@ -1,31 +1,25 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.6 2005-08-17 21:44:41 kohsuke Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.7 2005-08-17 22:29:47 kohsuke Exp $
  */
 /*
  * Copyright (c) 2005 Sun Microsystems. All Rights Reserved.
  */
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.server.RuntimeContext;
-
-import java.io.Serializable;
-import java.io.IOException;
-
-import java.lang.reflect.Proxy;
-
-import java.net.URL;
-import java.util.Enumeration;
+import org.apache.xml.resolver.CatalogManager;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.xml.sax.EntityResolver;
 
 import javax.naming.Referenceable;
-
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceFactory;
 import javax.xml.ws.WebServiceException;
-
-import org.apache.xml.resolver.tools.CatalogResolver;
-import org.apache.xml.resolver.CatalogManager;
-import org.xml.sax.EntityResolver;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.Enumeration;
 
 
 /**
@@ -45,7 +39,7 @@ public class ServiceFactoryImpl extends ServiceFactory {
         throws WebServiceException {
         if (name == null)
             throw new WebServiceException("QName for the service must not be null");
-        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,null,name);
+        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,null,getResolver());
 
         if (serviceContext.getWsdlContext().contains(name).size() > 1) {
             throw new WebServiceException(" Service " + name +
@@ -61,7 +55,7 @@ public class ServiceFactoryImpl extends ServiceFactory {
                 "QName for the service must not be null");
         }
 
-        ServiceContext serviceContext = new ServiceContext();
+        ServiceContext serviceContext = new ServiceContext(getResolver());
         return new WebService(serviceContext);
     }
 
@@ -80,8 +74,8 @@ public class ServiceFactoryImpl extends ServiceFactory {
                 serviceInterface.getName());
         }
 
-        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,
-                serviceInterface, null);
+        ServiceContext serviceContext = ServiceContextBuilder.build(
+                wsdlDocumentLocation, serviceInterface, getResolver());
 
         return createServiceProxy(serviceContext);
     }
@@ -95,10 +89,9 @@ public class ServiceFactoryImpl extends ServiceFactory {
         ServiceContext serviceContext) {
 
         ServiceInvocationHandler handler = new ServiceInvocationHandler(serviceContext);
-        WebServiceInterface serviceProxy = null;
 
         try {
-            serviceProxy = (WebServiceInterface) Proxy.newProxyInstance(
+            WebServiceInterface serviceProxy = (WebServiceInterface) Proxy.newProxyInstance(
                 serviceContext.getServiceInterface().getClassLoader(),
                     new Class[] {
                         serviceContext.getServiceInterface(),
@@ -107,14 +100,10 @@ public class ServiceFactoryImpl extends ServiceFactory {
                         Referenceable.class
                     }, handler);
             handler.setProxy((Proxy) serviceProxy);
+            return serviceProxy;
         } catch (Exception ex) {
             throw new WebServiceException(ex.getMessage(), ex);
         }
-
-        if (serviceProxy == null) {
-            throw new WebServiceException("Failed to create ServiceProxy.");
-        }
-        return serviceProxy;
     }
 
     /**

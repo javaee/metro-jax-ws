@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLContext.java,v 1.11 2005-08-17 21:44:41 kohsuke Exp $
+ * $Id: WSDLContext.java,v 1.12 2005-08-17 22:29:49 kohsuke Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -26,41 +26,46 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 /**
  * $author: JAXWS Development Team
  */
 public class WSDLContext {
-    private URL orgWsdlLocation;
+    private final URL orgWsdlLocation;
     private String targetNamespace;
     private URI bindingId;
     private String defaultBindingId = SOAPBinding.SOAP11HTTP_BINDING;
     private LinkedHashMap<QName, LinkedHashMap> service2portsLocationMap = new LinkedHashMap<QName, LinkedHashMap>();   //service2
-    private WSDLDocument wsdlDoc;
+    private final WSDLDocument wsdlDoc;
 
     /**
      * Creates a {@link WSDLContext} by parsing the given wsdl file.
      */
-    public WSDLContext(URL wsdlDocumentLocation) throws WebServiceException {
+    public WSDLContext(URL wsdlDocumentLocation, EntityResolver entityResolver) throws WebServiceException {
         //must get binding information
 
         if (wsdlDocumentLocation == null)
             throw new WebServiceException("No WSDL location Information present, error");
 
         //WSDLParser parser = new WSDLParser();
-        setOrigWSDLLocation(wsdlDocumentLocation);
+        orgWsdlLocation = wsdlDocumentLocation;
         try {
             //return parser.parse(new BufferedInputStream(wsdlDocumentLocation.openStream()), getWSDLContext());
-            WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(wsdlDocumentLocation);
-            setWSDLDocument(wsdlDoc);
+            wsdlDoc = RuntimeWSDLParser.parse(wsdlDocumentLocation,entityResolver);
         } catch (IOException e) {
             throw new WebServiceException(e);
         } catch (XMLStreamException e) {
             throw new WebServiceException(e);
+        } catch (SAXException e) {
+            throw new WebServiceException(e);
         }
-    }
 
-    public void setOrigWSDLLocation(URL wsdlLocation) {
-        orgWsdlLocation = wsdlLocation;
+        String bId = wsdlDoc.getBindingId();
+        if(bId != null)
+            setBindingID(bId);
     }
 
     public URL getWsdlLocation() {
@@ -112,13 +117,6 @@ public class WSDLContext {
                 e.printStackTrace();
             }
         return bindingId;
-    }
-
-    public void setWSDLDocument(WSDLDocument wsdlDoc){
-        this.wsdlDoc = wsdlDoc;
-        String bId = wsdlDoc.getBindingId();
-        if(bId != null)
-            setBindingID(bId);
     }
 
     public void setBindingID(String id) {

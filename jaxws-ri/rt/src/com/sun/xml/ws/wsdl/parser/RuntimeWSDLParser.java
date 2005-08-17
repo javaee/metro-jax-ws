@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.8 2005-08-17 21:44:41 kohsuke Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.9 2005-08-17 22:29:48 kohsuke Exp $
  */
 
 /**
@@ -13,56 +13,58 @@ import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.soap.SOAPBinding;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 public class RuntimeWSDLParser {
 
-    public static WSDLDocument parse(URL wsdlLoc) throws IOException, XMLStreamException {
+    public static WSDLDocument parse(URL wsdlLoc, EntityResolver resolver) throws IOException, XMLStreamException, SAXException {
         WSDLDocument wsdlDoc = new WSDLDocument();
-        WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
-        parserContext.setOriginalWsdlURL(wsdlLoc);
-        InputSource source = new InputSource(wsdlLoc.openStream());
-        parseWSDL(source, parserContext);
+        WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc,resolver);
+
+        parseWSDL(wsdlLoc, parserContext);
         return wsdlDoc;
     }
 
-    public static WSDLDocument parse(InputStream is) throws Exception {
-        WSDLDocument wsdlDoc = new WSDLDocument();
-        WSDLParserContext parserContext = new WSDLParserContext(wsdlDoc);
-        InputSource source = new InputSource(is);
-        System.out.println("system id: "+source.getSystemId());
-        parserContext.setOriginalWsdlURL(new URL(source.getSystemId()));
-        try {
-            parseWSDL(source, parserContext);
-
-        } catch (XMLStreamException e) {
-            throw new Exception("wsdl.xmlReader", e);
-        }
-        return wsdlDoc;
+    private static XMLStreamReader createReader(InputSource source) {
+        return XMLStreamReaderFactory.createXMLStreamReader(source,true);
     }
 
-    private static XMLStreamReader createReader(InputStream is) {
-        return XMLStreamReaderFactory.createXMLStreamReader(is, true);
-    }
+    private static void parseWSDL(URL wsdlLoc, WSDLParserContext parserContext) throws XMLStreamException, IOException, SAXException {
 
-    private static void parseWSDL(InputSource source, WSDLParserContext parserContext) throws XMLStreamException {
-        XMLStreamReader reader = createReader(source.getByteStream());
+//        String systemId = wsdlLoc.toExternalForm();
+//        InputSource source = resolver.resolveEntity(null,systemId);
+//        if(source==null)
+//            source = new InputSource(systemId);
+
+        InputSource source = parserContext.getResolver().resolveEntity(null,wsdlLoc.toExternalForm());
+        if(source==null)
+            source = new InputSource(wsdlLoc.toExternalForm());  // default resolution
+        else
+            if(source.getSystemId()==null)
+                // ideally entity resolvers should be giving us the system ID for the resource
+                // (or otherwise we won't be able to resolve references within this imported WSDL correctly),
+                // but if none is given, the system ID before the entity resolution is better than nothing.
+                source.setSystemId(wsdlLoc.toExternalForm());
+
+        // avoid processing the same WSDL twice.
+        if(parserContext.isImportedWSDL(source.getSystemId()))
+            return;
+        parserContext.addImportedWSDL(source.getSystemId());
+
+
+        XMLStreamReader reader = createReader(source);
         XMLStreamReaderUtil.nextElementContent(reader);
 
         //wsdl:definition
@@ -80,7 +82,7 @@ public class RuntimeWSDLParser {
                 break;
             QName name = reader.getName();
             if (WSDLConstants.QNAME_IMPORT.equals(name)) {
-                parseImport(reader, parserContext);
+                parseImport(wsdlLoc, reader, parserContext);
                 XMLStreamReaderUtil.next(reader);
             }else if (WSDLConstants.QNAME_BINDING.equals(name)) {
                 parseBinding(reader, parserContext);
@@ -294,77 +296,13 @@ public class RuntimeWSDLParser {
         }
     }
 
-    protected static void parseImport(XMLStreamReader reader, WSDLParserContext parserContext) {
+    protected static void parseImport(URL baseURL, XMLStreamReader reader, WSDLParserContext parserContext) throws IOException, SAXException, XMLStreamException {
+        // expand to the absolute URL of the imported WSDL.
         String importLocation =
                 ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_LOCATION);
+        URL importURL = new URL(baseURL,importLocation);
 
-        URI temp = null;
-        URL importURL = null;
-        try {
-            temp = new URI(importLocation);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        if (temp.isAbsolute()) {
-            try {
-                importURL = temp.toURL();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            String wsdlPath = parserContext.getOriginalWsdlURL().getPath();
-            int index = wsdlPath.lastIndexOf("/");
-            String base = wsdlPath.substring(0, index);
-
-            URI owsdlLoc = null;
-            String host = null;
-            int port = 0;
-
-            try {
-                owsdlLoc = new URI(parserContext.getOriginalWsdlURL().toExternalForm());
-                host = owsdlLoc.getHost();
-                port = owsdlLoc.getPort();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-
-            if (owsdlLoc != null) {
-                File file = null;
-                if (owsdlLoc.getScheme().equals("file")) {
-                    String path = owsdlLoc.getPath();
-                    if (path != null) {
-                        file = new File(path);
-                        File parent = file.getParentFile();
-                        if (parent.isDirectory()) {
-                            try {
-                                String absPath = parent.getCanonicalPath();
-                                String importString = "file:/" +
-                                    absPath + "/" + importLocation;
-                                importURL = new URL(importString);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    //todo://needs to be update for http imports
-                } else if (owsdlLoc.getScheme().equals("http"))
-                    try {
-                        importURL = new URL("http://" + host + ":" + port + base + "/" + importLocation);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-            }
-        }
-        try {
-            if(parserContext.isImportedWSDL(importURL.toExternalForm()))
-                return;
-            parserContext.addImportedWSDL(importURL.toExternalForm());
-
-            parseWSDL(new InputSource(importURL.openStream()), parserContext);
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        parseWSDL(importURL,parserContext);
     }
 
     private void parsePortType(XMLStreamReader reader, WSDLParserContext parserContext) {

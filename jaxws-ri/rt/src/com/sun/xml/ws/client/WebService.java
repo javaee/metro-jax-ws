@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.19 2005-08-17 21:44:41 kohsuke Exp $
+ * $Id: WebService.java,v 1.20 2005-08-17 22:29:47 kohsuke Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -87,7 +87,7 @@ public class WebService
     }
 
     private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
-        ServiceContextBuilder.completeServiceContext(serviceContext, portName, portInterface);
+        ServiceContextBuilder.completeServiceContext(serviceContext, portInterface);
     }
 
     public URL getWSDLLocation() {
