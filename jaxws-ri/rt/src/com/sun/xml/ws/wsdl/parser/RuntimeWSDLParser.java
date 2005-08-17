@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.6 2005-08-17 19:26:53 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.7 2005-08-17 20:43:13 vivekp Exp $
  */
 
 /**
@@ -13,6 +13,7 @@ import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
@@ -117,7 +118,7 @@ public class RuntimeWSDLParser {
         String location = null;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
-            if(SOAPConstants.QNAME_ADDRESS.equals(name)){
+            if(SOAPConstants.QNAME_ADDRESS.equals(name)||SOAPConstants.QNAME_SOAP12ADDRESS.equals(name)){
                 location = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_LOCATION);
                 XMLStreamReaderUtil.next(reader);
             }else{
@@ -189,7 +190,7 @@ public class RuntimeWSDLParser {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
-            if(SOAPConstants.QNAME_BODY.equals(name) && !bodyFound){
+            if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
                 bindingOp.setInputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getInputParts()));
                 XMLStreamReaderUtil.next(reader);
@@ -207,7 +208,7 @@ public class RuntimeWSDLParser {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
-            if(SOAPConstants.QNAME_BODY.equals(name) && !bodyFound){
+            if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
                 bindingOp.setOutputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getOutputParts()));
                 XMLStreamReaderUtil.next(reader);
