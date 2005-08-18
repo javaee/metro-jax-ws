@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.15 2005-08-17 21:04:46 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.16 2005-08-18 00:27:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -269,8 +269,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             collectMembers(method, operationName, typeNamespace, reqMembers, resMembers);            
 
             // XmlType
-//            writeXmlTypeDeclaration(reqCls, operationName, typeNamespace, reqMembers);
-//            writeXmlTypeDeclaration(resCls, operationName+RESPONSE, typeNamespace, resMembers);
             writeXmlTypeDeclaration(reqCls, reqName, reqNamespace, reqMembers);
             writeXmlTypeDeclaration(resCls, resName, resNamespace, resMembers);
                  

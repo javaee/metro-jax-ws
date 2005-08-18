@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.27 2005-08-16 19:06:59 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.28 2005-08-18 00:26:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -596,7 +596,7 @@ public class RuntimeModeler {
      * @param wrapper The wrapper class
      * @return the element name for the <code>wrapperClass</code>
      */
-    protected QName getWrapperElementName(Class wrapper) {
+/*    protected QName getWrapperElementName(Class wrapper) {
         QName elementName = null;
         XmlRootElement rootElement = (XmlRootElement)wrapper.getAnnotation(XmlRootElement.class);
         if (rootElement != null) {
@@ -613,7 +613,7 @@ public class RuntimeModeler {
             }
         }
         return elementName;
-    }
+    }*/
 
 
     /**
@@ -650,22 +650,30 @@ public class RuntimeModeler {
 
         Class returnType = method.getReturnType();
 
-        String resultName = null;
-        String resultTNS = null;
+        String resultName = RETURN;//null;
+        String resultTNS = targetNamespace;//null;
         QName resultQName = null;
         String resultPartName = null;
         boolean isResultHeader = false;
         WebResult webResult = method.getAnnotation(WebResult.class);
 
         if (webResult != null) {
-            resultName = webResult.name();
-            resultPartName = webResult.partName();
-            resultQName = new QName(resultName);
+            if (webResult.name().length() > 0)
+                resultName = webResult.name();
+            if (webResult.partName().length() > 0)
+                resultPartName = webResult.partName();
+            if (webResult.targetNamespace().length() > 0)
+                resultTNS = webResult.targetNamespace();
+//            resultQName = new QName(resultName);
             isResultHeader = webResult.header();
-        } else if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
-            resultQName = new QName(RETURN);
-        }
-
+        } //else if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
+//            resultQName = new QName(RETURN);
+//        }
+        if (isResultHeader)
+            resultQName = new QName(resultTNS, resultName);
+        else
+            resultQName = new QName(resultName);
+        
         if(javaMethod.isAsync()){
             returnType = getAsyncReturnType(method, returnType);
         }
@@ -716,6 +724,7 @@ public class RuntimeModeler {
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
                 continue;
             }
+
 
             boolean isHolder = HOLDER_CLASS.isAssignableFrom(clazzType);
             //set the actual type argument of Holder in the TypeReference
