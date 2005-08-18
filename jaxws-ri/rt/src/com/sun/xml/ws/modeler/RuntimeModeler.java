@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.29 2005-08-18 17:58:40 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.30 2005-08-18 22:37:56 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -1040,7 +1040,19 @@ public class RuntimeModeler {
      * @param implClass the implementation class
      * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
-    public QName getServiceName(Class implClass) {
+    /*
+     * Return service QName
+     */
+    /**
+     * gets the <code>wsdl:serviceName</code> for a given implementation class
+     * @param implClass the implementation class
+     * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
+     */
+    public static QName getServiceName(Class implClass, ClassLoader cl) {
+        if(cl == null)
+            cl = Thread.currentThread().getContextClassLoader();
+
+
         String name = implClass.getSimpleName();
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
@@ -1049,7 +1061,13 @@ public class RuntimeModeler {
                                     new Object[] {implClass.getCanonicalName()});
         }
         if (webService.endpointInterface().length() > 0) {
-            Class seiClass = getClass(webService.endpointInterface());
+            Class seiClass = null;
+            try {
+                seiClass = cl.loadClass(webService.endpointInterface());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeModelerException("runtime.modeler.class.not.found",
+                             new Object[] {webService.endpointInterface()});
+            }
             webService = (WebService)seiClass.getAnnotation(WebService.class);
             if (webService == null) {
                 throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
