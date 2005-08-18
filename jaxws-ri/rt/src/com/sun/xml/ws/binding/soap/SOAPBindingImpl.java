@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.7 2005-08-16 01:59:52 jitu Exp $
+ * $Id: SOAPBindingImpl.java,v 1.8 2005-08-18 02:05:20 jitu Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,8 +31,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 /**
  * @author WS Development Team
  */
-public class SOAPBindingImpl extends BindingImpl implements SOAPBinding,
-    com.sun.xml.ws.spi.runtime.SOAPBinding {
+public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
     private final static String SHD_NAME =
         "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
