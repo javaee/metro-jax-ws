@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.20 2005-08-15 22:58:14 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.21 2005-08-18 00:59:00 vivekp Exp $
  */
 
 /*
@@ -51,6 +51,7 @@ import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.encoding.ByteArray;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -482,11 +483,15 @@ public abstract class SOAPEncoder implements Encoder {
                 continue;
             Object value = block.getValue();
             AttachmentPart ap = msg.createAttachmentPart();
-            if(value instanceof DataHandler)
+            if(value instanceof DataHandler){
                 ap.setDataHandler((DataHandler)value);
-            else if(value instanceof byte[])
-                ap.setRawContentBytes((byte[])value, block.getType());
-            else{
+            }else if(value instanceof byte[]){
+                byte[] data = (byte[])value;
+                ap.setRawContentBytes(data, 0, data.length, block.getType());
+            }else if(value instanceof ByteArray){
+                ByteArray data = (ByteArray) value;
+                ap.setRawContentBytes(data.bytes, data.offset, data.length, block.getType());
+            }else{
                 ap.setContent(value, block.getType());
             }
             ap.setContentId(id);
