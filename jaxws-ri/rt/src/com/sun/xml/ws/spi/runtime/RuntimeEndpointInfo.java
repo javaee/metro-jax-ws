@@ -1,22 +1,19 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.7 2005-08-12 02:55:14 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.8 2005-08-18 02:19:03 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi.runtime;
 
+import java.net.URL;
+import org.xml.sax.EntityResolver;
+
 /**
  * This captures all the required information (e.g: handlers, binding, endpoint
  * object, proxy for endpoint object etc.) about the endpoint.
  */
 public interface RuntimeEndpointInfo {
-    
-    /**
-     * TODO: remove this method
-     * Not used.
-     */
-    public void setUrlPattern(String s);
         
     /*
      * Builds runtime model from implementor object. It also generates required
@@ -68,5 +65,12 @@ public interface RuntimeEndpointInfo {
      * sets the WebServiceContext for this endpoint.
      */
     public void setWebServiceContext(WebServiceContext wsContext);
+    
+    /**
+     * set the URL for primary WSDL, and a resolver to resolve entities like
+     * WSDL, imports/references. A resolver for XML catalog can be created using
+     * WSRtObjectFactory.createResolver(URL catalogURL).
+     */
+    public void setWsdlInfo(URL wsdlUrl, EntityResolver resolver);
 
 }

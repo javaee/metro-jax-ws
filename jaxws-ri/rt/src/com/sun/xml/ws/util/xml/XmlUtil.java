@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.3 2005-08-13 19:32:44 vivekp Exp $
+ * $Id: XmlUtil.java,v 1.4 2005-08-18 02:19:04 jitu Exp $
  */
 
 /*
@@ -32,8 +32,12 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.util.xml.NamedNodeMapIterator;
-import com.sun.xml.ws.util.xml.NodeListIterator;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import java.net.URL;
+import org.apache.xml.resolver.CatalogManager;
+import org.apache.xml.resolver.tools.CatalogResolver;
+import org.xml.sax.EntityResolver;
 
 /**
  * @author WS Development Team
@@ -185,6 +189,24 @@ public class XmlUtil {
             throw new IllegalStateException("Unable to create a JAXP transformer");
         }
         return t;
+    }
+    
+    /*
+     * Gets an EntityResolver using XML catalog
+     */
+    public static EntityResolver createEntityResolver(URL catalogUrl) {
+        // set up a manager
+        CatalogManager manager = new CatalogManager();
+        manager.setIgnoreMissingProperties(true);
+        try {
+            if (catalogUrl != null) {
+                manager.getCatalog().parseCatalog(catalogUrl);
+            }
+        } catch (IOException e) {
+            throw new ServerRtException("server.rt.err",
+                new LocalizableExceptionAdapter(e));
+        }
+        return new CatalogResolver(manager);
     }
 
 }

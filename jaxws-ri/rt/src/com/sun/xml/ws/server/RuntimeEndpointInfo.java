@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.35 2005-08-16 01:59:53 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.36 2005-08-18 02:19:02 jitu Exp $
  */
 
 /*
@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
 import javax.xml.ws.WebServiceProvider;
+import org.apache.xml.resolver.apps.resolver;
+import org.xml.sax.EntityResolver;
 
 
 
@@ -76,7 +78,8 @@ public class RuntimeEndpointInfo
     private boolean endServiceDone;
     private boolean injectedContext;
     private boolean publishingDone;
-    private URL wsdlURL;
+    private URL wsdlUrl;
+    private EntityResolver wsdlResolver;
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
     private static final Localizer localizer = new Localizer();
@@ -104,12 +107,21 @@ public class RuntimeEndpointInfo
         wsdlFileName = s;
     }
     
-    public void setWSDLURL(URL url) {
-        wsdlURL = url;
+    /**
+     * set the URL for primary WSDL, and an EntityResolver to resolve all
+     * imports/references
+     */
+    public void setWsdlInfo(URL wsdlUrl, EntityResolver wsdlResolver) {
+        this.wsdlUrl = wsdlUrl;
+        this.wsdlResolver = wsdlResolver;
     }
     
-    public URL getWSDLURL() {
-        return wsdlURL;
+    public EntityResolver getWsdlResolver() {
+        return wsdlResolver;
+    }
+    
+    public URL getWsdLUrl() {
+        return wsdlUrl;
     }
 
     /**

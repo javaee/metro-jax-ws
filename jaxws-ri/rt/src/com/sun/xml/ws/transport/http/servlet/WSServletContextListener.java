@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.7 2005-08-15 22:53:39 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.8 2005-08-18 02:19:04 jitu Exp $
  */
 
 /*
@@ -26,8 +26,10 @@ import com.sun.xml.ws.spi.runtime.WebServiceContext;
 
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.xml.sax.EntityResolver;
 
 
 /**
@@ -154,13 +157,21 @@ public class WSServletContextListener
      */
     private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints,
             Map<String, DocInfo> docs)  throws UnsupportedEncodingException {
+        URL catalogUrl = null;
+        try {
+            catalogUrl = context.getResource("/WEB-INF/jax-ws-catalog.xml");
+        } catch(java.net.MalformedURLException e) {
+            e.printStackTrace();
+        }
+        EntityResolver entityResolver = XmlUtil.createEntityResolver(catalogUrl);
                     
-                    
+     
         for(RuntimeEndpointInfo endpoint : endpoints) {
             
             if (endpoint.getWSDLFileName() != null) {
                 try {
-                    endpoint.setWSDLURL(context.getResource(endpoint.getWSDLFileName()));
+                    URL wsdlUrl = context.getResource(endpoint.getWSDLFileName());
+                    endpoint.setWsdlInfo(wsdlUrl, entityResolver);
                 } catch(java.net.MalformedURLException e) {
                     e.printStackTrace();
                 }

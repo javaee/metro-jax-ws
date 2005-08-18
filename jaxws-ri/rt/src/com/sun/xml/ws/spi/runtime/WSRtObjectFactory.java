@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.5 2005-08-17 01:49:54 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.6 2005-08-18 02:19:03 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.sun.xml.ws.util.WSRtObjectFactoryImpl;
+import java.net.URL;
+import org.xml.sax.EntityResolver;
 
 /**
  * Singleton abstract factory used to produce JAX-WS runtime related objects.
@@ -76,5 +78,10 @@ public abstract class WSRtObjectFactory {
      * javax.xml.ws.http.HTTPBinding.HTTP_BINDING
      */
     public abstract Binding createBinding(String bindingId);
+    
+    /**
+     * creates an EntityResolver for the XML Catalog URL
+     */
+    public abstract EntityResolver createEntityResolver(URL catalogUrl);
 
 }

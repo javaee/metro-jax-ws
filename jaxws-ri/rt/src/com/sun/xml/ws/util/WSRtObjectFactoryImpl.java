@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.5 2005-08-17 01:49:55 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.6 2005-08-18 02:19:04 jitu Exp $
  */
 
 /*
@@ -14,17 +14,19 @@ import java.io.OutputStream;
 
 import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.handler.MessageContextImpl;
-import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 
 import com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.servlet.ServletConnectionImpl;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
+import org.xml.sax.EntityResolver;
 
 /**
  * Singleton factory class to instantiate concrete objects.
@@ -87,5 +89,13 @@ public class WSRtObjectFactoryImpl
             return new HTTPBindingImpl();
         }
         return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
+    }
+    
+    /**
+     * creates an EntityResolver for the XML Catalog URL
+     */
+    @Override
+    public EntityResolver createEntityResolver(URL catalogUrl) {
+        return XmlUtil.createEntityResolver(catalogUrl);
     }
 }
