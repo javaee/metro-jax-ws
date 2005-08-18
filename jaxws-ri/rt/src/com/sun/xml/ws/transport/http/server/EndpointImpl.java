@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.5 2005-08-16 22:24:10 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.6 2005-08-18 18:58:45 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -16,7 +16,7 @@ import javax.xml.transform.Source;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Executor;
-
+import javax.xml.ws.WebServicePermission;
 
 /**
  *
@@ -24,11 +24,8 @@ import java.util.concurrent.Executor;
  */
 public class EndpointImpl implements Endpoint {
     
-    /*
     private static final WebServicePermission ENDPOINT_PUBLISH_PERMISSION =
         new WebServicePermission("publishEndpoint");
-     */
-    
     private Endpoint actualEndpoint;
     private RuntimeEndpointInfo rtEndpointInfo;
    
@@ -92,12 +89,11 @@ public class EndpointImpl implements Endpoint {
     }
     
     private void checkPermissions() {
-        /*
+
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             sm.checkPermission(ENDPOINT_PUBLISH_PERMISSION);
         }
-         */
         try {
             Class clazz = Class.forName("com.sun.net.httpserver.HttpServer");
         } catch(Exception e) {
