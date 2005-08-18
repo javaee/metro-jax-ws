@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.28 2005-08-18 00:26:59 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.29 2005-08-18 17:58:40 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 
 /**
  * Creates a runtime model of a SEI (portClass).
+ *
  * @author JAXWS Developement Team
  */
 public class RuntimeModeler {
@@ -303,7 +304,7 @@ public class RuntimeModeler {
         int modifier = method.getModifiers();
         //use for checking
 
-         //set MEP -oneway, async, req/resp
+        //set MEP -oneway, async, req/resp
         int mep = getMEP(method);
         javaMethod.setMEP(mep);
 
@@ -652,8 +653,8 @@ public class RuntimeModeler {
 
         String resultName = RETURN;//null;
         String resultTNS = targetNamespace;//null;
+        String resultPartName = resultName; // TODO this needs to be spec'ed
         QName resultQName = null;
-        String resultPartName = null;
         boolean isResultHeader = false;
         WebResult webResult = method.getAnnotation(WebResult.class);
 
@@ -664,11 +665,8 @@ public class RuntimeModeler {
                 resultPartName = webResult.partName();
             if (webResult.targetNamespace().length() > 0)
                 resultTNS = webResult.targetNamespace();
-//            resultQName = new QName(resultName);
             isResultHeader = webResult.header();
-        } //else if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
-//            resultQName = new QName(RETURN);
-//        }
+        }
         if (isResultHeader)
             resultQName = new QName(resultTNS, resultName);
         else
@@ -687,9 +685,6 @@ public class RuntimeModeler {
                 returnParameter.setBinding(SOAPBlock.HEADER);
                 javaMethod.addParameter(returnParameter);
             }else{
-                if(resultPartName == null || (resultPartName.length() == 0)){
-                    resultPartName = resultName;
-                }
                 SOAPBlock rb = getBinding(binding, operationName, resultPartName, com.sun.xml.ws.model.Mode.OUT);
                 returnParameter.setBinding(rb);
                 returnParameter.setPartName(resultPartName);
