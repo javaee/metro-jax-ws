@@ -1,5 +1,5 @@
 /*
- * $Id: Import.java,v 1.1 2005-06-01 00:12:53 kohlert Exp $
+ * $Id: Import.java,v 1.2 2005-08-18 19:11:52 kohlert Exp $
  */
 
 /*
@@ -14,6 +14,10 @@ import com.sun.xml.txw2.annotation.XmlElement;
 import com.sun.xml.ws.wsdl.writer.document.Documented;
 import com.sun.xml.ws.wsdl.writer.document.*;
 
+/**
+ *
+ * @author WS Development Team
+ */
 @XmlElement("import")
 public interface Import
     extends TypedXmlWriter, Documented

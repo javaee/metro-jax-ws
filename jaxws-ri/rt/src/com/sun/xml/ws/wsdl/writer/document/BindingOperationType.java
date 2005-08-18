@@ -1,4 +1,9 @@
-
+/**
+ * $Id: BindingOperationType.java,v 1.5 2005-08-18 19:11:42 kohlert Exp $
+ *
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
 package com.sun.xml.ws.wsdl.writer.document;
 
 import com.sun.xml.txw2.TypedXmlWriter;
@@ -8,6 +13,10 @@ import com.sun.xml.ws.wsdl.writer.document.Fault;
 import com.sun.xml.ws.wsdl.writer.document.StartWithExtensionsType;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPOperation;
 
+/**
+ *
+ * @author WS Development Team
+ */
 public interface BindingOperationType
     extends TypedXmlWriter, StartWithExtensionsType
 {
