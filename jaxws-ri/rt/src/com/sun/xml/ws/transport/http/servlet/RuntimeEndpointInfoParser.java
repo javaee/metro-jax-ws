@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.4 2005-08-16 01:59:53 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.5 2005-08-18 23:49:41 jitu Exp $
  */
 
 /*
@@ -110,6 +110,11 @@ public class RuntimeEndpointInfoParser {
                     rei.setBinding(new SOAPBindingImpl(bindingId));
                 } else if(bindingId.equals(HTTPBinding.HTTP_BINDING)) {
                     rei.setBinding(new HTTPBindingImpl());
+                } else {
+                    failWithLocalName(
+                        "runtime.parser.invalidAttributeValue",
+                        reader,
+                        ATTR_BINDING);
                 }
                 rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
 

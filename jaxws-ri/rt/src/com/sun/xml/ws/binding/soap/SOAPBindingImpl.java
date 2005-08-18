@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.8 2005-08-18 02:05:20 jitu Exp $
+ * $Id: SOAPBindingImpl.java,v 1.9 2005-08-18 23:49:40 jitu Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -36,7 +36,8 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     private final static String SHD_NAME =
         "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
     
-    public static final String X_SOAP12HTTP_BINDING = "X_SOAP12HTTP_BINDING";
+    public static final String X_SOAP12HTTP_BINDING = 
+        "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
     
     private static URI ROLE_NONE;
 
