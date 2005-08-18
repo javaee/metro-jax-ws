@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.14 2005-08-15 21:52:12 kohlert Exp $
+ * $Id: CompileTool.java,v 1.15 2005-08-18 15:27:22 vivekp Exp $
  */
 
 /*
@@ -70,7 +70,7 @@ import java.util.*;
  *    JAXBTypeGenerator} to generate JAXB types,
  *    the {@link com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator 
  *    ServiceInterfaceGenerator} to generate the Service interface, and
- *    the {@link com.sun.tools.ws.processor.generator.RemoteInterfaceGenerator 
+ *    the {@link com.sun.tools.ws.processor.generator.SeiGenerator
  *    RemoteInterfaceGenerator} to generate the service endpoint interface.
  *    The CompileTool then invokes the {@link com.sun.tools.ws.processor.Processor#runActions() 
  *    Processor.runActions()} method to cause these ProcessorActions to run.
@@ -118,7 +118,14 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else if (args[i].equals("-keep")) {
                 keepGenerated = true;
                 args[i] = null;
-            } else if (args[i].equals("-d")) {
+            } else if(args[i].equals("-wsdllocation")){
+                if(program.equals("wsgen"))
+                    continue;
+                args[i]=null;
+                wsdlLocation = args[++i];
+                args[i]=null;
+
+            }else if (args[i].equals("-d")) {
                 if ((i + 1) < args.length) {
                     if (destDir != null) {
                         onError(getMessage("wscompile.duplicateOption", "-d"));
@@ -240,7 +247,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else if (args[i].equals("-extension")) {
                 extensions = true;
                 args[i] = null;
-            } else if (args[i].startsWith("-help")) {
+            }else if (args[i].startsWith("-help")) {
                 help();
                 return false;
             }
@@ -263,7 +270,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                         return false;
                     }
                 } else {
-                    fileName = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(args[i]));
+                    //fileName = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(args[i]));
                 }
                 inputFiles.add(fileName);
             }
@@ -595,6 +602,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         properties.setProperty(ProcessorOptions.PROTOCOL, protocol);
         properties.setProperty(ProcessorOptions.TRANSPORT, transport);
         properties.setProperty(ProcessorOptions.JAXWS_SOURCE_VERSION, getSourceVersion());
+        if(wsdlLocation != null)
+            properties.setProperty(ProcessorOptions.WSDL_LOCATION, wsdlLocation);
     }
 
     protected String getGenericErrorMessage() {
@@ -717,4 +726,5 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected static final String VALID_PROTOCOLS = SOAP11 +", "+X_SOAP12;
     protected static final String VALID_TRANSPORTS = "http";
     protected String  targetVersion = null;
+    protected String wsdlLocation;
 }

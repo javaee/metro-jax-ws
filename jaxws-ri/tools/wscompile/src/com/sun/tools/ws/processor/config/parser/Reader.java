@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.6 2005-08-08 17:19:31 vivekp Exp $
+ * $Id: Reader.java,v 1.7 2005-08-18 15:27:54 vivekp Exp $
  */
 
 /*
@@ -60,17 +60,17 @@ public class Reader {
             return;
         }
 
-        JAXWSUtils.checkAbsoluteness(file);
-        URL url = new URL(file);
-
-        XMLStreamReader reader =
-                XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
-
-        XMLStreamReaderUtil.nextElementContent(reader);
-        if(!reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
-            //we are here, means invalid element
-            ParserUtil.failWithFullName("configuration.invalidElement", file, reader);
-        }
+//        JAXWSUtils.checkAbsoluteness(file);
+//        URL url = new URL(file);
+//
+//        XMLStreamReader reader =
+//                XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
+//
+//        XMLStreamReaderUtil.nextElementContent(reader);
+//        if(!reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)){
+//            //we are here, means invalid element
+//            ParserUtil.failWithFullName("configuration.invalidElement", file, reader);
+//        }
     }
 
     public boolean isClass(String className) {

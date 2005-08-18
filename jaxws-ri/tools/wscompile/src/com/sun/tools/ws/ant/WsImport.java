@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.7 2005-08-12 21:34:28 kohlert Exp $
+ * $Id: WsImport.java,v 1.8 2005-08-18 15:27:55 vivekp Exp $
  */
 
 /*
@@ -49,6 +49,18 @@ public class WsImport extends MatchingTask {
     /** Sets the base directory to output generated class. **/
     public void setBase(File base) {
         this.baseDir = base;
+    }
+
+    /** wsdllocation - set @WebService.wsdlLocation and @WebServiceClient.wsdlLocation values */
+
+    private String wsdlLocation;
+
+    public String getWsdlLocation() {
+        return wsdlLocation;
+    }
+
+    public void setWsdlLocation(String wsdlLocation) {
+        this.wsdlLocation = wsdlLocation;
     }
 
     /********************  -httpproxy option **********************/
@@ -394,6 +406,11 @@ public class WsImport extends MatchingTask {
         if(getBinding() != null){
             cmd.createArgument().setValue("-b");
             cmd.createArgument().setFile(new File (getBinding()));
+        }
+
+        if(wsdlLocation != null){
+            cmd.createArgument().setValue("-wsdllocation");
+            cmd.createArgument().setValue(wsdlLocation);
         }
 
         if(!bindingFiles.isEmpty()){

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.5 2005-08-13 08:25:42 vivekp Exp $
+ * $Id: JAXBModelBuilder.java,v 1.6 2005-08-18 15:27:53 vivekp Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 
@@ -68,10 +69,10 @@ public class JAXBModelBuilder {
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
             schemaCompiler.setErrorListener(new ConsoleErrorReporter(_env, printstacktrace));
             int schemaElementCount = 1;
+            String wsdlLocation =((WSDLModelInfo)_modelInfo).getLocation();
+            wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
             for(Iterator iter = elements.iterator(); iter.hasNext();){
                 Element schemaElement = (Element)iter.next();
-                String targetNamespace = schemaElement.getAttribute("targetNamespace");
-                String wsdlLocation =((WSDLModelInfo)_modelInfo).getLocation();
                 String systemId = new String(wsdlLocation + "#types?schema"+schemaElementCount++);
                 schemaCompiler.parseSchema(systemId,schemaElement);
             }

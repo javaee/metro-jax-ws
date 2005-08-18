@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.5 2005-08-09 16:06:14 vivekp Exp $
+ * $Id: CustomizationParser.java,v 1.6 2005-08-18 15:27:54 vivekp Exp $
  */
 
 /*
@@ -53,6 +53,8 @@ public class CustomizationParser extends InputParser {
         Configuration configuration = new Configuration(getEnv());
         wsdlModelInfo = new WSDLModelInfo();
         wsdlModelInfo.setLocation(inputFiles.get(0));
+        if(_options.get(ProcessorOptions.WSDL_LOCATION) == null)
+            _options.setProperty(ProcessorOptions.WSDL_LOCATION, inputFiles.get(0));
 
         //modelInfoParser = (JAXWSBindingInfoParser)getModelInfoParsers().get(JAXWSBindingsConstants.JAXWS_BINDINGS);
         modelInfoParser = new JAXWSBindingInfoParser(getEnv());
@@ -60,8 +62,9 @@ public class CustomizationParser extends InputParser {
         //get the jaxws bindingd file and add it to the modelInfo
         Set<String> bindingFiles = (Set<String>)_options.get(ProcessorOptions.BINDING_FILES);
         for(String bindingFile : bindingFiles){
-            addBinding(bindingFile);
+            addBinding(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(bindingFile)));
         }
+
 
         for(String jaxwsBinding : jaxwsBindings){
             Element root = modelInfoParser.parse(new InputSource(jaxwsBinding));

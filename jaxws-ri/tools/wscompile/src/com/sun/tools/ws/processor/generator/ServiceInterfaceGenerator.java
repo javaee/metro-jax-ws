@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.9 2005-08-10 23:48:25 kohlert Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.10 2005-08-18 15:27:54 vivekp Exp $
  */
 
 /*
@@ -44,7 +44,6 @@ import javax.xml.ws.WebServiceClient;
  * @author WS Development Team
  */
 public class ServiceInterfaceGenerator extends GeneratorBase implements ProcessorAction {
-    private String wsdlLocation;
     private String serviceNS;
 
     public ServiceInterfaceGenerator() {
@@ -56,7 +55,6 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
         Configuration config,
         Properties properties) {
         super(model, config, properties);
-        this.wsdlLocation = ((WSDLModelInfo)config.getModelInfo()).getLocation();            
     }
 
     public GeneratorBase getGenerator(

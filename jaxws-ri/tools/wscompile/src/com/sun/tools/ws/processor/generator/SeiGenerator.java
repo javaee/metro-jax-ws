@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.17 2005-08-17 06:26:55 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.18 2005-08-18 15:27:54 vivekp Exp $
  */
 
 /**
@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Properties;
 
 public class SeiGenerator extends GeneratorBase implements ProcessorAction {
-    private String wsdlLocation;
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
     public SeiGenerator() {
@@ -76,7 +75,6 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     public SeiGenerator(Model model, Configuration config, Properties properties) {
         super(model, config, properties);
         this.model = model;
-        this.wsdlLocation = ((WSDLModelInfo)config.getModelInfo()).getLocation();
         this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();
     }
 

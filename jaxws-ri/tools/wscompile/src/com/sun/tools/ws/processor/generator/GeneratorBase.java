@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.7 2005-08-13 08:25:42 vivekp Exp $
+ * $Id: GeneratorBase.java,v 1.8 2005-08-18 15:27:54 vivekp Exp $
  */
 
 /*
@@ -19,6 +19,7 @@ import com.sun.tools.ws.processor.ProcessorAction;
 import com.sun.tools.ws.processor.ProcessorConstants;
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.Configuration;
+import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.model.AbstractType;
 import com.sun.tools.ws.processor.model.Block;
 import com.sun.tools.ws.processor.model.Fault;
@@ -65,6 +66,7 @@ public abstract class GeneratorBase
     protected String servicePackage;
     protected JCodeModel cm;
     protected boolean printStackTrace;
+    protected String wsdlLocation;
 
     private LocalizableMessageFactory messageFactory;
 
@@ -130,7 +132,7 @@ public abstract class GeneratorBase
         this.donotOverride =
             Boolean.valueOf(properties.getProperty(key)).booleanValue();
         this.printStackTrace = Boolean.valueOf(properties.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
-
+        this.wsdlLocation = properties.getProperty(ProcessorOptions.WSDL_LOCATION);
     }
 
     protected void doGeneration() {

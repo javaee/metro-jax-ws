@@ -9,6 +9,7 @@ import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
 import javax.jws.WebService;
@@ -58,7 +59,8 @@ public abstract class ServiceContextBuilder {
             
             if(wsdlLocation == null)
                 try {
-                    wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
+//                    wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
+                    wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceIFAnnotations.wsdlLocation));
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
@@ -103,18 +105,7 @@ public abstract class ServiceContextBuilder {
                 serviceContext.addEndpointIFContext(eifc);
             }
 
-//            Binding binding = serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(),
-//                                serviceContext.getWsdlContext().getPortName());
-
-
-
             RuntimeModeler processor = new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
-//            RuntimeModeler processor = null;
-//            if(binding != null)
-//                processor = new RuntimeModeler(portInterface, binding);
-//            else
-//                processor = new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
-
             RuntimeModel model = processor.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
