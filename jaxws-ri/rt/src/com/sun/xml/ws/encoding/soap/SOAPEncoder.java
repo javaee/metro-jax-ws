@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.21 2005-08-18 00:59:00 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.22 2005-08-19 03:05:05 jitu Exp $
  */
 
 /*
@@ -399,8 +399,6 @@ public abstract class SOAPEncoder implements Encoder {
             if (headerBlocks == null || headerBlocks.isEmpty()) {
                 return;
             }
-            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
-            BridgeContext bridgeContext = rtCtxt.getBridgeContext();
             startHeader(writer); // <env:Header>
             for (HeaderBlock headerBlock: headerBlocks) {
                 Object value = headerBlock.getValue();
