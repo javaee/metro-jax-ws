@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLOutputResolver.java,v 1.2 2005-07-20 20:58:53 kwalsh Exp $
+ * $Id: WSDLOutputResolver.java,v 1.3 2005-08-19 21:06:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,7 @@ import javax.xml.transform.Result;
 
 /**
  *
- * @author dkohlert
+ * @author WS Development Team
  */
 public interface WSDLOutputResolver {
     public Result getWSDLOutput(String suggestedFilename);

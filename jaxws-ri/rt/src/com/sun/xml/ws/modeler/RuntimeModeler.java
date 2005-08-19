@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.32 2005-08-19 01:26:49 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.33 2005-08-19 21:06:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -147,6 +147,7 @@ public class RuntimeModeler {
                                     new Object[] {webService.endpointInterface()});
             }
         }
+        runtimeModel.setServiceQName(getServiceName(portClass, classLoader));
 
         processClass(clazz);
         runtimeModel.postProcess();
@@ -185,12 +186,12 @@ public class RuntimeModeler {
         QName name = new QName(targetNamespace, portName);
         runtimeModel.setPortQName(name);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
-        String serviceName = clazz.getSimpleName()+SERVICE;
-        serviceName = webService.serviceName().length() > 0 ?
-                        webService.serviceName() : serviceName;
+//        String serviceName = clazz.getSimpleName()+SERVICE;
+//        serviceName = webService.serviceName().length() > 0 ?
+//                        webService.serviceName() : serviceName;
         
-        QName serviceQName = new QName(targetNamespace, serviceName);
-        runtimeModel.setServiceQName(serviceQName);
+//        QName serviceQName = new QName(targetNamespace, serviceName);
+//        runtimeModel.setServiceQName(serviceQName);
         
         javax.jws.soap.SOAPBinding soapBinding =
             (javax.jws.soap.SOAPBinding) clazz.getAnnotation(javax.jws.soap.SOAPBinding.class);
@@ -248,7 +249,7 @@ public class RuntimeModeler {
      * @param packageName the name of the package used to find a namespace
      * @return the namespace for the specified <code>packageName</code>
      */
-    protected String getNamespace(String packageName) {
+    static protected String getNamespace(String packageName) {
         StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
         String[] tokens;
         if (tokenizer.countTokens() == 0) {
@@ -1034,32 +1035,23 @@ public class RuntimeModeler {
     public static QName getServiceName(Class implClass, ClassLoader cl) {
         if(cl == null)
             cl = Thread.currentThread().getContextClassLoader();
-        String name = implClass.getSimpleName();
+
+        String name = implClass.getSimpleName()+SERVICE;
+        String packageName = implClass.getPackage().getName();
+        String targetNamespace = getNamespace(packageName);
+
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
         if (webService == null) {
-                throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
+            throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                                     new Object[] {implClass.getCanonicalName()});
         }
-        if (webService.endpointInterface().length() > 0) {
-            Class seiClass = null;
-            try {
-                seiClass = cl.loadClass(webService.endpointInterface());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeModelerException("runtime.modeler.class.not.found",
-                             new Object[] {webService.endpointInterface()});
-            }
-            webService = (WebService)seiClass.getAnnotation(WebService.class);
-            if (webService == null) {
-                throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
-                                    new Object[] {seiClass.getCanonicalName()});
-            }
-            name = seiClass.getSimpleName();
+        if (webService.serviceName().length() > 0) {
+            name = webService.serviceName();
         }
-        if (webService.name().length() > 0) {
-            name = webService.name();
-        }
-        return new QName(webService.targetNamespace(), name);
+        if (webService.targetNamespace().length() > 0)
+            targetNamespace = webService.targetNamespace();
+        return new QName(targetNamespace, name);
     }
 
     public ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, Mode mode){

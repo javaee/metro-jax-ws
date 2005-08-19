@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.7 2005-08-16 19:07:00 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.8 2005-08-19 21:06:40 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -155,7 +155,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                         webService.serviceName() : serviceName;
         wsdlNamespace = seiContext.getNamespaceURI();
         typeNamespace = wsdlNamespace;
-//        builder.setWsdlNamespaceURI(wsdlNamespace);
+
         SOAPBinding soapBinding = d.getAnnotation(SOAPBinding.class);
         if (soapBinding != null) {
             pushSOAPBinding(soapBinding, d);
@@ -396,8 +396,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     public void addSchemaElements(MethodDeclaration method, boolean isDocLitWrapped) {
-//        if (!isDocLitWrapped)
-            addReturnSchemaElement(method, isDocLitWrapped);
+        addReturnSchemaElement(method, isDocLitWrapped);
         boolean hasInParam = false;
         for (ParameterDeclaration param : method.getParameters()) {
             hasInParam |= addParamSchemaElement(param, method, isDocLitWrapped);
