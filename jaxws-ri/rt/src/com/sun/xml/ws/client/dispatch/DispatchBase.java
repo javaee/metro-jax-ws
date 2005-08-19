@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.14 2005-08-14 17:55:17 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.15 2005-08-19 17:33:49 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -201,7 +201,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         messageStruct.setMEP(MessageStruct.ASYNC_CALLBACK_MEP);
         Object result = sendAsync(messageStruct);
-        if (result instanceof Response)
+        if (result instanceof WSFuture)
             return (Future<Object>) result;
         else
             throw (WebServiceException) result;

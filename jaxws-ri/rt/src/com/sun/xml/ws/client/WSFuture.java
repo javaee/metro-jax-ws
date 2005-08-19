@@ -1,12 +1,10 @@
 /*
- * $Id: ResponseImpl.java,v 1.4 2005-08-19 17:33:49 kwalsh Exp $
- *
  * Copyright (c) 2005 Sun Microsystems, Inc.
- * All rights reserved.
+ * All Rights Reserved.
  */
-package com.sun.xml.ws.client.dispatch;
+package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.client.AsyncHandlerService;
+
 import com.sun.xml.ws.client.ResponseContext;
 
 import javax.xml.ws.Response;
@@ -29,27 +27,27 @@ import java.util.logging.Logger;
  */
 
 
-public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
+public class WSFuture<T> extends FutureTask<T> {
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-    private UID uid;
+    //private UID uid;
     private Lock _lock;
-    private AsyncHandlerService _handlerService;
-    private ResponseContext _responseContext;
-    private boolean handler;
+   // private CallbackQueue _callbackQueue;
+    //private ResponseContext _responseContext;
+    //private boolean handler;
 
-    public ResponseImpl(Callable<T> callable) {
+    public WSFuture(Callable<T> callable) {
         super(callable);
         _lock = new ReentrantLock();
     }
 
-    public ResponseImpl(Runnable runable, T result) {
+    public WSFuture(Runnable runable, T result) {
         super(runable, result);
         _lock = new ReentrantLock();
     }
 
     //protected method need to overide
-    public void setException(Exception ex) {
+   /* public void setException(Exception ex) {
         _lock.lock();
         try {
             super.setException(ex);
@@ -70,14 +68,14 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
             _lock.unlock();
         }
     }
-
+    */
     /**
      * Gets the contained response context.
      *
      * @return The contained response context. May be <code>null</code> if a
      *         response is not yet available.
      */
-    public Map<String, Object> getContext() {
+   /* public Map<String, Object> getContext() {
         if (!isDone())
             return null;
         else
@@ -96,8 +94,8 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
         return uid;
     }
 
-    public void setHandlerService(AsyncHandlerService handlerService) {
-        _handlerService = handlerService;
+    public void setCallbackService(CallbackQueue queue) {
+        _callbackQueue = queue;
     }
 
     //got to lock
@@ -105,12 +103,19 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
     public void done() {
         _lock.lock();
         try {
-            if (!isCancelled())
-                _handlerService.executeWSFuture();
-
+            if (handler) {
+                if (!isCancelled())
+                    _callbackQueue.run();
+            }
         } catch (Exception e) {
         } finally {
             _lock.unlock();
         }
     }
+
+    public void setHandlerResponse(boolean isHandler){
+        handler = isHandler;
+    }
+   */ 
+
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.5 2005-08-16 15:52:14 kwalsh Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.6 2005-08-19 17:33:51 kwalsh Exp $
  */
 
 /*
@@ -65,7 +65,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
     protected ExecutorService executorService = null;
-    protected CallbackQueue callbackQueue;
 
     /**
      * Default constructor
@@ -368,19 +367,20 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
             AsyncHandlerService service = (AsyncHandlerService) messageInfo
                 .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
+            WSFuture wsfuture = null;
             if (service != null) {
+                wsfuture = service.setupAsyncCallback(r);
                 ((ResponseImpl) r).setUID(service.getUID());
-                if (callbackQueue == null)
-                    callbackQueue = new CallbackQueue();
-                callbackQueue.addWaiter(service);
-                callbackQueue.addResponse((ResponseImpl) r);
+                ((ResponseImpl)r).setHandlerService(service);
             }
-
             executorService.execute((FutureTask) r);
-            messageInfo.setResponse(r);
+            if (service == null)
+                messageInfo.setResponse(r);
+            else
+                messageInfo.setResponse(wsfuture);
+
         } catch (Throwable e) {
             messageInfo.setResponse(e);
-
         }
     }
 

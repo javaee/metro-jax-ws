@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.21 2005-08-19 01:17:20 vivekp Exp $
+ * $Id: WebService.java,v 1.22 2005-08-19 17:33:49 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  *  <code>Service</code> objects provide the client view of a Web service.
@@ -104,19 +105,13 @@ public class WebService
     }
 
     public Executor getExecutor() {
-        try {
-            if (executor != null)
-                //todo:this is only an Instance- need deepCopy
-                return (Executor)executor.getClass().newInstance();
-            else
-                //todo:make daemon thread factory for 2nd arg
-                return Executors.newFixedThreadPool(3);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-        return null;
+        if (executor != null)
+        //todo:needs to be decoupled from service at execution
+        {
+            return (Executor) executor;
+        } else
+            executor = Executors.newFixedThreadPool(5, new DaemonThreadFactory());
+        return executor;        
     }
 
     public void setExecutor(Executor executor) {
@@ -340,3 +335,10 @@ public class WebService
         return context;
     }
 }
+class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread daemonThread = new Thread(r);
+            daemonThread.setDaemon(Boolean.TRUE);
+            return daemonThread;
+        }
+    }

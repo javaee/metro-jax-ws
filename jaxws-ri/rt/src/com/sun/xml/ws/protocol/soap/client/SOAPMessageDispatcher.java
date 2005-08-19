@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.24 2005-08-16 15:52:13 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.25 2005-08-19 17:33:50 kwalsh Exp $
  */
 
 /*
@@ -70,7 +70,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
     protected ExecutorService executorService;
-    protected CallbackQueue callbackQueue;
 
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING = "SOAP must understand error";
 
@@ -386,36 +385,28 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SOAPMessage sm = doSend(messageInfo);
             postSendHook(messageInfo);
 
-            //Response r = sendAsyncReceive(messageInfo, sm);
-
             //pass a copy of MessageInfo to the future task,so that no conflicts
             //due to threading happens
             Response r = sendAsyncReceive(MessageInfoBase.copy(messageInfo), sm);
             if (executorService == null) {
                 executorService =
                     Executors.newFixedThreadPool(MAX_THREAD_POOL_SIZE, new DaemonThreadFactory());
-
-                /*
-                 * try {
-                 * executorService.awaitTermination(AWAIT_TERMINATION_TIME,
-                 * TimeUnit.MILLISECONDS); } catch (InterruptedException e) {
-                 * throw new JAXWSException(e); }
-                 */
             }
 
             AsyncHandlerService service = (AsyncHandlerService) messageInfo
                 .getMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER);
+            WSFuture wsfuture = null;
             if (service != null) {
+                wsfuture = service.setupAsyncCallback(r);
                 ((ResponseImpl) r).setUID(service.getUID());
-                if (callbackQueue == null)
-                    callbackQueue = new CallbackQueue();
-                callbackQueue.addWaiter(service);
-                callbackQueue.addResponse((ResponseImpl) r);
+                ((ResponseImpl)r).setHandlerService(service);
             }
 
-
-            executorService.execute((FutureTask) r);            
-            messageInfo.setResponse(r);
+            executorService.execute((FutureTask) r);
+            if (service == null)
+                messageInfo.setResponse(r);
+            else
+                messageInfo.setResponse(wsfuture);
         } catch (Throwable e) {
             messageInfo.setResponse(e);
         }

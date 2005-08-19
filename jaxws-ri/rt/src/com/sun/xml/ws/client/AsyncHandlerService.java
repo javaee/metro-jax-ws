@@ -4,16 +4,27 @@
  */
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.client.dispatch.ResponseImpl;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.pept.ept.MessageInfo;
+import com.sun.pept.presentation.MessageStruct;
+
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.Response;
+import javax.xml.ws.WebServiceException;
+import javax.xml.soap.SOAPMessage;
 import java.rmi.server.UID;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Callable;
 
 public class AsyncHandlerService {
 
     private AsyncHandler _handler;
     private UID _uid;
     private Executor _executor;
+    private WSFuture wsfuture;
+    private Response response;
 
     public AsyncHandlerService(AsyncHandler handler, Executor executor){
         _uid = new UID();
@@ -25,33 +36,21 @@ public class AsyncHandlerService {
         return _uid;
     }
 
-    public void executeHandler(Response response){
+    public void executeWSFuture(){
 
-       _executor.execute(new WaiterRunnable(response, _handler));
+       _executor.execute((Runnable) wsfuture);
     }
 
-    private class WaiterRunnable implements Runnable {
-        Response r;
-        AsyncHandler handler;
+     public WSFuture<Object> setupAsyncCallback(final Response<Object> result) {
+        response = result;
 
-        private WaiterRunnable(Response res, AsyncHandler ahandler){
-            r = res;
-            handler = ahandler;
-        }
+        wsfuture = new WSFuture<Object>(new Callable<Object>() {
 
-        /**
-         * When an object implementing interface <code>Runnable</code> is used
-         * to create a thread, starting the thread causes the object's
-         * <code>run</code> method to be called in that separately executing
-         * thread.
-         * <p/>
-         * The general contract of the method <code>run</code> is that it may
-         * take any action whatsoever.
-         *
-         * @see Thread#run()
-         */
-        public void run() {
-           handler.handleResponse(r);
-        }
+            public Object call() throws Exception {
+                _handler.handleResponse(response);
+                return null;
+            }
+        });
+        return wsfuture;
     }
 }
