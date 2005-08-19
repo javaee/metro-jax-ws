@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.4 2005-08-19 01:16:10 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.5 2005-08-19 02:09:57 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -103,7 +103,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             if(param.isResponse())
                 obj = result;
             else
-                obj= data[param.getIndex()];
+                obj = param.getHolderValue(data[param.getIndex()]);
             return obj;
         }
         if (binding.isRpcLit() && (param.getBinding()).isBody()) {
