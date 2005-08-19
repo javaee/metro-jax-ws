@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.37 2005-08-19 01:17:17 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.38 2005-08-19 07:10:15 vivekp Exp $
  */
 
 /*
@@ -156,9 +156,11 @@ public class RuntimeEndpointInfo
                 com.sun.xml.ws.wsdl.parser.Binding wsdlBinding = null;
                 if(serviceName == null)
                     serviceName = RuntimeModeler.getServiceName(getImplementorClass(), null);
-                if(getPortName() != null )
+                if(getPortName() != null){
                     wsdlBinding = wsdlDoc.getBinding(getServiceName(), getPortName());
-                else{
+                    if(wsdlBinding == null)
+                        throw new ServerRtException("runtime.parser.wsdl.incorrectserviceport", new Object[]{serviceName, portName, getWsdLUrl()});
+                }else{
                     Service service = wsdlDoc.getService(serviceName);
                     if(service == null)
                         throw new ServerRtException("runtime.parser.wsdl.noservice", new Object[]{serviceName, getWsdLUrl()});
