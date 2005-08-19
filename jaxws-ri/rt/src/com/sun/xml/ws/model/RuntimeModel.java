@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.13 2005-07-29 00:15:53 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.14 2005-08-19 01:16:11 vivekp Exp $
  */
 
 /*
@@ -16,6 +16,7 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.wsdl.parser.Binding;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -244,6 +245,37 @@ public abstract class RuntimeModel {
     public void addJavaMethod(JavaMethod jm) {
         if (jm != null)
             javaMethods.add(jm);
+    }
+
+    public void applyParameterBinding(Binding wsdlBinding){
+        for(JavaMethod method : javaMethods){
+            List<Parameter> reqParams = method.getRequestParameters();
+            for(Parameter param:reqParams){
+                if(param.isWrapperStyle())
+                    continue;
+                String partName = param.getPartName();
+                if(partName == null)
+                    continue;
+                ParameterBinding paramBinding = wsdlBinding.getBinding(method.getOperationName(),
+                        partName, param.mode);
+                if(paramBinding != null)
+                    param.setBinding(paramBinding);
+            }
+
+            List<Parameter> resParams = method.getResponseParameters();
+            for(Parameter param:resParams){
+                if(param.isWrapperStyle())
+                    continue;
+                String partName = param.getPartName();
+                if(partName == null)
+                    continue;
+                ParameterBinding paramBinding = wsdlBinding.getBinding(method.getOperationName(),
+                        partName, param.mode);
+                if(paramBinding != null)
+                    param.setBinding(paramBinding);
+            }
+
+        }
     }
 
     /**

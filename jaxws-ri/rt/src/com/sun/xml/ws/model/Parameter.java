@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.5 2005-08-15 22:58:14 vivekp Exp $
+ * $Id: Parameter.java,v 1.6 2005-08-19 01:16:11 vivekp Exp $
  */
 
 /*
@@ -70,16 +70,16 @@ public class Parameter {
     /**
      * @return the Binding for this Parameter
      */
-    public Object getBinding() {
+    public ParameterBinding getBinding() {
         if(binding == null)
-            return SOAPBlock.BODY;
+            return new ParameterBinding(SOAPBlock.BODY);
         return binding;
     }
 
     /**
      * @param binding
      */
-    public void setBinding(Object binding) {
+    public void setBinding(ParameterBinding binding) {
         this.binding = binding;
     }
 
@@ -143,7 +143,7 @@ public class Parameter {
         this.partName = partName;
     }
 
-    protected Object binding;
+    protected ParameterBinding binding;
     protected int index;
     protected Mode mode;
     protected TypeReference typeReference;

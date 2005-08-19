@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.3 2005-08-15 22:58:14 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.4 2005-08-19 01:16:10 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -7,27 +7,27 @@
  */
 package com.sun.xml.ws.encoding.soap;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.io.UnsupportedEncodingException;
-
-import javax.xml.namespace.QName;
+import com.sun.xml.ws.encoding.EncoderDecoderBase;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.encoding.EncoderDecoderBase;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.model.Parameter;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
-import com.sun.xml.ws.model.soap.SOAPBlock;
-import com.sun.xml.ws.model.soap.MimeParameter;
-import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
-import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
+import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Vivek Pandey
@@ -70,7 +70,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             }
             return resp;
         }
-        obj = (obj != null)?((JAXBBridgeInfo)obj).getValue():null;
+        if(!param.getBinding().isAttachment())
+            obj = (obj != null)?((JAXBBridgeInfo)obj).getValue():null;
         if (param.isResponse()) {
             return obj;
         } else if (data[param.getIndex()] != null) {
@@ -97,10 +98,15 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      */
     protected Object createPayload(RuntimeContext context, Parameter param, Object[] data,
             Object result, SOAPBinding binding) {
-        if(((SOAPBlock)param.getBinding()).isAttachment()){
-            return data[param.getIndex()];
+        if(param.getBinding().isAttachment()){
+            Object obj = null;
+            if(param.isResponse())
+                obj = result;
+            else
+                obj= data[param.getIndex()];
+            return obj;
         }
-        if (binding.isRpcLit() && ((SOAPBlock)param.getBinding()).isBody()) {
+        if (binding.isRpcLit() && (param.getBinding()).isBody()) {
             return createRpcLitPayload(context, (WrapperParameter) param, data, result);
         }
         Object obj = createDocLitPayloadValue(context, param, data, result, binding);
@@ -243,26 +249,31 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
     protected Object getAttachment(Map<String, AttachmentBlock> attachments, Parameter param){
         for(String id:attachments.keySet()){
             String part = getMimePart(id);
-            if(part.equals(param)){
+            if(part.equals(param.getPartName())){
                 AttachmentBlock ab = attachments.get(id);
                 if(ab == null)
                     return null;
-                return ab.getValue();
+                AttachmentPart ap = ab.getAttachmentPart();
+                try {
+                    return ap.getContent();
+                } catch (SOAPException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
         }
         return null;
     }
 
-    protected void addAttachmentPart(InternalMessage im, Object obj, MimeParameter mimeParam){
+    protected void addAttachmentPart(InternalMessage im, Object obj, Parameter mimeParam){
         if(obj == null)
             return;
 
-        String mimeType = mimeParam.getMimeType();
+        String mimeType = mimeParam.getBinding().getMimeType();
         String contentId = null;
         try {
             contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
             return;
         }
 

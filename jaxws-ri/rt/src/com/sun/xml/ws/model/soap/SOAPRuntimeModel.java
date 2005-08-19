@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.7 2005-07-26 23:43:45 vivekp Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.8 2005-08-19 01:16:11 vivekp Exp $
  */
 
 /*
@@ -42,7 +42,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
             params.addAll(m.getResponseParameters());
             SOAPBinding binding = (SOAPBinding) m.getBinding();
             for (Parameter param : params) {
-                SOAPBlock paramBinding = (SOAPBlock) param.getBinding();
+                ParameterBinding paramBinding = param.getBinding();
                 if (paramBinding.isBody() && binding.isRpcLit()) {
                     RpcLitPayload payload = new RpcLitPayload(param.getName());
                     WrapperParameter wp = (WrapperParameter) param;
@@ -78,8 +78,8 @@ public class SOAPRuntimeModel extends RuntimeModel {
             put(jm.getMethod(), jm);
             boolean bodyFound = false;
             for(Parameter p:jm.getRequestParameters()){
-                SOAPBlock binding = (SOAPBlock)p.getBinding();
-                if(binding.equals(SOAPBlock.BODY)){
+                ParameterBinding binding = p.getBinding();
+                if(binding.isBody()){
                     put(p.getName(), jm);
                     bodyFound = true;
                 }
@@ -125,7 +125,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
         for(Parameter p:params){
             if(!p.isWrapperStyle()){
                 types.add(p.getTypeReference());
-            }else if(((SOAPBlock)p.getBinding()).isBody()){
+            }else if(p.getBinding().isBody()){
                 List<Parameter> wcParams = ((WrapperParameter)p).getWrapperChildren();
                 for(Parameter wc:wcParams){
                     types.add(wc.getTypeReference());
@@ -158,7 +158,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
     private void fillHeaders(Iterator<Parameter> params, Set<QName> headers) {
         while (params.hasNext()) {
             Parameter param = params.next();
-            SOAPBlock binding = (SOAPBlock) param.getBinding();
+            ParameterBinding binding = param.getBinding();
             QName name = param.getName();
             if (binding.isHeader() && !headers.contains(name)) {
                 headers.add(name);

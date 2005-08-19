@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.12 2005-08-15 22:58:13 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.13 2005-08-19 01:16:10 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -7,43 +7,33 @@
  */
 package com.sun.xml.ws.encoding.soap;
 
+import com.sun.pept.ept.MessageInfo;
+import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.encoding.internal.InternalEncoder;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
+import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
+import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.model.*;
+import com.sun.xml.ws.model.soap.SOAPBinding;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.util.StringUtils;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map;
-import java.awt.*;
-import java.io.UnsupportedEncodingException;
-
-import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.namespace.QName;
-import javax.xml.soap.Detail;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.transform.Source;
-import javax.activation.DataHandler;
-
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
-import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
-import com.sun.xml.ws.model.*;
-import com.sun.xml.ws.model.soap.SOAPBinding;
-import com.sun.xml.ws.model.soap.SOAPBlock;
-import com.sun.xml.ws.model.soap.MimeParameter;
-import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.client.BindingProviderProperties;
 
 /**
  * @author Vivek Pandey
@@ -211,11 +201,11 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         while (iter.hasNext()) {
             Parameter param = iter.next();
             Object obj = null;
-            SOAPBlock paramBinding = (SOAPBlock)param.getBinding();
-            if (paramBinding.equals(SOAPBlock.BODY)) {
+            ParameterBinding paramBinding = param.getBinding();
+            if (paramBinding.isBody()) {
                 //TODO: check if the bodyValue qname is the one we expect!
                 obj = bodyValue;
-            } else if (headers != null && paramBinding.equals(SOAPBlock.HEADER)) {
+            } else if (headers != null && paramBinding.isHeader()) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
             } else if((attachments.size() > 0) && paramBinding.isAttachment()){
@@ -347,14 +337,14 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
         while (iter.hasNext()) {
             Parameter param = iter.next();
-            SOAPBlock paramBinding = (SOAPBlock)param.getBinding();
+            ParameterBinding paramBinding = param.getBinding();
             Object obj = createPayload(rtContext, param, data, null, soapBinding);
-            if (paramBinding.equals(SOAPBlock.BODY)) {
+            if (paramBinding.isBody()) {
                 im.setBody(new BodyBlock(obj));
-            } else if (paramBinding.equals(SOAPBlock.HEADER)) {
+            } else if (paramBinding.isHeader()) {
                 im.addHeader(new HeaderBlock((JAXBBridgeInfo)obj));
-            } else if (paramBinding.equals(SOAPBlock.MIME)) {
-                addAttachmentPart(im, obj, (MimeParameter)param);
+            } else if (paramBinding.isAttachment()) {
+                addAttachmentPart(im, obj, param);
             }
         }
         return im;
