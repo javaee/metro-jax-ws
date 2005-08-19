@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.31 2005-08-19 01:18:02 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.32 2005-08-19 01:26:49 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -1031,27 +1031,9 @@ public class RuntimeModeler {
      * @param implClass the implementation class
      * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
-<<<<<<< RuntimeModeler.java
     public static QName getServiceName(Class implClass, ClassLoader cl) {
         if(cl == null)
             cl = Thread.currentThread().getContextClassLoader();
-
-
-=======
-    /*
-     * Return service QName
-     */
-    /**
-     * gets the <code>wsdl:serviceName</code> for a given implementation class
-     * @param implClass the implementation class
-     * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
-     */
-    public static QName getServiceName(Class implClass, ClassLoader cl) {
-        if(cl == null)
-            cl = Thread.currentThread().getContextClassLoader();
-
-
->>>>>>> 1.30
         String name = implClass.getSimpleName();
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
