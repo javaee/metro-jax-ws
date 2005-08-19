@@ -1,5 +1,5 @@
 /**
- * $Id: Binding.java,v 1.3 2005-08-19 01:17:18 vivekp Exp $
+ * $Id: Binding.java,v 1.4 2005-08-19 08:02:23 vivekp Exp $
  */
 
 /**
@@ -56,7 +56,7 @@ public class Binding extends HashMap<String, BindingOperation> {
             //TODO throw exception
             return null;
         }
-        if(Mode.IN == mode)
+        if((Mode.IN == mode)||(Mode.INOUT == mode))
             return op.getInputBinding(part);
         else
             return op.getOutputBinding(part);
