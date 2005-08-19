@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.11 2005-08-17 23:43:50 kohsuke Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.12 2005-08-19 01:17:18 vivekp Exp $
  */
 
 /**
@@ -10,6 +10,7 @@
 package com.sun.xml.ws.wsdl.parser;
 
 import com.sun.xml.ws.model.soap.SOAPBlock;
+import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -99,6 +100,7 @@ public class RuntimeWSDLParser {
                 XMLStreamConstants.END_ELEMENT) {
              if(reader.getEventType() == XMLStreamConstants.END_DOCUMENT)
                 break;
+
             QName name = reader.getName();
             if (WSDLConstants.QNAME_IMPORT.equals(name)) {
                 parseImport(wsdlLoc, reader);
@@ -250,15 +252,15 @@ public class RuntimeWSDLParser {
      * @return
      * Returns true if body has explicit parts declaration
      */
-    private static boolean parseSOAPBodyBinding(XMLStreamReader reader, Map<String, SOAPBlock> parts){
+    private static boolean parseSOAPBodyBinding(XMLStreamReader reader, Map<String, ParameterBinding> parts){
         String partsString = reader.getAttributeValue(null, "parts");
         if(partsString != null){
             List<String> partsList = XmlUtil.parseTokenList(partsString);
             if(partsList.isEmpty()){
-                parts.put(" ", SOAPBlock.BODY);
+                parts.put(" ", new ParameterBinding(SOAPBlock.BODY));
             }else{
                 for(String part:partsList){
-                    parts.put(part, SOAPBlock.BODY);
+                    parts.put(part, new ParameterBinding(SOAPBlock.BODY));
                 }
             }
             return true;
@@ -278,7 +280,7 @@ public class RuntimeWSDLParser {
 //    }
 
 
-    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String, SOAPBlock> parts,
+    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String, ParameterBinding> parts,
                                                   Map<String, String> mimeTypes) {
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
@@ -290,7 +292,7 @@ public class RuntimeWSDLParser {
         }
     }
 
-    private static void parseMIMEPart(XMLStreamReader reader, Map<String,SOAPBlock> parts,
+    private static void parseMIMEPart(XMLStreamReader reader, Map<String,ParameterBinding> parts,
                                       Map<String,String> mimeTypes) {
         boolean bodyFound = false;
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
@@ -306,8 +308,10 @@ public class RuntimeWSDLParser {
                     XMLStreamReaderUtil.skipElement(reader);
                     continue;
                 }
-                parts.put(part, SOAPBlock.MIME);
-                mimeTypes.put(part, type);
+                ParameterBinding sb = new ParameterBinding(SOAPBlock.MIME);
+                sb.setMimeType(type);
+                parts.put(part, sb);
+                //mimeTypes.put(part, type);
                 XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);

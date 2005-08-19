@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.27 2005-08-17 06:26:54 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.28 2005-08-19 01:17:19 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -376,17 +376,17 @@ public class WSDLGenerator {
     }
 
     protected boolean isBodyParameter(Parameter parameter) {
-        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        ParameterBinding paramBinding = parameter.getBinding();
         return paramBinding.isBody();
     }
 
     protected boolean isHeaderParameter(Parameter parameter) {
-        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        ParameterBinding paramBinding = parameter.getBinding();
         return paramBinding.isHeader();
     }
 
     protected boolean isAttachmentParameter(Parameter parameter) {
-        SOAPBlock paramBinding = (SOAPBlock) parameter.getBinding();
+        ParameterBinding paramBinding = parameter.getBinding();
         return paramBinding.isAttachment();
     }
 

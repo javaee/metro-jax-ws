@@ -1,5 +1,5 @@
 /**
- * $Id: Port.java,v 1.1 2005-08-13 19:30:36 vivekp Exp $
+ * $Id: Port.java,v 1.2 2005-08-19 01:17:18 vivekp Exp $
  */
 
 /**
@@ -13,11 +13,12 @@ import javax.xml.namespace.QName;
 public class Port {
     private QName name;
     private String address;
-    private QName binding;
+    private QName bindingName;
+    private Binding binding;
 
     public Port(QName name, QName binding, String address) {
         this.name = name;
-        this.binding = binding;
+        this.bindingName = binding;
         this.address = address;
     }
 
@@ -25,11 +26,21 @@ public class Port {
         return name;
     }
 
-    public QName getBinding() {
-        return binding;
+    public QName getBindingName() {
+        return bindingName;
     }
 
     public String getAddress() {
         return address;
     }
+
+    public Binding getBinding() {
+        return binding;
+    }
+
+    public void setBinding(Binding binding) {
+        this.binding = binding;
+    }
+
+
 }

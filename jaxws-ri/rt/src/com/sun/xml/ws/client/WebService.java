@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.20 2005-08-17 22:29:47 kohsuke Exp $
+ * $Id: WebService.java,v 1.21 2005-08-19 01:17:20 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,9 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.wsdl.WSDLContext;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.parser.Binding;
+import com.sun.xml.ws.model.RuntimeModel;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -300,6 +303,14 @@ public class WebService
         throws WebServiceException {
 
         EndpointIFContext eif = completeEndpointIFContext(serviceContext, portQName, portInterface);
+
+        //apply parameter bindings
+        RuntimeModel model = eif.getRuntimeContext().getModel();
+        if(portQName != null){
+            Binding binding = serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(), portQName);
+            model.applyParameterBinding(binding);
+        }
+
         //needs cleaning up
         EndpointIFInvocationHandler handler =
             new EndpointIFInvocationHandler(portInterface,

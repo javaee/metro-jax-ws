@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.36 2005-08-18 02:19:02 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.37 2005-08-19 01:17:17 vivekp Exp $
  */
 
 /*
@@ -15,13 +15,14 @@ import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+import com.sun.xml.ws.wsdl.parser.Service;
+import com.sun.xml.ws.wsdl.parser.Port;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.xml.namespace.QName;
 import com.sun.xml.ws.spi.runtime.Binding;
 import javax.xml.ws.Provider;
@@ -40,11 +41,15 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.logging.Logger;
+import java.io.IOException;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
 import javax.xml.ws.WebServiceProvider;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.xml.resolver.apps.resolver;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.SAXException;
 
 
 
@@ -137,10 +142,47 @@ public class RuntimeEndpointInfo
     }
     
     public void createModel() {
-        // Create runtime model for non Provider endpoints            
-        RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
-            getImplementor(), ((BindingImpl)binding).getBindingId());
-        runtimeModel = rap.buildRuntimeModel();
+        // Create runtime model for non Provider endpoints
+
+        // wsdlURL will be null, means we will generate WSDL. Hence no need to apply
+        // bindings or need to look in the WSDL
+        if(wsdlUrl == null){
+           RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
+                getImplementor(), ((BindingImpl)binding).getBindingId());
+           runtimeModel = rap.buildRuntimeModel();
+        }else {
+            try {
+                WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(getWsdLUrl(), getWsdlResolver());
+                com.sun.xml.ws.wsdl.parser.Binding wsdlBinding = null;
+                if(serviceName == null)
+                    serviceName = RuntimeModeler.getServiceName(getImplementorClass(), null);
+                if(getPortName() != null )
+                    wsdlBinding = wsdlDoc.getBinding(getServiceName(), getPortName());
+                else{
+                    Service service = wsdlDoc.getService(serviceName);
+                    if(service == null)
+                        throw new ServerRtException("runtime.parser.wsdl.noservice", new Object[]{serviceName, getWsdLUrl()});
+
+                    String bindingId = ((BindingImpl)binding).getBindingId();
+                    List<com.sun.xml.ws.wsdl.parser.Binding> bindings = wsdlDoc.getBindings(service, bindingId);
+                    if(bindings.size() == 0)
+                        throw new ServerRtException("runtime.parser.wsdl.nobinding", new Object[]{bindingId, serviceName, getWsdLUrl()});
+
+                    if(bindings.size() > 1)
+                        throw new ServerRtException("runtime.parser.wsdl.multiplebinding", new Object[]{bindingId, serviceName, getWsdLUrl()});
+                }
+                //now we got the Binding so lets build the model
+                RuntimeModeler rap = new RuntimeModeler(getImplementorClass(), getImplementor(), wsdlBinding);
+                runtimeModel = rap.buildRuntimeModel();
+            } catch (IOException e) {
+                throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
+            } catch (XMLStreamException e) {
+                throw new ServerRtException("runtime.saxparser.exception",
+                        new Object[]{e.getMessage(), e.getLocation()});
+            } catch (SAXException e) {
+                throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
+            }
+        }
     }
     
     

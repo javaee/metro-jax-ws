@@ -1,5 +1,5 @@
 /**
- * $Id: BindingOperation.java,v 1.2 2005-08-15 22:44:07 vivekp Exp $
+ * $Id: BindingOperation.java,v 1.3 2005-08-19 01:17:18 vivekp Exp $
  */
 
 /**
@@ -8,20 +8,18 @@
  */
 package com.sun.xml.ws.wsdl.parser;
 
+import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BindingOperation {
     private String name;
 
     // map of wsdl:part to the binding
-    private Map<String, SOAPBlock> inputParts;
-    private Map<String, SOAPBlock> outputParts;
+    private Map<String, ParameterBinding> inputParts;
+    private Map<String, ParameterBinding> outputParts;
     private Map<String, String> inputMimeTypes;
     private Map<String, String> outputMimeTypes;
 
@@ -37,8 +35,8 @@ public class BindingOperation {
      */
     public BindingOperation(String name) {
         this.name = name;
-        inputParts = new HashMap<String, SOAPBlock>();
-        outputParts = new HashMap<String, SOAPBlock>();
+        inputParts = new HashMap<String, ParameterBinding>();
+        outputParts = new HashMap<String, ParameterBinding>();
         inputMimeTypes = new HashMap<String, String>();
         outputMimeTypes = new HashMap<String, String>();
     }
@@ -47,11 +45,11 @@ public class BindingOperation {
         return name;
     }
 
-    public Map<String, SOAPBlock> getInputParts() {
+    public Map<String, ParameterBinding> getInputParts() {
         return inputParts;
     }
 
-    public Map<String, SOAPBlock> getOutputParts() {
+    public Map<String, ParameterBinding> getOutputParts() {
         return outputParts;
     }
 
@@ -63,35 +61,35 @@ public class BindingOperation {
         return outputMimeTypes;
     }
 
-    public SOAPBlock getInputBinding(String part){
+    public ParameterBinding getInputBinding(String part){
         if(emptyInputBody == null){
             if(inputParts.get(" ") != null)
                 emptyInputBody = true;
             else
                 emptyInputBody = false;
         }
-        SOAPBlock block = inputParts.get(part);
+        ParameterBinding block = inputParts.get(part);
         if(block == null){
             if(explicitInputSOAPBodyParts || (boolean)emptyInputBody)
-                return SOAPBlock.UNBOUND;
-            return SOAPBlock.BODY;
+                return new ParameterBinding(SOAPBlock.UNBOUND);
+            return new ParameterBinding(SOAPBlock.BODY);
         }
 
         return block;
     }
 
-    public SOAPBlock getOutputBinding(String part){
+    public ParameterBinding getOutputBinding(String part){
         if(emptyOutputBody == null){
             if(outputParts.get(" ") != null)
                 emptyOutputBody = true;
             else
                 emptyOutputBody = false;
         }
-        SOAPBlock block = outputParts.get(part);
+        ParameterBinding block = outputParts.get(part);
         if(block == null){
             if(explicitOutputSOAPBodyParts || (boolean)emptyOutputBody)
-                return SOAPBlock.UNBOUND;
-            return SOAPBlock.BODY;
+                return new ParameterBinding(SOAPBlock.UNBOUND);;
+            return new ParameterBinding(SOAPBlock.BODY);
         }
 
         return block;

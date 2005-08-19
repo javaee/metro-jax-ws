@@ -1,5 +1,5 @@
 /**
- * $Id: Service.java,v 1.1 2005-08-13 19:30:37 vivekp Exp $
+ * $Id: Service.java,v 1.2 2005-08-19 01:17:19 vivekp Exp $
  */
 
 /**
@@ -11,6 +11,7 @@ package com.sun.xml.ws.wsdl.parser;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class Service extends LinkedHashMap<QName, Port> {
     private QName name;

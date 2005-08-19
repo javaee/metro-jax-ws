@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLDocument.java,v 1.1 2005-08-13 19:30:37 vivekp Exp $
+ * $Id: WSDLDocument.java,v 1.2 2005-08-19 01:17:19 vivekp Exp $
  */
 
 /**
@@ -103,7 +103,7 @@ public class WSDLDocument {
         Port port = getFirstPort();
         if(port == null)
             return null;
-        Binding binding = bindings.get(port.getBinding());
+        Binding binding = bindings.get(port.getBindingName());
         if(binding == null)
             return null;
         return binding.getBindingId();
@@ -120,7 +120,7 @@ public class WSDLDocument {
         if(s != null){
             Port p = s.get(port);
             if(p != null){
-                Binding b = bindings.get(p.getBinding());
+                Binding b = bindings.get(p.getBindingName());
                 if(b != null)
                     return b.getBindingId();
             }
@@ -141,10 +141,32 @@ public class WSDLDocument {
         if(service != null){
             Port port = service.get(portName);
             if(port != null){
-                QName bindingName = port.getBinding();
+                QName bindingName = port.getBindingName();
                 return bindings.get(bindingName);
             }
         }
         return null;
     }
+
+    /**
+     * Returns the bindings for the given bindingId
+     * @param service  non-null service
+     * @param bindingId  non-null binding id
+     * @return
+     */
+    public List<Binding> getBindings(Service service, String bindingId){
+        List<Binding> bs = new ArrayList<Binding>();
+        Collection<Port> ports = service.values();
+        if(ports.isEmpty())
+            return bs;
+        for(Port port:ports){
+            Binding b = bindings.get(port.getName());
+            if(b == null)
+                return bs;
+            if(b.equals(bindingId))
+                bs.add(b);
+        }
+        return bs;
+    }
+
 }

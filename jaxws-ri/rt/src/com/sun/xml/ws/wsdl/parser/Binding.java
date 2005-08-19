@@ -1,5 +1,5 @@
 /**
- * $Id: Binding.java,v 1.2 2005-08-15 22:44:07 vivekp Exp $
+ * $Id: Binding.java,v 1.3 2005-08-19 01:17:18 vivekp Exp $
  */
 
 /**
@@ -8,8 +8,8 @@
  */
 package com.sun.xml.ws.wsdl.parser;
 
-import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.Mode;
+import com.sun.xml.ws.model.ParameterBinding;
 
 import javax.xml.namespace.QName;
 import java.util.HashMap;
@@ -50,8 +50,12 @@ public class Binding extends HashMap<String, BindingOperation> {
         this.bindingId = bindingId;
     }
 
-    public SOAPBlock getBinding(String operation, String part, Mode mode){
+    public ParameterBinding getBinding(String operation, String part, Mode mode){
         BindingOperation op = get(operation);
+        if(op == null){
+            //TODO throw exception
+            return null;
+        }
         if(Mode.IN == mode)
             return op.getInputBinding(part);
         else

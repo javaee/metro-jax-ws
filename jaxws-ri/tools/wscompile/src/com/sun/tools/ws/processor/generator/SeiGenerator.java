@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.18 2005-08-18 15:27:54 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.19 2005-08-19 01:17:19 vivekp Exp $
  */
 
 /**
@@ -175,32 +175,24 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             webMethodAnn.param("operationName", operationName);
         }
 
-        if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0){               
+        if (operation.getSOAPAction() != null && operation.getSOAPAction().length() > 0){
             webMethodAnn.param("action", operation.getSOAPAction());
         }
-//System.out.println("writing WebMethod");
+
         if (operation.getResponse() == null){
             m.annotate(javax.jws.Oneway.class);
         }else if (!operation.getJavaMethod().getReturnType().getName().equals("void") &&
                  operation.getResponse().getParametersList().size() > 0){
-//                 operation.getResponse().getBodyBlocks().hasNext()){
-//            Block block = operation.getResponse().getBodyBlocks().next();
-//            String resultName = block.getName().getLocalPart();
-//            String nsURI = block.getName().getNamespaceURI();
-            Block block = null; //operation.getResponse().getBodyBlocks().next();
-            String resultName = null; // block.getName().getLocalPart();
-            String nsURI = null; //= block.getName().getNamespaceURI();
+            Block block = null;
+            String resultName = null;
+            String nsURI = null;
             if (operation.getResponse().getBodyBlocks().hasNext()) {
                 block = operation.getResponse().getBodyBlocks().next();
                 resultName = block.getName().getLocalPart();
                 nsURI = block.getName().getNamespaceURI();                
             }
+
             for (Parameter parameter : operation.getResponse().getParametersList()) {
-//                System.out.println("param: "+parameter.getName());
-//                System.out.println("header: "+parameter.getBlock().getLocation());
-//                System.out.println("headerblock: "+parameter.getBlock().equals(Block.HEADER));
-//                System.out.println("parameterOrderPos: "+parameter.getParameterOrderPosition());
-//                System.out.println("operation.isWrapped: "+operation.isWrapped()); 
                 if (parameter.getParameterOrderPosition() == -1) {
                     if(operation.isWrapped()||!isDocStyle){
                         resultName = parameter.getName();
@@ -298,6 +290,17 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         return false;
     }
 
+    private boolean isAttachmentParam(Parameter param, Message message){
+        if (message.getAttachmentBlockCount() == 0)
+            return false;
+
+        for (Block attBlock : message.getAttachmentBlocksMap().values())
+            if (param.getBlock().equals(attBlock))
+                return true;
+
+        return false;
+    }
+
     private void writeWebParam(Operation operation, JavaParameter javaParameter, JAnnotationUse paramAnno) {
         Parameter param = javaParameter.getParameter();
         Request req = operation.getRequest();
@@ -336,7 +339,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
 
         if (param.getLinkedParameter() != null){
             paramAnno.param("mode", javax.jws.WebParam.Mode.INOUT);
-        }else if (res != null && (isMessageParam(param, res) || isHeaderParam(param, res))){
+        }else if (res != null && (isMessageParam(param, res) || isHeaderParam(param, res) || isAttachmentParam(param, res))){
             paramAnno.param("mode", javax.jws.WebParam.Mode.OUT);
         }
 
