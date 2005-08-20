@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.16 2005-08-18 00:27:00 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.17 2005-08-20 15:03:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -27,7 +27,7 @@ import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import javax.xml.namespace.QName;
 import javax.xml.bind.annotation.*;
 import javax.xml.ws.WebFault;
-import javax.xml.ws.ParameterIndex;
+//import javax.xml.ws.ParameterIndex;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 
@@ -293,11 +293,15 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         int i=0;
         for (FieldDeclaration field : fields) {
             XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-            ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);                            
+//            ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);                            
+            String fieldName = field.getSimpleName();
             String typeName = field.getType().toString();
-            String elementName = xmlElement != null ? xmlElement.name() : field.getSimpleName();
+            String elementName = xmlElement != null ? xmlElement.name() : fieldName;
             String namespace =  xmlElement != null ? xmlElement.namespace() : "";
-            int index = paramIndex != null ? paramIndex.value() : i;
+            
+//            int index = paramIndex != null ? paramIndex.value() : i;
+            String idxStr = fieldName.substring(3);
+            int index = Integer.parseInt(idxStr);
             member = new MemberInfo(index, typeName, 
                                     field.getSimpleName(), 
                                     new QName(namespace, elementName));
@@ -357,15 +361,16 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             if (holderType != null) {
                 paramType = holderType.toString();
             }
-            paramName =  param.getSimpleName();
+            paramName =  "arg"+paramIndex; //param.getSimpleName();
             if (webParam != null && webParam.header()) {
                 continue;
             }                   
             if (webParam != null) {
                 mode = webParam.mode(); 
-                paramName =  webParam.name().length() > 0 ? webParam.name() : paramName;
-                paramNamespace = webParam.targetNamespace().length() > 0 ?
-                    webParam.targetNamespace() : paramNamespace;
+                if (webParam.name().length() > 0)
+                    paramName = webParam.name();
+                if (webParam.targetNamespace().length() > 0)
+                    paramNamespace = webParam.targetNamespace();
             }
             MemberInfo memInfo = new MemberInfo(paramIndex, paramType, paramName, 
                 new QName(paramNamespace, paramName));
@@ -411,10 +416,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                     JAnnotationUse xmlValueAnnn = field.annotate(XmlValue.class);                    
                 }
             }
-            if (memInfo.getParamIndex() >= -1) {
-                JAnnotationUse parameterIndex = field.annotate(cm.ref(ParameterIndex.class));
-                parameterIndex.param("value", memInfo.getParamIndex());
-            }
+//            if (memInfo.getParamIndex() >= -1) {
+//                JAnnotationUse parameterIndex = field.annotate(cm.ref(ParameterIndex.class));
+//                parameterIndex.param("value", memInfo.getParamIndex());
+//            }
         }
         for (MemberInfo memInfo : members) {
             writeMember(cls, memInfo.getParamIndex(), memInfo.getParamType(), 

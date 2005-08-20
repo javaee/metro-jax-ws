@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.33 2005-08-19 21:06:38 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.34 2005-08-20 15:03:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -459,7 +459,7 @@ public class RuntimeModeler {
             } 
             resultQName = new QName(resultTNS, resultName);
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
-            resultQName = getParamElementName(-1, responseClass);
+//            resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
                 resultQName = new QName(resultTNS, RETURN);
             }
@@ -495,7 +495,7 @@ public class RuntimeModeler {
         QName paramQName = null;
         for (Class clazzType : parameterTypes) {
             Parameter param = null;
-            String paramName = "";
+            String paramName = "arg"+pos;
             String paramNamespace = "";//targetNamespace;
             boolean isHeader = false;
 
@@ -516,7 +516,8 @@ public class RuntimeModeler {
             for (Annotation annotation : pannotations[pos]) {
                 if (annotation.annotationType() == javax.jws.WebParam.class) {
                     javax.jws.WebParam webParam = (javax.jws.WebParam) annotation;
-                    paramName = webParam.name();
+                    if (webParam.name().length() > 0)
+                        paramName = webParam.name();
                     isHeader = webParam.header();
                     if (isHeader) // headers cannot be in empty namespace
                         paramNamespace = targetNamespace;
@@ -532,23 +533,23 @@ public class RuntimeModeler {
                     break;
                 }
             }
-            if (paramName.length() != 0) {
+//            if (paramName.length() != 0) {
                 paramQName = new QName(paramNamespace, paramName);
-            } else {  // go get it from the wrappers
-                Class paramWrapperClass = requestClass;
-                if (paramMode != com.sun.xml.ws.model.Mode.IN) {
-                    if (isOneway) {
-                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
-                                new Object[] {portClass.getCanonicalName(), methodName});
-                    }
-                    paramWrapperClass = responseClass;
-                }
-                paramQName = getParamElementName(pos, paramWrapperClass);
-                if(paramQName == null){
-                    throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
-                        new Object[] {String.valueOf(pos), responseClass.getName(), method.getName()});
-                }
-            }
+//            } else {  // go get it from the wrappers
+//                Class paramWrapperClass = requestClass;
+//                if (paramMode != com.sun.xml.ws.model.Mode.IN) {
+//                    if (isOneway) {
+//                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
+//                                new Object[] {portClass.getCanonicalName(), methodName});
+//                    }
+//                    paramWrapperClass = responseClass;
+//                }
+//                paramQName = getParamElementName(pos, paramWrapperClass);
+//                if(paramQName == null){
+//                    throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
+//                        new Object[] {String.valueOf(pos), responseClass.getName(), method.getName()});
+//                }
+//            }
             typeRef =
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
             param = new Parameter(typeRef, paramMode, pos++);
@@ -579,7 +580,7 @@ public class RuntimeModeler {
      * @return returns the wrapper child element name thats annotated with @ParameterIndex equals to paramPos.
      *         Returns null if it cant find any.
      */
-    protected QName getParamElementName(int paramPos, Class wrapperClass) {
+/*    protected QName getParamElementName(int paramPos, Class wrapperClass) {
         QName elementName = null;
         for (Field field : wrapperClass.getDeclaredFields()) {
             ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);
@@ -592,7 +593,7 @@ public class RuntimeModeler {
             }
         }
         return elementName;
-    }
+    }*/
 
     /**
      * gets the element name for the <code>wrapperClass</code>
@@ -860,24 +861,22 @@ public class RuntimeModeler {
     protected void processDocBareMethod(JavaMethod javaMethod, String methodName,
         WebMethod webMethod, String operationName, Method method, WebService webService) {
 
-        String resultName = null;
-        String resultTNS = null;
+        String resultName = operationName+RESPONSE;
+        String resultTNS = targetNamespace;
         String resultPartName = null;
         boolean isResultHeader = false;
         WebResult webResult = method.getAnnotation(WebResult.class);
         if (webResult != null) {
-            resultName = webResult.name();
-            resultTNS = webResult.targetNamespace();
+            if (webResult.name().length() > 0)
+                resultName = webResult.name();
+            if (webResult.targetNamespace().length() > 0)
+                resultTNS = webResult.targetNamespace();
             resultPartName = webResult.partName();
             isResultHeader = webResult.header();
-
-            if (resultTNS == null || resultTNS.equals("")) {
-                resultTNS = targetNamespace;
-            }
-        } else {
+        }/* else {
             resultTNS = targetNamespace;
             resultName = operationName+"Response";
-        }
+        }*/
 
         Class returnType = method.getReturnType();
 
@@ -925,7 +924,7 @@ public class RuntimeModeler {
         int pos = 0;
         for (Class clazzType : parameterTypes) {
             Parameter param = null;
-            String paramName = method.getName();
+            String paramName = operationName; //method.getName();
             String partName = null;
             String requestNamespace = targetNamespace;
             boolean isHeader = false;
@@ -948,7 +947,8 @@ public class RuntimeModeler {
             for (Annotation annotation : pannotations[pos]) {
                 if (annotation.annotationType() == javax.jws.WebParam.class) {
                     javax.jws.WebParam webParam = (javax.jws.WebParam) annotation;
-                    paramName = webParam.name();
+                    if (webParam.name().length() > 0)
+                        paramName = webParam.name();
                     partName = webParam.partName();
                     if (!webParam.targetNamespace().equals("")) {
                         requestNamespace = webParam.targetNamespace();

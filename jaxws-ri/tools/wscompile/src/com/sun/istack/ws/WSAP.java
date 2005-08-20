@@ -1,5 +1,5 @@
 /**
- * $Id: WSAP.java,v 1.3 2005-08-08 15:23:21 kohlert Exp $
+ * $Id: WSAP.java,v 1.4 2005-08-20 15:03:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,6 +49,8 @@ public class WSAP extends WebServiceAP {
         if (classDir == null)
             classDir = ".";
         String srcDir = options.get("-s");    
+//        System.out.println("classDir: "+classDir);
+//        System.out.println("srcDir: "+srcDir);
         Properties properties = new Properties();
         if (srcDir == null)
             srcDir = classDir;
