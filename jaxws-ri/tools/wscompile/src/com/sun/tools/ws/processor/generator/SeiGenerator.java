@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.20 2005-08-19 21:06:39 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.21 2005-08-21 19:26:42 vivekp Exp $
  */
 
 /**
@@ -301,6 +301,17 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         return false;
     }
 
+    private boolean isUnboundParam(Parameter param, Message message){
+        if (message.getUnboundBlocksCount() == 0)
+            return false;
+
+        for (Block unboundBlock : message.getUnboundBlocksMap().values())
+            if (param.getBlock().equals(unboundBlock))
+                return true;
+
+        return false;
+    }
+
     private void writeWebParam(Operation operation, JavaParameter javaParameter, JAnnotationUse paramAnno) {
         Parameter param = javaParameter.getParameter();
         Request req = operation.getRequest();
@@ -339,7 +350,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
 
         if (param.getLinkedParameter() != null){
             paramAnno.param("mode", javax.jws.WebParam.Mode.INOUT);
-        }else if (res != null && (isMessageParam(param, res) || isHeaderParam(param, res) || isAttachmentParam(param, res))){
+        }else if ((res != null) && (isMessageParam(param, res) || isHeaderParam(param, res) || isAttachmentParam(param, res) ||
+                isUnboundParam(param,res))){
             paramAnno.param("mode", javax.jws.WebParam.Mode.OUT);
         }
 
