@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.5 2005-08-13 08:25:42 vivekp Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.6 2005-08-21 21:07:25 vivekp Exp $
  */
 
 /*
@@ -119,6 +119,9 @@ public class JAXBTypeGenerator extends GeneratorBase {
      * @see JAXBTypeVisitor#visit(JAXBType)
      */
     public void visit(JAXBType type) throws Exception {
+        //this is a raw type, probably from rpclit
+        if(type.getJaxbModel() == null)
+            return;
         S2JJAXBModel model = type.getJaxbModel().getS2JJAXBModel();
         if (model != null)
             generateJAXBClasses(model);

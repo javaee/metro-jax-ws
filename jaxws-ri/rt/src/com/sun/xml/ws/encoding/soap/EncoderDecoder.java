@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.6 2005-08-21 19:30:00 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.7 2005-08-21 21:07:24 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -19,16 +19,20 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.bind.api.TypeReference;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
+import javax.xml.transform.Source;
+import javax.activation.DataHandler;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.lang.reflect.Type;
+import java.awt.*;
 
 /**
  * @author Vivek Pandey
@@ -281,13 +285,26 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     return null;
                 AttachmentPart ap = ab.getAttachmentPart();
                 try {
-                    return ap.getContent();
+                    if(isKnownAttachmentType(param.getTypeReference().type))
+                        return ap.getContent();
+                    return ap.getRawContentBytes();
                 } catch (SOAPException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
         }
         return null;
+    }
+
+    private boolean isKnownAttachmentType(Type type) {
+        if(type instanceof Class){
+            Class cls = (Class)type;
+            if(DataHandler.class.isAssignableFrom(cls) ||
+                    Source.class.isAssignableFrom(cls)||
+                    Image.class.isAssignableFrom(cls))
+                return true;            
+        }
+        return false;
     }
 
     protected void addAttachmentPart(InternalMessage im, Object obj, Parameter mimeParam){

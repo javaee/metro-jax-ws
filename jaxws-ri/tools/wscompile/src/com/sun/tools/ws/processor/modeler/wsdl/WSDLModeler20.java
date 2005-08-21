@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.22 2005-08-17 04:28:09 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.23 2005-08-21 21:07:25 vivekp Exp $
  */
 
 /*
@@ -2325,6 +2325,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @return
      */
     private JAXBType getAttachmentType(List<MIMEContent> mimeContents, MessagePart part) {
+        if(!enableMimeContent()){
+            return getJAXBType(part);
+        }
         String javaType = null;
         List<String> mimeTypes = getAlternateMimeTypes(mimeContents);
         if(mimeTypes.size() > 1) {
