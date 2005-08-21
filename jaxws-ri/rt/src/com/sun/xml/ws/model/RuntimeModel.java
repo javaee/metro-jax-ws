@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.14 2005-08-19 01:16:11 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.15 2005-08-21 19:30:01 vivekp Exp $
  */
 
 /*
@@ -17,6 +17,7 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.wsdl.parser.Binding;
+import com.sun.xml.ws.model.soap.SOAPBinding;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -249,10 +250,15 @@ public abstract class RuntimeModel {
 
     public void applyParameterBinding(Binding wsdlBinding){
         for(JavaMethod method : javaMethods){
+            boolean isRpclit = ((SOAPBinding)method.getBinding()).isRpcLit();
             List<Parameter> reqParams = method.getRequestParameters();
             for(Parameter param:reqParams){
-                if(param.isWrapperStyle())
+                if(param.isWrapperStyle()){
+                    if(isRpclit)
+                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
                     continue;
+                }
+
                 String partName = param.getPartName();
                 if(partName == null)
                     continue;
@@ -264,8 +270,11 @@ public abstract class RuntimeModel {
 
             List<Parameter> resParams = method.getResponseParameters();
             for(Parameter param:resParams){
-                if(param.isWrapperStyle())
+                if(param.isWrapperStyle()){
+                    if(isRpclit)
+                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
                     continue;
+                }
                 String partName = param.getPartName();
                 if(partName == null)
                     continue;
@@ -276,6 +285,25 @@ public abstract class RuntimeModel {
             }
 
         }
+    }
+
+    private void applyRpcLitParamBinding(String opName, WrapperParameter wrapperParameter, Binding wsdlBinding) {
+        RpcLitPayload payload = new RpcLitPayload(wrapperParameter.getName());
+        for(Parameter param:wrapperParameter.getWrapperChildren()){
+            String partName = param.getPartName();
+                if(partName == null)
+                    continue;
+                ParameterBinding paramBinding = wsdlBinding.getBinding(opName,
+                        partName, param.mode);
+                if(paramBinding != null){
+                    param.setBinding(paramBinding);
+                    if(paramBinding.isBody()){
+                        JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()), null);
+                        payload.addParameter(bi);
+                    }
+                }
+        }
+        payloadMap.put(wrapperParameter.getName(), payload);
     }
 
     /**

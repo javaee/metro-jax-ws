@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.8 2005-08-19 01:16:11 vivekp Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.9 2005-08-21 19:30:01 vivekp Exp $
  */
 
 /*
@@ -48,6 +48,8 @@ public class SOAPRuntimeModel extends RuntimeModel {
                     WrapperParameter wp = (WrapperParameter) param;
                     List<Parameter> wc = wp.getWrapperChildren();
                     for (Parameter p : wc) {
+                        if(p.getBinding().isUnbound())
+                            continue;
                         JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(p.getTypeReference()),
                             null);
                         payload.addParameter(bi);

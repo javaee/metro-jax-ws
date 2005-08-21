@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.5 2005-08-19 02:09:57 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.6 2005-08-21 19:30:00 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.lang.reflect.Type;
 
 /**
  * @author Vivek Pandey
@@ -52,12 +53,15 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             for (Parameter p : ((WrapperParameter) param).getWrapperChildren()) {
                 QName name = p.getName();
                 Object value = null;
-                if (binding.isDocLit())
+                if (binding.isDocLit()){
                     value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), name.getNamespaceURI(), name
                             .getLocalPart());
-                else if (binding.isRpcLit())
+                }else if (binding.isRpcLit()){
                     value = getWrapperChildValue(context, obj, name.getNamespaceURI(), name
                             .getLocalPart());
+                    if(value == null)
+                        value = setIfPrimitive(p.getTypeReference().type);
+                }
                 if (p.isResponse())
                     resp = value;
                 else {
@@ -78,6 +82,24 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             Parameter.setHolderValue(data[param.getIndex()], obj);
         } else {
             data[param.getIndex()] = param.createHolderValue(obj);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the default values of primitive types. To be called when the object referene by this type is null.
+     * @param type
+     * @return default values of primitive types if type is primitive else null
+     */
+    private Object setIfPrimitive(Type type) {
+        if(type instanceof Class){
+            Class cls = (Class)type;
+            if(cls.isPrimitive()){
+                if(cls.getName().equals(boolean.class.getName())){
+                    return false;
+                }
+                return 0;
+            }
         }
         return null;
     }
@@ -126,7 +148,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             String localName) {
         RpcLitPayload payload = (RpcLitPayload) obj;
         JAXBBridgeInfo rpcParam = payload.getBridgeParameterByName(localName);
-        return rpcParam.getValue();
+        if(rpcParam != null)
+            return rpcParam.getValue();
+        return null;
     }
 
     /**
@@ -234,6 +258,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
 
         while (wc.hasNext()) {
             Parameter p = wc.next();
+            if(p.getBinding().isUnbound())
+                continue;
             Object value = null;
             if (p.isResponse())
                 value = result;

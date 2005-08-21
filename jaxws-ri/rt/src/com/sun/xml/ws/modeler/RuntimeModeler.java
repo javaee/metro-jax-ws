@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.35 2005-08-21 05:27:03 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.36 2005-08-21 19:30:02 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -694,7 +694,7 @@ public class RuntimeModeler {
                 returnParameter.setBinding(rb);
                 returnParameter.setPartName(resultPartName);
 
-                if(rb.getBinding().isBody()){
+                if(rb.getBinding().isBody() || rb.getBinding().isUnbound()){
                     responseWrapper.addWrapperChild(returnParameter);
                 }else{
                     javaMethod.addParameter(returnParameter);
@@ -772,7 +772,7 @@ public class RuntimeModeler {
                 param.setPartName(partName);
                 param.setBinding(pb);
 
-                if(pb.getBinding().isBody()){
+                if(pb.getBinding().isBody() || pb.getBinding().isUnbound()){
                     if (!paramMode.equals(com.sun.xml.ws.model.Mode.OUT)) {
                         requestWrapper.addWrapperChild(param);
                     }

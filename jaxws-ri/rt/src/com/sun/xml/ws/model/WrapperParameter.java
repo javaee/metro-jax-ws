@@ -1,5 +1,5 @@
 /**
- * $Id: WrapperParameter.java,v 1.2 2005-07-12 23:32:51 kohlert Exp $
+ * $Id: WrapperParameter.java,v 1.3 2005-08-21 19:30:01 vivekp Exp $
  */
 
 /*
@@ -55,6 +55,15 @@ public class WrapperParameter extends Parameter{
     public void addWrapperChild(Parameter wrapperChild) {
         wrapperChildren.add(wrapperChild);
     }
-    
+
+    /**
+     * removes the wrapper child from the given index
+     * @param index
+     * @return
+     */
+    public Parameter removeWrapperChild(int index){
+        return wrapperChildren.remove(index);
+    }
+
     protected final List<Parameter> wrapperChildren = new ArrayList<Parameter>();
 }

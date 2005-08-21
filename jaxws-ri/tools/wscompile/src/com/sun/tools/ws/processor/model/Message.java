@@ -1,5 +1,5 @@
 /*
- * $Id: Message.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
+ * $Id: Message.java,v 1.3 2005-08-21 19:30:02 vivekp Exp $
  */
 
 /*
@@ -121,6 +121,10 @@ public abstract class Message extends ModelObject {
     /* serialization */
     public Map<QName, Block> getUnboundBlocksMap() {
         return _unboundBlocks;
+    }
+
+    public int getUnboundBlocksCount() {
+        return _unboundBlocks.size();
     }
 
     /* serialization */

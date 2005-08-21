@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayload.java,v 1.2 2005-07-18 22:25:06 jitu Exp $
+ * $Id: RpcLitPayload.java,v 1.3 2005-08-21 19:30:00 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -34,8 +34,8 @@ public class RpcLitPayload {
     
     public List<JAXBBridgeInfo> getBridgeParameters() {
         return bridgeParameters;
-    }
-    
+    }       
+
     public static RpcLitPayload copy(RpcLitPayload payload) {
         RpcLitPayload newPayload = new RpcLitPayload(payload.getOperation());
         for(JAXBBridgeInfo param: payload.getBridgeParameters()) {
