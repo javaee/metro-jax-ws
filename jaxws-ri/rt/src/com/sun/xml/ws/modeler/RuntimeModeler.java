@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.34 2005-08-20 15:03:11 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.35 2005-08-21 05:27:03 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,17 +17,16 @@ import com.sun.xml.ws.model.soap.Style;
 
 import javax.jws.*;
 import javax.jws.soap.SOAPBinding;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
 import java.util.StringTokenizer;
 import java.util.concurrent.Future;
+import javax.xml.ws.BindingType;
 
 
 /**
@@ -1052,6 +1051,18 @@ public class RuntimeModeler {
         if (webService.targetNamespace().length() > 0)
             targetNamespace = webService.targetNamespace();
         return new QName(targetNamespace, name);
+    }
+    
+    public static String getBindingId(Class implClass) {
+        BindingType bindingType =
+            (BindingType)implClass.getAnnotation(BindingType.class);
+        if (bindingType != null) {
+            String bindingId = bindingType.value();
+            if (bindingId.length() > 0) {
+                return bindingId;
+            }
+        }
+        return null;
     }
 
     public ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, Mode mode){

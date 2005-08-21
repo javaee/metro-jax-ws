@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.4 2005-08-16 01:59:51 jitu Exp $
+ * $Id: BindingImpl.java,v 1.5 2005-08-21 05:27:02 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,8 @@
 
 package com.sun.xml.ws.binding;
 
+import com.sun.xml.ws.binding.http.HTTPBindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 
@@ -16,6 +18,8 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.security.SecurityConfiguration;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.SOAPBinding;
 
 /**
  * Instances are created by HandlerRegistryImpl, which then
@@ -106,6 +110,21 @@ public abstract class BindingImpl implements
 
     public void setSystemHandlerDelegate(SystemHandlerDelegate delegate) {
         systemHandlerDelegate = delegate;
+    }
+    
+    public static com.sun.xml.ws.spi.runtime.Binding getBinding(String bindingId) {
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
+            || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) 
+            || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
+            return new SOAPBindingImpl(bindingId); 
+        } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
+            return new HTTPBindingImpl();
+        }
+        return null;
+    }
+    
+    public static Binding getDefaultBinding() {
+        return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
     }
 
         

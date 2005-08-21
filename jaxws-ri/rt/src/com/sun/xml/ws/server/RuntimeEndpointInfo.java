@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.38 2005-08-19 07:10:15 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.39 2005-08-21 05:27:03 jitu Exp $
  */
 
 /*
@@ -194,6 +194,7 @@ public class RuntimeEndpointInfo
         return (ann != null);
     }
     
+    
     /**
      * creates a RuntimeModel using @link com.sun.xml.ws.modeler.RuntimeModeler. 
      * The modeler creates the model by reading annotations on ImplementorClassobject. 
@@ -209,6 +210,7 @@ public class RuntimeEndpointInfo
         }
         // setting a default binding
         if (binding == null) {
+            String bindingId = RuntimeModeler.getBindingId(getImplementorClass());
             setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
         }
         

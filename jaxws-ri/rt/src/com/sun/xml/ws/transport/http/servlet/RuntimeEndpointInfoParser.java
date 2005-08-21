@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.5 2005-08-18 23:49:41 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.6 2005-08-21 05:27:03 jitu Exp $
  */
 
 /*
@@ -9,6 +9,7 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
@@ -29,7 +30,7 @@ import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
-import com.sun.xml.ws.binding.http.HTTPBindingImpl;
+import com.sun.xml.ws.modeler.RuntimeModeler;
 
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
@@ -82,7 +83,9 @@ public class RuntimeEndpointInfoParser {
                 rei.setName(getMandatoryNonEmptyAttribute(reader, attrs, ATTR_NAME));
                 String implementationName =
                     getMandatoryNonEmptyAttribute(reader, attrs, ATTR_IMPLEMENTATION);
-                rei.setImplementor(getImplementor(implementationName));
+                Class implementorClass = getImplementorClass(implementationName);
+                rei.setImplementorClass(implementorClass);
+                rei.setImplementor(getImplementor(implementorClass));
                 String wsdlFile = getAttribute(attrs, ATTR_WSDL);
                 if (wsdlFile != null &&
                         !wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DIR)) {
@@ -99,23 +102,33 @@ public class RuntimeEndpointInfoParser {
                 String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);                
                 rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
 
-                //get bindingId
+                //set Binding using DD, annotation, or default one(in that order)
                 String bindingId = getAttribute(attrs, ATTR_BINDING);
-                //if bindingId is null default to SOAP 1.1
-                if(bindingId == null){
-                    rei.setBinding(new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING));
-                }else if(bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                        bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) ||
-                        bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)){
-                    rei.setBinding(new SOAPBindingImpl(bindingId));
-                } else if(bindingId.equals(HTTPBinding.HTTP_BINDING)) {
-                    rei.setBinding(new HTTPBindingImpl());
+                if (bindingId == null) {
+                    bindingId = RuntimeModeler.getBindingId(implementorClass);
+                    if (bindingId == null) {            // Default one
+                        bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+                    }
+                }
+                if (bindingId.equals("##SOAP11_HTTP")) {
+                    bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+                } else if (bindingId.equals("##SOAP12_HTTP")) {
+                    bindingId = SOAPBinding.SOAP12HTTP_BINDING;
+                } else if (bindingId.equals("##XML_HTTP")) {
+                    bindingId = HTTPBinding.HTTP_BINDING;
+                }
+                if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
+                    || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
+                    || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)
+                    || bindingId.equals(HTTPBinding.HTTP_BINDING)) {
+                    rei.setBinding(BindingImpl.getBinding(bindingId));
                 } else {
                     failWithLocalName(
                         "runtime.parser.invalidAttributeValue",
                         reader,
                         ATTR_BINDING);
                 }
+                
                 rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
 
                 rei.setUrlPattern(
@@ -366,25 +379,34 @@ public class RuntimeEndpointInfoParser {
                 name);
         }
     }
-
+    
     /*
-     * Instantiates endpoint implementation
+     * Gets endpoint implementation class
      */
-    protected Object getImplementor(String name) {
+    protected Class getImplementorClass(String name) {
         try {
-            return Class.forName(name, true, classLoader).newInstance();
+            return Class.forName(name, true, classLoader);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new ServerRtException(
                 "runtime.parser.classNotFound", name);
+        }
+    }
+
+    /*
+     * Instantiates endpoint implementation
+     */
+    protected Object getImplementor(Class cl) {
+        try {
+            return cl.newInstance();
         } catch (InstantiationException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new ServerRtException(
-                "error.implementorFactory.newInstanceFailed", name);
+                "error.implementorFactory.newInstanceFailed", cl.getName());
         } catch (IllegalAccessException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new ServerRtException(
-                "error.implementorFactory.newInstanceFailed", name);
+                "error.implementorFactory.newInstanceFailed", cl.getName());
         }
     }
 
