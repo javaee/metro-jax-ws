@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.15 2005-08-21 19:30:01 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.16 2005-08-21 23:32:36 vivekp Exp $
  */
 
 /*
@@ -250,6 +250,8 @@ public abstract class RuntimeModel {
 
     public void applyParameterBinding(Binding wsdlBinding){
         for(JavaMethod method : javaMethods){
+            if(method.isAsync())
+                continue;
             boolean isRpclit = ((SOAPBinding)method.getBinding()).isRpcLit();
             List<Parameter> reqParams = method.getRequestParameters();
             for(Parameter param:reqParams){
