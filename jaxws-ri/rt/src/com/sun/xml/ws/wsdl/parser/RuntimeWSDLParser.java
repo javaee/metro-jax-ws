@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.12 2005-08-19 01:17:18 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.13 2005-08-21 19:28:56 vivekp Exp $
  */
 
 /**
@@ -110,7 +110,8 @@ public class RuntimeWSDLParser {
                 XMLStreamReaderUtil.next(reader);
             } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
                 parseService(reader);
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);                
             } else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -126,7 +127,8 @@ public class RuntimeWSDLParser {
             QName name = reader.getName();
             if(WSDLConstants.QNAME_PORT.equals(name)){
                 parsePort(reader, service);
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -176,7 +178,8 @@ public class RuntimeWSDLParser {
                 XMLStreamReaderUtil.next(reader);
             } else if (WSDLConstants.QNAME_OPERATION.equals(name)) {
                 parseBindingOperation(reader, binding);
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else{
                XMLStreamReaderUtil.skipElement(reader);
             }
@@ -199,10 +202,12 @@ public class RuntimeWSDLParser {
             QName name = reader.getName();
             if (WSDLConstants.QNAME_INPUT.equals(name)) {
                 parseInputBinding(reader, bindingOp);
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else if(WSDLConstants.QNAME_OUTPUT.equals(name)){
                 parseOutputBinding(reader, bindingOp);
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -216,10 +221,12 @@ public class RuntimeWSDLParser {
             if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
                 bindingOp.setInputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getInputParts()));
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
                 parseMimeMultipartBinding(reader, bindingOp.getInputParts(), bindingOp.getOutputMimeTypes());
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -234,10 +241,12 @@ public class RuntimeWSDLParser {
             if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
                 bindingOp.setOutputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getOutputParts()));
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
                 parseMimeMultipartBinding(reader, bindingOp.getOutputParts(), bindingOp.getOutputMimeTypes());
-                XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
