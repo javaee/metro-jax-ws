@@ -61,9 +61,9 @@
 			</fault>
 		</operation>
 	</binding>
-	<queue name="AddNumbersService">
+	<service name="AddNumbersService">
 		<port name="AddNumbersPort" binding="tns:AddNumbersBinding">
 			<soap12:address location="REPLACE_WITH_ACTUAL_URL" />
 		</port>
-	</queue>
+	</service>
 </definitions>
