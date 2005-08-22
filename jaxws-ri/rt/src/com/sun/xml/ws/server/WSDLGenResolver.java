@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.3 2005-07-18 16:52:21 kohlert Exp $
+ * $Id: WSDLGenResolver.java,v 1.4 2005-08-22 19:52:23 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -37,12 +37,17 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         return docs;
     }
     
-    public Result getWSDLOutput(String suggestedFileName) {
+    public Result getWSDLOutput(String suggestedFileName) {       
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         
         StreamDocInfo docInfo = new StreamDocInfo(suggestedFileName, bout);
-        docInfo.setQueryString("wsdl");
-        wsdlFile = suggestedFileName;
+        
+        if (wsdlFile == null) {
+            docInfo.setQueryString("wsdl");
+            wsdlFile = suggestedFileName;
+        } else {
+            docInfo.setQueryString("wsdl="+suggestedFileName);
+        }
         docs.put(docInfo.getPath(),  docInfo);
    
         StreamResult result = new StreamResult();
