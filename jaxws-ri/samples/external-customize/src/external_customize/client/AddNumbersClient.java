@@ -5,6 +5,7 @@
 package external_customize.client;
 
 import java.rmi.RemoteException;
+import javax.xml.namespace.QName;
 
 import javax.xml.ws.ServiceFactory;
 
@@ -20,16 +21,15 @@ public class AddNumbersClient {
     public static void main (String[] args) {
         try {
             AddNumbersClient client = new AddNumbersClient ();
+            
             //invoke synchronous method
             client.invoke ();
-        } catch (RemoteException e) {
-            e.printStackTrace ();
         } catch(MathUtilException e){
             System.out.println ("\tException detail: "+ e.getMessage ()+", "+e.getFaultInfo ());
         }
     }
     
-    private void invoke () throws RemoteException, MathUtilException{
+    private void invoke () throws MathUtilException{
         int number1 = 10;
         int number2 = 20;
         

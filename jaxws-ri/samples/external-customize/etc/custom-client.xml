@@ -34,8 +34,8 @@
         <method name="add"/>   
                 
         <!-- rename method parameters-->           
-        <parameter part="definitions/message[@name='addNumbers']/part[@name='parameters']" element="tns:number1" name="num1"/>
-        <parameter part="definitions/message[@name='addNumbers']/part[@name='parameters']" element="tns:number2" name="num2"/>      
+        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" element="tns:number1" name="num1"/>
+        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" element="tns:number2" name="num2"/>      
          
          <!-- you can also override the following customization settings -->
         <enableWrapperStyle>true</enableWrapperStyle>
@@ -47,14 +47,14 @@
         <class name="MathUtilException"/>
     </bindings>
     
-    <!-- wsdl:queue customization -->
-    <bindings node="wsdl:definitions/wsdl:queue[@name='AddNumbersService']">
-        <!-- change the generated queue class -->
+    <!-- wsdl:service customization -->
+    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']">
+        <!-- change the generated service class -->
         <class name="MathUtilService"/>
     </bindings>
     
     <!-- change the port accessor method -->
-    <bindings node="wsdl:definitions/wsdl:queue[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImpl']">
+    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImpl']">
         <method name="getMathUtil"/>
     </bindings>    
     
