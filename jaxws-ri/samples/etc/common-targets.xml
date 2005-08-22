@@ -84,6 +84,7 @@
         debug="${debug}"
         verbose="${verbose}"
         keep="${keep}"
+        extension="${extension}"
         base="${build.classes.home}"
         wsdlFile="${server.wsdl}">
         <binding dir="${basedir}/etc" includes="${server.binding}"/>
