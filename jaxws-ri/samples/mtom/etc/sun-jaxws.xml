@@ -10,8 +10,9 @@
         name="Mtom"
         implementation="mtom.server.HelloImpl"
         wsdl="WEB-INF/wsdl/hello.wsdl"
-        queue='{http://example.org/mtom}HelloService'
+        service='{http://example.org/mtom}HelloService'
         port='{http://example.org/mtom}HelloPort'
-        url-pattern="/hello" enable-mtom="true"/>
+        url-pattern="/hello"
+        enable-mtom="true"/>
 </endpoints>
 

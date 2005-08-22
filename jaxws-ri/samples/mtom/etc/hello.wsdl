@@ -110,10 +110,10 @@
 
 	</wsdl:binding>
 
-	<wsdl:queue name="HelloService">
+	<wsdl:service name="HelloService">
   		<wsdl:port name="HelloPort" binding="tns:HelloBinding">
     			<soap12:address location="http://example/mtom-test-cr"/>
   		</wsdl:port>
-	</wsdl:queue>
+	</wsdl:service>
 
 </wsdl:definitions>	
