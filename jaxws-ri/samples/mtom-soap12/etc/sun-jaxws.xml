@@ -9,7 +9,7 @@
     <endpoint
         name="Mtom-soap12"
         implementation="mtom_soap12.server.HelloImpl"
-        wsdl="/WEB-INF/wsdl/hello.wsdl"
+        wsdl="WEB-INF/wsdl/hello.wsdl"
         queue='{http://example.org/mtom}HelloService'
         port='{http://example.org/mtom}HelloPort'
         binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"

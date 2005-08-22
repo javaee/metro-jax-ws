@@ -11,7 +11,7 @@
     <endpoint
         name="provider"
         implementation="provider.server.AddNumbersImpl"
-        wsdl="/WEB-INF/wsdl/AddNumbers.wsdl"
+        wsdl="WEB-INF/wsdl/AddNumbers.wsdl"
         queue="{http://duke.org}AddNumbersService"
         port="{http://duke.org}AddNumbersPort"
         url-pattern="/addnumbers" />
