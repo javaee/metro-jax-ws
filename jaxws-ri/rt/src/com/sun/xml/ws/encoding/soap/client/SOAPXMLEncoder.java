@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.7 2005-07-28 21:56:55 spericas Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.8 2005-08-22 18:06:44 spericas Exp $
  */
 
 /*
@@ -288,13 +288,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 //            messageContext));
 //    }
 
-    /**
-     * If both FI and XOP are enabled, use MIME type:
-     *
-     *   application/xop+xml;type="application/fastinfoset"
-     *
-     * until we figure out if this mode will be supported or not.
-     */
     protected String getContentType(MessageInfo messageInfo) {
         String contentNegotiation = (String)
             messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
@@ -305,9 +298,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             if (bc != null) {
                 JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
                 if (am.isXopped()) {
-                    return contentNegotiation == "optimistic" ? 
-                           XOP_SOAP11_FI_TYPE_VALUE : XOP_SOAP11_XML_TYPE_VALUE;
-                }                
+                    return XOP_SOAP11_XML_TYPE_VALUE;
+                }          
             }
         }
         

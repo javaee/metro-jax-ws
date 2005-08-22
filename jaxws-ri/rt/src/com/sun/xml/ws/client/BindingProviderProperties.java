@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.7 2005-08-04 02:32:20 kwalsh Exp $
+ * $Id: BindingProviderProperties.java,v 1.8 2005-08-22 18:06:43 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -71,17 +71,9 @@ public interface BindingProviderProperties {
     public static final String XOP_SOAP11_XML_TYPE_VALUE =
         "application/xop+xml;type=\"text/xml\"";
 
-    // FI + XOP + SOAP 1.1
-    public static final String XOP_SOAP11_FI_TYPE_VALUE =
-        "application/xop+xml;type=\"application/fastinfoset\"";
-
     // XML + XOP + SOAP 1.2
     public static final String XOP_SOAP12_XML_TYPE_VALUE =
         "application/xop+xml;type=\"application/soap+xml\"";
-
-    // FI + XOP + SOAP 1.2
-    public static final String XOP_SOAP12_FI_TYPE_VALUE =
-        "application/xop+xml;type=\"application/soap+fastinfoset\"";
 
     public static final String XML_CONTENT_TYPE_VALUE = "text/xml";
 
