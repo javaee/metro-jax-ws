@@ -119,8 +119,8 @@
         debug="${debug}"
         verbose="${verbose}"
         keep="${keep}"
+        extension="${extension}"
         base="${build.classes.home}"
-        httpProxy="webcache.sfbay.sun.com:8080"
         wsdlFile="${client.wsdl}">
         <binding dir="${basedir}/etc" includes="${client.binding}"/>
     </wsimport>
@@ -142,8 +142,6 @@
             <path refid="jaxws.classpath"/>
             <pathelement location="${build.classes.home}"/>
         </classpath>
-        <jvmarg value="-Dhttp.proxyHost=webcache.sfbay.sun.com"/>
-        <jvmarg value="-Dhttp.proxyPort=8080"/>
     </java>
 </target>
 
