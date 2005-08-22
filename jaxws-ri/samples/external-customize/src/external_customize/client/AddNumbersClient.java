@@ -5,7 +5,6 @@
 package external_customize.client;
 
 import java.rmi.RemoteException;
-import javax.xml.namespace.QName;
 
 import javax.xml.ws.ServiceFactory;
 
