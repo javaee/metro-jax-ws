@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.14 2005-08-22 18:04:04 spericas Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.15 2005-08-22 22:18:02 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -154,9 +154,7 @@ public class EndpointIFInvocationHandler
         if (_rtcontext != null && _rtcontext.getModel() != null) {
             javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding) ? (javax.xml.ws.soap.SOAPBinding) binding : null;
             if (sb != null) {
-                _rtcontext.getModel().enableMtom(
-                    messageStruct.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic" ?
-                        false : sb.isMTOMEnabled());
+                _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
             }
         }
 

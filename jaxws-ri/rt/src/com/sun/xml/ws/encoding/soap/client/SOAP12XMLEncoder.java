@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.7 2005-08-22 18:06:44 spericas Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.8 2005-08-22 22:18:03 spericas Exp $
  */
 
 /*
@@ -89,25 +89,25 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
         }
     }
     
-    protected String getContentType(MessageInfo messageInfo) {
+    protected String getContentType(MessageInfo messageInfo, 
+        JAXWSAttachmentMarshaller marshaller) 
+    {
         String contentNegotiation = (String)
             messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
 
-        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if (rtc != null) {
-            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
-            if (bc != null) {
-                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
-                if (am.isXopped()) {
-                    return XOP_SOAP12_XML_TYPE_VALUE;
-                }                
-            }
+        if (marshaller == null) {
+            marshaller = getAttachmentMarshaller(messageInfo);
         }
         
-        return (contentNegotiation == "optimistic") ? 
-            FAST_INFOSET_TYPE_SOAP12 : SOAP12_XML_CONTENT_TYPE_VALUE;
+        if (marshaller != null && marshaller.isXopped()) {
+            return XOP_SOAP12_XML_TYPE_VALUE;
+        }
+        else {
+            return (contentNegotiation == "optimistic") ? 
+                FAST_INFOSET_TYPE_SOAP12 : SOAP12_XML_CONTENT_TYPE_VALUE;
+        }
     }
-
+    
     /**
      * This method is used to create the appropriate SOAPMessage (1.1 or 1.2 using SAAJ api).
      * @return the BindingID associated with this encoder
