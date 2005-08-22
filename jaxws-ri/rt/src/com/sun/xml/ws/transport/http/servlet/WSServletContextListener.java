@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.8 2005-08-18 02:19:04 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.9 2005-08-22 05:08:28 jitu Exp $
  */
 
 /*
@@ -167,10 +167,12 @@ public class WSServletContextListener
                     
      
         for(RuntimeEndpointInfo endpoint : endpoints) {
-            
-            if (endpoint.getWSDLFileName() != null) {
+            String wsdlFile = endpoint.getWSDLFileName();
+            if (wsdlFile != null) {
                 try {
-                    URL wsdlUrl = context.getResource(endpoint.getWSDLFileName());
+                    wsdlFile = "/"+wsdlFile;
+                    URL wsdlUrl = context.getResource(wsdlFile);
+System.out.println("URL="+wsdlUrl);                    
                     endpoint.setWsdlInfo(wsdlUrl, entityResolver);
                 } catch(java.net.MalformedURLException e) {
                     e.printStackTrace();
@@ -204,7 +206,7 @@ public class WSServletContextListener
                 }
                 switch(docType) {
                     case WSDL :                   
-                        query = path.equals(endpoint.getWSDLFileName())
+                        query = path.equals(wsdlFile)
                             ? "wsdl" : "wsdl="+queryValue;
                         break;
                     case SCHEMA : 
@@ -226,6 +228,7 @@ public class WSServletContextListener
 
     private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
     public static final String JAXWS_WSDL_DIR = "/WEB-INF/wsdl";
+    public static final String JAXWS_WSDL_DD_DIR = "WEB-INF/wsdl";
 
     private static final Logger logger =
         Logger.getLogger(

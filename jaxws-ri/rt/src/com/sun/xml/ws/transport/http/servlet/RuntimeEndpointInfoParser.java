@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.6 2005-08-21 05:27:03 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.7 2005-08-22 05:08:27 jitu Exp $
  */
 
 /*
@@ -37,6 +37,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.http.HTTPBinding;
 
 /**
@@ -88,11 +89,18 @@ public class RuntimeEndpointInfoParser {
                 rei.setImplementor(getImplementor(implementorClass));
                 String wsdlFile = getAttribute(attrs, ATTR_WSDL);
                 if (wsdlFile != null &&
-                        !wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DIR)) {
+                        !wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
                     logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
-                            +WSServletContextListener.JAXWS_WSDL_DIR
+                            +WSServletContextListener.JAXWS_WSDL_DD_DIR
                             +". Going to generate and publish a new WSDL.");
                     wsdlFile = null;
+                } else {
+                    WebServiceProvider wsProvider =
+                        (WebServiceProvider)implementorClass.getAnnotation(
+                            WebServiceProvider.class);
+                    if (wsProvider != null && !wsProvider.wsdlLocation().equals("")) {
+                        wsdlFile = wsProvider.wsdlLocation();
+                    }
                 }
                 rei.setWSDLFileName(wsdlFile);
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
