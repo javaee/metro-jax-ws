@@ -6,8 +6,8 @@ package fromjava.server;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-import javax.net.http.HttpContext;
-import javax.net.http.HttpServer;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpServer;
 
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
@@ -23,20 +23,20 @@ public class AddWebservice {
             new AddNumbersImpl ());
     }
     
-    public static void deployMethod2 () throws Exception {
-        EndpointFactory factory = EndpointFactory.newInstance ();
-        Endpoint endpoint = factory.createEndpoint (
-            new URI (SOAPBinding.SOAP11HTTP_BINDING),
-            new AddNumbersImpl ());
-        
-        HttpServer server = HttpServer.create (new InetSocketAddress (8080), 5);
-        server.setExecutor (Executors.newFixedThreadPool (5));
-        HttpContext context = server.createContext (
-            "http",
-            "/jaxws-fromjava/addnumbers");
-        
-        endpoint.publish (context);
-        server.start ();
-    }
+//    public static void deployMethod2 () throws Exception {
+//        EndpointFactory factory = EndpointFactory.newInstance ();
+//        Endpoint endpoint = factory.createEndpoint (
+//            new URI (SOAPBinding.SOAP11HTTP_BINDING),
+//            new AddNumbersImpl ());
+//        
+//        HttpServer server = HttpServer.create (new InetSocketAddress (8080), 5);
+//        server.setExecutor (Executors.newFixedThreadPool (5));
+//        HttpContext context = server.createContext (
+//            "http",
+//            "/jaxws-fromjava/addnumbers");
+//        
+//        endpoint.publish (context);
+//        server.start ();
+//    }
     
 }

@@ -26,8 +26,6 @@ public class AddNumbersClient {
             System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
             result = port.addNumbers (number1, number2);
             System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
-        } catch (RemoteException ex) {
-            ex.printStackTrace ();
         } catch (AddNumbersException_Exception ex) {
             System.out.printf ("Caught AddNumbersException_Exception: %s\n", ex.getFaultInfo ().getDetail ());
         }
