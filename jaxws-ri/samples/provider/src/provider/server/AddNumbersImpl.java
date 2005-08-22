@@ -18,8 +18,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Node;
+import javax.xml.ws.WebServiceProvider;
 
 @ServiceMode(value=Service.Mode.PAYLOAD)
+@WebServiceProvider(wsdlLocation="WEB-INF/wsdl/AddNumbers.wsdl")
 public class AddNumbersImpl implements Provider<Source> {
     public Source invoke(Source source) {
         try {
