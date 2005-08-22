@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.5 2005-08-08 19:32:31 bbissett Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.6 2005-08-22 22:26:19 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -221,35 +221,6 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
 
     public Collection<Object> values() {
         return ctxt.values();
-    }
-
-    public SOAPMessage createMessage(MimeHeaders headers, InputStream in)
-        throws IOException {
-        
-        try {
-            MessageFactory mFac = MessageFactory.newInstance();
-            return mFac.createMessage(headers, in);
-        } catch (SOAPException e) {
-            throw new WebServiceException(e);
-        }
-    }
-
-    public boolean isFailure() {
-        return failure;
-    }
-
-    public void setFailure(boolean failure) {
-        this.failure = failure;
-    }
-    
-    public void writeInternalServerErrorResponse() {
-        setFailure(true);
-        //todo
-    }
-
-    public void writeSimpleErrorResponse(QName faultCode, String faultString) {
-        setFailure(true);
-        //todo
     }
     
     /*

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageContext.java,v 1.1 2005-05-23 22:54:49 bbissett Exp $
+ * $Id: SOAPMessageContext.java,v 1.2 2005-08-22 22:26:19 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -19,10 +19,4 @@ import javax.xml.soap.SOAPMessage;
  */
 public interface SOAPMessageContext
     extends javax.xml.ws.handler.soap.SOAPMessageContext, MessageContext {
-
-    public SOAPMessage createMessage(MimeHeaders headers, InputStream in)
-        throws IOException;
-    public void writeInternalServerErrorResponse();
-    public void writeSimpleErrorResponse(QName faultCode, String faultString);
-    public boolean isFailure();
 }
