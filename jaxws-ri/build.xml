@@ -427,6 +427,15 @@
     </zip>
   </target>
 
+  <target name="src.zip" description="create source zip bundles of the JAX-WS RI">
+    <zip file="${build.home}/jaxws-rt.src.zip">
+      <fileset dir="${basedir}/rt/src" />
+    </zip>
+    <zip file="${build.home}/jaxws-tools.src.zip">
+      <fileset dir="${basedir}/tools/wscompile/src" />
+    </zip>
+  </target>
+
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
       <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
