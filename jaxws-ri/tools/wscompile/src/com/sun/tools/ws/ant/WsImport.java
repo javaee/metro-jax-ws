@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.8 2005-08-18 15:27:55 vivekp Exp $
+ * $Id: WsImport.java,v 1.9 2005-08-23 22:40:59 vivekp Exp $
  */
 
 /*
@@ -408,7 +408,7 @@ public class WsImport extends MatchingTask {
             cmd.createArgument().setFile(new File (getBinding()));
         }
 
-        if(wsdlLocation != null){
+        if((wsdlLocation != null) && (wsdlLocation.length() != 0)){
             cmd.createArgument().setValue("-wsdllocation");
             cmd.createArgument().setValue(wsdlLocation);
         }
