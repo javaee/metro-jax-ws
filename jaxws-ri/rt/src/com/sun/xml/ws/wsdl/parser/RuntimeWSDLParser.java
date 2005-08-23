@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.13 2005-08-21 19:28:56 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.14 2005-08-23 03:12:03 vivekp Exp $
  */
 
 /**
@@ -333,8 +333,10 @@ public class RuntimeWSDLParser {
         String importLocation =
                 ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_LOCATION);
         URL importURL = new URL(baseURL,importLocation);
-
         parseWSDL(importURL);
+        while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT){
+            XMLStreamReaderUtil.skipElement(reader);
+        }
     }
 
     private void parsePortType(XMLStreamReader reader) {
