@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.7 2005-08-17 22:29:47 kohsuke Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.8 2005-08-23 19:09:29 spericas Exp $
  */
 
 /*
@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * <p>A factory to create XML and FI parsers.</p>
@@ -55,14 +56,14 @@ public class XMLStreamReaderFactory {
     static Method fiStAXDocumentParser_setStringInterning;
     
     /**
-     * FI <code>XMLReaderImpl.setInputStream()</code> method via reflection.
+     * Zephyr's <code>XMLReaderImpl.setInputSource()</code> method via reflection.
      */
-    static Method XMLReaderImpl_setInputStream;
+    static Method XMLReaderImpl_setInputSource;
     
     /**
-     * FI <code>XMLReaderImpl.setReader()</code> method via reflection.
+     * Zephyr's <code>XMLReaderImpl.reset()</code> method via reflection.
      */
-    static Method XMLReaderImpl_setReader;
+    static Method XMLReaderImpl_reset;
     
     /**
      * FI stream reader for each thread.
@@ -78,7 +79,15 @@ public class XMLStreamReaderFactory {
         // Use StAX pluggability layer to get factory instance
         xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
-        
+
+        try {
+            // Turn OFF internal factory caching in Zephyr -- not thread safe
+            xmlInputFactory.setProperty("reuse-instance", Boolean.FALSE);
+        }
+        catch (IllegalArgumentException e) {
+            // falls through
+        }
+            
         // Use reflection to avoid static dependency with FI and Zephyr jar
         try {
             Class clazz;
@@ -91,10 +100,13 @@ public class XMLStreamReaderFactory {
                 clazz.getMethod("setStringInterning", boolean.class);
                         
             clazz = Class.forName("com.sun.xml.stream.XMLReaderImpl");
-            XMLReaderImpl_setInputStream = 
-                clazz.getMethod("setInputStream", java.io.InputStream.class);
-            XMLReaderImpl_setReader = 
-                clazz.getMethod("setReader", java.io.Reader.class);
+            // Are we running on top of JAXP 1.4?
+            if (clazz == null) {
+                clazz = Class.forName("com.sun.xml.stream.XMLStreamReaderImpl");
+            }
+            XMLReaderImpl_setInputSource = 
+                clazz.getMethod("setInputSource", org.xml.sax.InputSource.class);
+            XMLReaderImpl_reset = clazz.getMethod("reset");
         } 
         catch (Exception e) {
             // Falls through
@@ -103,52 +115,70 @@ public class XMLStreamReaderFactory {
     
     // -- XML ------------------------------------------------------------
     
+    /**
+     * Returns a StAX parser created from an InputSource.
+     *
+     * TODO: Reject DTDs?
+     */
     public static XMLStreamReader createXMLStreamReader(InputSource source,
         boolean rejectDTDs) {
-        if(source.getByteStream()!=null)
-            return createXMLStreamReader(source.getByteStream(), rejectDTDs);
-        if(source.getCharacterStream()!=null)
+        if (source.getByteStream() != null) {
+            return createXMLStreamReader(null, source.getByteStream(), rejectDTDs);
+        }
+        
+        if (source.getCharacterStream() != null) {
             return createXMLStreamReader(source.getCharacterStream(), rejectDTDs);
+        }
 
         try {
-            synchronized (xmlInputFactory) {
-                return xmlInputFactory.createXMLStreamReader(source.getSystemId(),
-                        new URL(source.getSystemId()).openStream());
-            }
-        } catch (XMLStreamException e) {
+            return createXMLStreamReader(source.getSystemId(),
+                new URL(source.getSystemId()).openStream(), rejectDTDs);
+        }
+        catch (Exception e) {
             throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));
-        } catch (IOException e) {
-            throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));
+                new LocalizableExceptionAdapter(e));            
         }
     }
     
     /**
-     * Returns a fresh StAX parser. StAX does not support a reset() method, but Zephyr does.
+     * Returns a StAX parser from an InputStream.
      *
      * TODO: Reject DTDs?
      */
     public static XMLStreamReader createXMLStreamReader(InputStream in,
         boolean rejectDTDs) {
+        return createXMLStreamReader(null, in, rejectDTDs);        
+    }
+    
+    /**
+     * Returns a StAX parser from an InputStream. Attemps to re-use parsers if
+     * underlying representation is Zephyr.
+     *
+     * TODO: Reject DTDs?
+     */
+    public static XMLStreamReader createXMLStreamReader(String systemId, 
+        InputStream in, boolean rejectDTDs) {
         try {
             // If using Zephyr, try re-using the last instance
-            if (XMLReaderImpl_setInputStream != null) {
+            if (XMLReaderImpl_setInputSource != null) {
                 Object xsr = xmlStreamReader.get();                
                 if (xsr == null) {
                     synchronized (xmlInputFactory) {
-                        xmlStreamReader.set(xsr = xmlInputFactory.createXMLStreamReader(in));
+                        xmlStreamReader.set(
+                            xsr = xmlInputFactory.createXMLStreamReader(systemId, in));
                     }
                 }              
                 else {
-                    // setInputStream() implies reset()
-                    XMLReaderImpl_setInputStream.invoke(xsr, in);
+                    XMLReaderImpl_reset.invoke(xsr);
+                    InputSource inputSource = new InputSource(in);
+                    inputSource.setSystemId(systemId);
+                    XMLReaderImpl_setInputSource.invoke(xsr, inputSource);
                 }                
                 return (XMLStreamReader) xsr;
             }
             else {
                 synchronized (xmlInputFactory) {
-                    return xmlInputFactory.createXMLStreamReader(in);
+                    return xmlInputFactory.createXMLStreamReader(systemId, in);
                 }                
             }
         } catch (Exception e) {
@@ -158,7 +188,8 @@ public class XMLStreamReaderFactory {
     }
     
     /**
-     * Returns a fresh StAX parser. StAX does not support a reset() method, but Zephyr does.
+     * Returns a StAX parser from a Reader. Attemps to re-use parsers if
+     * underlying representation is Zephyr.
      *
      * TODO: Reject DTDs?
      */
@@ -166,16 +197,17 @@ public class XMLStreamReaderFactory {
         boolean rejectDTDs) {
         try {
             // If using Zephyr, try re-using the last instance
-            if (XMLReaderImpl_setReader != null) {
+            if (XMLReaderImpl_setInputSource != null) {
                 Object xsr = xmlStreamReader.get();                
                 if (xsr == null) {
                     synchronized (xmlInputFactory) {
-                        xmlStreamReader.set(xsr = xmlInputFactory.createXMLStreamReader(reader));
+                        xmlStreamReader.set(
+                            xsr = xmlInputFactory.createXMLStreamReader(reader));
                     }
                 }              
                 else {
-                    // setReader() implies reset()
-                    XMLReaderImpl_setReader.invoke(xsr, reader);
+                    XMLReaderImpl_reset.invoke(xsr);
+                    XMLReaderImpl_setInputSource.invoke(xsr, new InputSource(reader));
                 }                
                 return (XMLStreamReader) xsr;
             }
