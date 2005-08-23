@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.29 2005-08-19 21:06:38 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.30 2005-08-23 01:20:37 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -87,7 +87,8 @@ public class WSDLGenerator {
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         wsdlLocation = result.getSystemId();
         serviceOutputStream = getOutputStream(result);
-        if (model.getPortQName().getNamespaceURI().equals(model.getServiceQName().getNamespaceURI()))
+//        if (model.getPortQName().getNamespaceURI().equals(model.getServiceQName().getNamespaceURI()))
+        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))
             portStream = serviceOutputStream;
         else {
             String wsdlName = model.getPortQName().getLocalPart();
@@ -428,7 +429,7 @@ public class WSDLGenerator {
 
     protected void generateBinding() {
         Binding binding = serviceDefinitions.binding().name(model.getPortQName().getLocalPart()+BINDING);
-        binding.type(model.getPortQName());
+        binding.type(new QName(model.getTargetNamespace(), model.getPortQName().getLocalPart()));
         boolean first = true;
         for (JavaMethod method : model.getJavaMethods()) {
             if (first) {

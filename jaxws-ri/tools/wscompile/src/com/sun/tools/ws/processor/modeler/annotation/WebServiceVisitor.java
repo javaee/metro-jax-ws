@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.8 2005-08-19 21:06:40 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.9 2005-08-23 01:20:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,8 +11,11 @@ import com.sun.mirror.declaration.*;
 import com.sun.mirror.type.*;
 import com.sun.mirror.util.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.io.*;
@@ -51,6 +54,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected String wsdlNamespace;
     protected String typeNamespace;
     protected Stack<SOAPBinding> soapBindingStack;
+    protected SOAPBinding typeDeclSOAPBinding;
     protected SOAPUse soapUse = SOAPUse.LITERAL;
     protected SOAPStyle soapStyle = SOAPStyle.DOCUMENT;
     protected boolean wrapped = true;
@@ -69,6 +73,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean hasWebMethods = false;
     protected JavaSimpleTypeCreator simpleTypeCreator;
     protected TypeDeclaration typeDecl;
+    protected Set<String> processedMethods;
 
 
 
@@ -78,6 +83,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         this.context = context;
         this.simpleTypeCreator = new JavaSimpleTypeCreator();
         soapBindingStack = new Stack<SOAPBinding>();
+        processedMethods = new HashSet<String>();
     }
 
     public void visitInterfaceDeclaration(InterfaceDeclaration d) {
@@ -110,6 +116,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             return;
         if (builder.checkAndSetProcessed(d))
             return;
+        typeDeclSOAPBinding = d.getAnnotation(SOAPBinding.class);
         typeDecl = d;
         if (serviceImplName == null)
             serviceImplName = d.getQualifiedName();
@@ -273,16 +280,22 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     protected void processMethods(TypeDeclaration d) {
+        builder.log("ProcessedMethods: "+d);
         if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return;
-        for (MethodDeclaration methodDecl : d.getMethods()) {
-            methodDecl.accept((DeclarationVisitor)this);
+        if (d instanceof InterfaceDeclaration ||
+               ((ClassDeclaration)d).getAnnotation(WebService.class) != null) {
+            // Super classes must have @WebService annotations to pick up their methods
+            for (MethodDeclaration methodDecl : d.getMethods()) {
+                methodDecl.accept((DeclarationVisitor)this);
+            }
         }
         if (d instanceof InterfaceDeclaration) {
             for (InterfaceType superType : d.getSuperinterfaces())
                 processMethods(superType.getDeclaration());
         } else {
-            processMethods(((ClassDeclaration)d).getSuperclass().getDeclaration());
+            ClassDeclaration classDecl = (ClassDeclaration)d;
+            processMethods(classDecl.getSuperclass().getDeclaration());
         }
     }
 
@@ -308,11 +321,23 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     public void visitMethodDeclaration(MethodDeclaration method) {
+        if (processedMethod(method))
+            return;
         WebMethod webMethod = method.getAnnotation(WebMethod.class);
         if (shouldProcessMethod(method, webMethod))
             processMethod(method, webMethod);
     }
-
+    
+    protected boolean processedMethod(MethodDeclaration method) {
+//        MethodID methID = new MethodID(method);
+        String id = method.toString();
+        if (processedMethods.contains(id)) 
+            return true;
+        processedMethods.add(id);
+//        System.out.println("processing method: "+id);
+        return false;
+    }
+    
     abstract protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod);
     abstract protected void processMethod(MethodDeclaration method, WebMethod webMethod);
 
@@ -461,7 +486,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return isInParam;
     }
 
-    private static class MySOAPBinding implements SOAPBinding {
+    protected static class MySOAPBinding implements SOAPBinding {
         public Style style() {return SOAPBinding.Style.DOCUMENT;}
         public Use use() {return SOAPBinding.Use.LITERAL; }
         public ParameterStyle parameterStyle() { return SOAPBinding.ParameterStyle.WRAPPED;}

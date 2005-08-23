@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.16 2005-08-21 23:32:36 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.17 2005-08-23 01:20:37 kohlert Exp $
  */
 
 /*
@@ -348,10 +348,18 @@ public abstract class RuntimeModel {
         portQName = name;
     }
     
+    /**
+     * This is the targetNamespace for the WSDL containing the PortType
+     * definition
+     */
     public void setTargetNamespace(String namespace) {
         targetNamespace = namespace;
     }
 
+    /**
+     * This is the targetNamespace for the WSDL containing the PortType
+     * definition
+     */
     public String getTargetNamespace() {
         return targetNamespace;
     }

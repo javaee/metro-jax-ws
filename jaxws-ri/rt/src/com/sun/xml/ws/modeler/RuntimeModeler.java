@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.36 2005-08-21 19:30:02 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.37 2005-08-23 01:20:37 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -182,7 +182,9 @@ public class RuntimeModeler {
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
-        QName name = new QName(targetNamespace, portName);
+//        QName name = new QName(targetNamespace, portName);
+        QName name = new QName(runtimeModel.getServiceQName().getNamespaceURI(), portName);
+        
         runtimeModel.setPortQName(name);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
 //        String serviceName = clazz.getSimpleName()+SERVICE;
@@ -216,7 +218,8 @@ public class RuntimeModeler {
         }
 
         for (Method method : clazz.getMethods()) {
-            if (method.getDeclaringClass().equals(Object.class))
+            if (method.getDeclaringClass().equals(Object.class) ||
+                !isWebMethod(method, clazz))
                 continue;
             if (!method.isAccessible()) {
                 method.setAccessible(true);
@@ -225,6 +228,19 @@ public class RuntimeModeler {
         }
     }
 
+    protected boolean isWebMethod(Method method, Class clazz) {
+        if (clazz.isInterface())
+            return true;
+        Class declClass = method.getDeclaringClass();
+        if (declClass.equals(clazz))
+            return true;
+        if (method.getAnnotation(WebMethod.class) != null)
+            return true;
+        if (declClass.getAnnotation(WebService.class) != null)
+            return true;
+        return false;
+    }
+    
     /**
      * creates a runtime model <code>SOAPBinding</code> from a <code>javax.jws.soap.SOAPBinding</code> object
      * @param soapBinding the <code>javax.jws.soap.SOAPBinding</code> to model
@@ -278,6 +294,9 @@ public class RuntimeModeler {
     protected void processMethod(Method method, WebService webService) {
         
         WebMethod webMethod = method.getAnnotation(WebMethod.class);
+        if (webMethod != null && webMethod.exclude())
+            return;
+        
         // If one WebMethod is used, then only methods with WebMethod will be
         // processed.
         if (usesWebMethod && webMethod == null) {
@@ -320,6 +339,12 @@ public class RuntimeModeler {
         javaMethod.setOperationName(operationName);
         SOAPBinding methodBinding =
             method.getAnnotation(SOAPBinding.class);
+        if (methodBinding == null && !method.getDeclaringClass().equals(portClass)) {
+            if (!method.getDeclaringClass().isInterface()) {
+//                System.out.println("using "+method.getDeclaringClass()+"'s SOAPBinding.");            
+                methodBinding = method.getDeclaringClass().getAnnotation(SOAPBinding.class);  
+            }
+        }
         boolean methodIsWrapped = isWrapped;
         Style style = defaultBinding.getStyle();
         if (methodBinding != null) {

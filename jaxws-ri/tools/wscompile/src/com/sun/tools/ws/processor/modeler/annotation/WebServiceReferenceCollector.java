@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.4 2005-08-11 01:12:49 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.5 2005-08-23 01:20:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -68,13 +68,29 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     }
 
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
+        if (webMethod != null && webMethod.exclude())
+            return false;
+        
         return !hasWebMethods || webMethod != null;
     }
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         boolean generatedWrapper = false;
+        builder.log("WebServiceReferenceCollector - method: "+method);
+        builder.log("method.getDeclaringType(): "+method.getDeclaringType());            
         SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
+        if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
+            if (method.getDeclaringType() instanceof ClassDeclaration) {
+                soapBinding = method.getDeclaringType().getAnnotation(SOAPBinding.class);            
+                if (soapBinding != null)
+                    builder.log("using "+method.getDeclaringType()+"'s SOAPBinding.");            
+                else {
+                    soapBinding = new MySOAPBinding();
+                }
+            }
+        }    
+        
         boolean newBinding = false;
         if (soapBinding != null) {
             if (soapBinding.style().equals(Style.RPC)) {
