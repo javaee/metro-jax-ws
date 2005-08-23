@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.7 2005-08-21 21:07:24 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.8 2005-08-23 03:10:47 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -10,6 +10,7 @@ package com.sun.xml.ws.encoding.soap;
 import com.sun.xml.ws.encoding.EncoderDecoderBase;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -25,8 +26,11 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.activation.DataHandler;
 import java.io.UnsupportedEncodingException;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -276,7 +280,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         return payload;
     }
 
-    protected Object getAttachment(Map<String, AttachmentBlock> attachments, Parameter param){
+    protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments, Parameter param){
+        Object obj = null;
+        RuntimeModel model = rtContext.getModel();
         for(String id:attachments.keySet()){
             String part = getMimePart(id);
             if(part.equals(param.getPartName())){
@@ -286,11 +292,31 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 AttachmentPart ap = ab.getAttachmentPart();
                 try {
                     if(isKnownAttachmentType(param.getTypeReference().type))
-                        return ap.getContent();
-                    return ap.getRawContentBytes();
+                        obj =  ap.getContent();
+                    else
+                        obj = ap.getRawContentBytes();
                 } catch (SOAPException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+                String mimeType = param.getBinding().getMimeType();
+                Class type = (Class)param.getTypeReference().type;
+                if((obj != null) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(type)){
+                    JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
+                    if(Source.class.isAssignableFrom(obj.getClass())){
+                        JAXBTypeSerializer.getInstance().deserialize((Source)obj, bi, rtContext.getBridgeContext());
+                        return bi.getValue();
+                    }else if(byte[].class.isAssignableFrom(obj.getClass())){
+//                        ByteArrayInputStream bais = new ByteArrayInputStream((byte[])obj);
+//                        JAXBTypeSerializer.getInstance().deserialize(bais, bi, rtContext.getBridgeContext());
+                        try {
+                            JAXBTypeSerializer.getInstance().deserialize(ap.getRawContent(), bi, rtContext.getBridgeContext());
+                        } catch (SOAPException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                        return bi.getValue();
+                    }
+                }
+                return obj;
             }
         }
         return null;
@@ -307,10 +333,10 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         return false;
     }
 
-    protected void addAttachmentPart(InternalMessage im, Object obj, Parameter mimeParam){
+    protected void addAttachmentPart(RuntimeContext rtContext, InternalMessage im, Object obj, Parameter mimeParam){
         if(obj == null)
             return;
-
+        RuntimeModel model = rtContext.getModel();
         String mimeType = mimeParam.getBinding().getMimeType();
         String contentId = null;
         try {
@@ -320,8 +346,20 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             return;
         }
 
+        if(isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
+            JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JAXBTypeSerializer.getInstance().serialize(bi, rtContext.getBridgeContext(), baos);
+            obj = baos.toByteArray();
+        }
         AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);
         im.addAttachment(contentId, ab);
+    }
+
+    private boolean isXMLMimeType(String mimeType){
+        if(mimeType.equals("text/xml") || mimeType.equals("application/xml"))
+            return true;
+        return false;
     }
 
     /**

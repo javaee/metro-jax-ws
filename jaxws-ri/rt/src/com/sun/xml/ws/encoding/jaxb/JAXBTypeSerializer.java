@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeSerializer.java,v 1.8 2005-07-28 21:56:53 spericas Exp $
+ * $Id: JAXBTypeSerializer.java,v 1.9 2005-08-23 03:10:47 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,9 @@
 package com.sun.xml.ws.encoding.jaxb;
 
 import java.io.OutputStream;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import javax.xml.bind.JAXBContext;
@@ -140,7 +143,7 @@ public class JAXBTypeSerializer {
                     e));
         }
     }
-    
+
     /*
      * JAXB object is serialized. Note that the BridgeContext is cached per
      * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
@@ -211,7 +214,32 @@ public class JAXBTypeSerializer {
                     e));
         }
     }
-    
+
+    public void deserialize(Source source, JAXBBridgeInfo bridgeInfo,
+        BridgeContext bridgeContext)
+    {
+        try {
+            Bridge bridge = bridgeInfo.getBridge();
+            Object value = bridge.unmarshal(bridgeContext, source);
+            bridgeInfo.setValue(value);
+        } catch (JAXBException e) {
+            throw new DeserializationException(new LocalizableExceptionAdapter(
+                    e));
+        }
+    }
+
+    public void deserialize(InputStream stream, JAXBBridgeInfo bridgeInfo,
+        BridgeContext bridgeContext)
+    {
+        try {
+            Bridge bridge = bridgeInfo.getBridge();
+            Object value = bridge.unmarshal(bridgeContext, stream);
+            bridgeInfo.setValue(value);
+        } catch (JAXBException e) {
+            throw new DeserializationException(new LocalizableExceptionAdapter(
+                    e));
+        }
+    }
     /*
      * JAXB bean in one context is converted to JAXB bean in another context
      *

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.23 2005-08-21 21:07:25 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.24 2005-08-23 03:10:48 vivekp Exp $
  */
 
 /*
@@ -1883,7 +1883,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                         List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getOutput(),
                                 getOutputMessage(), part.getName());
                         jaxbResType = getAttachmentType(mimeContents, part);
-                        resBlock = new Block(new QName(part.getName()), jaxbResType);
+                        //resBlock = new Block(new QName(part.getName()), jaxbResType);
+                        resBlock = new Block(jaxbResType.getName(), jaxbResType);
                         response.addAttachmentBlock(resBlock);
                     }else if(ModelerUtils.isUnbound(part)){
                         response.addUnboundBlock(resBlock);
@@ -1961,7 +1962,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     List<MIMEContent> mimeContents = getMimeContents(info.bindingOperation.getInput(),
                         getInputMessage(), part.getName());
                     jaxbReqType = getAttachmentType(mimeContents, part);
-                    reqBlock = new Block(new QName(part.getName()), jaxbReqType);
+                    //reqBlock = new Block(new QName(part.getName()), jaxbReqType);
+                    reqBlock = new Block(jaxbReqType.getName(), jaxbReqType);
                     request.addAttachmentBlock(reqBlock);
                 }else if(ModelerUtils.isUnbound(part)){
                     request.addUnboundBlock(reqBlock);
@@ -2225,7 +2227,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
                 JAXBType type = getAttachmentType(mimeContents, part);
                 //create Parameters in request or response
-                Block mimeBlock = new Block(new QName(part.getName()), type);
+                //Block mimeBlock = new Block(new QName(part.getName()), type);
+                Block mimeBlock = new Block(type.getName(), type);
                 request.addAttachmentBlock(mimeBlock);
                 Parameter param = ModelerUtils.createParameter(part.getName(), type, mimeBlock);
                 if(param != null){
@@ -2286,7 +2289,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
                 JAXBType type = getAttachmentType(mimeContents, part);
                 //create Parameters in request or response
-                Block mimeBlock = new Block(new QName(part.getName()), type);
+                //Block mimeBlock = new Block(new QName(part.getName()), type);
+                Block mimeBlock = new Block(type.getName(), type);
                 response.addAttachmentBlock(mimeBlock);
                 Parameter param = ModelerUtils.createParameter(part.getName(), type, mimeBlock);
                 if(param != null){

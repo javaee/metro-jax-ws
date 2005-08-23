@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.13 2005-08-19 01:16:10 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.14 2005-08-23 03:10:47 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -209,7 +209,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
                 obj = (header != null)?header.getValue():null;
             } else if((attachments.size() > 0) && paramBinding.isAttachment()){
-                obj = getAttachment(attachments, param);
+                obj = getAttachment(rtContext, attachments, param);
             }
             Object resp = fillData(rtContext, param, obj, data, soapBinding);
             if(param.isResponse()){
@@ -344,7 +344,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (paramBinding.isHeader()) {
                 im.addHeader(new HeaderBlock((JAXBBridgeInfo)obj));
             } else if (paramBinding.isAttachment()) {
-                addAttachmentPart(im, obj, param);
+                addAttachmentPart(rtContext, im, obj, param);
             }
         }
         return im;
