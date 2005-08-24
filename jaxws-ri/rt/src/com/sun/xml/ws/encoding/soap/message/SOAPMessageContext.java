@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContext.java,v 1.6 2005-07-23 04:10:06 kohlert Exp $
+ * $Id: SOAPMessageContext.java,v 1.7 2005-08-24 03:24:47 jitu Exp $
  */
 
 /*
@@ -9,6 +9,7 @@
 
 package com.sun.xml.ws.encoding.soap.message;
 
+import com.sun.pept.ept.MessageInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +26,10 @@ import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.handler.MessageContextImpl;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * A MessageContext holds a SOAP message as well as a set
@@ -243,4 +246,40 @@ public class SOAPMessageContext extends MessageContextImpl
                 + "</env:Fault>"
                 + "</env:Body>"
                 + "</env:Envelope>";
+    
+    /**
+     * If there is a SOAPMessage already, use getSOAPMessage(). Ignore all other
+     * methods
+     */
+    public boolean isAlreadySoap() {
+        return false;
+    }
+    
+    /*
+     * Returns InternalMessage's BodyBlock value
+     */
+    public Object getBody() {
+        return null;
+    }
+    
+    /*
+     * Returns InternalMessage's HeaderBlock values
+     */
+    public List getHeaders() {
+        return null;
+    }
+    
+    /*
+     * Use this MessageInfo to pass to InternalSoapEncoder write methods
+     */
+    public MessageInfo getMessageInfo() {
+        return null;
+    }
+    
+    /*
+     * Encoder to marshall all JAXWS objects: RpcLitPayload, JAXBBridgeInfo etc
+     */
+    public InternalSoapEncoder getEncoder() {
+        return null;
+    }
 }

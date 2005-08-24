@@ -1,13 +1,10 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.6 2005-08-22 22:26:19 jitu Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.7 2005-08-24 03:24:47 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.handler;
-
-import java.io.InputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -27,10 +24,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.security.SecurityConfiguration;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.Name;
-import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPHeaderElement;
@@ -43,6 +37,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import java.lang.reflect.Method;
 
 /**
@@ -228,6 +223,42 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
      */
     public Method getMethod() {
         // TODO
+        return null;
+    }
+    
+    /**
+     * If there is a SOAPMessage already, use getSOAPMessage(). Ignore all other
+     * methods
+     */
+    public boolean isAlreadySoap() {
+        return false;
+    }
+    
+    /*
+     * Returns InternalMessage's BodyBlock value
+     */
+    public Object getBody() {
+        return null;
+    }
+    
+    /*
+     * Returns InternalMessage's HeaderBlock values
+     */
+    public List getHeaders() {
+        return null;
+    }
+    
+    /*
+     * Use this MessageInfo to pass to InternalSoapEncoder write methods
+     */
+    public MessageInfo getMessageInfo() {
+        return null;
+    }
+    
+    /*
+     * Encoder to marshall all JAXWS objects: RpcLitPayload, JAXBBridgeInfo etc
+     */
+    public InternalSoapEncoder getEncoder() {
         return null;
     }
 
