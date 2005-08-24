@@ -70,10 +70,10 @@ must have its own <code>-b</code>)</p>
       <p align="left"><code>-extension</code></p>
       </td>
       <td>
-      <p align="left">allow vendor extensions (functionality not specified
-          by the specification).  Use of extensions may result in applications 
-          that are not portable or may not interoperate with other implementations
-      </p>
+      <p align="left">allow vendor extensions (functionality not
+specified by the specification). Use of extensions may result in
+applications that are not portable or may not interoperate with other
+implementations </p>
       </td>
     </tr>
     <tr>
@@ -125,6 +125,13 @@ must have its own <code>-b</code>)</p>
       <p align="left">Print version information</p>
       </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top;">-wsdllocation<br>
+      </td>
+      <td style="vertical-align: top;">@WebService.wsdlLocation and
+@WebServiceClient.wsdlLocation value<br>
+      </td>
+    </tr>
   </tbody>
 </table>
 <p>Multiple JAX-WS and JAXB binding files can be specified using <code>-b</code>
@@ -138,20 +145,7 @@ documentation</a>.<br>
 <p>An Ant task for the <code>wsimport</code> tool is provided along
 with the tool. The attributes
 and elements supported by the Ant task are listed below:</p>
-<pre>  
-   &lt;wsimport      
-      fork= "true|false"      
-      jvmargs="..."      
-      wsdlFile="..."      
-      base="directory for generated class files"
-      HTTPProxy="proxy host and port"      
-      sourceBase="directory for generated source files"
-      keep="true|false"
-      extension="true|false"
-      verbose="true|false"
-      version="true|false"
-      &lt;binding dir="..." includes="..." /&gt;
-  &lt;/wsimport&gt;<br><br><br>
+<pre>  <br>   &lt;wsimport      <br>      fork= "true|false"      <br>      jvmargs="..."      <br>      wsdlFile="..."      <br>      base="directory for generated class files"<br>      HTTPProxy="proxy host and port"      <br>      sourceBase="directory for generated source files"<br>      keep="true|false"<br>      extension="true|false"<br>      verbose="true|false"<br>      version="true|false"<br>      wsdlLocation="..."<br>      &lt;binding dir="..." includes="..." /&gt;<br>  &lt;/wsimport&gt;<br><br><br>
 </pre>
 <table border="0" cellpadding="2" cellspacing="2" width="90%">
   <tbody>
@@ -272,16 +266,26 @@ machine</p>
       </code></p>
       </td>
       <td width="70%">
-      <p>allow vendor extentions (funcionality not specified by the specification).
-         Use of extensions may result in applications that are not portable or
-         may not interoperate with other implementations<br>
+      <p>allow vendor extentions (funcionality not specified by the
+specification). Use of extensions may result in applications that are
+not portable or may not interoperate with other implementations<br>
       </p>
       </td>
       <td width="15%">
       <p><code>-extension</code></p>
       </td>
     </tr>
-
+    <tr>
+      <td style="vertical-align: top;">wsdlLocation<br>
+      </td>
+      <td style="vertical-align: top;">The wsdl URI passed thru this
+option will be used to set the value of @WebService.wsdlLocation and
+@WebServiceClient.wsdlLocation annotation elements on the generated SEI
+and Service interface<br>
+      </td>
+      <td style="vertical-align: top;">-wsdllocation<br>
+      </td>
+    </tr>
   </tbody>
 </table>
 <p>The <code></code><code>binding</code> attributes is like
