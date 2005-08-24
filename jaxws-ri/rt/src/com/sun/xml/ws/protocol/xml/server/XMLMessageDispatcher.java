@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.5 2005-08-06 01:35:19 jitu Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.6 2005-08-24 20:15:00 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -331,9 +331,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             (HandlerChainCaller) info.getMetaData(
                 HandlerChainCaller.HANDLER_CHAIN_CALLER);
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
-            /*
             handlerCaller.forceCloseHandlers(context);
-             */
         }
     }
 
