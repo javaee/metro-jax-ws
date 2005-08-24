@@ -11,7 +11,7 @@
 <h1>JAX-WS 2.0 Early Access - wsgen<br>
 </h1>
 <hr>
-<p>Last Modified: 07/19/05<br>
+<p>Last Modified: 08/24/05<br>
 </p>
 <h2><a name="wscompiletool" id="wscompiletool"></a>wsgen</h2>
 <p>The <code>wsgen</code> tool generates JAX-WS portable artifacts
@@ -56,6 +56,17 @@ invocation.</p>
       </td>
       <td>
       <p align="left">Specify where to place generated output files</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+      <p align="left"><code>-extension</code></p>
+      </td>
+      <td>
+      <p align="left">allow vendor extensions (functionality not specified
+          by the specification).  Use of extensions may result in applications 
+          that are not portable or may not interoperate with other implementations
+      </p>
       </td>
     </tr>
     <tr>
@@ -116,8 +127,8 @@ can
 look at the WSDL before the endpoint is deploy.&nbsp; The
 protocol is optional and is
 used to specify what protocol should be
-used in the <code>wsdl:binding</code>. Valid protocols include:&nbsp; <code>soap11</code>
-and <code>soap12</code>.&nbsp; The default is <code>soap11</code>.&nbsp;
+used in the <code>wsdl:binding</code>. Valid protocols include:&nbsp; <code>soap1.1</code>
+and <code>soap1.2</code>.&nbsp; The default is <code>soap1.1</code>.&nbsp;
       <br>
       </td>
     </tr>
@@ -130,7 +141,24 @@ and <code>soap12</code>.&nbsp; The default is <code>soap11</code>.&nbsp;
 <p>An Ant task for the <code>wsgen</code> tool is provided along
 with the tool. The attributes
 and elements supported by the Ant task are listed below:</p>
-<pre>  &lt;wsgen<br>      fork= "true|false"<br>      jvmargs="..."<br>      endpointImplementationClass="..."<br>      base="directory for generated class files"<br>      classpath="classpath" | cp="classpath"<br>      nonClassDir="directory for non-class generated files"<br>      sourceBase="directory for generated source files"<br>      keep="true|false"<br>      verbose="true|false"<br>      version="true|false"<br>      genWsdl="true|false"<br>      protocol="soap11|soap12"&gt;<br>      &lt;classpath refid="..."/&gt;<br>  &lt;/wsgen&gt;<br><br><br></pre>
+<pre>  
+    &lt;wsgen      
+         fork= "true|false"      
+         jvmargs="..."     
+         endpointImplementationClass="..."
+         base="directory for generated class files"      
+         classpath="classpath" | cp="classpath"
+         nonClassDir="directory for non-class generated files"
+         sourceBase="directory for generated source files"      
+         keep="true|false"
+         verbose="true|false"
+         version="true|false"
+         genWsdl="true|false"      
+         protocol="soap1.1|soap1.2"&gt;
+         extension="true|false"
+         &lt;classpath refid="..."/&gt;
+     &lt;/wsgen&gt;<br><br><br>
+</pre>
 <table style="width: 90%;" border="0" cellpadding="2" cellspacing="2">
   <tbody>
     <tr valign="top">
@@ -285,13 +313,28 @@ version</code><br>
  bgcolor="#cccccc" width="70%">
       <p>Used in conjunction with <code>genWsdl</code> to specify the
 protocol to
-use in the <code>wsdl:binding</code>.&nbsp; Value values are <code>"soap11"</code>
-or <code>"soap12"</code><br>
+use in the <code>wsdl:binding</code>.&nbsp; Value values are <code>"soap1.1"</code>
+or <code>"soap1.2"</code>, default is <code>"soap1.1"</code><br>
       </p>
       </td>
       <td style="width: 15%; background-color: rgb(255, 255, 255);">
       <p style="background-color: rgb(255, 255, 255);">-wsdl:soap11<br>
       </p>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="15%">
+      <p><code>extension<br>
+      </code></p>
+      </td>
+      <td width="70%">
+      <p>allow vendor extentions (funcionality not specified by the specification).
+         Use of extensions may result in applications that are not portable or
+         may not interoperate with other implementations<br>
+      </p>
+      </td>
+      <td width="15%">
+      <p><code>-extension</code></p>
       </td>
     </tr>
   </tbody>
