@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.5 2005-08-24 15:39:52 kohlert Exp $
+ * $Id: Apt.java,v 1.6 2005-08-24 15:54:42 kohlert Exp $
  */
 
 /*
@@ -74,10 +74,6 @@ public class Apt extends Task {
     public void setSourceBase(File sourceBase) { this.sourceBase = sourceBase; }
     public File getSourceBase() { return sourceBase; }
     
-//    /** -source option: Provide source compatibility with specified release */
-//    protected String source = null;
-//    public String getSource() { return source; }
-//    public void setSource(String source) { this.source = source; }
     
     /** -A option */
     protected List<Option> options = new ArrayList<Option>();
@@ -286,13 +282,13 @@ public class Apt extends Task {
             String debugOption = "";
             debugOption = "-g";
             if (getDebugLevel() != null && !getDebugLevel().equals(""))
-                    debugOption += ":" + getDebugLevel();
+                debugOption += ":" + getDebugLevel();
             cmd.createArgument().setValue(debugOption);
         } else
             cmd.createArgument().setValue("-g:none");
         
-		if (isVerbose())
-			cmd.createArgument().setValue("-verbose");
+	if (isVerbose())
+            cmd.createArgument().setValue("-verbose");
 		
         if (getEncoding() != null && !getEncoding().equals("")) {
             cmd.createArgument().setValue("-encoding");
@@ -330,12 +326,12 @@ public class Apt extends Task {
 
         if(getFactoryPath() != null){
             cmd.createArgument().setValue("-factorypath");
-			cmd.createArgument().setValue(getFactoryPath().toString());
+            cmd.createArgument().setValue(getFactoryPath().toString());
         }
 		
         if(getFactory() != null){
             cmd.createArgument().setValue("-factory");
-			cmd.createArgument().setValue(getFactory());
+            cmd.createArgument().setValue(getFactory());
         }
 		
         if (isXListAnnotationTypes()) {
@@ -405,11 +401,11 @@ public class Apt extends Task {
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 try {
-					com.sun.tools.apt.Main aptTool = new com.sun.tools.apt.Main();
+                    com.sun.tools.apt.Main aptTool = new com.sun.tools.apt.Main();
                     status = aptTool.process(writer, cmd.getArguments());
-					writer.flush();
-					if (verbose || !baos.toString().equals(""))
-						log(baos.toString());
+                    writer.flush();
+                    if (verbose || !baos.toString().equals(""))
+                        log(baos.toString());
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }

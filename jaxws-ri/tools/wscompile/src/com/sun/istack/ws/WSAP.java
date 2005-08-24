@@ -1,5 +1,5 @@
 /**
- * $Id: WSAP.java,v 1.5 2005-08-24 15:18:08 kohlert Exp $
+ * $Id: WSAP.java,v 1.6 2005-08-24 15:52:21 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -18,7 +18,7 @@ import com.sun.xml.ws.util.VersionUtil;
 
 import java.util.*;
 
-import javax.jws.*;
+import javax.jws.*; 
 
 
 
