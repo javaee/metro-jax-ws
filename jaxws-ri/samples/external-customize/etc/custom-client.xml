@@ -34,8 +34,8 @@
         <method name="add"/>   
                 
         <!-- rename method parameters-->           
-        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" element="tns:number1" name="num1"/>
-        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" element="tns:number2" name="num2"/>      
+        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" childElementName="tns:number1" name="num1"/>
+        <parameter part="wsdl:definitions/wsdl:message[@name='addNumbers']/wsdl:part[@name='parameters']" childElementName="tns:number2" name="num2"/>      
          
          <!-- you can also override the following customization settings -->
         <enableWrapperStyle>true</enableWrapperStyle>
