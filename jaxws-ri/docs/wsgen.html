@@ -128,7 +128,9 @@ look at the WSDL before the endpoint is deploy.&nbsp; The
 protocol is optional and is
 used to specify what protocol should be
 used in the <code>wsdl:binding</code>. Valid protocols include:&nbsp; <code>soap1.1</code>
-and <code>soap1.2</code>.&nbsp; The default is <code>soap1.1</code>.&nbsp;
+and <code>Xsoap1.2</code>.&nbsp; The default is <code>soap1.1</code>.&nbsp;
+<code>Xsoap1.2</code> is not standard and can only be used in conjunction with the
+<code>-extension</code> option.
       <br>
       </td>
     </tr>
@@ -154,7 +156,7 @@ and elements supported by the Ant task are listed below:</p>
          verbose="true|false"
          version="true|false"
          genWsdl="true|false"      
-         protocol="soap1.1|soap1.2"&gt;
+         protocol="soap1.1|Xsoap1.2"&gt;
          extension="true|false"
          &lt;classpath refid="..."/&gt;
      &lt;/wsgen&gt;<br><br><br>
@@ -314,7 +316,8 @@ version</code><br>
       <p>Used in conjunction with <code>genWsdl</code> to specify the
 protocol to
 use in the <code>wsdl:binding</code>.&nbsp; Value values are <code>"soap1.1"</code>
-or <code>"soap1.2"</code>, default is <code>"soap1.1"</code><br>
+or <code>"Xsoap1.2"</code>, default is <code>"soap1.1".</code>  <code>"Xsoap1.2"</code> 
+is not standard and can only be used in conjunction with the -extensions option.<br>
       </p>
       </td>
       <td style="width: 15%; background-color: rgb(255, 255, 255);">
