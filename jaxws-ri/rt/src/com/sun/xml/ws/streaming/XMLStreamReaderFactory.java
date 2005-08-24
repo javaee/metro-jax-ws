@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.8 2005-08-23 19:09:29 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.9 2005-08-24 19:01:38 spericas Exp $
  */
 
 /*
@@ -80,6 +80,7 @@ public class XMLStreamReaderFactory {
         xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
 
+        /*
         try {
             // Turn OFF internal factory caching in Zephyr -- not thread safe
             xmlInputFactory.setProperty("reuse-instance", Boolean.FALSE);
@@ -87,6 +88,7 @@ public class XMLStreamReaderFactory {
         catch (IllegalArgumentException e) {
             // falls through
         }
+        */
             
         // Use reflection to avoid static dependency with FI and Zephyr jar
         try {
@@ -98,7 +100,8 @@ public class XMLStreamReaderFactory {
                 clazz.getMethod("setInputStream", java.io.InputStream.class);
             fiStAXDocumentParser_setStringInterning =
                 clazz.getMethod("setStringInterning", boolean.class);
-                        
+           
+            /*
             clazz = Class.forName("com.sun.xml.stream.XMLReaderImpl");
             // Are we running on top of JAXP 1.4?
             if (clazz == null) {
@@ -107,6 +110,7 @@ public class XMLStreamReaderFactory {
             XMLReaderImpl_setInputSource = 
                 clazz.getMethod("setInputSource", org.xml.sax.InputSource.class);
             XMLReaderImpl_reset = clazz.getMethod("reset");
+            */
         } 
         catch (Exception e) {
             // Falls through
