@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPConstants.java,v 1.2 2005-08-17 20:43:13 vivekp Exp $
+ * $Id: SOAPConstants.java,v 1.3 2005-08-24 00:29:10 vivekp Exp $
  */
 
 /**
@@ -42,6 +42,7 @@ public interface SOAPConstants {
     public static final QName QNAME_SOAP12BODY = new QName(NS_WSDL_SOAP12, "body");
     public static final QName QNAME_FAULT = new QName(NS_WSDL_SOAP, "fault");
     public static final QName QNAME_HEADER = new QName(NS_WSDL_SOAP, "header");
+    public static final QName QNAME_SOAP12HEADER = new QName(NS_WSDL_SOAP12, "header");
     public static final QName QNAME_HEADERFAULT =
         new QName(NS_WSDL_SOAP, "headerfault");
     public static final QName QNAME_OPERATION =

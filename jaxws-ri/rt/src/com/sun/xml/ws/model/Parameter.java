@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.6 2005-08-19 01:16:11 vivekp Exp $
+ * $Id: Parameter.java,v 1.7 2005-08-24 00:29:11 vivekp Exp $
  */
 
 /*
@@ -136,6 +136,8 @@ public class Parameter {
     }
 
     public String getPartName() {
+        if(partName == null)
+            return name.getLocalPart();
         return partName;
     }
 

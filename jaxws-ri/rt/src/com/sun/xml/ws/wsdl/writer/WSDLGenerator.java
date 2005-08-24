@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.30 2005-08-23 01:20:37 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.31 2005-08-24 00:29:12 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -194,17 +194,17 @@ public class WSDLGenerator {
                     part = message.part().name(PARAMETERS);
                     part.element(param.getName());
                 } else {
-                    part = message.part().name(param.getName().getLocalPart());
+                    part = message.part().name(param.getPartName());
                     part.element(param.getName());
                 }
             } else {
                 if (param.isWrapperStyle()) {
                     for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
-                        part = message.part().name(childParam.getName().getLocalPart());
+                        part = message.part().name(childParam.getPartName());
                         part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
                     }
                 } else {
-                    part = message.part().name(param.getName().getLocalPart());
+                    part = message.part().name(param.getPartName());
                     part.element(param.getName());
                 }
             }
@@ -231,13 +231,13 @@ public class WSDLGenerator {
                             part = message.part().name(UNWRAPPABLE_RESULT);
                         part.element(param.getName());
                     } else {
-                        part = message.part().name(param.getName().getLocalPart());
+                        part = message.part().name(param.getPartName());
                         part.element(param.getName());
                     }
                 } else {
                     if (param.isWrapperStyle()) {
                         for (Parameter childParam : ((WrapperParameter)param).getWrapperChildren()) {
-                            part = message.part().name(childParam.getName().getLocalPart());
+                            part = message.part().name(childParam.getPartName());
                             part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
                         }
                     } else {
@@ -661,7 +661,7 @@ public class WSDLGenerator {
         for (Parameter headerParam : parameters) {
             Header header = writer._element(Header.class);
             header.message(message);
-            header.part(headerParam.getName().getLocalPart());
+            header.part(headerParam.getPartName());
             header.use(LITERAL);
         }
     }
@@ -671,7 +671,7 @@ public class WSDLGenerator {
         for (Parameter headerParam : parameters) {
             com.sun.xml.ws.wsdl.writer.document.soap12.Header header = writer._element(com.sun.xml.ws.wsdl.writer.document.soap12.Header.class);
             header.message(message);
-            header.part(headerParam.getName().getLocalPart());
+            header.part(headerParam.getPartName());
             header.use(LITERAL);
         }
     }

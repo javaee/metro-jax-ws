@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.17 2005-08-23 01:20:37 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.18 2005-08-24 00:29:11 vivekp Exp $
  */
 
 /*
@@ -255,6 +255,8 @@ public abstract class RuntimeModel {
             boolean isRpclit = ((SOAPBinding)method.getBinding()).isRpcLit();
             List<Parameter> reqParams = method.getRequestParameters();
             for(Parameter param:reqParams){
+                if(param.getBinding().isHeader())
+                    continue;
                 if(param.isWrapperStyle()){
                     if(isRpclit)
                         applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
@@ -272,6 +274,8 @@ public abstract class RuntimeModel {
 
             List<Parameter> resParams = method.getResponseParameters();
             for(Parameter param:resParams){
+                if(param.getBinding().isHeader())
+                    continue;                
                 if(param.isWrapperStyle()){
                     if(isRpclit)
                         applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
