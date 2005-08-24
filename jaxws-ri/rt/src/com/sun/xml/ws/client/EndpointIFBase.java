@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.10 2005-08-15 21:20:03 kwalsh Exp $
+ * $Id: EndpointIFBase.java,v 1.11 2005-08-24 20:00:33 arungupta Exp $
  */
 
 /*
@@ -32,9 +32,7 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     protected Delegate _delegate = null;
     protected BindingImpl binding;
 
-    private ClientTransport _transport;
     private ClientTransportFactory _transportFactory;
-
 
     void setResponseContext(ResponseContext context) {
         _responseContext = (ContextMap) context;

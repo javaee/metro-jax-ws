@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.13 2005-07-24 01:34:58 kohlert Exp $
+ * $Id: HttpClientTransport.java,v 1.14 2005-08-24 20:00:34 arungupta Exp $
  */
 
 /*
@@ -32,7 +32,6 @@ import java.util.Map;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.transport.WSConnectionImpl;
@@ -181,8 +180,8 @@ public class HttpClientTransport extends WSConnectionImpl {
         
     }
     
-    public void invoke(String endpoint, SOAPMessageContext context)
-            throws ClientTransportException {
+//    public void invoke(String endpoint, SOAPMessageContext context)
+//            throws ClientTransportException {
 
 //        try {
 //            int statusCode = httpConnection.getResponseCode();
@@ -197,7 +196,7 @@ public class HttpClientTransport extends WSConnectionImpl {
 //                redirectRequest(httpConnection, context);
 //                return;
 //            }
-    }
+//    }
 
     protected ByteInputStream readResponse()
             throws IOException {
@@ -417,14 +416,14 @@ public class HttpClientTransport extends WSConnectionImpl {
         return (HttpURLConnection) new URL(endpoint).openConnection();
     }
 
-    private void redirectRequest(HttpURLConnection httpConnection, SOAPMessageContext context) {
-        String redirectEndpoint = httpConnection.getHeaderField("Location");
-        if (redirectEndpoint != null) {
-            httpConnection.disconnect();
-            invoke(redirectEndpoint, context);
-        } else
-            System.out.println("redirection Failed");
-    }
+//    private void redirectRequest(HttpURLConnection httpConnection, SOAPMessageContext context) {
+//        String redirectEndpoint = httpConnection.getHeaderField("Location");
+//        if (redirectEndpoint != null) {
+//            httpConnection.disconnect();
+//            invoke(redirectEndpoint, context);
+//        } else
+//            System.out.println("redirection Failed");
+//    }
 
     private boolean checkForRedirect(int statusCode) {
         return (((statusCode == 301) || (statusCode == 302)) && redirect && (redirectCount-- > 0));
