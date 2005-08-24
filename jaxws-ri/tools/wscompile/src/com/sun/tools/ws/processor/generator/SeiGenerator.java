@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.22 2005-08-24 00:29:12 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.23 2005-08-24 21:11:24 vivekp Exp $
  */
 
 /**
@@ -212,7 +212,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                                 wr = m.annotate(javax.jws.WebResult.class);
                             wr.param("name", resultName);
                         }
-                        if (operation.getStyle().equals(SOAPStyle.DOCUMENT) && !(nsURI.equals(serviceNS))) {
+                        //if (operation.getStyle().equals(SOAPStyle.DOCUMENT) && !(nsURI.equals(serviceNS))) {
+                        if((nsURI != null) && (!nsURI.equals(serviceNS) || (isDocStyle && operation.isWrapped()))){
                             if(wr == null)
                                 wr = m.annotate(javax.jws.WebResult.class);
                             wr.param("targetNamespace", nsURI);
@@ -340,7 +341,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             ns = param.getBlock().getName().getNamespaceURI();
         }
 
-        if(ns != null && !ns.equals(serviceNS))
+        if((ns != null) && (!ns.equals(serviceNS) || (isDocStyle && isWrapped)))
             paramAnno.param("targetNamespace", ns);
 
         if (header) {
