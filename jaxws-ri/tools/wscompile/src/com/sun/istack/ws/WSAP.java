@@ -1,5 +1,5 @@
 /**
- * $Id: WSAP.java,v 1.4 2005-08-20 15:03:12 kohlert Exp $
+ * $Id: WSAP.java,v 1.5 2005-08-24 15:18:08 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,8 +49,6 @@ public class WSAP extends WebServiceAP {
         if (classDir == null)
             classDir = ".";
         String srcDir = options.get("-s");    
-//        System.out.println("classDir: "+classDir);
-//        System.out.println("srcDir: "+srcDir);
         Properties properties = new Properties();
         if (srcDir == null)
             srcDir = classDir;
@@ -61,20 +59,10 @@ public class WSAP extends WebServiceAP {
             VersionUtil.JAXWS_VERSION_DEFAULT);
         properties.setProperty(ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY, classDir);
         String ndDir = classDir;
-        for (String key : options.keySet()) {
-            if (key.startsWith("-And")) {
-                String value = key.substring(key.indexOf('=')+1);
-//                System.out.println("nd: "+value);
-                ndDir = value;
-                break;
-            }
-        }
-//        System.out.println("ndDir: "+ndDir);
         
         properties.setProperty(
             ProcessorOptions.NONCLASS_DESTINATION_DIRECTORY_PROPERTY,
             ndDir);               
-//        properties.setProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY, "true");
         Configuration config = new Configuration(env);
         
         Processor processor = new Processor(config, properties, model);
@@ -84,7 +72,6 @@ public class WSAP extends WebServiceAP {
     }
     
     private void registerGenerators(Processor processor) {
-//        processor.add(new WSDLGenerator());
     }    
     
     public void onError(Localizable msg) {
