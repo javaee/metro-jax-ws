@@ -13,7 +13,7 @@ Access - APT</h1>
 <hr>
 <p>Last Modified: 07/20/05</p>
 <br>
-</p>
+<p></p>
 <h1><a class="mozTocH1" name="mozTocId642262"></a><code>apt<br>
 </code></h1>
 <p>The <code>apt</code> tool provides a facility for programmatically
@@ -124,13 +124,11 @@ release</p>
       </td>
       <td width="608">
       <p align="left">Options to pass to annotation processors</p>
-      <p align="left">JAX-WS uses <code>-Averbose=true</code> to dump
-verbose messages from its <code>AnnotationProcessor</code></p>
       </td>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-nocompile</code></p>
+      <p align="left"><code>nocompile</code></p>
       </td>
       <td width="608">
       <p align="left">Do not compile source files to class files</p>
@@ -270,7 +268,35 @@ documentation <a
 <p>An Ant task for the <code>apt</code> tool is provided with JAX-WS
 2.0 EA. The attributes and elements supported by the Ant task are
 listed below:</p>
-<pre>&lt;apt<br>    fork="true|false"<br>    verbose="true|false"<br>    classpath="classpath"<br>    base="directory for generated class files"<br>    sourceBase="directory for generated source files"<br>    noCompile="true|false"<br>    print="true|false"<br>    factoryPath="&lt;path&gt;"<br>    factory="name of AnnotationProcessorFactory to use"<br>    xListAnnotationTypes="true|false"<br>    xListDeclarations="true|false"<br>    xPrintAptRounds="true|false"<br>    xPrintFactoryInfo="true|false"<br>    xClassesAsDecls="true|false"<br>    debug="true|false"<br>    debugLevel="lines|vars|source"<br>    nowarn="true|false"<br>    deprecation="true|false"<br>    bootclasspath="&lt;path&gt;"<br>    extdirs="&lt;path&gt;"<br>    endorseddirs="&lt;path&gt;"<br>    sourcePath="&lt;path&gt;"<br>    encoding="specify character encoding used by source files"<br>    target="generate class files for specific virtual machine version"&gt;<br>    &lt;source ... &gt; ... &lt;/source&gt;<br>    &lt;classpath ... &gt; ... &lt;/classpath&gt;<br>&lt;/apt&gt;<br></pre>
+<pre>&lt;apt<br>    
+  fork="true|false"<br>    
+  verbose="true|false"<br>    
+  classpath="classpath"<br>    
+  base="directory for generated class files"<br>    
+  sourceBase="directory for generated source files"<br>    
+  noCompile="true|false"<br>    
+  print="true|false"<br>    
+  factoryPath="&lt;path&gt;"<br>    
+  factory="name of AnnotationProcessorFactory to use"<br>    
+  xListAnnotationTypes="true|false"<br>    
+  xListDeclarations="true|false"<br>    
+  xPrintAptRounds="true|false"<br>    
+  xPrintFactoryInfo="true|false"<br>    
+  xClassesAsDecls="true|false"<br>    
+  debug="true|false"<br>    
+  debugLevel="lines|vars|source"<br>    
+  nowarn="true|false"<br>    
+  deprecation="true|false"<br>    
+  bootclasspath="&lt;path&gt;"<br>    
+  extdirs="&lt;path&gt;"<br>    
+  endorseddirs="&lt;path&gt;"<br>    
+  sourcePath="&lt;path&gt;"<br>    
+  encoding="specify character encoding used by source files"<br>    
+  target="generate class files for specific virtual machine version"&gt;<br>    
+  &lt;option key="keyname" value="keyvalue"/&gt;
+  &lt;source ... &gt; ... &lt;/source&gt;<br>    
+  &lt;classpath ... &gt; ... &lt;/classpath&gt;<br>&lt;/apt&gt;<br>
+</pre>
 <table border="0" cellpadding="2" cellspacing="2" width="90%">
   <tbody>
     <tr>
@@ -289,7 +315,7 @@ listed below:</p>
       <p><code>fork</code></p>
       </td>
       <td width="70%">
-      <p>Forks the <code>wsimport</code> process into another virtual
+      <p>Forks the <code>apt</code> process into another virtual
 machine</p>
       </td>
       <td width="15%">
@@ -554,6 +580,18 @@ to process</p>
       <p><code>-target &lt;release&gt;</code></p>
       </td>
     </tr>
+    <tr>
+      <td width="20%">
+      <p><code>option</code></p>
+      </td>
+      <td width="60%">
+      <p>Specify options to pass to annotation processors</p>
+      </td>
+      <td width="20%">
+      <p><code>-Akey=value;</code></p>
+      </td>
+    </tr>
+
   </tbody>
 </table>
 <p>The list of source files to be processed are specified via a nested <code>&lt;source&gt;</code>
