@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.4 2005-08-08 15:34:00 kohlert Exp $
+ * $Id: Apt.java,v 1.5 2005-08-24 15:39:52 kohlert Exp $
  */
 
 /*
@@ -167,7 +167,7 @@ public class Apt extends Task {
     public void setDeprecation(boolean deprecation) { this.deprecation = deprecation; }
 
     /** -bootclasspath option: override location of bootstrap class files */
-	protected Path bootclassPath = null;
+    protected Path bootclassPath = null;
     public Path getBootclassPath() { return bootclassPath; }
     public void setBootclassPath(Path bootclassPath) { this.bootclassPath = bootclassPath; }
 
@@ -202,10 +202,6 @@ public class Apt extends Task {
     public void setTarget(String target) { this.targetVM = target; }
 
 
-//    /** -failonerror option */
-//	protected String failonerror = null;
-//    public String isFailonerror() { return failonerror; }
-//    public void setFailonerror(String failonerror) { this.failonerror = failonerror; }
 
 	/** Others */
 	
@@ -219,89 +215,11 @@ public class Apt extends Task {
         sourceFileset.add(fileset);
     }
 	
-//    /***********************  include ant runtime **********************/
-//    /** not sure if these methods are needed */
-//    private boolean includeAntRuntime = false;
-//    
-//    /**
-//     * Include ant's own classpath in this task's classpath?
-//     */
-//    public void setIncludeantruntime(boolean include) {
-//        includeAntRuntime = include;
-//    }
-//    
-//    /**
-//     * Gets whether or not the ant classpath is to be included in the
-//     * task's classpath.
-//     */
-//    public boolean getIncludeantruntime() {
-//        return includeAntRuntime;
-//    }
-//    
-//    /***********************  include java runtime **********************/
-//    /** not sure if these methods are needed */
-//    private boolean includeJavaRuntime = false;
-//    
-//    /**
-//     * Sets whether or not to include the java runtime libraries to this
-//     * task's classpath.
-//     */
-//    public void setIncludejavaruntime(boolean include) {
-//        includeJavaRuntime = include;
-//    }
-//    
-//    /**
-//     * Gets whether or not the java runtime should be included in this
-//     * task's classpath.
-//     */
-//    public boolean getIncludejavaruntime() {
-//        return includeJavaRuntime;
-//    }
-//    
-//    /** not sure if this method is needed */
-//    private Path generateCompileClasspath() {
-//        Path classpath = new Path(getProject());
-//        
-//        if (getClasspath() == null) {
-//            if (getIncludeantruntime()) {
-//                classpath.addExisting(Path.systemClasspath);
-//            }
-//        } else {
-//            if (getIncludeantruntime()) {
-//                classpath.addExisting(
-//                    getClasspath().concatSystemClasspath("last"));
-//            } else {
-//                classpath.addExisting(
-//                    getClasspath().concatSystemClasspath("ignore"));
-//            }
-//        }
-//        
-//        if (getIncludejavaruntime()) {
-//            
-//            // JDK > 1.1 seems to set java.home to the JRE directory.
-//            classpath.addExisting(new Path(null,
-//                System.getProperty("java.home") +
-//                File.separator + "lib" +
-//                File.separator + "rt.jar"));
-//            
-//            /* Just keep the old version as well and let addExistingToPath
-//             * sort it out.
-//             */
-//            classpath.addExisting(new Path(null,
-//                System.getProperty("java.home") +
-//                File.separator + "jre" +
-//                File.separator + "lib" +
-//                File.separator + "rt.jar"));
-//        }
-//        
-//        return classpath;
-//    }
     
     private Commandline setupAptCommand() {
         Commandline cmd = setupAptArgs();
         
         // classpath option (cp option just uses classpath option)
-        // Path classpath = generateCompileClasspath();
         Path classpath = getClasspath();
         
         if (classpath != null && !classpath.toString().equals("")) {
@@ -341,11 +259,6 @@ public class Apt extends Task {
             cmd.createArgument().setFile(getSourceBase());
         }
 		
-//        if (getSource() != null && !getSource().equals("")) {
-//            cmd.createArgument().setValue("-source");
-//            cmd.createArgument().setValue(getSource());
-//        }
-
         if (getSourcePath() == null)
             throw new BuildException("\"sourcePath\" attribute must be set.");
         
@@ -479,7 +392,6 @@ public class Apt extends Task {
             Commandline cmd = fork ?
                 setupAptForkCommand() : setupAptCommand();
 			
-//            Commandline cmd = setupAptCommand();
             if (verbose) {
                 log("command line: " + "apt " + cmd.toString());
             }
