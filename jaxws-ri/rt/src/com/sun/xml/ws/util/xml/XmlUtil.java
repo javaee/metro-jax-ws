@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.5 2005-08-25 00:32:27 jitu Exp $
+ * $Id: XmlUtil.java,v 1.6 2005-08-25 00:44:12 jitu Exp $
  */
 
 /*
@@ -214,7 +214,7 @@ public class XmlUtil {
     /**
      * Gets a default EntityResolver for catalog at META-INF/jaxws-catalog.xml
      */
-    public static EntityResolver getDefaultCatalogResolver() {
+    public static EntityResolver createDefaultCatalogResolver() {
     
         // set up a manager
         CatalogManager manager = new CatalogManager();
