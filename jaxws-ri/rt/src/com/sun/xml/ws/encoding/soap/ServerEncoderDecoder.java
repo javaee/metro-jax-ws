@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.13 2005-08-23 03:10:48 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.14 2005-08-25 20:20:52 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -21,6 +21,7 @@ import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.ws.Holder;
 import java.lang.reflect.Field;
@@ -161,24 +162,9 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         try {
             Method m = exception.getClass().getMethod("getFaultInfo");
             return m.invoke(exception);
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch(Exception e){
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-        // TODO Auto-generated method stub
-        return null;
     }
 
     private Object createDetailFromUserDefinedException(CheckedException ce, Object exception) {
@@ -188,31 +174,13 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             Object detail = detailBean.newInstance();
             for(Field f : fields){
                 Method em = exception.getClass().getMethod(getReadMethod(f));
-//                f.set(detail, em.invoke(exception));
                 Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
                 sm.invoke(detail, em.invoke(exception));
             }
             return detail;
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch(Exception e){
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-        return null;
     }
 
     private String getReadMethod(Field f){

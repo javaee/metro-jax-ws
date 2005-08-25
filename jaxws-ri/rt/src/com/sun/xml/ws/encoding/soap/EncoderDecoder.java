@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.9 2005-08-25 19:02:38 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.10 2005-08-25 20:20:52 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -243,9 +243,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                         .getLocalPart());
             }
             return obj;
-        } catch (java.lang.InstantiationException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
-        } catch (java.lang.IllegalAccessException e) {
+        } catch(Exception e){
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
     }
@@ -296,7 +294,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     else
                         obj = ap.getRawContent();
                 } catch (SOAPException e) {
-                    throw new WebServiceException(e);
+                    throw new SerializationException(new LocalizableExceptionAdapter(e));
                 }
                 String mimeType = param.getBinding().getMimeType();
                 Class type = (Class)param.getTypeReference().type;
@@ -316,7 +314,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     try {
                         return ASCIIUtility.getBytes((InputStream)obj);
                     } catch (IOException e) {
-                        throw new WebServiceException(e);
+                        throw new WebServiceException(new LocalizableExceptionAdapter(e));
                     }
                 }
                 return obj;
@@ -345,8 +343,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         try {
             contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return;
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
 
         if(isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
@@ -398,8 +395,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         try {
             return java.net.URLDecoder.decode(localPart.substring(0, index), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            return null;
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
     }
 }

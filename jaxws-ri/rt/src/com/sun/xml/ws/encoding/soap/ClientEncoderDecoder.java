@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.14 2005-08-23 03:10:47 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.15 2005-08-25 20:20:52 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -24,6 +24,7 @@ import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -236,12 +237,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
 
         try {
             return asyncWrapper.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch(Exception e){
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-        return null;
     }
 
     private Exception createCheckedException(String message, CheckedException ce, Object detail) {
@@ -254,26 +252,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             Constructor constructor = exceptionClass.getConstructor(new Class[]{String.class, (Class) ce.getDetailType().type});
             Object exception = constructor.newInstance(new Object[]{message, detail});
             return (Exception)exception;
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch(Exception e){
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-        return null;
     }
 
     /**
@@ -293,26 +274,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 m.invoke(exception, new Object[]{f.get(detail)});
             }
             return (Exception)exception;
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch(Exception e){
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
-        return null;
     }
 
     /**
