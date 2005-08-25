@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.10 2005-08-18 15:27:54 vivekp Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.11 2005-08-25 18:32:37 kohlert Exp $
  */
 
 /*
@@ -29,7 +29,6 @@ import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
-//import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
