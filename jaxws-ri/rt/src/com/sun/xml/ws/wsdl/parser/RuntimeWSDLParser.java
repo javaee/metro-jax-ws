@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.14 2005-08-23 03:12:03 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.15 2005-08-25 02:54:19 vivekp Exp $
  */
 
 /**
@@ -50,6 +50,10 @@ public class RuntimeWSDLParser {
         RuntimeWSDLParser parser = new RuntimeWSDLParser(resolver);
         parser.parseWSDL(wsdlLoc);
         return parser.wsdlDoc;
+    }
+
+    public static boolean containsService(URL wsdlLoc, EntityResolver resolver, QName serviceName){
+        return false;
     }
 
     private RuntimeWSDLParser(EntityResolver resolver) {
