@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.9 2005-08-24 19:01:38 spericas Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.10 2005-08-25 21:43:32 spericas Exp $
  */
 
 /*
@@ -80,7 +80,6 @@ public class XMLStreamReaderFactory {
         xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
 
-        /*
         try {
             // Turn OFF internal factory caching in Zephyr -- not thread safe
             xmlInputFactory.setProperty("reuse-instance", Boolean.FALSE);
@@ -88,7 +87,6 @@ public class XMLStreamReaderFactory {
         catch (IllegalArgumentException e) {
             // falls through
         }
-        */
             
         // Use reflection to avoid static dependency with FI and Zephyr jar
         try {
@@ -101,7 +99,6 @@ public class XMLStreamReaderFactory {
             fiStAXDocumentParser_setStringInterning =
                 clazz.getMethod("setStringInterning", boolean.class);
            
-            /*
             clazz = Class.forName("com.sun.xml.stream.XMLReaderImpl");
             // Are we running on top of JAXP 1.4?
             if (clazz == null) {
@@ -110,7 +107,6 @@ public class XMLStreamReaderFactory {
             XMLReaderImpl_setInputSource = 
                 clazz.getMethod("setInputSource", org.xml.sax.InputSource.class);
             XMLReaderImpl_reset = clazz.getMethod("reset");
-            */
         } 
         catch (Exception e) {
             // Falls through
@@ -120,23 +116,31 @@ public class XMLStreamReaderFactory {
     // -- XML ------------------------------------------------------------
     
     /**
-     * Returns a StAX parser created from an InputSource.
+     * Returns a fresh StAX parser created from an InputSource. Use this 
+     * method when concurrent instances are needed within a single thread.
      *
      * TODO: Reject DTDs?
      */
-    public static XMLStreamReader createXMLStreamReader(InputSource source,
+    public static XMLStreamReader createFreshXMLStreamReader(InputSource source,
         boolean rejectDTDs) {
-        if (source.getByteStream() != null) {
-            return createXMLStreamReader(null, source.getByteStream(), rejectDTDs);
-        }
-        
-        if (source.getCharacterStream() != null) {
-            return createXMLStreamReader(source.getCharacterStream(), rejectDTDs);
-        }
-
         try {
-            return createXMLStreamReader(source.getSystemId(),
-                new URL(source.getSystemId()).openStream(), rejectDTDs);
+            synchronized (xmlInputFactory) {
+                // Char stream available?
+                if (source.getCharacterStream() != null) {
+                    return xmlInputFactory.createXMLStreamReader(
+                        source.getSystemId(), source.getCharacterStream());
+                }
+                
+                // Byte stream available?
+                if (source.getByteStream() != null) {
+                    return xmlInputFactory.createXMLStreamReader(
+                        source.getSystemId(), source.getByteStream());
+                }
+
+                // Otherwise, open URI                
+                return xmlInputFactory.createXMLStreamReader(source.getSystemId(),
+                    new URL(source.getSystemId()).openStream());
+            }
         }
         catch (Exception e) {
             throw new XMLReaderException("stax.cantCreate",
@@ -233,9 +237,9 @@ public class XMLStreamReaderFactory {
         return createFIStreamReader(source.getByteStream());
     }
     
-    //
-    // Returns the FI parser allocated for this thread.
-    //
+    /**
+     * Returns the FI parser allocated for this thread.
+     */
     public static XMLStreamReader createFIStreamReader(InputStream in) {
         // Check if compatible implementation of FI was found
         if (fiStAXDocumentParser_new == null) {

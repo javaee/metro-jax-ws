@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.15 2005-08-25 02:54:19 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.16 2005-08-25 21:43:33 spericas Exp $
  */
 
 /**
@@ -60,8 +60,13 @@ public class RuntimeWSDLParser {
         this.resolver = resolver;
     }
 
+    /**
+     * Make sure to return a "fresh" reader each time it is called because
+     * more than one active reader may be needed within a single thread
+     * to parse a WSDL file.
+     */
     private static XMLStreamReader createReader(InputSource source) {
-        return XMLStreamReaderFactory.createXMLStreamReader(source,true);
+        return XMLStreamReaderFactory.createFreshXMLStreamReader(source,true);
     }
 
     private void parseWSDL(URL wsdlLoc) throws XMLStreamException, IOException, SAXException {
