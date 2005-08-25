@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.15 2005-08-25 20:20:52 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.16 2005-08-25 22:54:28 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;

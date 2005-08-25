@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBinding.java,v 1.2 2005-08-05 22:34:41 vivekp Exp $
+ * $Id: JAXWSBinding.java,v 1.3 2005-08-25 22:54:31 vivekp Exp $
  */
 
 /*
@@ -267,15 +267,6 @@ public class JAXWSBinding extends Extension implements Extensible {
                 }else if(!wrapperStyle){
                     return param.getName();
                 }
-//                if(param.getElement() != null){
-//                    if(param.getElement().equals(element))
-//                        return param.getName();
-//                }else if(wrapperStyle){
-//                    //TODO throw warning? can you have null element on parameter customization
-//                    return null;
-//                }else{
-//                    return param.getName();
-//                }
             }
         }
         return null;

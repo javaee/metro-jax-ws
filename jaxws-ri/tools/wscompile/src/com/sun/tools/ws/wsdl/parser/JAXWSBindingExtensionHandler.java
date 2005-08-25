@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.5 2005-08-05 21:07:53 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.6 2005-08-25 22:54:31 vivekp Exp $
  */
 
 /*
@@ -451,8 +451,6 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                     parseMimeContent(context, jaxwsBinding, e2);
                 }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PARAMETER)){
                     parseParameter(context, jaxwsBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.EXCEPTION)){
-                    parseException(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",

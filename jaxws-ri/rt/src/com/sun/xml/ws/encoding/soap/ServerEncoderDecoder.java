@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.14 2005-08-25 20:20:52 vivekp Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.15 2005-08-25 22:54:29 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -59,8 +59,6 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         Iterator<Parameter> iter = jm.getRequestParameters().iterator();
         Object bodyValue = (bodyBlock == null) ? null :  bodyBlock.getValue();
 
-        // TODO process exceptions
-
         int numInputParams = jm.getInputParametersCount();
         Object data[] = new Object[numInputParams];
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
@@ -110,26 +108,21 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                     return im;
                 }
                 if(!(result instanceof java.lang.Exception)){
-                    //TODO its error, throw excetion?
-                    break;
+                    throw new SerializationException("exception.incorrectType", result.getClass().toString());
                 }
                 CheckedException ce = jm.getCheckedException(result.getClass());
                 if(ce == null){
-                    //TODO: throw exception
-                    System.out.println("Error: Couldnt find model for: " + result.getClass());
-                    break;
+                    throw new SerializationException("exception.notfound", result.getClass().toString());
                 }
                 Object detail = getDetail(jm.getCheckedException(result.getClass()), result);
                 JAXBBridgeInfo di = new JAXBBridgeInfo(model.getBridge(ce.getDetailType()), detail);
-                if(ce.isHeaderFault())
-                    SOAPRuntimeModel.createHeaderFault(result, null, di, im);
-                else {
-                    if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
-                        SOAPRuntimeModel.createFaultInBody(result, null, di, im);
-                    else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
-                        SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, di, im);
-                    }
+
+                if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
+                    SOAPRuntimeModel.createFaultInBody(result, null, di, im);
+                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
+                    SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, di, im);
                 }
+
                 return im;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
                 if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
