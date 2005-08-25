@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.4 2005-08-18 02:19:04 jitu Exp $
+ * $Id: XmlUtil.java,v 1.5 2005-08-25 00:32:27 jitu Exp $
  */
 
 /*
@@ -35,6 +35,8 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.net.URL;
+import java.util.Enumeration;
+import javax.xml.ws.WebServiceException;
 import org.apache.xml.resolver.CatalogManager;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.xml.sax.EntityResolver;
@@ -209,4 +211,33 @@ public class XmlUtil {
         return new CatalogResolver(manager);
     }
 
+    /**
+     * Gets a default EntityResolver for catalog at META-INF/jaxws-catalog.xml
+     */
+    public static EntityResolver getDefaultCatalogResolver() {
+    
+        // set up a manager
+        CatalogManager manager = new CatalogManager();
+        manager.setIgnoreMissingProperties(true);
+
+        // parse the catalog
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Enumeration<URL> catalogEnum;
+        try {
+            if (cl == null) {
+                catalogEnum = ClassLoader.getSystemResources("META-INF/jax-ws-catalog.xml");
+            } else {
+                catalogEnum = cl.getResources("META-INF/jax-ws-catalog.xml");
+            }
+
+            while(catalogEnum.hasMoreElements()) {
+                URL url = catalogEnum.nextElement();
+                manager.getCatalog().parseCatalog(url);
+            }
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        }
+
+        return new CatalogResolver(manager);
+    }
 }
