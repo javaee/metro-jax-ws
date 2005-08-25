@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.9 2005-08-23 01:20:38 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.10 2005-08-25 01:10:20 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -74,7 +74,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected JavaSimpleTypeCreator simpleTypeCreator;
     protected TypeDeclaration typeDecl;
     protected Set<String> processedMethods;
-
+    protected boolean pushedSOAPBinding = false;
 
 
 
@@ -165,10 +165,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
         SOAPBinding soapBinding = d.getAnnotation(SOAPBinding.class);
         if (soapBinding != null) {
+            pushedSOAPBinding = true;
             pushSOAPBinding(soapBinding, d);
-        } else {
+        }/* else {
             pushSOAPBinding(new MySOAPBinding(), d);
-        }
+        }*/
     }
 
     public static boolean sameStyle(SOAPBinding.Style style, SOAPStyle soapStyle) {
@@ -183,8 +184,12 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     
     protected boolean pushSOAPBinding(SOAPBinding soapBinding, TypeDeclaration d) {
         boolean changed = false;
-        if (!sameStyle(soapBinding.style(), soapStyle))
+        if (!sameStyle(soapBinding.style(), soapStyle)) {
             changed = true;
+            if (pushedSOAPBinding)
+                builder.onError("webserviceap.mixed.binding.style",
+                                 new Object[] {d.getQualifiedName()});
+        }
         if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
             soapStyle = SOAPStyle.RPC;
             wrapped = true;
@@ -212,7 +217,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
 
     protected SOAPBinding popSOAPBinding() {
-        soapBindingStack.pop();
+        if (pushedSOAPBinding)
+            soapBindingStack.pop();
         SOAPBinding soapBinding = null;
         if (!soapBindingStack.empty()) {
             soapBinding = soapBindingStack.peek();
@@ -329,12 +335,10 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
     
     protected boolean processedMethod(MethodDeclaration method) {
-//        MethodID methID = new MethodID(method);
         String id = method.toString();
         if (processedMethods.contains(id)) 
             return true;
         processedMethods.add(id);
-//        System.out.println("processing method: "+id);
         return false;
     }
     

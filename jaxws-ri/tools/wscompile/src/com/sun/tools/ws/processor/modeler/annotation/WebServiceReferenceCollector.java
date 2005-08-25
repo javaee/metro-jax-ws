@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.5 2005-08-23 01:20:38 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.6 2005-08-25 01:10:20 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -37,7 +37,7 @@ import com.sun.tools.ws.processor.modeler.annotation.*;
 
 /**
  *
- * @author  dkohlert
+ * @author  WS Development Team
  */
 public class WebServiceReferenceCollector extends WebServiceVisitor {
     protected Set<String> wrapperNames;
