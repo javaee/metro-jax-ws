@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorEnvironmentBase.java,v 1.3 2005-08-08 21:43:21 kohlert Exp $
+ * $Id: ProcessorEnvironmentBase.java,v 1.4 2005-08-25 15:57:57 kohlert Exp $
  */
 
 /*
@@ -32,7 +32,8 @@ public abstract class ProcessorEnvironmentBase implements ProcessorEnvironment {
     public URLClassLoader getClassLoader() {
         if (classLoader == null) {
             classLoader =
-                new URLClassLoader(pathToURLs(getClassPath()));
+                new URLClassLoader(pathToURLs(getClassPath()), 
+                    this.getClass().getClassLoader());
         }
         return classLoader;
     }
