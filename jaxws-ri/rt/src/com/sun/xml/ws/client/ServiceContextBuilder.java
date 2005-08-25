@@ -104,6 +104,24 @@ public abstract class ServiceContextBuilder {
         return serviceName;    
     }
     
+    private static QName getPortName(Class portInterface, Class serviceInterface) {
+        QName portName = null;
+        WebServiceClient wsClient = (WebServiceClient)serviceInterface.getAnnotation(WebServiceClient.class);
+        for (Method method : serviceInterface.getMethods()) {
+            if (!method.getDeclaringClass().equals(serviceInterface))
+                continue;
+            WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
+            if (webEndpoint == null)
+                continue;
+            if (method.getGenericReturnType().getClass().equals(portInterface)) {
+                if (method.getName().startsWith("get")) {
+                   portName = new QName(wsClient.targetNamespace(), webEndpoint.name()); 
+                }
+            }
+        }
+        return portName;
+    }
+    
     
     //does any necessagy checking and validation
 
@@ -117,11 +135,12 @@ public abstract class ServiceContextBuilder {
                 eifc = new EndpointIFContext(portInterface);
                 serviceContext.addEndpointIFContext(eifc);
             }
-
             QName serviceName = getServiceName(serviceContext.getServiceInterface());
-            RuntimeModeler processor = new RuntimeModeler(portInterface, serviceName, 
+            QName portName = getPortName(portInterface, serviceContext.getServiceInterface());
+            RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, 
                     serviceContext.getWsdlContext().getBindingID().toString());
-            RuntimeModel model = processor.buildRuntimeModel();
+            modeler.setPortName(portName);
+            RuntimeModel model = modeler.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
             //serviceContext.addEndpointIFContext(eifc);
