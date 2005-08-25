@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.38 2005-08-24 00:29:11 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.39 2005-08-25 01:50:10 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -690,6 +690,8 @@ public class RuntimeModeler {
                 resultName = webResult.name();
             if (webResult.partName().length() > 0)
                 resultPartName = webResult.partName();
+            else 
+                resultPartName = resultName;
             if (webResult.targetNamespace().length() > 0)
                 resultTNS = webResult.targetNamespace();
             isResultHeader = webResult.header();
@@ -708,9 +710,6 @@ public class RuntimeModeler {
             Annotation[] rann = method.getAnnotations();
             TypeReference rTypeReference = new TypeReference(resultQName, returnType, rann);
             Parameter returnParameter = new Parameter(rTypeReference, com.sun.xml.ws.model.Mode.OUT, -1);
-            if(resultPartName == null || (resultPartName.length() == 0)){
-                resultPartName = resultName;
-            }
             returnParameter.setPartName(resultPartName);
             if(isResultHeader){
                 returnParameter.setBinding(new ParameterBinding(SOAPBlock.HEADER));

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.10 2005-08-25 01:10:20 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.11 2005-08-25 01:50:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -165,8 +165,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
         SOAPBinding soapBinding = d.getAnnotation(SOAPBinding.class);
         if (soapBinding != null) {
-            pushedSOAPBinding = true;
-            pushSOAPBinding(soapBinding, d);
+            pushedSOAPBinding = pushSOAPBinding(soapBinding, d);
         }/* else {
             pushSOAPBinding(new MySOAPBinding(), d);
         }*/
