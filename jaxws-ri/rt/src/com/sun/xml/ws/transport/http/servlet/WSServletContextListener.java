@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.9 2005-08-22 05:08:28 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.10 2005-08-25 19:14:50 jitu Exp $
  */
 
 /*
@@ -171,8 +171,7 @@ public class WSServletContextListener
             if (wsdlFile != null) {
                 try {
                     wsdlFile = "/"+wsdlFile;
-                    URL wsdlUrl = context.getResource(wsdlFile);
-System.out.println("URL="+wsdlUrl);                    
+                    URL wsdlUrl = context.getResource(wsdlFile);                   
                     endpoint.setWsdlInfo(wsdlUrl, entityResolver);
                 } catch(java.net.MalformedURLException e) {
                     e.printStackTrace();
