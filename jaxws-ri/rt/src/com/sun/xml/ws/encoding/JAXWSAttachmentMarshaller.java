@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.10 2005-08-19 07:08:15 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.11 2005-08-25 19:03:30 vivekp Exp $
  */
 
 /*
@@ -122,7 +122,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(null);
         if(cid != null){
             attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, data.getContentType()));
-            //isXopped = true;
+            isXopped = false;
             cid = "cid:"+cid;
         }
         return cid;

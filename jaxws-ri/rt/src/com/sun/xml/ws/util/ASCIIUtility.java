@@ -1,5 +1,5 @@
 /**
- * $Id: ASCIIUtility.java,v 1.1 2005-05-24 17:48:17 vivekp Exp $
+ * $Id: ASCIIUtility.java,v 1.2 2005-08-25 19:02:37 vivekp Exp $
  */
 
 /*
@@ -30,62 +30,62 @@ public class ASCIIUtility {
      */
     public static int parseInt(byte[] b, int start, int end, int radix)
 		throws NumberFormatException {
-	if (b == null)
-	    throw new NumberFormatException("null");
+        if (b == null)
+            throw new NumberFormatException("null");
 
-	int result = 0;
-	boolean negative = false;
-	int i = start;
-	int limit;
-	int multmin;
-	int digit;
+        int result = 0;
+        boolean negative = false;
+        int i = start;
+        int limit;
+        int multmin;
+        int digit;
 
-	if (end > start) {
-	    if (b[i] == '-') {
-		negative = true;
-		limit = Integer.MIN_VALUE;
-		i++;
-	    } else {
-		limit = -Integer.MAX_VALUE;
-	    }
-	    multmin = limit / radix;
-	    if (i < end) {
-		digit = Character.digit((char)b[i++], radix);
-		if (digit < 0) {
-		    throw new NumberFormatException(
-			"illegal number: " + toString(b, start, end)
-			);
-		} else {
-		    result = -digit;
-		}
-	    }
-	    while (i < end) {
-		// Accumulating negatively avoids surprises near MAX_VALUE
-		digit = Character.digit((char)b[i++], radix);
-		if (digit < 0) {
-		    throw new NumberFormatException("illegal number");
-		}
-		if (result < multmin) {
-		    throw new NumberFormatException("illegal number");
-		}
-		result *= radix;
-		if (result < limit + digit) {
-		    throw new NumberFormatException("illegal number");
-		}
-		result -= digit;
-	    }
-	} else {
-	    throw new NumberFormatException("illegal number");
-	}
-	if (negative) {
-	    if (i > start + 1) {
-		return result;
-	    } else {	/* Only got "-" */
-		throw new NumberFormatException("illegal number");
-	    }
-	} else {
-	    return -result;
-	}
+        if (end > start) {
+            if (b[i] == '-') {
+                negative = true;
+                limit = Integer.MIN_VALUE;
+                i++;
+            } else {
+                limit = -Integer.MAX_VALUE;
+            }
+            multmin = limit / radix;
+            if (i < end) {
+                digit = Character.digit((char)b[i++], radix);
+                if (digit < 0) {
+                    throw new NumberFormatException(
+                    "illegal number: " + toString(b, start, end)
+                    );
+                } else {
+                    result = -digit;
+                }
+            }
+            while (i < end) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                digit = Character.digit((char)b[i++], radix);
+                if (digit < 0) {
+                    throw new NumberFormatException("illegal number");
+                }
+                if (result < multmin) {
+                    throw new NumberFormatException("illegal number");
+                }
+                result *= radix;
+                if (result < limit + digit) {
+                    throw new NumberFormatException("illegal number");
+                }
+                result -= digit;
+            }
+        } else {
+            throw new NumberFormatException("illegal number");
+        }
+        if (negative) {
+            if (i > start + 1) {
+                return result;
+            } else {	/* Only got "-" */
+                throw new NumberFormatException("illegal number");
+            }
+        } else {
+            return -result;
+        }
     }
 
     /**
@@ -94,44 +94,41 @@ public class ASCIIUtility {
      * till, but not including <code>end</code>. <p>
      */
     public static String toString(byte[] b, int start, int end) {
-	int size = end - start;
-	char[] theChars = new char[size];
+        int size = end - start;
+        char[] theChars = new char[size];
 
-	for (int i = 0, j = start; i < size; )
-	    theChars[i++] = (char)(b[j++]&0xff);
+        for (int i = 0, j = start; i < size; )
+            theChars[i++] = (char)(b[j++]&0xff);
 
-	return new String(theChars);
+        return new String(theChars);
     }
 
     public static byte[] getBytes(String s) {
-	char [] chars= s.toCharArray();
-	int size = chars.length;
-	byte[] bytes = new byte[size];
+        char [] chars= s.toCharArray();
+        int size = chars.length;
+        byte[] bytes = new byte[size];
 
-	for (int i = 0; i < size;)
-	    bytes[i] = (byte) chars[i++];
-	return bytes;
+        for (int i = 0; i < size;)
+            bytes[i] = (byte) chars[i++];
+        return bytes;
     }
 
     public static byte[] getBytes(InputStream is) throws IOException {
-
-	int len;
-	int size = 1024;
-	byte [] buf;
-
-
-	if (is instanceof ByteArrayInputStream) {
-	    size = is.available();
-	    buf = new byte[size];
-	    len = is.read(buf, 0, size);
-	}
-	else {
-	    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	    buf = new byte[size];
-	    while ((len = is.read(buf, 0, size)) != -1)
-		bos.write(buf, 0, len);
-	    buf = bos.toByteArray();
-	}
-	return buf;
+        int len;
+        int size = 1024;
+        byte [] buf;
+        if (is instanceof ByteArrayInputStream) {
+            size = is.available();
+            buf = new byte[size];
+            len = is.read(buf, 0, size);
+        }
+        else {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            buf = new byte[size];
+            while ((len = is.read(buf, 0, size)) != -1)
+                bos.write(buf, 0, len);
+            buf = bos.toByteArray();
+        }
+        return buf;
     }
 }

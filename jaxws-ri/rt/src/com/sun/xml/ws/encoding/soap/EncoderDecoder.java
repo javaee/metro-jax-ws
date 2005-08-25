@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.8 2005-08-23 03:10:47 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.9 2005-08-25 19:02:38 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -20,6 +20,7 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.bind.api.TypeReference;
 
 import javax.xml.namespace.QName;
@@ -27,10 +28,9 @@ import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
 import javax.activation.DataHandler;
-import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -294,9 +294,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     if(isKnownAttachmentType(param.getTypeReference().type))
                         obj =  ap.getContent();
                     else
-                        obj = ap.getRawContentBytes();
+                        obj = ap.getRawContent();
                 } catch (SOAPException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    throw new WebServiceException(e);
                 }
                 String mimeType = param.getBinding().getMimeType();
                 Class type = (Class)param.getTypeReference().type;
@@ -305,15 +305,18 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     if(Source.class.isAssignableFrom(obj.getClass())){
                         JAXBTypeSerializer.getInstance().deserialize((Source)obj, bi, rtContext.getBridgeContext());
                         return bi.getValue();
-                    }else if(byte[].class.isAssignableFrom(obj.getClass())){
+                    }else if(InputStream.class.isAssignableFrom(obj.getClass())){
 //                        ByteArrayInputStream bais = new ByteArrayInputStream((byte[])obj);
 //                        JAXBTypeSerializer.getInstance().deserialize(bais, bi, rtContext.getBridgeContext());
-                        try {
-                            JAXBTypeSerializer.getInstance().deserialize(ap.getRawContent(), bi, rtContext.getBridgeContext());
-                        } catch (SOAPException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
+                        JAXBTypeSerializer.getInstance().deserialize((InputStream)obj, bi, rtContext.getBridgeContext());
                         return bi.getValue();
+                    }
+                }
+                if(obj instanceof InputStream){
+                    try {
+                        return ASCIIUtility.getBytes((InputStream)obj);
+                    } catch (IOException e) {
+                        throw new WebServiceException(e);
                     }
                 }
                 return obj;

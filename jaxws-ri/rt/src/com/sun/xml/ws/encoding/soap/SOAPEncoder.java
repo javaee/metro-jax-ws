@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.22 2005-08-19 03:05:05 jitu Exp $
+ * $Id: SOAPEncoder.java,v 1.23 2005-08-25 19:02:38 vivekp Exp $
  */
 
 /*
@@ -60,13 +60,14 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 
 /**
  * @author WS Development Team
  */
-public abstract class SOAPEncoder implements Encoder {
+public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     /*
      * @see Encoder#encodeAndSend(MessageInfo)
@@ -511,6 +512,25 @@ public abstract class SOAPEncoder implements Encoder {
 
     protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
         throw new UnsupportedOperationException();
+    }
+
+    public void write(Object value, MessageInfo mi, OutputStream out){
+
+    }
+    public void write(Object value, MessageInfo mi, XMLStreamWriter writer){
+        if (value instanceof JAXBBridgeInfo) {
+            writeJAXBBridgeInfo((JAXBBridgeInfo)value, mi, writer);
+        } else if (value instanceof RpcLitPayload) {
+            writeRpcLitPayload((RpcLitPayload)value, mi, writer);
+        } else if (value instanceof Source) {
+            serializeSource((Source)value, writer);
+        } else if (value instanceof SOAPFaultInfo) {
+            writeFault((SOAPFaultInfo)value, mi, writer);
+        } else if (value instanceof JAXBBeanInfo) {
+            writeJAXBBeanInfo((JAXBBeanInfo)value, mi, writer);
+        }else {
+            System.out.println("Unknown object in BodyBlock:"+value.getClass());
+        }
     }
 
 }

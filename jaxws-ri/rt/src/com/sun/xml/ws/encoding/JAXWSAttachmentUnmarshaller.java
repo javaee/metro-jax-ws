@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.5 2005-07-23 04:10:01 kohlert Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.6 2005-08-25 19:03:30 vivekp Exp $
  */
 
 /*
@@ -9,12 +9,15 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.util.ASCIIUtility;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
+import javax.xml.ws.WebServiceException;
 import java.util.Map;
+import java.io.IOException;
 
 /**
  * @author Vivek Pandey
@@ -41,10 +44,14 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
         try {
             AttachmentPart ap = ab.getAttachmentPart();
-            if(ap != null)
-                return new DataHandler(new com.sun.xml.bind.v2.ByteArrayDataSource(ap.getRawContentBytes(),  ap.getContentType()));
+            if(ap != null){
+                byte[] data = ASCIIUtility.getBytes(ap.getRawContent());
+                return new DataHandler(new com.sun.xml.bind.v2.ByteArrayDataSource(data,  ap.getContentType()));
+            }
         } catch (SOAPException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new WebServiceException(e);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
         }
         return null;
     }
@@ -59,11 +66,12 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
         if((ab == null) && ((ab != null) && (ab.getAttachmentPart() == null)))
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
         try {
-            return ab.getAttachmentPart().getRawContentBytes();
+            return ASCIIUtility.getBytes(ab.getAttachmentPart().getRawContent());
         } catch (SOAPException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new WebServiceException(e);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
         }
-        return null;
     }
 
     /**
