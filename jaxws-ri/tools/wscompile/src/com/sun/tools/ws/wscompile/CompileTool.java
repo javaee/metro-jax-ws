@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.16 2005-08-25 15:29:13 kohlert Exp $
+ * $Id: CompileTool.java,v 1.17 2005-08-25 20:44:19 kohlert Exp $
  */
 
 /*
@@ -410,7 +410,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             }
             String bindingID = getBindingID(protocol);
             com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
-                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, bindingID);
+                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, null, bindingID);
             rtModeler.setClassLoader(classLoader);
             com.sun.xml.ws.model.RuntimeModel rtModel = rtModeler.buildRuntimeModel();
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,

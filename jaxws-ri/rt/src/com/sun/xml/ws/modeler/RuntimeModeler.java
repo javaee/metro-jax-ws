@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.40 2005-08-25 19:54:54 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.41 2005-08-25 20:44:18 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -46,6 +46,8 @@ public class RuntimeModeler {
     private ClassLoader classLoader = null;
     private Object implementor;
     private com.sun.xml.ws.wsdl.parser.Binding binding;
+    private QName serviceName;
+    private QName portName;
 
     /**
      * 
@@ -66,10 +68,12 @@ public class RuntimeModeler {
     /**
      * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
      * @param portClass The SEI class to be modeled.
+     * @param serviceName The ServiceName to use instead of one calculated from the implementation class
      * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
      */
-    public RuntimeModeler(Class portClass, String bindingId) {
+    public RuntimeModeler(Class portClass, QName serviceName, String bindingId) {
         this.portClass = portClass;
+        this.serviceName = serviceName;
         this.bindingId = bindingId;
     }
 
@@ -77,11 +81,13 @@ public class RuntimeModeler {
      *
      * creates an instance of RunTimeModeler given a <code>sei</code> and <code>binding</code>
      * @param sei The SEI class to be modeled.
+     * @param serviceName The ServiceName to use instead of one calculated from the implementation class
      * @param binding The Binding representing WSDL Binding for the given port to be used when modeling the
      * <code>sei</code>.
      */
-    public RuntimeModeler(Class sei, com.sun.xml.ws.wsdl.parser.Binding binding){
+    public RuntimeModeler(Class sei, QName serviceName, com.sun.xml.ws.wsdl.parser.Binding binding){
         this.portClass = sei;
+        this.serviceName = serviceName;
         this.bindingId = binding.getBindingId();
         this.binding = binding;
     }
@@ -93,10 +99,11 @@ public class RuntimeModeler {
      *
      * @param portClass The SEI class to be modeled.
      * @param implementor The object on which service methods are invoked
+     * @param serviceName The ServiceName to use instead of one calculated from the implementation class
      * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
      */
     public RuntimeModeler(Class portClass, Object implementor, QName serviceName, String bindingId) {
-        this(portClass, bindingId);
+        this(portClass, serviceName, bindingId);
         this.implementor = implementor;
     }
 
@@ -111,7 +118,7 @@ public class RuntimeModeler {
      * <code>sei</code>.
      */
     public RuntimeModeler(Class portClass, Object implementor, QName serviceName, com.sun.xml.ws.wsdl.parser.Binding binding) {
-        this(portClass, binding);
+        this(portClass, serviceName, binding);
         this.implementor = implementor;
     }
 
@@ -124,6 +131,16 @@ public class RuntimeModeler {
         this.classLoader = classLoader;
     }
 
+    /**
+     * sets the PortName to be used by the <code>RuntimeModeler</code>.
+     * @param portName The PortName to be used instead of the PortName
+     * retrieved via annotations
+     */
+    public void setPortName(QName portName) {
+        this.portName = portName;
+    }
+    
+    
     //currently has many local vars which will be eliminated after debugging issues
     //first draft
     /**
@@ -146,7 +163,9 @@ public class RuntimeModeler {
                                     new Object[] {webService.endpointInterface()});
             }
         }
-        runtimeModel.setServiceQName(getServiceName(portClass, classLoader));
+        if (serviceName == null)
+            serviceName = getServiceName(portClass, classLoader);
+        runtimeModel.setServiceQName(serviceName);
 
         processClass(clazz);
         runtimeModel.postProcess();
@@ -174,8 +193,10 @@ public class RuntimeModeler {
     void processClass(Class clazz) {
         WebService webService =
             (WebService) clazz.getAnnotation(WebService.class);
-        String portName  = clazz.getSimpleName();
-        portName = webService.name().length() >0 ? webService.name() : portName;
+        String portLocalName  = clazz.getSimpleName();
+        if (webService.name().length() >0)
+            portLocalName = webService.name();
+        
 
         targetNamespace = webService.targetNamespace();
         packageName = clazz.getPackage().getName();
@@ -183,9 +204,10 @@ public class RuntimeModeler {
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
 //        QName name = new QName(targetNamespace, portName);
-        QName name = new QName(runtimeModel.getServiceQName().getNamespaceURI(), portName);
+        if (portName == null)
+            portName = new QName(runtimeModel.getServiceQName().getNamespaceURI(), portLocalName);
         
-        runtimeModel.setPortQName(name);
+        runtimeModel.setPortQName(portName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
 //        String serviceName = clazz.getSimpleName()+SERVICE;
 //        serviceName = webService.serviceName().length() > 0 ?
@@ -1041,6 +1063,10 @@ public class RuntimeModeler {
      * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
     public static QName getServiceName(Class implClass, ClassLoader cl) {
+        if (implClass.isInterface()) {
+            throw new RuntimeModelerException("runtime.modeler.cannot.get.serviceName.from.interface",
+                                    new Object[] {implClass.getCanonicalName()});            
+        }
         if(cl == null)
             cl = Thread.currentThread().getContextClassLoader();
 

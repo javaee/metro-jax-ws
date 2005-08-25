@@ -93,8 +93,21 @@ public abstract class ServiceContextBuilder {
         //}
     }
 
+    private static QName getServiceName(Class serviceInterface) {
+        WebServiceClient wsClient = (WebServiceClient)serviceInterface.getAnnotation(WebServiceClient.class);
+        QName serviceName = null;
+        if (wsClient != null) {
+            String name = wsClient.name();
+            String namespace = wsClient.targetNamespace();
+            serviceName = new QName(namespace, name);
+        }
+        return serviceName;    
+    }
+    
+    
     //does any necessagy checking and validation
 
+    
     //todo: valid port in wsdl
     private static void processAnnotations(ServiceContext serviceContext,Class portInterface) throws WebServiceException {
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
@@ -105,7 +118,9 @@ public abstract class ServiceContextBuilder {
                 serviceContext.addEndpointIFContext(eifc);
             }
 
-            RuntimeModeler processor = new RuntimeModeler(portInterface, serviceContext.getWsdlContext().getBindingID().toString());
+            QName serviceName = getServiceName(serviceContext.getServiceInterface());
+            RuntimeModeler processor = new RuntimeModeler(portInterface, serviceName, 
+                    serviceContext.getWsdlContext().getBindingID().toString());
             RuntimeModel model = processor.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
