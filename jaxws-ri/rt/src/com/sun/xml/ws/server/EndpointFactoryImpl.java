@@ -17,9 +17,6 @@ import com.sun.xml.ws.transport.http.server.EndpointImpl;
  */
 public class EndpointFactoryImpl extends EndpointFactory {
     
-    public EndpointFactoryImpl() {
-    }
-    
     @Override
     public Endpoint createEndpoint(URI bindingId, Object impl) {
         Endpoint endpoint = new EndpointImpl(bindingId, impl);
@@ -28,8 +25,7 @@ public class EndpointFactoryImpl extends EndpointFactory {
     
     @Override
     public Endpoint publish(String address, Object impl) {
-        // TODO : binding
-        Endpoint endpoint = new EndpointImpl(null, impl);
+        Endpoint endpoint = new EndpointImpl(impl);
         endpoint.publish(address);
         return endpoint;
     }

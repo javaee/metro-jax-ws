@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.1 2005-08-16 22:24:09 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.2 2005-08-25 19:19:17 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -25,20 +25,29 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpInteraction;
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import java.io.ByteArrayOutputStream;
 
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.Binding;
 import java.util.List;
-import javax.xml.transform.Source;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Executor;
 import java.util.logging.Logger;
+import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import org.xml.sax.EntityResolver;
 
 
 
@@ -46,7 +55,7 @@ import java.util.logging.Logger;
  *
  * @author WS Development Team
  */
-public class HttpEndpoint implements Endpoint {
+public class HttpEndpoint {
     
     private Localizer localizer;
     private LocalizableMessageFactory messageFactory;
@@ -74,14 +83,66 @@ public class HttpEndpoint implements Endpoint {
             new LocalizableMessageFactory("com.sun.xml.ws.resources.httpserver");
     }
     
-    public Binding getBinding() {
-        return endpointInfo.getBinding();
+    /*
+     * Fills RuntimeEndpointInfo with ServiceName, and PortName from properties
+     */
+    public void fillEndpointInfo() {
+        // If Service Name is in properties, set it on RuntimeEndpointInfo
+        Map<String, Object> properties = endpointInfo.getProperties();
+        if (properties != null) {
+            QName serviceName = (QName)properties.get(Endpoint.WSDL_SERVICE);
+            if (serviceName != null) {
+                endpointInfo.setServiceName(serviceName);
+            }
+        }
+        
+        // If Port Name is in properties, set it on RuntimeEndpointInfo
+        if (properties != null) {
+            QName portName = (QName)properties.get(Endpoint.WSDL_PORT);
+            if (portName != null) {
+                endpointInfo.setPortName(portName);
+            }
+        }
+        
+        // Sets the correct Service Name
+        endpointInfo.doServiceNameProcessing();
+        
+        // Convert metadata sources using identity transform. So that we can
+        // reuse the Source object multiple times.
+        List<Source> metadata = endpointInfo.getMetadata();
+        if (metadata != null) {
+            Map<String, Source> newMetadata = new HashMap<String, Source>();
+            Transformer transformer = XmlUtil.newTransformer();
+            for(Source source: metadata) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try {
+                    transformer.transform(source, new StreamResult(baos));
+                    baos.close();
+                } catch(IOException ioe) {
+                    throw new ServerRtException("server.rt.err",
+                        new LocalizableExceptionAdapter(ioe));
+                } catch (TransformerException te) {
+                    throw new ServerRtException("server.rt.err",
+                        new LocalizableExceptionAdapter(te));
+                }
+                byte[] buf = baos.toByteArray();
+                String systemId = source.getSystemId();
+                source = new StreamSource(new ByteInputStream(buf, buf.length));
+                source.setSystemId(systemId);
+                newMetadata.put(systemId, source);
+            }
+            endpointInfo.setProcessedMetadata(newMetadata);
+            
+            // Create a EntityResolver to look inside metadata and find a primary WSDL
+            URL wsdlUrl = null; // TODO
+            EntityResolver wsdlResolver = new EndpointEntityResolver(newMetadata);
+            
+            // Set primary WSDL, and WSDL resolver
+            endpointInfo.setWsdlInfo(wsdlUrl, wsdlResolver);
+        }
+        
     }
-
-    public Object getImplementor() {
-        return endpointInfo.getImplementor();
-    }
-
+    
     public void publish(String address) {
         try {
             this.address = address;
@@ -100,7 +161,7 @@ public class HttpEndpoint implements Endpoint {
             publish(context);
             server.start();
         } catch(Exception e) {
-            throw new ServerRtException("server.rt.err", new Object[] { e } );
+            throw new ServerRtException("server.rt.err", new LocalizableExceptionAdapter(e) );
         }
     }
 
@@ -118,8 +179,8 @@ public class HttpEndpoint implements Endpoint {
     }
 
     public void stop() {
-        // TODO: what should be done in unpublish ?
         httpContext.setHandler(null);
+        httpContext.getServer().removeContext(httpContext);
         if (httpServer != null) {
             httpServer.removeContext(httpContext);
             httpServer.terminate(0);
@@ -127,35 +188,8 @@ public class HttpEndpoint implements Endpoint {
         published = false;
     }
 
-    public boolean isPublished() {
-        return published;
-    }
-
-    public java.util.List<Source> getMetadata() {
-        return endpointInfo.getMetadata();
-    }
-
-    public void setMetadata(java.util.List<Source> metadata) {
-        endpointInfo.setMetadata(metadata);
-    }
-
-    public Executor getExecutor() {
-        return null;
-    }
-
-    public void setExecutor(Executor executor) {
-        //ToDO
-    }
-
-    public Map<String, Object> getProperties() {
-        return null;
-    }
-
-    public void setProperties(Map<String, Object> map) {
-
-    }
-
-    public void publish (HttpContext context) throws Exception {
+    private void publish (HttpContext context) throws Exception {
+        fillEndpointInfo();
         endpointInfo.setUrlPattern("");
         endpointInfo.deploy();
         if (endpointInfo.needWSDLGeneration()) {

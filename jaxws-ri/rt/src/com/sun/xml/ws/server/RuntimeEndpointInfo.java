@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.39 2005-08-21 05:27:03 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.40 2005-08-25 19:19:18 jitu Exp $
  */
 
 /*
@@ -18,7 +18,6 @@ import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.wsdl.parser.WSDLDocument;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.parser.Service;
-import com.sun.xml.ws.wsdl.parser.Port;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 
@@ -42,12 +41,12 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.util.concurrent.Executor;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.stream.XMLStreamException;
-
-import org.apache.xml.resolver.apps.resolver;
+import javax.xml.ws.Endpoint;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -61,7 +60,7 @@ import org.xml.sax.SAXException;
  * @author WS Development Team
  */
 public class RuntimeEndpointInfo
-    implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
+    implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo, Endpoint {
     
     private String name;
     private Exception exception;
@@ -71,6 +70,7 @@ public class RuntimeEndpointInfo
     private boolean deployed;
     private String urlPattern;
     private List<Source> metadata;
+    private Map<String, Source> processedMetadata;
     private Binding binding;
     private RuntimeModel runtimeModel;
     private Object implementor;
@@ -141,6 +141,24 @@ public class RuntimeEndpointInfo
         return deployed;
     }
     
+    public boolean isPublished() {
+        return deployed;
+    }
+    
+    public void stop() {
+        
+    }
+    
+    public void publish(Object obj) {
+        
+    }
+    
+    public void publish(String address) {
+        
+    }
+    
+    
+    
     public void createModel() {
         // Create runtime model for non Provider endpoints
 
@@ -194,6 +212,27 @@ public class RuntimeEndpointInfo
         return (ann != null);
     }
     
+    /*
+     * If serviceName is not already set via DD or programmatically, it uses
+     * annotations on implementorClass to set ServiceName.
+     */
+    public void doServiceNameProcessing() {
+        if (getServiceName() == null) {
+            if (isProviderEndpoint()) {
+                WebServiceProvider wsProvider =
+                    (WebServiceProvider)getImplementorClass().getAnnotation(
+                        WebServiceProvider.class);
+                String tns = wsProvider.targetNamespace();
+                String local = wsProvider.serviceName();
+                if (local.length() > 0) {
+                    setServiceName(new QName(tns, local));
+                }
+            } else {
+                RuntimeModeler.getServiceName(getImplementorClass(),  null);
+            }
+        }
+    }
+    
     
     /**
      * creates a RuntimeModel using @link com.sun.xml.ws.modeler.RuntimeModeler. 
@@ -208,6 +247,12 @@ public class RuntimeEndpointInfo
         if (implementorClass == null) {
             setImplementorClass(getImplementor().getClass());
         }
+        
+        // verify if implementor class has @WebService or @WebServiceProvider
+        
+        // ServiceName processing
+        doServiceNameProcessing();
+        
         // setting a default binding
         if (binding == null) {
             String bindingId = RuntimeModeler.getBindingId(getImplementorClass());
@@ -304,13 +349,6 @@ public class RuntimeEndpointInfo
                 setWSDLFileName(wsProvider.wsdlLocation());
             }
         }
-        if (serviceName == null) {
-            String tns = wsProvider.targetNamespace();
-            String local = wsProvider.serviceName();
-            if (!local.equals("")) {
-                setServiceName(new QName(tns, local));
-            }
-        }
         if (getWSDLFileName() == null) {
             throw new ServerRtException("wsdl.required");
         }
@@ -384,6 +422,10 @@ public class RuntimeEndpointInfo
     
     public void setImplementorClass(Class implementorClass) {
         this.implementorClass = implementorClass;
+    }
+    
+    public void setProcessedMetadata(Map<String, Source> processedMetadata) {
+        this.processedMetadata = processedMetadata;
     }
     
     public void setMetadata(Map<String, DocInfo> docs) {
@@ -602,6 +644,22 @@ public class RuntimeEndpointInfo
                 once = true;
             } 
         }
+    }
+    
+    public Executor getExecutor() {
+        return null;
+    }
+
+    public void setExecutor(Executor executor) {
+       
+    }
+
+    public Map<String, Object> getProperties() {
+        return null;
+    }
+
+    public void setProperties(Map<String, Object> map) {
+        
     }
 
 }
