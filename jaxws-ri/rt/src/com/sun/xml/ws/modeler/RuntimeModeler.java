@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.39 2005-08-25 01:50:10 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.40 2005-08-25 19:54:54 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -95,7 +95,7 @@ public class RuntimeModeler {
      * @param implementor The object on which service methods are invoked
      * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
      */
-    public RuntimeModeler(Class portClass, Object implementor, String bindingId) {
+    public RuntimeModeler(Class portClass, Object implementor, QName serviceName, String bindingId) {
         this(portClass, bindingId);
         this.implementor = implementor;
     }
@@ -110,7 +110,7 @@ public class RuntimeModeler {
      * @param binding The Binding representing WSDL Binding for the given port to be used when modeling the
      * <code>sei</code>.
      */
-    public RuntimeModeler(Class portClass, Object implementor, com.sun.xml.ws.wsdl.parser.Binding binding) {
+    public RuntimeModeler(Class portClass, Object implementor, QName serviceName, com.sun.xml.ws.wsdl.parser.Binding binding) {
         this(portClass, binding);
         this.implementor = implementor;
     }

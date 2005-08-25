@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.40 2005-08-25 19:19:18 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.41 2005-08-25 19:54:54 jitu Exp $
  */
 
 /*
@@ -166,7 +166,7 @@ public class RuntimeEndpointInfo
         // bindings or need to look in the WSDL
         if(wsdlUrl == null){
            RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
-                getImplementor(), ((BindingImpl)binding).getBindingId());
+                getImplementor(), getServiceName(), ((BindingImpl)binding).getBindingId());
            runtimeModel = rap.buildRuntimeModel();
         }else {
             try {
@@ -192,7 +192,7 @@ public class RuntimeEndpointInfo
                         throw new ServerRtException("runtime.parser.wsdl.multiplebinding", new Object[]{bindingId, serviceName, getWsdLUrl()});
                 }
                 //now we got the Binding so lets build the model
-                RuntimeModeler rap = new RuntimeModeler(getImplementorClass(), getImplementor(), wsdlBinding);
+                RuntimeModeler rap = new RuntimeModeler(getImplementorClass(), getImplementor(), getServiceName(), wsdlBinding);
                 runtimeModel = rap.buildRuntimeModel();
             } catch (IOException e) {
                 throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
