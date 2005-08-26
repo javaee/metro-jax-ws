@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.10 2005-08-25 20:20:52 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.11 2005-08-26 00:35:29 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -288,16 +288,18 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 if(ab == null)
                     return null;
                 AttachmentPart ap = ab.getAttachmentPart();
+                String mimeType = param.getBinding().getMimeType();
+                Class type = (Class)param.getTypeReference().type;
                 try {
                     if(isKnownAttachmentType(param.getTypeReference().type))
                         obj =  ap.getContent();
-                    else
+                    if(DataHandler.class.isAssignableFrom(type)){
+                        obj = ap.getDataHandler();
+                    }else
                         obj = ap.getRawContent();
                 } catch (SOAPException e) {
                     throw new SerializationException(new LocalizableExceptionAdapter(e));
                 }
-                String mimeType = param.getBinding().getMimeType();
-                Class type = (Class)param.getTypeReference().type;
                 if((obj != null) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(type)){
                     JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
                     if(Source.class.isAssignableFrom(obj.getClass())){
