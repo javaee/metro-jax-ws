@@ -4,6 +4,8 @@
  */
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.handler.HandlerResolverImpl;
+import com.sun.xml.ws.handler.PortInfoImpl;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -38,7 +40,6 @@ public abstract class ServiceContextBuilder {
 
     //nedd sei for next2 steps
     //runs handlerAnnotationProcessor
-    //returns handlerregistry
 
     //runs RuntimeAnnotationProcessor
     //returns runtime model
@@ -108,27 +109,23 @@ public abstract class ServiceContextBuilder {
         QName portName = null;
         WebServiceClient wsClient = (WebServiceClient)serviceInterface.getAnnotation(WebServiceClient.class);
         for (Method method : serviceInterface.getMethods()) {
-//            System.out.println("method: "+method);
-            if (!method.getDeclaringClass().equals(serviceInterface))
+            if (!method.getDeclaringClass().equals(serviceInterface)) {
                 continue;
-//            System.out.println("processing method: "+method);
+            }
             WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
-            if (webEndpoint == null)
+            if (webEndpoint == null) {
                 continue;
-//            System.out.println("method.getGenericReturnType().getClass().toString(): "+method.getGenericReturnType().getClass().toString());
-//            System.out.println("method.getGenericReturnType().toString(): "+method.getGenericReturnType().toString());
+            }
             if (method.getGenericReturnType().equals(portInterface)) {
                 if (method.getName().startsWith("get")) {
-                   portName = new QName(wsClient.targetNamespace(), webEndpoint.name()); 
-                   break;
+                    portName = new QName(wsClient.targetNamespace(), webEndpoint.name());
+                    break;
                 }
             }
         }
-//        System.out.println("portName: "+portName);
         return portName;
     }
-    
-    
+   
     //does any necessagy checking and validation
 
     
@@ -155,16 +152,19 @@ public abstract class ServiceContextBuilder {
             // get handler information
             HandlerAnnotationInfo chainInfo =
                 HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
-            if (chainInfo != null)
-                eifc.setHandlers(chainInfo.getHandlers());
 
             if (serviceContext.getServiceName() == null)
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
 
             if (chainInfo != null) {
-                HandlerRegistryImpl registry = getHandlerRegistry(serviceContext,serviceContext.getServiceName());
-                registry.setHandlerChain(chainInfo.getHandlers());
-                serviceContext.setRegistry(registry);
+                HandlerResolverImpl resolver =
+                    getHandlerResolver(serviceContext);
+                resolver.setHandlerChain(new PortInfoImpl(
+                    modeler.getBindingId(),
+                    model.getPortQName(),
+                    model.getServiceQName()),
+                    chainInfo.getHandlers());
+                serviceContext.setResolver(resolver);
 
                 // todo: need a place to store role information to
                 // place in binding
@@ -180,17 +180,12 @@ public abstract class ServiceContextBuilder {
 //        }
     }
 
-    private static HandlerRegistryImpl getHandlerRegistry(ServiceContext serviceContext,QName serviceName) {
-        //need to return handlerRegistryImpl?
-        if (serviceContext.getRegistry() == null) {
-            Set knownPorts = serviceContext.getWsdlContext().getPortsAsSet(serviceName);
-            HashSet portz = new HashSet(knownPorts.size());
-            portz.addAll(knownPorts);
-            serviceContext.setRegistry(
-                new HandlerRegistryImpl(portz));
+    private static HandlerResolverImpl getHandlerResolver(
+        ServiceContext serviceContext) {
+        if (serviceContext.getResolver() == null) {
+            serviceContext.setResolver(new HandlerResolverImpl());
         }
-
-        return serviceContext.getRegistry();
+        return serviceContext.getResolver();
     }
 
     private ArrayList<Class> getSEI(Class si) {

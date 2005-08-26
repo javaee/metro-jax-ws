@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.9 2005-08-18 23:49:40 jitu Exp $
+ * $Id: SOAPBindingImpl.java,v 1.10 2005-08-26 21:42:17 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -52,7 +52,6 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         setupSystemHandlerDelegate();
     }
 
-    // created by HandlerRegistryImpl
     public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
         setup(getBindingId());

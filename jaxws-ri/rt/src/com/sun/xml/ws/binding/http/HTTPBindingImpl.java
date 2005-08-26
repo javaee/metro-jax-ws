@@ -1,5 +1,5 @@
 /*
- * $Id: HTTPBindingImpl.java,v 1.4 2005-08-01 19:40:02 bbissett Exp $
+ * $Id: HTTPBindingImpl.java,v 1.5 2005-08-26 21:42:17 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -27,7 +27,6 @@ public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
         super(HTTPBinding.HTTP_BINDING);
     }
 
-    // created by HandlerRegistryImpl
     public HTTPBindingImpl(List<Handler> handlerChain) {
         super(handlerChain, HTTPBinding.HTTP_BINDING);
     }

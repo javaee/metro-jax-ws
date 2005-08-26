@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.41 2005-08-25 20:44:18 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.42 2005-08-26 21:42:19 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -1105,4 +1105,9 @@ public class RuntimeModeler {
             return new ParameterBinding(SOAPBlock.BODY);
         return binding.getBinding(operation, part, mode);
     }
+    
+    public String getBindingId() {
+        return bindingId;
+    }
+    
 }

@@ -1,9 +1,12 @@
-/*
- * Copyright (c) 2005 Sun Microsystems, Inc.
- * All Rights Reserved.
+/**
+ * $Id: ServiceContext.java,v 1.8 2005-08-26 21:42:18 bbissett Exp $
+ *
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.handler.HandlerResolverImpl;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
@@ -23,7 +26,8 @@ import org.xml.sax.EntityResolver;
  */
 public class ServiceContext {
     private WSDLContext wsdlContext; //from wsdlParsing
-    private HandlerRegistryImpl registry; //from HandlerAnnotationProcessing
+    
+    private HandlerResolverImpl resolver; //from HandlerAnnotationProcessing
     private Class serviceInterface;
     private QName serviceName; //supplied on creation of service
     private SIAnnotations siAnnotations;
@@ -53,12 +57,12 @@ public class ServiceContext {
         this.wsdlContext = wsdlContext;
     }
 
-    public HandlerRegistryImpl getRegistry() {
-        return registry;
+    public HandlerResolverImpl getResolver() {
+        return resolver;
     }
 
-    public void setRegistry(HandlerRegistryImpl registry) {
-        this.registry = registry;
+    public void setResolver(HandlerResolverImpl resolver) {
+        this.resolver = resolver;
     }
 
     public EndpointIFContext getEndpointIFContext(String className) {

@@ -121,7 +121,7 @@ public class MyServiceImpl {
   
   <h3>Programmatic Case</h3>
 
-  <p>Handler chains may be configured on the client side at runtime by setting a chain directly on a <code>BindingProvider</code> (e.g., a <code>Dispatch</code> object or a port proxy). The <code>HandlerRegistry</code> obtained from a JAX-WS service is not functional in this release. This example shows how to add a handler chain to a port proxy:</p>
+  <p>Handler chains may be configured on the client side at runtime by setting a chain directly on a <code>BindingProvider</code> (e.g., a <code>Dispatch</code> object or a port proxy) or by using a <code>HandlerResolver</code>. This example shows how to add a handler chain to a port proxy:</p>
   <pre>
     // given proxy interface HelloPortType
     HelloPortType myProxy = // create proxy

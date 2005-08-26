@@ -65,14 +65,6 @@ public class EndpointIFContext {
         return endpointAddress;
     }
 
-    public void setHandlers(List<Handler> hdlers) {
-        handlers.addAll(hdlers);
-    }
-
-    public List<Handler> getHandlers() {
-        return handlers;
-    }
-
     public void setPortInfo(QName portQName, String endpoint, URI bindingID) {
         portName = portQName;
         endpointAddress = endpoint;

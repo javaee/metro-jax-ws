@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.5 2005-08-21 05:27:02 jitu Exp $
+ * $Id: BindingImpl.java,v 1.6 2005-08-26 21:42:17 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -22,7 +22,7 @@ import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 
 /**
- * Instances are created by HandlerRegistryImpl, which then
+ * Instances are created by the service, which then
  * sets the handler chain on the binding impl. The handler
  * caller class actually creates and manages the handlers.
  *
@@ -53,7 +53,6 @@ public abstract class BindingImpl implements
         this.bindingId = bindingId;
     }
 
-    // created by HandlerRegistryImpl
     public BindingImpl(List<Handler> handlerChain, String bindingId) {
         handlers = handlerChain;
         this.bindingId = bindingId;
