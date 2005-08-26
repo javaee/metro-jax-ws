@@ -1,5 +1,5 @@
 /*
- * $Id: RpcLitPayloadSerializer.java,v 1.6 2005-07-28 21:56:54 spericas Exp $
+ * $Id: RpcLitPayloadSerializer.java,v 1.7 2005-08-26 23:40:07 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -10,6 +10,7 @@ package com.sun.xml.ws.encoding.jaxb;
 import com.sun.xml.bind.api.BridgeContext;
 import java.util.List;
 import java.io.OutputStream;
+import java.io.IOException;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -77,7 +78,24 @@ public class RpcLitPayloadSerializer {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
     }
-    
+
+    public static void serialize(RpcLitPayload obj, BridgeContext bridgeContext, OutputStream writer) {
+        QName op = obj.getOperation();
+        String opURI = op.getNamespaceURI();
+        String startElm = "<ans:"+op.getLocalPart()+" xmlns:ans=\""+opURI+"\">";
+        String endElm="</ans:"+op.getLocalPart()+">";
+        try {
+            writer.write(startElm.getBytes());
+            for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
+                JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
+                     writer);
+            }
+            writer.write(endElm.getBytes());
+        } catch (IOException e) {
+            throw new SerializationException(new LocalizableExceptionAdapter(e));
+        }
+    }
+
     /*
      * Uses BridgeContext to deserialize the rpc/lit payload. First it reads
      * the operation element, and then it deserializes each parameter. If the

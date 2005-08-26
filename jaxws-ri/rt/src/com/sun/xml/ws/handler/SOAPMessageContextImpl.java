@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.7 2005-08-24 03:24:47 jitu Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.8 2005-08-26 23:40:07 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -222,8 +222,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
      * Returns the invocation method
      */
     public Method getMethod() {
-        // TODO
-        return null;
+        return handlerCtxt.getMessageInfo().getMethod();
     }
     
     /**
@@ -231,35 +230,37 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
      * methods
      */
     public boolean isAlreadySoap() {
-        return false;
+        return handlerCtxt.getSOAPMessage() != null;
     }
     
     /*
      * Returns InternalMessage's BodyBlock value
      */
     public Object getBody() {
-        return null;
+        InternalMessage im = handlerCtxt.getInternalMessage();
+        return (im == null)?null:im.getBody();
     }
     
     /*
      * Returns InternalMessage's HeaderBlock values
      */
     public List getHeaders() {
-        return null;
+        InternalMessage im = handlerCtxt.getInternalMessage();
+        return (im == null)?null:im.getHeaders();
     }
     
     /*
      * Use this MessageInfo to pass to InternalSoapEncoder write methods
      */
-    public MessageInfo getMessageInfo() {
-        return null;
+    public Object getMessageInfo() {
+        return handlerCtxt.getMessageInfo();
     }
     
     /*
      * Encoder to marshall all JAXWS objects: RpcLitPayload, JAXBBridgeInfo etc
      */
     public InternalSoapEncoder getEncoder() {
-        return null;
+        return (InternalSoapEncoder)handlerCtxt.getMessageInfo().getEncoder();
     }
 
 }
