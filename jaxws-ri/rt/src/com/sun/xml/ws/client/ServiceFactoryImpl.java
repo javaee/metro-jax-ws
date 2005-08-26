@@ -1,14 +1,10 @@
 /*
- * $Id: ServiceFactoryImpl.java,v 1.8 2005-08-17 23:43:17 kohsuke Exp $
+ * $Id: ServiceFactoryImpl.java,v 1.9 2005-08-26 00:12:26 arungupta Exp $
  */
 /*
  * Copyright (c) 2005 Sun Microsystems. All Rights Reserved.
  */
 package com.sun.xml.ws.client;
-
-import org.apache.xml.resolver.CatalogManager;
-import org.apache.xml.resolver.tools.CatalogResolver;
-import org.xml.sax.EntityResolver;
 
 import javax.naming.Referenceable;
 import javax.xml.namespace.QName;
@@ -21,6 +17,9 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.Enumeration;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
+
+
 
 /**
  * <p> A concrete factory for Service objects. </p>
@@ -29,17 +28,11 @@ import java.util.Enumeration;
  */
 public class ServiceFactoryImpl extends ServiceFactory {
 
-    /**
-     * {@link CatalogResolver} to check META-INF/jaxws-catalog.xml.
-     * Lazily created.
-     */
-    private EntityResolver resolver;
-
     public Service createService(URL wsdlDocumentLocation, QName name)
         throws WebServiceException {
         if (name == null)
             throw new WebServiceException("QName for the service must not be null");
-        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,null,getResolver());
+        ServiceContext serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation,null,XmlUtil.createDefaultCatalogResolver());
 
         if (serviceContext.getWsdlContext().contains(name).size() > 1) {
             throw new WebServiceException(" Service " + name +
@@ -55,7 +48,7 @@ public class ServiceFactoryImpl extends ServiceFactory {
                 "QName for the service must not be null");
         }
 
-        ServiceContext serviceContext = new ServiceContext(getResolver());
+        ServiceContext serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
         return new WebService(serviceContext);
     }
 
@@ -75,7 +68,7 @@ public class ServiceFactoryImpl extends ServiceFactory {
         }
 
         ServiceContext serviceContext = ServiceContextBuilder.build(
-                wsdlDocumentLocation, serviceInterface, getResolver());
+                wsdlDocumentLocation, serviceInterface, XmlUtil.createDefaultCatalogResolver());
 
         return createServiceProxy(serviceContext);
     }
@@ -104,54 +97,6 @@ public class ServiceFactoryImpl extends ServiceFactory {
         } catch (Exception ex) {
             throw new WebServiceException(ex.getMessage(), ex);
         }
-    }
-
-    /**
-     * Gets the resolver that this {@link ServiceFactory} uses before
-     * accessing remote WSDLs.
-     */
-    public EntityResolver getResolver() {
-        if(resolver==null) {
-            // set up a manager
-            CatalogManager manager = new CatalogManager();
-            manager.setIgnoreMissingProperties(true);
-            try {
-                if(System.getProperty(getClass().getName()+".verbose")!=null)
-                    manager.setVerbosity(999);
-            } catch (SecurityException e) {
-                // recover by not setting the debug flag.
-            }
-
-            // parse the catalog
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            Enumeration<URL> catalogEnum;
-            try {
-                if(cl==null)
-                    catalogEnum = ClassLoader.getSystemResources("/META-INF/jaxws-catalog.xml");
-                else
-                    catalogEnum = cl.getResources("/META-INF/jaxws-catalog.xml");
-
-                while(catalogEnum.hasMoreElements()) {
-                    URL url = catalogEnum.nextElement();
-                    manager.getCatalog().parseCatalog(url);
-                }
-            } catch (IOException e) {
-                throw new WebServiceException(e);
-            }
-
-            resolver = new CatalogResolver(manager);
-        }
-
-        return resolver;
-    }
-
-    /**
-     * Overrides the resolver that this {@link ServiceFactoryImpl} uses.
-     * To disable the catalog resolution, set a dummy entity resolver that
-     * always return null.
-     */
-    public void setResolver(EntityResolver resolver) {
-        this.resolver = resolver;
     }
 
     public String toString() {
