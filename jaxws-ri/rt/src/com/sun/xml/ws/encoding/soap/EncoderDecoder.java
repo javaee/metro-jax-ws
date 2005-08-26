@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.11 2005-08-26 00:35:29 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.12 2005-08-26 18:41:00 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -293,9 +293,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 try {
                     if(isKnownAttachmentType(param.getTypeReference().type))
                         obj =  ap.getContent();
-                    if(DataHandler.class.isAssignableFrom(type)){
+                    else if (DataHandler.class.isAssignableFrom(type))
                         obj = ap.getDataHandler();
-                    }else
+                    else
                         obj = ap.getRawContent();
                 } catch (SOAPException e) {
                     throw new SerializationException(new LocalizableExceptionAdapter(e));
