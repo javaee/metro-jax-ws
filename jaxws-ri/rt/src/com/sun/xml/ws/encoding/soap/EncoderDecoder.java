@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.12 2005-08-26 18:41:00 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.13 2005-08-26 18:50:21 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -348,7 +348,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             throw new SerializationException(new LocalizableExceptionAdapter(e));
         }
 
-        if(isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
+        if(!DataHandler.class.isAssignableFrom(obj.getClass()) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
             JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             JAXBTypeSerializer.getInstance().serialize(bi, rtContext.getBridgeContext(), baos);
