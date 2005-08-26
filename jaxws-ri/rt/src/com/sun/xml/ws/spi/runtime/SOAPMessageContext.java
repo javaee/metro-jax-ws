@@ -1,11 +1,10 @@
 /**
- * $Id: SOAPMessageContext.java,v 1.4 2005-08-26 23:40:08 vivekp Exp $
+ * $Id: SOAPMessageContext.java,v 1.5 2005-08-26 23:54:55 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi.runtime;
-import com.sun.pept.ept.MessageInfo;
 import java.util.List;
 
 public interface SOAPMessageContext
