@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.13 2005-08-26 18:50:21 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.14 2005-08-26 19:44:48 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -291,10 +291,10 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 String mimeType = param.getBinding().getMimeType();
                 Class type = (Class)param.getTypeReference().type;
                 try {
-                    if(isKnownAttachmentType(param.getTypeReference().type))
+                    if (DataHandler.class.isAssignableFrom(type))
+                        return ap.getDataHandler();
+                    else if(isKnownAttachmentType(param.getTypeReference().type))
                         obj =  ap.getContent();
-                    else if (DataHandler.class.isAssignableFrom(type))
-                        obj = ap.getDataHandler();
                     else
                         obj = ap.getRawContent();
                 } catch (SOAPException e) {
