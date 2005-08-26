@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.16 2005-08-25 21:43:33 spericas Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.17 2005-08-26 22:25:52 jitu Exp $
  */
 
 /**
@@ -11,6 +11,7 @@ package com.sun.xml.ws.wsdl.parser;
 
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -52,8 +53,15 @@ public class RuntimeWSDLParser {
         return parser.wsdlDoc;
     }
 
-    public static boolean containsService(URL wsdlLoc, EntityResolver resolver, QName serviceName){
-        return false;
+    /*
+     * Fills DocInfo with Document type(WSDL, or schema),
+     * Service Name, Port Type name, targetNamespace for the document.
+     * 
+     * Don't follow imports
+     */
+    public static void fillDocInfo(DocInfo docInfo, QName serviceName,
+        QName portTypeName) {
+        
     }
 
     private RuntimeWSDLParser(EntityResolver resolver) {

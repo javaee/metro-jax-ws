@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.4 2005-08-22 19:52:23 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.5 2005-08-26 22:25:52 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,7 @@
 
 package com.sun.xml.ws.server;
 
+import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -102,6 +103,38 @@ public class WSDLGenResolver implements WSDLOutputResolver {
 
         public void setQueryString(String queryString) {
             this.queryString = queryString;
+        }
+        
+        public void setDocType(DOC_TYPE docType) {
+
+        }
+
+        public DOC_TYPE getDocType() {
+            return null;
+        }
+
+        public void setTargetNamespace(String ns) {
+
+        }
+
+        public String getTargetNamespace() {
+            return null;
+        }
+
+        public void setService(Service service) {
+
+        }
+
+        public Service getService() {
+            return null;
+        }
+
+        public void setPortType(boolean portType) {
+
+        }
+
+        public boolean hasPortType() {
+            return false;
         }
 
     }

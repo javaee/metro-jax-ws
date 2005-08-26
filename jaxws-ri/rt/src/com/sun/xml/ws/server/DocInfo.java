@@ -1,5 +1,5 @@
 /*
- * $Id: DocInfo.java,v 1.2 2005-06-03 20:48:35 jitu Exp $
+ * $Id: DocInfo.java,v 1.3 2005-08-26 22:25:51 jitu Exp $
  *
  */
 
@@ -8,10 +8,13 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.server;
-
+import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.InputStream;
 
+
 public interface DocInfo {
+    
+    public enum DOC_TYPE { WSDL, SCHEMA, OTHER };
     
     /*
      * The implemenation needs to work for multiple invocations of this method
@@ -22,6 +25,46 @@ public interface DocInfo {
      * @return wsdl=a, xsd=c etc
      */
     public String getQueryString();
+    
+    /*
+     * Sets document type : WSDL, or Schema ?
+     */
+    public void setDocType(DOC_TYPE docType);
+    
+    /*
+     * return document type : WSDL, or Schema ?
+     */
+    public DOC_TYPE getDocType();
+    
+    /*
+     * Sets targetNamespace of WSDL, and schema
+     */
+    public void setTargetNamespace(String ns);
+    
+    /*
+     * Sets targetNamespace of WSDL, and schema
+     */
+    public String getTargetNamespace();
+    
+    /*
+     * Sets if the endpoint service is defined in this document
+     */
+    public void setService(Service service);
+    
+    /*
+     * returns true if endpoint service is present in this document
+     */
+    public Service getService();
+    
+    /*
+     * Sets if the endpoint Port Type is defined in this document
+     */
+    public void setPortType(boolean portType);
+    
+    /*
+     * returns true if endpoint PortType is present in this document
+     */
+    public boolean hasPortType();
     
     /*
      * @return /WEB-INF/wsdl/xxx.wsdl

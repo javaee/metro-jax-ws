@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocInfo.java,v 1.2 2005-06-03 20:48:36 jitu Exp $
+ * $Id: ServletDocInfo.java,v 1.3 2005-08-26 22:25:52 jitu Exp $
  *
  */
 
@@ -11,6 +11,7 @@ package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.xml.ws.server.DocContext;
 import com.sun.xml.ws.server.DocInfo;
+import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.InputStream;
 import javax.servlet.ServletContext;
 
@@ -44,6 +45,38 @@ public class ServletDocInfo implements DocInfo {
     
     public DocContext getDocContext() {
         return docContext;
+    }
+    
+        public void setDocType(DOC_TYPE docType) {
+        
+    }
+    
+    public DOC_TYPE getDocType() {
+        return null;
+    }
+
+    public void setTargetNamespace(String ns) {
+        
+    }
+    
+    public String getTargetNamespace() {
+        return null;
+    }
+    
+    public void setService(Service service) {
+        
+    }
+    
+    public Service getService() {
+        return null;
+    }
+    
+    public void setPortType(boolean portType) {
+        
+    }
+    
+    public boolean hasPortType() {
+        return false;
     }
     
 }
