@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.6 2005-08-25 01:10:20 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.7 2005-08-26 03:36:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -71,7 +71,10 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
         if (webMethod != null && webMethod.exclude())
             return false;
         
-        return !hasWebMethods || webMethod != null;
+//        return !hasWebMethods || webMethod != null;
+        return webMethod != null || endpointReferencesInterface ||
+                method.getDeclaringType().equals(typeDecl) || 
+                (method.getDeclaringType().getAnnotation(WebService.class) != null);
     }
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {

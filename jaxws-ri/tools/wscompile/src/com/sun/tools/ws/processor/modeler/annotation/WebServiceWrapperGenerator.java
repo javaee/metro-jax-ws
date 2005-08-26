@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.18 2005-08-23 01:20:38 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.19 2005-08-26 03:36:23 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -115,7 +115,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
         if (webMethod != null && webMethod.exclude())
             return false;
-        return !hasWebMethods || webMethod != null;
+//        return !hasWebMethods || webMethod != null;
+        return webMethod != null || endpointReferencesInterface ||
+                method.getDeclaringType().equals(typeDecl) || 
+                (method.getDeclaringType().getAnnotation(WebService.class) != null);
     }
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
