@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.41 2005-08-25 19:54:54 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.42 2005-08-27 00:36:48 vivekp Exp $
  */
 
 /*
@@ -173,7 +173,7 @@ public class RuntimeEndpointInfo
                 WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(getWsdLUrl(), getWsdlResolver());
                 com.sun.xml.ws.wsdl.parser.Binding wsdlBinding = null;
                 if(serviceName == null)
-                    serviceName = RuntimeModeler.getServiceName(getImplementorClass(), null);
+                    serviceName = RuntimeModeler.getServiceName(getImplementorClass());
                 if(getPortName() != null){
                     wsdlBinding = wsdlDoc.getBinding(getServiceName(), getPortName());
                     if(wsdlBinding == null)
@@ -228,7 +228,7 @@ public class RuntimeEndpointInfo
                     setServiceName(new QName(tns, local));
                 }
             } else {
-                RuntimeModeler.getServiceName(getImplementorClass(),  null);
+                RuntimeModeler.getServiceName(getImplementorClass());
             }
         }
     }
