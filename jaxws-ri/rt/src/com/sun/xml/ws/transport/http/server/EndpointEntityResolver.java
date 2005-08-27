@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointEntityResolver.java,v 1.1 2005-08-25 19:19:17 jitu Exp $
+ * $Id: EndpointEntityResolver.java,v 1.2 2005-08-27 02:54:28 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -8,6 +8,7 @@
 package com.sun.xml.ws.transport.http.server;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,12 +27,12 @@ import org.xml.sax.SAXException;
 public class EndpointEntityResolver implements EntityResolver {
 
     private EntityResolver catalogResolver;
-    private Map<String, Source> metadata;
+    private Map<String, DocInfo> metadata;
     
     /*
      * Assumes Source objects can be reused multiple times
      */ 
-    public EndpointEntityResolver(Map<String, Source> metadata) {
+    public EndpointEntityResolver(Map<String, DocInfo> metadata) {
         this.metadata = metadata;
         catalogResolver = XmlUtil.createDefaultCatalogResolver(); 
     }
@@ -43,12 +44,10 @@ public class EndpointEntityResolver implements EntityResolver {
     public InputSource resolveEntity (String publicId, String systemId)
 	throws SAXException, IOException {
         if (systemId != null) {
-            Source source = metadata.get(systemId);
-            if (source != null) {
-                InputStream in = ((StreamSource)source).getInputStream();
-                ByteArrayInputStream bais = new ByteArrayInputStream(
-                    ((ByteInputStream)in).getBytes());
-                InputSource is = new InputSource(bais);
+            DocInfo docInfo = metadata.get(systemId);
+            if (docInfo != null) {
+                InputStream in = docInfo.getDoc();
+                InputSource is = new InputSource(in);
                 is.setSystemId(systemId);
                 return is;
             }

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.42 2005-08-27 00:36:48 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.43 2005-08-27 02:54:27 jitu Exp $
  */
 
 /*
@@ -70,7 +70,6 @@ public class RuntimeEndpointInfo
     private boolean deployed;
     private String urlPattern;
     private List<Source> metadata;
-    private Map<String, Source> processedMetadata;
     private Binding binding;
     private RuntimeModel runtimeModel;
     private Object implementor;
@@ -422,10 +421,6 @@ public class RuntimeEndpointInfo
     
     public void setImplementorClass(Class implementorClass) {
         this.implementorClass = implementorClass;
-    }
-    
-    public void setProcessedMetadata(Map<String, Source> processedMetadata) {
-        this.processedMetadata = processedMetadata;
     }
     
     public void setMetadata(Map<String, DocInfo> docs) {
