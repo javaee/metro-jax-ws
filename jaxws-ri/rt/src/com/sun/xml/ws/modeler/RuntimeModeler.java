@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.42 2005-08-26 21:42:19 bbissett Exp $
+ * $Id: RuntimeModeler.java,v 1.43 2005-08-27 00:36:14 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -164,7 +164,7 @@ public class RuntimeModeler {
             }
         }
         if (serviceName == null)
-            serviceName = getServiceName(portClass, classLoader);
+            serviceName = getServiceName(portClass);
         runtimeModel.setServiceQName(serviceName);
 
         processClass(clazz);
@@ -1062,13 +1062,11 @@ public class RuntimeModeler {
      * @param implClass the implementation class
      * @return the <code>wsdl:serviceName</code> for the <code>implClass</code>
      */
-    public static QName getServiceName(Class implClass, ClassLoader cl) {
+    public static QName getServiceName(Class implClass) {
         if (implClass.isInterface()) {
             throw new RuntimeModelerException("runtime.modeler.cannot.get.serviceName.from.interface",
                                     new Object[] {implClass.getCanonicalName()});            
         }
-        if(cl == null)
-            cl = Thread.currentThread().getContextClassLoader();
 
         String name = implClass.getSimpleName()+SERVICE;
         String packageName = implClass.getPackage().getName();
@@ -1087,7 +1085,45 @@ public class RuntimeModeler {
             targetNamespace = webService.targetNamespace();
         return new QName(targetNamespace, name);
     }
-    
+
+    /**
+     * Gives portType QName from implementatorClass or SEI
+     * @param implOrSeiClass
+     * @return  <code>wsdl:portType@name</code>
+     */
+    public static QName getPortTypeName(Class implOrSeiClass){
+        Class clazz = null;
+        WebService webService = null;
+        if (!implOrSeiClass.isAnnotationPresent(javax.jws.WebService.class))
+                throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
+                                           new Object[] {implOrSeiClass.getCanonicalName()});
+
+        if (implOrSeiClass.isInterface()) {
+            clazz = implOrSeiClass;
+        }else{
+            webService = (WebService) implOrSeiClass.getAnnotation(WebService.class);
+            String epi = webService.endpointInterface();
+            if (epi.length() > 0) {
+                try {
+                    clazz = Thread.currentThread().getContextClassLoader().loadClass(epi);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeModelerException("runtime.modeler.class.not.found",
+                                 new Object[] {epi});
+                }
+                if (!clazz.isAnnotationPresent(javax.jws.WebService.class)) {
+                    throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
+                                        new Object[] {webService.endpointInterface()});
+                }
+            }
+        }
+
+        webService = (WebService) clazz.getAnnotation(WebService.class);
+        String name = webService.name();
+        String tns = webService.targetNamespace();
+
+        return new QName(tns, name);
+    }
+
     public static String getBindingId(Class implClass) {
         BindingType bindingType =
             (BindingType)implClass.getAnnotation(BindingType.class);
