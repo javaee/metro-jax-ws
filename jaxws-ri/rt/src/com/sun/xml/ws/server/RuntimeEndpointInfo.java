@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.43 2005-08-27 02:54:27 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.44 2005-08-29 18:13:39 jitu Exp $
  */
 
 /*
@@ -84,6 +84,8 @@ public class RuntimeEndpointInfo
     private boolean publishingDone;
     private URL wsdlUrl;
     private EntityResolver wsdlResolver;
+    private QName portTypeName;
+    private Map<String, Object> properties;
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
     private static final Localizer localizer = new Localizer();
@@ -227,7 +229,18 @@ public class RuntimeEndpointInfo
                     setServiceName(new QName(tns, local));
                 }
             } else {
-                RuntimeModeler.getServiceName(getImplementorClass());
+                setServiceName(RuntimeModeler.getServiceName(getImplementorClass()));
+            }
+        }
+    }
+    
+    /*
+     * Sets PortType QName 
+     */
+    public void doPortTypeNameProcessing() {
+        if (getPortTypeName() == null) {
+            if (!isProviderEndpoint()) {
+                setPortTypeName(RuntimeModeler.getPortTypeName(getImplementorClass()));
             }
         }
     }
@@ -251,6 +264,9 @@ public class RuntimeEndpointInfo
         
         // ServiceName processing
         doServiceNameProcessing();
+        
+        // PortType Name processing
+        //doPortTypeNameProcessing();
         
         // setting a default binding
         if (binding == null) {
@@ -366,6 +382,14 @@ public class RuntimeEndpointInfo
     public void setPortName(QName n) {
         portName = n;
     }
+    
+    public QName getPortTypeName() {
+        return portTypeName;
+    }
+
+    public void setPortTypeName(QName n) {
+        portTypeName = n;
+    }
 
     public QName getServiceName() {
         return serviceName;
@@ -425,6 +449,20 @@ public class RuntimeEndpointInfo
     
     public void setMetadata(Map<String, DocInfo> docs) {
         this.docs = docs;
+        // update uri-->DocInfo map
+        if (query2Doc != null) {
+            query2Doc.clear();
+        } else {
+            query2Doc = new HashMap<String, DocInfo>();
+        }
+        Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();
+        for(Map.Entry<String, DocInfo> entry : entries) {
+            DocInfo docInfo = entry.getValue();
+            query2Doc.put(docInfo.getQueryString(), docInfo);
+        }
+    }
+    
+    public void updateQuery2DocInfo() {
         // update uri-->DocInfo map
         if (query2Doc != null) {
             query2Doc.clear();
@@ -650,11 +688,11 @@ public class RuntimeEndpointInfo
     }
 
     public Map<String, Object> getProperties() {
-        return null;
+        return properties;
     }
 
-    public void setProperties(Map<String, Object> map) {
-        
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
 }

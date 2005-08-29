@@ -1,5 +1,5 @@
 /*
- * $Id: DocInfo.java,v 1.3 2005-08-26 22:25:51 jitu Exp $
+ * $Id: DocInfo.java,v 1.4 2005-08-29 18:13:38 jitu Exp $
  *
  */
 
@@ -25,6 +25,11 @@ public interface DocInfo {
      * @return wsdl=a, xsd=c etc
      */
     public String getQueryString();
+    
+    /*
+     * set wsdl=a, xsd=c etc as queryString
+     */
+    public void setQueryString(String queryString);
     
     /*
      * Sets document type : WSDL, or Schema ?

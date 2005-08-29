@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.3 2005-08-27 02:54:28 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.4 2005-08-29 18:13:39 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -26,6 +26,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpInteraction;
 import com.sun.xml.ws.handler.MessageContextImpl;
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -36,10 +37,12 @@ import java.io.ByteArrayOutputStream;
 import javax.xml.ws.Endpoint;
 import java.util.List;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -145,29 +148,37 @@ public class HttpEndpoint {
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 RuntimeWSDLParser.fillDocInfo(entry.getValue(), 
                     endpointInfo.getServiceName(),
-                    null);      // TODO: endpointInfo.getPortTypeName());
+                    endpointInfo.getPortTypeName());
             }
         }
     }
     
     // Finds primary WSDL
-    private void findPrimaryWSDL() {
+    private void findPrimaryWSDL() throws Exception {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
             Transformer transformer = XmlUtil.newTransformer();
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 DocInfo docInfo = entry.getValue();
-                if (docInfo.getService() != null) {
-                    // Donot generate any document
-                    URL wsdlUrl = null;
+                    // TEMPORARY - need to uncoment the code below
+                    URL wsdlUrl = new URL(entry.getKey());
                     EntityResolver resolver = new EndpointEntityResolver(metadata);
                     endpointInfo.setWsdlInfo(wsdlUrl, resolver);
+                    docInfo.setQueryString("wsdl");
+                /*    
+                if (docInfo.getService() != null) {
+                    // Donot generate any document
+                    URL wsdlUrl = new URL(entry.getKey());
+                    EntityResolver resolver = new EndpointEntityResolver(metadata);
+                    endpointInfo.setWsdlInfo(wsdlUrl, resolver);
+                    docInfo.setQueryString("wsdl");
                     break;
                 } else if (docInfo.hasPortType()) {
                     // Generate concrete WSDL, no schema
                 } else {
                     // Generate everything, but schema from metadata
                 }
+                 */
             }
         }
     }
@@ -175,7 +186,7 @@ public class HttpEndpoint {
     /*
      * Fills RuntimeEndpointInfo with ServiceName, and PortName from properties
      */
-    public void fillEndpointInfo() {
+    public void fillEndpointInfo() throws Exception {
         // set Service Name from properties on RuntimeEndpointInfo
         setServiceName();
         
@@ -184,6 +195,9 @@ public class HttpEndpoint {
         
         // Sets the correct Service Name
         endpointInfo.doServiceNameProcessing();
+        
+        // Sets the PortType Name
+        endpointInfo.doPortTypeNameProcessing();
         
         // Creates DocInfo from metadata and sets it on RuntimeEndpointinfo
         setDocInfo();
@@ -194,75 +208,45 @@ public class HttpEndpoint {
         //
         findPrimaryWSDL();
         
-            /*
-            // Create a EntityResolver to look inside metadata and find a primary WSDL
-            URL wsdlUrl = null; // TODO
-            EntityResolver wsdlResolver = new EndpointEntityResolver(newMetadata);
-            
-            // Set primary WSDL, and WSDL resolver
-            endpointInfo.setWsdlInfo(wsdlUrl, wsdlResolver);
-             */
-        
     }
     
-    public void publishWSDLDocs() {
-    /*
+    public void generateWSDLDocs() {
+        /*
+        if (endpointInfo.needWSDLGeneration()) {
+            endpointInfo.generateWSDL();
+        }
+         */
+        
+        if (endpointInfo.getWsdLUrl() == null) {
+            endpointInfo.generateWSDL();
+        }
+    }
     
-                String wsdlFile = endpoint.getWSDLFileName();
-            if (wsdlFile != null) {
-                try {
-                    wsdlFile = "/"+wsdlFile;
-                    URL wsdlUrl = context.getResource(wsdlFile);                   
-                    endpoint.setWsdlInfo(wsdlUrl, entityResolver);
-                } catch(java.net.MalformedURLException e) {
-                    e.printStackTrace();
-                }
-            }
-            
-            endpoint.deploy();
-            if (endpoint.needWSDLGeneration()) {
-                endpoint.generateWSDL();
-            }
-            if (endpoint.isPublishingDone()) {
-                continue;
-            }
-            
-     
+    public void publishWSDLDocs() {     
         // Set queryString for the documents
         Map<String, DocInfo> docs = endpointInfo.getDocMetadata();
         Set<Entry<String, DocInfo>> entries = docs.entrySet();
+        int wsdlNum = 1;
+        int xsdNum = 1;
         for(Entry<String, DocInfo> entry : entries) {
-            ServerDocInfo docInfo = (ServerDocInfo)entry.getValue();
-            String path = docInfo.getPath();
-            String query = null;
-            String queryValue = docInfo.getPath().substring(J2SE_WSDL_DIR.length()+1);    // Without /WEB-INF/wsdl
-            queryValue = URLEncoder.encode(queryValue, "UTF-8");
-            InputStream in = docInfo.getDoc();
-            DOC_TYPE docType = null;    // is WSDL or schema ??
-            try {
-                docType = WSDLPatcher.getDocType(docInfo.getDoc());
-            } catch (Exception e) {
-                continue;           // Not XML ?? Ignore this document
-            } finally {
-                try { in.close(); } catch(IOException ie) {};
+            DocInfo docInfo = (DocInfo)entry.getValue();
+            DOC_TYPE docType = docInfo.getDocType();
+            String query = docInfo.getQueryString();
+            if (query == null) {
+                switch(docType) {
+                    case WSDL :                   
+                        query = "wsdl="+(wsdlNum++);
+                        break;
+                    case SCHEMA : 
+                        query = "xsd="+(xsdNum++);
+                        break;
+                    case OTHER :
+                        logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
+                }
+                docInfo.setQueryString(query);
             }
-
-            switch(docType) {
-                case WSDL :                   
-                    query = path.equals(wsdlFile)
-                        ? "wsdl" : "wsdl="+queryValue;
-                    break;
-                case SCHEMA : 
-                    query = "xsd="+queryValue;
-                    break;
-                case OTHER :
-                    logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
-            }
-             
-            docInfo.setQueryString(query);
         }
-     */
-     
+        endpointInfo.updateQuery2DocInfo();
     }
     
     public void publish(String address) {
@@ -315,10 +299,8 @@ public class HttpEndpoint {
         fillEndpointInfo();
         endpointInfo.setUrlPattern("");
         endpointInfo.deploy();
+        generateWSDLDocs();
         publishWSDLDocs();
-        if (endpointInfo.needWSDLGeneration()) {
-            endpointInfo.generateWSDL();
-        }
         final WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
         endpointInfo.beginService();
@@ -392,6 +374,15 @@ public class HttpEndpoint {
         
         List<RuntimeEndpointInfo> endpoints = new ArrayList<RuntimeEndpointInfo>();
         endpoints.add(targetEndpoint);
+        
+        String address =
+            "http"
+                + "://"
+                + msg.getLocalAddress().getHostName()
+                + ":"
+                + msg.getLocalAddress().getPort()
+                + msg.getRequestURI().getPath();
+        System.out.println("****** Addres ="+address);
         WSDLPatcher patcher = new WSDLPatcher(inPath, address,
                 targetEndpoint, endpoints, in.getDocContext());
         InputStream is = in.getDoc();
