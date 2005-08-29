@@ -1,5 +1,5 @@
 /*
- * $Id: ServerPropertyConstants.java,v 1.1 2005-05-23 22:50:26 bbissett Exp $
+ * $Id: ServerPropertyConstants.java,v 1.2 2005-08-29 19:37:31 kohlert Exp $
  */
 
 /*
@@ -16,9 +16,9 @@ package com.sun.xml.ws.server;
  */
 public interface ServerPropertyConstants {
     /*public static final String ATTACHMENT_CONTEXT =
-        "com.sun.xml.rpc.attachment.AttachmentContext";*/
+        "com.sun.xml.ws.attachment.AttachmentContext";*/
     public static final String SET_ATTACHMENT_PROPERTY =
-        "com.sun.xml.rpc.attachment.SetAttachmentContext";
+        "com.sun.xml.ws.attachment.SetAttachmentContext";
     public static final String GET_ATTACHMENT_PROPERTY =
-        "com.sun.xml.rpc.attachment.GetAttachmentContext";
+        "com.sun.xml.ws.attachment.GetAttachmentContext";
 }

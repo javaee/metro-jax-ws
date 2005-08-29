@@ -1,5 +1,5 @@
 /*
- * $Id: WSServlet.java,v 1.4 2005-08-17 01:49:54 jitu Exp $
+ * $Id: WSServlet.java,v 1.5 2005-08-29 19:37:33 kohlert Exp $
  */
 
 /*
@@ -81,13 +81,13 @@ public class WSServlet extends HttpServlet {
     private Localizer localizer;
 
     public static final String JAXWS_RI_RUNTIME_INFO =
-        "com.sun.xml.rpc.server.http.info";
+        "com.sun.xml.ws.server.http.info";
     public static final String JAXWS_RI_PROPERTY_PUBLISH_WSDL =
-        "com.sun.xml.rpc.server.http.publishWSDL";
+        "com.sun.xml.ws.server.http.publishWSDL";
     public static final String JAXWS_RI_PROPERTY_PUBLISH_MODEL =
-        "com.sun.xml.rpc.server.http.publishModel";
+        "com.sun.xml.ws.server.http.publishModel";
     public static final String JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE =
-        "com.sun.xml.rpc.server.http.publishStatusPage";
+        "com.sun.xml.ws.server.http.publishStatusPage";
 
     private static final Logger logger =
         Logger.getLogger(

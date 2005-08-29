@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.16 2005-08-25 22:54:28 vivekp Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.17 2005-08-29 19:37:30 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -45,7 +45,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.EncoderDecoderBase#toMessageInfo(java.lang.Object, com.sun.pept.ept.MessageInfo)
+     * @see com.sun.xml.ws.rt.encoding.EncoderDecoderBase#toMessageInfo(java.lang.Object, com.sun.pept.ept.MessageInfo)
      */
     public void toMessageInfo(Object intMessage, MessageInfo mi) {
         InternalMessage im = (InternalMessage) intMessage;
@@ -287,7 +287,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
+     * @see com.sun.xml.ws.rt.encoding.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
      */
     public Object toInternalMessage(MessageInfo mi) {
         RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);

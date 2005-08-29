@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceReferenceResolver.java,v 1.2 2005-07-18 16:52:07 kohlert Exp $
+ * $Id: ServiceReferenceResolver.java,v 1.3 2005-08-29 19:37:29 kohlert Exp $
  */
 
 /*
@@ -74,7 +74,7 @@ public class ServiceReferenceResolver implements ObjectFactory {
 
     public Reference getServiceClassReference(String serviceClassName) {
         Reference reference = new Reference(serviceClassName,
-            "com.sun.xml.rpc.naming.ServiceReferenceResolver", null);
+            "com.sun.xml.ws.naming.ServiceReferenceResolver", null);
         reference.add(new StringRefAddr("ServiceClassName", serviceClassName));
         return reference;
     }

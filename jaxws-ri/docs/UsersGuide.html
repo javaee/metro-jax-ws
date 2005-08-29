@@ -128,7 +128,7 @@ per JAXWS 2.0 API. <br>
 For example,<br>
 <br>
 JAXRPC 2.0 EA1 fromwsdl.client.AddNumersClient.java created the port as:<br>
-<pre>import <span style="color: rgb(153, 0, 0);">javax.xml.rpc.ServiceFactory</span>;<br><br>ServiceFactory serviceFactory = ServiceFactory.newInstance();<br>AddNumbersService service = (AddNumbersService)serviceFactory.loadService(AddNumbersService.class);<br>AddNumbersPortType port = service.getAddNumbersPort();<br></pre>
+<pre>import <span style="color: rgb(153, 0, 0);">javax.xml.ws.ServiceFactory</span>;<br><br>ServiceFactory serviceFactory = ServiceFactory.newInstance();<br>AddNumbersService service = (AddNumbersService)serviceFactory.loadService(AddNumbersService.class);<br>AddNumbersPortType port = service.getAddNumbersPort();<br></pre>
 JAXWS 2.0 EA2 fromwsdl.client.AddNumbersClient.java creates proxy port
 (there is no generated stub):<br>
 <pre>import <span style="color: rgb(153, 0, 0);">javax.xml.ws.ServiceFactory</span>;<br><br>ServiceFactory serviceFactory = ServiceFactory.newInstance();<br>AddNumbersService service = (AddNumbersService)serviceFactory.<span

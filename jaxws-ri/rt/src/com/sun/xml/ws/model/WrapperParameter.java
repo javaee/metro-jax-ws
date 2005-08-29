@@ -1,5 +1,5 @@
 /**
- * $Id: WrapperParameter.java,v 1.3 2005-08-21 19:30:01 vivekp Exp $
+ * $Id: WrapperParameter.java,v 1.4 2005-08-29 19:37:31 kohlert Exp $
  */
 
 /*
@@ -27,7 +27,7 @@ public class WrapperParameter extends Parameter{
     /*
      * (non-Javadoc)
      * 
-     * @see com.sun.xml.rpc.rt.model.Parameter#isWrapperStyle()
+     * @see com.sun.xml.ws.rt.model.Parameter#isWrapperStyle()
      */
     @Override
     public boolean isWrapperStyle() {

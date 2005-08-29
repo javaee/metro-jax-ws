@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.8 2005-08-15 22:41:43 vivekp Exp $
+ * $Id: WSDLModelerBase.java,v 1.9 2005-08-29 19:37:36 kohlert Exp $
  */
 
 /*
@@ -2725,15 +2725,15 @@ public abstract class WSDLModelerBase implements Modeler {
     }
 
     protected static final String OPERATION_HAS_VOID_RETURN_TYPE =
-        "com.sun.xml.rpc.processor.modeler.wsdl.operationHasVoidReturnType";
+        "com.sun.xml.ws.processor.modeler.wsdl.operationHasVoidReturnType";
     private static final String WSDL_DOCUMENTATION =
-        "com.sun.xml.rpc.processor.modeler.wsdl.documentation";
+        "com.sun.xml.ws.processor.modeler.wsdl.documentation";
     protected static final String WSDL_PARAMETER_ORDER =
-        "com.sun.xml.rpc.processor.modeler.wsdl.parameterOrder";
+        "com.sun.xml.ws.processor.modeler.wsdl.parameterOrder";
     public static final String WSDL_RESULT_PARAMETER =
-        "com.sun.xml.rpc.processor.modeler.wsdl.resultParameter";
+        "com.sun.xml.ws.processor.modeler.wsdl.resultParameter";
     public static final String MESSAGE_HAS_MIME_MULTIPART_RELATED_BINDING =
-        "com.sun.xml.rpc.processor.modeler.wsdl.mimeMultipartRelatedBinding";
+        "com.sun.xml.ws.processor.modeler.wsdl.mimeMultipartRelatedBinding";
 
 
     public ProcessorEnvironment getProcessorEnvironment(){

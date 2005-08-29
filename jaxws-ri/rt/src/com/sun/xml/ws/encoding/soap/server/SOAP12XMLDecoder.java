@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.3 2005-08-17 16:45:15 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.4 2005-08-29 19:37:30 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -37,7 +37,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.ws.streaming.XMLReader, com.sun.pept.ept.MessageInfo, com.sun.xml.ws.soap.internal.InternalMessage)
      */
     @Override
     protected void decodeHeader(XMLStreamReader reader, MessageInfo messageInfo, InternalMessage request) {
@@ -46,7 +46,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getBodyTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getBodyTag()
      */
     @Override
     protected QName getBodyTag() {
@@ -54,7 +54,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getEnvelopeTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getEnvelopeTag()
      */
     @Override
     protected QName getEnvelopeTag() {
@@ -62,7 +62,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getHeaderTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getHeaderTag()
      */
     @Override
     protected QName getHeaderTag() {

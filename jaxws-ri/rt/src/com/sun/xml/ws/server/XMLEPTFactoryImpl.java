@@ -1,5 +1,5 @@
 /**
- * $Id: XMLEPTFactoryImpl.java,v 1.1 2005-07-25 18:28:25 jitu Exp $
+ * $Id: XMLEPTFactoryImpl.java,v 1.2 2005-08-29 19:37:31 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -80,28 +80,28 @@ public class XMLEPTFactoryImpl implements XMLEPTFactory {
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getLogicalEncoder()
+     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getLogicalEncoder()
      */
     public LogicalEncoder getLogicalEncoder() {
         return logicalEncoder;
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getLogicalDecoder()
+     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getLogicalDecoder()
      */
     public LogicalDecoder getLogicalDecoder() {
         return null;
     }
 
     /* 
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getSoapEncoder()
+     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getSoapEncoder()
      */
     public XMLEncoder getXMLEncoder() {
         return xmlEncoder;
     }
 
     /*
-     * @see com.sun.xml.rpc.encoding.jaxb.LogicalEPTFactory#getSoapDecoder()
+     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getSoapDecoder()
      */
     public XMLDecoder getXMLDecoder() {
         return xmlDecoder;

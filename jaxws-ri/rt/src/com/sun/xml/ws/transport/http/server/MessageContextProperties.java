@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContextProperties.java,v 1.2 2005-07-18 16:52:26 kohlert Exp $
+ * $Id: MessageContextProperties.java,v 1.3 2005-08-29 19:37:32 kohlert Exp $
  */
 
 /*
@@ -16,17 +16,17 @@ package com.sun.xml.ws.transport.http.server;
 public interface MessageContextProperties {
 
     public static final String SERVLET_CONTEXT =
-        "com.sun.xml.rpc.server.http.ServletContext";
+        "com.sun.xml.w.server.http.ServletContext";
     public static final String HTTP_SERVLET_REQUEST =
-        "com.sun.xml.rpc.server.http.HttpServletRequest";
+        "com.sun.xml.ws.server.http.HttpServletRequest";
     public static final String HTTP_SERVLET_RESPONSE =
-        "com.sun.xml.rpc.server.http.HttpServletResponse";
+        "com.sun.xml.ws.server.http.HttpServletResponse";
     public static final String IMPLEMENTOR =
-        "com.sun.xml.rpc.server.http.Implementor";
+        "com.sun.xml.ws.server.http.Implementor";
     public static final String ONE_WAY_OPERATION =
-        "com.sun.xml.rpc.server.OneWayOperation";
+        "com.sun.xml.ws.server.OneWayOperation";
     public static final String CLIENT_BAD_REQUEST =
-        "com.sun.xml.rpc.server.http.ClientBadRequest";
+        "com.sun.xml.ws.server.http.ClientBadRequest";
     public static final String CLIENT_INVALID_CONTENT_TYPE =
-        "com.sun.xml.rpc.server.http.ClientInvalidContentType";
+        "com.sun.xml.ws.server.http.ClientInvalidContentType";
 }

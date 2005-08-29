@@ -1,5 +1,5 @@
 /*
- * $Id: ActionConstants.java,v 1.2 2005-07-18 18:14:10 kohlert Exp $
+ * $Id: ActionConstants.java,v 1.3 2005-08-29 19:37:36 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,6 +12,8 @@ package com.sun.tools.ws.wscompile;
 public interface ActionConstants {
     public static final String ACTION_SERVICE_INTERFACE_GENERATOR =
         "service.interface.generator";
+    public static final String ACTION_SERVICE_GENERATOR =
+        "service.generator";
     public static final String ACTION_REMOTE_INTERFACE_GENERATOR  =
         "remote.interface.impl.generator";
     public static final String ACTION_REMOTE_INTERFACE_IMPL_GENERATOR  =

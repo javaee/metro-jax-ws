@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.8 2005-08-18 15:27:54 vivekp Exp $
+ * $Id: GeneratorBase.java,v 1.9 2005-08-29 19:37:34 kohlert Exp $
  */
 
 /*
@@ -509,7 +509,7 @@ public abstract class GeneratorBase
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.rpc.processor.model.jaxb.JAXBType)
+     * @see com.sun.xml.ws.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.ws.processor.model.jaxb.JAXBType)
      */
     public void visit(JAXBType type) throws Exception {
         preVisitJAXBType(type);
@@ -544,7 +544,7 @@ public abstract class GeneratorBase
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.rpc.processor.model.jaxb.RpcLitStructure)
+     * @see com.sun.xml.ws.processor.model.jaxb.JAXBTypeVisitor#visit(com.sun.xml.ws.processor.model.jaxb.RpcLitStructure)
      */
     public void visit(RpcLitStructure type) throws Exception {
         // TODO Auto-generated method stub

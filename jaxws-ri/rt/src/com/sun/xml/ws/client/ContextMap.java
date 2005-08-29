@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.8 2005-08-04 02:32:20 kwalsh Exp $
+ * $Id: ContextMap.java,v 1.9 2005-08-29 19:37:28 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -219,10 +219,10 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
 
         if (!isKnownProperty(name)) {
-            //do validation check on not "javax.xml.rpc."
+            //do validation check on not "javax.xml.ws."
             if (name.startsWith("javax.xml.ws"))
-                throw new WebServiceException(name + " is a User-defined property - can not start with javax.xml.rpc. package",
-                    new IllegalArgumentException("can not start with javax.xml.rpc. package"));                                            //let's check the propertyContext
+                throw new WebServiceException(name + " is a User-defined property - can not start with javax.xml.ws. package",
+                    new IllegalArgumentException("can not start with javax.xml.ws. package"));                                            //let's check the propertyContext
         }
 
         //is it alreadySet

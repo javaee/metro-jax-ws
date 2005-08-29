@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.6 2005-07-24 01:34:57 kohlert Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.7 2005-08-29 19:37:32 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,7 +23,7 @@ public interface SystemHandlerDelegate {
 
    /**
     * The processRequest method is invoked with an object that
-    * implements com.sun.xml.rpc.spi.runtime.SOAPMessageContext.
+    * implements com.sun.xml.ws.spi.runtime.SOAPMessageContext.
     * <p>
     * When this method is called by the WSServletDelegate
     * (on the server side of jaxws servlet container invocation processing)
@@ -31,27 +31,27 @@ public interface SystemHandlerDelegate {
     * and at the time of the request message and the following properties
     * must have been set on the SOAPMessageContext.
     * <p>
-    * com.sun.xml.rpc.server.http.MessageContextProperties.IMPLEMENTOR
+    * com.sun.xml.ws.server.http.MessageContextProperties.IMPLEMENTOR
     * <br>
-    * This property must be set to the com.sun.xml.rpc.spi.runtime.Implementor
+    * This property must be set to the com.sun.xml..spi.runtime.Implementor
     * object corresponding to the target endpoint.
     *
     * NOTE: I'd like us to be able to hang the ServletAuthContext off the Implementor.
     *
     * <p>
-    * com.sun.xml.rpc.server.http.MessageContextProperties.HTTP_SERVLET_REQUEST
+    * com.sun.xml.ws.server.http.MessageContextProperties.HTTP_SERVLET_REQUEST
     * <br>
     * This property must be
     * set to the javax.servlet.http.HttpServletRequest object containing the
     * JAXWS invocation.
     * <p>
-    * com.sun.xml.rpc.server.http.MessageContextProperties.HTTP_SERVLET_RESPONSE
+    * com.sun.xml.ws.server.http.MessageContextProperties.HTTP_SERVLET_RESPONSE
     * <br>
     * This property must be
     * set to the javax.servlet.http.HttpServletResponse object corresponding to
     * the JAXWS invocation.
     * <p>
-    * com.sun.xml.rpc.server.MessageContextProperties.HTTP_SERVLET_CONTEXT
+    * com.sun.xml.ws.server.MessageContextProperties.HTTP_SERVLET_CONTEXT
     * <br>
     * This property must be
     * set to the javax.servlet.ServletContext object corresponding to web application
@@ -72,7 +72,7 @@ public interface SystemHandlerDelegate {
 
    /**
     * The processResponse method is invoked with an object that
-    * implements com.sun.xml.rpc.spi2.runtime.SOAPMessageContext.
+    * implements com.sun.xml.ws.spi.runtime.SOAPMessageContext.
     * <p>
     * When this method is called by the WSServletDelegate
     * (on the server side of jaxws servlet container invocation processing)

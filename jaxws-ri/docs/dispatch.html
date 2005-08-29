@@ -24,11 +24,11 @@
 
   <p>Last Modified: 07/20/05</p>
 
-  <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.rpc.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
+  <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.ws.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
   <p>Four Message Exchange Protocols(MEP) are supported: request-response, one way, asynchronous polling, and callback. Each of these invocation MEPs are required with JAXB data bound <code>java.lang.Object</code>, <code>javax.xml.transform.Source</code>, and <code>javax.xml.soap.SOAPMessage</code> object requests.</p>
 
-  <p>The <code>javax.xml.rpc.Service</code> interface acts as a factory for the creation of <code>Dispatch</code> instances. In addition, a <code>Dispatch</code> instance is created in either <code>Service.Mode.PAYLOAD</code> or <code>Service.Mode.MESSAGE</code> modes. A <code>javax.xml.soap.SOAPMessage</code> request can only be used with a Dispatch instance of <code>Service.Mode.MESSAGE</code>.</p>
+  <p>The <code>javax.xml.ws.Service</code> interface acts as a factory for the creation of <code>Dispatch</code> instances. In addition, a <code>Dispatch</code> instance is created in either <code>Service.Mode.PAYLOAD</code> or <code>Service.Mode.MESSAGE</code> modes. A <code>javax.xml.soap.SOAPMessage</code> request can only be used with a Dispatch instance of <code>Service.Mode.MESSAGE</code>.</p>
 
   <p>Note that the <code>Dispatch&lt;T&gt;</code> instance simply acts as a conduit for the request. No validation of the message is required to be performed by the implementation, though some may catch errors during request processing. Additionally, <code>Dispatch&lt;T&gt;</code> has no knowledge of the web service and the WSDL definition. It is up to the client program to supply well-formed XML requests.</p>
 
@@ -36,7 +36,7 @@
 
   <h3>Create a <code>Service</code> instance.</h3>
 
-  <p>The <code>javax.xml.rpc.ServiceFactory</code> acts as a factory for the creation of <code>Service</code> instances. When created for use with <code>Dispatch</code> APIs the <code>Service</code> created is a non-configured <code>Service</code>. That is, the <code>Service</code> has no knowledge of the web service WSDL file other than what the client developer supplies.</p>
+  <p>The <code>javax.xml.ws.ServiceFactory</code> acts as a factory for the creation of <code>Service</code> instances. When created for use with <code>Dispatch</code> APIs the <code>Service</code> created is a non-configured <code>Service</code>. That is, the <code>Service</code> has no knowledge of the web service WSDL file other than what the client developer supplies.</p>
 
   <p>The easiest way to create a <code>Service</code> is show here:</p>
   <pre>
@@ -76,7 +76,7 @@ Dispatch dispatch = service.createDispatch(QName portName, JAXBContext jaxbconte
 
   <h3>Set the <code>JAXRPCContext</code> for the request.</h3>
 
-  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.rpc.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the <code>JAXRPCContext</code> request and response context. Standard <code>BindingProvider</code> properties are defined by the JAXRPC 2.0 Early Draft specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
+  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.ws.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the <code>JAXRPCContext</code> request and response context. Standard <code>BindingProvider</code> properties are defined by the JAXRPC 2.0 Early Draft specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
 
   <h3>Prepare the message request.</h3>
 

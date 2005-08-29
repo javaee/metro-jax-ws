@@ -1,5 +1,5 @@
 /*
- * $Id: ModelProperties.java,v 1.2 2005-07-18 18:13:59 kohlert Exp $
+ * $Id: ModelProperties.java,v 1.3 2005-08-29 19:37:35 kohlert Exp $
  */
 
 /*
@@ -17,44 +17,44 @@ public interface ModelProperties {
 
     //to set WSDL_MODELER_NAME from inside WSDLModeler
     public static final String WSDL_MODELER_NAME =
-        "com.sun.xml.rpc.processor.modeler.wsdl.WSDLModeler";
+        "com.sun.xml.ws.processor.modeler.wsdl.WSDLModeler";
     public static final String PROPERTY_PARAM_MESSAGE_PART_NAME =
-        "com.sun.xml.rpc.processor.model.ParamMessagePartName";
+        "com.sun.xml.ws.processor.model.ParamMessagePartName";
     public static final String PROPERTY_ANONYMOUS_TYPE_NAME =
-        "com.sun.xml.rpc.processor.model.AnonymousTypeName";
+        "com.sun.xml.ws.processor.model.AnonymousTypeName";
     public static final String PROPERTY_ANONYMOUS_ARRAY_TYPE_NAME =
-        "com.sun.xml.rpc.processor.model.AnonymousArrayTypeName";
+        "com.sun.xml.ws.processor.model.AnonymousArrayTypeName";
     public static final String PROPERTY_ANONYMOUS_ARRAY_JAVA_TYPE =
-        "com.sun.xml.rpc.processor.model.AnonymousArrayJavaType";
+        "com.sun.xml.ws.processor.model.AnonymousArrayJavaType";
 
     public static final String PROPERTY_PTIE_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.PtieClassName";
+        "com.sun.xml.ws.processor.model.PtieClassName";
     public static final String PROPERTY_EPTFF_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.EPTFFClassName";
+        "com.sun.xml.ws.processor.model.EPTFFClassName";
     public static final String PROPERTY_SED_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.SEDClassName";
+        "com.sun.xml.ws.processor.model.SEDClassName";
         public static final String PROPERTY_WSDL_PORT_NAME =
-        "com.sun.xml.rpc.processor.model.WSDLPortName";
+        "com.sun.xml.ws.processor.model.WSDLPortName";
     public static final String PROPERTY_WSDL_PORT_TYPE_NAME =
-        "com.sun.xml.rpc.processor.model.WSDLPortTypeName";
+        "com.sun.xml.ws.processor.model.WSDLPortTypeName";
     public static final String PROPERTY_WSDL_BINDING_NAME =
-        "com.sun.xml.rpc.processor.model.WSDLBindingName";
+        "com.sun.xml.ws.processor.model.WSDLBindingName";
     public static final String PROPERTY_WSDL_MESSAGE_NAME =
-        "com.sun.xml.rpc.processor.model.WSDLMessageName";
+        "com.sun.xml.ws.processor.model.WSDLMessageName";
     public static final String PROPERTY_MODELER_NAME =
-        "com.sun.xml.rpc.processor.model.ModelerName";
+        "com.sun.xml.ws.processor.model.ModelerName";
     public static final String PROPERTY_STUB_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.StubClassName";
+        "com.sun.xml.ws.processor.model.StubClassName";
     public static final String PROPERTY_STUB_OLD_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.StubOldClassName";
+        "com.sun.xml.ws.processor.model.StubOldClassName";
     public static final String PROPERTY_DELEGATE_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.DelegateClassName";
+        "com.sun.xml.ws.processor.model.DelegateClassName";
     public static final String PROPERTY_CLIENT_ENCODER_DECODER_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.ClientEncoderClassName";
+        "com.sun.xml.ws.processor.model.ClientEncoderClassName";
     public static final String PROPERTY_CLIENT_CONTACTINFOLIST_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.ClientContactInfoListClassName";
+        "com.sun.xml.ws.processor.model.ClientContactInfoListClassName";
     public static final String PROPERTY_TIE_CLASS_NAME =
-        "com.sun.xml.rpc.processor.model.TieClassName";
+        "com.sun.xml.ws.processor.model.TieClassName";
     public static final String PROPERTY_JAVA_PORT_NAME =
-        "com.sun.xml.rpc.processor.model.JavaPortName";
+        "com.sun.xml.ws.processor.model.JavaPortName";
 }

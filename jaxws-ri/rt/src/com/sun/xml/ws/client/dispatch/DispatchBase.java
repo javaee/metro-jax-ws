@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.15 2005-08-19 17:33:49 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.16 2005-08-29 19:37:29 kohlert Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -53,9 +53,9 @@ import javax.xml.ws.http.HTTPBinding;
 
 
 /**
- * The <code>javax.xml.rpc.Dispatch</code> interface provides support
+ * The <code>javax.xml.ws.Dispatch</code> interface provides support
  * for the dynamic invocation of a service endpoint operation using XML
- * constructs or JAXB objects. The <code>javax.xml.rpc.Service</code>
+ * constructs or JAXB objects. The <code>javax.xml.ws.Service</code>
  * interface acts as a factory for the creation of <code>Dispatch</code>
  * instances.
  *
@@ -93,7 +93,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *            the message used to invoke the operation. Must be an instance of
      *            either <code>javax.xml.transform.Source</code> or a JAXB object. If
      *            <code>msg</code> is an instance of a JAXB object then the request
-     *            context must have the <code>javax.xml.rpc.binding.context</code>
+     *            context must have the <code>javax.xml.ws.binding.context</code>
      *            property set.
      * @return The response to the operation invocation. The object is
      *         either an instance of <code>javax.xml.transform.Source</code>
@@ -128,7 +128,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *            the message used to invoke the operation. Must be an instance of
      *            either <code>javax.xml.transform.Source</code> or a JAXB object. If
      *            <code>msg</code> is an instance of a JAXB object then the request
-     *            context must have the <code>javax.xml.rpc.binding.context</code>
+     *            context must have the <code>javax.xml.ws.binding.context</code>
      *            property set.
      * @return The response to the operation invocation. The object
      *         returned by <code>Response.get()</code> is
@@ -169,7 +169,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *                the message used to invoke the operation. Must be an instance of
      *                either <code>javax.xml.transform.Source</code> or a JAXB object. If
      *                <code>msg</code> is an instance of a JAXB object then the request
-     *                context must have the <code>javax.xml.rpc.binding.context</code>
+     *                context must have the <code>javax.xml.ws.binding.context</code>
      *                property set.
      * @param handler The handler object that will receive the
      *                response to the operation invocation. The object
@@ -223,7 +223,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *            the message used to invoke the operation. Must be an instance of
      *            either <code>javax.xml.transform.Source</code> or a JAXB object. If
      *            <code>msg</code> is an instance of a JAXB object then the request
-     *            context must have the <code>javax.xml.rpc.binding.context</code>
+     *            context must have the <code>javax.xml.ws.binding.context</code>
      *            property set.
      * @throws javax.xml.ws.WebServiceException
      *          If there is any error in the configuration of

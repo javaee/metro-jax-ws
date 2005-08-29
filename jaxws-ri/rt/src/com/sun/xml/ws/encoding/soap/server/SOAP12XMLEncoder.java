@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.6 2005-08-22 22:18:04 spericas Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.7 2005-08-29 19:37:30 kohlert Exp $
  */
 
 /*
@@ -84,7 +84,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.server.SOAPXMLEncoder#writeFault(com.sun.xml.rpc.soap.message.SOAPFaultInfo, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.streaming.XMLStreamWriter)
+     * @see com.sun.xml.ws.rt.server.SOAPXMLEncoder#writeFault(com.sun.xml.ws.soap.message.SOAPFaultInfo, com.sun.pept.ept.MessageInfo, com.sun.xml.ws.streaming.XMLStreamWriter)
      */
     @Override
     protected void writeFault(SOAPFaultInfo faultInfo, MessageInfo messageInfo, XMLStreamWriter writer) {

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.7 2005-08-10 17:14:18 bbissett Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.8 2005-08-29 19:37:30 kohlert Exp $
  */
 
 /*
@@ -244,7 +244,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }         
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.rpc.streaming.XMLStreamReader, com.sun.pept.ept.MessageInfo, com.sun.xml.rpc.soap.internal.InternalMessage)
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.ws.streaming.XMLStreamReader, com.sun.pept.ept.MessageInfo, com.sun.xml.ws.soap.internal.InternalMessage)
      */
     @Override
     protected void decodeHeader (XMLStreamReader reader, MessageInfo messageInfo, InternalMessage request) {
@@ -298,14 +298,14 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getFaultTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getFaultTag()
      */
     @Override
     protected QName getFaultTag (){
         return SOAP12Constants.QNAME_SOAP_FAULT;
     }
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getBodyTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getBodyTag()
      */
     @Override
     protected QName getBodyTag () {
@@ -313,7 +313,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getEnvelopeTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getEnvelopeTag()
      */
     @Override
     protected QName getEnvelopeTag () {
@@ -321,7 +321,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
     
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.rt.encoding.soap.SOAPDecoder#getHeaderTag()
+     * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#getHeaderTag()
      */
     @Override
     protected QName getHeaderTag () {

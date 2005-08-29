@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.25 2005-08-25 22:54:30 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.26 2005-08-29 19:37:35 kohlert Exp $
  */
 
 /*
@@ -729,7 +729,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if (inputMessage != null) {
                 QName name = new QName(getRequestNamespaceURI(soapRequestBody), operationName);
                 RpcLitStructure rpcStruct = new RpcLitStructure(name, getJAXBModelBuilder().getJAXBModel());
-                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.rpc.encoding.jaxb.RpcLitPayload", null));
+                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.ws.encoding.jaxb.RpcLitPayload", null));
                 reqBlock = new Block(name, rpcStruct);
                 request.addBodyBlock(reqBlock);
             }
@@ -738,7 +738,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if (isRequestResponse && outputMessage != null) {
                 QName name = new QName(getResponseNamespaceURI(soapResponseBody), operationName + "Response");
                 RpcLitStructure rpcStruct = new RpcLitStructure(name, getJAXBModelBuilder().getJAXBModel());
-                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.rpc.encoding.jaxb.RpcLitPayload", null));
+                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.ws.encoding.jaxb.RpcLitPayload", null));
                 resBlock = new Block(name, rpcStruct);
                 response.addBodyBlock(resBlock);
             }
@@ -1184,7 +1184,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             if (inputMessage != null) {
                 QName name = new QName(getRequestNamespaceURI(soapRequestBody), operationName);
                 RpcLitStructure rpcStruct = new RpcLitStructure(name, getJAXBModelBuilder().getJAXBModel());
-                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.rpc.encoding.jaxb.RpcLitPayload", null));
+                rpcStruct.setJavaType(new JavaSimpleType("com.sun.xml.ws.encoding.jaxb.RpcLitPayload", null));
                 reqBlock = new Block(name, rpcStruct);
                 request.addBodyBlock(reqBlock);
             }

@@ -80,7 +80,7 @@ public class AddNumbersClient {
     private class AddNumbersCallbackHandler implements AsyncHandler<AddNumbersResponse> {
         private AddNumbersResponse output;
         /*
-         * @see javax.xml.rpc.AsyncHandler#handleResponse(javax.xml.rpc.Response)
+         * @see javax.xml.ws.AsyncHandler#handleResponse(javax.xml.ws.Response)
          */
         public void handleResponse (Response<AddNumbersResponse> response) {
             try {

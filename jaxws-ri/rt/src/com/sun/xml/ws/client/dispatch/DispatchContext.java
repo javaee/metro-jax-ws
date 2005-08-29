@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchContext.java,v 1.3 2005-08-08 19:13:01 arungupta Exp $
+ * $Id: DispatchContext.java,v 1.4 2005-08-29 19:37:29 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -36,11 +36,11 @@ public class DispatchContext {
     }
 
     public static final String DISPATCH_MESSAGE =
-        "com.sun.xml.rpc.rt.client.dispatch.messagetype";
+        "com.sun.xml.ws.rt.client.dispatch.messagetype";
     public static final String DISPATCH_MESSAGE_MODE =
-        "com.sun.xml.rpc.rt.client.dispatch.mode";
+        "com.sun.xml.ws.rt.client.dispatch.mode";
     public static final String DISPATCH_MESSAGE_CLASS =
-        "com.sun.xml.rpc.rt.client.dispatch.messageclass";
+        "com.sun.xml.ws.rt.client.dispatch.messageclass";
 
     //public static final int DOMSOURCE = 100;
     //public static final int SAXSOURCE = 200;

@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.23 2005-08-26 21:42:19 bbissett Exp $
+ * $Id: WebService.java,v 1.24 2005-08-29 19:37:29 kohlert Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -202,7 +202,7 @@ public class WebService
     public Reference getReference() throws NamingException {
         Reference reference =
             new Reference(getClass().getName(),
-                "com.sun.xml.rpc.naming.ServiceReferenceResolver",
+                "com.sun.xml.ws.naming.ServiceReferenceResolver",
                 null);
         String serviceName = ServiceReferenceResolver.registerService(this);
         reference.add(new StringRefAddr("ServiceName", serviceName));

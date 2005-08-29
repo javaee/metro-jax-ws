@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.16 2005-08-11 21:24:03 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.17 2005-08-29 19:37:31 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -489,7 +489,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         SOAPHeader header) throws SOAPException {
 
         // this is "finer" level
-        logger.entering("com.sun.xml.rpc.server.SOAPMessageDispatcher",
+        logger.entering("com.sun.xml.ws.server.SOAPMessageDispatcher",
             "checkMustUnderstandHeaders");
 
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);

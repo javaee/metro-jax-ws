@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerConstants.java,v 1.4 2005-07-24 01:35:10 kohlert Exp $
+ * $Id: ModelerConstants.java,v 1.5 2005-08-29 19:37:35 kohlert Exp $
  */
 
 /*
@@ -82,6 +82,6 @@ public interface ModelerConstants {
      public static final String HASHTABLE_CLASSNAME           = "java.util.Hashtable";
      public static final String PROPERTIES_CLASSNAME          = "java.util.Properties";
 //     public static final String WEAK_HASH_MAP_CLASSNAME       = "java.util.WeakHashMap";
-     public static final String JAX_WS_MAP_ENTRY_CLASSNAME   = "com.sun.xml.rpc.encoding.soap.JAXWSMapEntry";
+     public static final String JAX_WS_MAP_ENTRY_CLASSNAME   = "com.sun.xml.ws.encoding.soap.JAXWSMapEntry";
 
 }

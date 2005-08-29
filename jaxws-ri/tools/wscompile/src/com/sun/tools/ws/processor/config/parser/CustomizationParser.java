@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.6 2005-08-18 15:27:54 vivekp Exp $
+ * $Id: CustomizationParser.java,v 1.7 2005-08-29 19:37:34 kohlert Exp $
  */
 
 /*
@@ -46,7 +46,7 @@ public class CustomizationParser extends InputParser {
 
 
     /* (non-Javadoc)
-     * @see com.sun.xml.rpc.processor.config.parser.InputParser#parse(java.io.File[], java.lang.String)
+     * @see com.sun.xml.ws.processor.config.parser.InputParser#parse(java.io.File[], java.lang.String)
      */
     protected Configuration parse(List<String> inputFiles) throws Exception{
         //File wsdlFile = inputFiles[0];
