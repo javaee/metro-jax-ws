@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.19 2005-08-26 03:36:23 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.20 2005-08-29 22:09:29 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -71,7 +71,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
-        cm =  new JCodeModel();
     }
  
     protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
@@ -91,6 +90,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     }   
     
     protected void processWebService(WebService webService, TypeDeclaration d) {
+        cm =  new JCodeModel();
         wrapperNames = new HashSet<String>();
         processedExceptions = new HashSet<String>();
     }
