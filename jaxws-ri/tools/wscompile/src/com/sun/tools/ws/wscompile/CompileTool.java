@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.18 2005-08-29 19:37:36 kohlert Exp $
+ * $Id: CompileTool.java,v 1.19 2005-08-29 20:08:38 kohlert Exp $
  */
 
 /*
@@ -360,8 +360,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         actions = new HashMap();
         actions.put(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator());
-        actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
-                new com.sun.tools.ws.processor.generator.ServiceGenerator());
+//        actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
+//                new com.sun.tools.ws.processor.generator.ServiceGenerator());
         actions.put(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR,
                 new SeiGenerator());
         actions.put(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR,
