@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.43 2005-08-27 00:36:14 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.44 2005-08-29 21:12:32 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -1088,19 +1088,18 @@ public class RuntimeModeler {
 
     /**
      * Gives portType QName from implementatorClass or SEI
-     * @param implOrSeiClass
-     * @return  <code>wsdl:portType@name</code>
+     * @param  implOrSeiClass cant be null
+     * @return  <code>wsdl:portType@name</code>, null if it could not find the annotated class.
      */
     public static QName getPortTypeName(Class implOrSeiClass){
-        Class clazz = null;
+        assert(implOrSeiClass == null);
+        Class clazz = implOrSeiClass;
         WebService webService = null;
         if (!implOrSeiClass.isAnnotationPresent(javax.jws.WebService.class))
                 throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                                            new Object[] {implOrSeiClass.getCanonicalName()});
 
-        if (implOrSeiClass.isInterface()) {
-            clazz = implOrSeiClass;
-        }else{
+        if (!implOrSeiClass.isInterface()) {
             webService = (WebService) implOrSeiClass.getAnnotation(WebService.class);
             String epi = webService.endpointInterface();
             if (epi.length() > 0) {
@@ -1119,7 +1118,13 @@ public class RuntimeModeler {
 
         webService = (WebService) clazz.getAnnotation(WebService.class);
         String name = webService.name();
+        if(name.length() == 0){
+            name = clazz.getSimpleName();
+        }
+
         String tns = webService.targetNamespace();
+        if(tns.length() == 0)
+            tns = getNamespace(clazz.getPackage().getName());
 
         return new QName(tns, name);
     }
