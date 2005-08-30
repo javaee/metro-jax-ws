@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.24 2005-08-29 19:37:29 kohlert Exp $
+ * $Id: WebService.java,v 1.25 2005-08-30 20:18:48 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -100,6 +100,9 @@ public class WebService
         serviceContext = scontext;
         this.dispatchPorts = new HashMap();
         seiProxies = new HashSet();
+        if (serviceContext.getResolver() != null) {
+            handlerResolver = serviceContext.getResolver();
+        }
     }
 
     private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
@@ -185,13 +188,6 @@ public class WebService
     }
 
     public HandlerResolver getHandlerResolver() {
-        if (handlerResolver == null) {
-            if (serviceContext.getResolver() != null)
-                handlerResolver = serviceContext.getResolver();
-            else {
-                handlerResolver = new HandlerResolverImpl();
-            }
-        }
         return handlerResolver;
     }
 
@@ -270,7 +266,7 @@ public class WebService
         
         // get handler chain
         List<Handler> handlerChain = null;
-        if (getServiceName() != null) {
+        if (getHandlerResolver() != null && getServiceName() != null) {
             PortInfo portInfo = new PortInfoImpl(bindingId.toString(), 
                 portName, getServiceName());
             handlerChain = getHandlerResolver().getHandlerChain(portInfo);
