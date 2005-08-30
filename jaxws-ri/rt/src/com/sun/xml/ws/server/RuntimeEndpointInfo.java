@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.46 2005-08-30 02:13:30 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.47 2005-08-30 21:59:33 jitu Exp $
  */
 
 /*
@@ -158,9 +158,12 @@ public class RuntimeEndpointInfo
         // wsdlURL will be null, means we will generate WSDL. Hence no need to apply
         // bindings or need to look in the WSDL
         if(wsdlUrl == null){
-           RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
+            RuntimeModeler rap = new RuntimeModeler(getImplementorClass(),
                 getImplementor(), getServiceName(), ((BindingImpl)binding).getBindingId());
-           runtimeModel = rap.buildRuntimeModel();
+            if (getPortName() != null) {
+                rap.setPortName(getPortName());
+            }
+            runtimeModel = rap.buildRuntimeModel();
         }else {
             try {
                 WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(getWsdLUrl(), getWsdlResolver());
@@ -186,6 +189,9 @@ public class RuntimeEndpointInfo
                 }
                 //now we got the Binding so lets build the model
                 RuntimeModeler rap = new RuntimeModeler(getImplementorClass(), getImplementor(), getServiceName(), wsdlBinding);
+                if (getPortName() != null) {
+                    rap.setPortName(getPortName());
+                }
                 runtimeModel = rap.buildRuntimeModel();
             } catch (IOException e) {
                 throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
