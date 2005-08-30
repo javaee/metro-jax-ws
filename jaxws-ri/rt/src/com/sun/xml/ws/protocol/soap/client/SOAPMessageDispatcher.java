@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.25 2005-08-19 17:33:50 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.26 2005-08-30 21:36:56 kwalsh Exp $
  */
 
 /*
@@ -142,6 +142,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerContext = new HandlerContext(messageInfo, im, sm);
                     updateMessageContext(messageInfo, handlerContext);
                 }
+                //already used im, we can set that to null
+                if ((sm != null) && (im != null))
+                    handlerContext.setInternalMessage(null);
+
                 handlerContext.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 handlerResult =
