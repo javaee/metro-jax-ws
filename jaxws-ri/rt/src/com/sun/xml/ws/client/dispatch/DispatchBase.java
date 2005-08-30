@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.16 2005-08-29 19:37:29 kohlert Exp $
+ * $Id: DispatchBase.java,v 1.17 2005-08-30 22:38:47 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -554,7 +554,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     protected Delegate _delegate = null;
     protected PortInfoBase _portInfo = null;
 
-    protected static URI _bindingId = null;
+    protected URI _bindingId = null;
     protected BindingImpl binding;
 
     private ClientTransportFactory _transportFactory;

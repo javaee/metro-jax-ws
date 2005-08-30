@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.11 2005-08-24 20:00:33 arungupta Exp $
+ * $Id: EndpointIFBase.java,v 1.12 2005-08-30 22:38:17 kwalsh Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     protected Map _requestContext;
     protected Map _responseContext;
 
-    protected static URI _bindingId = null;
+    protected URI _bindingId = null;
     protected Delegate _delegate = null;
     protected BindingImpl binding;
 
