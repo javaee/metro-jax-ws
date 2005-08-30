@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.17 2005-08-29 19:37:31 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.18 2005-08-30 21:01:52 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -167,14 +167,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     }
                 } else {
                     //updateContextPropertyBag(messageInfo, context);
-                    soapMessage = getResponse(messageInfo, context);
+                    getResponse(messageInfo, context);
                     if (shd != null) {
                         context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                         shd.processResponse(
                                 context.getSOAPMessageContext());
                     }
-                    sendResponse(messageInfo, soapMessage);
+                    sendResponse(messageInfo, context.getSOAPMessage());
                 }
             }
         } catch(Exception e) {
@@ -262,7 +262,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         tie._invoke(messageInfo);
     }
 
-    protected SOAPMessage getResponse(MessageInfo messageInfo, HandlerContext context) {
+    protected void getResponse(MessageInfo messageInfo, HandlerContext context) {
         setResponseInContext(messageInfo, context);
         try {
             HandlerChainCaller handlerCaller =
@@ -292,7 +292,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.setSOAPMessage(soapMesage);
             context.setInternalMessage(null);
         }
-        return context.getSOAPMessage();
     }
 
     /*
