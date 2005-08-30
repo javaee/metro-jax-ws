@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocInfo.java,v 1.3 2005-08-26 22:25:52 jitu Exp $
+ * $Id: ServletDocInfo.java,v 1.4 2005-08-30 02:13:31 jitu Exp $
  *
  */
 
@@ -13,6 +13,7 @@ import com.sun.xml.ws.server.DocContext;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.InputStream;
+import java.net.URL;
 import javax.servlet.ServletContext;
 
 public class ServletDocInfo implements DocInfo {
@@ -33,6 +34,14 @@ public class ServletDocInfo implements DocInfo {
     
     public String getPath() {
         return resource;
+    }
+    
+    public URL getUrl() {
+        try {
+            return context.getResource(resource);
+        } catch(Exception e) {
+            return null;
+        }
     }
     
     public String getQueryString() {

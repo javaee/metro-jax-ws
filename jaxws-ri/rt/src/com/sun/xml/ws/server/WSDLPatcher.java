@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.7 2005-06-06 22:01:13 vivekp Exp $
+ * $Id: WSDLPatcher.java,v 1.8 2005-08-30 02:13:31 jitu Exp $
  *
  */
 
@@ -16,6 +16,8 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,24 +60,22 @@ public class WSDLPatcher {
         Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".wsdl.patcher");
     
-    private String inPath;
+    private DocInfo docInfo;
     private String baseAddress;
     private RuntimeEndpointInfo targetEndpoint;
     private List<RuntimeEndpointInfo> endpoints;
-    private DocContext docContext;
     
     /*
      * inPath - /WEB-INF/wsdl/xxx.wsdl
      * baseAddress - http://host:port/context/
      */
-    public WSDLPatcher(String inPath, String baseAddress,
+    public WSDLPatcher(DocInfo docInfo, String baseAddress,
             RuntimeEndpointInfo targetEndpoint,
-            List<RuntimeEndpointInfo> endpoints, DocContext context) {
-        this.inPath = inPath;
+            List<RuntimeEndpointInfo> endpoints) {
+        this.docInfo = docInfo;
         this.baseAddress = baseAddress;
         this.targetEndpoint = targetEndpoint;
         this.endpoints = endpoints;
-        this.docContext = context;
     }
     
     /*
@@ -150,20 +150,27 @@ public class WSDLPatcher {
   
     /*
      * Returns true for relative imports
-     */
+     *
     private boolean isPatchable(String value) {
         return !value.startsWith("/") && value.indexOf(':') == -1;
     }
+     */
 
-    private String getAbsImportLocation(String relPath) {
-        String path = docContext.getAbsolutePath(inPath, relPath);
-        String query = targetEndpoint.getQueryString(path);
-        if (query == null) {
+    /*
+     * return patchedlocation  null if we don't how to patch this location 
+     */
+    private String getPatchedImportLocation(String relPath) {
+        try {
+            URL relUrl = new URL(docInfo.getUrl(), relPath);
+            String query = targetEndpoint.getQueryString(relUrl);
+            if (query == null) {
+                return null;
+            }
+            String abs = baseAddress+targetEndpoint.getUrlPattern()+"?"+query;
+            return abs;
+        } catch(MalformedURLException mue) {
             return null;
         }
-        String abs = baseAddress+targetEndpoint.getUrlPattern()+"?"+query;
-
-        return abs;
     }
 
     private XMLEvent patchImport(StartElement startElement, QName location)
@@ -180,10 +187,10 @@ public class WSDLPatcher {
             String file = attr.getValue();
             if (attr.getName().equals(location)) {
                 String relPath = attr.getValue();
-                if (isPatchable(relPath)) {
-                    String absPath = getAbsImportLocation(relPath);
+                //if (isPatchable(relPath)) {
+                    String absPath = getPatchedImportLocation(relPath);
                     if (absPath == null) {
-                        logger.warning("Couldn't fix the relative location:"+relPath);
+                        //logger.warning("Couldn't fix the relative location:"+relPath);
                         return startElement;        // Not patching
                     }
                     logger.info("Fixing the relative location:"+relPath
@@ -192,7 +199,7 @@ public class WSDLPatcher {
                         location, absPath);
                     newAttrs.add(newAttr);
                     continue;
-                }
+                //}
             } 
             newAttrs.add(attr);
         }

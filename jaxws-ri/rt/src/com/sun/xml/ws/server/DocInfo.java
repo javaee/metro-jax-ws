@@ -1,5 +1,5 @@
 /*
- * $Id: DocInfo.java,v 1.4 2005-08-29 18:13:38 jitu Exp $
+ * $Id: DocInfo.java,v 1.5 2005-08-30 02:13:30 jitu Exp $
  *
  */
 
@@ -10,6 +10,7 @@
 package com.sun.xml.ws.server;
 import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.InputStream;
+import java.net.URL;
 
 
 public interface DocInfo {
@@ -75,6 +76,11 @@ public interface DocInfo {
      * @return /WEB-INF/wsdl/xxx.wsdl
      */
     public String getPath();
+    
+    /*
+     * @return URL for /WEB-INF/wsdl/xxx.wsdl
+     */
+    public URL getUrl();
 
     /*
      * Used to resolve relative doc locations

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.5 2005-08-26 22:25:52 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.6 2005-08-30 02:13:31 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -14,6 +14,7 @@ import java.io.InputStream;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import com.sun.xml.ws.wsdl.writer.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         private String queryString;
         
         public StreamDocInfo(String resource, ByteArrayOutputStream bout) {
-            this.resource = "/WEB-INF/wsdl/"+resource;
+            this.resource = resource;
             this.bout = bout;
         }
 
@@ -91,6 +92,15 @@ public class WSDLGenResolver implements WSDLOutputResolver {
 
         public String getPath() {
             return resource;
+        }
+        
+        public URL getUrl() {
+            try {
+                return new URL("file:///"+resource);
+            } catch(Exception e) {
+                
+            }
+            return null;
         }
 
         public String getQueryString() {

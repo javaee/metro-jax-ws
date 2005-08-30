@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.8 2005-07-24 01:34:57 kohlert Exp $
+ * $Id: WSDLPublisher.java,v 1.9 2005-08-30 02:13:31 jitu Exp $
  */
 
 /*
@@ -99,8 +99,8 @@ public class WSDLPublisher {
         response.setContentType("text/xml");
         response.setStatus(HttpServletResponse.SC_OK);
         OutputStream outputStream = response.getOutputStream();
-        WSDLPatcher patcher = new WSDLPatcher(inPath, baseAddress,
-                targetEndpoint, endpoints, in.getDocContext());
+        WSDLPatcher patcher = new WSDLPatcher(in, baseAddress,
+                targetEndpoint, endpoints);
         InputStream is = in.getDoc();
         try {
             patcher.patchDoc(is, outputStream);

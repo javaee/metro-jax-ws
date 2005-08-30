@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.4 2005-08-29 18:13:39 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.5 2005-08-30 02:13:31 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -383,8 +383,8 @@ public class HttpEndpoint {
                 + msg.getLocalAddress().getPort()
                 + msg.getRequestURI().getPath();
         System.out.println("****** Addres ="+address);
-        WSDLPatcher patcher = new WSDLPatcher(inPath, address,
-                targetEndpoint, endpoints, in.getDocContext());
+        WSDLPatcher patcher = new WSDLPatcher(in, address,
+                targetEndpoint, endpoints);
         InputStream is = in.getDoc();
         try {
             patcher.patchDoc(is, outputStream);

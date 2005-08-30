@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointDocInfo.java,v 1.1 2005-08-27 02:54:28 jitu Exp $
+ * $Id: EndpointDocInfo.java,v 1.2 2005-08-30 02:13:31 jitu Exp $
  *
  */
 
@@ -14,6 +14,7 @@ import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URL;
 
 public class EndpointDocInfo implements DocInfo {
     private String resource;
@@ -77,6 +78,13 @@ public class EndpointDocInfo implements DocInfo {
     
     public boolean hasPortType() {
         return false;
+    }
+    
+    /*
+     * @return URL for /WEB-INF/wsdl/xxx.wsdl
+     */
+    public URL getUrl() {
+        return null;
     }
     
 }

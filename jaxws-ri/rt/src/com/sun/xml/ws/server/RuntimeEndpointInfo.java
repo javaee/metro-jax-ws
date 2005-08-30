@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.45 2005-08-30 00:08:50 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.46 2005-08-30 02:13:30 jitu Exp $
  */
 
 /*
@@ -41,6 +41,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import javax.xml.ws.BeginService;
 import javax.xml.ws.EndService;
@@ -489,9 +490,19 @@ public class RuntimeEndpointInfo
      * path - /WEB-INF/wsdl/xxx.wsdl
      * return - xsd=a | wsdl | wsdl=b etc
      */
-    public String getQueryString(String path) {
+    public String getQueryString(URL url) {
+        Set<Entry<String, DocInfo>> entries = getDocMetadata().entrySet();
+        for(Entry<String, DocInfo> entry : entries) {
+            // URLs are not matching. servlet container bug ?
+            if (entry.getValue().getUrl().toString().equals(url.toString())) {       
+                return entry.getValue().getQueryString();
+            }
+        }
+        return null;
+        /*
         DocInfo docInfo = docs.get(path);
         return (docInfo == null) ? null : docInfo.getQueryString();
+         */
     }
     
     /*
