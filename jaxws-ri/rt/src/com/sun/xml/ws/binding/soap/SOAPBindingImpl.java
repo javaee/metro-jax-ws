@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.11 2005-08-29 19:37:28 kohlert Exp $
+ * $Id: SOAPBindingImpl.java,v 1.12 2005-08-30 18:19:05 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -33,8 +33,10 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
  */
 public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
+    //this is currently hardcoded to xws SystemHandlerDelegate
+    //package is com.sun.xml.rpc
     private final static String SHD_NAME =
-        "com.sun.xml.ws.security.SystemHandlerDelegateImpl";
+        "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
     
     public static final String X_SOAP12HTTP_BINDING = 
         "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
