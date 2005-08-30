@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.9 2005-08-29 19:37:28 kohlert Exp $
+ * $Id: ContextMap.java,v 1.10 2005-08-30 21:47:46 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -245,13 +245,12 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     }
 
-    private static Class STRING_CLASS = String.class;
-    private static Class BOOLEAN_CLASS = Boolean.class;
-    private static Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
-    private static Class DISPATCH_CLASS = Dispatch.class;
-    private static Class PROXY_CLASS = Proxy.class;  //tbd
-    //private static Class CALL_CLASS = Call.class; //tbd
-    private static Class JAXBCONTEXT_CLASS =
+    private static final Class STRING_CLASS = String.class;
+    private static final Class BOOLEAN_CLASS = Boolean.class;
+    private static final Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
+    private static final Class DISPATCH_CLASS = Dispatch.class;
+    private static final Class PROXY_CLASS = Proxy.class;     
+    private final static Class JAXBCONTEXT_CLASS =
         JAXBContext.class;
     private static Class CLIENT_TRANSPORT_FACTORY_CLASS = ClientTransportFactory.class;
 
