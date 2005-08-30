@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.15 2005-08-30 21:03:38 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.16 2005-08-30 23:59:05 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -284,7 +284,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         return payload;
     }
 
-    protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments, Parameter param){
+    protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments, 
+                                   Parameter param, ParameterBinding paramBinding){
         Object obj = null;
         RuntimeModel model = rtContext.getModel();
         for(String id:attachments.keySet()){
@@ -294,7 +295,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 if(ab == null)
                     return null;
                 AttachmentPart ap = ab.getAttachmentPart();
-                String mimeType = param.getBinding().getMimeType();
+                String mimeType = paramBinding.getMimeType();
                 Class type = (Class)param.getTypeReference().type;
                 try {
                     if (DataHandler.class.isAssignableFrom(type))
