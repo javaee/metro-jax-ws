@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.25 2005-08-30 19:42:04 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.26 2005-08-30 21:01:28 vivekp Exp $
  */
 
 /**
@@ -218,7 +218,9 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                                 wr = m.annotate(javax.jws.WebResult.class);
                             wr.param("targetNamespace", nsURI);
                         }
-                        if(!(isDocStyle && operation.isWrapped())){
+                        //doclit wrapped could have additional headers
+                        if(!(isDocStyle && operation.isWrapped()) ||
+                                (parameter.getBlock().getLocation() == Block.HEADER)){
                             if(wr == null)
                                 wr = m.annotate(javax.jws.WebResult.class);
                             wr.param("partName", parameter.getName());
@@ -355,9 +357,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             paramAnno.param("mode", javax.jws.WebParam.Mode.OUT);
         }
 
-        //dont generate partName element for doclit-wrapped and if the binding is HEADER
-        //because header=true is already there to tell the binding
-        if(!(isDocStyle && isWrapped))
+        //doclit wrapped could have additional headers
+        if(!(isDocStyle && isWrapped) || header)
             paramAnno.param("partName", javaParameter.getParameter().getName());
     }
 
