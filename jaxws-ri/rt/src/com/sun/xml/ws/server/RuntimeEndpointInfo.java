@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.44 2005-08-29 18:13:39 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.45 2005-08-30 00:08:50 vivekp Exp $
  */
 
 /*
@@ -76,7 +76,6 @@ public class RuntimeEndpointInfo
     private Class implementorClass;
     private Map<String, DocInfo> docs;      // /WEB-INF/wsdl/xxx.wsdl -> DocInfo
     private Map<String, DocInfo> query2Doc;     // (wsdl=a) --> DocInfo
-    private boolean enableMtom;
     private WebServiceContext wsContext;
     private boolean beginServiceDone;
     private boolean endServiceDone;
@@ -128,14 +127,6 @@ public class RuntimeEndpointInfo
     
     public URL getWsdLUrl() {
         return wsdlUrl;
-    }
-
-    /**
-     * Enable Mtom processing
-     * @param enable enables the use of MTOM
-     */
-    public void setMtomEnabled(boolean enable){
-        this.enableMtom = enable;
     }
 
     public boolean isDeployed() {
@@ -297,8 +288,10 @@ public class RuntimeEndpointInfo
                     }
                 }
             }
-            //set Tmomt processing
-            runtimeModel.enableMtom(enableMtom);
+            //set momt processing
+            if(binding instanceof SOAPBindingImpl){
+                runtimeModel.enableMtom(((SOAPBinding)binding).isMTOMEnabled());
+            }
         }
         deployed = true;
     }

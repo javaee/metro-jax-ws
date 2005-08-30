@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.7 2005-08-22 05:08:27 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.8 2005-08-30 00:08:50 vivekp Exp $
  */
 
 /*
@@ -106,10 +106,6 @@ public class RuntimeEndpointInfoParser {
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
                 rei.setPortName(getQNameAttribute(attrs, ATTR_PORT));
 
-                //get enable-mtom attribute value
-                String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);                
-                rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
-
                 //set Binding using DD, annotation, or default one(in that order)
                 String bindingId = getAttribute(attrs, ATTR_BINDING);
                 if (bindingId == null) {
@@ -136,8 +132,14 @@ public class RuntimeEndpointInfoParser {
                         reader,
                         ATTR_BINDING);
                 }
+
+                //get enable-mtom attribute value
+                String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);
                 
-                rei.setMtomEnabled((mtom != null)?Boolean.valueOf(mtom):false);
+                if(rei.getBinding() instanceof SOAPBindingImpl){
+                    SOAPBinding sb = (SOAPBinding)rei.getBinding();
+                    sb.setMTOMEnabled((mtom != null)?Boolean.valueOf(mtom):false);
+                }
 
                 rei.setUrlPattern(
                     getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN));
