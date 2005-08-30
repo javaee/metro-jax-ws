@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.24 2005-08-30 19:40:45 kohlert Exp $
+ * $Id: SeiGenerator.java,v 1.25 2005-08-30 19:42:04 kohlert Exp $
  */
 
 /**
@@ -422,9 +422,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
 //        serviceNS = service.getName().getNamespaceURI();
 //        wsa.param("serviceName", serviceName);
 //        wsa.param("targetNamespace", serviceNS);
-        QName portTypeName = (QName)port.getProperty(ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
-        wsa.param("name", portTypeName.getLocalPart());
-        wsa.param("targetNamespace", portTypeName.getNamespaceURI());
+        wsa.param("name", name.getLocalPart());
+        wsa.param("targetNamespace", name.getNamespaceURI());
         wsa.param("wsdlLocation", wsdlLocation);
     }
 
