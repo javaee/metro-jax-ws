@@ -1,5 +1,5 @@
 /**
- * $Id: WSRtObjectFactory.java,v 1.6 2005-08-18 02:19:03 jitu Exp $
+ * $Id: WSRtObjectFactory.java,v 1.7 2005-08-30 19:52:10 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -18,7 +18,7 @@ import org.xml.sax.EntityResolver;
  */
 public abstract class WSRtObjectFactory {
 
-    private static WSRtObjectFactory factory;
+    private static final WSRtObjectFactory factory = new WSRtObjectFactoryImpl();
 
     /**
      * Obtain an instance of a factory. Don't worry about synchronization(at
@@ -26,14 +26,11 @@ public abstract class WSRtObjectFactory {
      *
      */
     public static WSRtObjectFactory newInstance() {
-        if (factory == null) {
-            factory = new WSRtObjectFactoryImpl();
-        }
         return factory;
     }
 
     /**
-     * Delete it ??
+     * Creates SOAPMessageContext
      */
     public abstract SOAPMessageContext createSOAPMessageContext();
 
