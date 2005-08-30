@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.6 2005-08-30 02:13:31 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.7 2005-08-30 22:35:24 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -17,6 +17,7 @@ import com.sun.xml.ws.wsdl.writer.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.ws.Holder;
 
 /**
  * @author WS Development Team
@@ -69,6 +70,35 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         result.setOutputStream(bout);
         result.setSystemId(suggestedFileName);
         return result;
+    }
+    
+    /*
+     * Updates filename if the suggested filename need to be changed
+     *
+     * return null if concrete WSDL need not be generated
+     */
+    public Result getWSDLOutput(Holder<String> filename) {
+        return null;
+    }
+
+    /*
+     * Updates filename if the suggested filename need to be changed in
+     * wsdl:import
+     *
+     * return null if abstract WSDL need not be generated
+     */
+    public Result getAbstractWSDLOutput(Holder<String> filename) {
+        return null;
+    }
+
+    /*
+     * Updates filename if the suggested filename need to be changed in
+     * xsd:import
+     *
+     * return null if schema need not be generated
+     */
+    public Result getSchemaOutput(String namespace, Holder<String> filename) {
+        return null;
     }
     
     public class StreamDocInfo implements DocInfo {

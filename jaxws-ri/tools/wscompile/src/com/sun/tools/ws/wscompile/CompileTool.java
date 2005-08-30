@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.19 2005-08-29 20:08:38 kohlert Exp $
+ * $Id: CompileTool.java,v 1.20 2005-08-30 22:35:25 jitu Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.ws.Holder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -432,7 +433,16 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                             if (namespace.equals(""))
                                 return null;
                             return getWSDLOutput(suggestedFilename);
-                        }                        
+                        }
+                        public Result getWSDLOutput(Holder<String> filename) {
+                            return null;
+                        }
+                        public Result getAbstractWSDLOutput(Holder<String> filename) {
+                            return null;
+                        }
+                        public Result getSchemaOutput(String namespace, Holder<String> filename) {
+                            return null;
+                        }
                     }, bindingID);
             wsdlGenerator.doGeneration();        
         }
