@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.7 2005-08-24 00:29:11 vivekp Exp $
+ * $Id: Parameter.java,v 1.8 2005-08-30 21:03:39 vivekp Exp $
  */
 
 /*
@@ -83,6 +83,24 @@ public class Parameter {
         this.binding = binding;
     }
 
+    public void setInBinding(ParameterBinding binding){
+        this.binding = binding;
+    }
+
+    public void setOutBinding(ParameterBinding binding){
+        this.outBinding = binding;
+    }
+
+    public ParameterBinding getInBinding(){
+        return binding;
+    }
+
+    public ParameterBinding getOutBinding(){
+        if(outBinding == null)
+            return binding;
+        return outBinding;
+    }
+
     public boolean isIN() {
         return mode.equals(Mode.IN);
     }
@@ -146,6 +164,7 @@ public class Parameter {
     }
 
     protected ParameterBinding binding;
+    protected ParameterBinding outBinding;
     protected int index;
     protected Mode mode;
     protected TypeReference typeReference;

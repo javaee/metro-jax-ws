@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.16 2005-08-29 19:37:30 kohlert Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.17 2005-08-30 21:03:38 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -64,7 +64,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
         while (iter.hasNext()) {
             Parameter param = iter.next();
-            ParameterBinding paramBinding = param.getBinding();
+            ParameterBinding paramBinding = param.getInBinding();
             Object obj = null;
             if (paramBinding.isBody()) {
                 obj = bodyValue;
@@ -74,7 +74,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             } else if (paramBinding.isAttachment()) {
               obj = getAttachment(rtContext, attachments, param);
             }
-            fillData(rtContext, param, obj, data, soapBinding);
+            fillData(rtContext, param, obj, data, soapBinding, paramBinding);
         }
         Iterator<Parameter> resIter = jm.getResponseParameters().iterator();
         while(resIter.hasNext()){
@@ -135,8 +135,8 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         while (iter.hasNext()) {
             Parameter param = iter.next();
-            ParameterBinding paramBinding = param.getBinding();
-            Object obj = createPayload(rtContext, param, data, result, soapBinding);
+            ParameterBinding paramBinding = param.getOutBinding();
+            Object obj = createPayload(rtContext, param, data, result, soapBinding, paramBinding);
             if (paramBinding.isBody()) {
                 im.setBody(new BodyBlock(obj));
             } else if (paramBinding.isHeader()) {

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.9 2005-08-21 19:30:01 vivekp Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.10 2005-08-30 21:03:39 vivekp Exp $
  */
 
 /*
@@ -37,12 +37,20 @@ public class SOAPRuntimeModel extends RuntimeModel {
         for (JavaMethod m : methods) {
             if(m.isAsync())
                 continue;
-            List<Parameter> params = new ArrayList<Parameter>();
-            params.addAll(m.getRequestParameters());
-            params.addAll(m.getResponseParameters());
             SOAPBinding binding = (SOAPBinding) m.getBinding();
-            for (Parameter param : params) {
-                ParameterBinding paramBinding = param.getBinding();
+            setDecoderInfo(m.getRequestParameters(), binding, Mode.IN);
+            setDecoderInfo(m.getResponseParameters(), binding, Mode.OUT);
+            for(CheckedException ce:m.getCheckedExceptions()){
+                JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(ce.getDetailType()));
+                addDecoderInfo(ce.getDetailType().tagName, bi);
+            }
+        }
+
+    }
+
+    private void setDecoderInfo(List<Parameter> params, SOAPBinding binding, Mode mode){
+        for (Parameter param : params) {
+                ParameterBinding paramBinding = (mode == Mode.IN)?param.getInBinding():param.getOutBinding();
                 if (paramBinding.isBody() && binding.isRpcLit()) {
                     RpcLitPayload payload = new RpcLitPayload(param.getName());
                     WrapperParameter wp = (WrapperParameter) param;
@@ -61,16 +69,9 @@ public class SOAPRuntimeModel extends RuntimeModel {
                     addDecoderInfo(param.getName(), bi);
                 }
             }
-            for(CheckedException ce:m.getCheckedExceptions()){
-                JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(ce.getDetailType()));
-                addDecoderInfo(ce.getDetailType().tagName, bi);
-            }
-        }
-
     }
-    
 
-    /* 
+    /*
      * @see RuntimeModel#populateMaps()
      */
     @Override
@@ -115,19 +116,21 @@ public class SOAPRuntimeModel extends RuntimeModel {
         }
         
         //else is rpclit
-        addTypes(m.getRequestParameters(), types);
-        addTypes(m.getResponseParameters(), types);
+        addTypes(m.getRequestParameters(), types, Mode.IN);
+        addTypes(m.getResponseParameters(), types, Mode.OUT);
     }
         
     /**
      * @param params
      * @param types
+     * @param mode
      */
-    private void addTypes(List<Parameter> params, List<TypeReference> types) {
+    private void addTypes(List<Parameter> params, List<TypeReference> types, Mode mode) {
         for(Parameter p:params){
+            ParameterBinding binding = (mode == Mode.IN)?p.getInBinding():p.getOutBinding();
             if(!p.isWrapperStyle()){
                 types.add(p.getTypeReference());
-            }else if(p.getBinding().isBody()){
+            }else if(binding.isBody()){
                 List<Parameter> wcParams = ((WrapperParameter)p).getWrapperChildren();
                 for(Parameter wc:wcParams){
                     types.add(wc.getTypeReference());
@@ -144,11 +147,11 @@ public class SOAPRuntimeModel extends RuntimeModel {
             JavaMethod method = methods.next();
             // fill in request headers
             Iterator<Parameter> params = method.getRequestParameters().iterator();
-            fillHeaders(params, headers);
+            fillHeaders(params, headers, Mode.IN);
 
             // fill in response headers
             params = method.getResponseParameters().iterator();
-            fillHeaders(params, headers);
+            fillHeaders(params, headers, Mode.OUT);
         }
         return headers;
     }
@@ -157,10 +160,10 @@ public class SOAPRuntimeModel extends RuntimeModel {
      * @param params
      * @param headers
      */
-    private void fillHeaders(Iterator<Parameter> params, Set<QName> headers) {
+    private void fillHeaders(Iterator<Parameter> params, Set<QName> headers, Mode mode) {
         while (params.hasNext()) {
             Parameter param = params.next();
-            ParameterBinding binding = param.getBinding();
+            ParameterBinding binding = (mode == Mode.IN)?param.getInBinding():param.getOutBinding();
             QName name = param.getName();
             if (binding.isHeader() && !headers.contains(name)) {
                 headers.add(name);

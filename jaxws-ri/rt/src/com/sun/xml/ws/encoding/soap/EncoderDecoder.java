@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.14 2005-08-26 19:44:48 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.15 2005-08-30 21:03:38 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -17,6 +17,7 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.model.Parameter;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -55,7 +56,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return if the parameter is a return
      */
     protected Object fillData(RuntimeContext context, Parameter param, Object obj, Object[] data,
-            SOAPBinding binding) {
+            SOAPBinding binding, ParameterBinding paramBinding) {
         if (param.isWrapperStyle()) {
             Object resp = null;
             for (Parameter p : ((WrapperParameter) param).getWrapperChildren()) {
@@ -82,8 +83,13 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             }
             return resp;
         }
-        if(!param.getBinding().isAttachment())
-            obj = (obj != null)?((JAXBBridgeInfo)obj).getValue():null;
+
+        if(!paramBinding.isAttachment()){
+            if(paramBinding.isUnbound())
+                obj = setIfPrimitive(param.getTypeReference().type);
+            else
+                obj = (obj != null)?((JAXBBridgeInfo)obj).getValue():null;
+        }
         if (param.isResponse()) {
             return obj;
         } else if (data[param.getIndex()] != null) {
@@ -127,8 +133,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return Payload - decided by the binding used
      */
     protected Object createPayload(RuntimeContext context, Parameter param, Object[] data,
-            Object result, SOAPBinding binding) {
-        if(param.getBinding().isAttachment()){
+            Object result, SOAPBinding binding, ParameterBinding paramBinding) {
+        if(paramBinding.isAttachment()){
             Object obj = null;
             if(param.isResponse())
                 obj = result;
@@ -136,7 +142,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 obj = param.getHolderValue(data[param.getIndex()]);
             return obj;
         }
-        if (binding.isRpcLit() && (param.getBinding()).isBody()) {
+        if (binding.isRpcLit() && paramBinding.isBody()) {
             return createRpcLitPayload(context, (WrapperParameter) param, data, result);
         }
         Object obj = createDocLitPayloadValue(context, param, data, result, binding);

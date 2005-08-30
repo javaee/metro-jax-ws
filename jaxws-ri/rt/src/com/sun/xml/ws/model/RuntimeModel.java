@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.18 2005-08-24 00:29:11 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.19 2005-08-30 21:03:39 vivekp Exp $
  */
 
 /*
@@ -255,54 +255,58 @@ public abstract class RuntimeModel {
             boolean isRpclit = ((SOAPBinding)method.getBinding()).isRpcLit();
             List<Parameter> reqParams = method.getRequestParameters();
             for(Parameter param:reqParams){
-                if(param.getBinding().isHeader())
-                    continue;
                 if(param.isWrapperStyle()){
                     if(isRpclit)
-                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
+                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding, Mode.IN);
                     continue;
                 }
-
+                //if the parameter is not inout and its header=true then dont get binding from WSDL
+//                if(!param.isINOUT() && param.getBinding().isHeader())
+//                    continue;
                 String partName = param.getPartName();
                 if(partName == null)
                     continue;
                 ParameterBinding paramBinding = wsdlBinding.getBinding(method.getOperationName(),
-                        partName, param.mode);
+                        partName, Mode.IN);
                 if(paramBinding != null)
-                    param.setBinding(paramBinding);
+                    param.setInBinding(paramBinding);
             }
 
             List<Parameter> resParams = method.getResponseParameters();
             for(Parameter param:resParams){
-                if(param.getBinding().isHeader())
-                    continue;                
                 if(param.isWrapperStyle()){
                     if(isRpclit)
-                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding);
+                        applyRpcLitParamBinding(method.getOperationName(), (WrapperParameter)param, wsdlBinding, Mode.OUT);
                     continue;
                 }
+                //if the parameter is not inout and its header=true then dont get binding from WSDL
+//                if(!param.isINOUT() && param.getBinding().isHeader())
+//                    continue;
                 String partName = param.getPartName();
                 if(partName == null)
                     continue;
                 ParameterBinding paramBinding = wsdlBinding.getBinding(method.getOperationName(),
-                        partName, param.mode);
+                        partName, Mode.OUT);
                 if(paramBinding != null)
-                    param.setBinding(paramBinding);
+                    param.setOutBinding(paramBinding);
             }
 
         }
     }
 
-    private void applyRpcLitParamBinding(String opName, WrapperParameter wrapperParameter, Binding wsdlBinding) {
+    private void applyRpcLitParamBinding(String opName, WrapperParameter wrapperParameter, Binding wsdlBinding, Mode mode) {
         RpcLitPayload payload = new RpcLitPayload(wrapperParameter.getName());
         for(Parameter param:wrapperParameter.getWrapperChildren()){
             String partName = param.getPartName();
                 if(partName == null)
                     continue;
                 ParameterBinding paramBinding = wsdlBinding.getBinding(opName,
-                        partName, param.mode);
+                        partName, mode);
                 if(paramBinding != null){
-                    param.setBinding(paramBinding);
+                    if(mode == Mode.IN)
+                        param.setInBinding(paramBinding);
+                    else if(mode == Mode.OUT)
+                        param.setOutBinding(paramBinding);
                     if(paramBinding.isBody()){
                         JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()), null);
                         payload.addParameter(bi);

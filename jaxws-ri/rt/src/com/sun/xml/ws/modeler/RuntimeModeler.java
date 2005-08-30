@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.44 2005-08-29 21:12:32 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.45 2005-08-30 21:03:40 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -540,6 +540,7 @@ public class RuntimeModeler {
         int pos = 0;
         QName paramQName = null;
         for (Class clazzType : parameterTypes) {
+            String partName=null;
             Parameter param = null;
             String paramName = "arg"+pos;
             String paramNamespace = "";//targetNamespace;
@@ -565,6 +566,10 @@ public class RuntimeModeler {
                     if (webParam.name().length() > 0)
                         paramName = webParam.name();
                     isHeader = webParam.header();
+                    if(webParam.partName().length() > 0)
+                        partName = webParam.partName();
+                    else
+                        partName = paramName;
                     if (isHeader) // headers cannot be in empty namespace
                         paramNamespace = targetNamespace;
                     if (!webParam.targetNamespace().equals("")) {
@@ -602,6 +607,7 @@ public class RuntimeModeler {
             if (isHeader) {
                 param.setBinding(new ParameterBinding(SOAPBlock.HEADER));
                 javaMethod.addParameter(param);
+                param.setPartName(partName);
             } else {
                 param.setBinding(new ParameterBinding(SOAPBlock.BODY));
                 if (!paramMode.equals(com.sun.xml.ws.model.Mode.OUT)) {
@@ -688,6 +694,7 @@ public class RuntimeModeler {
                 new TypeReference(reqElementName, RPC_LIT_PAYLOAD_CLASS, new Annotation[0]);
         WrapperParameter requestWrapper = new WrapperParameter(typeRef,
             com.sun.xml.ws.model.Mode.IN, 0);
+        requestWrapper.setInBinding(new ParameterBinding(SOAPBlock.BODY));
         javaMethod.addParameter(requestWrapper);
         WrapperParameter responseWrapper = null;
         if (!isOneway) {
@@ -695,6 +702,7 @@ public class RuntimeModeler {
                                         new Annotation[0]);
             responseWrapper = new WrapperParameter(typeRef,
                 com.sun.xml.ws.model.Mode.OUT, -1);
+            responseWrapper.setOutBinding(new ParameterBinding(SOAPBlock.BODY));
             javaMethod.addParameter(responseWrapper);
         }
 
@@ -737,7 +745,7 @@ public class RuntimeModeler {
                 returnParameter.setBinding(new ParameterBinding(SOAPBlock.HEADER));
                 javaMethod.addParameter(returnParameter);
             }else{
-                ParameterBinding rb = getBinding(binding, operationName, resultPartName, com.sun.xml.ws.model.Mode.OUT);
+                ParameterBinding rb = getBinding(binding, operationName, resultPartName, false, com.sun.xml.ws.model.Mode.OUT);
                 returnParameter.setBinding(rb);
                 if(rb.getBinding().isBody() || rb.getBinding().isUnbound()){
                     responseWrapper.addWrapperChild(returnParameter);
@@ -811,26 +819,33 @@ public class RuntimeModeler {
             }
             param.setPartName(partName);
 
-            if (isHeader) {
-                param.setBinding(new ParameterBinding(SOAPBlock.HEADER));
-                javaMethod.addParameter(param);
-            } else {
-                ParameterBinding pb = getBinding(binding, operationName, partName, paramMode);
-                param.setBinding(pb);
-                if(pb.getBinding().isBody() || pb.getBinding().isUnbound()){
-                    if (!paramMode.equals(com.sun.xml.ws.model.Mode.OUT)) {
-                        requestWrapper.addWrapperChild(param);
-                    }
-                    if (!paramMode.equals(com.sun.xml.ws.model.Mode.IN)) {
-                        if (isOneway) {
+            if(paramMode == Mode.INOUT){
+                ParameterBinding pb = getBinding(binding, operationName, partName, isHeader, Mode.IN);
+                param.setInBinding(pb);
+                pb = getBinding(binding, operationName, partName, isHeader, Mode.OUT);
+                param.setOutBinding(pb);
+            }else{
+                if (isHeader) {
+                    param.setBinding(new ParameterBinding(SOAPBlock.HEADER));
+                } else {
+                    ParameterBinding pb = getBinding(binding, operationName, partName, false, paramMode);
+                    param.setBinding(pb);
+                }
+            }
+            if(param.getInBinding().isBody()){
+                if(!param.isOUT()){
+                    requestWrapper.addWrapperChild(param);
+                }
+
+                if(!param.isIN()){
+                    if (isOneway) {
                             throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
                                     new Object[] {portClass.getCanonicalName(), methodName});
                         }
                         responseWrapper.addWrapperChild(param);
-                    }
-                }else {
-                    javaMethod.addParameter(param);
                 }
+            }else{
+                javaMethod.addParameter(param);
             }
         }
         processExceptions(javaMethod, method);
@@ -945,7 +960,7 @@ public class RuntimeModeler {
                 if(isResultHeader){
                     returnParameter.setBinding(new ParameterBinding(SOAPBlock.HEADER));
                 }else{
-                    ParameterBinding rb = getBinding(binding, operationName, resultPartName, com.sun.xml.ws.model.Mode.OUT);
+                    ParameterBinding rb = getBinding(binding, operationName, resultPartName, false, com.sun.xml.ws.model.Mode.OUT);
                     returnParameter.setBinding(rb);
                 }
                 javaMethod.addParameter(returnParameter);
@@ -1011,11 +1026,18 @@ public class RuntimeModeler {
                     partName = paramName;
             }
             param.setPartName(partName);
-            if (isHeader){
-                param.setBinding(new ParameterBinding(SOAPBlock.HEADER));
+            if(paramMode == com.sun.xml.ws.model.Mode.INOUT){
+                ParameterBinding pb = getBinding(binding, operationName, partName, isHeader, com.sun.xml.ws.model.Mode.IN);
+                param.setInBinding(pb);
+                pb = getBinding(binding, operationName, partName, isHeader, com.sun.xml.ws.model.Mode.OUT);
+                param.setOutBinding(pb);
             }else{
-                ParameterBinding pb = getBinding(binding, operationName, partName, paramMode);
-                param.setBinding(pb);
+                if (isHeader){
+                    param.setBinding(new ParameterBinding(SOAPBlock.HEADER));
+                }else{
+                    ParameterBinding pb = getBinding(binding, operationName, partName, false, paramMode);
+                    param.setBinding(pb);
+                }
             }
             javaMethod.addParameter(param);
         }
@@ -1141,9 +1163,14 @@ public class RuntimeModeler {
         return null;
     }
 
-    public ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, Mode mode){
-        if(binding == null)
-            return new ParameterBinding(SOAPBlock.BODY);
+    public ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, boolean isHeader, Mode mode){
+        if(binding == null){
+            if(isHeader)
+                return new ParameterBinding(SOAPBlock.HEADER);
+            else
+                return new ParameterBinding(SOAPBlock.BODY);
+
+        }
         return binding.getBinding(operation, part, mode);
     }
     
