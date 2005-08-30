@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.18 2005-08-30 21:03:40 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.19 2005-08-30 22:25:48 vivekp Exp $
  */
 
 /**
@@ -60,8 +60,54 @@ public class RuntimeWSDLParser {
      * Don't follow imports
      */
     public static void fillDocInfo(DocInfo docInfo, QName serviceName,
-        QName portTypeName) {
-        
+        QName portTypeName) throws XMLStreamException {
+        RuntimeWSDLParser parser = new RuntimeWSDLParser(null);
+
+        URL wsdlLoc = docInfo.getUrl();
+        InputSource source = new InputSource(wsdlLoc.toExternalForm());  // default resolution
+
+        XMLStreamReader reader = createReader(source);
+        XMLStreamReaderUtil.nextElementContent(reader);
+
+        if(reader.getName().equals(WSDLConstants.QNAME_SCHEMA)){
+            docInfo.setDocType(DocInfo.DOC_TYPE.SCHEMA);
+            String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
+            docInfo.setTargetNamespace(tns);
+            return;
+        }else if (reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)) {
+            docInfo.setDocType(DocInfo.DOC_TYPE.WSDL);
+            String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
+            docInfo.setTargetNamespace(tns);
+        }else{
+            return;
+        }
+
+        while (XMLStreamReaderUtil.nextElementContent(reader) !=
+                XMLStreamConstants.END_ELEMENT) {
+             if(reader.getEventType() == XMLStreamConstants.END_DOCUMENT)
+                break;
+
+            QName name = reader.getName();
+            if (WSDLConstants.QNAME_PORT_TYPE.equals(name)) {
+                String pn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
+                if(!portTypeName.getLocalPart().equals(pn) ||
+                        !portTypeName.getNamespaceURI().equals(docInfo.getTargetNamespace()))
+                docInfo.setPortType(true);
+                XMLStreamReaderUtil.skipElement(reader);
+            } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
+                String sn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
+                QName sqn = new QName(docInfo.getTargetNamespace(), sn);
+                if(!serviceName.equals(sqn))
+                    continue;
+                parser.parseService(reader);
+                docInfo.setService(parser.wsdlDoc.getService(sqn));
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                    XMLStreamReaderUtil.next(reader);
+            } else{
+                XMLStreamReaderUtil.skipElement(reader);
+            }
+        }
+        reader.close();
     }
 
     private RuntimeWSDLParser(EntityResolver resolver) {

@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLConstants.java,v 1.7 2005-08-30 21:29:53 vivekp Exp $
+ * $Id: WSDLConstants.java,v 1.8 2005-08-30 22:25:48 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -19,6 +19,8 @@ public interface WSDLConstants {
     public static final String NS_XMLNS = "http://www.w3.org/2000/xmlns/";
     public static final String NS_WSDL = "http://schemas.xmlsoap.org/wsdl/";
     public static final String NS_SOAP11_HTTP_BINDING = "http://schemas.xmlsoap.org/soap/http";
+
+    public static final QName QNAME_SCHEMA = new QName(NS_XMLNS, "schema");
 
     // QNames
     public static final QName QNAME_BINDING = new QName(NS_WSDL, "binding");

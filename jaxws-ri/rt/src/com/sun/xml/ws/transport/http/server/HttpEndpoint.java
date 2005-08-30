@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.5 2005-08-30 02:13:31 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.6 2005-08-30 22:25:48 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -50,6 +50,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.stream.XMLStreamException;
+
 import org.xml.sax.EntityResolver;
 
 
@@ -141,7 +143,7 @@ public class HttpEndpoint {
     }
     
     // Fill DocInfo with docuent info : WSDL or Schema, targetNS etc.
-    private void fillDocInfo() {
+    private void fillDocInfo() throws XMLStreamException {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
             Transformer transformer = XmlUtil.newTransformer();
