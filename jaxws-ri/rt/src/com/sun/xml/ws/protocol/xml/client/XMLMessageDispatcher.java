@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.6 2005-08-19 17:33:51 kwalsh Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.7 2005-08-31 04:26:20 kohlert Exp $
  */
 
 /*
@@ -246,12 +246,12 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         if (clientTransportFactory == null) {
             clientTransportFactory = new HttpClientTransportFactory();
         }
-        if (clientTransportFactory instanceof HttpClientTransportFactory) {
-            connection = ((HttpClientTransportFactory) clientTransportFactory).create(context);
-        } else {
-            //local transport
-            connection = clientTransportFactory.create();
-        }
+//        if (clientTransportFactory instanceof HttpClientTransportFactory) {
+//            connection = ((HttpClientTransportFactory) clientTransportFactory).create(context);
+//        } else {
+//            //local transport
+            connection = clientTransportFactory.create(context);
+//        }
         messageInfo.setConnection(connection);
     }
 

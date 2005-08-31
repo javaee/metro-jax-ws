@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransportFactory.java,v 1.1 2005-07-19 18:10:07 arungupta Exp $
+ * $Id: LocalClientTransportFactory.java,v 1.2 2005-08-31 04:26:21 kohlert Exp $
  */
 
 /*
@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+
+import java.util.Map;
 
 /**
  * @author WS Development Team
@@ -33,6 +35,10 @@ public class LocalClientTransportFactory implements ClientTransportFactory {
     }
 
     public WSConnection create() {
+        return create(null);        
+    }
+    
+    public WSConnection create(Map<String, Object> context) {
         return new LocalClientTransport(endpointInfo, logStream);
     }
 

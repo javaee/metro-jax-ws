@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.26 2005-08-30 21:36:56 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.27 2005-08-31 04:26:20 kohlert Exp $
  */
 
 /*
@@ -173,7 +173,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             setConnection(messageInfo, context);
             ((WSConnection) messageInfo.getConnection()).setHeaders(ch);
 
-            if (!isAsync(messageInfo)) {
+            if (!isAsync(messageInfo)) {           
                 WSConnection connection = (WSConnection) messageInfo.getConnection();
 
                 logRequestMessage(sm, messageInfo);
@@ -183,8 +183,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
             // if handlerResult is false, the receive has already happened
             if (isRequestResponse && handlerResult) {
+            
                 receive(messageInfo);
+            } else if (!isRequestResponse && handlerResult) {
+                checkReturnStatus(messageInfo);              
             }
+        
         } catch (Throwable e) {
             setResponseType(e, messageInfo);
             messageInfo.setResponse(e);
@@ -282,13 +286,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         WSConnection connection = null;
         if (clientTransportFactory == null) {
             clientTransportFactory = new HttpClientTransportFactory();
+            context.put(CLIENT_TRANSPORT_FACTORY, clientTransportFactory);
         }
-        if (clientTransportFactory instanceof HttpClientTransportFactory) {
-            connection = ((HttpClientTransportFactory) clientTransportFactory).create(context);
-        } else {
-            //local transport
-            connection = clientTransportFactory.create();
-        }
+//        if (clientTransportFactory instanceof HttpClientTransportFactory) {
+//            connection = ((HttpClientTransportFactory) clientTransportFactory).create(context);
+//        } else {
+//            //local transport
+            connection = clientTransportFactory.create(context);
+//        }
         messageInfo.setConnection(connection);
     }
 
@@ -305,6 +310,23 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         messageInfo.setResponse(e);
     }
 
+    public void checkReturnStatus(MessageInfo messageInfo) {
+        WSConnection connection = (WSConnection)messageInfo.getConnection();
+        Map<String, List<String>> headers = connection.getHeaders();
+        if (connection.getStatus() != 202) {
+            // TODO  throw an exception
+//            System.out.println("status: "+connection.getStatus());
+        }
+/*        if (headers != null)
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                String name = entry.getKey();
+                for (String value : entry.getValue()) {
+                    System.out.println(name+": "+value);
+                }
+            }*/
+        
+    }
+    
     /*
      * Orchestrates the receiving of a synchronous response
      *
