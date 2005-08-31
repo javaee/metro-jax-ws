@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.11 2005-08-31 03:18:12 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.12 2005-08-31 04:07:16 jitu Exp $
  */
 
 /*
@@ -11,7 +11,7 @@ package com.sun.xml.ws.transport.http.servlet;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
-import com.sun.xml.ws.server.WSDLPatcher.DOC_TYPE;
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;

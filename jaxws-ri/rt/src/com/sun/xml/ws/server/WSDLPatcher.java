@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.8 2005-08-30 02:13:31 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.9 2005-08-31 04:07:15 jitu Exp $
  *
  */
 
@@ -10,6 +10,7 @@
 
 package com.sun.xml.ws.server;
 
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -53,8 +54,6 @@ public class WSDLPatcher {
             XMLOutputFactory.newInstance();
     private static final XMLInputFactory inputFactory = 
             XMLInputFactory.newInstance();
-    
-    public static enum DOC_TYPE { WSDL, SCHEMA, OTHER };
     
     private static final Logger logger =
         Logger.getLogger(
