@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.7 2005-08-31 15:51:15 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.8 2005-08-31 21:29:57 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -227,7 +227,7 @@ public class HttpEndpoint {
                         query = "xsd="+(xsdNum++);
                         break;
                     case OTHER :
-                        logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
+                        logger.warning(docInfo.getUrl()+" is not a WSDL or Schema file.");
                 }
                 docInfo.setQueryString(query);
             }
