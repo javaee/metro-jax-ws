@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.6 2005-08-24 20:15:00 bbissett Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.7 2005-08-31 18:29:40 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -132,7 +132,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 }
             }
         } catch(Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
             sendResponseError(messageInfo, e);
         }
     }
@@ -261,7 +260,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
-        e.printStackTrace();
+        logger.log(Level.SEVERE, e.getMessage(), e);
         WSConnection con = (WSConnection)messageInfo.getConnection();
         //SOAPConnectionUtil.sendResponseError(con);
     }
