@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.29 2005-08-31 19:57:38 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.30 2005-08-31 20:23:02 arungupta Exp $
  */
 
 /*
@@ -56,6 +56,8 @@ import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -316,8 +318,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     public void checkReturnStatus(MessageInfo messageInfo) {
         WSConnection connection = (WSConnection)messageInfo.getConnection();
         Map<String, List<String>> headers = connection.getHeaders();
-        if (connection.getStatus() != 202 || connection.getStatus() != 200) {
-            throw new WebServiceException("HTTP status code for oneway: " + connection.getStatus());
+        if (connection.getStatus() != 202 && connection.getStatus() != 200) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "HTTP status code for oneway: expected 202 or 200, got " + connection.getStatus());
 //            System.out.println("status: "+connection.getStatus());
         }
 /*        if (headers != null)
