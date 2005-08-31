@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.20 2005-08-30 22:35:25 jitu Exp $
+ * $Id: CompileTool.java,v 1.21 2005-08-31 03:18:12 jitu Exp $
  */
 
 /*
@@ -433,9 +433,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                             if (namespace.equals(""))
                                 return null;
                             return getWSDLOutput(suggestedFilename);
-                        }
-                        public Result getWSDLOutput(Holder<String> filename) {
-                            return null;
                         }
                         public Result getAbstractWSDLOutput(Holder<String> filename) {
                             return null;

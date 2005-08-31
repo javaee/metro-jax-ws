@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.7 2005-08-30 22:35:24 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.8 2005-08-31 03:18:11 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,6 +7,7 @@
 
 package com.sun.xml.ws.server;
 
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.wsdl.parser.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,8 +16,12 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import com.sun.xml.ws.wsdl.writer.*;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.xml.ws.Holder;
 
 /**
@@ -26,20 +31,39 @@ import javax.xml.ws.Holder;
 public class WSDLGenResolver implements WSDLOutputResolver {
     
     private Map<String, DocInfo> docs;
-    private String wsdlFile;
+    private DocInfo abstractWsdl;
+    private DocInfo concreteWsdl;
+    private Map<String, List<String>> nsMapping;    // targetNS -> system id list
     
-    public WSDLGenResolver() {
-        docs = new HashMap<String, DocInfo>();
+    public WSDLGenResolver(Map<String, DocInfo> docs) {
+        this.docs = docs;
+        nsMapping = new HashMap<String, List<String>>();
+        Set<Entry<String, DocInfo>> docEntries = docs.entrySet();
+        for(Entry<String, DocInfo> entry : docEntries) {
+            DocInfo docInfo = entry.getValue();
+            if (docInfo.hasPortType()) {
+                abstractWsdl = docInfo;
+            }
+            if (docInfo.getDocType() == DOC_TYPE.SCHEMA) {
+                List<String> sysIds = nsMapping.get(docInfo.getTargetNamespace());
+                if (sysIds == null) {
+                    sysIds = new ArrayList<String>();
+                    nsMapping.put(docInfo.getTargetNamespace(), sysIds);
+                }
+                sysIds.add(docInfo.getUrl().toString());
+            }
+        }
     }
     
     public String getWSDLFile() {
-        return wsdlFile;
+        return concreteWsdl.getUrl().toString();
     }
     
     public Map<String, DocInfo> getDocs() {
         return docs;
     }
     
+    /*
     public Result getWSDLOutput(String suggestedFileName) {       
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         
@@ -58,27 +82,41 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         result.setSystemId(suggestedFileName);
         return result;
     }
+     */
     
     public Result getSchemaOutput(String namespaceUri, String suggestedFileName) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         
         StreamDocInfo docInfo = new StreamDocInfo(suggestedFileName, bout);
         docInfo.setQueryString("xsd="+suggestedFileName);
-        docs.put(docInfo.getPath(),  docInfo);
+        docInfo.setDocType(DOC_TYPE.SCHEMA);
+        docs.put(docInfo.getUrl().toString(),  docInfo);
    
         StreamResult result = new StreamResult();
         result.setOutputStream(bout);
-        result.setSystemId(suggestedFileName);
+        result.setSystemId(docInfo.getUrl().toString());
         return result;
     }
     
     /*
-     * Updates filename if the suggested filename need to be changed
-     *
      * return null if concrete WSDL need not be generated
      */
-    public Result getWSDLOutput(Holder<String> filename) {
-        return null;
+    public Result getWSDLOutput(String filename) {        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        StreamDocInfo docInfo = new StreamDocInfo(filename, bout);
+        docInfo.setDocType(DOC_TYPE.WSDL);
+        // TODO remove this checking once WSDL generation uses new methods
+        if (concreteWsdl == null) {
+            docInfo.setQueryString("wsdl");
+            concreteWsdl = docInfo;
+        } else {
+            docInfo.setQueryString("wsdl="+filename);
+        }
+        docs.put(docInfo.getUrl().toString(),  docInfo);
+        StreamResult result = new StreamResult();
+        result.setOutputStream(bout);
+        result.setSystemId(docInfo.getUrl().toString());
+        return result;
     }
 
     /*
@@ -88,7 +126,19 @@ public class WSDLGenResolver implements WSDLOutputResolver {
      * return null if abstract WSDL need not be generated
      */
     public Result getAbstractWSDLOutput(Holder<String> filename) {
-        return null;
+        if (abstractWsdl != null) {
+            filename.value = abstractWsdl.getUrl().toString();
+            return null;                // Don't generate abstract WSDL
+        }
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        StreamDocInfo abstractWsdl = new StreamDocInfo(filename.value, bout);
+        abstractWsdl.setDocType(DOC_TYPE.WSDL);
+        abstractWsdl.setQueryString("wsdl="+filename.value);
+        docs.put(abstractWsdl.getUrl().toString(),  abstractWsdl);
+        StreamResult result = new StreamResult();
+        result.setOutputStream(bout);
+        result.setSystemId(abstractWsdl.getUrl().toString());
+        return result;
     }
 
     /*
@@ -98,7 +148,20 @@ public class WSDLGenResolver implements WSDLOutputResolver {
      * return null if schema need not be generated
      */
     public Result getSchemaOutput(String namespace, Holder<String> filename) {
-        return null;
+        List<String> schemas = nsMapping.get(namespace);
+        if (schemas != null) {
+            filename.value = schemas.get(0);
+            return null;            // Don't generate schema
+        }
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        StreamDocInfo docInfo = new StreamDocInfo(filename.value, bout);
+        docInfo.setDocType(DOC_TYPE.SCHEMA);
+        docInfo.setQueryString("xsd="+filename.value);
+        docs.put(docInfo.getUrl().toString(),  docInfo);
+        StreamResult result = new StreamResult();
+        result.setOutputStream(bout);
+        result.setSystemId(docInfo.getUrl().toString());
+        return result;
     }
     
     public class StreamDocInfo implements DocInfo {

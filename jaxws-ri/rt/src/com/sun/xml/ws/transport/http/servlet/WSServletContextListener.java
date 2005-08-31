@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.10 2005-08-25 19:14:50 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.11 2005-08-31 03:18:12 jitu Exp $
  */
 
 /*
@@ -29,6 +29,7 @@ import com.sun.xml.ws.util.localization.Localizer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -123,7 +124,7 @@ public class WSServletContextListener
      * Get all the WSDL & schema documents under WEB-INF/wsdl directory
      */
     private static void collectDocs(ServletContext context, String dirPath,
-            Map<String, DocInfo> docs) {
+            Map<String, DocInfo> docs) throws MalformedURLException {
         Set paths = context.getResourcePaths(dirPath);
         if (paths != null) {
             Iterator i = paths.iterator();
@@ -132,7 +133,7 @@ public class WSServletContextListener
                 if (docPath.endsWith("/")) {
                     collectDocs(context, docPath, docs);
                 } else {
-                    docs.put(docPath, new ServletDocInfo(context, docPath));
+                    docs.put(context.getResource(docPath).toString(), new ServletDocInfo(context, docPath));
                 }
             }
         }
@@ -181,42 +182,40 @@ public class WSServletContextListener
             endpoint.deploy();
             if (endpoint.needWSDLGeneration()) {
                 endpoint.generateWSDL();
-            }
-            if (endpoint.isPublishingDone()) {
-                continue;
-            }
-            
-            // Set queryString for the document
-            Set<Entry<String, DocInfo>> entries = docs.entrySet();
-            for(Entry<String, DocInfo> entry : entries) {
-                ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
-                String path = docInfo.getPath();
-                String query = null;
-                String queryValue = docInfo.getPath().substring(JAXWS_WSDL_DIR.length()+1);    // Without /WEB-INF/wsdl
-                queryValue = URLEncoder.encode(queryValue, "UTF-8");
-                InputStream in = docInfo.getDoc();
-                DOC_TYPE docType = null;    // is WSDL or schema ??
-                try {
-                    docType = WSDLPatcher.getDocType(docInfo.getDoc());
-                } catch (Exception e) {
-                    continue;           // Not XML ?? Ignore this document
-                } finally {
-                    try { in.close(); } catch(IOException ie) {};
+            } else {
+                endpoint.setMetadata(docs);
+                // Set queryString for the document
+                Set<Entry<String, DocInfo>> entries = docs.entrySet();
+                for(Entry<String, DocInfo> entry : entries) {
+                    ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
+                    String path = docInfo.getPath();
+                    String query = null;
+                    String queryValue = docInfo.getPath().substring(JAXWS_WSDL_DIR.length()+1);    // Without /WEB-INF/wsdl
+                    queryValue = URLEncoder.encode(queryValue, "UTF-8");
+                    InputStream in = docInfo.getDoc();
+                    DOC_TYPE docType = null;    // is WSDL or schema ??
+                    try {
+                        docType = WSDLPatcher.getDocType(docInfo.getDoc());
+                    } catch (Exception e) {
+                        continue;           // Not XML ?? Ignore this document
+                    } finally {
+                        try { in.close(); } catch(IOException ie) {};
+                    }
+                    switch(docType) {
+                        case WSDL :                   
+                            query = path.equals(wsdlFile)
+                                ? "wsdl" : "wsdl="+queryValue;
+                            break;
+                        case SCHEMA : 
+                            query = "xsd="+queryValue;
+                            break;
+                        case OTHER :
+                            logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
+                    }
+                    docInfo.setQueryString(query);
                 }
-                switch(docType) {
-                    case WSDL :                   
-                        query = path.equals(wsdlFile)
-                            ? "wsdl" : "wsdl="+queryValue;
-                        break;
-                    case SCHEMA : 
-                        query = "xsd="+queryValue;
-                        break;
-                    case OTHER :
-                        logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
-                }
-                docInfo.setQueryString(query);
             }
-            endpoint.setMetadata(docs);
+            endpoint.updateQuery2DocInfo();
         }
     }
 

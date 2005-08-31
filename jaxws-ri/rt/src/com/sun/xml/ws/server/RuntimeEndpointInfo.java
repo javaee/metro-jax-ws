@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.47 2005-08-30 21:59:33 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.48 2005-08-31 03:18:11 jitu Exp $
  */
 
 /*
@@ -334,7 +334,10 @@ public class RuntimeEndpointInfo
         }
          
         // Generate WSDL and schema documents using runtime model
-        WSDLGenResolver wsdlResolver = new WSDLGenResolver();
+        if (getDocMetadata() == null) {
+            setMetadata(new HashMap<String, DocInfo>());
+        }
+        WSDLGenResolver wsdlResolver = new WSDLGenResolver(getDocMetadata());
         WSDLGenerator wsdlGen = new WSDLGenerator(runtimeModel, wsdlResolver,
                 ((BindingImpl)binding).getBindingId());
         try {
@@ -343,7 +346,7 @@ public class RuntimeEndpointInfo
             throw new ServerRtException("server.rt.err",
                     new LocalizableExceptionAdapter(e));
         }
-        setMetadata(wsdlResolver.getDocs());
+        //setMetadata(wsdlResolver.getDocs());
         setWSDLFileName(wsdlResolver.getWSDLFile());
         setPublishingDone(true);
     }
@@ -469,11 +472,11 @@ public class RuntimeEndpointInfo
         } else {
             query2Doc = new HashMap<String, DocInfo>();
         }
-        Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();
+        Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();        
         for(Map.Entry<String, DocInfo> entry : entries) {
-            DocInfo docInfo = entry.getValue();
+            DocInfo docInfo = entry.getValue();          
             query2Doc.put(docInfo.getQueryString(), docInfo);
-        }
+        }        
     }
     
     public WebServiceContext getWebServiceContext() {
@@ -499,7 +502,7 @@ public class RuntimeEndpointInfo
     public String getQueryString(URL url) {
         Set<Entry<String, DocInfo>> entries = getDocMetadata().entrySet();
         for(Entry<String, DocInfo> entry : entries) {
-            // URLs are not matching. servlet container bug ?
+            // URLs are not matching. servlet container bug ?            
             if (entry.getValue().getUrl().toString().equals(url.toString())) {       
                 return entry.getValue().getQueryString();
             }
@@ -517,7 +520,7 @@ public class RuntimeEndpointInfo
      */
     public String getPath(String queryString) {
         DocInfo docInfo = query2Doc.get(queryString);
-        return (docInfo == null) ? null : docInfo.getPath();
+        return (docInfo == null) ? null : docInfo.getUrl().toString();
     }
     
     /*
