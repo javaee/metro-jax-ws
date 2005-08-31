@@ -1,5 +1,5 @@
 /*
- * $Id: DocInfo.java,v 1.6 2005-08-30 22:25:47 vivekp Exp $
+ * $Id: DocInfo.java,v 1.7 2005-08-31 03:59:45 jitu Exp $
  *
  */
 
@@ -15,7 +15,7 @@ import java.net.URL;
 
 public interface DocInfo {
     
-    public static enum DOC_TYPE { WSDL, SCHEMA, OTHER };
+    public enum DOC_TYPE { WSDL, SCHEMA, OTHER };
     
     /*
      * The implemenation needs to work for multiple invocations of this method

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.19 2005-08-30 22:25:48 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.20 2005-08-31 03:59:45 jitu Exp $
  */
 
 /**
@@ -8,10 +8,10 @@
  */
 
 package com.sun.xml.ws.wsdl.parser;
-
-import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.server.DocInfo;
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -70,12 +70,12 @@ public class RuntimeWSDLParser {
         XMLStreamReaderUtil.nextElementContent(reader);
 
         if(reader.getName().equals(WSDLConstants.QNAME_SCHEMA)){
-            docInfo.setDocType(DocInfo.DOC_TYPE.SCHEMA);
+            docInfo.setDocType(DOC_TYPE.SCHEMA);
             String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
             docInfo.setTargetNamespace(tns);
             return;
         }else if (reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)) {
-            docInfo.setDocType(DocInfo.DOC_TYPE.WSDL);
+            docInfo.setDocType(DOC_TYPE.WSDL);
             String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
             docInfo.setTargetNamespace(tns);
         }else{
