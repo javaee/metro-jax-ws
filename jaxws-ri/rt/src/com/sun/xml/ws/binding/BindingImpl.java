@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.6 2005-08-26 21:42:17 bbissett Exp $
+ * $Id: BindingImpl.java,v 1.7 2005-08-31 23:03:54 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -15,7 +15,6 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
-import javax.xml.ws.security.SecurityConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.ws.http.HTTPBinding;
@@ -81,10 +80,6 @@ public abstract class BindingImpl implements
         } else {
             handlers = chain;
         }
-    }
-
-    public SecurityConfiguration getSecurityConfiguration() {
-        throw new WebServiceException("Security is not implemented for JAXWS 2.0 Early Access.");
     }
 
     // used by client runtime before invoking handlers

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.49 2005-08-31 15:51:14 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.50 2005-08-31 23:03:55 jitu Exp $
  */
 
 /*
@@ -60,8 +60,8 @@ import org.xml.sax.SAXException;
  * WSDL & Schema Metadata
  * @author WS Development Team
  */
-public class RuntimeEndpointInfo
-    implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo, Endpoint {
+public class RuntimeEndpointInfo extends Endpoint
+    implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
     
     private String name;
     private Exception exception;

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageContextImpl.java,v 1.8 2005-08-26 23:40:07 vivekp Exp $
+ * $Id: SOAPMessageContextImpl.java,v 1.9 2005-08-31 23:03:54 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import javax.xml.ws.security.SecurityConfiguration;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPHeader;
@@ -69,7 +68,6 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
             allowedTypes.put(MessageContext.WSDL_INTERFACE, QName.class);
             allowedTypes.put(MessageContext.WSDL_OPERATION, QName.class);
             allowedTypes.put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.class);
-            allowedTypes.put(MessageContext.MESSAGE_SECURITY_CONFIGURATION, SecurityConfiguration.class);
         }
     }
 

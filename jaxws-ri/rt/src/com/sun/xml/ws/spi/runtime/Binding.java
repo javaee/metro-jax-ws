@@ -1,13 +1,11 @@
 /**
- * $Id: Binding.java,v 1.2 2005-06-30 18:50:32 bbissett Exp $
+ * $Id: Binding.java,v 1.3 2005-08-31 23:03:55 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
 package com.sun.xml.ws.spi.runtime;
-
-import javax.xml.ws.security.SecurityConfiguration;
 
 /** The <code>Binding</code> is the spi interface that extends the base interface
  *  for JAX-WS protocol bindings.

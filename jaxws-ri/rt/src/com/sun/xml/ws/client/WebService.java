@@ -1,5 +1,5 @@
 /*
- * $Id: WebService.java,v 1.25 2005-08-30 20:18:48 bbissett Exp $
+ * $Id: WebService.java,v 1.26 2005-08-31 23:03:54 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -30,7 +30,6 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.handler.PortInfo;
 import javax.xml.ws.http.HTTPBinding;
-import javax.xml.ws.security.SecurityConfiguration;
 import javax.xml.ws.soap.SOAPBinding;
 
 import java.io.Serializable;
@@ -181,10 +180,6 @@ public class WebService
 
     public java.net.URL getWSDLDocumentLocation() {
         return getWsdlLocation();
-    }
-
-    public SecurityConfiguration getSecurityConfiguration() {
-        throw new UnsupportedOperationException("Security is not implemented for JAXWS 2.0 Early Access.");
     }
 
     public HandlerResolver getHandlerResolver() {

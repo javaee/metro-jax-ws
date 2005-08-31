@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.7 2005-08-25 19:19:17 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.8 2005-08-31 23:03:56 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -24,7 +24,7 @@ import javax.xml.ws.WebServiceProvider;
  *
  * @author WS Development Team
  */
-public class EndpointImpl implements Endpoint {
+public class EndpointImpl extends Endpoint {
     
     private static final WebServicePermission ENDPOINT_PUBLISH_PERMISSION =
         new WebServicePermission("publishEndpoint");
