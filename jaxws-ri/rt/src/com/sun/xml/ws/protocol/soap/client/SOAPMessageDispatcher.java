@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.27 2005-08-31 04:26:20 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.28 2005-08-31 17:33:47 kwalsh Exp $
  */
 
 /*
@@ -182,10 +182,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             } // else return sm;
 
             // if handlerResult is false, the receive has already happened
-            if (isRequestResponse && handlerResult) {
-            
+            if (isRequestResponse && handlerResult) {            
                 receive(messageInfo);
-            } else if (!isRequestResponse && handlerResult) {
+            } else if (isOneway(messageInfo) && handlerResult) {
                 checkReturnStatus(messageInfo);              
             }
         
@@ -194,6 +193,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             messageInfo.setResponse(e);
         }
         return sm;
+    }
+
+    private boolean isOneway(MessageInfo messageInfo) {
+        return messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP ? true : false;
     }
 
     /**
