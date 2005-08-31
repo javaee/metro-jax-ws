@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointDocInfo.java,v 1.2 2005-08-30 02:13:31 jitu Exp $
+ * $Id: EndpointDocInfo.java,v 1.3 2005-08-31 15:51:15 jitu Exp $
  *
  */
 
@@ -17,15 +17,17 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class EndpointDocInfo implements DocInfo {
-    private String resource;
+    private URL resourceUrl;
     private String queryString;
-    private DocContext docContext;
     private byte[] buf;
+    private DOC_TYPE docType;
+    private String tns;
+    private Service service;
+    private boolean portType;
 
-    public EndpointDocInfo(String resource, byte[] buf) {
-        this.resource = resource;
+    public EndpointDocInfo(URL resourceUrl, byte[] buf) {
+        this.resourceUrl = resourceUrl;
         this.buf = buf;
-        this.docContext = null;
     }
     
     public InputStream getDoc() {
@@ -33,7 +35,7 @@ public class EndpointDocInfo implements DocInfo {
     }
     
     public String getPath() {
-        return resource;
+        return null;
     }
     
     public String getQueryString() {
@@ -45,46 +47,43 @@ public class EndpointDocInfo implements DocInfo {
     }
     
     public DocContext getDocContext() {
-        return docContext;
+        return null;
     }
     
     public void setDocType(DOC_TYPE docType) {
-        
+        this.docType = docType;
     }
     
     public DOC_TYPE getDocType() {
-        return null;
+        return docType;
     }
 
-    public void setTargetNamespace(String ns) {
-        
+    public void setTargetNamespace(String tns) {
+        this.tns = tns;
     }
     
     public String getTargetNamespace() {
-        return null;
+        return tns;
     }
     
     public void setService(Service service) {
-        
+        this.service = service;
     }
     
     public Service getService() {
-        return null;
+        return service;
     }
     
     public void setPortType(boolean portType) {
-        
+        this.portType = portType;
     }
     
     public boolean hasPortType() {
-        return false;
+        return portType;
     }
     
-    /*
-     * @return URL for /WEB-INF/wsdl/xxx.wsdl
-     */
     public URL getUrl() {
-        return null;
+        return resourceUrl;
     }
     
 }

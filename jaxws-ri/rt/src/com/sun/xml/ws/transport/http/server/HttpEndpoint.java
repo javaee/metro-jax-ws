@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.6 2005-08-30 22:25:48 vivekp Exp $
+ * $Id: HttpEndpoint.java,v 1.7 2005-08-31 15:51:15 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -33,11 +33,11 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import java.io.ByteArrayOutputStream;
+import java.net.MalformedURLException;
 
 import javax.xml.ws.Endpoint;
 import java.util.List;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +116,7 @@ public class HttpEndpoint {
      * Convert metadata sources using identity transform. So that we can
      * reuse the Source object multiple times.
      */
-    private void setDocInfo() {
+    private void setDocInfo() throws MalformedURLException {
         List<Source> metadata = endpointInfo.getMetadata();
         if (metadata != null) {
             Map<String, DocInfo> newMetadata = new HashMap<String, DocInfo>();
@@ -134,8 +134,9 @@ public class HttpEndpoint {
                         new LocalizableExceptionAdapter(te));
                 }
                 String systemId = source.getSystemId();
+                URL url = new URL(systemId);
                 byte[] buf = baos.toByteArray();
-                EndpointDocInfo docInfo = new EndpointDocInfo(systemId, buf);
+                EndpointDocInfo docInfo = new EndpointDocInfo(url, buf);
                 newMetadata.put(systemId, docInfo);
             }
             endpointInfo.setMetadata(newMetadata);
@@ -162,25 +163,14 @@ public class HttpEndpoint {
             Transformer transformer = XmlUtil.newTransformer();
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 DocInfo docInfo = entry.getValue();
-                    // TEMPORARY - need to uncoment the code below
-                    URL wsdlUrl = new URL(entry.getKey());
-                    EntityResolver resolver = new EndpointEntityResolver(metadata);
-                    endpointInfo.setWsdlInfo(wsdlUrl, resolver);
-                    docInfo.setQueryString("wsdl");
-                /*    
                 if (docInfo.getService() != null) {
-                    // Donot generate any document
+                    // Donot generate any WSDL or Schema document
                     URL wsdlUrl = new URL(entry.getKey());
                     EntityResolver resolver = new EndpointEntityResolver(metadata);
                     endpointInfo.setWsdlInfo(wsdlUrl, resolver);
                     docInfo.setQueryString("wsdl");
                     break;
-                } else if (docInfo.hasPortType()) {
-                    // Generate concrete WSDL, no schema
-                } else {
-                    // Generate everything, but schema from metadata
                 }
-                 */
             }
         }
     }
@@ -213,13 +203,7 @@ public class HttpEndpoint {
     }
     
     public void generateWSDLDocs() {
-        /*
         if (endpointInfo.needWSDLGeneration()) {
-            endpointInfo.generateWSDL();
-        }
-         */
-        
-        if (endpointInfo.getWsdLUrl() == null) {
             endpointInfo.generateWSDL();
         }
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.48 2005-08-31 03:18:11 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.49 2005-08-31 15:51:14 jitu Exp $
  */
 
 /*
@@ -304,7 +304,7 @@ public class RuntimeEndpointInfo
     }
     
     public boolean needWSDLGeneration() {
-        return (getWSDLFileName() == null);
+        return (getWsdLUrl() == null);
     }
     
     public boolean isPublishingDone() {

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.20 2005-08-31 03:59:45 jitu Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.21 2005-08-31 15:51:15 jitu Exp $
  */
 
 /**
@@ -77,6 +77,7 @@ public class RuntimeWSDLParser {
         }else if (reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)) {
             docInfo.setDocType(DOC_TYPE.WSDL);
             String tns = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_TNS);
+            parser.targetNamespace = tns;
             docInfo.setTargetNamespace(tns);
         }else{
             return;
