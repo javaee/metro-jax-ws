@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.22 2005-08-31 21:27:35 jitu Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.23 2005-08-31 23:44:35 vivekp Exp $
  */
 
 /**
@@ -295,8 +295,11 @@ public class RuntimeWSDLParser {
                     XMLStreamReaderUtil.next(reader);
             }else if((SOAPConstants.QNAME_HEADER.equals(name) || SOAPConstants.QNAME_SOAP12HEADER.equals(name))){
                 parseSOAPHeaderBinding(reader, bindingOp.getInputParts());
-                while(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
-                    XMLStreamReaderUtil.next(reader);
+                if(reader.getEventType() != XMLStreamConstants.END_ELEMENT){
+                    while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT){
+                        XMLStreamReaderUtil.skipElement(reader);
+                    }
+                }
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
                 parseMimeMultipartBinding(reader, bindingOp.getInputParts(), bindingOp.getOutputMimeTypes());
                 if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
@@ -319,8 +322,9 @@ public class RuntimeWSDLParser {
                     XMLStreamReaderUtil.next(reader);
             }else if((SOAPConstants.QNAME_HEADER.equals(name) || SOAPConstants.QNAME_SOAP12HEADER.equals(name))){
                 parseSOAPHeaderBinding(reader, bindingOp.getOutputParts());
-                while(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
-                    XMLStreamReaderUtil.next(reader);
+                while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT){
+                    XMLStreamReaderUtil.skipElement(reader);
+                }
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
                 parseMimeMultipartBinding(reader, bindingOp.getOutputParts(), bindingOp.getOutputMimeTypes());
                 if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
