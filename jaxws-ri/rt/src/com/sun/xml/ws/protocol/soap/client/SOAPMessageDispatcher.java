@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.28 2005-08-31 17:33:47 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.29 2005-08-31 19:57:38 arungupta Exp $
  */
 
 /*
@@ -316,8 +316,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     public void checkReturnStatus(MessageInfo messageInfo) {
         WSConnection connection = (WSConnection)messageInfo.getConnection();
         Map<String, List<String>> headers = connection.getHeaders();
-        if (connection.getStatus() != 202) {
-            // TODO  throw an exception
+        if (connection.getStatus() != 202 || connection.getStatus() != 200) {
+            throw new WebServiceException("HTTP status code for oneway: " + connection.getStatus());
 //            System.out.println("status: "+connection.getStatus());
         }
 /*        if (headers != null)
