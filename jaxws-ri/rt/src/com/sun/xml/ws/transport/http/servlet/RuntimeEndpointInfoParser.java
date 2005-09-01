@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.8 2005-08-30 00:08:50 vivekp Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.9 2005-09-01 05:35:53 jitu Exp $
  */
 
 /*
@@ -10,6 +10,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.spi.runtime.Binding;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
@@ -108,30 +109,9 @@ public class RuntimeEndpointInfoParser {
 
                 //set Binding using DD, annotation, or default one(in that order)
                 String bindingId = getAttribute(attrs, ATTR_BINDING);
-                if (bindingId == null) {
-                    bindingId = RuntimeModeler.getBindingId(implementorClass);
-                    if (bindingId == null) {            // Default one
-                        bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-                    }
-                }
-                if (bindingId.equals("##SOAP11_HTTP")) {
-                    bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-                } else if (bindingId.equals("##SOAP12_HTTP")) {
-                    bindingId = SOAPBinding.SOAP12HTTP_BINDING;
-                } else if (bindingId.equals("##XML_HTTP")) {
-                    bindingId = HTTPBinding.HTTP_BINDING;
-                }
-                if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
-                    || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
-                    || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)
-                    || bindingId.equals(HTTPBinding.HTTP_BINDING)) {
-                    rei.setBinding(BindingImpl.getBinding(bindingId));
-                } else {
-                    failWithLocalName(
-                        "runtime.parser.invalidAttributeValue",
-                        reader,
-                        ATTR_BINDING);
-                }
+                Binding binding = BindingImpl.getBinding(bindingId,
+					implementorClass, true);
+                rei.setBinding(binding);
 
                 //get enable-mtom attribute value
                 String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);

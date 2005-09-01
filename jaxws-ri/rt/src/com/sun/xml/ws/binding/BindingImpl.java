@@ -1,5 +1,5 @@
 /*
- * $Id: BindingImpl.java,v 1.7 2005-08-31 23:03:54 jitu Exp $
+ * $Id: BindingImpl.java,v 1.8 2005-09-01 05:35:51 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -10,10 +10,10 @@ package com.sun.xml.ws.binding;
 import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 
 import javax.xml.ws.Binding;
-import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,15 +106,34 @@ public abstract class BindingImpl implements
         systemHandlerDelegate = delegate;
     }
     
-    public static com.sun.xml.ws.spi.runtime.Binding getBinding(String bindingId) {
+    public static com.sun.xml.ws.spi.runtime.Binding getBinding(String bindingId,
+        Class implementorClass, boolean tokensOK) {
+        
+        if (bindingId == null) {
+            // Gets bindingId from @BindingType annotation
+            bindingId = RuntimeModeler.getBindingId(implementorClass);
+            if (bindingId == null) {            // Default one
+                bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+            }
+        }
+        if (tokensOK) {
+            if (bindingId.equals("##SOAP11_HTTP")) {
+                bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+            } else if (bindingId.equals("##SOAP12_HTTP")) {
+                bindingId = SOAPBinding.SOAP12HTTP_BINDING;
+            } else if (bindingId.equals("##XML_HTTP")) {
+                bindingId = HTTPBinding.HTTP_BINDING;
+            }
+        }
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
-            || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) 
+            || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
             || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
             return new SOAPBindingImpl(bindingId); 
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
             return new HTTPBindingImpl();
+        } else {
+            throw new IllegalArgumentException("Wrong bindingId "+bindingId);
         }
-        return null;
     }
     
     public static Binding getDefaultBinding() {

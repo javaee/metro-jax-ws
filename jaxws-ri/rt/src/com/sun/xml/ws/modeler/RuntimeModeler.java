@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.46 2005-09-01 00:18:58 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.47 2005-09-01 05:35:52 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -9,6 +9,7 @@ package com.sun.xml.ws.modeler;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBlock;
@@ -27,6 +28,7 @@ import java.rmi.RemoteException;
 import java.util.StringTokenizer;
 import java.util.concurrent.Future;
 import javax.xml.ws.BindingType;
+import javax.xml.ws.http.HTTPBinding;
 
 
 /**
@@ -1080,6 +1082,12 @@ public class RuntimeModeler {
         if (bindingType != null) {
             String bindingId = bindingType.value();
             if (bindingId.length() > 0) {
+                if (!bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
+                    && !bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+                    && !bindingId.equals(HTTPBinding.HTTP_BINDING)
+                    && !bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
+                    throw new IllegalArgumentException("Wrong binding id "+bindingId+" in @BindingType");
+                }
                 return bindingId;
             }
         }

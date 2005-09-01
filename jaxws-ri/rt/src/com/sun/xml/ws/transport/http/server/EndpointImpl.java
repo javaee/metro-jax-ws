@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.9 2005-09-01 02:46:05 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.10 2005-09-01 05:35:52 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,17 +8,16 @@
 
 package com.sun.xml.ws.transport.http.server;
 
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Binding;
 import javax.xml.transform.Source;
-import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServicePermission;
-import javax.xml.ws.WebServiceProvider;
+
 
 /**
  *
@@ -33,7 +32,9 @@ public class EndpointImpl extends Endpoint {
    
     public EndpointImpl(String bindingId, Object impl) {
         this(impl);
-        // TODO set binding
+        com.sun.xml.ws.spi.runtime.Binding binding =
+            BindingImpl.getBinding(bindingId, impl.getClass(), false);
+        rtEndpointInfo.setBinding(binding);
     }
     
     public EndpointImpl(Object impl) {
