@@ -8,12 +8,16 @@ package utils;
 import com.sun.xml.ws.util.ASCIIUtility;
 
 import javax.xml.transform.stream.StreamSource;
+import javax.imageio.ImageWriter;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -33,7 +37,27 @@ public class AttachmentHelper {
         
         return Arrays.equals (ASCIIUtility.getBytes (is1), ASCIIUtility.getBytes (is2));
     }
-    
+
+    public static byte[] getImageBytes(Image image, String type) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        BufferedImage bufImage = convertToBufferedImage(image);
+        ImageWriter writer = null;
+        Iterator i = ImageIO.getImageWritersByMIMEType(type);
+        if (i.hasNext()) {
+            writer = (ImageWriter)i.next();
+        }
+        if (writer != null) {
+            ImageOutputStream stream = null;
+            stream = ImageIO.createImageOutputStream(baos);
+            writer.setOutput(stream);
+            writer.write(bufImage);
+            stream.close();
+            return baos.toByteArray();
+        }
+        return null;
+    }
+
     private static BufferedImage convertToBufferedImage (Image image) throws IOException {
         if (image instanceof BufferedImage) {
             return (BufferedImage)image;
