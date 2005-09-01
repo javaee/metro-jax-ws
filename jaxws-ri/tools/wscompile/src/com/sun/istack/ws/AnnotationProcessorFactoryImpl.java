@@ -1,5 +1,5 @@
 /**
- * $Id: AnnotationProcessorFactoryImpl.java,v 1.4 2005-08-08 15:14:38 kohlert Exp $
+ * $Id: AnnotationProcessorFactoryImpl.java,v 1.5 2005-09-01 20:04:41 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -30,15 +30,35 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
 
 
     /*
-     * Supportes javax.jws.*, javax.jws.soap.* and javax.xml.ws.* annotations.
+     * Supports javax.jws.*, javax.jws.soap.* and javax.xml.ws.* annotations.
      */
     static Collection<String> supportedAnnotations;
     static {
         Collection<String> types = new HashSet<String>();
-        types.add("javax.jws.*");
-        types.add("javax.jws.soap.*");
-        types.add("javax.xml.ws.*");
-        types.add("com.sun.xml.ws.*");
+        types.add("javax.jws.HandlerChain");
+        types.add("javax.jws.Oneway");
+        types.add("javax.jws.WebMethod");
+        types.add("javax.jws.WebParam");
+        types.add("javax.jws.WebResult");
+        types.add("javax.jws.WebService");
+        types.add("javax.jws.soap.InitParam");
+        types.add("javax.jws.soap.SOAPBinding");
+        types.add("javax.jws.soap.SOAPMessageHandler");
+        types.add("javax.jws.soap.SOAPMessageHandlers");
+        types.add("javax.xml.ws.BeginService");
+        types.add("javax.xml.ws.EndService");
+        types.add("javax.xml.ws.BindingType");
+        types.add("javax.xml.ws.ParameterIndex");
+        types.add("javax.xml.ws.RequestWrapper");
+        types.add("javax.xml.ws.ResponseWrapper");
+        types.add("javax.xml.ws.ServiceMode");
+        types.add("javax.xml.ws.WebEndpoint");
+        types.add("javax.xml.ws.WebFault");
+        types.add("javax.xml.ws.WebServiceClient");
+        types.add("javax.xml.ws.WebServiceProvider");
+        types.add("javax.xml.ws.WebServiceRef");
+        
+        types.add("javax.xml.ws.security.MessageSecurity");
         supportedAnnotations = Collections.unmodifiableCollection(types);
     }
 
