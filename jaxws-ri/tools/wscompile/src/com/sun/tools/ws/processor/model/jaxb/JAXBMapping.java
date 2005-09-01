@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBMapping.java,v 1.2 2005-07-21 01:59:09 vivekp Exp $
+ * $Id: JAXBMapping.java,v 1.3 2005-09-01 21:06:19 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,8 +8,6 @@ package com.sun.tools.ws.processor.model.jaxb;
 
 import java.util.List;
 import java.util.ArrayList;
-
-import com.sun.tools.ws.processor.model.Persistent;
 
 import javax.xml.namespace.QName;
 
@@ -26,7 +24,6 @@ public class JAXBMapping {
     /**
      * @see Mapping#getElement()
      */
-    @Persistent
     private QName elementName;
 
     /**
@@ -37,7 +34,6 @@ public class JAXBMapping {
     /**
      * @see Mapping#getWrapperStyleDrilldown()
      */
-    @Persistent
     private List<JAXBProperty> wrapperStyleDrilldown;
 
     /**

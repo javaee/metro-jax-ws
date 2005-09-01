@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBProperty.java,v 1.2 2005-07-21 01:59:10 vivekp Exp $
+ * $Id: JAXBProperty.java,v 1.3 2005-09-01 21:06:20 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -10,7 +10,6 @@ import javax.xml.namespace.QName;
 
 import com.sun.tools.xjc.api.Property;
 
-import com.sun.tools.ws.processor.model.Persistent;
 import com.sun.codemodel.JType;
 /**
  * @author Kohsuke Kawaguchi

@@ -1,5 +1,5 @@
 /*
- * $Id: Port.java,v 1.4 2005-08-04 22:09:37 kohlert Exp $
+ * $Id: Port.java,v 1.5 2005-09-01 21:06:19 arungupta Exp $
  */
 
 /*
@@ -179,9 +179,7 @@ public class Port extends ModelObject {
         _isWrapped = isWrapped;
     }
 
-    @Persistent
     private SOAPStyle _style = null;
-    @Persistent
     private boolean _isWrapped = true;
 
     private String portGetter;

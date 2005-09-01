@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBModel.java,v 1.3 2005-08-08 16:54:09 kohlert Exp $
+ * $Id: JAXBModel.java,v 1.4 2005-09-01 21:06:19 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,7 +11,6 @@ import com.sun.tools.xjc.api.*;
 import javax.xml.namespace.QName;
 import java.util.*;
 
-import com.sun.tools.ws.processor.model.Persistent;
 import com.sun.codemodel.JType;
 
 /**
