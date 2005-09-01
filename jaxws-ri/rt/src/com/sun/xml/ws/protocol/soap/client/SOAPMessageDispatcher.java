@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.30 2005-08-31 20:23:02 arungupta Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.31 2005-09-01 16:31:15 kohlert Exp $
  */
 
 /*
@@ -293,12 +293,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             clientTransportFactory = new HttpClientTransportFactory();
             context.put(CLIENT_TRANSPORT_FACTORY, clientTransportFactory);
         }
-//        if (clientTransportFactory instanceof HttpClientTransportFactory) {
-//            connection = ((HttpClientTransportFactory) clientTransportFactory).create(context);
-//        } else {
-//            //local transport
-            connection = clientTransportFactory.create(context);
-//        }
+        connection = clientTransportFactory.create(context);
         messageInfo.setConnection(connection);
     }
 
@@ -321,15 +316,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (connection.getStatus() != 202 && connection.getStatus() != 200) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "HTTP status code for oneway: expected 202 or 200, got " + connection.getStatus());
 //            System.out.println("status: "+connection.getStatus());
-        }
-/*        if (headers != null)
-            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-                String name = entry.getKey();
-                for (String value : entry.getValue()) {
-                    System.out.println(name+": "+value);
-                }
-            }*/
-        
+        }        
     }
     
     /*
