@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.50 2005-08-31 23:03:55 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.51 2005-09-01 00:18:59 kohlert Exp $
  */
 
 /*
@@ -281,7 +281,7 @@ public class RuntimeEndpointInfo extends Endpoint
                 setServiceName(runtimeModel.getServiceQName());
             }
             if (getPortName() == null) {
-                setPortName(runtimeModel.getPortQName());
+                setPortName(runtimeModel.getPortName());
             }
             if (getBinding().getHandlerChain() == null) {
                 HandlerAnnotationInfo chainInfo =

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.45 2005-08-30 21:03:40 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.46 2005-09-01 00:18:58 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -203,18 +203,13 @@ public class RuntimeModeler {
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
-//        QName name = new QName(targetNamespace, portName);
+        QName portTypeName = new QName(targetNamespace, portLocalName);
         if (portName == null)
             portName = new QName(runtimeModel.getServiceQName().getNamespaceURI(), portLocalName);
         
-        runtimeModel.setPortQName(portName);
+        runtimeModel.setPortName(portName);
+        runtimeModel.setPortTypeName(portTypeName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
-//        String serviceName = clazz.getSimpleName()+SERVICE;
-//        serviceName = webService.serviceName().length() > 0 ?
-//                        webService.serviceName() : serviceName;
-        
-//        QName serviceQName = new QName(targetNamespace, serviceName);
-//        runtimeModel.setServiceQName(serviceQName);
         
         javax.jws.soap.SOAPBinding soapBinding =
             (javax.jws.soap.SOAPBinding) clazz.getAnnotation(javax.jws.soap.SOAPBinding.class);
@@ -363,7 +358,6 @@ public class RuntimeModeler {
             method.getAnnotation(SOAPBinding.class);
         if (methodBinding == null && !method.getDeclaringClass().equals(portClass)) {
             if (!method.getDeclaringClass().isInterface()) {
-//                System.out.println("using "+method.getDeclaringClass()+"'s SOAPBinding.");            
                 methodBinding = method.getDeclaringClass().getAnnotation(SOAPBinding.class);  
             }
         }
@@ -442,7 +436,6 @@ public class RuntimeModeler {
         }
 
         Class requestClass = getClass(requestClassName);
-//        QName reqElementName = (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
   
         String reqName = operationName;
         String reqNamespace = targetNamespace;
@@ -453,8 +446,6 @@ public class RuntimeModeler {
                 reqName = reqWrapper.localName();
         }
         QName reqElementName = new QName(reqNamespace, reqName);  
-//        System.out.println("reqName: "+reqName);
-//                (reqWrapper != null)?new QName(reqWrapper.targetNamespace(),reqWrapper.localName()):getWrapperElementName(requestClass);
         
         Class responseClass = null;
         QName resElementName = null;
@@ -462,7 +453,6 @@ public class RuntimeModeler {
         String resNamespace = targetNamespace;
         if (!isOneway) {
             responseClass = getClass(responseClassName);
-//            resName = (resWrapper != null)?new QName(resWrapper.targetNamespace(),resWrapper.localName()):getWrapperElementName(responseClass);
             if (resWrapper != null) {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
@@ -505,7 +495,6 @@ public class RuntimeModeler {
             } 
             resultQName = new QName(resultTNS, resultName);
         } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
-//            resultQName = getParamElementName(-1, responseClass);
             if(resultQName == null){
                 resultQName = new QName(resultTNS, RETURN);
             }
@@ -519,7 +508,6 @@ public class RuntimeModeler {
         if (!isOneway && (returnType != null) && (!returnType.getName().equals("void"))) {
             Class returnClazz = returnType;
             Annotation[] rann = method.getAnnotations();
-//            System.out.println("resultQName: "+resultQName);
             if (resultQName.getLocalPart() != null) {
                 TypeReference rTypeReference = new TypeReference(resultQName, returnType, rann);
                 Parameter returnParameter = new Parameter(rTypeReference, com.sun.xml.ws.model.Mode.OUT, -1);
@@ -543,7 +531,7 @@ public class RuntimeModeler {
             String partName=null;
             Parameter param = null;
             String paramName = "arg"+pos;
-            String paramNamespace = "";//targetNamespace;
+            String paramNamespace = "";
             boolean isHeader = false;
 
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
@@ -584,23 +572,7 @@ public class RuntimeModeler {
                     break;
                 }
             }
-//            if (paramName.length() != 0) {
-                paramQName = new QName(paramNamespace, paramName);
-//            } else {  // go get it from the wrappers
-//                Class paramWrapperClass = requestClass;
-//                if (paramMode != com.sun.xml.ws.model.Mode.IN) {
-//                    if (isOneway) {
-//                        throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
-//                                new Object[] {portClass.getCanonicalName(), methodName});
-//                    }
-//                    paramWrapperClass = responseClass;
-//                }
-//                paramQName = getParamElementName(pos, paramWrapperClass);
-//                if(paramQName == null){
-//                    throw new RuntimeModelerException("runtime.modeler.parameterElementNotFound",
-//                        new Object[] {String.valueOf(pos), responseClass.getName(), method.getName()});
-//                }
-//            }
+            paramQName = new QName(paramNamespace, paramName);
             typeRef =
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
             param = new Parameter(typeRef, paramMode, pos++);
@@ -624,52 +596,6 @@ public class RuntimeModeler {
         }
         processExceptions(javaMethod, method);
     }
-
-    /**
-     * gets the WSDL element name for a given parameter
-     * @param paramPos the parameter position
-     * @param wrapperClass the wrapper class for this method
-     * @return returns the wrapper child element name thats annotated with @ParameterIndex equals to paramPos.
-     *         Returns null if it cant find any.
-     */
-/*    protected QName getParamElementName(int paramPos, Class wrapperClass) {
-        QName elementName = null;
-        for (Field field : wrapperClass.getDeclaredFields()) {
-            ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);
-            if ((paramIndex != null) && (paramIndex.value() == paramPos)) {
-                XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-                String namespace = xmlElement.namespace();
-                String name = xmlElement.name();
-                elementName = new QName(namespace, name);
-                break;
-            }
-        }
-        return elementName;
-    }*/
-
-    /**
-     * gets the element name for the <code>wrapperClass</code>
-     * @param wrapper The wrapper class
-     * @return the element name for the <code>wrapperClass</code>
-     */
-/*    protected QName getWrapperElementName(Class wrapper) {
-        QName elementName = null;
-        XmlRootElement rootElement = (XmlRootElement)wrapper.getAnnotation(XmlRootElement.class);
-        if (rootElement != null) {
-            String localName = rootElement.name();
-            String namespace = rootElement.namespace();
-            elementName = new QName(namespace, localName);
-        } else {
-            // TODO this is wrong we need an annotation to solve this.
-            XmlType type = (XmlType)wrapper.getAnnotation(XmlType.class);
-            if (type != null) {
-                String localName = type.name();
-                String namespace = type.namespace();
-                elementName = new QName(namespace, localName);
-            }
-        }
-        return elementName;
-    }*/
 
 
     /**
@@ -708,9 +634,9 @@ public class RuntimeModeler {
 
         Class returnType = method.getReturnType();
 
-        String resultName = RETURN;//null;
-        String resultTNS = targetNamespace;//null;
-        String resultPartName = resultName; // TODO this needs to be spec'ed
+        String resultName = RETURN;
+        String resultTNS = targetNamespace;
+        String resultPartName = resultName; 
         QName resultQName = null;
         boolean isResultHeader = false;
         WebResult webResult = method.getAnnotation(WebResult.class);
@@ -932,10 +858,7 @@ public class RuntimeModeler {
                 resultTNS = webResult.targetNamespace();
             resultPartName = webResult.partName();
             isResultHeader = webResult.header();
-        }/* else {
-            resultTNS = targetNamespace;
-            resultName = operationName+"Response";
-        }*/
+        }
 
         Class returnType = method.getReturnType();
 

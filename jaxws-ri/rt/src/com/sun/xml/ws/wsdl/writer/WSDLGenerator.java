@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.31 2005-08-24 00:29:12 vivekp Exp $
+ * $Id: WSDLGenerator.java,v 1.32 2005-09-01 00:19:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -87,11 +87,10 @@ public class WSDLGenerator {
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
         wsdlLocation = result.getSystemId();
         serviceOutputStream = getOutputStream(result);
-//        if (model.getPortQName().getNamespaceURI().equals(model.getServiceQName().getNamespaceURI()))
         if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))
             portStream = serviceOutputStream;
         else {
-            String wsdlName = model.getPortQName().getLocalPart();
+            String wsdlName = model.getPortName().getLocalPart();
             if (wsdlName.equals(model.getServiceQName().getLocalPart()))
                 wsdlName += "PortType";
             result = wsdlResolver.getWSDLOutput(wsdlName+DOT_WSDL);
@@ -116,8 +115,6 @@ public class WSDLGenerator {
         serviceDefinitions = TXW.create(Definitions.class, new StreamSerializer(serviceStream));
         serviceDefinitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
         serviceDefinitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
-//        System.out.println("service name: "+model.getServiceQName());
-//        System.out.println("port name: "+model.getPortQName());
         serviceDefinitions.targetNamespace(model.getServiceQName().getNamespaceURI());
         serviceDefinitions._namespace(model.getServiceQName().getNamespaceURI(), TNS_PREFIX);
         if(bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
@@ -140,9 +137,6 @@ public class WSDLGenerator {
         } else {
             portDefinitions = serviceDefinitions;
         }
-
-//        definitions._namespace(WSDL_NAMESPACE, false);
-
 
         generateTypes();
         generateMessages();
@@ -181,12 +175,8 @@ public class WSDLGenerator {
         Message message = portDefinitions.message().name(method.getOperationName());
         com.sun.xml.ws.wsdl.writer.document.Part part;
         JAXBRIContext jaxbContext = model.getJAXBContext();
-//        System.out.println("javaMethod: "+method.getOperationName());
         boolean unwrappable = true;
         for (Parameter param : method.getRequestParameters()) {
-//            System.out.println("req param.getName: "+ param.getName());
-//            System.out.println("doclit: "+isDoclit);
-//            System.out.println("isWrapper: "+param.isWrapperStyle());
             if (isDoclit) {
                 if (isHeaderParameter(param))
                     unwrappable = false;
@@ -219,11 +209,8 @@ public class WSDLGenerator {
             }
 
             for (Parameter param : method.getResponseParameters()) {
-//                System.out.println("param.getName(): "+param.getName());
                 if (isDoclit) {
-//                    System.out.println("doclit");
                     if (param.isWrapperStyle()) {
-//                        System.out.println("isWrapper");
                         // if its not really wrapper style dont use the same name as input message
                         if (unwrappable)
                             part = message.part().name(RESULT);
@@ -260,7 +247,7 @@ public class WSDLGenerator {
 
     protected void generatePortType() {
 
-        PortType portType = portDefinitions.portType().name(model.getPortQName().getLocalPart());
+        PortType portType = portDefinitions.portType().name(model.getPortTypeName().getLocalPart());
         for (JavaMethod method : model.getJavaMethods()) {
             Operation operation = portType.operation().name(method.getOperationName());
             generateParameterOrder(operation, method);
@@ -352,14 +339,12 @@ public class WSDLGenerator {
             } else {
                partName = parameter.getName().getLocalPart();
             }
-//            System.out.println("partName: "+ partName);
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
                     paramOrder.append(' ');
                 paramOrder.append(partName);
                 partNames.add(partName);
             }
-//            System.out.println("paramOrder: "+paramOrder);
         }
         if (i>1) {
             operation.parameterOrder(paramOrder.toString());
@@ -428,8 +413,8 @@ public class WSDLGenerator {
 
 
     protected void generateBinding() {
-        Binding binding = serviceDefinitions.binding().name(model.getPortQName().getLocalPart()+BINDING);
-        binding.type(new QName(model.getTargetNamespace(), model.getPortQName().getLocalPart()));
+        Binding binding = serviceDefinitions.binding().name(model.getPortName().getLocalPart()+BINDING);
+        binding.type(new QName(model.getTargetNamespace(), model.getPortName().getLocalPart()));
         boolean first = true;
         for (JavaMethod method : model.getJavaMethods()) {
             if (first) {
@@ -526,7 +511,6 @@ public class WSDLGenerator {
                                 parts += " ";
                             parts += parameter.getName().getLocalPart();
                         }
-//                        body.parts(parts);
                     } else {
                         if (param != null) {
                             if (param.isWrapperStyle()) {
@@ -677,7 +661,7 @@ public class WSDLGenerator {
     }
 
     protected void generateService() {
-        QName portQName = model.getPortQName();
+        QName portQName = model.getPortName();
         QName serviceQName = model.getServiceQName();
         Service service = serviceDefinitions.service().name(serviceQName.getLocalPart());
         Port port = service.port().name(portQName.getLocalPart());

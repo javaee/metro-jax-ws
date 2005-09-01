@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.19 2005-08-30 21:03:39 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.20 2005-09-01 00:18:58 kohlert Exp $
  */
 
 /*
@@ -341,19 +341,27 @@ public abstract class RuntimeModel {
     }
 
     public QName getServiceQName() {
-        return serviceQName;
+        return serviceName;
     }
 
-    public QName getPortQName() {
-        return portQName;
+    public QName getPortName() {
+        return portName;
+    }
+    
+    public QName getPortTypeName() {
+        return portTypeName;
     }
 
     public void setServiceQName(QName name) {
-        serviceQName = name;
+        serviceName = name;
     }
 
-    public void setPortQName(QName name) {
-        portQName = name;
+    public void setPortName(QName name) {
+        portName = name;
+    }
+    
+    public void setPortTypeName(QName name) {
+        portTypeName = name;
     }
     
     /**
@@ -405,8 +413,9 @@ public abstract class RuntimeModel {
     private ThreadLocal<BridgeContext> bridgeContext = new ThreadLocal<BridgeContext>();
     private JAXBRIContext jaxbContext;
     private String wsdlLocation;
-    private QName serviceQName;
-    private QName portQName;
+    private QName serviceName;
+    private QName portName;
+    private QName portTypeName;
     private Map<Method, JavaMethod> methodToJM = new HashMap<Method, JavaMethod>();
     private Map<QName, JavaMethod> nameToJM = new HashMap<QName, JavaMethod>();
     private List<JavaMethod> javaMethods = new ArrayList<JavaMethod>();

@@ -161,7 +161,7 @@ public abstract class ServiceContextBuilder {
                     getHandlerResolver(serviceContext);
                 resolver.setHandlerChain(new PortInfoImpl(
                     modeler.getBindingId(),
-                    model.getPortQName(),
+                    model.getPortName(),
                     model.getServiceQName()),
                     chainInfo.getHandlers());
                 serviceContext.setResolver(resolver);
