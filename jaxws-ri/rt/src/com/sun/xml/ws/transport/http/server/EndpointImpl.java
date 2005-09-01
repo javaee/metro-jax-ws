@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.8 2005-08-31 23:03:56 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.9 2005-09-01 02:46:05 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -31,7 +31,7 @@ public class EndpointImpl extends Endpoint {
     private Object actualEndpoint;        // Don't declare as HttpEndpoint type
     private RuntimeEndpointInfo rtEndpointInfo;
    
-    public EndpointImpl(URI bindingId, Object impl) {
+    public EndpointImpl(String bindingId, Object impl) {
         this(impl);
         // TODO set binding
     }
