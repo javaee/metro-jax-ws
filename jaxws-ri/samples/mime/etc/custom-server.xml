@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
+-->
+
+<bindings wsdlLocation="hello.wsdl"
+    xmlns="http://java.sun.com/xml/ns/jaxws"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <package name="mime.server"/>
+    <bindings node="wsdl:definitions/wsdl:types/xs:schema[@targetNamespace='http://example.org/mime/data']">
+        <ns2:schemaBindings xmlns:ns2="http://java.sun.com/xml/ns/jaxb">
+            <ns2:package name="mime.server"/>
+        </ns2:schemaBindings>
+    </bindings>
+
+    <bindings node="wsdl:definitions/wsdl:binding[@name='HelloBinding']/wsdl:operation[@name='echoDataWithEnableMIMEContent']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+
+    <bindings node="wsdl:definitions/wsdl:binding[@name='HelloBinding']/wsdl:operation[@name='Detail']">
+        <enableMIMEContent>true</enableMIMEContent>
+    </bindings>
+</bindings>
+

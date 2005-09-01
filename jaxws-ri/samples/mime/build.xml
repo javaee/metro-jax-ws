@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright (c) 2005 Sun Microsystems, Inc.
+ All rights reserved. 
+-->
+
+<!DOCTYPE project [
+<!ENTITY commonTargets SYSTEM "../etc/common-targets.xml">
+]>
+
+<project basedir="." default="help" name="mime">
+
+    &commonTargets;
+
+    <property file="etc/build.properties" />
+
+    <target name="server" depends="setup">
+
+        <antcall target="clean" />
+
+        <antcall target="build-server-wsdl" />
+
+        <antcall target="create-war" />
+
+        <antcall target="deploy" />
+    </target>
+
+</project>
