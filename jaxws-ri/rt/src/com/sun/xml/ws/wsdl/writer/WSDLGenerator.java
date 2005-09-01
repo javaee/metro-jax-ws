@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.32 2005-09-01 00:19:00 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.33 2005-09-01 21:51:00 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -21,6 +21,9 @@ import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.model.soap.Use;
 import com.sun.xml.ws.wsdl.writer.document.*;
 import com.sun.xml.ws.wsdl.writer.document.soap.*;
+
+import javax.xml.ws.Holder;
+
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
@@ -85,18 +88,39 @@ public class WSDLGenerator {
         OutputStream serviceOutputStream = null;
         OutputStream portStream = null;
         Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
+        if (result == null)
+            return;
         wsdlLocation = result.getSystemId();
         serviceOutputStream = getOutputStream(result);
-        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))
+        String wsdlName = model.getPortTypeName().getLocalPart();
+        if (wsdlName.equals(model.getServiceQName().getLocalPart()))
+            wsdlName += "PortType";
+        Holder<String> absWSDLName = new Holder<String>();
+        absWSDLName.value = wsdlName+DOT_WSDL;
+        result = wsdlResolver.getAbstractWSDLOutput(absWSDLName);
+        if (result != null) {
+            portWSDLID = result.getSystemId();
+            if (portWSDLID.equals(wsdlLocation)) {
+                portStream = serviceOutputStream;            
+            } else {
+                portStream = getOutputStream(result);
+            }
+        } else {
+            portWSDLID = absWSDLName.value;
+        }
+        
+/*        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))
             portStream = serviceOutputStream;
         else {
             String wsdlName = model.getPortName().getLocalPart();
             if (wsdlName.equals(model.getServiceQName().getLocalPart()))
                 wsdlName += "PortType";
-            result = wsdlResolver.getWSDLOutput(wsdlName+DOT_WSDL);
+            Holder<String> absWSDLName = new Holder<String>();
+            asbWSDLName.value = wsdlName+DOT_WSDL;
+            result = wsdlResolver.getAbstractWSDLOutput(wsdlName+DOT_WSDL);
             portWSDLID = result.getSystemId();
             portStream = getOutputStream(result);
-        }
+        }*/
         generateDocument(serviceOutputStream, portStream);
     }
 
@@ -122,7 +146,8 @@ public class WSDLGenerator {
         else
             serviceDefinitions._namespace(SOAP11_NAMESPACE, SOAP_PREFIX);
         serviceDefinitions.name(model.getServiceQName().getLocalPart());
-        if (serviceStream != portStream) {
+        if (serviceStream != portStream && portStream != null) {
+            // generate an abstract and concrete wsdl
             portDefinitions = TXW.create(Definitions.class, new StreamSerializer(portStream));
             portDefinitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
             portDefinitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
@@ -134,17 +159,25 @@ public class WSDLGenerator {
             String schemaLoc = relativize(portWSDLID, wsdlLocation);            
             Import _import = serviceDefinitions._import().namespace(model.getTargetNamespace());
             _import.location(schemaLoc);
-        } else {
+        } else if (portStream != null) {
+            // abstract and concrete are the same
             portDefinitions = serviceDefinitions;
+        } else {
+            // import a provided abstract wsdl
+            String schemaLoc = relativize(portWSDLID, wsdlLocation);            
+            Import _import = serviceDefinitions._import().namespace(model.getTargetNamespace());
+            _import.location(schemaLoc);            
         }
 
-        generateTypes();
-        generateMessages();
-        generatePortType();
+        if (portDefinitions != null) {
+            generateTypes();
+            generateMessages();
+            generatePortType();
+        }
         generateBinding();
         generateService();
         serviceDefinitions.commit();
-        if (portDefinitions != serviceDefinitions)
+        if (portDefinitions != null && portDefinitions != serviceDefinitions)
             portDefinitions.commit();
     }
 
@@ -694,8 +727,14 @@ public class WSDLGenerator {
         }
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
 
-        result = wsdlResolver.getSchemaOutput(namespaceUri, suggestedFileName);
-        String schemaLoc = relativize(result.getSystemId(), wsdlLocation);
+        Holder<String> fileNameHolder = new Holder<String>();
+        fileNameHolder.value = suggestedFileName;
+        result = wsdlResolver.getSchemaOutput(namespaceUri, fileNameHolder);
+        String schemaLoc;
+        if (result == null)
+            schemaLoc = fileNameHolder.value;
+        else
+            schemaLoc = relativize(result.getSystemId(), wsdlLocation);
         _import.schemaLocation(schemaLoc);
         return result;
     }
