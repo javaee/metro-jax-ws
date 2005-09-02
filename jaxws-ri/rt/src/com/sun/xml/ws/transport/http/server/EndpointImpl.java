@@ -1,6 +1,6 @@
 
 /**
- * $Id: EndpointImpl.java,v 1.10 2005-09-01 05:35:52 jitu Exp $
+ * $Id: EndpointImpl.java,v 1.11 2005-09-02 00:05:41 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -31,16 +31,12 @@ public class EndpointImpl extends Endpoint {
     private RuntimeEndpointInfo rtEndpointInfo;
    
     public EndpointImpl(String bindingId, Object impl) {
-        this(impl);
-        com.sun.xml.ws.spi.runtime.Binding binding =
-            BindingImpl.getBinding(bindingId, impl.getClass(), false);
-        rtEndpointInfo.setBinding(binding);
-    }
-    
-    public EndpointImpl(Object impl) {
         rtEndpointInfo = new RuntimeEndpointInfo();
         rtEndpointInfo.setImplementor(impl);
         rtEndpointInfo.setImplementorClass(impl.getClass());
+        com.sun.xml.ws.spi.runtime.Binding binding =
+            BindingImpl.getBinding(bindingId, impl.getClass(), false);
+        rtEndpointInfo.setBinding(binding);
     }
     
     public Binding getBinding() {
