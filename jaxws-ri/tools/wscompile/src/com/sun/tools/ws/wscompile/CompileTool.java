@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.22 2005-09-02 17:58:39 kwalsh Exp $
+ * $Id: CompileTool.java,v 1.23 2005-09-02 19:47:46 kohlert Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.ws.BindingType;
 import javax.xml.ws.Holder;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -410,6 +411,12 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 environment.error(getMessage("wsgen.class.not.found", endpoint));
             }
             String bindingID = getBindingID(protocol);
+            if (bindingID == null) {
+                BindingType bindingType = (BindingType)endpointClass.getAnnotation(BindingType.class);
+                if (bindingType != null && 
+                    bindingType.value().length()>0)
+                    bindingID = bindingType.value();
+            }
             com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
                     new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, null, bindingID);
             rtModeler.setClassLoader(classLoader);
@@ -435,10 +442,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                             return getWSDLOutput(suggestedFilename);
                         }
                         public Result getAbstractWSDLOutput(Holder<String> filename) {
-                            return null;
+                            return getWSDLOutput(filename.value);
                         }
                         public Result getSchemaOutput(String namespace, Holder<String> filename) {
-                            return null;
+                            return getSchemaOutput(namespace, filename.value);
                         }
                     }, bindingID);
             wsdlGenerator.doGeneration();        
