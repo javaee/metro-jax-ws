@@ -113,11 +113,13 @@ public abstract class ServiceContextBuilder {
             if (!method.getDeclaringClass().equals(serviceInterface))
                 continue;
             WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
-            if (webEndpoint == null)
+            if (webEndpoint == null) {
                 continue;
-            if (method.getGenericReturnType().getClass().equals(portInterface)) {
+            }
+            if (method.getGenericReturnType().equals(portInterface)) {
                 if (method.getName().startsWith("get")) {
                     portName = new QName(wsClient.targetNamespace(), webEndpoint.name());
+                    break;
                 }
             }
         }
