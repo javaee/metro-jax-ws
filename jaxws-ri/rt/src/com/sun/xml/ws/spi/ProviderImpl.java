@@ -1,17 +1,21 @@
 /**
- * $Id: ProviderImpl.java,v 1.2 2005-09-01 02:46:05 jitu Exp $
+ * $Id: ProviderImpl.java,v 1.3 2005-09-02 18:03:40 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.spi;
 
+
+import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.transport.http.server.EndpointImpl;
-import java.net.URL;
-import javax.xml.namespace.QName;
+
+import javax.xml.ws.Service;
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.spi.Provider;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.spi.ServiceDelegate;
+import javax.xml.ws.spi.Provider;
+import javax.xml.namespace.QName;
 
 /**
  *
@@ -19,25 +23,18 @@ import javax.xml.ws.spi.ServiceDelegate;
  */
 public class ProviderImpl extends Provider {
     
-    @Override
-    public ServiceDelegate createServiceDelegate(URL wsdlDocumentLocation,
-        QName serviceName, Class serviceClass) {
-        return null;
-    }
     
     @Override
     public Endpoint createEndpoint(String bindingId, Object implementor) {
         return new EndpointImpl(bindingId, implementor);
     }
-    
-    /*
     @Override
-    public Endpoint publish(String address, Object impl) {
-        // TODO : binding
-        Endpoint endpoint = new EndpointImpl(null, impl);
-        endpoint.publish(address);
-        return endpoint;
+    public ServiceDelegate createServiceDelegate(
+                                    java.net.URL wsdlDocumentLocation,
+                                    QName serviceName, Class serviceClass){
+          return
+              new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
-     */
+    
     
 }
