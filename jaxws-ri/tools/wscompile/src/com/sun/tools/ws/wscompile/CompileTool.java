@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.21 2005-08-31 03:18:12 jitu Exp $
+ * $Id: CompileTool.java,v 1.22 2005-09-02 17:58:39 kwalsh Exp $
  */
 
 /*
@@ -359,10 +359,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         super.initialize();
         properties = new Properties();
         actions = new HashMap();
-        actions.put(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR,
-                new com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator());
-//        actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
-//                new com.sun.tools.ws.processor.generator.ServiceGenerator());
+//        actions.put(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR,
+//                new com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator());
+        actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
+                new com.sun.tools.ws.processor.generator.ServiceGenerator());
         actions.put(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR,
                 new SeiGenerator());
         actions.put(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR,
@@ -558,8 +558,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         }
 
         if (genServiceInterface) {
-            processor.add(getAction(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR));
-//            processor.add(getAction(ActionConstants.ACTION_SERVICE_GENERATOR));
+            processor.add(getAction(ActionConstants.ACTION_SERVICE_GENERATOR));
         }
 
         if (genCustomClasses) {
