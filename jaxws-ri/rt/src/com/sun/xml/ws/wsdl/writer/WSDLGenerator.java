@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.33 2005-09-01 21:51:00 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.34 2005-09-02 01:36:54 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -446,8 +446,8 @@ public class WSDLGenerator {
 
 
     protected void generateBinding() {
-        Binding binding = serviceDefinitions.binding().name(model.getPortName().getLocalPart()+BINDING);
-        binding.type(new QName(model.getTargetNamespace(), model.getPortName().getLocalPart()));
+        Binding binding = serviceDefinitions.binding().name(model.getPortTypeName().getLocalPart()+BINDING);
+        binding.type(model.getPortTypeName());
         boolean first = true;
         for (JavaMethod method : model.getJavaMethods()) {
             if (first) {
