@@ -1,6 +1,8 @@
-/*
- * Copyright (c) 2005 Sun Microsystems, Inc.
- * All Rights Reserved.
+/**
+ * $Id: ServiceContextBuilder.java,v 1.21 2005-09-02 21:09:31 bbissett Exp $
+ *
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package com.sun.xml.ws.client;
 
@@ -101,11 +103,13 @@ public abstract class ServiceContextBuilder {
         QName portName = null;
         WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
         for (Method method : serviceInterface.getMethods()) {
-            if (!method.getDeclaringClass().equals(serviceInterface))
+            if (!method.getDeclaringClass().equals(serviceInterface)) {
                 continue;
+            }
             WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
             if (webEndpoint == null) {
                 continue;
+            }
             if (method.getGenericReturnType().equals(portInterface)) {
                 if (method.getName().startsWith("get")) {
                     portName = new QName(wsClient.targetNamespace(), webEndpoint.name());
