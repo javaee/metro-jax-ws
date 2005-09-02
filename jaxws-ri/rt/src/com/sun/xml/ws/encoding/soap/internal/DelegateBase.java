@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.7 2005-08-14 17:55:18 kwalsh Exp $
+ * $Id: DelegateBase.java,v 1.8 2005-09-02 18:09:50 kwalsh Exp $
  */
 
 /*
@@ -23,6 +23,7 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.ContactInfoBase;
 import com.sun.xml.ws.client.ContactInfoListImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.client.WSServiceDelegate;
 
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
@@ -34,7 +35,7 @@ import java.util.Iterator;
  */
 public class DelegateBase implements Delegate {
     protected ContactInfoList contactInfoList;
-    protected Service service;
+    protected WSServiceDelegate service;
 
     public DelegateBase() {
     }
@@ -43,7 +44,7 @@ public class DelegateBase implements Delegate {
         this.contactInfoList = contactInfoList;
     }
 
-    public DelegateBase(ContactInfoList cil, Service service) {
+    public DelegateBase(ContactInfoList cil, WSServiceDelegate service) {
        this(cil);
        this.service = service;
     }
