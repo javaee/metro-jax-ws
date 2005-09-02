@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderImpl.java,v 1.3 2005-09-02 18:03:40 kwalsh Exp $
+ * $Id: ProviderImpl.java,v 1.4 2005-09-02 19:31:35 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -36,5 +36,10 @@ public class ProviderImpl extends Provider {
               new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
     
+    @Override
+    public Endpoint createAndPublishEndpoint(String address,
+                          Object implementor) {
+        return null;
+    }
     
 }
