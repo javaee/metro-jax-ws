@@ -13,6 +13,7 @@ import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.wsdl.WSDLContext;
+import org.xml.sax.EntityResolver;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
@@ -47,30 +48,34 @@ public abstract class ServiceContextBuilder {
     /**
      * Creates a new {@link ServiceContext}.
      */
-    public static ServiceContext build(URL wsdlLocation, Class si, EntityResolver er) throws WebServiceException {
+    public static ServiceContext build(URL wsdlLocation, Class service, EntityResolver er) throws WebServiceException {
 
         ServiceContext serviceContext = new ServiceContext(er);
         SIAnnotations serviceIFAnnotations;
-        if (si != null) {
+        if ((service != null)) {
 
-            serviceIFAnnotations = getSIAnnotations(si);
-            if (serviceIFAnnotations == null )
+            serviceIFAnnotations = getSIAnnotations(service);
+            if ((serviceIFAnnotations == null) && (service != javax.xml.ws.Service.class))
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
             serviceContext.setSiAnnotations(serviceIFAnnotations);
-            
-            if(wsdlLocation == null)
+
+            if (wsdlLocation == null) {
                 try {
-//                    wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
+                    //wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
+                    JAXWSUtils.getFileOrURLName(serviceIFAnnotations.wsdlLocation);
+
                     wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceIFAnnotations.wsdlLocation));
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation,er));
+            }
 
-            if (si != null) {
-                serviceContext.setServiceInterface(si);
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
+
+            if (serviceIFAnnotations != null) {
+                serviceContext.setServiceInterface(service);
                 for (Class clazz : serviceIFAnnotations.classes) {
-                    processAnnotations(serviceContext,clazz);
+                    processAnnotations(serviceContext, clazz);
                 }
             }
         }
@@ -83,54 +88,46 @@ public abstract class ServiceContextBuilder {
             try {
                 wsdlLocation = getWSDLLocation(portInterface);
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                new WebServiceException(e);
             }
 
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation,serviceContext.getEntityResolver()));
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, serviceContext.getEntityResolver()));
         }
-
-        //if ((serviceContext.getRuntimeContext() == null) && (portInterface != null)) {
-        //    processAnnotations(portInterface);
-        //}
     }
 
     private static QName getServiceName(Class serviceInterface) {
-        WebServiceClient wsClient = (WebServiceClient)serviceInterface.getAnnotation(WebServiceClient.class);
+        WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
         QName serviceName = null;
         if (wsClient != null) {
             String name = wsClient.name();
             String namespace = wsClient.targetNamespace();
             serviceName = new QName(namespace, name);
         }
-        return serviceName;    
+        return serviceName;
     }
-    
+
     private static QName getPortName(Class portInterface, Class serviceInterface) {
         QName portName = null;
-        WebServiceClient wsClient = (WebServiceClient)serviceInterface.getAnnotation(WebServiceClient.class);
+        WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
         for (Method method : serviceInterface.getMethods()) {
-            if (!method.getDeclaringClass().equals(serviceInterface)) {
+            if (!method.getDeclaringClass().equals(serviceInterface))
                 continue;
-            }
             WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
-            if (webEndpoint == null) {
+            if (webEndpoint == null)
                 continue;
-            }
-            if (method.getGenericReturnType().equals(portInterface)) {
+            if (method.getGenericReturnType().getClass().equals(portInterface)) {
                 if (method.getName().startsWith("get")) {
                     portName = new QName(wsClient.targetNamespace(), webEndpoint.name());
-                    break;
                 }
             }
         }
         return portName;
     }
-   
+
     //does any necessagy checking and validation
 
-    
     //todo: valid port in wsdl
-    private static void processAnnotations(ServiceContext serviceContext,Class portInterface) throws WebServiceException {
+    private static void processAnnotations(ServiceContext serviceContext, Class portInterface) throws WebServiceException {
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
         if ((eifc == null) || (eifc.getRuntimeContext() == null)) {
 
@@ -138,11 +135,13 @@ public abstract class ServiceContextBuilder {
                 eifc = new EndpointIFContext(portInterface);
                 serviceContext.addEndpointIFContext(eifc);
             }
-//            QName serviceName = serviceContext.getSiAnnotations().serviceQName;
+
+            //toDo:
             QName serviceName = getServiceName(serviceContext.getServiceInterface());
             QName portName = getPortName(portInterface, serviceContext.getServiceInterface());
-            RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, 
-                    serviceContext.getWsdlContext().getBindingID().toString());
+            //todo:Use SI ANNotations and put in map
+            RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName,
+                serviceContext.getWsdlContext().getBindingID().toString());
             modeler.setPortName(portName);
             RuntimeModel model = modeler.buildRuntimeModel();
 
@@ -171,13 +170,6 @@ public abstract class ServiceContextBuilder {
                 //chainInfo.getRoles();
             }
         }
-
-//        //todo: if changed reprocess wsdl- track this
-//        if (wsdlLocation != null) {
-//            wsdlContext = parseWSDL(wsdlLocation);
-//        } else {
-//            noWsdlException();
-//        }
     }
 
     private static HandlerResolverImpl getHandlerResolver(

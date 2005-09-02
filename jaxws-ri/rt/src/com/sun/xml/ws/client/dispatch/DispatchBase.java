@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.17 2005-08-30 22:38:47 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.18 2005-09-02 18:01:35 kwalsh Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -66,15 +66,15 @@ import javax.xml.ws.http.HTTPBinding;
 public class DispatchBase implements BindingProvider, InternalBindingProvider,
     Dispatch {
 
-    public DispatchBase(PortInfoBase port, Class aClass, Service.Mode mode, Service service) {
+    public DispatchBase(PortInfoBase port, Class aClass, Service.Mode mode, WSServiceDelegate service) {
         this(port, mode, null, aClass, service);
     }
 
-    public DispatchBase(PortInfoBase port, JAXBContext jaxbContext, Service.Mode mode, Service service) {
+    public DispatchBase(PortInfoBase port, JAXBContext jaxbContext, Service.Mode mode, WSServiceDelegate service) {
         this(port, mode, jaxbContext, null, service);
     }
 
-    DispatchBase(PortInfoBase port, Service.Mode mode, JAXBContext context, Class clazz, Service service) {
+    DispatchBase(PortInfoBase port, Service.Mode mode, JAXBContext context, Class clazz, WSServiceDelegate service) {
         _delegate = new DispatchDelegate(new DispatchContactInfoList());
         _mode = mode;
         _portInfo = port;
@@ -547,7 +547,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     protected Map _requestContext;
     protected Map _responseContext;
     protected Service.Mode _mode;
-    protected Service _service;
+    protected WSServiceDelegate _service;
     protected Class _clazz;
     protected JAXBContext _jaxbContext;
 

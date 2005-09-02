@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.15 2005-08-22 22:18:02 spericas Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.16 2005-09-02 18:01:33 kwalsh Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -42,13 +42,13 @@ public class EndpointIFInvocationHandler
     WSDLContext _wsdlContext;
     boolean failure;
     URL wsdlDocumentLocation;
-    Service _service;
+    WSServiceDelegate _service;
 
     /**
      * public constructor
      */
 
-    public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, Service service, QName serviceName) {
+    public EndpointIFInvocationHandler(Class portInterface, EndpointIFContext eif, WSServiceDelegate service, QName serviceName) {
 
         if ((eif.getBindingID() == null) || (eif.getRuntimeContext() == null)) {
             failure = true;

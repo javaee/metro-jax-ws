@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceReferenceResolver.java,v 1.3 2005-08-29 19:37:29 kohlert Exp $
+ * $Id: ServiceReferenceResolver.java,v 1.4 2005-09-02 18:01:34 kwalsh Exp $
  */
 
 /*
@@ -52,7 +52,7 @@ public class ServiceReferenceResolver implements ObjectFactory {
         return null;
     }
 
-    public static String registerService(WebService service) {
+    public static String registerService(Service service) {
         String serviceName = getQualifiedServiceNameString(service);
         registeredServices.put(serviceName, service);
         return serviceName;
