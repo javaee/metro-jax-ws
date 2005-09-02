@@ -115,7 +115,6 @@ public abstract class ServiceContextBuilder {
             WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
             if (webEndpoint == null) {
                 continue;
-            }
             if (method.getGenericReturnType().equals(portInterface)) {
                 if (method.getName().startsWith("get")) {
                     portName = new QName(wsClient.targetNamespace(), webEndpoint.name());

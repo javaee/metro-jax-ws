@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.35 2005-09-02 06:09:45 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.36 2005-09-02 20:35:38 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -92,21 +92,25 @@ public class WSDLGenerator {
             return;
         wsdlLocation = result.getSystemId();
         serviceOutputStream = getOutputStream(result);
-        String wsdlName = model.getPortTypeName().getLocalPart();
-        if (wsdlName.equals(model.getServiceQName().getLocalPart()))
-            wsdlName += "PortType";
-        Holder<String> absWSDLName = new Holder<String>();
-        absWSDLName.value = wsdlName+DOT_WSDL;
-        result = wsdlResolver.getAbstractWSDLOutput(absWSDLName);
-        if (result != null) {
-            portWSDLID = result.getSystemId();
-            if (portWSDLID.equals(wsdlLocation)) {
-                portStream = serviceOutputStream;            
-            } else {
-                portStream = getOutputStream(result);
-            }
+        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace())) { 
+            portStream = serviceOutputStream;
         } else {
-            portWSDLID = absWSDLName.value;
+            String wsdlName = model.getPortTypeName().getLocalPart();
+            if (wsdlName.equals(model.getServiceQName().getLocalPart()))
+                wsdlName += "PortType";
+            Holder<String> absWSDLName = new Holder<String>();
+            absWSDLName.value = wsdlName+DOT_WSDL;
+            result = wsdlResolver.getAbstractWSDLOutput(absWSDLName);
+            if (result != null) {
+                portWSDLID = result.getSystemId();
+                if (portWSDLID.equals(wsdlLocation)) {
+                    portStream = serviceOutputStream;            
+                } else {
+                    portStream = getOutputStream(result);
+                }
+            } else {
+                portWSDLID = absWSDLName.value;
+            }
         }
         
 /*        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))

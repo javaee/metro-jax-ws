@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.23 2005-09-02 19:47:46 kohlert Exp $
+ * $Id: CompileTool.java,v 1.24 2005-09-02 20:35:39 kohlert Exp $
  */
 
 /*
@@ -360,8 +360,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         super.initialize();
         properties = new Properties();
         actions = new HashMap();
-//        actions.put(ActionConstants.ACTION_SERVICE_INTERFACE_GENERATOR,
-//                new com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator());
         actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.ServiceGenerator());
         actions.put(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR,
@@ -370,7 +368,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 new CustomExceptionGenerator());
         actions.put(ActionConstants.ACTION_JAXB_TYPE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.JAXBTypeGenerator());
-//        actions.put(ActionConstants.ACTION_WSDL_GENERATOR, new com.sun.tools.ws.processor.generator.WSDLGenerator());
     }
 
     public void removeGeneratedFiles() {
@@ -576,11 +573,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             processor.add(getAction(ActionConstants.ACTION_CUSTOM_EXCEPTION_GENERATOR));
             processor.add(getAction(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR));
         }
-
-
-//        if (genWsdl) {
-//            processor.add(getAction(ActionConstants.ACTION_WSDL_GENERATOR));
-//        }
     }
 
     public String getVersionString() {
