@@ -36,15 +36,6 @@ import org.xml.sax.EntityResolver;
 public abstract class ServiceContextBuilder {
     private ServiceContextBuilder() {}  // no instantication please
 
-    //parses WSDL for service, Ports, endpoint, binding
-    //returns wsdlcontext
-
-    //nedd sei for next2 steps
-    //runs handlerAnnotationProcessor
-
-    //runs RuntimeAnnotationProcessor
-    //returns runtime model
-
     /**
      * Creates a new {@link ServiceContext}.
      */
