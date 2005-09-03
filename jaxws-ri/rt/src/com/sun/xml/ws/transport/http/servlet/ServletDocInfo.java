@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocInfo.java,v 1.4 2005-08-30 02:13:31 jitu Exp $
+ * $Id: ServletDocInfo.java,v 1.5 2005-09-03 02:10:34 jitu Exp $
  *
  */
 
@@ -21,6 +21,10 @@ public class ServletDocInfo implements DocInfo {
     private String resource;
     private String queryString;
     private DocContext docContext;
+    private DOC_TYPE docType;
+    private Service service;
+    private boolean hasPortType;
+    private String tns;
 
     public ServletDocInfo(ServletContext context, String resource) {
         this.context = context;
@@ -56,36 +60,36 @@ public class ServletDocInfo implements DocInfo {
         return docContext;
     }
     
-        public void setDocType(DOC_TYPE docType) {
-        
+    public void setDocType(DOC_TYPE docType) {
+        this.docType = docType;
     }
     
     public DOC_TYPE getDocType() {
-        return null;
+        return docType;
     }
 
     public void setTargetNamespace(String ns) {
-        
+        this.tns = tns;
     }
     
     public String getTargetNamespace() {
-        return null;
+        return tns;
     }
     
     public void setService(Service service) {
-        
+        this.service = service;
     }
     
     public Service getService() {
-        return null;
+        return service;
     }
     
     public void setPortType(boolean portType) {
-        
+        this.hasPortType = portType;
     }
     
     public boolean hasPortType() {
-        return false;
+        return hasPortType;
     }
     
 }

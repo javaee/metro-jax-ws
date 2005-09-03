@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.12 2005-08-31 04:07:16 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.13 2005-09-03 02:10:34 jitu Exp $
  */
 
 /*
@@ -138,6 +138,16 @@ public class WSServletContextListener
             }
         }
     }
+
+	private Map<String, DocInfo> copyDocs(Map<String, DocInfo> docs) {
+		Map<String, DocInfo> newDocs = new HashMap<String, DocInfo>();
+		Set<Entry<String, DocInfo>> entries = docs.entrySet();
+		for(Entry<String, DocInfo> entry : entries) {
+			String docPath = entry.getValue().getPath();
+			newDocs.put(entry.getKey(), new ServletDocInfo(context, docPath));
+		}
+		return newDocs;
+	}
     
     /*
      * Setting the WebServiceContext for each endpoint. WebServiceContextImpl
@@ -157,7 +167,7 @@ public class WSServletContextListener
      * endpoint
      */
     private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints,
-            Map<String, DocInfo> docs)  throws UnsupportedEncodingException {
+            Map<String, DocInfo> docs)  throws Exception {
         URL catalogUrl = null;
         try {
             catalogUrl = context.getResource("/WEB-INF/jax-ws-catalog.xml");
@@ -183,38 +193,17 @@ public class WSServletContextListener
             if (endpoint.needWSDLGeneration()) {
                 endpoint.generateWSDL();
             } else {
-                endpoint.setMetadata(docs);
-                // Set queryString for the document
-                Set<Entry<String, DocInfo>> entries = docs.entrySet();
-                for(Entry<String, DocInfo> entry : entries) {
-                    ServletDocInfo docInfo = (ServletDocInfo)entry.getValue();
-                    String path = docInfo.getPath();
-                    String query = null;
-                    String queryValue = docInfo.getPath().substring(JAXWS_WSDL_DIR.length()+1);    // Without /WEB-INF/wsdl
-                    queryValue = URLEncoder.encode(queryValue, "UTF-8");
-                    InputStream in = docInfo.getDoc();
-                    DOC_TYPE docType = null;    // is WSDL or schema ??
-                    try {
-                        docType = WSDLPatcher.getDocType(docInfo.getDoc());
-                    } catch (Exception e) {
-                        continue;           // Not XML ?? Ignore this document
-                    } finally {
-                        try { in.close(); } catch(IOException ie) {};
-                    }
-                    switch(docType) {
-                        case WSDL :                   
-                            query = path.equals(wsdlFile)
-                                ? "wsdl" : "wsdl="+queryValue;
-                            break;
-                        case SCHEMA : 
-                            query = "xsd="+queryValue;
-                            break;
-                        case OTHER :
-                            logger.warning(docInfo.getPath()+" is not a WSDL or Schema file.");
-                    }
-                    docInfo.setQueryString(query);
-                }
+                endpoint.setMetadata(copyDocs(docs));
+				if (endpoint.getWsdLUrl() != null) {
+					docs = endpoint.getDocMetadata();
+					DocInfo wsdlDoc = docs.get(endpoint.getWsdLUrl().toString());
+					if (wsdlDoc != null) {
+						wsdlDoc.setQueryString("wsdl");
+					}
+				}
+				RuntimeEndpointInfo.fillDocInfo(endpoint);
             }
+			RuntimeEndpointInfo.publishWSDLDocs(endpoint);
             endpoint.updateQuery2DocInfo();
         }
     }

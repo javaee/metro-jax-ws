@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenResolver.java,v 1.8 2005-08-31 03:18:11 jitu Exp $
+ * $Id: WSDLGenResolver.java,v 1.9 2005-09-03 02:10:33 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -105,13 +105,8 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         StreamDocInfo docInfo = new StreamDocInfo(filename, bout);
         docInfo.setDocType(DOC_TYPE.WSDL);
-        // TODO remove this checking once WSDL generation uses new methods
-        if (concreteWsdl == null) {
-            docInfo.setQueryString("wsdl");
-            concreteWsdl = docInfo;
-        } else {
-            docInfo.setQueryString("wsdl="+filename);
-        }
+        docInfo.setQueryString("wsdl");
+        concreteWsdl = docInfo;
         docs.put(docInfo.getUrl().toString(),  docInfo);
         StreamResult result = new StreamResult();
         result.setOutputStream(bout);
@@ -133,7 +128,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         StreamDocInfo abstractWsdl = new StreamDocInfo(filename.value, bout);
         abstractWsdl.setDocType(DOC_TYPE.WSDL);
-        abstractWsdl.setQueryString("wsdl="+filename.value);
+        //abstractWsdl.setQueryString("wsdl="+filename.value);
         docs.put(abstractWsdl.getUrl().toString(),  abstractWsdl);
         StreamResult result = new StreamResult();
         result.setOutputStream(bout);
@@ -150,13 +145,17 @@ public class WSDLGenResolver implements WSDLOutputResolver {
     public Result getSchemaOutput(String namespace, Holder<String> filename) {
         List<String> schemas = nsMapping.get(namespace);
         if (schemas != null) {
+            if (schemas.size() > 1) {
+                throw new ServerRtException("server.rt.err",
+                    "More than one schema for the target namespace "+namespace);
+            }
             filename.value = schemas.get(0);
             return null;            // Don't generate schema
         }
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         StreamDocInfo docInfo = new StreamDocInfo(filename.value, bout);
         docInfo.setDocType(DOC_TYPE.SCHEMA);
-        docInfo.setQueryString("xsd="+filename.value);
+        //docInfo.setQueryString("xsd="+filename.value);
         docs.put(docInfo.getUrl().toString(),  docInfo);
         StreamResult result = new StreamResult();
         result.setOutputStream(bout);
@@ -168,6 +167,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         private ByteArrayOutputStream bout;
         private String resource;
         private String queryString;
+		private DOC_TYPE docType;
         
         public StreamDocInfo(String resource, ByteArrayOutputStream bout) {
             this.resource = resource;
@@ -209,11 +209,11 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         }
         
         public void setDocType(DOC_TYPE docType) {
-
+			this.docType = docType;
         }
 
         public DOC_TYPE getDocType() {
-            return null;
+            return docType;
         }
 
         public void setTargetNamespace(String ns) {

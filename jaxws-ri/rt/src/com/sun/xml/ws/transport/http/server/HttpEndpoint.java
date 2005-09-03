@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.8 2005-08-31 21:29:57 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.9 2005-09-03 02:10:33 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -143,11 +143,11 @@ public class HttpEndpoint {
         }
     }
     
+    /*
     // Fill DocInfo with docuent info : WSDL or Schema, targetNS etc.
     private void fillDocInfo() throws XMLStreamException {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
-            Transformer transformer = XmlUtil.newTransformer();
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 RuntimeWSDLParser.fillDocInfo(entry.getValue(), 
                     endpointInfo.getServiceName(),
@@ -155,12 +155,12 @@ public class HttpEndpoint {
             }
         }
     }
+     */
     
     // Finds primary WSDL
     private void findPrimaryWSDL() throws Exception {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
-            Transformer transformer = XmlUtil.newTransformer();
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 DocInfo docInfo = entry.getValue();
                 if (docInfo.getService() != null) {
@@ -195,7 +195,7 @@ public class HttpEndpoint {
         setDocInfo();
         
         // Fill DocInfo with docuent info : WSDL or Schema, targetNS etc.
-        fillDocInfo();
+        RuntimeEndpointInfo.fillDocInfo(endpointInfo);
         
         //
         findPrimaryWSDL();
@@ -208,6 +208,7 @@ public class HttpEndpoint {
         }
     }
     
+    /*
     public void publishWSDLDocs() {     
         // Set queryString for the documents
         Map<String, DocInfo> docs = endpointInfo.getDocMetadata();
@@ -234,6 +235,7 @@ public class HttpEndpoint {
         }
         endpointInfo.updateQuery2DocInfo();
     }
+     */
     
     public void publish(String address) {
         try {
@@ -286,7 +288,7 @@ public class HttpEndpoint {
         endpointInfo.setUrlPattern("");
         endpointInfo.deploy();
         generateWSDLDocs();
-        publishWSDLDocs();
+        RuntimeEndpointInfo.publishWSDLDocs(endpointInfo);
         final WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
         endpointInfo.beginService();

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.51 2005-09-01 00:18:59 kohlert Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.52 2005-09-03 02:10:32 jitu Exp $
  */
 
 /*
@@ -20,6 +20,7 @@ import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.parser.Service;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 
 import java.util.*;
 import javax.xml.namespace.QName;
@@ -706,6 +707,61 @@ public class RuntimeEndpointInfo extends Endpoint
 
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
+    }
+    
+    // Fill DocInfo with document info : WSDL or Schema, targetNS etc.
+    public static void fillDocInfo(RuntimeEndpointInfo endpointInfo)
+    throws XMLStreamException {
+        Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
+        if (metadata != null) {
+            for(Entry<String, DocInfo> entry: metadata.entrySet()) {
+                RuntimeWSDLParser.fillDocInfo(entry.getValue(), 
+                    endpointInfo.getServiceName(),
+                    endpointInfo.getPortTypeName());
+            }
+        }
+    }
+    
+    public static void publishWSDLDocs(RuntimeEndpointInfo endpointInfo) {     
+        // Set queryString for the documents
+        Map<String, DocInfo> docs = endpointInfo.getDocMetadata();
+		if (docs == null) {
+			return;
+		}
+        Set<Entry<String, DocInfo>> entries = docs.entrySet();
+        List<String> wsdlSystemIds = new ArrayList<String>();
+        List<String> schemaSystemIds = new ArrayList<String>();
+        for(Entry<String, DocInfo> entry : entries) {
+            DocInfo docInfo = (DocInfo)entry.getValue();
+            DOC_TYPE docType = docInfo.getDocType();
+            String query = docInfo.getQueryString();
+            if (query == null && docType != null) {
+                switch(docType) {
+                    case WSDL :                   
+                        wsdlSystemIds.add(entry.getKey());
+                        break;
+                    case SCHEMA : 
+                        schemaSystemIds.add(entry.getKey());
+                        break;
+                    case OTHER :
+                        //(docInfo.getUrl()+" is not a WSDL or Schema file.");
+                }
+            }
+        }
+        
+        Collections.sort(wsdlSystemIds);
+        int wsdlnum = 1;
+        for(String wsdlSystemId : wsdlSystemIds) {
+            DocInfo docInfo = docs.get(wsdlSystemId);
+            docInfo.setQueryString("wsdl="+(wsdlnum++));
+        }
+        Collections.sort(schemaSystemIds);
+        int xsdnum = 1;
+        for(String schemaSystemId : schemaSystemIds) {
+            DocInfo docInfo = docs.get(schemaSystemId);
+            docInfo.setQueryString("xsd="+(xsdnum++));
+        }
+        endpointInfo.updateQuery2DocInfo();
     }
 
 }
