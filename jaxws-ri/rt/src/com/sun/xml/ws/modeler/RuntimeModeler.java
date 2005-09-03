@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.47 2005-09-01 05:35:52 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.48 2005-09-03 15:27:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -63,6 +63,7 @@ public class RuntimeModeler {
     public static final String RETURN               = "return";
     public static final String BEAN                 = "Bean";
     public static final String SERVICE              = "Service";
+    public static final String PORT                 = "Port";
     public static final Class HOLDER_CLASS = Holder.class;
     public static final Class REMOTE_EXCEPTION_CLASS = RemoteException.class;
     public static final Class RPC_LIT_PAYLOAD_CLASS = com.sun.xml.ws.encoding.jaxb.RpcLitPayload.class;
@@ -169,6 +170,18 @@ public class RuntimeModeler {
             serviceName = getServiceName(portClass);
         runtimeModel.setServiceQName(serviceName);
 
+        String portLocalName  = portClass.getSimpleName()+PORT;
+        if (webService.portName().length() >0) {
+            portLocalName = webService.portName();
+        } else if (webService.name().length() >0) {
+            portLocalName = webService.name()+PORT;
+        }
+        
+        if (portName == null)
+            portName = new QName(serviceName.getNamespaceURI(), portLocalName);
+        
+        runtimeModel.setPortName(portName);
+        
         processClass(clazz);
         runtimeModel.postProcess();
         return runtimeModel;
@@ -195,9 +208,9 @@ public class RuntimeModeler {
     void processClass(Class clazz) {
         WebService webService =
             (WebService) clazz.getAnnotation(WebService.class);
-        String portLocalName  = clazz.getSimpleName();
+        String portTypeLocalName  = clazz.getSimpleName();
         if (webService.name().length() >0)
-            portLocalName = webService.name();
+            portTypeLocalName = webService.name();
         
 
         targetNamespace = webService.targetNamespace();
@@ -205,11 +218,7 @@ public class RuntimeModeler {
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
-        QName portTypeName = new QName(targetNamespace, portLocalName);
-        if (portName == null)
-            portName = new QName(runtimeModel.getServiceQName().getNamespaceURI(), portLocalName);
-        
-        runtimeModel.setPortName(portName);
+        QName portTypeName = new QName(targetNamespace, portTypeLocalName);
         runtimeModel.setPortTypeName(portTypeName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
         
