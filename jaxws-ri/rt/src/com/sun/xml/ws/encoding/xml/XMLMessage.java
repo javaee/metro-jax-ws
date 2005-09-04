@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessage.java,v 1.14 2005-08-13 21:33:03 bbissett Exp $
+ * $Id: XMLMessage.java,v 1.15 2005-09-04 02:18:40 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -209,21 +209,14 @@ public class XMLMessage {
 //        }
 //    }
     
-    public WSConnection.STATUS getStatus() {
+    public int getStatus() {
         if (err != null) {     
             if (err instanceof HTTPException) {
-                return WSConnection.STATUS.OTHER;
+                return ((HTTPException)err).getStatusCode();
             }
-            return WSConnection.STATUS.INTERNAL_ERR;
+            return WSConnection.INTERNAL_ERR;
         }
-        return WSConnection.STATUS.OK;
-    }
-    
-    public int getStatusCode() {
-        if (err != null && err instanceof HTTPException) {
-            return ((HTTPException)err).getStatusCode();
-        }
-        return -1;
+        return WSConnection.OK;
     }
 
     public void writeTo(OutputStream out)

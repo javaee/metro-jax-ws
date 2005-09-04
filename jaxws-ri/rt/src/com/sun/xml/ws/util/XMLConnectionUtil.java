@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.4 2005-08-08 19:13:05 arungupta Exp $
+ * $Id: XMLConnectionUtil.java,v 1.5 2005-09-04 02:18:42 jitu Exp $
  */
 
 /*
@@ -19,7 +19,6 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
@@ -36,19 +35,15 @@ public class XMLConnectionUtil {
         try {
             Map<String, List<String>> headers = con.getHeaders();
             MimeHeaders mh = new MimeHeaders();
-            if (headers != null)
+            if (headers != null) {
                 for(Map.Entry<String, List<String>> entry : headers.entrySet()) {
                     String name = entry.getKey();
                     for(String value : entry.getValue()) {
                         mh.addHeader(name, value);
                     }
                 }
-//            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-//            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-//            String bindingId = ((BindingImpl)endpointInfo.getBinding()).getBindingId();
-            XMLMessage xmlMessage =  new XMLMessage(mh, con.getInput());
-            
-            return xmlMessage;
+            }
+            return new XMLMessage(mh, con.getInput());
         } catch(Exception e) {
             e.printStackTrace();
             throw new WebServiceException(e);
@@ -80,12 +75,11 @@ public class XMLConnectionUtil {
     
     public static void sendResponse(WSConnection con, XMLMessage xmlMessage) {
         setStatus(con, xmlMessage.getStatus());
-        con.setStatus(xmlMessage.getStatusCode());
         send(con, xmlMessage);
     }
     
     public static void sendResponseOneway(WSConnection con) {
-        setStatus(con, STATUS.ONEWAY);
+        setStatus(con, WSConnection.ONEWAY);
         con.getOutput();
         con.closeOutput();
     }
@@ -95,7 +89,7 @@ public class XMLConnectionUtil {
             StreamSource source = new StreamSource(
                     new ByteArrayInputStream(DEFAULT_SERVER_ERROR.getBytes()));
             XMLMessage message = new XMLMessage(source);
-            setStatus(con, STATUS.INTERNAL_ERR);
+            setStatus(con, WSConnection.INTERNAL_ERR);
             send(con, message);
         } catch(Exception e) {
             throw new WebServiceException(e);
@@ -114,7 +108,7 @@ public class XMLConnectionUtil {
         con.setHeaders(headers);
     }
     
-    public static void setStatus(WSConnection con, STATUS status) {
+    public static void setStatus(WSConnection con, int status) {
         con.setStatus(status);
     }
     

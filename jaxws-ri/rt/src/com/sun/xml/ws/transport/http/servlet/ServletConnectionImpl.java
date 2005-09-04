@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.7 2005-07-28 00:24:36 jitu Exp $
+ * $Id: ServletConnectionImpl.java,v 1.8 2005-09-04 02:18:42 jitu Exp $
  */
 
 /*
@@ -16,7 +16,6 @@ import java.nio.ByteBuffer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.sun.pept.ept.EPTFactory;
-import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 
 import java.net.HttpURLConnection;
@@ -38,7 +37,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
 
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private STATUS status;
+    private int status;
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
 
@@ -76,29 +75,19 @@ public class ServletConnectionImpl extends WSConnectionImpl {
     }
     
     @Override
-    public void setStatus(STATUS status) {
+    public void setStatus(int status) {
         this.status = status;
     }
     
     /**
      * sets HTTP status code
      */
-    private int getStatusCode() {
-        switch(status) {
-            case OK :
-                return HttpURLConnection.HTTP_OK;
-            case ONEWAY :
-                return HttpURLConnection.HTTP_ACCEPTED;
-            case UNSUPPORTED_MEDIA :
-                return HttpURLConnection.HTTP_UNSUPPORTED_TYPE;
-            case MALFORMED_XML :
-                return HttpURLConnection.HTTP_BAD_REQUEST;
-            case INTERNAL_ERR :
-                return HttpURLConnection.HTTP_INTERNAL_ERROR;
-            case OTHER :
-                return getStatus();
+    @Override
+    public int getStatus() {
+        if (status == 0) {
+            status = HttpURLConnection.HTTP_OK;
         }
-        return HttpURLConnection.HTTP_OK;
+        return status;
     }
     
     @Override
@@ -114,7 +103,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
     @Override
     public OutputStream getOutput() {
         // write HTTP status code, and headers
-        response.setStatus(getStatusCode());
+        response.setStatus(getStatus());
         if (responseHeaders != null) {
             for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
                 String name = entry.getKey();

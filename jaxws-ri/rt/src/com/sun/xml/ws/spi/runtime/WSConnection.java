@@ -1,5 +1,5 @@
 /**
- * $Id: WSConnection.java,v 1.5 2005-07-28 00:24:36 jitu Exp $
+ * $Id: WSConnection.java,v 1.6 2005-09-04 02:18:40 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -31,33 +31,35 @@ import java.util.Map;
  */
 
 public interface WSConnection extends Connection {
-    /**
-     * It maps the enum constants to the following HTTP status codes.
-     * OK=200, ONEWAY=202, UNSUPPORTED_MEDIA=415, MALFORMED_XML=400,
-     * INTERNAL_ERR=500
-     *
-     */
-    enum STATUS { OK, ONEWAY, UNSUPPORTED_MEDIA, MALFORMED_XML, 
-                  INTERNAL_ERR, OTHER };
+    
+    public static final int OK=200;
+    public static final int ONEWAY=202;
+    public static final int UNSUPPORTED_MEDIA=415;
+    public static final int MALFORMED_XML=400;
+    public static final int INTERNAL_ERR=500;
     
     /**
-     * returns request headers. can we use javax.net.http.Headers ?
+     * returns request headers
      */
     public Map<String,List<String>> getHeaders();
     
     /**
-     * sets response headers. can we use javax.net.http.Headers ?
+     * sets response headers
      */
     public void setHeaders(Map<String,List<String>> headers);
+    
     public void setStatus(int status);
-    public void setStatus(STATUS status);
+    
     public int getStatus();
     
     public InputStream getInput();
     
+    public void closeInput();
+    
     public OutputStream getOutput();
     
-    public OutputStream getDebug();
     public void closeOutput();
-
+    
+    public OutputStream getDebug();
+    
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.10 2005-07-28 00:24:37 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.11 2005-09-04 02:18:42 jitu Exp $
  */
 
 /*
@@ -15,7 +15,6 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -87,12 +86,12 @@ public class SOAPConnectionUtil {
     }
 
     public static void sendResponse(WSConnection con, SOAPMessage soapMessage) {
-        setStatus(con, STATUS.OK);
+        setStatus(con, WSConnection.OK);
         send(con, soapMessage);
     }
 
     public static void sendResponseOneway(WSConnection con) {
-        setStatus(con, STATUS.ONEWAY);
+        setStatus(con, WSConnection.ONEWAY);
         con.getOutput();
         con.closeOutput();
     }
@@ -109,7 +108,7 @@ public class SOAPConnectionUtil {
             writer.close();
             byte[] data = bufferedStream.toByteArray();
             message.getSOAPPart().setContent(new StreamSource(new ByteInputStream(data, data.length)));
-            setStatus(con, STATUS.INTERNAL_ERR);
+            setStatus(con, WSConnection.INTERNAL_ERR);
             send(con, message);
         } catch (Exception e) {
             throw new WebServiceException(e);
@@ -128,7 +127,7 @@ public class SOAPConnectionUtil {
         con.setHeaders(headers);
     }
 
-    public static void setStatus(WSConnection con, STATUS status) {
+    public static void setStatus(WSConnection con, int status) {
         con.setStatus(status);
     }
 

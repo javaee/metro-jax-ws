@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.2 2005-07-27 13:12:44 spericas Exp $
+ * $Id: WSConnectionImpl.java,v 1.3 2005-09-04 02:18:41 jitu Exp $
  */
 
 /*
@@ -35,7 +35,6 @@ public abstract class WSConnectionImpl implements WSConnection {
     public OutputStream outputStream = null;
     public InputStream inputStream = null;
     int statusCode;
-    STATUS status;
     
     /** Creates a new instance of WSConnectionImpl */
     public WSConnectionImpl () {
@@ -47,10 +46,6 @@ public abstract class WSConnectionImpl implements WSConnection {
 
     public void setStatus (int statusCode) {
         this.statusCode = statusCode;
-    }
-
-    public void setStatus (STATUS status) {
-        this.status = status;
     }
 
     public OutputStream getDebug () {
@@ -186,5 +181,8 @@ public abstract class WSConnectionImpl implements WSConnection {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    public void closeInput() {
     }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.5 2005-07-19 18:10:05 arungupta Exp $
+ * $Id: ServerConnectionImpl.java,v 1.6 2005-09-04 02:18:41 jitu Exp $
  */
 
 /*
@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 import com.sun.pept.ept.EPTFactory;
-import com.sun.xml.ws.spi.runtime.WSConnection.STATUS;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.net.httpserver.HttpInteraction;
 
@@ -40,7 +39,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
     private InputStream is;
-//    private OutputStream out;
+    private OutputStream out;
 
     public ServerConnectionImpl(HttpInteraction httpTransaction) {
         this.httpTransaction = httpTransaction;
@@ -64,20 +63,10 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     /**
      * sets HTTP status code
      */
-    private int getStatusCode() {
-//        switch(status) {
-//            case STATUS.OK :
-//                return HttpURLConnection.HTTP_OK;
-//            case ONEWAY :
-//                return HttpURLConnection.HTTP_ACCEPTED;
-//            case UNSUPPORTED_MEDIA :
-//                return HttpURLConnection.HTTP_UNSUPPORTED_TYPE;
-//            case MALFORMED_XML :
-//                return HttpURLConnection.HTTP_BAD_REQUEST;
-//            case INTERNAL_ERR :
-//                return HttpURLConnection.HTTP_INTERNAL_ERROR;
-//        }
-//        return HttpURLConnection.HTTP_OK;
+    public int getStatus() {
+        if (status == 0) {
+            status = HttpURLConnection.HTTP_OK;
+        }
         return status;
     }
     
@@ -91,13 +80,6 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     public OutputStream getOutput() {
         if (outputStream == null) {
             try {
-                // Read everything from request and close it
-                byte[] buf = new byte[1024];
-                int num;
-                while ((num = is.read(buf)) != -1) {
-                }
-                is.close();
-
                 if (responseHeaders != null) {
                     for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
                         String name = entry.getKey();
@@ -109,13 +91,37 @@ public class ServerConnectionImpl extends WSConnectionImpl {
                 }
 
                 // write HTTP status code, and headers
-                httpTransaction.sendResponseHeaders(getStatusCode(), 0);
+                httpTransaction.sendResponseHeaders(getStatus(), 0);
                 outputStream = httpTransaction.getResponseBody();
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
         }
         return outputStream;
+    }
+    
+    public void closeOutput() {
+        try {
+            if (outputStream != null) {
+                outputStream.flush();
+                outputStream.close();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void closeInput() {
+        try {
+            // Read everything from request and close it
+            byte[] buf = new byte[1024];
+            int num;
+            while ((num = inputStream.read(buf)) != -1) {
+            }
+            is.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }
