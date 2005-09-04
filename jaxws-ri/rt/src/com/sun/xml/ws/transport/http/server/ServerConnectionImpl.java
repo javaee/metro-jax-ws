@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.6 2005-09-04 02:18:41 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.7 2005-09-04 23:33:06 jitu Exp $
  */
 
 /*
@@ -78,7 +78,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     }
     
     public OutputStream getOutput() {
-        if (outputStream == null) {
+        if (out == null) {
             try {
                 if (responseHeaders != null) {
                     for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
@@ -92,36 +92,38 @@ public class ServerConnectionImpl extends WSConnectionImpl {
 
                 // write HTTP status code, and headers
                 httpTransaction.sendResponseHeaders(getStatus(), 0);
-                outputStream = httpTransaction.getResponseBody();
+                out = httpTransaction.getResponseBody();
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
         }
-        return outputStream;
+        return out;
     }
     
     public void closeOutput() {
-        try {
-            if (outputStream != null) {
-                outputStream.flush();
-                outputStream.close();
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
+        out = null;
     }
     
     public void closeInput() {
-        try {
-            // Read everything from request and close it
-            byte[] buf = new byte[1024];
-            int num;
-            while ((num = inputStream.read(buf)) != -1) {
+        if (is != null) {
+            try {
+                // Read everything from request and close it
+                byte[] buf = new byte[1024];
+                while (is.read(buf) != -1) {
+                }
+                is.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-            is.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
+        is = null;
     }
 
 }
