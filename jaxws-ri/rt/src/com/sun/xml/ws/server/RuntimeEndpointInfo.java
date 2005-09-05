@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.52 2005-09-03 02:10:32 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.53 2005-09-05 23:58:09 jitu Exp $
  */
 
 /*
@@ -363,6 +363,7 @@ public class RuntimeEndpointInfo extends Endpoint
         WebServiceProvider wsProvider =
             (WebServiceProvider)getImplementorClass().getAnnotation(
                 WebServiceProvider.class);
+        /*
         if (getWSDLFileName() == null) {
             if (!wsProvider.wsdlLocation().equals("")) {
                 setWSDLFileName(wsProvider.wsdlLocation());
@@ -377,6 +378,7 @@ public class RuntimeEndpointInfo extends Endpoint
         if (getPortName() == null) {
             throw new ServerRtException("port.name.required");
         }
+         */
     }
 
     public QName getPortName() {
