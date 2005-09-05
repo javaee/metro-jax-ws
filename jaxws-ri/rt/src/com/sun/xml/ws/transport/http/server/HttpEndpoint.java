@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.10 2005-09-04 23:33:06 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.11 2005-09-05 02:41:12 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -227,6 +227,7 @@ public class HttpEndpoint {
         System.out.println("Doc Metadata="+endpointInfo.getDocMetadata());
         WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
+        endpointInfo.injectContext();
         endpointInfo.beginService();
         Tie tie = new Tie();
         context.setHandler(new WSHttpHandler(tie, endpointInfo));
