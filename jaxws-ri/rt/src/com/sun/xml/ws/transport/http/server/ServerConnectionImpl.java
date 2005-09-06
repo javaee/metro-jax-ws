@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.7 2005-09-04 23:33:06 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.8 2005-09-06 02:57:38 jitu Exp $
  */
 
 /*
@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 
 import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.ws.transport.WSConnectionImpl;
-import com.sun.net.httpserver.HttpInteraction;
+import com.sun.net.httpserver.HttpExchange;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -34,14 +34,14 @@ import java.util.Map;
  */
 public class ServerConnectionImpl extends WSConnectionImpl {
 
-    private HttpInteraction httpTransaction;
+    private HttpExchange httpTransaction;
     private int status;
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
-    private InputStream is;
-    private OutputStream out;
+    private NoCloseInputStream is;
+    private NoCloseOutputStream out;
 
-    public ServerConnectionImpl(HttpInteraction httpTransaction) {
+    public ServerConnectionImpl(HttpExchange httpTransaction) {
         this.httpTransaction = httpTransaction;
     }
 
@@ -72,7 +72,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     
     public InputStream getInput() {
         if (is == null) {
-            is = httpTransaction.getRequestBody();
+            is = new NoCloseInputStream(httpTransaction.getRequestBody());
         }
         return is;
     }
@@ -80,19 +80,21 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     public OutputStream getOutput() {
         if (out == null) {
             try {
+                closeInput();
+                
                 if (responseHeaders != null) {
                     for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
                         String name = entry.getKey();
                         List<String> values = entry.getValue();
                         for(String value : values) {
-                            httpTransaction.getResponseHeaders().addHeader(name, value);
+                            httpTransaction.getResponseHeaders().add(name, value);
                         }
                     }
                 }
 
                 // write HTTP status code, and headers
                 httpTransaction.sendResponseHeaders(getStatus(), 0);
-                out = httpTransaction.getResponseBody();
+                out = new NoCloseOutputStream(httpTransaction.getResponseBody());
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -103,7 +105,8 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     public void closeOutput() {
         if (out != null) {
             try {
-                out.close();
+System.out.println("Output is closed");                 
+                out.getOutputStream().close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -118,12 +121,59 @@ public class ServerConnectionImpl extends WSConnectionImpl {
                 byte[] buf = new byte[1024];
                 while (is.read(buf) != -1) {
                 }
-                is.close();
+System.out.println("Input is closed");                
+                is.getInputStream().close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
         is = null;
+    }
+    
+    private static class NoCloseInputStream extends InputStream {
+        private InputStream is;
+        
+        public NoCloseInputStream(InputStream is) {
+            this.is = is;
+        }
+        
+        @Override
+        public int read() throws IOException {
+            return is.read();
+        }
+
+        @Override
+        public void close() throws IOException {
+System.out.println("NoCloseInput close()");              
+            // Intentionally left empty. use closeInput() to close
+        }
+        
+        public InputStream getInputStream() {
+            return is;
+        }
+    }
+    
+    private static class NoCloseOutputStream extends OutputStream {
+        private OutputStream out;
+        
+        public NoCloseOutputStream(OutputStream out) {
+            this.out = out;
+        }
+        
+        @Override
+        public void write(int ch) throws IOException {
+            out.write(ch);
+        }
+
+        @Override
+        public void close() throws IOException {
+System.out.println("NoCloseOutput close()");            
+            // Intentionally left empty. use closeOutput() to close
+        }
+        
+        public OutputStream getOutputStream() {
+            return out;
+        }
     }
 
 }

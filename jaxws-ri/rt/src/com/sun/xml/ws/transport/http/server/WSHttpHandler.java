@@ -1,5 +1,5 @@
 /**
- * $Id: WSHttpHandler.java,v 1.1 2005-09-04 23:33:06 jitu Exp $
+ * $Id: WSHttpHandler.java,v 1.2 2005-09-06 02:57:38 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,13 +8,14 @@
 package com.sun.xml.ws.transport.http.server;
 
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpInteraction;
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
@@ -24,7 +25,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -54,7 +57,7 @@ public class WSHttpHandler implements HttpHandler {
         this.endpointInfo = endpointInfo;
     }
     
-    public void handleInteraction(HttpInteraction msg) {
+    public void handle(HttpExchange msg) {
         logger.fine("Received HTTP request:"+msg.getRequestURI());
         String method = msg.getRequestMethod();
         if (method.equals(GET_METHOD)) {
@@ -77,7 +80,7 @@ public class WSHttpHandler implements HttpHandler {
     /*
      * Handles POST requests
      */
-    private void post(HttpInteraction msg) {
+    private void post(HttpExchange msg) {
         try {
             ServerConnectionImpl con = new ServerConnectionImpl(msg);
             MessageContext msgCtxt = new MessageContextImpl();
@@ -108,19 +111,22 @@ public class WSHttpHandler implements HttpHandler {
     /*
      * Handles GET requests
      */ 
-    public void get(HttpInteraction msg) {
+    public void get(HttpExchange msg) {
         try {
-            InputStream is = msg.getRequestBody();
+            WSConnection con = new ServerConnectionImpl(msg);
+            InputStream is = con.getInput();
+            /*
             try {
                 readFully(is);
             } catch(IOException ioe) {
                 ioe.printStackTrace();
                 String message = "Couldn't read Request";
-                writeErrorPage(msg, HttpURLConnection.HTTP_INTERNAL_ERROR, message);
+                writeErrorPage(con, HttpURLConnection.HTTP_INTERNAL_ERROR, message);
                 return;
             } finally {
-                closeInputStream(is);
+                con.closeInput();
             }
+             */
             String queryString = msg.getRequestURI().getQuery();
             logger.fine("Query String for request ="+queryString);
 
@@ -130,7 +136,7 @@ public class WSHttpHandler implements HttpHandler {
                     localizer.localize(
                         messageFactory.getMessage("html.notFound",
                             "Invalid Request ="+msg.getRequestURI()));
-                writeErrorPage(msg, HttpURLConnection.HTTP_NOT_FOUND, message);
+                writeErrorPage(con, HttpURLConnection.HTTP_NOT_FOUND, message);
                 return;
             }
             DocInfo docInfo = endpointInfo.getDocMetadata().get(inPath);
@@ -139,16 +145,23 @@ public class WSHttpHandler implements HttpHandler {
                     localizer.localize(
                         messageFactory.getMessage("html.notFound",
                             "Invalid Request ="+msg.getRequestURI()));
-                writeErrorPage(msg, HttpURLConnection.HTTP_NOT_FOUND, message);
+                writeErrorPage(con, HttpURLConnection.HTTP_NOT_FOUND, message);
                 return;
             }
             
-            OutputStream os = null;
             InputStream docStream = null;
             try {
-                msg.getResponseHeaders().addHeader(CONTENT_TYPE_HEADER, XML_CONTENT_TYPE);
+                Map<String,List<String>> headers = new HashMap<String, List<String>>();
+                List<String> ctHeader = new ArrayList<String>();
+                ctHeader.add(XML_CONTENT_TYPE);
+                headers.put(CONTENT_TYPE_HEADER, ctHeader);
+                con.setHeaders(headers);
+                con.setStatus(HttpURLConnection.HTTP_OK);
+            /*
+                msg.getResponseHeaders().add(CONTENT_TYPE_HEADER, XML_CONTENT_TYPE);
                 msg.sendResponseHeaders(HttpURLConnection.HTTP_OK,  0);
-                os = msg.getResponseBody();
+             */
+                OutputStream os = con.getOutput();
 
                 List<RuntimeEndpointInfo> endpoints = new ArrayList<RuntimeEndpointInfo>();
                 endpoints.add(endpointInfo);
@@ -165,11 +178,9 @@ public class WSHttpHandler implements HttpHandler {
                         endpointInfo, endpoints);
                 docStream = docInfo.getDoc();
                 patcher.patchDoc(docStream, os);
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
             } finally {
                 closeInputStream(docStream);
-                //closeOutputStream(os);
+                con.closeOutput();
             }
         } finally {
             try {
@@ -183,12 +194,15 @@ public class WSHttpHandler implements HttpHandler {
     /*
      * writes error html page
      */
-    private void writeErrorPage(HttpInteraction msg, int status, String message) {
-        OutputStream outputStream = null;
+    private void writeErrorPage(WSConnection con, int status, String message) {
         try {
-            msg.getResponseHeaders().addHeader(CONTENT_TYPE_HEADER, HTML_CONTENT_TYPE);
-            msg.sendResponseHeaders(status, 0);
-            outputStream = msg.getResponseBody();
+            Map<String,List<String>> headers = new HashMap<String, List<String>>();
+            List<String> ctHeader = new ArrayList<String>();
+            ctHeader.add(HTML_CONTENT_TYPE);
+            headers.put(CONTENT_TYPE_HEADER, ctHeader);
+            con.setHeaders(headers);
+            con.setStatus(status);
+            OutputStream outputStream = con.getOutput();
             PrintWriter out = new PrintWriter(outputStream);
             out.println("<html><head><title>");
             out.println(
@@ -198,10 +212,8 @@ public class WSHttpHandler implements HttpHandler {
             out.println(message);
             out.println("</body></html>");
             out.close();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
         } finally {
-            //closeOutputStream(outputStream);
+            con.closeOutput();
         }
     }
     

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.12 2005-09-04 23:33:07 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.13 2005-09-06 02:57:39 jitu Exp $
  */
 
 /*
@@ -52,7 +52,6 @@ public class SOAPConnectionUtil {
             }
             SOAPMessage soapMessage = SOAPUtil.createMessage(mh,
                 con.getInput(), bindingId);
-            con.closeInput();
             return soapMessage;
         } catch (Exception e) {
             e.printStackTrace();

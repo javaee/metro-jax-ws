@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.11 2005-09-05 02:41:12 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.12 2005-09-06 02:57:38 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -184,10 +184,10 @@ public class HttpEndpoint {
             InetSocketAddress inetAddress = new InetSocketAddress(port);
             HttpServer server = HttpServer.create(inetAddress, MAX_THREADS);
             server.setExecutor(Executors.newFixedThreadPool(5));
-            int index = url.getPath().lastIndexOf('/');
-            String contextRoot = url.getPath().substring(0, index);
-            System.out.println("*** contextRoot ***"+contextRoot);
-            HttpContext context = server.createContext(contextRoot);
+            //int index = url.getPath().lastIndexOf('/');
+            //String contextRoot = url.getPath().substring(0, index);
+            System.out.println("*** contextRoot ***"+url.getPath());
+            HttpContext context = server.createContext(url.getPath());
             publish(context);
             server.start();
         } catch(Exception e) {
@@ -213,7 +213,7 @@ public class HttpEndpoint {
         httpContext.getServer().removeContext(httpContext);
         if (httpServer != null) {
             httpServer.removeContext(httpContext);
-            httpServer.terminate(0);
+            httpServer.stop(0);
         }
         endpointInfo.endService();
         published = false;
