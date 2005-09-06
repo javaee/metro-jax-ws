@@ -5,6 +5,7 @@ package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.client.dispatch.DispatchBase;
 import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import com.sun.xml.ws.wsdl.parser.Binding;
 import com.sun.xml.ws.handler.HandlerResolverImpl;
@@ -89,10 +90,10 @@ public class WSServiceDelegate extends ServiceDelegate
     private HashSet<Object> seiProxies;
 
     /**
-     * {@link CatalogResolver} to check META-INF/jaxws-catalog.xml.
+     * {@link CatalogResolver} to check META-INF/jax-ws-catalog.xml.
      * Lazily created.
      */
-    private EntityResolver resolver;
+    private EntityResolver entityResolver;
 
 
     public WSServiceDelegate(ServiceContext scontext) {
@@ -111,9 +112,9 @@ public class WSServiceDelegate extends ServiceDelegate
 
         if (wsdlDocumentLocation != null){
             serviceContext = ServiceContextBuilder.build(
-                wsdlDocumentLocation, serviceClass, getResolver());
+                wsdlDocumentLocation, serviceClass, XmlUtil.createDefaultCatalogResolver());
         } else {
-            serviceContext = new ServiceContext(getResolver());
+            serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
             serviceContext.setServiceName(serviceName);
         }
          if (serviceContext.getResolver() != null) {
@@ -380,53 +381,14 @@ public class WSServiceDelegate extends ServiceDelegate
     }
 
 
-    /**
-     * Gets the resolver that this {@link ServiceFactory} uses before
-     * accessing remote WSDLs.
-     */
-    public EntityResolver getResolver() {
-        if (resolver == null) {
-            // set up a manager
-            CatalogManager manager = new CatalogManager();
-            manager.setIgnoreMissingProperties(true);
-            try {
-                if (System.getProperty(getClass().getName() + ".verbose") != null) {
-                    manager.setVerbosity(999);
-                }
-            } catch (SecurityException e) {
-                // recover by not setting the debug flag.
-            }
-
-            // parse the catalog
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            Enumeration<URL> catalogEnum;
-            try {
-                if (cl == null)
-                    catalogEnum = ClassLoader.getSystemResources("/META-INF/jaxws-catalog.xml");
-                else
-                    catalogEnum = cl.getResources("/META-INF/jaxws-catalog.xml");
-
-                while (catalogEnum.hasMoreElements()) {
-                    URL url = catalogEnum.nextElement();
-                    manager.getCatalog().parseCatalog(url);
-                }
-            } catch (IOException e) {
-                throw new WebServiceException(e);
-            }
-            resolver = new CatalogResolver(manager);
-        }
-
-        return resolver;
-    }
-
-    /**
-     * Overrides the resolver that this {@link ServiceFactoryImpl} uses.
-     * To disable the catalog resolution, set a dummy entity resolver that
-     * always return null.
-     */
-    public void setResolver(EntityResolver resolver) {
-        this.resolver = resolver;
-    }
+//    /**
+//     * Overrides the resolver that this {@link ServiceFactoryImpl} uses.
+//     * To disable the catalog resolution, set a dummy entity resolver that
+//     * always return null.
+//     */
+//    public void setResolver(EntityResolver resolver) {
+//        this.entityResolver = resolver;
+//    }
 
 
     class DaemonThreadFactory implements ThreadFactory {
