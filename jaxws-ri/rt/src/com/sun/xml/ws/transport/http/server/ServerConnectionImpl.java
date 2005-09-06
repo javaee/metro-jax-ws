@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.8 2005-09-06 02:57:38 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.9 2005-09-06 23:51:30 jitu Exp $
  */
 
 /*
@@ -104,8 +104,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     
     public void closeOutput() {
         if (out != null) {
-            try {
-System.out.println("Output is closed");                 
+            try {                 
                 out.getOutputStream().close();
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -120,8 +119,7 @@ System.out.println("Output is closed");
                 // Read everything from request and close it
                 byte[] buf = new byte[1024];
                 while (is.read(buf) != -1) {
-                }
-System.out.println("Input is closed");                
+                }             
                 is.getInputStream().close();
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -143,8 +141,7 @@ System.out.println("Input is closed");
         }
 
         @Override
-        public void close() throws IOException {
-System.out.println("NoCloseInput close()");              
+        public void close() throws IOException {           
             // Intentionally left empty. use closeInput() to close
         }
         
@@ -166,8 +163,7 @@ System.out.println("NoCloseInput close()");
         }
 
         @Override
-        public void close() throws IOException {
-System.out.println("NoCloseOutput close()");            
+        public void close() throws IOException {         
             // Intentionally left empty. use closeOutput() to close
         }
         
