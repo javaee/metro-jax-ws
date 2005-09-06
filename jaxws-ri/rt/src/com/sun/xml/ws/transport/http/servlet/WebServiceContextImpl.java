@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceContextImpl.java,v 1.1 2005-08-03 22:54:07 jitu Exp $
+ * $Id: WebServiceContextImpl.java,v 1.2 2005-09-06 23:54:30 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class WebServiceContextImpl implements WebServiceContext  {
     
-    public static ThreadLocal msgContext = new ThreadLocal();
+    public ThreadLocal msgContext = new ThreadLocal();
     
     public MessageContext getMessageContext() {
         MessageContext ctxt = (MessageContext)msgContext.get();
