@@ -1,5 +1,5 @@
 /*
- * $Id: XMLMessageDispatcher.java,v 1.7 2005-08-31 18:29:40 bbissett Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.8 2005-09-06 19:36:09 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -256,13 +256,13 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     protected void sendResponseOneway(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        //SOAPConnectionUtil.sendResponseOneway(con);
+        XMLConnectionUtil.sendResponseOneway(con);
     }
 
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
         logger.log(Level.SEVERE, e.getMessage(), e);
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        //SOAPConnectionUtil.sendResponseError(con);
+        XMLConnectionUtil.sendResponseError(con);
     }
 
 
