@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.7 2005-08-12 21:34:28 kohlert Exp $
+ * $Id: WsGen.java,v 1.8 2005-09-06 22:48:45 kohlert Exp $
  */
 
 /*
@@ -261,6 +261,32 @@ public class WsGen extends MatchingTask {
          this.protocol = protocol;
      }     
 
+     /*************  serviceName option used only with -wsdl option*****************/
+     private String serviceName = null;
+
+     /** Gets the serviceName. **/
+     public String getServiceName() {
+         return serviceName;
+     }
+
+     /** Sets the serviceName. **/
+     public void setServiceName(String name) {
+         this.serviceName = name;
+     }        
+     
+     /*************  portName option used only with -wsdl option*****************/
+     private String portName = null;
+
+     /** Gets the portName. **/
+     public String getPortName() {
+         return portName;
+     }
+
+     /** Sets the serviceName. **/
+     public void setPortName(String name) {
+         this.portName = name;
+     }       
+     
     /***********************  include ant runtime **********************/
     /** not sure if these methods are needed */
     private boolean includeAntRuntime = false;
@@ -368,6 +394,16 @@ public class WsGen extends MatchingTask {
                 tmp += ":"+protocol;
             cmd.createArgument().setValue(tmp);
         }
+        
+        if (serviceName != null) {
+            cmd.createArgument().setValue("-servicename");
+            cmd.createArgument().setValue(serviceName);
+        }
+
+        if (portName != null) {
+            cmd.createArgument().setValue("-portname");
+            cmd.createArgument().setValue(portName);
+        }        
         
         // nd option
         if (null != getNonClassDir() && !getNonClassDir().getName().equals("")) {

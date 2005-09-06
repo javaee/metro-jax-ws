@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.48 2005-09-03 15:27:03 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.49 2005-09-06 22:48:43 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -180,6 +180,10 @@ public class RuntimeModeler {
         if (portName == null)
             portName = new QName(serviceName.getNamespaceURI(), portLocalName);
         
+        if (!portName.getNamespaceURI().equals(serviceName.getNamespaceURI())) {
+            throw new RuntimeModelerException("runtime.modeler.portname.servicename.namespace.mismatch",
+                    new Object[] {serviceName, portName});            
+        }
         runtimeModel.setPortName(portName);
         
         processClass(clazz);

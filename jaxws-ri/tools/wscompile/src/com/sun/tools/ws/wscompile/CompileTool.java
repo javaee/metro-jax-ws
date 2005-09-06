@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.24 2005-09-02 20:35:39 kohlert Exp $
+ * $Id: CompileTool.java,v 1.25 2005-09-06 22:48:46 kohlert Exp $
  */
 
 /*
@@ -32,6 +32,7 @@ import com.sun.xml.ws.util.VersionUtil;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingType;
@@ -103,14 +104,21 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             }*/ else if (args[i].equals("-verbose")) {
                 verbose = true;
                 args[i] = null;
-            }else if (args[i].equals("-b")) {
-                if(program.equals("wsgen"))
-                    continue;
+            } else if (args[i].equals("-b")) {
+                if(program.equals(WSGEN)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
                 if ((i + 1) < args.length) {
                     args[i] = null;
                     String file = args[++i];
                     args[i] = null;
                     bindingFiles.add(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(file)));
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", "-b"));
+                    usage();
+                    return false;
                 }
             } else if (args[i].equals("-version")) {
                 report(getVersion());
@@ -121,13 +129,51 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 keepGenerated = true;
                 args[i] = null;
             } else if(args[i].equals("-wsdllocation")){
-                if(program.equals("wsgen"))
-                    continue;
-                args[i]=null;
-                wsdlLocation = args[++i];
-                args[i]=null;
-
-            }else if (args[i].equals("-d")) {
+                if(program.equals(WSGEN)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
+                if ((i + 1) < args.length) {
+                    args[i]=null;
+                    wsdlLocation = args[++i];
+                    args[i]=null;
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
+                }
+            } else if (args[i].equals(SERVICENAME_OPTION)) {
+                if(program.equals(WSIMPORT)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
+                if ((i + 1) < args.length) {
+                    args[i] = null;
+                    serviceName = QName.valueOf(args[++i]);
+                    args[i] = null;
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
+                }
+            } else if (args[i].equals(PORTNAME_OPTION)) {
+                if(program.equals(WSIMPORT)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
+                if ((i + 1) < args.length) {
+                    args[i] = null;
+                    portName = QName.valueOf(args[++i]);
+                    args[i] = null;                
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
+                }
+            } else if (args[i].equals("-d")) {           
                 if ((i + 1) < args.length) {
                     if (destDir != null) {
                         onError(getMessage("wscompile.duplicateOption", "-d"));
@@ -148,8 +194,11 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     return false;
                 }
             } else if (args[i].equals("-nd")) {
-                if (program.equals("wsimport"))
-                    continue;
+                if (program.equals(WSIMPORT)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
                 if ((i + 1) < args.length) {
                     if (nonclassDestDir != null) {
                         onError(getMessage("wscompile.duplicateOption", "-nd"));
@@ -190,8 +239,11 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     return false;
                 }
             } else if (args[i].equals("-classpath") || args[i].equals("-cp")) {
-                if (program.equals("wsimport"))
-                    continue;
+                if (program.equals(WSIMPORT)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
                 if ((i + 1) < args.length) {
                     if (userClasspath != null) {
                         onError(getMessage("wscompile.duplicateOption", args[i]));
@@ -201,10 +253,18 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     args[i] = null;
                     userClasspath = args[++i];
                     args[i] = null;
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
                 }
+
             } else if (args[i].startsWith("-httpproxy:")) {
-                if(program.equals("wsgen"))
-                    continue;
+                if(program.equals(WSGEN)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
                 String value = args[i].substring(11);
                 if (value.length() == 0) {
                     onError(getMessage("wscompile.invalidOption", args[i]));
@@ -223,8 +283,11 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 }
                 args[i] = null;
             } else if (args[i].startsWith("-wsdl")) {
-                if (program.equals("wsimport")) 
-                    continue;
+                if (program.equals(WSIMPORT)) { 
+                    onError(getMessage("wscompile.invalidOption", args[i]));                    
+                    usage();
+                    return false;
+                }
                 genWsdl = true;
                 String value = args[i].substring(5);
                 int index = value.indexOf(':');
@@ -249,7 +312,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else if (args[i].equals("-extension")) {
                 extensions = true;
                 args[i] = null;
-            }else if (args[i].startsWith("-help")) {
+            } else if (args[i].startsWith("-help")) {
                 help();
                 return false;
             }
@@ -266,7 +329,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 // the input source could be a local file or a URL,get the
                 // abolutized URL string
                 String fileName = args[i];
-                if (program.equals("wsgen")) {
+                if (program.equals(WSGEN)) {
                     if (!isClass(fileName)) {
                         onError(getMessage("wsgen.class.not.found", fileName));
                         return false;
@@ -288,6 +351,24 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         
         // put jaxws and jaxb binding files
         properties.put(ProcessorOptions.BINDING_FILES, bindingFiles);
+        if (!validateArguments()) {
+            usage();
+            return false;
+        }
+        return true;    
+    }
+    
+    protected boolean validateArguments() {
+        if (!genWsdl) {
+            if (serviceName != null) {
+                onError(getMessage("wsgen.wsdl.arg.no.genwsdl", SERVICENAME_OPTION));
+                return false;                
+            }
+            if (portName != null) {
+                onError(getMessage("wsgen.wsdl.arg.no.genwsdl", PORTNAME_OPTION));
+                return false;                
+            }
+        }
         return true;
     }
 
@@ -415,8 +496,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     bindingID = bindingType.value();
             }
             com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
-                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, null, bindingID);
+                    new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, serviceName, bindingID);
             rtModeler.setClassLoader(classLoader);
+            if (portName != null)
+                rtModeler.setPortName(portName);
             com.sun.xml.ws.model.RuntimeModel rtModel = rtModeler.buildRuntimeModel();
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
                     new com.sun.xml.ws.wsdl.writer.WSDLOutputResolver() {
@@ -729,10 +812,16 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected static final String SOAP11 = "soap1.1";
     protected static final String X_SOAP12 = "Xsoap1.2";
     protected static final String HTTP   = "http";    
+    protected static final String WSIMPORT = "wsimport";
+    protected static final String WSGEN    = "wsgen";
     protected static final String SOAP11_ID = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
     protected static final String SOAP12_ID = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;
     protected static final String VALID_PROTOCOLS = SOAP11 +", "+X_SOAP12;
     protected static final String VALID_TRANSPORTS = "http";
     protected String  targetVersion = null;
     protected String wsdlLocation;
+    protected QName serviceName;
+    protected QName portName;
+    protected static final String PORTNAME_OPTION = "-portname";
+    protected static final String SERVICENAME_OPTION = "-servicename";
 }
