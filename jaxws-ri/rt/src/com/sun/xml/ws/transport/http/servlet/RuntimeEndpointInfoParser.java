@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.9 2005-09-01 05:35:53 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.10 2005-09-07 19:54:30 bbissett Exp $
  */
 
 /*
@@ -9,37 +9,33 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.spi.runtime.Binding;
-import com.sun.xml.ws.server.RuntimeEndpointInfo;
-import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 
-import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
-import com.sun.xml.ws.modeler.RuntimeModeler;
-
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.SOAPBinding;
+
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.modeler.RuntimeModeler;
+import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.spi.runtime.Binding;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 
 /**
  * @author WS Development Team
@@ -189,135 +185,38 @@ public class RuntimeEndpointInfoParser {
     /*
      * Parses the handler and role information and sets it
      * on the RuntimeEndpointInfo.
-     *
-     * todo: use code in HandlerAnnotationProcessor for this
      */
     protected void setHandlersAndRoles(RuntimeEndpointInfo rei,
         XMLStreamReader reader) {
 
-        // first check for handler-chain element
         if (XMLStreamReaderUtil.nextElementContent(reader) ==
             XMLStreamConstants.END_ELEMENT ||
-            !reader.getName().equals(QNAME_HANDLER_CHAIN)) {
+            !reader.getName().equals(
+            HandlerAnnotationProcessor.QNAME_HANDLER_CHAINS)) {
 
             return;
         }
 
-        List<Handler> handlerChain = new ArrayList<Handler>();
-        Set<String> roles = new HashSet<String>();
+        QName serviceName = rei.getServiceName();
+        if (serviceName == null) {
+            serviceName =
+                RuntimeModeler.getServiceName(rei.getImplementorClass());
+        }
+        
+        HandlerAnnotationInfo handlerInfo =
+            HandlerAnnotationProcessor.parseHandlerFile(reader, classLoader,
+            serviceName, rei.getPortName(),
+            ((BindingImpl) rei.getBinding()).getBindingId());
 
-        XMLStreamReaderUtil.nextElementContent(reader);
-        if (reader.getName().equals(QNAME_HANDLER_CHAIN_NAME)) {
-            skipTextElement(reader);
+        rei.getBinding().setHandlerChain(handlerInfo.getHandlers());
+        if (rei.getBinding() instanceof SOAPBinding) {
+            ((SOAPBinding) rei.getBinding()).setRoles(handlerInfo.getRoles());
         }
 
-        // process all <handler> elements
-        while (reader.getName().equals(QNAME_HANDLER)) {
-            Handler handler = null;
-            Map<String, String> initParams = new HashMap<String, String>();
-            Set<QName> headers = new HashSet<QName>();
-
-            XMLStreamReaderUtil.nextContent(reader);
-            if (reader.getName().equals(QNAME_HANDLER_NAME)) {
-                skipTextElement(reader);
-            }
-
-            // handler class
-            ensureProperName(reader, QNAME_HANDLER_CLASS);
-            try {
-                handler = (Handler) loadClass(
-                    XMLStreamReaderUtil.getElementText(reader)).newInstance();
-            } catch (InstantiationException ie){
-                throw new RuntimeException(ie);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            XMLStreamReaderUtil.nextContent(reader);
-
-            // init params
-            while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
-                XMLStreamReaderUtil.nextContent(reader);
-
-                // Skip <description> at either end in case users have
-                // confused which schema we're using (don't want to fail
-                // over this).
-                if (reader.getLocalName().equals("description")) {
-                    skipTextElement(reader);
-                }
-                
-                ensureProperName(reader, QNAME_HANDLER_PARAM_NAME);
-                String paramName = XMLStreamReaderUtil.getElementText(reader);
-
-                XMLStreamReaderUtil.nextContent(reader);
-                ensureProperName(reader, QNAME_HANDLER_PARAM_VALUE);
-                String paramValue = XMLStreamReaderUtil.getElementText(reader);
-                initParams.put(paramName, paramValue);
-
-                XMLStreamReaderUtil.nextContent(reader); // past param-value
-                
-                // skip <description> if present
-                if (reader.getLocalName().equals("description")) {
-                    skipTextElement(reader);
-                }
-                XMLStreamReaderUtil.nextContent(reader); // past init-param
-            }
-
-            // headers (ignored)
-            while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
-                skipTextElement(reader);
-            }
-            
-            // roles (not stored per handler)
-            while (reader.getName().equals(QNAME_HANDLER_ROLE)) {
-                roles.add(XMLStreamReaderUtil.getElementText(reader));
-                XMLStreamReaderUtil.nextContent(reader);
-            }
-
-            // finish handler info and add to chain
-            if (!initParams.isEmpty()) {
-                handler.init(initParams);
-            }
-            if (!headers.isEmpty()) {
-                QName [] headerArray = new QName [headers.size()];
-                int i = 0;
-                for (QName header : headers) {
-                    headerArray[i++] = header;
-                }
-            }
-            handlerChain.add(handler);
-
-            // move past </handler>
-            XMLStreamReaderUtil.nextContent(reader);
-        }
-
-        rei.getBinding().setHandlerChain(handlerChain);
-        if (!roles.isEmpty() &&
-            rei.getBinding() instanceof SOAPBinding) {
-            Set<URI> uriRoles = new HashSet<URI>(roles.size());
-            ((SOAPBinding) rei.getBinding()).setRoles(uriRoles);
-        }
-
-        // move past </handler-chain>
+        // move past </handler-chains>
         XMLStreamReaderUtil.nextContent(reader);
     }
 
-    // utility method
-    protected static void ensureProperName(XMLStreamReader reader,
-        QName expectedName) {
-
-        if (!reader.getName().equals(expectedName)) {
-            failWithLocalName("runtime.parser.wrong.element", reader,
-                expectedName.getLocalPart());
-        }
-    }
-
-    // utility method for setHandlersAndRoles
-    protected static void skipTextElement(XMLStreamReader reader) {
-        XMLStreamReaderUtil.nextContent(reader);
-        XMLStreamReaderUtil.nextElementContent(reader);
-        XMLStreamReaderUtil.nextElementContent(reader);
-    }
-    
     protected static void ensureNoContent(XMLStreamReader reader) {
         if (reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
             fail("runtime.parser.unexpectedContent", reader);
@@ -404,32 +303,12 @@ public class RuntimeEndpointInfoParser {
 
     public static final String NS_RUNTIME =
         "http://java.sun.com/xml/ns/jax-ws/ri/runtime";
-
+    
     public static final QName QNAME_ENDPOINTS =
         new QName(NS_RUNTIME, "endpoints");
     public static final QName QNAME_ENDPOINT =
         new QName(NS_RUNTIME, "endpoint");
-    public static final QName QNAME_HANDLER_CHAIN =
-        new QName(NS_RUNTIME, "handler-chain");
-    public static final QName QNAME_HANDLER_CHAIN_NAME =
-        new QName(NS_RUNTIME, "handler-chain-name");
-    public static final QName QNAME_HANDLER =
-        new QName(NS_RUNTIME, "handler");
-    public static final QName QNAME_HANDLER_NAME =
-        new QName(NS_RUNTIME, "handler-name");
-    public static final QName QNAME_HANDLER_CLASS =
-        new QName(NS_RUNTIME, "handler-class");
-    public static final QName QNAME_HANDLER_PARAM =
-        new QName(NS_RUNTIME, "init-param");
-    public static final QName QNAME_HANDLER_PARAM_NAME =
-        new QName(NS_RUNTIME, "param-name");
-    public static final QName QNAME_HANDLER_PARAM_VALUE =
-        new QName(NS_RUNTIME, "param-value");
-    public static final QName QNAME_HANDLER_HEADER =
-        new QName(NS_RUNTIME, "soap-header");
-    public static final QName QNAME_HANDLER_ROLE =
-        new QName(NS_RUNTIME, "soap-role");
-
+    
     public static final String ATTR_VERSION = "version";
     public static final String ATTR_NAME = "name";
     public static final String ATTR_IMPLEMENTATION = "implementation";

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.53 2005-09-05 23:58:09 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.54 2005-09-07 19:54:29 bbissett Exp $
  */
 
 /*
@@ -285,9 +285,11 @@ public class RuntimeEndpointInfo extends Endpoint
                 setPortName(runtimeModel.getPortName());
             }
             if (getBinding().getHandlerChain() == null) {
+                String bindingId = ((BindingImpl) binding).getBindingId();
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
-                        implementorClass);
+                    implementorClass, getServiceName(),
+                    getPortName(), bindingId);
                 if (chainInfo != null) {
                     getBinding().setHandlerChain(chainInfo.getHandlers());
                     if (getBinding() instanceof SOAPBinding) {

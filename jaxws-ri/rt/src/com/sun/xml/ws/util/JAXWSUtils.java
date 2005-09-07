@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSUtils.java,v 1.1 2005-08-13 19:30:35 vivekp Exp $
+ * $Id: JAXWSUtils.java,v 1.2 2005-09-07 19:54:31 bbissett Exp $
  */
 
 /*
@@ -10,12 +10,15 @@
 package com.sun.xml.ws.util;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.File;
 import java.io.IOException;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author Vivek Pandey
@@ -86,5 +89,21 @@ public final class JAXWSUtils {
         }
     }
 
+    /*
+     * To match, both QNames must have the same namespace and the local
+     * part of the target must match the local part of the 'pattern'
+     * QName, which may contain wildcard characters.
+     */
+    public static boolean matchQNames(QName target, QName pattern) {
+        if (target == null) {
+            // if no service or port is in descriptor
+            return false;
+        }
+        if (pattern.getNamespaceURI().equals(target.getNamespaceURI())) {
+            String regex = pattern.getLocalPart().replaceAll("\\*",  ".*");
+            return Pattern.matches(regex, target.getLocalPart());
+        }
+        return false;
+    }
 
 }

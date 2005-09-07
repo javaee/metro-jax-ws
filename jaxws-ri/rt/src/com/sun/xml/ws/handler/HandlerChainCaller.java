@@ -1,5 +1,5 @@
 /**
- * $Id: HandlerChainCaller.java,v 1.7 2005-08-12 19:20:48 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.8 2005-09-07 19:54:29 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -8,9 +8,11 @@ package com.sun.xml.ws.handler;
 
 import javax.xml.namespace.QName;
 
+import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.*;
 import javax.xml.ws.handler.soap.*;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import javax.xml.soap.Detail;
 import javax.xml.soap.SOAPBody;
@@ -54,6 +56,9 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
  *
  * <p>Exceptions are logged in many cases here before being rethrown. This
  * is to help primarily with server side handlers.
+ *
+ * <p>Currently, the handler chain caller checks for a null soap
+ * message context to see if the binding in use is XML/HTTP.
  *
  * @see com.sun.xml.ws.binding.BindingImpl
  * @see com.sun.xml.ws.protocol.soap.client.SOAPMessageDispatcher
@@ -168,21 +173,19 @@ public class HandlerChainCaller {
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
-     *
-     * //todo still needs to be finished to account for soap 1.1,
-     * soap 1.2, and xml bindings.
      */
     private void insertFaultMessage(ContextHolder holder,
         ProtocolException exception) {
 
         try {
             SOAPMessageContext context = holder.getSMC();
-            
-            // avoid NPE in xml binding until this is done
-            if (context == null) {
+            if (context == null) { // non-soap case
+                LogicalMessage msg = holder.getLMC().getMessage();
+                if (msg != null) {
+                    msg.setPayload(null);
+                }
                 return;
             }
-            // end hack
             
             SOAPMessage message = context.getMessage();
             SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
@@ -196,41 +199,37 @@ public class HandlerChainCaller {
 
             body.removeContents();
             SOAPFault fault = body.addFault();
-/* no more sfe
- *
- * todo: remove after checking new spec
 
-            // try to handle any nulls gracefully
-            if (exception instanceof SOAPFaultException) {
-                SOAPFaultException sfe = (SOAPFaultException) exception;
-                if (sfe.getFaultCode() != null) {
-                    fault.setFaultCode(envelope.createName(
-                        sfe.getFaultCode().getLocalPart(),
-                        sfe.getFaultCode().getPrefix(),
-                        sfe.getFaultCode().getNamespaceURI()));
-                } else {
-                    fault.setFaultCode(envelope.createName("Server",
-                        "env", "http://schemas.xmlsoap.org/soap/envelope/"));
-                }
-                if (sfe.getFaultString() != null) {
-                    fault.setFaultString(sfe.getFaultString());
-                } else {
-                    if (sfe.getMessage() != null) {
-                        fault.setFaultString(sfe.getMessage());
-                    } else {
-                        fault.setFaultString(sfe.toString());
-                    }
-                }
-                if (sfe.getFaultActor() != null) {
-                    fault.setFaultActor(sfe.getFaultActor());
-                } else {
-                    fault.setFaultActor("");
-                }
-                if (sfe.getDetail() != null) {
-                    fault.addChildElement(sfe.getDetail());
-                }
-            } else if (exception.getMessage() != null) {
- */
+//            // try to handle any nulls gracefully
+//            if (exception instanceof SOAPFaultException) {
+//                SOAPFaultException sfe = (SOAPFaultException) exception;
+//                if (sfe.getFaultCode() != null) {
+//                    fault.setFaultCode(envelope.createName(
+//                        sfe.getFaultCode().getLocalPart(),
+//                        sfe.getFaultCode().getPrefix(),
+//                        sfe.getFaultCode().getNamespaceURI()));
+//                } else {
+//                    fault.setFaultCode(envelope.createName("Server",
+//                        "env", "http://schemas.xmlsoap.org/soap/envelope/"));
+//                }
+//                if (sfe.getFaultString() != null) {
+//                    fault.setFaultString(sfe.getFaultString());
+//                } else {
+//                    if (sfe.getMessage() != null) {
+//                        fault.setFaultString(sfe.getMessage());
+//                    } else {
+//                        fault.setFaultString(sfe.toString());
+//                    }
+//                }
+//                if (sfe.getFaultActor() != null) {
+//                    fault.setFaultActor(sfe.getFaultActor());
+//                } else {
+//                    fault.setFaultActor("");
+//                }
+//                if (sfe.getDetail() != null) {
+//                    fault.addChildElement(sfe.getDetail());
+//                }
+//            } else if (exception.getMessage() != null) {
             if (exception.getMessage() != null) {
                 fault.setFaultCode(envelope.createName("Server",
                     "env", "http://schemas.xmlsoap.org/soap/envelope/"));
@@ -241,8 +240,9 @@ public class HandlerChainCaller {
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.FINER,
-                "exception while creating fault message", e);
+            // severe since this is from runtime and not handler
+            logger.log(Level.SEVERE,
+                "exception while creating fault message in handler chain", e);
             throw new RuntimeException(e);
         }
     }
@@ -253,8 +253,8 @@ public class HandlerChainCaller {
      * is a new exception thrown during handle fault processing.
      */
     private void setIgnoreFaultProperty(ContextHolder holder) {
-       holder.getSMC().put(IGNORE_FAULT_PROPERTY, Boolean.TRUE);
-       holder.getSMC().setScope(IGNORE_FAULT_PROPERTY,
+       holder.getLMC().put(IGNORE_FAULT_PROPERTY, Boolean.TRUE);
+       holder.getLMC().setScope(IGNORE_FAULT_PROPERTY,
            MessageContext.Scope.APPLICATION);
     }
 
@@ -366,15 +366,13 @@ public class HandlerChainCaller {
                 i++;
             }
             while (j < soapHandlers.size()) {
-                if (soapHandlers.get(j).handleFault(
-                    ch.getSMC()) == false) {
+                if (soapHandlers.get(j).handleFault(ch.getSMC()) == false) {
                     return false;
                 }
                 j++;
             }
         } catch (RuntimeException re) {
-            logger.log(Level.FINER,
-                "exception in handler chain", re);
+            logger.log(Level.FINER, "exception in handler chain", re);
             throw re;
         } finally {
             closeHandlers(ch);
@@ -410,11 +408,11 @@ public class HandlerChainCaller {
                     i++;
                 }
             } catch (RuntimeException re) {
-                logger.log(Level.FINER,
-                    "exception in handler chain", re);
+                logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    // reverse direction and handle fault
                     insertFaultMessage(holder, (ProtocolException) re);
+
+                    // reverse direction and handle fault
                     if (i>0) {
                         try {
                             callLogicalHandleFault(holder, i-1, 0);
@@ -458,14 +456,15 @@ public class HandlerChainCaller {
                     i--;
                 }
             } catch (RuntimeException re) {
-                logger.log(Level.FINER,
-                    "exception in handler chain", re);
+                logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
+                    insertFaultMessage(holder, (ProtocolException) re);
+                    
                     // reverse direction and handle fault
-                    insertFaultMessage(holder,
-                        (ProtocolException) re);
                     try {
-                        if (callLogicalHandleFault(holder, i+1,
+                        // if i==size-1, no more logical handlers to call
+                        if (i == logicalHandlers.size()-1 ||
+                            callLogicalHandleFault(holder, i+1,
                                 logicalHandlers.size()-1)) {
                             callProtocolHandleFault(holder, 0,
                                 soapHandlers.size()-1);
@@ -478,8 +477,7 @@ public class HandlerChainCaller {
                 if (type == RequestOrResponse.RESPONSE) {
                     closeHandlers(holder);
                 } else {
-                    closeProtocolHandlers(holder,
-                        soapHandlers.size()-1, 0);
+                    closeProtocolHandlers(holder, soapHandlers.size()-1, 0);
                     closeLogicalHandlers(holder, logicalHandlers.size()-1, i);
                 }
                 throw re;
@@ -505,8 +503,7 @@ public class HandlerChainCaller {
 
                         if (responseExpected) {
                             // reverse and call handle message/response
-                            callProtocolHandleMessage(holder,
-                                i, 0);
+                            callProtocolHandleMessage(holder, i, 0);
                             callLogicalHandleMessage(holder,
                                 logicalHandlers.size()-1, 0);
                         }
@@ -522,11 +519,11 @@ public class HandlerChainCaller {
                     i++;
                 }
             } catch (RuntimeException re) {
-                logger.log(Level.FINER,
-                    "exception in handler chain", re);
+                logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    // reverse direction and handle fault
                     insertFaultMessage(holder, (ProtocolException) re);
+
+                    // reverse direction and handle fault
                     try {
                         if (callProtocolHandleFault(holder, i, 0)) {
                             callLogicalHandleFault(holder,
@@ -568,11 +565,11 @@ public class HandlerChainCaller {
                     i--;
                 }
             } catch (RuntimeException re) {
-                logger.log(Level.FINER,
-                    "exception in handler chain", re);
+                logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    // reverse direction and handle fault
                     insertFaultMessage(holder, (ProtocolException) re);
+
+                    // reverse direction and handle fault
                     try {
                         callProtocolHandleFault(holder, i,
                             soapHandlers.size()-1);
@@ -584,8 +581,7 @@ public class HandlerChainCaller {
                 if (type == RequestOrResponse.RESPONSE) {
                     closeHandlers(holder);
                 } else {
-                    closeProtocolHandlers(holder,
-                        soapHandlers.size()-1, i);
+                    closeProtocolHandlers(holder, soapHandlers.size()-1, i);
                 }
                 throw re;
             }

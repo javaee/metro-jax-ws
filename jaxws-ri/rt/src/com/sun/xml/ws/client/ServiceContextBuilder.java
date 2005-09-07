@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContextBuilder.java,v 1.23 2005-09-07 19:07:14 kwalsh Exp $
+ * $Id: ServiceContextBuilder.java,v 1.24 2005-09-07 19:54:28 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -140,8 +140,10 @@ public abstract class ServiceContextBuilder {
             eifc.setRuntimeContext(new RuntimeContext(model));
 
             // get handler information
+            String bindingId = modeler.getBindingId();
             HandlerAnnotationInfo chainInfo =
-                HandlerAnnotationProcessor.buildHandlerInfo(portInterface);
+                HandlerAnnotationProcessor.buildHandlerInfo(portInterface, 
+                model.getServiceQName(), model.getPortName(), bindingId);
 
             if (serviceContext.getServiceName() == null)
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
@@ -150,7 +152,7 @@ public abstract class ServiceContextBuilder {
                 HandlerResolverImpl resolver =
                     getHandlerResolver(serviceContext);
                 resolver.setHandlerChain(new PortInfoImpl(
-                    modeler.getBindingId(),
+                    bindingId,
                     model.getPortName(),
                     model.getServiceQName()),
                     chainInfo.getHandlers());

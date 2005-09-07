@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.12 2005-08-30 18:19:05 kwalsh Exp $
+ * $Id: SOAPBindingImpl.java,v 1.13 2005-09-07 19:54:28 bbissett Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
@@ -120,6 +120,9 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * been called by a user without them.
      */
     public void setRoles(Set<URI> roles) {
+        if (roles == null) {
+            roles = new HashSet<URI>();
+        }
         if (roles.contains(ROLE_NONE)) {
             LocalizableMessageFactory messageFactory =
                 new LocalizableMessageFactory("com.sun.xml.ws.resources.client");

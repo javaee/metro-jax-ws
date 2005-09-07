@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderUtil.java,v 1.6 2005-08-17 19:24:43 bbissett Exp $
+ * $Id: XMLStreamReaderUtil.java,v 1.7 2005-09-07 19:54:30 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -147,8 +147,16 @@ public class XMLStreamReaderUtil {
         try {
             String namespaceURI = reader.getNamespaceURI(0);
             String text = reader.getElementText();
-            String localPart =
-                text.substring(text.indexOf(':') + 1,  text.length());
+            if (namespaceURI == null) {
+                String prefix = text.substring(0, 
+                    text.indexOf(':'));
+                namespaceURI = reader.getNamespaceURI(prefix);
+                if (namespaceURI == null) {
+                    namespaceURI = "";
+                }
+            } 
+            String localPart = text.substring(
+                text.indexOf(':') + 1,  text.length());
             return new QName(namespaceURI, localPart);
         } catch (XMLStreamException e) {
             throw wrapException(e);

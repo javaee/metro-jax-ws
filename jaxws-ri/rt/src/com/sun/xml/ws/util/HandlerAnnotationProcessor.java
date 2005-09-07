@@ -1,8 +1,6 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.7 2005-07-18 18:21:51 kohlert Exp $
- */
-
-/*
+ * $Id: HandlerAnnotationProcessor.java,v 1.8 2005-09-07 19:54:31 bbissett Exp $
+ *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
@@ -19,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.jws.HandlerChain;
 import javax.jws.soap.SOAPMessageHandlers;
@@ -27,6 +27,10 @@ import javax.jws.WebService;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
+import javax.xml.namespace.QName;
+
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 
@@ -42,11 +46,16 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
  */
 public class HandlerAnnotationProcessor {
 
+    private static final Logger logger = Logger.getLogger(
+        com.sun.xml.ws.util.Constants.LoggingDomain + ".util");
+    
     /*
      * Returns an object that stores handler lists and roles. Will
      * return null if there is no handler annotation.
      */
-    public static HandlerAnnotationInfo buildHandlerInfo(Class clazz) {
+    public static HandlerAnnotationInfo buildHandlerInfo(Class clazz,
+        QName serviceName, QName portName, String bindingId) {
+        
         clazz = checkClass(clazz);
         HandlerChain handlerChain =
             (HandlerChain) clazz.getAnnotation(HandlerChain.class);
@@ -62,7 +71,8 @@ public class HandlerAnnotationProcessor {
         XMLStreamReader reader =
             XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
-        return parseHandlerFile(reader, clazz);
+        return parseHandlerFile(reader, clazz.getClassLoader(),
+            serviceName, portName, bindingId);
     }
     
     static Class getClass(String className) {
@@ -95,107 +105,164 @@ public class HandlerAnnotationProcessor {
         return clazz;
     }
     
-    // see RuntimeInfoParser.setHandlersAndRoles
-    static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
-        Class clazz) {
+    public static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
+        ClassLoader classLoader, QName serviceName, QName portName,
+        String bindingId) {
         
         HandlerAnnotationInfo info = new HandlerAnnotationInfo();
         
-        List<Handler> handlerChain = new ArrayList<Handler>();
-        Set<URI> roles = new HashSet<URI>();
+        XMLStreamReaderUtil.nextElementContent(reader);
         
-        // skip <handler-config> and <handler-chain>
-        String elementName = reader.getLocalName();
-        while (elementName.equals("handler-config") ||
-            elementName.equals("handler-chain")) {
-            
+        List<Handler> handlerChain = new ArrayList<Handler>();
+        Set<String> roles = new HashSet<String>();
+
+        while (reader.getName().equals(QNAME_HANDLER_CHAIN)) {
+        
             XMLStreamReaderUtil.nextElementContent(reader);
-            elementName = reader.getLocalName();
-        }
-
-        // skip <handler-chain-name>
-        if (reader.getLocalName().equals("handler-chain-name")) {
-            skipTextElement(reader);
-        }
-
-        // process all <handler> elements
-        while (reader.getLocalName().equals("handler")) {
-            XMLStreamReaderUtil.nextContent(reader);
-            Handler handler = null;
-            Map<String, String> initParams = new HashMap<String, String>();
             
-            // skip some elements that we don't use
-            elementName = reader.getLocalName();
-            while (elementName.equals("description") ||
-                elementName.equals("display-name") ||
-                elementName.equals("small-icon") ||
-                elementName.equals("large-icon") ||
-                elementName.equals("handler-name")) {
-                
-                skipTextElement(reader);
-                elementName = reader.getLocalName();
+            if (reader.getName().equals(QNAME_CHAIN_PORT_PATTERN)) {
+                if (portName == null) {
+                    logger.warning("handler chain sepcified for port " +
+                        "but port QName passed to parser is null");
+                }
+                boolean parseChain = JAXWSUtils.matchQNames(portName,
+                    XMLStreamReaderUtil.getElementQName(reader));
+                if (!parseChain) {
+                    skipChain(reader);
+                    continue;
+                }
+                XMLStreamReaderUtil.nextElementContent(reader);
+            } else if (reader.getName().equals(QNAME_CHAIN_PROTOCOL_BINDING)) {
+                if (bindingId == null) {
+                    logger.warning("handler chain sepcified for bindingId " +
+                        "but bindingId passed to parser is null");
+                }
+                String bindingList = XMLStreamReaderUtil.getElementText(reader);
+                boolean skipThisChain = true;
+                if (bindingId.equals(HTTPBinding.HTTP_BINDING) &&
+                    bindingList.indexOf(PROTOCOL_XML_TOKEN) != -1) {
+                    skipThisChain = false;
+                } else if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) &&
+                    bindingList.indexOf(PROTOCOL_SOAP11_TOKEN) != -1) {
+                    skipThisChain = false;
+                } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) &&
+                    bindingList.indexOf(PROTOCOL_SOAP12_TOKEN) != -1) {
+                    skipThisChain = false;
+                }
+
+                if (skipThisChain) {
+                    skipChain(reader);
+                    continue;
+                }
+                XMLStreamReaderUtil.nextElementContent(reader);
+            } else if (reader.getName().equals(QNAME_CHAIN_SERVICE_PATTERN)) {
+                if (serviceName == null) {
+                    logger.warning("handler chain sepcified for service " +
+                        "but service QName passed to parser is null");
+                }
+                boolean parseChain = JAXWSUtils.matchQNames(
+                    serviceName,
+                    XMLStreamReaderUtil.getElementQName(reader));
+                if (!parseChain) {
+                    skipChain(reader);
+                    continue;
+                }
+                XMLStreamReaderUtil.nextElementContent(reader);
             }
 
-            // handler class
-            ensureProperName(reader, "handler-class");
-            try {
-                handler = (Handler) loadClass(clazz,
-                    XMLStreamReaderUtil.getElementText(reader)).newInstance();
-            } catch (InstantiationException ie){
-                throw new RuntimeException(ie);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            XMLStreamReaderUtil.nextElementContent(reader);
+            // process all <handler> elements
+            while (reader.getName().equals(QNAME_HANDLER)) {
+                Handler handler = null;
+                Map<String, String> initParams = new HashMap<String, String>();
+                Set<QName> headers = new HashSet<QName>();
 
-            while (!reader.getLocalName().equals("handler")) {
-                if (reader.getLocalName().equals("init-param")) {
+                XMLStreamReaderUtil.nextContent(reader);
+                if (reader.getName().equals(QNAME_HANDLER_NAME)) {
+                    skipTextElement(reader);
+                }
+
+                // handler class
+                ensureProperName(reader, QNAME_HANDLER_CLASS);
+                try {
+                    handler = (Handler) loadClass(classLoader,
+                        XMLStreamReaderUtil.getElementText(reader)).newInstance();
+                } catch (InstantiationException ie){
+                    throw new RuntimeException(ie);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                XMLStreamReaderUtil.nextContent(reader);
+
+                // init params
+                while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
                     XMLStreamReaderUtil.nextContent(reader);
-                    ensureProperName(reader, "param-name");
+
+                    // Skip <description> at either end in case users have
+                    // confused which schema we're using (don't want to fail
+                    // over this).
+                    if (reader.getLocalName().equals("description")) {
+                        skipTextElement(reader);
+                    }
+
+                    ensureProperName(reader, QNAME_HANDLER_PARAM_NAME);
                     String paramName = XMLStreamReaderUtil.getElementText(reader);
 
                     XMLStreamReaderUtil.nextContent(reader);
-                    ensureProperName(reader, "param-value");
+                    ensureProperName(reader, QNAME_HANDLER_PARAM_VALUE);
                     String paramValue = XMLStreamReaderUtil.getElementText(reader);
                     initParams.put(paramName, paramValue);
 
                     XMLStreamReaderUtil.nextContent(reader); // past param-value
-                    
+
                     // skip <description> if present
                     if (reader.getLocalName().equals("description")) {
                         skipTextElement(reader);
                     }
                     XMLStreamReaderUtil.nextContent(reader); // past init-param
-                } else if (reader.getLocalName().equals("soap-header")) {
-                    skipTextElement(reader);
-                } else if (reader.getLocalName().equals("soap-role")) {
-                    String roleString =
-                        XMLStreamReaderUtil.getElementText(reader);
-                    try {
-                        roles.add(new URI(roleString));
-                    } catch (URISyntaxException e) {
-                        // todo: which exception?
-                        throw new WebServiceException(e);
-                    }
-                    XMLStreamReaderUtil.nextContent(reader);
-                } else {
-                    failWithLocalName("util.parser.wrong.element", reader,
-                        "</handler>");
                 }
-            }
-            
-            // finish handler info and add to chain
-            if (!initParams.isEmpty()) {
-                handler.init(initParams);
-            }
-            handlerChain.add(handler);
-            
-            // move past </handler>
-            XMLStreamReaderUtil.nextElementContent(reader);
-        }
 
+                // headers (ignored)
+                while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
+                    skipTextElement(reader);
+                }
+
+                // roles (not stored per handler)
+                while (reader.getName().equals(QNAME_HANDLER_ROLE)) {
+                    roles.add(XMLStreamReaderUtil.getElementText(reader));
+                    XMLStreamReaderUtil.nextContent(reader);
+                }
+
+                // finish handler info and add to chain
+                if (!initParams.isEmpty()) {
+                    handler.init(initParams);
+                }
+                if (!headers.isEmpty()) {
+                    QName [] headerArray = new QName [headers.size()];
+                    int i = 0;
+                    for (QName header : headers) {
+                        headerArray[i++] = header;
+                    }
+                }
+                handlerChain.add(handler);
+
+                // move past </handler>
+                XMLStreamReaderUtil.nextContent(reader);
+            }
+            
+            // move past </handler-chain>
+            XMLStreamReaderUtil.nextContent(reader);
+        }
+        
         info.setHandlers(handlerChain);
-        info.setRoles(roles);
+        Set<URI> uriRoles = new HashSet<URI>(roles.size());
+        try {
+            for (String role : roles) {
+                uriRoles.add(new URI(role));
+            }
+        } catch (URISyntaxException e) {
+            throw new UtilException(e.getMessage());
+        }
+        info.setRoles(uriRoles);
         return info;
     }
     
@@ -215,9 +282,9 @@ public class HandlerAnnotationProcessor {
                 arg });
     }
     
-    static Class loadClass(Class clazz, String name) {
+    static Class loadClass(ClassLoader loader, String name) {
         try {
-            return Class.forName(name, true, clazz.getClassLoader());
+            return Class.forName(name, true, loader);
         } catch (ClassNotFoundException e) {
             throw new UtilException(
                 "util.handler.class.not.found",
@@ -229,6 +296,22 @@ public class HandlerAnnotationProcessor {
         XMLStreamReaderUtil.nextContent(reader);
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.nextElementContent(reader);
+    }
+
+    static void skipChain(XMLStreamReader reader) {
+        while (XMLStreamReaderUtil.nextContent(reader) !=
+            XMLStreamConstants.END_ELEMENT ||
+            !reader.getName().equals(QNAME_HANDLER_CHAIN)) {}
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+    
+    static void ensureProperName(XMLStreamReader reader,
+        QName expectedName) {
+
+        if (!reader.getName().equals(expectedName)) {
+            failWithLocalName("runtime.parser.wrong.element", reader,
+                expectedName.getLocalPart());
+        }
     }
 
     static InputStream getFileAsStream(Class clazz, HandlerChain chain) {
@@ -255,4 +338,39 @@ public class HandlerAnnotationProcessor {
                 new Object[] {clazz.getName(), chain.file()});
         }
     }
+
+    public static final String NS_109 =
+        "http://java.sun.com/xml/ns/javaee";
+
+    public static final String PROTOCOL_SOAP11_TOKEN = "##SOAP11_HTTP";
+    public static final String PROTOCOL_SOAP12_TOKEN = "##SOAP12_HTTP";
+    public static final String PROTOCOL_XML_TOKEN = "##XML_HTTP";
+    
+    public static final QName QNAME_CHAIN_PORT_PATTERN =
+        new QName(NS_109, "port-name-pattern");
+    public static final QName QNAME_CHAIN_PROTOCOL_BINDING =
+        new QName(NS_109, "protocol-bindings");
+    public static final QName QNAME_CHAIN_SERVICE_PATTERN =
+        new QName(NS_109, "service-name-pattern");
+    public static final QName QNAME_HANDLER_CHAIN =
+        new QName(NS_109, "handler-chain");
+    public static final QName QNAME_HANDLER_CHAINS =
+        new QName(NS_109, "handler-chains");
+    public static final QName QNAME_HANDLER =
+        new QName(NS_109, "handler");
+    public static final QName QNAME_HANDLER_NAME =
+        new QName(NS_109, "handler-name");
+    public static final QName QNAME_HANDLER_CLASS =
+        new QName(NS_109, "handler-class");
+    public static final QName QNAME_HANDLER_PARAM =
+        new QName(NS_109, "init-param");
+    public static final QName QNAME_HANDLER_PARAM_NAME =
+        new QName(NS_109, "param-name");
+    public static final QName QNAME_HANDLER_PARAM_VALUE =
+        new QName(NS_109, "param-value");
+    public static final QName QNAME_HANDLER_HEADER =
+        new QName(NS_109, "soap-header");
+    public static final QName QNAME_HANDLER_ROLE =
+        new QName(NS_109, "soap-role");
+
 }
