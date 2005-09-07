@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.12 2005-09-06 02:57:38 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.13 2005-09-07 03:22:48 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -30,6 +30,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -59,7 +60,6 @@ public class HttpEndpoint {
     private RuntimeEndpointInfo endpointInfo;
     
     private static final int MAX_THREADS = 5;
-    private static final String J2SE_WSDL_DIR = "META-INF/wsdl";
     
     public HttpEndpoint(RuntimeEndpointInfo rtEndpointInfo) {
         this.endpointInfo = rtEndpointInfo;
@@ -184,9 +184,7 @@ public class HttpEndpoint {
             InetSocketAddress inetAddress = new InetSocketAddress(port);
             HttpServer server = HttpServer.create(inetAddress, MAX_THREADS);
             server.setExecutor(Executors.newFixedThreadPool(5));
-            //int index = url.getPath().lastIndexOf('/');
-            //String contextRoot = url.getPath().substring(0, index);
-            System.out.println("*** contextRoot ***"+url.getPath());
+            logger.fine("Endpoint Context Path = "+url.getPath());
             HttpContext context = server.createContext(url.getPath());
             publish(context);
             server.start();
@@ -213,6 +211,7 @@ public class HttpEndpoint {
         httpContext.getServer().removeContext(httpContext);
         if (httpServer != null) {
             httpServer.removeContext(httpContext);
+            ((ExecutorService)httpServer.getExecutor()).shutdown();
             httpServer.stop(0);
         }
         endpointInfo.endService();

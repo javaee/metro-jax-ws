@@ -1,5 +1,5 @@
 /**
- * $Id: ProviderImpl.java,v 1.4 2005-09-02 19:31:35 jitu Exp $
+ * $Id: ProviderImpl.java,v 1.5 2005-09-07 03:22:48 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -23,11 +23,11 @@ import javax.xml.namespace.QName;
  */
 public class ProviderImpl extends Provider {
     
-    
     @Override
     public Endpoint createEndpoint(String bindingId, Object implementor) {
         return new EndpointImpl(bindingId, implementor);
     }
+    
     @Override
     public ServiceDelegate createServiceDelegate(
                                     java.net.URL wsdlDocumentLocation,
@@ -39,7 +39,9 @@ public class ProviderImpl extends Provider {
     @Override
     public Endpoint createAndPublishEndpoint(String address,
                           Object implementor) {
-        return null;
+        Endpoint endpoint = new EndpointImpl(null, implementor);
+        endpoint.publish(address);
+        return endpoint;
     }
     
 }
