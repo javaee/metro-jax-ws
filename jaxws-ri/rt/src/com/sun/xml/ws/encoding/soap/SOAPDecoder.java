@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPDecoder.java,v 1.20 2005-08-10 17:14:18 bbissett Exp $
+ * $Id: SOAPDecoder.java,v 1.21 2005-09-07 20:26:40 spericas Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -31,6 +31,7 @@ import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
@@ -50,6 +51,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.stream.StreamSource;
+import java.lang.reflect.Method;
 
 /**
  * @author WS Development Team
@@ -61,6 +63,22 @@ public abstract class SOAPDecoder implements Decoder {
 
     protected final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
+
+    /**
+     * FI <code>FastInfosetSource.getInputStream()</code> method via reflection.
+     */
+    protected static Method FastInfosetSource_getInputStream;
+    
+    static {
+        // Use reflection to avoid static dependency with FI jar
+        try {
+            Class clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
+            FastInfosetSource_getInputStream = clazz.getMethod("getInputStream");
+        } 
+        catch (Exception e) {
+            // Falls through
+        }
+    }
 
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
@@ -370,10 +388,13 @@ public abstract class SOAPDecoder implements Decoder {
                 System.out.println("****** NOT ByteInputStream **** "+is);
             }
         }
-        // Temporarily for FI (TODO: must remove static dep if this code stays)
-        else if (source instanceof org.jvnet.fastinfoset.FastInfosetSource) {
-            bis = (ByteInputStream) 
-                ((org.jvnet.fastinfoset.FastInfosetSource) source).getInputStream();
+        else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
+            try {
+                bis = (ByteInputStream) FastInfosetSource_getInputStream.invoke(source);
+            }
+            catch (Exception e) {
+                throw new XMLReaderException("fastinfoset.noImplementation");                                    
+            }                
         } 
         else {
             System.out.println("****** NOT StreamSource **** ");
