@@ -1,5 +1,5 @@
 /**
- * $Id: ParserUtil.java,v 1.6 2005-09-07 19:38:43 vivekp Exp $
+ * $Id: ParserUtil.java,v 1.7 2005-09-07 19:40:05 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.

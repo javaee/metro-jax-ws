@@ -1,5 +1,5 @@
 /**
- * $Id: Binding.java,v 1.5 2005-09-07 19:38:44 vivekp Exp $
+ * $Id: Binding.java,v 1.6 2005-09-07 19:40:06 vivekp Exp $
  */
 
 /**

@@ -1,5 +1,5 @@
 /**
- * $Id: Message.java,v 1.2 2005-09-07 19:38:44 vivekp Exp $
+ * $Id: Message.java,v 1.3 2005-09-07 19:40:05 vivekp Exp $
  */
 /**
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.

@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.20 2005-09-01 00:18:58 kohlert Exp $
+ * $Id: RuntimeModel.java,v 1.21 2005-09-07 19:40:08 vivekp Exp $
  */
 
 /*
@@ -17,6 +17,8 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.wsdl.parser.Binding;
+import com.sun.xml.ws.wsdl.parser.Part;
+import com.sun.xml.ws.wsdl.parser.BindingOperation;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 
 import javax.xml.bind.JAXBException;
@@ -249,6 +251,9 @@ public abstract class RuntimeModel {
     }
 
     public void applyParameterBinding(Binding wsdlBinding){
+        if(wsdlBinding == null)
+            return;
+        wsdlBinding.finalizeBinding();
         for(JavaMethod method : javaMethods){
             if(method.isAsync())
                 continue;
@@ -296,25 +301,57 @@ public abstract class RuntimeModel {
 
     private void applyRpcLitParamBinding(String opName, WrapperParameter wrapperParameter, Binding wsdlBinding, Mode mode) {
         RpcLitPayload payload = new RpcLitPayload(wrapperParameter.getName());
+        BindingOperation bo = wsdlBinding.get(opName);
+        Map<Integer, Parameter> params = new HashMap<Integer, Parameter>();
+        List<Parameter> unboundParams = new ArrayList<Parameter>();
         for(Parameter param:wrapperParameter.getWrapperChildren()){
             String partName = param.getPartName();
-                if(partName == null)
-                    continue;
-                ParameterBinding paramBinding = wsdlBinding.getBinding(opName,
-                        partName, mode);
-                if(paramBinding != null){
-                    if(mode == Mode.IN)
-                        param.setInBinding(paramBinding);
-                    else if(mode == Mode.OUT)
-                        param.setOutBinding(paramBinding);
-                    if(paramBinding.isBody()){
-                        JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()), null);
-                        payload.addParameter(bi);
+            if(partName == null)
+                continue;
+
+            ParameterBinding paramBinding = wsdlBinding.getBinding(opName,
+                    partName, mode);
+            if(paramBinding != null){
+                if(mode == Mode.IN)
+                    param.setInBinding(paramBinding);
+                else if(mode == Mode.OUT)
+                    param.setOutBinding(paramBinding);
+                if(paramBinding.isBody()){
+//                    JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()), null);
+                    if(bo != null){
+                        Part p = bo.getPart(param.getPartName(), mode);
+                        if(p != null)
+                            params.put(p.getIndex(), param);
+                        else
+                            params.put(params.size(), param);
+                    }else{
+                        params.put(params.size(), param);
                     }
+//                        payload.addParameter(bi);
+                }else if(paramBinding.isUnbound()){
+                    unboundParams.add(param);
                 }
+            }
+
+        }
+        wrapperParameter.clear();
+        for(int i = 0; i <  params.size();i++){
+            Parameter p = params.get(i);
+            wrapperParameter.addWrapperChild(p);
+            if(((mode == Mode.IN) && p.getInBinding().isBody())||
+                    ((mode == Mode.OUT) && p.getOutBinding().isBody())){
+                JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(p.getTypeReference()), null);
+                payload.addParameter(bi);
+            }
+        }
+
+        //add unbounded parts
+        for(Parameter p:unboundParams){
+            wrapperParameter.addWrapperChild(p);
         }
         payloadMap.put(wrapperParameter.getName(), payload);
     }
+
 
     /**
      * @param name

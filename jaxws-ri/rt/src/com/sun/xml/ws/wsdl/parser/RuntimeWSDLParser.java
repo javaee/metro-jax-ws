@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.24 2005-09-07 19:38:43 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.25 2005-09-07 19:40:04 vivekp Exp $
  */
 
 /**

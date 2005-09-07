@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.16 2005-08-30 23:59:05 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.17 2005-09-07 19:40:09 vivekp Exp $
  */
 /*
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -91,6 +91,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 obj = (obj != null)?((JAXBBridgeInfo)obj).getValue():null;
         }
         if (param.isResponse()) {
+            if(paramBinding.isUnbound())
+                return setIfPrimitive(param.getTypeReference().type);
             return obj;
         } else if (data[param.getIndex()] != null) {
             Parameter.setHolderValue(data[param.getIndex()], obj);

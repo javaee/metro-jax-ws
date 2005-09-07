@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.51 2005-09-07 00:51:01 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.52 2005-09-07 19:40:06 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -15,6 +15,9 @@ import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.model.soap.Style;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.parser.BindingOperation;
+import com.sun.xml.ws.wsdl.parser.Part;
 
 import javax.jws.*;
 import javax.jws.soap.SOAPBinding;
@@ -25,7 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.Future;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.http.HTTPBinding;
@@ -634,6 +637,14 @@ public class RuntimeModeler {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
         QName reqElementName = new QName(targetNamespace, operationName);
         QName resElementName = null;
+
+        //build ordered list
+        Map<Integer, Parameter> resRpcParams = new HashMap<Integer, Parameter>();
+        Map<Integer, Parameter> reqRpcParams = new HashMap<Integer, Parameter>();
+        if(binding != null){
+            binding.finalizeBinding();
+        }
+
         if (!isOneway) {
             resElementName = new QName(targetNamespace, operationName+RESPONSE);
         }
@@ -696,7 +707,12 @@ public class RuntimeModeler {
                 ParameterBinding rb = getBinding(binding, operationName, resultPartName, false, com.sun.xml.ws.model.Mode.OUT);
                 returnParameter.setBinding(rb);
                 if(rb.getBinding().isBody() || rb.getBinding().isUnbound()){
-                    responseWrapper.addWrapperChild(returnParameter);
+                    Part p = getPart(operationName, resultPartName, Mode.OUT);
+                    if(p == null)
+                        resRpcParams.put(resRpcParams.size(), returnParameter);
+                    else
+                        resRpcParams.put(p.getIndex(), returnParameter);
+                    //responseWrapper.addWrapperChild(returnParameter);
                 }else{
                     javaMethod.addParameter(returnParameter);
                 }
@@ -782,20 +798,34 @@ public class RuntimeModeler {
             }
             if(param.getInBinding().isBody()){
                 if(!param.isOUT()){
-                    requestWrapper.addWrapperChild(param);
+                    Part p = getPart(operationName, partName, Mode.IN);
+                    if(p == null)
+                        reqRpcParams.put(reqRpcParams.size(), param);
+                    else
+                        reqRpcParams.put(p.getIndex(), param);
+                    //requestWrapper.addWrapperChild(param);
                 }
 
                 if(!param.isIN()){
                     if (isOneway) {
                             throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.out.parameters",
                                     new Object[] {portClass.getCanonicalName(), methodName});
-                        }
-                        responseWrapper.addWrapperChild(param);
+                    }
+                    Part p = getPart(operationName, partName, Mode.OUT);
+                    if(p == null)
+                        resRpcParams.put(resRpcParams.size(), param);
+                    else
+                        resRpcParams.put(p.getIndex(), param);
+//                        responseWrapper.addWrapperChild(param);
                 }
             }else{
                 javaMethod.addParameter(param);
             }
         }
+        for(int i = 0; i < reqRpcParams.size();i++)
+            requestWrapper.addWrapperChild(reqRpcParams.get(i));
+        for(int i = 0; i < resRpcParams.size();i++)
+            responseWrapper.addWrapperChild(resRpcParams.get(i));
         processExceptions(javaMethod, method);
     }
 
@@ -1123,7 +1153,7 @@ public class RuntimeModeler {
         return null;
     }
 
-    public ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, boolean isHeader, Mode mode){
+    private ParameterBinding getBinding(com.sun.xml.ws.wsdl.parser.Binding binding, String operation, String part, boolean isHeader, Mode mode){
         if(binding == null){
             if(isHeader)
                 return new ParameterBinding(SOAPBlock.HEADER);
@@ -1133,7 +1163,17 @@ public class RuntimeModeler {
         }
         return binding.getBinding(operation, part, mode);
     }
-    
+
+    private Part getPart(String opName, String partName, Mode mode){
+        if(binding != null){
+            BindingOperation bo = binding.get(opName);
+            if(bo != null)
+                return bo.getPart(partName, mode);
+        }
+        return null;
+    }
+
+
     public String getBindingId() {
         return bindingId;
     }
