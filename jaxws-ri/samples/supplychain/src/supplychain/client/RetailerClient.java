@@ -5,17 +5,13 @@
 package supplychain.client;
 
 import java.util.List;
-
-import javax.xml.ws.ServiceFactory;
-
 import java.rmi.RemoteException;
 
 public class RetailerClient {
     public static void main (String[] args) {
         try {
-            ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-            WarehouseImplService service = (WarehouseImplService)serviceFactory.createService ((java.net.URL)null, WarehouseImplService.class);
-            WarehouseImpl port = service.getWarehouseImpl ();
+            WarehouseImplService service = new  WarehouseImplService();
+            WarehouseImpl port = service.getWarehouseImplPort();
             
             int number1 = 10;
             int number2 = 20;
