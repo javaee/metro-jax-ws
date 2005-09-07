@@ -142,6 +142,7 @@
         <classpath>
             <path refid="jaxws.classpath"/>
             <pathelement location="${build.classes.home}"/>
+            <pathelement location="${basedir}/etc"/>
         </classpath>
     </java>
 </target>
