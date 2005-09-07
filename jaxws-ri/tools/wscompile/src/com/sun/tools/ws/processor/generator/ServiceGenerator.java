@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.2 2005-09-02 18:12:27 kwalsh Exp $
+ * $Id: ServiceGenerator.java,v 1.3 2005-09-07 00:31:02 kohlert Exp $
  */
 
 /*
@@ -37,6 +37,7 @@ import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -122,6 +123,21 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             inv.arg("namespace");
             inv.arg("localpart");
             JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC, QName.class, "serviceName", createQName(service.getName()));
+
+            JFieldVar portField;
+            String fieldName;
+            for (Port port: service.getPorts()) {
+                if (port.isProvider()) {
+                    continue;  // No getXYZPort() for porvider based endpoint
+                }                
+                inv = JExpr._new(qNameCls);
+                inv.arg("namespace");
+                inv.arg("localpart");
+                fieldName = StringUtils.decapitalize(port.getName().getLocalPart())+"Name";
+                portField = cls.field(JMod.PRIVATE|JMod.STATIC, QName.class, fieldName, createQName(port.getName()));
+            }
+            
+            
 //            field.assign(inv);
             JBlock staticBlock = cls.init();
             JTryBlock tryBlock = staticBlock._try();
@@ -151,7 +167,6 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             //@WebService
             JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
             writeWebServiceClientAnnotation(service, webServiceClientAnn);
-        
             for (Port port: service.getPorts()) {
                 if (port.isProvider()) {
                     continue;  // No getXYZPort() for porvider based endpoint
@@ -160,7 +175,6 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JMethod m = null;
                 JDocComment methodDoc = null;
                 JType retType = getClass(port.getJavaInterface().getName(), ClassType.INTERFACE);
-//                JType retType = cm.ref(port.getJavaInterface().getName());
                 m = cls.method(JMod.PUBLIC, retType, port.getPortGetter());
                 methodDoc = m.javadoc();
                 JCommentPart ret = methodDoc.addReturn();
@@ -168,11 +182,8 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JBlock body = m.body();
                 StringBuffer statement = new StringBuffer("return (");
                 statement.append(retType.name());
-                statement.append(")super.getPort(new QName(\"");
-                statement.append(port.getName().getNamespaceURI());
-                statement.append("\", \"");
-                statement.append(port.getName().getLocalPart());
-                statement.append("\"), ");
+                fieldName = StringUtils.decapitalize(port.getName().getLocalPart())+"Name";                
+                statement.append(")super.getPort("+fieldName+", ");
                 statement.append(retType.name());
                 statement.append(".class);");
                 body.directStatement(statement.toString());
