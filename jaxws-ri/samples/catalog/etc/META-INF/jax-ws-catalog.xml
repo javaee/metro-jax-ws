@@ -1,19 +1,7 @@
---
-  sample catalog file.
-  
-  double hyphens are used to begin and end a comment section.
-  
-  
-  SYSTEM "<reference>" "<actualLocation>" will define a simple
-  redirection. Whenever JAX-WS tries to load a file from <reference>,
-  this statement will redirect it to <actualLocation>.
-  <refence> needs to be an absolute URI, and <actualLocation> can
-  be relative to the catalog file itself.
-  
-  PUBLIC "<publicId>" "<actualLocation>" will define a mapping
-  from public ID to its actual location. This is only used in
-  conjunction with DTD.
---
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
+    prefer="system">
 
-SYSTEM "http://localhost:8080/jaxws-catalog/addnumbers?wsdl" "../AddNumbers.wsdl"
+    <system systemId="http://localhost:8080/jaxws-catalog/addnumbers?wsdl"
+          uri="../AddNumbers.wsdl"/>
 
+</catalog>
