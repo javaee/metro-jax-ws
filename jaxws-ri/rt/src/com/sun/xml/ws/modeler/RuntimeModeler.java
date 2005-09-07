@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.50 2005-09-07 00:09:49 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.51 2005-09-07 00:51:01 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -218,11 +218,12 @@ public class RuntimeModeler {
         
 
         targetNamespace = webService.targetNamespace();
-        packageName = "";
+        packageName = null;
         if (clazz.getPackage() != null)
             packageName = clazz.getPackage().getName();
-        if (targetNamespace.length() == 0)
-            targetNamespace = getNamespace(packageName);
+        if (targetNamespace.length() == 0) {
+            targetNamespace = getNamespace(packageName, clazz.getName());
+        }
         runtimeModel.setTargetNamespace(targetNamespace);
         QName portTypeName = new QName(targetNamespace, portTypeLocalName);
         runtimeModel.setPortTypeName(portTypeName);
@@ -298,7 +299,11 @@ public class RuntimeModeler {
      * @param packageName the name of the package used to find a namespace
      * @return the namespace for the specified <code>packageName</code>
      */
-    public static String getNamespace(String packageName) {
+    public static String getNamespace(String packageName, String className) {
+        if (packageName == null || packageName.length() == 0)
+            throw new RuntimeModelerException("runtime.modeler.no.package",
+                             new Object[] {className});                
+
         StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
         String[] tokens;
         if (tokenizer.countTokens() == 0) {
@@ -1031,10 +1036,9 @@ public class RuntimeModeler {
         }
 
         String name = implClass.getSimpleName()+SERVICE;
-        String packageName = "";
+        String packageName = null;
         if (implClass.getPackage() != null)
             packageName = implClass.getPackage().getName();
-        String targetNamespace = getNamespace(packageName);
 
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
@@ -1045,8 +1049,16 @@ public class RuntimeModeler {
         if (webService.serviceName().length() > 0) {
             name = webService.serviceName();
         }
-        if (webService.targetNamespace().length() > 0)
+        String targetNamespace = getNamespace(packageName, implClass.getName());
+        if (webService.targetNamespace().length() > 0) {
+            if (packageName == null) {
+                throw new RuntimeModelerException("runtime.modeler.no.package",
+                                 new Object[] {implClass.getName()});                
+            }            
             targetNamespace = webService.targetNamespace();
+        }
+         
+
         return new QName(targetNamespace, name);
     }
 
@@ -1088,7 +1100,7 @@ public class RuntimeModeler {
 
         String tns = webService.targetNamespace();
         if(tns.length() == 0)
-            tns = getNamespace(clazz.getPackage().getName());
+            tns = getNamespace(clazz.getPackage().getName(), clazz.getName());
 
         return new QName(tns, name);
     }

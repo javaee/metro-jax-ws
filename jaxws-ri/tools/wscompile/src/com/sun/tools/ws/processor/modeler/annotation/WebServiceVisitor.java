@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.12 2005-09-07 00:09:50 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.13 2005-09-07 00:51:03 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -141,7 +141,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (webService != null)
             targetNamespace = webService.targetNamespace();
         if (targetNamespace == null || targetNamespace.length() == 0)
-            targetNamespace = getNamespace(d.getPackage());
+            targetNamespace = getNamespace(d.getPackage(), d.getQualifiedName());
         seiContext.setNamespaceURI(targetNamespace);
         if (serviceImplName == null)
             serviceImplName = seiContext.getSEIImplName();
@@ -232,8 +232,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return soapBinding;
     }
  
-    protected String getNamespace(PackageDeclaration packageDecl) {
-        return RuntimeModeler.getNamespace(packageDecl.getQualifiedName());
+    protected String getNamespace(PackageDeclaration packageDecl, String className) {
+        return RuntimeModeler.getNamespace(packageDecl.getQualifiedName(), className);
     }
 
     abstract protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf);
