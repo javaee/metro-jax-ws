@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContextBuilder.java,v 1.21 2005-09-02 21:09:31 bbissett Exp $
+ * $Id: ServiceContextBuilder.java,v 1.22 2005-09-07 16:46:11 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -159,7 +159,7 @@ public abstract class ServiceContextBuilder {
                     model.getPortName(),
                     model.getServiceQName()),
                     chainInfo.getHandlers());
-                serviceContext.setResolver(resolver);
+                serviceContext.setHandlerResolver(resolver);
 
                 // todo: need a place to store role information to
                 // place in binding
@@ -170,10 +170,10 @@ public abstract class ServiceContextBuilder {
 
     private static HandlerResolverImpl getHandlerResolver(
         ServiceContext serviceContext) {
-        if (serviceContext.getResolver() == null) {
-            serviceContext.setResolver(new HandlerResolverImpl());
+        if (serviceContext.getHandlerResolver() == null) {
+            serviceContext.setHandlerResolver(new HandlerResolverImpl());
         }
-        return serviceContext.getResolver();
+        return serviceContext.getHandlerResolver();
     }
 
     private ArrayList<Class> getSEI(Class si) {

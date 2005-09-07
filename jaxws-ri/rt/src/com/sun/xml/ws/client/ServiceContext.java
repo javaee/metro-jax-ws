@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContext.java,v 1.8 2005-08-26 21:42:18 bbissett Exp $
+ * $Id: ServiceContext.java,v 1.9 2005-09-07 16:46:11 arungupta Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -27,7 +27,7 @@ import org.xml.sax.EntityResolver;
 public class ServiceContext {
     private WSDLContext wsdlContext; //from wsdlParsing
     
-    private HandlerResolverImpl resolver; //from HandlerAnnotationProcessing
+    private HandlerResolverImpl handlerResolver; //from HandlerAnnotationProcessing
     private Class serviceInterface;
     private QName serviceName; //supplied on creation of service
     private SIAnnotations siAnnotations;
@@ -57,12 +57,12 @@ public class ServiceContext {
         this.wsdlContext = wsdlContext;
     }
 
-    public HandlerResolverImpl getResolver() {
-        return resolver;
+    public HandlerResolverImpl getHandlerResolver() {
+        return handlerResolver;
     }
 
-    public void setResolver(HandlerResolverImpl resolver) {
-        this.resolver = resolver;
+    public void setHandlerResolver(HandlerResolverImpl resolver) {
+        this.handlerResolver = resolver;
     }
 
     public EndpointIFContext getEndpointIFContext(String className) {

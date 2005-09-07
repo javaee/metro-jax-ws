@@ -100,8 +100,8 @@ public class WSServiceDelegate extends ServiceDelegate
         serviceContext = scontext;
         this.dispatchPorts = new HashMap();
         seiProxies = new HashSet();
-        if (serviceContext.getResolver() != null) {
-            handlerResolver = serviceContext.getResolver();
+        if (serviceContext.getHandlerResolver() != null) {
+            handlerResolver = serviceContext.getHandlerResolver();
         }
     }
 
@@ -117,8 +117,8 @@ public class WSServiceDelegate extends ServiceDelegate
             serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
             serviceContext.setServiceName(serviceName);
         }
-         if (serviceContext.getResolver() != null) {
-            handlerResolver = serviceContext.getResolver();
+         if (serviceContext.getHandlerResolver() != null) {
+            handlerResolver = serviceContext.getHandlerResolver();
         }
     }
 
