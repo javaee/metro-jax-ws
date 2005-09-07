@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.49 2005-09-06 22:48:43 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.50 2005-09-07 00:09:49 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -218,7 +218,9 @@ public class RuntimeModeler {
         
 
         targetNamespace = webService.targetNamespace();
-        packageName = clazz.getPackage().getName();
+        packageName = "";
+        if (clazz.getPackage() != null)
+            packageName = clazz.getPackage().getName();
         if (targetNamespace.length() == 0)
             targetNamespace = getNamespace(packageName);
         runtimeModel.setTargetNamespace(targetNamespace);
@@ -296,11 +298,11 @@ public class RuntimeModeler {
      * @param packageName the name of the package used to find a namespace
      * @return the namespace for the specified <code>packageName</code>
      */
-    static protected String getNamespace(String packageName) {
+    public static String getNamespace(String packageName) {
         StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
         String[] tokens;
         if (tokenizer.countTokens() == 0) {
-            tokens = new String[] {"example", "com"};
+            tokens = new String[0];
         } else {
             tokens = new String[tokenizer.countTokens()];
             for (int i=tokenizer.countTokens()-1; i >= 0; i--) {
@@ -1029,7 +1031,9 @@ public class RuntimeModeler {
         }
 
         String name = implClass.getSimpleName()+SERVICE;
-        String packageName = implClass.getPackage().getName();
+        String packageName = "";
+        if (implClass.getPackage() != null)
+            packageName = implClass.getPackage().getName();
         String targetNamespace = getNamespace(packageName);
 
         WebService webService =

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.11 2005-08-25 01:50:11 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.12 2005-09-07 00:09:50 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 import java.io.*;
 
 import javax.xml.namespace.QName;
-
+import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.tools.ws.processor.model.Parameter;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Service;
@@ -233,33 +233,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
  
     protected String getNamespace(PackageDeclaration packageDecl) {
-        return getNamespace(packageDecl.getQualifiedName());
+        return RuntimeModeler.getNamespace(packageDecl.getQualifiedName());
     }
-
-    protected String getNamespace(String packageName) {
-        StringTokenizer tokenizer = new StringTokenizer(packageName, PD);
-        String[] tokens;
-        if (tokenizer.countTokens() == 0) {
-            tokens = new String[0];
-        } else {
-            tokens = new String[tokenizer.countTokens()];
-            for (int i=tokenizer.countTokens()-1; i >= 0; i--) {
-                tokens[i] = tokenizer.nextToken();
-            }
-        }
-        StringBuffer namespace = new StringBuffer(HTTP_PREFIX);
-        String dot = "";
-        for (int i=0; i<tokens.length; i++) {
-            if (i==1)
-                dot = PD;
-            namespace.append(dot+tokens[i]);
-        }
-        if (tokens.length > 0)
-            namespace.append('/');
-        namespace.append(JAXWS);
-        return namespace.toString();
-    }
-
 
     abstract protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf);
 
