@@ -30,11 +30,8 @@ import java.util.logging.Logger;
 public class WSFuture<T> extends FutureTask<T> {
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-    //private UID uid;
+
     private Lock _lock;
-   // private CallbackQueue _callbackQueue;
-    //private ResponseContext _responseContext;
-    //private boolean handler;
 
     public WSFuture(Callable<T> callable) {
         super(callable);
@@ -45,77 +42,4 @@ public class WSFuture<T> extends FutureTask<T> {
         super(runable, result);
         _lock = new ReentrantLock();
     }
-
-    //protected method need to overide
-   /* public void setException(Exception ex) {
-        _lock.lock();
-        try {
-            super.setException(ex);
-            //notify(_callbackQueue);
-        } catch (Exception e) {
-        } finally {
-            _lock.unlock();
-        }
-    }
-
-    public void set(T result) {
-        _lock.lock();
-        try {
-            super.set(result);
-            //notify(_callbackQueue);
-        } catch (Exception e) {
-        } finally {
-            _lock.unlock();
-        }
-    }
-    */
-    /**
-     * Gets the contained response context.
-     *
-     * @return The contained response context. May be <code>null</code> if a
-     *         response is not yet available.
-     */
-   /* public Map<String, Object> getContext() {
-        if (!isDone())
-            return null;
-        else
-            return (Map<String, Object>) (_responseContext = new ResponseContext(null));
-    }
-
-    public void setResponseContext(Map context) {
-        _responseContext = (ResponseContext) context;
-    }
-
-    public synchronized void setUID(UID id) {
-        uid = id;
-    }
-
-    public synchronized UID getUID() {
-        return uid;
-    }
-
-    public void setCallbackService(CallbackQueue queue) {
-        _callbackQueue = queue;
-    }
-
-    //got to lock
-
-    public void done() {
-        _lock.lock();
-        try {
-            if (handler) {
-                if (!isCancelled())
-                    _callbackQueue.run();
-            }
-        } catch (Exception e) {
-        } finally {
-            _lock.unlock();
-        }
-    }
-
-    public void setHandlerResponse(boolean isHandler){
-        handler = isHandler;
-    }
-   */ 
-
 }

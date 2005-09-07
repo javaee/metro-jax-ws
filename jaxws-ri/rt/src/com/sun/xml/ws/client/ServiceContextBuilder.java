@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContextBuilder.java,v 1.22 2005-09-07 16:46:11 arungupta Exp $
+ * $Id: ServiceContextBuilder.java,v 1.23 2005-09-07 19:07:14 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -27,10 +27,6 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.xml.sax.EntityResolver;
 
 /**
  * $author: WS Development Team
@@ -44,20 +40,20 @@ public abstract class ServiceContextBuilder {
     public static ServiceContext build(URL wsdlLocation, Class service, EntityResolver er) throws WebServiceException {
 
         ServiceContext serviceContext = new ServiceContext(er);
-        SIAnnotations serviceIFAnnotations;
+        SCAnnotations serviceCAnnotations;
         if ((service != null)) {
 
-            serviceIFAnnotations = getSIAnnotations(service);
-            if ((serviceIFAnnotations == null) && (service != javax.xml.ws.Service.class))
+            serviceCAnnotations = getSCAnnotations(service);
+            if ((serviceCAnnotations == null) && (service != javax.xml.ws.Service.class))
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
-            serviceContext.setSiAnnotations(serviceIFAnnotations);
+            serviceContext.setSCAnnotations(serviceCAnnotations);
 
             if (wsdlLocation == null) {
                 try {
-                    //wsdlLocation = new URL(serviceIFAnnotations.wsdlLocation);
-                    JAXWSUtils.getFileOrURLName(serviceIFAnnotations.wsdlLocation);
 
-                    wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceIFAnnotations.wsdlLocation));
+                    JAXWSUtils.getFileOrURLName(serviceCAnnotations.wsdlLocation);
+
+                    wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceCAnnotations.wsdlLocation));
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
@@ -65,9 +61,9 @@ public abstract class ServiceContextBuilder {
 
             serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
 
-            if (serviceIFAnnotations != null) {
-                serviceContext.setServiceInterface(service);
-                for (Class clazz : serviceIFAnnotations.classes) {
+            if (serviceCAnnotations != null) {
+                serviceContext.setServiceClass(service);
+                for (Class clazz : serviceCAnnotations.classes) {
                     processAnnotations(serviceContext, clazz);
                 }
             }
@@ -133,16 +129,15 @@ public abstract class ServiceContextBuilder {
             }
 
             //toDo:
-            QName serviceName = getServiceName(serviceContext.getServiceInterface());
-            QName portName = getPortName(portInterface, serviceContext.getServiceInterface());
-            //todo:Use SI ANNotations and put in map
+            QName serviceName = getServiceName(serviceContext.getServiceClass());
+            QName portName = getPortName(portInterface, serviceContext.getServiceClass());
+            //todo:use SCAnnotations and put in map
             RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName,
                 serviceContext.getWsdlContext().getBindingID().toString());
             modeler.setPortName(portName);
             RuntimeModel model = modeler.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
-            //serviceContext.addEndpointIFContext(eifc);
 
             // get handler information
             HandlerAnnotationInfo chainInfo =
@@ -176,19 +171,19 @@ public abstract class ServiceContextBuilder {
         return serviceContext.getHandlerResolver();
     }
 
-    private ArrayList<Class> getSEI(Class si) {
+    private ArrayList<Class> getSEI(Class sc) {
 
-        if (si == null) {
+        if (sc == null) {
             throw new WebServiceException();
         }
 
         //check to make sure this is a service
-        if (!Service.class.isAssignableFrom(si)) {
+        if (!Service.class.isAssignableFrom(sc)) {
             throw new WebServiceException("service.interface.required" +
-                si.getName());
+                sc.getName());
         }
 
-        Method[] methods = si.getDeclaredMethods();
+        Method[] methods = sc.getDeclaredMethods();
         ArrayList<Class> classes = new ArrayList<Class>(methods.length);
         for (Method method : methods) {
             method.setAccessible(true);
@@ -215,21 +210,21 @@ public abstract class ServiceContextBuilder {
     }
 
     //this will change
-    private static SIAnnotations getSIAnnotations(Class si) {
-       
-        SIAnnotations siAnnotations = new SIAnnotations();
+    private static SCAnnotations getSCAnnotations(Class sc) {
+
+        SCAnnotations SCAnnotations = new SCAnnotations();
         ArrayList<QName> portQNames = new ArrayList<QName>();
-        if (si != null) {
-            WebServiceClient wsc = (WebServiceClient) si.getAnnotation(WebServiceClient.class);
+        if (sc != null) {
+            WebServiceClient wsc = (WebServiceClient) sc.getAnnotation(WebServiceClient.class);
             if (wsc != null) {
                 String name = wsc.name();
                 String tns = wsc.targetNamespace();
-                siAnnotations.tns = tns;
+                SCAnnotations.tns = tns;
                 if (name != null)
-                    siAnnotations.serviceQName = new QName(tns, name);
-                siAnnotations.wsdlLocation = wsc.wsdlLocation();
+                    SCAnnotations.serviceQName = new QName(tns, name);
+                SCAnnotations.wsdlLocation = wsc.wsdlLocation();
 
-                Method[] methods = si.getDeclaredMethods();
+                Method[] methods = sc.getDeclaredMethods();
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
                     for (Method method : methods) {
@@ -245,11 +240,11 @@ public abstract class ServiceContextBuilder {
                             classes.add(seiClazz);
                         }
                     }
-                    siAnnotations.portQNames.addAll(portQNames);
-                    siAnnotations.classes.addAll(classes);
+                    SCAnnotations.portQNames.addAll(portQNames);
+                    SCAnnotations.classes.addAll(classes);
                 }
             }
         }
-        return siAnnotations;
+        return SCAnnotations;
     }
 }

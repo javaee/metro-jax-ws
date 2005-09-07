@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContext.java,v 1.9 2005-09-07 16:46:11 arungupta Exp $
+ * $Id: ServiceContext.java,v 1.10 2005-09-07 19:07:14 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,12 +7,9 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.handler.HandlerResolverImpl;
-import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
-import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,10 +24,11 @@ import org.xml.sax.EntityResolver;
 public class ServiceContext {
     private WSDLContext wsdlContext; //from wsdlParsing
     
+    private Class serviceClass;
     private HandlerResolverImpl handlerResolver; //from HandlerAnnotationProcessing
-    private Class serviceInterface;
+    
     private QName serviceName; //supplied on creation of service
-    private SIAnnotations siAnnotations;
+    private SCAnnotations SCAnnotations;
     private final HashSet<EndpointIFContext> seiContext = new HashSet<EndpointIFContext>();
     /**
      * To be used to resolve WSDL resources.
@@ -41,12 +39,12 @@ public class ServiceContext {
         this.entityResolver = entityResolver;
     }
 
-    public SIAnnotations getSiAnnotations() {
-        return siAnnotations;
+    public SCAnnotations getSCAnnotations() {
+        return SCAnnotations;
     }
 
-    public void setSiAnnotations(SIAnnotations siAnnotations) {
-        this.siAnnotations = siAnnotations;
+    public void setSCAnnotations(SCAnnotations SCAnnotations) {
+        this.SCAnnotations = SCAnnotations;
     }
 
     public WSDLContext getWsdlContext() {
@@ -87,22 +85,22 @@ public class ServiceContext {
         this.seiContext.addAll(eifContexts);
     }
 
-    public Class getServiceInterface() {
-        return serviceInterface;
+    public Class getServiceClass() {
+        return serviceClass;
     }
 
-    public void setServiceInterface(Class serviceInterface) {
-        this.serviceInterface = serviceInterface;
+    public void setServiceClass(Class serviceClass) {
+        this.serviceClass = serviceClass;
     }
 
     public QName getServiceName() {
-        if (serviceName != null)
-            return serviceName;
-        if (wsdlContext != null){
-            serviceName = wsdlContext.getFirstServiceName();
-            return serviceName;
+        if (serviceName == null) {
+            if (wsdlContext != null) {
+                serviceName = wsdlContext.getFirstServiceName();
+                return serviceName;
+            }
         }
-        return null;
+        return serviceName;
     }
 
     public void setServiceName(QName serviceName) {
@@ -112,8 +110,20 @@ public class ServiceContext {
     public EntityResolver getEntityResolver() {
         return entityResolver;
     }
+
+    public String toString() {
+        return "ServiceContext{" +
+            "wsdlContext=" + wsdlContext +
+            ", handleResolver=" + handlerResolver +
+            ", serviceClass=" + serviceClass +
+            ", serviceName=" + serviceName +
+            ", SCAnnotations=" + SCAnnotations +
+            ", seiContext=" + seiContext +
+            ", entityResolver=" + entityResolver +
+            "}";
+    }
 }
-class SIAnnotations {
+class SCAnnotations {
     String tns;
     QName serviceQName;
     ArrayList<QName> portQNames = new ArrayList<QName>();

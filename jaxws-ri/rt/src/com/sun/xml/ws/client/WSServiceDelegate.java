@@ -73,8 +73,7 @@ import java.util.concurrent.ThreadFactory;
  * @see java.util.concurrent.Executor
  * @since JAX-WS 2.0
  */
-public class WSServiceDelegate extends ServiceDelegate
-    implements Referenceable {
+public class WSServiceDelegate extends ServiceDelegate {
 
     protected static final String GET = "get";
 
@@ -211,20 +210,6 @@ public class WSServiceDelegate extends ServiceDelegate
         return getWsdlLocation();
     }
 
-
-
-
-    public Reference getReference() throws NamingException {
-        Reference reference =
-            new Reference(getClass().getName(),
-                "com.sun.xml.rpc.naming.ServiceReferenceResolver",
-                null);
-        //toDo:String serviceName = ServiceReferenceResolver.registerService(this);
-        //reference.add(new StringRefAddr("ServiceName", serviceName));
-        return reference;
-    }
-
-
     protected void addPorts(QName[] ports) {
         if (ports != null) {
             for (int i = 0; i < ports.length; ++i) {
@@ -270,7 +255,7 @@ public class WSServiceDelegate extends ServiceDelegate
 
         processServiceContext(portName, portInterface);
 
-        if (serviceContext.getWsdlContext().contains(serviceContext.getServiceName(), portName).size() < 1) {
+        if (!serviceContext.getWsdlContext().contains(getServiceName(), portName)) {
             throw new WebServiceException("Port " + portName + "is not found in service " + serviceContext.getServiceName());
         }
 
@@ -359,8 +344,8 @@ public class WSServiceDelegate extends ServiceDelegate
 
         Object proxy = Proxy.newProxyInstance(portInterface.getClassLoader(),
             new Class[]{
-                portInterface, Remote.class, BindingProvider.class,
-                BindingProviderProperties.class, AnnotatedElement.class,
+                portInterface, BindingProvider.class,
+                BindingProviderProperties.class,
                 com.sun.xml.ws.spi.runtime.StubBase.class
             }, handler);
         handler.setProxy((Object) proxy);
@@ -379,17 +364,6 @@ public class WSServiceDelegate extends ServiceDelegate
         }
         return context;
     }
-
-
-//    /**
-//     * Overrides the resolver that this {@link ServiceFactoryImpl} uses.
-//     * To disable the catalog resolution, set a dummy entity resolver that
-//     * always return null.
-//     */
-//    public void setResolver(EntityResolver resolver) {
-//        this.entityResolver = resolver;
-//    }
-
 
     class DaemonThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
