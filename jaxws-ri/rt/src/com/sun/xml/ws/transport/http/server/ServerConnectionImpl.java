@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.9 2005-09-06 23:51:30 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.10 2005-09-07 02:49:11 jitu Exp $
  */
 
 /*
@@ -34,19 +34,21 @@ import java.util.Map;
  */
 public class ServerConnectionImpl extends WSConnectionImpl {
 
-    private HttpExchange httpTransaction;
+    private HttpExchange httpExchange;
     private int status;
     private Map<String,List<String>> requestHeaders;
     private Map<String,List<String>> responseHeaders;
     private NoCloseInputStream is;
     private NoCloseOutputStream out;
+    private boolean closedInput;
+    private boolean closedOutput;
 
     public ServerConnectionImpl(HttpExchange httpTransaction) {
-        this.httpTransaction = httpTransaction;
+        this.httpExchange = httpTransaction;
     }
 
     public Map<String,List<String>> getHeaders() {
-        return httpTransaction.getRequestHeaders();
+        return httpExchange.getRequestHeaders();
     }
     
     /**
@@ -65,14 +67,14 @@ public class ServerConnectionImpl extends WSConnectionImpl {
      */
     public int getStatus() {
         if (status == 0) {
-            status = HttpURLConnection.HTTP_OK;
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
         return status;
     }
     
     public InputStream getInput() {
         if (is == null) {
-            is = new NoCloseInputStream(httpTransaction.getRequestBody());
+            is = new NoCloseInputStream(httpExchange.getRequestBody());
         }
         return is;
     }
@@ -87,14 +89,14 @@ public class ServerConnectionImpl extends WSConnectionImpl {
                         String name = entry.getKey();
                         List<String> values = entry.getValue();
                         for(String value : values) {
-                            httpTransaction.getResponseHeaders().add(name, value);
+                            httpExchange.getResponseHeaders().add(name, value);
                         }
                     }
                 }
 
                 // write HTTP status code, and headers
-                httpTransaction.sendResponseHeaders(getStatus(), 0);
-                out = new NoCloseOutputStream(httpTransaction.getResponseBody());
+                httpExchange.sendResponseHeaders(getStatus(), 0);
+                out = new NoCloseOutputStream(httpExchange.getResponseBody());
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -106,6 +108,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
         if (out != null) {
             try {                 
                 out.getOutputStream().close();
+                closedOutput = true;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -121,11 +124,32 @@ public class ServerConnectionImpl extends WSConnectionImpl {
                 while (is.read(buf) != -1) {
                 }             
                 is.getInputStream().close();
+                closedInput = true;
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
         is = null;
+    }
+    
+    public void close() {
+        try {
+            if (!closedInput) {
+                if (is == null) {
+                    getInput();
+                }
+                closeInput();
+            }
+            if (!closedOutput) {
+                if (out == null) {
+                    getOutput();    
+                }
+                closeOutput();
+            }
+            httpExchange.close();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
     
     private static class NoCloseInputStream extends InputStream {

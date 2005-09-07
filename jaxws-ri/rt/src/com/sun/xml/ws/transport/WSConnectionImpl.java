@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.3 2005-09-04 02:18:41 jitu Exp $
+ * $Id: WSConnectionImpl.java,v 1.4 2005-09-07 02:49:10 jitu Exp $
  */
 
 /*
@@ -184,5 +184,9 @@ public abstract class WSConnectionImpl implements WSConnection {
     }
     
     public void closeInput() {
+    }
+    
+    public void close() {
+        
     }
 }

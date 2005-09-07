@@ -1,5 +1,5 @@
 /**
- * $Id: WSHttpHandler.java,v 1.2 2005-09-06 02:57:38 jitu Exp $
+ * $Id: WSHttpHandler.java,v 1.3 2005-09-07 02:49:11 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -81,8 +81,8 @@ public class WSHttpHandler implements HttpHandler {
      * Handles POST requests
      */
     private void post(HttpExchange msg) {
+        WSConnection con = new ServerConnectionImpl(msg);
         try {
-            ServerConnectionImpl con = new ServerConnectionImpl(msg);
             MessageContext msgCtxt = new MessageContextImpl();
             WebServiceContext wsContext = endpointInfo.getWebServiceContext();
             wsContext.setMessageContext(msgCtxt);
@@ -90,11 +90,7 @@ public class WSHttpHandler implements HttpHandler {
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            try {
-                msg.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();          // Not much can be done
-            }
+            con.close();
         }
     }
     
@@ -112,21 +108,9 @@ public class WSHttpHandler implements HttpHandler {
      * Handles GET requests
      */ 
     public void get(HttpExchange msg) {
+        WSConnection con = new ServerConnectionImpl(msg);
         try {
-            WSConnection con = new ServerConnectionImpl(msg);
             InputStream is = con.getInput();
-            /*
-            try {
-                readFully(is);
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
-                String message = "Couldn't read Request";
-                writeErrorPage(con, HttpURLConnection.HTTP_INTERNAL_ERROR, message);
-                return;
-            } finally {
-                con.closeInput();
-            }
-             */
             String queryString = msg.getRequestURI().getQuery();
             logger.fine("Query String for request ="+queryString);
 
@@ -157,10 +141,6 @@ public class WSHttpHandler implements HttpHandler {
                 headers.put(CONTENT_TYPE_HEADER, ctHeader);
                 con.setHeaders(headers);
                 con.setStatus(HttpURLConnection.HTTP_OK);
-            /*
-                msg.getResponseHeaders().add(CONTENT_TYPE_HEADER, XML_CONTENT_TYPE);
-                msg.sendResponseHeaders(HttpURLConnection.HTTP_OK,  0);
-             */
                 OutputStream os = con.getOutput();
 
                 List<RuntimeEndpointInfo> endpoints = new ArrayList<RuntimeEndpointInfo>();
@@ -183,11 +163,7 @@ public class WSHttpHandler implements HttpHandler {
                 con.closeOutput();
             }
         } finally {
-            try {
-                msg.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();          // Not much can be done
-            }
+            con.close();
         }
     }
 

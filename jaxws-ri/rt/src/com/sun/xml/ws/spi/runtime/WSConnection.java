@@ -1,5 +1,5 @@
 /**
- * $Id: WSConnection.java,v 1.6 2005-09-04 02:18:40 jitu Exp $
+ * $Id: WSConnection.java,v 1.7 2005-09-07 02:49:10 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -61,5 +61,7 @@ public interface WSConnection extends Connection {
     public void closeOutput();
     
     public OutputStream getDebug();
+    
+    public void close();
     
 }
