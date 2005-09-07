@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.52 2005-09-07 19:40:06 vivekp Exp $
+ * $Id: RuntimeModeler.java,v 1.53 2005-09-07 21:09:11 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -37,7 +37,7 @@ import javax.xml.ws.http.HTTPBinding;
 /**
  * Creates a runtime model of a SEI (portClass).
  *
- * @author JAXWS Developement Team
+ * @author WS Developement Team
  */
 public class RuntimeModeler {
     private String bindingId;
@@ -324,7 +324,7 @@ public class RuntimeModeler {
                 dot = ".";
             namespace.append(dot+tokens[i]);
         }
-        namespace.append("/jaxws");
+        //namespace.append("/jaxws");
         return namespace.toString();
     }
 
