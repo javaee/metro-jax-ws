@@ -1,5 +1,5 @@
 /**
- * $Id: PortTypeOperation.java,v 1.1 2005-08-13 19:30:36 vivekp Exp $
+ * $Id: PortTypeOperation.java,v 1.2 2005-09-07 19:38:43 vivekp Exp $
  */
 
 /**
@@ -13,9 +13,9 @@ import javax.xml.namespace.QName;
 public class PortTypeOperation{
     private QName name;
     private String parameterOrder;
-    private Message inputMessage;
-    private Message outputMessage;
-    private Message faultMessage;
+    private QName inputMessage;
+    private QName outputMessage;
+    private QName faultMessage;
 
     public PortTypeOperation(QName name) {
         this.name = name;
@@ -33,27 +33,27 @@ public class PortTypeOperation{
         this.parameterOrder = parameterOrder;
     }
 
-    public Message getInputMessage() {
+    public QName getInputMessage() {
         return inputMessage;
     }
 
-    public void setInputMessage(Message inputMessage) {
+    public void setInputMessage(QName inputMessage) {
         this.inputMessage = inputMessage;
     }
 
-    public Message getOutputMessage() {
+    public QName getOutputMessage() {
         return outputMessage;
     }
 
-    public void setOutputMessage(Message outputMessage) {
+    public void setOutputMessage(QName outputMessage) {
         this.outputMessage = outputMessage;
     }
 
-    public Message getFaultMessage() {
+    public QName getFaultMessage() {
         return faultMessage;
     }
 
-    public void setFaultMessage(Message faultMessage) {
+    public void setFaultMessage(QName faultMessage) {
         this.faultMessage = faultMessage;
     }
 

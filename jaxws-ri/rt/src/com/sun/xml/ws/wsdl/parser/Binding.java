@@ -1,5 +1,5 @@
 /**
- * $Id: Binding.java,v 1.4 2005-08-19 08:02:23 vivekp Exp $
+ * $Id: Binding.java,v 1.5 2005-09-07 19:38:44 vivekp Exp $
  */
 
 /**
@@ -19,6 +19,8 @@ public class Binding extends HashMap<String, BindingOperation> {
     private QName portTypeName;
     private PortType portType;
     private String bindingId;
+    private WSDLDocument wsdlDoc;
+    private boolean finalized = false;
 
     public Binding(QName name, QName portTypeName) {
         super();
@@ -50,6 +52,10 @@ public class Binding extends HashMap<String, BindingOperation> {
         this.bindingId = bindingId;
     }
 
+    public void setWsdlDocument(WSDLDocument wsdlDoc) {
+        this.wsdlDoc = wsdlDoc;
+    }
+
     public ParameterBinding getBinding(String operation, String part, Mode mode){
         BindingOperation op = get(operation);
         if(op == null){
@@ -68,6 +74,13 @@ public class Binding extends HashMap<String, BindingOperation> {
             return op.getMimeTypeForInputPart(part);
         else
             return op.getMimeTypeForOutputPart(part);
+    }
+
+    public void finalizeBinding(){
+        if(!finalized){
+            wsdlDoc.finalizeBinding(this);
+            finalized = true;
+        }
     }
 
 }

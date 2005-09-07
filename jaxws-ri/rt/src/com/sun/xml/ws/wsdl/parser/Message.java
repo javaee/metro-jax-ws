@@ -1,5 +1,5 @@
 /**
- * $Id: Message.java,v 1.1 2005-08-13 19:30:36 vivekp Exp $
+ * $Id: Message.java,v 1.2 2005-09-07 19:38:44 vivekp Exp $
  */
 /**
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
@@ -10,9 +10,9 @@ package com.sun.xml.ws.wsdl.parser;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.TreeMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
-public class Message extends LinkedHashMap<String, QName>{
+public class Message extends LinkedHashSet<String>{
     private QName name;
 
     /**

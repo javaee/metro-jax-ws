@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLDocument.java,v 1.2 2005-08-19 01:17:19 vivekp Exp $
+ * $Id: WSDLDocument.java,v 1.3 2005-09-07 19:38:43 vivekp Exp $
  */
 
 /**
@@ -8,6 +8,9 @@
  */
 
 package com.sun.xml.ws.wsdl.parser;
+
+import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.Mode;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPBinding;
@@ -20,8 +23,8 @@ public class WSDLDocument {
     protected Map<QName, Service> services;
 
     public WSDLDocument() {
-//        messages = new HashMap<QName, Message>();
-//        portTypes = new HashMap<QName, PortType>();
+        messages = new HashMap<QName, Message>();
+        portTypes = new HashMap<QName, PortType>();
         bindings = new HashMap<QName, Binding>();
         services = new LinkedHashMap<QName, Service>();
     }
@@ -169,4 +172,45 @@ public class WSDLDocument {
         return bs;
     }
 
+    public void finalizeBinding(Binding binding){
+        assert(binding == null);
+        QName portTypeName = binding.getPortTypeName();
+        if(portTypeName == null)
+            return;
+        PortType pt = portTypes.get(portTypeName);
+        if(pt == null)
+            return;
+        for(String op:binding.keySet()){
+            PortTypeOperation pto = pt.get(op);
+            if(pto == null)
+                return;
+            QName inMsgName = pto.getInputMessage();
+            if(inMsgName == null)
+                continue;
+            Message inMsg = messages.get(inMsgName);
+            BindingOperation bo = binding.get(op);
+            int bodyindex = 0;
+            if(inMsg != null){
+                for(String name:inMsg){
+                    ParameterBinding pb = bo.getInputBinding(name);
+                    if(pb.getBinding().isBody()){
+                        bo.addPart(new Part(name, pb, bodyindex++), Mode.IN);
+                    }
+                }
+            }
+            bodyindex=0;
+            QName outMsgName = pto.getOutputMessage();
+            if(outMsgName == null)
+                continue;
+            Message outMsg = messages.get(outMsgName);
+            if(outMsg!= null){
+                for(String name:outMsg){
+                    ParameterBinding pb = bo.getOutputBinding(name);
+                    if(pb.getBinding().isBody()){
+                        bo.addPart(new Part(name, pb, bodyindex++), Mode.OUT);
+                    }
+                }
+            }
+        }
+    }
 }

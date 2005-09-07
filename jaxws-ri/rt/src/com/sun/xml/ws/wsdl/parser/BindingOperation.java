@@ -1,5 +1,5 @@
 /**
- * $Id: BindingOperation.java,v 1.3 2005-08-19 01:17:18 vivekp Exp $
+ * $Id: BindingOperation.java,v 1.4 2005-09-07 19:38:44 vivekp Exp $
  */
 
 /**
@@ -9,6 +9,7 @@
 package com.sun.xml.ws.wsdl.parser;
 
 import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.Mode;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 
 import java.util.HashMap;
@@ -29,6 +30,9 @@ public class BindingOperation {
     private Boolean emptyInputBody;
     private Boolean emptyOutputBody;
 
+    private Map<String, Part> inParts;
+    private Map<String, Part> outParts;
+
     /**
      *
      * @param name wsdl:operation name qualified value
@@ -39,10 +43,28 @@ public class BindingOperation {
         outputParts = new HashMap<String, ParameterBinding>();
         inputMimeTypes = new HashMap<String, String>();
         outputMimeTypes = new HashMap<String, String>();
+        inParts = new HashMap<String, Part>();
+        outParts = new HashMap<String, Part>();
     }
 
     public String getName(){
         return name;
+    }
+
+    public Part getPart(String partName, Mode mode){
+        if(mode.equals(Mode.IN)){
+            return inParts.get(partName);
+        }else if(mode.equals(Mode.OUT)){
+            return outParts.get(partName);
+        }
+        return null;
+    }
+
+    public void addPart(Part part, Mode mode){
+        if(mode.equals(Mode.IN))
+            inParts.put(part.getName(), part);
+        else if(mode.equals(Mode.OUT))
+            outParts.put(part.getName(), part);
     }
 
     public Map<String, ParameterBinding> getInputParts() {
