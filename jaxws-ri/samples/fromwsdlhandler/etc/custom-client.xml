@@ -19,12 +19,13 @@
             <jaxb:package name="fromwsdlhandler.client"/>
         </jaxb:schemaBindings>
     </bindings>
-    <bindings node="wsdl:definitions" xmlns:jws="http://www.bea.com/xml/ns/jws" xmlns:j2ee="http://java.sun.com/xml/ns/j2ee">
+    <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
         <jws:handler-chain>
-            <jws:handler-chain-name>logging handler chain</jws:handler-chain-name>
-            <jws:handler>
-              <j2ee:handler-class>fromwsdlhandler.common.LoggingHandler</j2ee:handler-class>
-            </jws:handler>
+            <jws:handler-chain>
+                <jws:handler>
+                    <jws:handler-class>fromwsdlhandler.common.LoggingHandler</jws:handler-class>
+                </jws:handler>
+            </jws:handler-chain>
         </jws:handler-chain>
     </bindings>
 </bindings>

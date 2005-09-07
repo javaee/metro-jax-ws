@@ -12,12 +12,13 @@
     <bindings node="wsdl:definitions">
         <package name="fromjavahandler.client"/>
     </bindings>
-    <bindings node="wsdl:definitions" xmlns:jws="http://www.bea.com/xml/ns/jws" xmlns:j2ee="http://java.sun.com/xml/ns/j2ee">
-        <jws:handler-chain>
-            <jws:handler-chain-name>logging handler chain</jws:handler-chain-name>
-            <jws:handler>
-              <j2ee:handler-class>fromjavahandler.common.LoggingHandler</j2ee:handler-class>
-            </jws:handler>
-        </jws:handler-chain>
+    <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
+        <jws:handler-chains>
+            <jws:handler-chain>
+                <jws:handler>
+                    <jws:handler-class>fromjavahandler.common.LoggingHandler</jws:handler-class>
+                </jws:handler>
+            </jws:handler-chain>
+        </jws:handler-chains>
     </bindings>
 </bindings>

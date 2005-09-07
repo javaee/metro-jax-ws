@@ -5,12 +5,12 @@
  All rights reserved.
 -->
 
-<jws:handler-config xmlns:jws="http://www.bea.com/xml/ns/jws">
-    <jws:handler-chain>
-        <jws:handler-chain-name>Chain1</jws:handler-chain-name>
-        <jws:handler>
-            <jws:handler-name>fromjavahandler.common.LoggingHandler</jws:handler-name>
-            <jws:handler-class>fromjavahandler.common.LoggingHandler</jws:handler-class>
-        </jws:handler>
-    </jws:handler-chain>
+<jws:handler-config xmlns:jws="http://java.sun.com/xml/ns/javaee">
+    <jws:handler-chains>
+        <jws:handler-chain>
+            <jws:handler>
+                <jws:handler-class>fromjavahandler.common.LoggingHandler</jws:handler-class>
+            </jws:handler>
+        </jws:handler-chain>
+    </jws:handler-chains>
 </jws:handler-config>
