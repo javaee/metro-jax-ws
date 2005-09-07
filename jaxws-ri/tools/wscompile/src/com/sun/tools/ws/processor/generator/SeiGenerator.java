@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.26 2005-08-30 21:01:28 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.27 2005-09-07 19:48:44 bbissett Exp $
  */
 
 /**
@@ -53,6 +53,9 @@ import java.util.Properties;
 public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
+    
+    private static final String HANDLER_CHAIN_NAME = "handlers";
+    
     public SeiGenerator() {
     }
 
@@ -402,11 +405,12 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             return;
         JAnnotationUse handlerChainAnn = cls.annotate(cm.ref(HandlerChain.class));
         String fullName = env.getNames().customJavaTypeClassName(port.getJavaInterface());
-        NodeList nl = e.getElementsByTagNameNS("http://www.bea.com/xml/ns/jws", "handler-chain-name");
+        NodeList nl = e.getElementsByTagNameNS(
+            "http://java.sun.com/xml/ns/javaee", "handler-chain");
         if(nl.getLength() > 0){
             Element hn = (Element)nl.item(0);
             String fName = getHandlerConfigFileName(fullName);
-            handlerChainAnn.param("name", hn.getTextContent());
+            handlerChainAnn.param("name", HANDLER_CHAIN_NAME);
             handlerChainAnn.param("file", fName);
             generateHandlerChainFile(e, fullName);
         }
@@ -458,7 +462,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         }
     }
 
-    private void generateHandlerChainFile(Element hc, String name) {
+    private void generateHandlerChainFile(Element hChains, String name) {
         String hcName = getHandlerConfigFileName(name);
 
         File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir, env);
@@ -482,13 +486,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                 "{http://xml.apache.org/xslt}indent-amount",
                 "2");
             it.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            String pfix = hc.getPrefix();
-            Element e = hc.getOwnerDocument().createElementNS("http://www.bea.com/xml/ns/jws", "handler-config");
-            if(pfix != null)
-                e.setPrefix(pfix);
-
-            e.appendChild(hc);
-            it.transform( new DOMSource(e), new StreamResult(p) );
+            it.transform( new DOMSource(hChains), new StreamResult(p) );
         } catch (Exception e) {
             throw new GeneratorException(
                     "generator.nestedGeneratorError",

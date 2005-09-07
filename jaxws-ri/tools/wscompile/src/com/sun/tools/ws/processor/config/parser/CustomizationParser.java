@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.7 2005-08-29 19:37:34 kohlert Exp $
+ * $Id: CustomizationParser.java,v 1.8 2005-09-07 19:48:44 bbissett Exp $
  */
 
 /*
@@ -101,7 +101,8 @@ public class CustomizationParser extends InputParser {
     private void addHandlerChainInfo() throws Exception{
         //setup handler chain info
         for(Element e:wsdlModelInfo.getJAXWSBindings()){
-            NodeList nl = e.getElementsByTagNameNS("http://www.bea.com/xml/ns/jws", "handler-chain");            
+            NodeList nl = e.getElementsByTagNameNS(
+                "http://java.sun.com/xml/ns/javaee", "handler-chains");            
             if(nl.getLength()== 0)
                 continue;
             //take the first one, anyway its 1 handler-config per customization
