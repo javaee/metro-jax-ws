@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.53 2005-09-07 21:09:11 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.54 2005-09-08 00:45:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -325,6 +325,7 @@ public class RuntimeModeler {
             namespace.append(dot+tokens[i]);
         }
         //namespace.append("/jaxws");
+        namespace.append('/');
         return namespace.toString();
     }
 
