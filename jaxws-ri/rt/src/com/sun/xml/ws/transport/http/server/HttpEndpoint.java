@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.13 2005-09-07 03:22:48 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.14 2005-09-08 04:45:37 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -152,6 +152,9 @@ public class HttpEndpoint {
         
         // Sets the correct Service Name
         endpointInfo.doServiceNameProcessing();
+        
+        // Sets the correct Port Name
+        endpointInfo.doPortNameProcessing();
         
         // Sets the PortType Name
         endpointInfo.doPortTypeNameProcessing();

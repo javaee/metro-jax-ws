@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeEndpointInfo.java,v 1.8 2005-08-18 02:19:03 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.9 2005-09-08 04:45:36 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -7,6 +7,7 @@
 package com.sun.xml.ws.spi.runtime;
 
 import java.net.URL;
+import javax.xml.namespace.QName;
 import org.xml.sax.EntityResolver;
 
 /**
@@ -15,7 +16,7 @@ import org.xml.sax.EntityResolver;
  */
 public interface RuntimeEndpointInfo {
         
-    /*
+    /**
      * Builds runtime model from implementor object. It also generates required
      * WSDL, schema documents if there is no corresponding metadata. 
      */
@@ -72,5 +73,17 @@ public interface RuntimeEndpointInfo {
      * WSRtObjectFactory.createResolver(URL catalogURL).
      */
     public void setWsdlInfo(URL wsdlUrl, EntityResolver resolver);
+    
+    /*
+     * Set service name from DD. If it is null, @WebService, @WebServiceProvider
+     * annotations are used to get service name
+     */
+    public void setServiceName(QName name);
+    
+    /*
+     * Set port name from DD. If it is null, @WebService, @WebServiceProvider
+     * annotations are used to get port name
+     */
+    public void setPortName(QName name);
 
 }

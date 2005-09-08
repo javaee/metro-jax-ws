@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.54 2005-09-07 19:54:29 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.55 2005-09-08 04:45:35 jitu Exp $
  */
 
 /*
@@ -234,6 +234,27 @@ public class RuntimeEndpointInfo extends Endpoint
     }
     
     /*
+     * If portName is not already set via DD or programmatically, it uses
+     * annotations on implementorClass to set PortName.
+     */
+    public void doPortNameProcessing() {
+        if (getPortName() == null) {
+            if (isProviderEndpoint()) {
+                WebServiceProvider wsProvider =
+                    (WebServiceProvider)getImplementorClass().getAnnotation(
+                        WebServiceProvider.class);
+                String tns = wsProvider.targetNamespace();
+                String local = wsProvider.portName();
+                if (local.length() > 0) {
+                    setPortName(new QName(tns, local));
+                }
+            } else {
+                setPortName(RuntimeModeler.getPortName(getImplementorClass()));
+            }
+        }
+    }
+    
+    /*
      * Sets PortType QName 
      */
     public void doPortTypeNameProcessing() {
@@ -263,6 +284,9 @@ public class RuntimeEndpointInfo extends Endpoint
         
         // ServiceName processing
         doServiceNameProcessing();
+        
+        // Port Name processing
+        doPortNameProcessing();
         
         // PortType Name processing
         //doPortTypeNameProcessing();
