@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.36 2005-09-02 20:35:38 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.37 2005-09-08 00:44:12 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -75,6 +75,7 @@ public class WSDLGenerator {
     private String bindingId;
     private String wsdlLocation;
     private String portWSDLID;
+    private String schemaPrefix;
 
 
     public WSDLGenerator(RuntimeModel model, WSDLOutputResolver wsdlResolver, String bindingId) {
@@ -87,16 +88,18 @@ public class WSDLGenerator {
     public void doGeneration() {
         OutputStream serviceOutputStream = null;
         OutputStream portStream = null;
-        Result result = wsdlResolver.getWSDLOutput(model.getServiceQName().getLocalPart()+DOT_WSDL);
+        String fileName = model.getJAXBContext().mangleNameToClassName(model.getServiceQName().getLocalPart());
+        Result result = wsdlResolver.getWSDLOutput(fileName+DOT_WSDL);
         if (result == null)
             return;
         wsdlLocation = result.getSystemId();
         serviceOutputStream = getOutputStream(result);
         if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace())) { 
             portStream = serviceOutputStream;
+            schemaPrefix = fileName+"_";
         } else {
-            String wsdlName = model.getPortTypeName().getLocalPart();
-            if (wsdlName.equals(model.getServiceQName().getLocalPart()))
+            String wsdlName = model.getJAXBContext().mangleNameToClassName(model.getPortTypeName().getLocalPart());
+            if (wsdlName.equals(fileName))
                 wsdlName += "PortType";
             Holder<String> absWSDLName = new Holder<String>();
             absWSDLName.value = wsdlName+DOT_WSDL;
@@ -111,20 +114,8 @@ public class WSDLGenerator {
             } else {
                 portWSDLID = absWSDLName.value;
             }
-        }
-        
-/*        if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace()))
-            portStream = serviceOutputStream;
-        else {
-            String wsdlName = model.getPortName().getLocalPart();
-            if (wsdlName.equals(model.getServiceQName().getLocalPart()))
-                wsdlName += "PortType";
-            Holder<String> absWSDLName = new Holder<String>();
-            asbWSDLName.value = wsdlName+DOT_WSDL;
-            result = wsdlResolver.getAbstractWSDLOutput(wsdlName+DOT_WSDL);
-            portWSDLID = result.getSystemId();
-            portStream = getOutputStream(result);
-        }*/
+            schemaPrefix = model.getJAXBContext().mangleNameToClassName(portWSDLID)+"_";
+        }    
         generateDocument(serviceOutputStream, portStream);
     }
 
@@ -715,12 +706,12 @@ public class WSDLGenerator {
     }
 
     protected void generateInputMessage(Operation operation, JavaMethod method) {
-        ParamType paramType = operation.input();//.name();
+        ParamType paramType = operation.input();
         paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()));
     }
 
     protected void generateOutputMessage(Operation operation, JavaMethod method) {
-        ParamType paramType = operation.output();//.name();
+        ParamType paramType = operation.output();
         paramType.message(new QName(model.getTargetNamespace(), method.getOperationName()+RESPONSE));
     }
 
@@ -732,7 +723,7 @@ public class WSDLGenerator {
         com.sun.xml.ws.wsdl.writer.document.xsd.Import _import = types.schema()._import().namespace(namespaceUri);
 
         Holder<String> fileNameHolder = new Holder<String>();
-        fileNameHolder.value = suggestedFileName;
+        fileNameHolder.value = schemaPrefix+suggestedFileName;
         result = wsdlResolver.getSchemaOutput(namespaceUri, fileNameHolder);
         String schemaLoc;
         if (result == null)
