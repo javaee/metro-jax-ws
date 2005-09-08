@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeContext.java,v 1.6 2005-07-23 04:10:11 kohlert Exp $
+ * $Id: RuntimeContext.java,v 1.7 2005-09-08 23:22:58 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -13,6 +13,7 @@ import javax.xml.namespace.QName;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.handler.HandlerContext;
 
 
 
@@ -85,7 +86,16 @@ public class RuntimeContext {
     public BridgeContext getBridgeContext() {
         return (model != null)?model.getBridgeContext():null;
     }
-    
-    private RuntimeModel model;   
-    private RuntimeEndpointInfo endpointInfo;  
+       
+    public HandlerContext getHandlerContext() {
+        return handlerContext;
+    }
+
+    public void setHandlerContext(HandlerContext handlerContext) {
+        this.handlerContext = handlerContext;
+    }
+
+    private RuntimeModel model;
+    private HandlerContext handlerContext;
+    private RuntimeEndpointInfo endpointInfo;
 }
