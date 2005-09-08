@@ -1,5 +1,5 @@
 /**
- * $Id: WSHttpHandler.java,v 1.3 2005-09-07 02:49:11 jitu Exp $
+ * $Id: WSHttpHandler.java,v 1.4 2005-09-08 22:55:43 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -147,7 +147,7 @@ public class WSHttpHandler implements HttpHandler {
                 endpoints.add(endpointInfo);
 
                 String address =
-                    "http"
+                     ((msg instanceof HttpExchange) ? "http" : "https")
                         + "://"
                         + msg.getLocalAddress().getHostName()
                         + ":"

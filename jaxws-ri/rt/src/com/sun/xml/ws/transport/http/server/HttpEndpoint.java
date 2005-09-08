@@ -1,6 +1,6 @@
 
 /**
- * $Id: HttpEndpoint.java,v 1.14 2005-09-08 04:45:37 jitu Exp $
+ * $Id: HttpEndpoint.java,v 1.15 2005-09-08 22:55:42 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,7 +17,6 @@ import com.sun.xml.ws.util.localization.Localizer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpServer;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -47,15 +46,12 @@ import org.xml.sax.EntityResolver;
  */
 public class HttpEndpoint {
     
-    private Localizer localizer;
-    private LocalizableMessageFactory messageFactory;
     private static final Logger logger =
         Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".server.http");
     
     private String address;
     private HttpContext httpContext;
-    private HttpServer httpServer;
     private boolean published;
     private RuntimeEndpointInfo endpointInfo;
     
@@ -64,9 +60,6 @@ public class HttpEndpoint {
     public HttpEndpoint(RuntimeEndpointInfo rtEndpointInfo) {
         this.endpointInfo = rtEndpointInfo;
         endpointInfo.setUrlPattern("");
-        localizer = new Localizer();
-        messageFactory =
-            new LocalizableMessageFactory("com.sun.xml.ws.resources.httpserver");
     }
     
     // If Service Name is in properties, set it on RuntimeEndpointInfo
@@ -165,11 +158,14 @@ public class HttpEndpoint {
         // Fill DocInfo with docuent info : WSDL or Schema, targetNS etc.
         RuntimeEndpointInfo.fillDocInfo(endpointInfo);
         
-        //
+        // Finds primary WSDL from metadata documents
         findPrimaryWSDL();
         
     }
     
+    /*
+     * Generates necessary WSDL and Schema documents
+     */
     public void generateWSDLDocs() {
         if (endpointInfo.needWSDLGeneration()) {
             endpointInfo.generateWSDL();
@@ -179,18 +175,13 @@ public class HttpEndpoint {
     public void publish(String address) {
         try {
             this.address = address;
-            URL url = new URL(address);
-            int port = url.getPort();
-            if (port == -1) {
-                port = url.getDefaultPort();
+            httpContext = ServerMgr.getInstance().createContext(address);
+            try {
+                publish(httpContext);
+            } catch(Exception e) {
+                ServerMgr.getInstance().removeContext(httpContext);
+                throw e;
             }
-            InetSocketAddress inetAddress = new InetSocketAddress(port);
-            HttpServer server = HttpServer.create(inetAddress, MAX_THREADS);
-            server.setExecutor(Executors.newFixedThreadPool(5));
-            logger.fine("Endpoint Context Path = "+url.getPath());
-            HttpContext context = server.createContext(url.getPath());
-            publish(context);
-            server.start();
         } catch(Exception e) {
             throw new ServerRtException("server.rt.err", new LocalizableExceptionAdapter(e) );
         }
@@ -198,8 +189,10 @@ public class HttpEndpoint {
 
     public void publish(Object serverContext) {
         if (!(serverContext instanceof HttpContext)) {
-            throw new ServerRtException("not.HttpContext.type");
+            throw new ServerRtException("not.HttpContext.type",
+                new Object[] { serverContext.getClass() });
         }
+        
         this.httpContext = (HttpContext)serverContext;
         try {
             publish(httpContext);
@@ -210,13 +203,16 @@ public class HttpEndpoint {
     }
 
     public void stop() {
-        httpContext.setHandler(null);
-        httpContext.getServer().removeContext(httpContext);
-        if (httpServer != null) {
-            httpServer.removeContext(httpContext);
-            ((ExecutorService)httpServer.getExecutor()).shutdown();
-            httpServer.stop(0);
+        if (address == null) {
+            // Application created its own HttpContext
+            httpContext.setHandler(null);
+            httpContext.getServer().removeContext(httpContext);
+        } else {
+            // Remove HttpContext created by JAXWS runtime 
+            ServerMgr.getInstance().removeContext(httpContext);
         }
+        
+        // Invoke WebService Life cycle method
         endpointInfo.endService();
         published = false;
     }
