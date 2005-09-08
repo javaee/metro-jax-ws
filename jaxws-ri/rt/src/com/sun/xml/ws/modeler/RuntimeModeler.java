@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.54 2005-09-08 00:45:59 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.55 2005-09-08 01:08:18 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -1090,6 +1090,40 @@ public class RuntimeModeler {
         }
          
 
+        return new QName(targetNamespace, name);
+    }
+    
+    /**
+     * gets the <code>wsdl:portName</code> for a given implementation class
+     * @param implClass the implementation class
+     * @return the <code>wsdl:portName</code> for the <code>implClass</code>
+     */
+    public static QName getPortName(Class implClass) {
+        WebService webService =
+            (WebService)implClass.getAnnotation(WebService.class);
+        if (webService == null) {
+            throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
+                new Object[] {implClass.getCanonicalName()});
+        }
+        String name = null;
+        if (webService.portName().length() > 0) {
+            name = webService.portName();
+        }
+        if (name == null) {
+            return null;
+        }
+        String packageName = null;
+        if (implClass.getPackage() != null) {
+            packageName = implClass.getPackage().getName();
+        }
+        String targetNamespace = getNamespace(packageName, implClass.getName());
+        if (webService.targetNamespace().length() > 0) {
+            if (packageName == null) {
+                throw new RuntimeModelerException("runtime.modeler.no.package",
+                    new Object[] {implClass.getName()});                
+            }            
+            targetNamespace = webService.targetNamespace();
+        }
         return new QName(targetNamespace, name);
     }
 
