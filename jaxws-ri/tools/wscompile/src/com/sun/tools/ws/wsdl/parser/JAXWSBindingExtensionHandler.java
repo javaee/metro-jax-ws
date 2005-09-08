@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.6 2005-08-25 22:54:31 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.7 2005-09-08 00:55:54 vivekp Exp $
  */
 
 /*
@@ -99,9 +99,11 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                 parseWrapperStyle(context, jaxwsBinding, e2);
             }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
                 parseAsynMapping(context, jaxwsBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
-            }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+            }
+//            else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+//                parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+//            }
+            else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
                 parseMimeContent(context, jaxwsBinding, e2);
             }else{
                 Util.fail(
@@ -192,17 +194,17 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
      * @param parent
      * @param e
      */
-    private void parseAdditionalSOAPHeaderMapping(ParserContext context, Extensible parent, Element e) {
-        //System.out.println("In handleAdditionalSOAPHeaderExtension: " + e.getNodeName());
-        String val = e.getTextContent();
-        if(val == null)
-            return;
-        if(val.equals("false") || val.equals("0")){
-            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.FALSE);
-        }else if(val.equals("true") || val.equals("1")){
-            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.TRUE);
-        }
-    }
+//    private void parseAdditionalSOAPHeaderMapping(ParserContext context, Extensible parent, Element e) {
+//        //System.out.println("In handleAdditionalSOAPHeaderExtension: " + e.getNodeName());
+//        String val = e.getTextContent();
+//        if(val == null)
+//            return;
+//        if(val.equals("false") || val.equals("0")){
+//            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.FALSE);
+//        }else if(val.equals("true") || val.equals("1")){
+//            ((JAXWSBinding)parent).setEnableAdditionalHeaderMapping(Boolean.TRUE);
+//        }
+//    }
 
     /**
      * @param context
@@ -445,9 +447,10 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+//                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+//                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+//                }else
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
                     parseMimeContent(context, jaxwsBinding, e2);
                 }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PARAMETER)){
                     parseParameter(context, jaxwsBinding, e2);
@@ -528,9 +531,10 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                 if (e2 == null)
                     break;
 
-                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
-                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
-                }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
+//                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ADDITIONAL_SOAPHEADER_MAPPING)){
+//                    parseAdditionalSOAPHeaderMapping(context, jaxwsBinding, e2);
+//                }else
+                if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_MIME_CONTENT)){
                     parseMimeContent(context, jaxwsBinding, e2);
                 }else{
                     Util.fail(

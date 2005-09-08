@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBinding.java,v 1.3 2005-08-25 22:54:31 vivekp Exp $
+ * $Id: JAXWSBinding.java,v 1.4 2005-09-08 00:55:53 vivekp Exp $
  */
 
 /*
@@ -73,19 +73,19 @@ public class JAXWSBinding extends Extension implements Extensible {
     }
 
 
-    /**
-     * @return Returns the enableAdditionalHeaderMapping.
-     */
-    public Boolean isEnableAdditionalHeaderMapping() {
-        return enableAdditionalHeaderMapping;
-    }
-    /**
-     * @param enableAdditionalHeaderMapping The enableAdditionalHeaderMapping to set.
-     */
-    public void setEnableAdditionalHeaderMapping(
-            Boolean enableAdditionalHeaderMapping) {
-        this.enableAdditionalHeaderMapping = enableAdditionalHeaderMapping;
-    }
+//    /**
+//     * @return Returns the enableAdditionalHeaderMapping.
+//     */
+//    public Boolean isEnableAdditionalHeaderMapping() {
+//        return enableAdditionalHeaderMapping;
+//    }
+//    /**
+//     * @param enableAdditionalHeaderMapping The enableAdditionalHeaderMapping to set.
+//     */
+//    public void setEnableAdditionalHeaderMapping(
+//            Boolean enableAdditionalHeaderMapping) {
+//        this.enableAdditionalHeaderMapping = enableAdditionalHeaderMapping;
+//    }
     /**
      * @return Returns the enableAsyncMapping.
      */
@@ -307,7 +307,7 @@ public class JAXWSBinding extends Extension implements Extensible {
     private List<Parameter> parameters;
     private Boolean enableWrapperStyle;
     private Boolean enableAsyncMapping;
-    private Boolean enableAdditionalHeaderMapping;
+//    private Boolean enableAdditionalHeaderMapping;
     private Boolean enableMimeContentMapping;
     private Boolean isProvider;
     private Exception exception;

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.26 2005-08-29 19:37:35 kohlert Exp $
+ * $Id: WSDLModeler20.java,v 1.27 2005-09-08 00:55:53 vivekp Exp $
  */
 
 /*
@@ -872,26 +872,26 @@ public class WSDLModeler20 extends WSDLModelerBase {
         handleLiteralSOAPFault(response, duplicateNames);
 
         // handle headers
-        boolean enableAdditionalHeader = enableAdditionalHeaderMapping();
-
-        if (enableAdditionalHeader) {
-            handleLiteralSOAPHeaders(
-                    request,
-                    response,
-                    getHeaderPartsNotFromMessage(getInputMessage(), true).iterator(),
-                    duplicateNames,
-                    definitiveParameterList,
-                    true);
-            if (isRequestResponse) {
-                handleLiteralSOAPHeaders(
-                        request,
-                        response,
-                        getHeaderPartsNotFromMessage(getOutputMessage(), false).iterator(),
-                        duplicateNames,
-                        definitiveParameterList,
-                        false);
-            }
-        }
+//        boolean enableAdditionalHeader = enableAdditionalHeaderMapping();
+//
+//        if (enableAdditionalHeader) {
+//            handleLiteralSOAPHeaders(
+//                    request,
+//                    response,
+//                    getHeaderPartsNotFromMessage(getInputMessage(), true).iterator(),
+//                    duplicateNames,
+//                    definitiveParameterList,
+//                    true);
+//            if (isRequestResponse) {
+//                handleLiteralSOAPHeaders(
+//                        request,
+//                        response,
+//                        getHeaderPartsNotFromMessage(getOutputMessage(), false).iterator(),
+//                        duplicateNames,
+//                        definitiveParameterList,
+//                        false);
+//            }
+//        }
         //process all the headerfaults
 //        handleHeaderFaults(info, response);
 
@@ -1003,28 +1003,28 @@ public class WSDLModeler20 extends WSDLModelerBase {
     /**
      * @return
      */
-    private boolean enableAdditionalHeaderMapping() {
-        //first we look at binding operation
-        JAXWSBinding jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
-        Boolean additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-        if(additionalHeader != null)
-            return additionalHeader;
-
-        //then in wsdl:binding
-        Binding binding = info.port.resolveBinding(info.document);
-        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(binding, JAXWSBinding.class);
-        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-        if(additionalHeader != null)
-            return additionalHeader;
-
-        //at last look in wsdl:definitions
-        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.document.getDefinitions(), JAXWSBinding.class);
-        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-        if(additionalHeader != null)
-            return additionalHeader;
-        return false;
-
-    }
+//    private boolean enableAdditionalHeaderMapping() {
+//        //first we look at binding operation
+//        JAXWSBinding jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
+//        Boolean additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
+//        if(additionalHeader != null)
+//            return additionalHeader;
+//
+//        //then in wsdl:binding
+//        Binding binding = info.port.resolveBinding(info.document);
+//        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(binding, JAXWSBinding.class);
+//        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
+//        if(additionalHeader != null)
+//            return additionalHeader;
+//
+//        //at last look in wsdl:definitions
+//        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.document.getDefinitions(), JAXWSBinding.class);
+//        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
+//        if(additionalHeader != null)
+//            return additionalHeader;
+//        return false;
+//
+//    }
 
     /**
      * @return
@@ -1213,9 +1213,10 @@ public class WSDLModeler20 extends WSDLModelerBase {
         List<MessagePart> outputParts = outputMessage.getParts();
 
         // handle headers
-        boolean enableAdditionalHeader = enableAdditionalHeaderMapping();
+//        boolean enableAdditionalHeader = enableAdditionalHeaderMapping();
 
-        int numOfOutMsgParts = outputParts.size() + ((enableAdditionalHeader)?getHeaderParts(false).size():0);
+//        int numOfOutMsgParts = outputParts.size() + ((enableAdditionalHeader)?getHeaderParts(false).size():0);
+        int numOfOutMsgParts = outputParts.size();
 
         if(isRequestResponse){
             if(numOfOutMsgParts == 1){
@@ -1280,15 +1281,15 @@ public class WSDLModeler20 extends WSDLModelerBase {
         // faults with duplicate names
         Set duplicateNames = getDuplicateFaultNames();
 
-        if (enableAdditionalHeader) {
-            handleLiteralSOAPHeaders(
-                    request,
-                    response,
-                    getHeaderPartsNotFromMessage(getInputMessage(), true).iterator(),
-                    duplicateNames,
-                    definitiveParameterList,
-                    true);
-        }
+//        if (enableAdditionalHeader) {
+//            handleLiteralSOAPHeaders(
+//                    request,
+//                    response,
+//                    getHeaderPartsNotFromMessage(getInputMessage(), true).iterator(),
+//                    duplicateNames,
+//                    definitiveParameterList,
+//                    true);
+//        }
 
         //  add callback handlerb Parameter to request
         if(operation.getAsyncType().equals(AsyncOperationType.CALLBACK)){
@@ -1507,122 +1508,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
             }
         }
         return portTypeFault.getMessage().getLocalPart();
-    }
-
-    private void handleHeaderFaults(ProcessSOAPOperationInfo info, Response response){
-        Extensible ext = info.bindingOperation.getInput();
-        List <SOAPHeader> headers =  getHeaderExtensions(info.bindingOperation.getInput());
-        //add response header extensions incase of Request/Response messages
-        if(info.portTypeOperation.getStyle() == OperationStyle.REQUEST_RESPONSE)
-            headers.addAll(getHeaderExtensions(info.bindingOperation.getOutput()));
-        Map<String, QName> duplicateHeaderFaults = new HashMap<String, QName>();
-        for(SOAPHeader header:headers){
-            createHeaderFaultsModel(header, info, response, duplicateHeaderFaults);
-        }
-    }
-
-    protected void createHeaderFaultsModel(SOAPHeader header, ProcessSOAPOperationInfo info, Response response, Map<String, QName> duplicateHeaderFaults) {
-        //if the header is not from input or output message and explicitservicecontext is false, ignore the headerfault
-        if(!enableAdditionalHeaderMapping()) {
-            Message headerMessage = findMessage(header.getMessage(), info);
-            if((getInputMessage().getPart(header.getPart()) == null) && ((getOutputMessage().getPart(header.getPart()) == null)))
-                return;
-        }
-
-        Iterator faults = header.faults();
-        while (faults.hasNext()) {
-            Extension extn = (Extension)faults.next();
-            if(!(extn instanceof SOAPHeaderFault))
-                continue;
-
-            SOAPHeaderFault headerFault = (SOAPHeaderFault)extn;
-            if(null == headerFault.getMessage())
-                continue;
-
-            if(useWSIBasicProfile && (headerFault.getNamespace() != null))
-                warn("wsdlmodeler.warning.r2716r2726", new Object[] {"soapbind:headerfault", info.bindingOperation.getName()});
-
-            com.sun.tools.ws.wsdl.document.Message faultMessage = findMessage(headerFault.getMessage(), info);
-
-            if (faultMessage == null) {
-                fail("wsdlmodeler.invalid.fault.cant.resolve.message",
-                        new Object[] {
-                        headerFault.getMessage(),
-                        info.bindingOperation.getName()});
-            }
-
-            MessagePart faultPart = faultMessage.getPart(headerFault.getPart());
-
-            if (faultPart == null) {
-                fail("wsdlmodeler.headerfault.part.notFound",
-                    new Object[] {
-                        header.getMessage(),
-                        headerFault.getPart(),
-                        info.bindingOperation.getName()});
-            }
-
-            if(headerFault.getUse() != SOAPUse.LITERAL){
-                fail("wsdlmodeler.invalid.headerfault.notLiteral",
-                    new Object[] {
-                        header.getPart(),
-                        info.bindingOperation.getName()});
-            }
-
-            if (faultPart.getDescriptorKind() != SchemaKinds.XSD_ELEMENT) {
-                fail(
-                    "wsdlmodeler.invalid.headerfault.message.partMustHaveElementDescriptor",
-                    new Object[] {headerFault.getPart(),
-                            header.getPart(),
-                            info.bindingOperation.getName()});
-            }
-
-            QName aMessageName = duplicateHeaderFaults.get(faultPart.getName());
-            if (aMessageName != null && aMessageName.equals(headerFault.getMessage())) {
-                warn(
-                    "wsdlmodeler.duplicate.fault.part.name",
-                    new Object[] {
-                        headerFault.getMessage(),
-                        info.portTypeOperation.getName(),
-                        faultPart.getName()});
-                continue;
-            }
-
-            duplicateHeaderFaults.put(faultPart.getName(), headerFault.getMessage());
-            QName headerFaultName = faultPart.getDescriptor();
-            JAXBType jaxbType = getJAXBType(headerFaultName);
-
-            String exceptionClassName = getHeaderfaultExceptionClassName();
-            if(exceptionClassName == null)
-                exceptionClassName = headerFault.getPart();
-            HeaderFault fault = new HeaderFault(exceptionClassName);
-            fault.setJavaMemberName(getEnvironment().getNames().getExceptionClassMemberName());
-            fault.setElementName(faultPart.getDescriptor());
-            fault.setMessage(headerFault.getMessage());
-            fault.setPart(headerFault.getPart());
-
-            Block faultBlock = new Block(faultPart.getDescriptor(), jaxbType);
-            fault.setBlock(faultBlock);
-            createParentFault(fault);
-            createSubfaults(fault);
-            //add headerFaultBlock if the reponse does not have it
-            if(!response.getFaultBlocksMap().containsKey(faultBlock.getName()))
-                response.addFaultBlock(faultBlock);
-            info.operation.addFault(fault);
-        }
-    }
-
-    /**
-     * @return
-     */
-    private String getHeaderfaultExceptionClassName() {
-        JAXWSBinding jaxwsBinding = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
-        if(jaxwsBinding != null){
-            com.sun.tools.ws.wsdl.document.jaxws.Exception exception = jaxwsBinding.getException();
-            if(exception != null && exception.getClassName() != null){
-                return exception.getClassName().getName();
-            }
-        }
-        return null;
     }
 
     protected  boolean setMessagePartsBinding(StyleAndUse styleAndUse){
