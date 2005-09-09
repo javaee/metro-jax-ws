@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.18 2005-08-30 21:01:52 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.19 2005-09-09 03:32:14 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -31,10 +31,8 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.SOAPMessage;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.ws.server.*;
@@ -45,6 +43,7 @@ import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.server.AppMsgContextImpl;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
+import com.sun.xml.ws.handler.MessageContextUtil;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
@@ -105,8 +104,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
                 SOAPDecoder decoder = eptf.getSOAPDecoder();
                 peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
-                        messageInfo, context, true);
-                //peekOneWay = checkHeadersPeekBody(messageInfo, context);
+                        messageInfo, context, true);                
+                MessageContextUtil.setMethod(context.getMessageContext(),
+                        messageInfo.getMethod());
             } catch (SOAPFaultException e) {
                 skipEndpoint = true;
                 RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
@@ -124,8 +124,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 context.setInternalMessage(internalMessage);
                 context.setSOAPMessage(null);
             }
-            
-
 
             // Call inbound handlers. It also calls outbound handlers incase of
             // reversal of flow.
@@ -166,14 +164,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         // Just log the error. Not much to do
                     }
                 } else {
-                    //updateContextPropertyBag(messageInfo, context);
                     getResponse(messageInfo, context);
                     if (shd != null) {
                         context.getMessageContext().put(
-                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                        shd.processResponse(
-                                context.getSOAPMessageContext());
+                            MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                        shd.processResponse(context.getSOAPMessageContext());
                     }
+                    makeSOAPMessage(messageInfo, context);
                     sendResponse(messageInfo, context.getSOAPMessage());
                 }
             }
@@ -197,9 +194,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
                 SOAPDecoder decoder = eptf.getSOAPDecoder();
                 internalMessage = decoder.toInternalMessage(soapMessage, internalMessage, messageInfo);
-                // Convert to JAXB bean if body contains Source, or bean in other
-                // JAXBContext
-                //context.toJAXBBean(decoderUtil.getJAXBContext());
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -243,8 +237,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * APPLICATION scope properties
      */
     protected void updateWebServiceContext(MessageInfo messageInfo, HandlerContext hc) {
-        RuntimeEndpointInfo endpointInfo = 
-            MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+        rtCtxt.setHandlerContext(hc);
+        RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
         if (wsContext != null) {
             AppMsgContextImpl appCtxt = new AppMsgContextImpl(hc.getMessageContext());
@@ -284,6 +279,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.setInternalMessage(internalMessage);
             context.setSOAPMessage(null);
         }
+    }
+    
+    private void makeSOAPMessage(MessageInfo messageInfo, HandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         if (internalMessage != null) {
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
@@ -433,136 +431,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.setMessageContext(wsContext.getMessageContext());
         }
     }
-
-    /*
-     * Check the headers for MU fault and peek into the
-     * body and make a best guess as to whether the request
-     * is one-way or not. Assume request-response
-     * if it cannot be determined.
-     *
-     *
-    private boolean checkHeadersPeekBody(MessageInfo mi, HandlerContext context)
-            throws SOAPException {
-
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-        SOAPMessage message = context.getSOAPMessage();
-        SOAPHeader header = message.getSOAPHeader();
-        if (header != null) {
-            //TODO remove, we dont want enc/dec to have any state
-            //rtCtxt.setMethodAndMEP(null, context.getMessageInfo());
-            checkMustUnderstandHeaders(mi, context, header);
-        }
-
-        // peek into body if MU fault was not thrown
-        try {
-            Node node = message.getSOAPBody().getFirstChild();
-
-            // ignore whitespace
-            while (node.getNodeType() == Node.TEXT_NODE) {
-                node = node.getNextSibling();
-            }
-
-            QName operationName = null;
-            if (node != null) {     // To take care of <Body/>
-                operationName = new QName(node.getNamespaceURI(),
-                        node.getLocalName());
-            }
-            MessageInfo info = context.getMessageInfo();
-            rtCtxt.setMethodAndMEP(operationName, info);
-            return isOneway(info);
-        } catch (Throwable t) {
-            // assume cannot be read if there is an error
-            return false;
-        }
-
-    }
-     */
-
-    /*
-     * Try to create as few objects as possible, thus carry
-     * around null sets when possible and check if MU headers
-     * are found. Also assume handler chain caller is null
-     * unless one is found.
-     *
-    private void checkMustUnderstandHeaders(MessageInfo mi, HandlerContext context,
-        SOAPHeader header) throws SOAPException {
-
-        // this is "finer" level
-        logger.entering("com.sun.xml.ws.server.SOAPMessageDispatcher",
-            "checkMustUnderstandHeaders");
-
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
-
-        // start with just the endpoint roles
-        Set<String> roles = new HashSet<String>();
-        roles.add("http://schemas.xmlsoap.org/soap/actor/next");
-        roles.add("");
-        HandlerChainCaller hcCaller = (HandlerChainCaller)
-            context.getMessageInfo().getMetaData(
-                HandlerChainCaller.HANDLER_CHAIN_CALLER);
-        if (hcCaller != null) {
-            roles.addAll(hcCaller.getRoles());
-        }
-
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("roles:");
-            for (String r : roles) {
-                logger.finest("\t\"" + r + "\"");
-            }
-        }
-
-        // keep set=null if there are no understood headers
-        Set<QName> understoodHeaders = null;
-        SOAPRuntimeModel model = (SOAPRuntimeModel)rtCtxt.getModel();
-        if (model != null && model.getKnownHeaders() != null) {
-            understoodHeaders =
-                new HashSet<QName>(((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders());
-        }
-        if (understoodHeaders == null) {
-            if (hcCaller != null) {
-                understoodHeaders = hcCaller.getUnderstoodHeaders();
-            }
-        } else {
-            if (hcCaller != null) {
-                understoodHeaders.addAll(hcCaller.getUnderstoodHeaders());
-            }
-        }
-
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("understood headers:");
-            if (understoodHeaders == null || understoodHeaders.isEmpty()) {
-                logger.finest("\tnone");
-            } else {
-                for (QName nameX : understoodHeaders) {
-                    logger.finest("\t" + nameX.toString());
-                }
-            }
-        }
-
-        // check MU headers for each role
-        for (String role: roles) {
-            logger.finest("checking role: " + role);
-            Iterator<SOAPHeaderElement> iter =
-                header.examineMustUnderstandHeaderElements(role);
-            logger.finest("checking element targeted at role:");
-            while (iter.hasNext()) {
-                SOAPHeaderElement element = iter.next();
-                QName qName = new QName(element.getNamespaceURI(),
-                    element.getLocalName());
-                logger.finest("\t" + qName.toString());
-                if (understoodHeaders == null ||
-                    !understoodHeaders.contains(qName)) {
-                    logger.finest("*element not understood*");
-                    throw new SOAPFaultException(
-                        SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
-                        MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
-                        role,
-                        null);
-                }
-            }
-        }
-    }
-     */
     
     private SystemHandlerDelegate getSystemHandlerDelegate(MessageInfo mi) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
