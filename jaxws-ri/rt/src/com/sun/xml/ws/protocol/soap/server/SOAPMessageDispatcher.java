@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.19 2005-09-09 03:32:14 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.20 2005-09-09 20:25:31 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -100,29 +100,31 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // TODO: need to act if processRequest() retuns false
             }
             boolean peekOneWay = false;
-            try {
-                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-                SOAPDecoder decoder = eptf.getSOAPDecoder();
-                peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
-                        messageInfo, context, true);                
-                MessageContextUtil.setMethod(context.getMessageContext(),
-                        messageInfo.getMethod());
-            } catch (SOAPFaultException e) {
-                skipEndpoint = true;
-                RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
-                    messageInfo).getRuntimeEndpointInfo();
-                String id = ((SOAPBindingImpl)
-                    rei.getBinding()).getBindingId();
-                InternalMessage internalMessage = null;
-                if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
-                    internalMessage = SOAPRuntimeModel.createFaultInBody(
-                        e, null, null, null);
-                } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-                    internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
-                        e, null, null, null, null);
+            if (!skipEndpoint) {
+                try {
+                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPDecoder decoder = eptf.getSOAPDecoder();
+                    peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
+                            messageInfo, context, true);                
+                    MessageContextUtil.setMethod(context.getMessageContext(),
+                            messageInfo.getMethod());
+                } catch (SOAPFaultException e) {
+                    skipEndpoint = true;
+                    RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
+                        messageInfo).getRuntimeEndpointInfo();
+                    String id = ((SOAPBindingImpl)
+                        rei.getBinding()).getBindingId();
+                    InternalMessage internalMessage = null;
+                    if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+                        internalMessage = SOAPRuntimeModel.createFaultInBody(
+                            e, null, null, null);
+                    } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                        internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
+                            e, null, null, null, null);
+                    }
+                    context.setInternalMessage(internalMessage);
+                    context.setSOAPMessage(null);
                 }
-                context.setInternalMessage(internalMessage);
-                context.setSOAPMessage(null);
             }
 
             // Call inbound handlers. It also calls outbound handlers incase of
