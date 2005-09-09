@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.37 2005-09-08 00:44:12 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.38 2005-09-09 05:50:16 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -89,6 +89,7 @@ public class WSDLGenerator {
         OutputStream serviceOutputStream = null;
         OutputStream portStream = null;
         String fileName = model.getJAXBContext().mangleNameToClassName(model.getServiceQName().getLocalPart());
+//        System.out.println("concrete name: "+ fileName);
         Result result = wsdlResolver.getWSDLOutput(fileName+DOT_WSDL);
         if (result == null)
             return;
@@ -101,6 +102,7 @@ public class WSDLGenerator {
             String wsdlName = model.getJAXBContext().mangleNameToClassName(model.getPortTypeName().getLocalPart());
             if (wsdlName.equals(fileName))
                 wsdlName += "PortType";
+//            System.out.println("abstract name: "+ wsdlName);
             Holder<String> absWSDLName = new Holder<String>();
             absWSDLName.value = wsdlName+DOT_WSDL;
             result = wsdlResolver.getAbstractWSDLOutput(absWSDLName);
@@ -725,11 +727,14 @@ public class WSDLGenerator {
         Holder<String> fileNameHolder = new Holder<String>();
         fileNameHolder.value = schemaPrefix+suggestedFileName;
         result = wsdlResolver.getSchemaOutput(namespaceUri, fileNameHolder);
+//        System.out.println("schema file: "+fileNameHolder.value);
+//        System.out.println("result: "+result);
         String schemaLoc;
         if (result == null)
             schemaLoc = fileNameHolder.value;
         else
             schemaLoc = relativize(result.getSystemId(), wsdlLocation);
+//        System.out.println("schemaLoca: "+schemaLoc);
         _import.schemaLocation(schemaLoc);
         return result;
     }

@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceAP.java,v 1.9 2005-08-24 15:19:55 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.10 2005-09-09 05:50:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -20,6 +20,7 @@ import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
+import com.sun.mirror.util.SourcePosition;
 import com.sun.mirror.util.Types;
 import com.sun.tools.ws.processor.ProcessorNotificationListener;
 import com.sun.tools.ws.processor.ProcessorOptions;
@@ -181,12 +182,20 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public void onError(String key, Object[] args) throws ModelerException {
-        onError(new LocalizableMessage(getResourceBundleName(), key, args));
+        onError(null, key, args);
+    }
+    
+    public void onError(SourcePosition pos, String key, Object[] args) throws ModelerException {
+        onError(pos, new LocalizableMessage(getResourceBundleName(), key, args));
     }
 
     public void onError(Localizable msg) throws ModelerException {
+        onError(null, msg);
+    }
+
+    public void onError(SourcePosition pos, Localizable msg) throws ModelerException {
         if (messager != null) {
-            messager.printError(localizer.localize(msg));
+            messager.printError(pos, localizer.localize(msg));
         } else {
             throw new ModelerException(msg);
         }

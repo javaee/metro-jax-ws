@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.8 2005-09-06 22:48:45 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.9 2005-09-09 05:50:17 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,7 +49,7 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
  
     protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
         if (webService == null)
-            builder.onError("webserviceap.endpointinterface.has.no.webservice.annotation", 
+            builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
                     new Object[] {intf.getQualifiedName()});
         if (isLegalSEI(intf))
             return true;
@@ -97,11 +97,11 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
         boolean newBinding = false;
         if (soapBinding != null) {
             if (soapBinding.style().equals(Style.RPC)) {
-                builder.onError("webserviceap.rpc.soapbinding.not.allowed.on.method",
+                builder.onError(method.getPosition(), "webserviceap.rpc.soapbinding.not.allowed.on.method",
                         new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
             
-            newBinding = pushSOAPBinding(soapBinding, typeDecl);
+            newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
         }
         try {
             collectTypes(method, webMethod, seiContext.getReqOperationWrapper(method) != null);

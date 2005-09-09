@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.13 2005-09-07 00:51:03 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.14 2005-09-09 05:50:18 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -75,6 +75,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected TypeDeclaration typeDecl;
     protected Set<String> processedMethods;
     protected boolean pushedSOAPBinding = false;
+    protected static final String ANNOTATION_ELEMENT_ERROR = "webserviceap.endpointinteface.plus.element";
 
 
 
@@ -95,12 +96,12 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         typeDecl = d;
         String tmpEndpointInterfaceName = webService != null ? webService.endpointInterface() : null;
         if (tmpEndpointInterfaceName != null && tmpEndpointInterfaceName.length() > 0) {
-            builder.onError("webservicefactory.endpointinterface.on.interface",
+            builder.onError(d.getPosition(), "webservicefactory.endpointinterface.on.interface",
                 new Object[] {d.getQualifiedName(), tmpEndpointInterfaceName});
             return;
         }
         if (endpointInterfaceName != null && !endpointInterfaceName.equals(d.getQualifiedName())) {
-            builder.onError("webserviceap.endpointinterfaces.do.not.match", new Object[]
+            builder.onError(d.getPosition(), "webserviceap.endpointinterfaces.do.not.match", new Object[]
                 {endpointInterfaceName, d.getQualifiedName()});
         }
         endpointInterfaceName = d.getQualifiedName();
@@ -122,7 +123,16 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             serviceImplName = d.getQualifiedName();
         String endpointInterfaceName = webService != null ? webService.endpointInterface() : null;
         if (endpointInterfaceName != null && endpointInterfaceName.length() > 0) {
+            SourcePosition pos = pos = d.getPosition();
+            checkForInvalidAnnotation(d, SOAPBinding.class);
+            if (webService.name().length() > 0)
+                 annotationError(pos, ANNOTATION_ELEMENT_ERROR,"name");
+            if (webService.targetNamespace().length() > 0)
+                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "targetNamespace");
+            if (webService.wsdlLocation().length() > 0)
+                annotationError(pos, ANNOTATION_ELEMENT_ERROR, "wsdlLocation");
             endpointReferencesInterface = true;
+            verifyNoAnnotations(d);
             inspectEndpointInterface(endpointInterfaceName, d);
             serviceImplName = null;
             return;
@@ -133,6 +143,32 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         serviceImplName = null;
         postProcessWebService(webService, d);
         serviceImplName = null;
+    }
+    
+    protected void verifyNoAnnotations(ClassDeclaration d) {
+        if (endpointReferencesInterface) {
+            for (MethodDeclaration method : d.getMethods()) {
+                checkForInvalidAnnotation(method, WebMethod.class);
+                checkForInvalidAnnotation(method, Oneway.class);
+                checkForInvalidAnnotation(method, WebResult.class);
+                for (ParameterDeclaration param : method.getParameters()) {
+                    checkForInvalidAnnotation(param, WebParam.class);
+                }
+            }            
+        }
+    }
+    
+    protected void checkForInvalidAnnotation(Declaration d, Class annotationClass) {
+        Object annotation = d.getAnnotation(annotationClass);
+        if (annotation != null) {
+            SourcePosition pos = d.getPosition();
+            annotationError(pos, "webserviceap.endpointinteface.plus.annotation", 
+                    annotationClass.getName());                    
+        }
+    }
+    
+    protected void annotationError(SourcePosition pos, String key, String element) {
+        builder.onError(pos, key, new Object[] {element});        
     }
 
     protected void preProcessWebService(WebService webService, TypeDeclaration d) {
@@ -165,7 +201,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
         SOAPBinding soapBinding = d.getAnnotation(SOAPBinding.class);
         if (soapBinding != null) {
-            pushedSOAPBinding = pushSOAPBinding(soapBinding, d);
+            pushedSOAPBinding = pushSOAPBinding(soapBinding, d, d);
         }/* else {
             pushSOAPBinding(new MySOAPBinding(), d);
         }*/
@@ -181,20 +217,21 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return false;
     }
     
-    protected boolean pushSOAPBinding(SOAPBinding soapBinding, TypeDeclaration d) {
+    protected boolean pushSOAPBinding(SOAPBinding soapBinding, Declaration bindingDecl, 
+            TypeDeclaration classDecl) {
         boolean changed = false;
         if (!sameStyle(soapBinding.style(), soapStyle)) {
             changed = true;
             if (pushedSOAPBinding)
-                builder.onError("webserviceap.mixed.binding.style",
-                                 new Object[] {d.getQualifiedName()});
+                builder.onError(bindingDecl.getPosition(), "webserviceap.mixed.binding.style",
+                                 new Object[] {classDecl.getQualifiedName()});
         }
         if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
             soapStyle = SOAPStyle.RPC;
             wrapped = true;
             if (soapBinding.parameterStyle().equals(ParameterStyle.BARE)) {
-                builder.onError("webserviceap.rpc.literal.must.not.be.bare",
-                                 new Object[] {d.getQualifiedName()});
+                builder.onError(bindingDecl.getPosition(), "webserviceap.rpc.literal.must.not.be.bare",
+                                 new Object[] {classDecl.getQualifiedName()});
             }
 
         } else {
@@ -205,8 +242,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             }
         }
         if (soapBinding.use().equals(SOAPBinding.Use.ENCODED)) {
-           builder.onError("webserviceap.rpc.encoded.not.supported",
-                    new Object[] {d.getQualifiedName()});
+           builder.onError(bindingDecl.getPosition(), "webserviceap.rpc.encoded.not.supported",
+                    new Object[] {classDecl.getQualifiedName()});
         }
         if (changed || soapBindingStack.empty()) {
             soapBindingStack.push(soapBinding);

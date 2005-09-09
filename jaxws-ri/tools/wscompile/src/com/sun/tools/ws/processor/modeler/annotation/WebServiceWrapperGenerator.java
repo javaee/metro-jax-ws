@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.20 2005-08-29 22:09:29 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.21 2005-09-09 05:50:18 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -142,7 +142,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 builder.onError("webserviceap.rpc.soapbinding.not.allowed.on.method",
                         new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
-            newBinding = pushSOAPBinding(soapBinding, typeDecl);
+            newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
         }
         try {
             if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {
@@ -392,12 +392,15 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 new QName(paramNamespace, paramName));
             if (holderType != null) {          
                 if (mode != null &&  mode.equals(WebParam.Mode.IN))
-                    builder.onError("webserviceap.holder.parameters.must.not.be.in.only", 
+                    builder.onError(param.getPosition(), "webserviceap.holder.parameters.must.not.be.in.only", 
                                 new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});
                 else if (mode == null || mode.equals(WebParam.Mode.INOUT)) {   
                     requestMembers.add(memInfo);
                 }
                 responseMembers.add(memInfo);
+            } else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
+                builder.onError(param.getPosition(), "webserviceap.non.in.parameters.must.be.holder", 
+                                new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});                
             } else {
                 requestMembers.add(memInfo);
             }
