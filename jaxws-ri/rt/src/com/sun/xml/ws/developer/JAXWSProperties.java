@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSProperties.java,v 1.1 2005-09-09 14:46:25 vivekp Exp $
+ * $Id: JAXWSProperties.java,v 1.2 2005-09-09 18:00:14 vivekp Exp $
  */
 
 /**
@@ -11,5 +11,5 @@ package com.sun.xml.ws.developer;
 public interface JAXWSProperties {
     // Content negotiation property: values "none", "pessimistic" and "optimistic"
     public static final String CONTENT_NEGOTIATION_PROPERTY = "com.sun.xml.ws.client.ContentNegotiation";
-    public static String MTOM_THRESHOLOD_VALUE =  "com.sun.xml.ws.common.MtomThresholdValue";
+    public static final String MTOM_THRESHOLOD_VALUE =  "com.sun.xml.ws.common.MtomThresholdValue";
 }
