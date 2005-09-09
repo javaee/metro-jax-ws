@@ -1,5 +1,5 @@
 /*
- * $Id: ContextMap.java,v 1.10 2005-08-30 21:47:46 kwalsh Exp $
+ * $Id: ContextMap.java,v 1.11 2005-09-09 07:21:04 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -101,6 +101,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
         // Content negotiation property for FI -- "none", "pessimistic", "optimistic"
         temp.add(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
+        temp.add(BindingProviderProperties.MTOM_THRESHOLOD_VALUE);
         _knownProperties = new ArrayList(temp);
     }
 

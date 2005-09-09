@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.24 2005-08-26 23:40:07 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.25 2005-09-09 07:21:06 vivekp Exp $
  */
 
 /*
@@ -63,6 +63,8 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
+import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.handler.HandlerContext;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 
@@ -497,6 +499,18 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 return;
             JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
             am.setAttachments(im.getAttachments());
+            am.setHandlerContaxt(((RuntimeContext)rtc).getHandlerContext());
+
+            HandlerContext hc = ((RuntimeContext)rtc).getHandlerContext();
+            Object mtomThreshold = null;
+            if(hc == null){
+                //to be removed when client guarantees handlerContext
+                mtomThreshold = mi.getMetaData(JAXWSProperties.MTOM_THRESHOLOD_VALUE);
+            }else{
+                mtomThreshold = hc.getMessageContext().get(JAXWSProperties.MTOM_THRESHOLOD_VALUE);
+            }
+            if(mtomThreshold != null)
+                am.setMtomThresholdValue((Integer)mtomThreshold);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.11 2005-08-25 19:03:30 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.12 2005-09-09 07:21:06 vivekp Exp $
  */
 
 /*
@@ -9,9 +9,12 @@
 package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.pept.ept.MessageInfo;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentMarshaller;
+import javax.xml.ws.handler.MessageContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.UUID;
+import java.util.HashMap;
 
 /**
  * @author WS Development Team
@@ -54,6 +58,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, data.getContentType()));
+            addToMessageContext("<"+cid+">", data);
             isXopped = true;
             cid = "cid:"+cid;
         }
@@ -89,7 +94,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
             return null;
 
         //TODO: With performance results we need to find out what length would need optimization
-        if(len < 1000)
+        if(len < mtomThresholdValue)
             return null;
 
         //this will not be needed if saaj exposes api that takes
@@ -98,21 +103,12 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", new ByteArray(data, offset, len), "application/octet-stream"));
+            addToMessageContext("<"+cid+">", new DataHandler(new ByteArrayDataSource(new ByteArrayInputStream(data, offset, len), "application/octet-stream")));
             isXopped = true;
             cid = "cid:"+cid;
         }
         return cid;
 
-    }
-
-    private byte[] getActualData(byte[] data, int offset, int len) {
-        if((offset == 0) && (len == data.length))
-            return data;
-        byte[] actualData = new byte[len];
-        for(int i = 0; i < len; i++){
-            actualData[i] = data[offset + i];
-        }
-        return actualData;
     }
 
     /*
@@ -126,6 +122,20 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
             cid = "cid:"+cid;
         }
         return cid;
+    }
+
+    private void addToMessageContext(String cid, DataHandler dh){
+        if(hc == null)
+            return;
+        Map<String, DataHandler> attMap=null;
+        Object obj = hc.getMessageContext().get(MessageContext.MESSAGE_ATTACHMENTS);
+        if(obj == null){
+            attMap = new HashMap<String, DataHandler>();
+            hc.getMessageContext().put(MessageContext.MESSAGE_ATTACHMENTS, attMap);
+        }else{
+            attMap = (Map<String, DataHandler>)obj;
+        }
+        attMap.put(cid, dh);
     }
 
     /**
@@ -165,6 +175,10 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         isXopped = false;
     }
 
+    public void setHandlerContaxt(HandlerContext hc){
+        this.hc = hc;
+    }
+
     /**
      *
      * @return true if Xopped, false otherwise
@@ -173,8 +187,15 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         return isXopped;
     }
 
+    public void setMtomThresholdValue(Integer mtomThresholdValue) {
+        if((mtomThresholdValue != null) && (mtomThresholdValue >=0))
+            this.mtomThresholdValue = mtomThresholdValue;
+    }
+
     private boolean isXOP;
     private boolean isXopped;
     private Map<String, AttachmentBlock> attachments;
+    private HandlerContext hc;
+    private int mtomThresholdValue = 1000;
 
 }

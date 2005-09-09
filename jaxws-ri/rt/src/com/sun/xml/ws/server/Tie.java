@@ -1,5 +1,5 @@
 /**
- * $Id: Tie.java,v 1.8 2005-08-09 02:01:38 jitu Exp $
+ * $Id: Tie.java,v 1.9 2005-09-09 07:21:05 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -17,6 +17,8 @@ import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.developer.JAXWSProperties;
 
 /**
  * Entry point for all server requests.
@@ -63,7 +65,7 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         // Set runtime context on MessageInfo
         MessageInfoUtil.setRuntimeContext(messageInfo, runtimeContext);
         messageInfo.setConnection(connection);
-        
+
         // Select EPTFactory based on binding, and transport
         EPTFactory eptFactory = EPTFactoryFactoryBase.getEPTFactory(messageInfo);
         messageInfo.setEPTFactory(eptFactory);
@@ -84,6 +86,8 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         ctxt.setScope(MessageContext.WSDL_SERVICE, Scope.APPLICATION);
         ctxt.put(MessageContext.WSDL_PORT, endpoint.getPortName());          
         ctxt.setScope(MessageContext.WSDL_PORT, Scope.APPLICATION);
+        ctxt.setScope(JAXWSProperties.MTOM_THRESHOLOD_VALUE, Scope.APPLICATION);
+        ctxt.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, endpoint.getMtomThreshold());
     }
     
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: BindingProviderProperties.java,v 1.8 2005-08-22 18:06:43 spericas Exp $
+ * $Id: BindingProviderProperties.java,v 1.9 2005-09-09 07:21:04 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -7,7 +7,9 @@
 
 package com.sun.xml.ws.client;
 
-public interface BindingProviderProperties {
+import com.sun.xml.ws.developer.JAXWSProperties;
+
+public interface BindingProviderProperties extends JAXWSProperties{
 
     //legacy properties
     public static final String SERVICEIMPL_NAME = "serviceImplementationName";
@@ -98,8 +100,8 @@ public interface BindingProviderProperties {
 
     public static final String BINDING_ID_PROPERTY = "com.sun.xml.ws.binding";
 
-    // Content negotiation property: values "none", "pessimistic" and "optimistic"
-    public static final String CONTENT_NEGOTIATION_PROPERTY =
-        "com.sun.xml.ws.client.ContentNegotiation";
+//    // Content negotiation property: values "none", "pessimistic" and "optimistic"
+//    public static final String CONTENT_NEGOTIATION_PROPERTY =
+//        "com.sun.xml.ws.client.ContentNegotiation";
 
 }

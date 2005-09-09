@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFInvocationHandler.java,v 1.16 2005-09-02 18:01:33 kwalsh Exp $
+ * $Id: EndpointIFInvocationHandler.java,v 1.17 2005-09-09 07:21:04 vivekp Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -145,6 +145,10 @@ public class EndpointIFInvocationHandler
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, requestContext);
 
+        //set mtom threshold value to
+        Object mtomThreshold = requestContext.get(MTOM_THRESHOLOD_VALUE);
+        messageStruct.setMetaData(MTOM_THRESHOLOD_VALUE, mtomThreshold);
+        
         messageStruct.setMEP(mmep);
 
         // Initialize content negotiation property

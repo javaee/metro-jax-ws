@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.10 2005-09-07 19:54:30 bbissett Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.11 2005-09-09 07:21:05 vivekp Exp $
  */
 
 /*
@@ -111,7 +111,13 @@ public class RuntimeEndpointInfoParser {
 
                 //get enable-mtom attribute value
                 String mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);
-                
+
+                String mtomThreshold = getAttribute(attrs, ATTR_MTOM_THRESHOLD_VALUE);
+                if(mtomThreshold != null){
+                    int mtomThresholdValue = Integer.valueOf(mtomThreshold);
+                    rei.setMtomThreshold(mtomThresholdValue);
+                }
+
                 if(rei.getBinding() instanceof SOAPBindingImpl){
                     SOAPBinding sb = (SOAPBinding)rei.getBinding();
                     sb.setMTOMEnabled((mtom != null)?Boolean.valueOf(mtom):false);
@@ -317,6 +323,7 @@ public class RuntimeEndpointInfoParser {
     public static final String ATTR_PORT = "port";
     public static final String ATTR_URL_PATTERN = "url-pattern";
     public static final String ATTR_ENABLE_MTOM = "enable-mtom";
+    public static final String ATTR_MTOM_THRESHOLD_VALUE = "mtom-threshold-value";
     public static final String ATTR_BINDING = "binding";
 
     public static final String ATTRVALUE_VERSION_1_0 = "2.0";

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.55 2005-09-08 04:45:35 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.56 2005-09-09 07:21:05 vivekp Exp $
  */
 
 /*
@@ -87,6 +87,7 @@ public class RuntimeEndpointInfo extends Endpoint
     private EntityResolver wsdlResolver;
     private QName portTypeName;
     private Map<String, Object> properties;
+    private Integer mtomThreshold;
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
     private static final Localizer localizer = new Localizer();
@@ -736,21 +737,33 @@ public class RuntimeEndpointInfo extends Endpoint
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
-    
+
+    /**
+     * @return returns null if no motm-threshold-value is specified in the descriptor
+     */ 
+
+    public Integer getMtomThreshold() {
+        return mtomThreshold;
+    }
+
+    public void setMtomThreshold(int mtomThreshold) {
+        this.mtomThreshold = mtomThreshold;
+    }
+
     // Fill DocInfo with document info : WSDL or Schema, targetNS etc.
     public static void fillDocInfo(RuntimeEndpointInfo endpointInfo)
     throws XMLStreamException {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
-                RuntimeWSDLParser.fillDocInfo(entry.getValue(), 
+                RuntimeWSDLParser.fillDocInfo(entry.getValue(),
                     endpointInfo.getServiceName(),
                     endpointInfo.getPortTypeName());
             }
         }
     }
-    
-    public static void publishWSDLDocs(RuntimeEndpointInfo endpointInfo) {     
+
+    public static void publishWSDLDocs(RuntimeEndpointInfo endpointInfo) {
         // Set queryString for the documents
         Map<String, DocInfo> docs = endpointInfo.getDocMetadata();
 		if (docs == null) {
@@ -765,10 +778,10 @@ public class RuntimeEndpointInfo extends Endpoint
             String query = docInfo.getQueryString();
             if (query == null && docType != null) {
                 switch(docType) {
-                    case WSDL :                   
+                    case WSDL :
                         wsdlSystemIds.add(entry.getKey());
                         break;
-                    case SCHEMA : 
+                    case SCHEMA :
                         schemaSystemIds.add(entry.getKey());
                         break;
                     case OTHER :
@@ -776,7 +789,7 @@ public class RuntimeEndpointInfo extends Endpoint
                 }
             }
         }
-        
+
         Collections.sort(wsdlSystemIds);
         int wsdlnum = 1;
         for(String wsdlSystemId : wsdlSystemIds) {
