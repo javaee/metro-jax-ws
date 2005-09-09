@@ -1,5 +1,5 @@
 /**
- * $Id: MessageContext.java,v 1.2 2005-07-13 00:45:32 jitu Exp $
+ * $Id: MessageContext.java,v 1.3 2005-09-09 02:41:31 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -11,10 +11,4 @@ import java.lang.reflect.Method;
 /**
  */
 public interface MessageContext extends javax.xml.ws.handler.MessageContext {
-    /**
-     * Returns the invocation method.
-     *
-     * @return invocation method, null if the model doesn't know
-     */
-    public Method getMethod();
 }
