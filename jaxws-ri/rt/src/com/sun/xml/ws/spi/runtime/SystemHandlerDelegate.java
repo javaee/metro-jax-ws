@@ -1,5 +1,5 @@
 /**
- * $Id: SystemHandlerDelegate.java,v 1.7 2005-08-29 19:37:32 kohlert Exp $
+ * $Id: SystemHandlerDelegate.java,v 1.8 2005-09-09 20:55:06 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -68,7 +68,7 @@ public interface SystemHandlerDelegate {
     * the caller will return a HTTP layer response code reporting that an internal
     * error occured.
     */
-    public boolean processRequest(MessageContext messageContext)throws RuntimeException;
+    public boolean processRequest(MessageContext messageContext)throws Exception;
 
    /**
     * The processResponse method is invoked with an object that
@@ -86,7 +86,7 @@ public interface SystemHandlerDelegate {
     * in which case the caller is expected to return an HTTP layer
     * response code reporting that an internal error occured.
     */
-    public void processResponse(MessageContext messageContext) throws RuntimeException;
+    public void processResponse(MessageContext messageContext) throws Exception;
     
     /**
      * Called before request handlers are invoked
