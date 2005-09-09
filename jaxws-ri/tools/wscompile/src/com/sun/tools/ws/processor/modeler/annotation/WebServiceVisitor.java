@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.14 2005-09-09 05:50:18 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.15 2005-09-09 15:30:36 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -127,8 +127,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             checkForInvalidAnnotation(d, SOAPBinding.class);
             if (webService.name().length() > 0)
                  annotationError(pos, ANNOTATION_ELEMENT_ERROR,"name");
-            if (webService.targetNamespace().length() > 0)
-                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "targetNamespace");
+//            if (webService.targetNamespace().length() > 0)
+//                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "targetNamespace");
             if (webService.wsdlLocation().length() > 0)
                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "wsdlLocation");
             endpointReferencesInterface = true;
