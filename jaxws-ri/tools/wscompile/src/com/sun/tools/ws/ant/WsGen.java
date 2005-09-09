@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.8 2005-09-06 22:48:45 kohlert Exp $
+ * $Id: WsGen.java,v 1.9 2005-09-09 06:07:57 kohlert Exp $
  */
 
 /*
@@ -393,17 +393,18 @@ public class WsGen extends MatchingTask {
             if (protocol.length() > 0)
                 tmp += ":"+protocol;
             cmd.createArgument().setValue(tmp);
+
+            if (serviceName != null && serviceName.length() > 0) {
+                cmd.createArgument().setValue("-servicename");
+                cmd.createArgument().setValue(serviceName);
+            }
+
+            if (portName != null && portName.length() > 0) {
+                cmd.createArgument().setValue("-portname");
+                cmd.createArgument().setValue(portName);
+            }                
         }
         
-        if (serviceName != null) {
-            cmd.createArgument().setValue("-servicename");
-            cmd.createArgument().setValue(serviceName);
-        }
-
-        if (portName != null) {
-            cmd.createArgument().setValue("-portname");
-            cmd.createArgument().setValue(portName);
-        }        
         
         // nd option
         if (null != getNonClassDir() && !getNonClassDir().getName().equals("")) {
