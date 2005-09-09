@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerAnnotationProcessor.java,v 1.8 2005-09-07 19:54:31 bbissett Exp $
+ * $Id: HandlerAnnotationProcessor.java,v 1.9 2005-09-09 17:34:19 bbissett Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -174,7 +174,6 @@ public class HandlerAnnotationProcessor {
             while (reader.getName().equals(QNAME_HANDLER)) {
                 Handler handler = null;
                 Map<String, String> initParams = new HashMap<String, String>();
-                Set<QName> headers = new HashSet<QName>();
 
                 XMLStreamReaderUtil.nextContent(reader);
                 if (reader.getName().equals(QNAME_HANDLER_NAME)) {
@@ -235,13 +234,6 @@ public class HandlerAnnotationProcessor {
                 // finish handler info and add to chain
                 if (!initParams.isEmpty()) {
                     handler.init(initParams);
-                }
-                if (!headers.isEmpty()) {
-                    QName [] headerArray = new QName [headers.size()];
-                    int i = 0;
-                    for (QName header : headers) {
-                        headerArray[i++] = header;
-                    }
                 }
                 handlerChain.add(handler);
 
