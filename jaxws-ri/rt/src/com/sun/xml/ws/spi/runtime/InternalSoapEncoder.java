@@ -1,5 +1,5 @@
 /**
- * $Id: InternalSoapEncoder.java,v 1.2 2005-08-26 23:40:08 vivekp Exp $
+ * $Id: InternalSoapEncoder.java,v 1.3 2005-09-09 22:51:28 vivekp Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -18,7 +18,7 @@ public interface InternalSoapEncoder {
      *        this object from SOAPMessageContext.getMessageInfo()
      * @param out stream to write to
      */
-    public void write(Object obj, Object messageInfo, OutputStream out);
+    public void write(Object obj, Object messageInfo, OutputStream out, MtomCallback mtomCallback);
 
     /**
      * Writes an object to output stream
@@ -27,5 +27,5 @@ public interface InternalSoapEncoder {
      *        this object from SOAPMessageContext.getMessageInfo()
      * @param out stream to write to
      */
-    public void write(Object obj, Object messageInfo, XMLStreamWriter out);
+    public void write(Object obj, Object messageInfo, XMLStreamWriter out, MtomCallback mtomCallback);
 }

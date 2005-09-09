@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.12 2005-09-09 07:21:06 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.13 2005-09-09 22:51:31 vivekp Exp $
  */
 
 /*
@@ -10,6 +10,7 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.spi.runtime.MtomCallback;
 import com.sun.pept.ept.MessageInfo;
 
 import javax.activation.DataHandler;
@@ -59,6 +60,8 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         if(cid != null){
             attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, data.getContentType()));
             addToMessageContext("<"+cid+">", data);
+            if(mtomCallback != null)
+                mtomCallback.addedMtomAttachment("<"+cid+">", data, elementNamespace, elementName);
             isXopped = true;
             cid = "cid:"+cid;
         }
@@ -103,7 +106,10 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", new ByteArray(data, offset, len), "application/octet-stream"));
-            addToMessageContext("<"+cid+">", new DataHandler(new ByteArrayDataSource(new ByteArrayInputStream(data, offset, len), "application/octet-stream")));
+            DataHandler dh = new DataHandler(new ByteArrayDataSource(new ByteArrayInputStream(data, offset, len), "application/octet-stream"));
+            addToMessageContext("<"+cid+">", dh);
+            if(mtomCallback != null)
+                mtomCallback.addedMtomAttachment("<"+cid+">", dh, elementNamespace, elementLocalName);
             isXopped = true;
             cid = "cid:"+cid;
         }
@@ -192,6 +198,11 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
             this.mtomThresholdValue = mtomThresholdValue;
     }
 
+    public void setMtomCallback(MtomCallback mtomCallback){
+        this.mtomCallback = mtomCallback;
+    }
+
+    private MtomCallback mtomCallback;
     private boolean isXOP;
     private boolean isXopped;
     private Map<String, AttachmentBlock> attachments;

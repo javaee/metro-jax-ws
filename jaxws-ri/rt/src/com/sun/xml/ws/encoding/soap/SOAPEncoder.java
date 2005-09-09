@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.25 2005-09-09 07:21:06 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.26 2005-09-09 22:51:29 vivekp Exp $
  */
 
 /*
@@ -63,6 +63,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
+import com.sun.xml.ws.spi.runtime.MtomCallback;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.handler.HandlerContext;
 
@@ -568,10 +569,18 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
 
-    public void write(Object value, Object obj, OutputStream writer){
+    public void write(Object value, Object obj, OutputStream writer, MtomCallback mtomCallback){
         if(!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", new Object[]{obj.getClass().getName()});
         MessageInfo mi = (MessageInfo)obj;
+        Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if(rtc != null){
+            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
+            if(bc == null)
+                return;
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            am.setMtomCallback(mtomCallback);
+        }
         if (value instanceof JAXBBridgeInfo) {
             writeJAXBBridgeInfo((JAXBBridgeInfo)value, mi, writer);
         } else if (value instanceof RpcLitPayload) {
@@ -586,10 +595,18 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             throw new SerializationException("unknown.object", new Object[]{value.getClass().getName()});
         }
     }
-    public void write(Object value, Object obj, XMLStreamWriter writer){
+    public void write(Object value, Object obj, XMLStreamWriter writer, MtomCallback mtomCallback){
         if(!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", new Object[]{obj.getClass().getName()});
         MessageInfo mi = (MessageInfo)obj;
+        Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if(rtc != null){
+            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
+            if(bc == null)
+                return;
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            am.setMtomCallback(mtomCallback);
+        }
         if (value instanceof JAXBBridgeInfo) {
             writeJAXBBridgeInfo((JAXBBridgeInfo)value, mi, writer);
         } else if (value instanceof RpcLitPayload) {
