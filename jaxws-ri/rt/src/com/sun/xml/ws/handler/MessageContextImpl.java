@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContextImpl.java,v 1.4 2005-09-09 02:41:29 jitu Exp $
+ * $Id: MessageContextImpl.java,v 1.5 2005-09-09 02:46:54 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -21,9 +21,8 @@ import javax.xml.ws.handler.MessageContext.Scope;
  */
 public class MessageContextImpl extends HashMap<String, Object>
     implements MessageContext {
-    
-    private Method method;
-    
+
+    // implementation specific properties
     private Map<String, Object> internalMap = new HashMap<String, Object>();
     
     private HashMap<String, Scope> propertyScopes =
@@ -34,6 +33,7 @@ public class MessageContextImpl extends HashMap<String, Object>
         propertyScopes.put(name, scope);
     }
     
+    // No public access
     Map<String, Object> getInternalMap() {
         return internalMap;
     }
@@ -49,11 +49,4 @@ public class MessageContextImpl extends HashMap<String, Object>
         return scope;
     }
     
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
-    }
 }
