@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.15 2005-09-09 15:30:36 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.16 2005-09-09 17:29:47 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -94,16 +94,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (builder.checkAndSetProcessed(d))
             return;
         typeDecl = d;
-        String tmpEndpointInterfaceName = webService != null ? webService.endpointInterface() : null;
-        if (tmpEndpointInterfaceName != null && tmpEndpointInterfaceName.length() > 0) {
-            builder.onError(d.getPosition(), "webservicefactory.endpointinterface.on.interface",
-                new Object[] {d.getQualifiedName(), tmpEndpointInterfaceName});
-            return;
-        }
         if (endpointInterfaceName != null && !endpointInterfaceName.equals(d.getQualifiedName())) {
             builder.onError(d.getPosition(), "webserviceap.endpointinterfaces.do.not.match", new Object[]
                 {endpointInterfaceName, d.getQualifiedName()});
         }
+        verifySEIAnnotations(webService, d);
         endpointInterfaceName = d.getQualifiedName();
         processingSEI = true;
         preProcessWebService(webService, d);
@@ -124,7 +119,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         String endpointInterfaceName = webService != null ? webService.endpointInterface() : null;
         if (endpointInterfaceName != null && endpointInterfaceName.length() > 0) {
             SourcePosition pos = pos = d.getPosition();
-            checkForInvalidAnnotation(d, SOAPBinding.class);
+            checkForInvalidImplAnnotation(d, SOAPBinding.class);
             if (webService.name().length() > 0)
                  annotationError(pos, ANNOTATION_ELEMENT_ERROR,"name");
 //            if (webService.targetNamespace().length() > 0)
@@ -132,7 +127,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             if (webService.wsdlLocation().length() > 0)
                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "wsdlLocation");
             endpointReferencesInterface = true;
-            verifyNoAnnotations(d);
+            verifyImplAnnotations(d);
             inspectEndpointInterface(endpointInterfaceName, d);
             serviceImplName = null;
             return;
@@ -145,20 +140,42 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         serviceImplName = null;
     }
     
-    protected void verifyNoAnnotations(ClassDeclaration d) {
-        if (endpointReferencesInterface) {
-            for (MethodDeclaration method : d.getMethods()) {
-                checkForInvalidAnnotation(method, WebMethod.class);
-                checkForInvalidAnnotation(method, Oneway.class);
-                checkForInvalidAnnotation(method, WebResult.class);
-                for (ParameterDeclaration param : method.getParameters()) {
-                    checkForInvalidAnnotation(param, WebParam.class);
-                }
-            }            
+    protected void verifySEIAnnotations(WebService webService, InterfaceDeclaration d) {
+        if (webService.endpointInterface().length() > 0) {
+            builder.onError(d.getPosition(), "webservicefactory.endpointinterface.on.interface",
+                new Object[] {d.getQualifiedName(), webService.endpointInterface()});
+        }
+        if (webService.serviceName().length() > 0) {
+            builder.onError(d.getPosition(), "webserviceap.invalid.sei.annotation.element",
+                new Object[] {"serviceName", d.getQualifiedName()});
+        }
+        if (webService.portName().length() > 0) {
+            builder.onError(d.getPosition(), "webserviceap.invalid.sei.annotation.element",
+                new Object[] {"portName", d.getQualifiedName()});
+        }
+    }    
+    
+    protected void verifyImplAnnotations(ClassDeclaration d) {
+        for (MethodDeclaration method : d.getMethods()) {
+            checkForInvalidImplAnnotation(method, WebMethod.class);
+            checkForInvalidImplAnnotation(method, Oneway.class);
+            checkForInvalidImplAnnotation(method, WebResult.class);
+            for (ParameterDeclaration param : method.getParameters()) {
+                checkForInvalidImplAnnotation(param, WebParam.class);
+            }
+        }            
+    }
+    
+    protected void checkForInvalidSEIAnnotation(InterfaceDeclaration d, Class annotationClass) {
+        Object annotation = d.getAnnotation(annotationClass);
+        if (annotation != null) {
+            SourcePosition pos = d.getPosition();
+            annotationError(pos, "webserviceap.invalid.sei.annotation", 
+                    new Object[] {annotationClass.getName(), d.getQualifiedName()});                    
         }
     }
     
-    protected void checkForInvalidAnnotation(Declaration d, Class annotationClass) {
+    protected void checkForInvalidImplAnnotation(Declaration d, Class annotationClass) {
         Object annotation = d.getAnnotation(annotationClass);
         if (annotation != null) {
             SourcePosition pos = d.getPosition();
@@ -168,9 +185,14 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
     
     protected void annotationError(SourcePosition pos, String key, String element) {
-        builder.onError(pos, key, new Object[] {element});        
+        annotationError(pos, key, new Object[] {element});        
     }
 
+    protected void annotationError(SourcePosition pos, String key, Object[] args) {
+        builder.onError(pos, key, args);        
+    }
+    
+    
     protected void preProcessWebService(WebService webService, TypeDeclaration d) {
         seiContext = context.getSEIContext(d);
         String targetNamespace = null;
