@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.38 2005-09-09 05:50:16 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.39 2005-09-09 06:52:02 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -105,7 +105,11 @@ public class WSDLGenerator {
 //            System.out.println("abstract name: "+ wsdlName);
             Holder<String> absWSDLName = new Holder<String>();
             absWSDLName.value = wsdlName+DOT_WSDL;
+//            System.out.println("absWSDLName.value: "+ absWSDLName.value);
             result = wsdlResolver.getAbstractWSDLOutput(absWSDLName);
+//            System.out.println("absWSDLName.value: "+ absWSDLName.value);
+//             schemaPrefix = model.getJAXBContext().mangleNameToClassName(portWSDLID)+"_";
+          
             if (result != null) {
                 portWSDLID = result.getSystemId();
                 if (portWSDLID.equals(wsdlLocation)) {
@@ -116,10 +120,18 @@ public class WSDLGenerator {
             } else {
                 portWSDLID = absWSDLName.value;
             }
-            schemaPrefix = model.getJAXBContext().mangleNameToClassName(portWSDLID)+"_";
+            schemaPrefix = new java.io.File(portWSDLID).getName();
+            int idx = schemaPrefix.lastIndexOf('.');
+            if (idx > 0)
+                schemaPrefix = schemaPrefix.substring(0, idx);
+            schemaPrefix = model.getJAXBContext().mangleNameToClassName(schemaPrefix)+"_";
+//            System.out.println("portWSDLID: "+ portWSDLID);
+//            schemaPrefix = model.getJAXBContext().mangleNameToClassName(portWSDLID)+"_";
+//            System.out.println("schemaPrefix: "+ schemaPrefix);
         }    
         generateDocument(serviceOutputStream, portStream);
     }
+    
 
     private OutputStream getOutputStream(Result result) {
         OutputStream stream = null;
