@@ -1,5 +1,5 @@
 /**
- * $Id: ServiceContextBuilder.java,v 1.24 2005-09-07 19:54:28 bbissett Exp $
+ * $Id: ServiceContextBuilder.java,v 1.25 2005-09-09 17:13:46 kwalsh Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -46,20 +46,18 @@ public abstract class ServiceContextBuilder {
             serviceCAnnotations = getSCAnnotations(service);
             if ((serviceCAnnotations == null) && (service != javax.xml.ws.Service.class))
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
-            serviceContext.setSCAnnotations(serviceCAnnotations);
+            else serviceContext.setSCAnnotations(serviceCAnnotations);
 
-            if (wsdlLocation == null) {
+            if ((wsdlLocation == null) && (serviceCAnnotations != null)) {
                 try {
-
-                    JAXWSUtils.getFileOrURLName(serviceCAnnotations.wsdlLocation);
-
                     wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceCAnnotations.wsdlLocation));
                 } catch (MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
             }
 
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
+            if (wsdlLocation != null)
+                serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
 
             if (serviceCAnnotations != null) {
                 serviceContext.setServiceClass(service);
@@ -72,16 +70,19 @@ public abstract class ServiceContextBuilder {
     }
 
     public static void completeServiceContext(ServiceContext serviceContext, Class portInterface) {
-        if (serviceContext.getWsdlContext() == null) {
+        if ((serviceContext.getWsdlContext() == null) && (portInterface != null)) {
             URL wsdlLocation = null;
             try {
-                wsdlLocation = getWSDLLocation(portInterface);
+                wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(getWSDLLocation(portInterface)));
             } catch (MalformedURLException e) {
-                new WebServiceException(e);
+                throw new WebServiceException(e);
             }
 
             serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, serviceContext.getEntityResolver()));
         }
+
+        if ((portInterface != null) && (serviceContext.getEndpointIFContext().isEmpty()))
+            processAnnotations(serviceContext, portInterface);
     }
 
     private static QName getServiceName(Class serviceInterface) {
@@ -129,8 +130,19 @@ public abstract class ServiceContextBuilder {
             }
 
             //toDo:
-            QName serviceName = getServiceName(serviceContext.getServiceClass());
-            QName portName = getPortName(portInterface, serviceContext.getServiceClass());
+             QName serviceName = serviceContext.getServiceName();
+             QName portName = eifc.getPortName();
+            if (serviceContext.getServiceClass() != null) {
+                if (serviceName == null)
+                    serviceName = getServiceName(serviceContext.getServiceClass());
+                if (portName == null)
+                    portName = getPortName(portInterface, serviceContext.getServiceClass());
+            }
+
+            if (portName == null){
+                portName = serviceContext.getWsdlContext().getPortName();
+            }
+
             //todo:use SCAnnotations and put in map
             RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName,
                 serviceContext.getWsdlContext().getBindingID().toString());
@@ -204,11 +216,11 @@ public abstract class ServiceContextBuilder {
      * @return the URL of the location of the WSDL for the sei, or null if none was found.
      */
     //this will change
-    private static URL getWSDLLocation(Class<?> sei) throws MalformedURLException {
+    private static String getWSDLLocation(Class<?> sei) throws MalformedURLException {
         WebService ws = sei.getAnnotation(WebService.class);
         if (ws == null)
             return null;
-        return new URL(ws.wsdlLocation());
+        return ws.wsdlLocation();
     }
 
     //this will change

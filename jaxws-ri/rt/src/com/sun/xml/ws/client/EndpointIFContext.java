@@ -58,6 +58,10 @@ public class EndpointIFContext {
     }
 
     public QName getPortName() {
+        if (portName == null){
+        if ((runtimeContext != null) && (runtimeContext.getModel() != null))
+            portName = runtimeContext.getModel().getPortName();
+        } 
         return portName;
     }
 

@@ -69,7 +69,7 @@ import java.util.concurrent.ThreadFactory;
  * registering it with the service.
  *
  * @author WS Development Team
- * @see javax.xml.ws.handler.HandlerRegistry
+ *
  * @see java.util.concurrent.Executor
  * @since JAX-WS 2.0
  */
@@ -141,7 +141,7 @@ public class WSServiceDelegate extends ServiceDelegate {
         {
             return (Executor) executor;
         } else
-            executor = Executors.newFixedThreadPool(5, new DaemonThreadFactory());
+            executor = Executors.newFixedThreadPool(3, new DaemonThreadFactory());
         return executor;
     }
 
@@ -254,7 +254,9 @@ public class WSServiceDelegate extends ServiceDelegate {
     private Object createEndpointIFBaseProxy(QName portName, Class portInterface) throws WebServiceException {
 
         processServiceContext(portName, portInterface);
-
+        if (portName == null){
+            portName = serviceContext.getEndpointIFContext(portInterface.getName()).getPortName();
+        }
         if (!serviceContext.getWsdlContext().contains(getServiceName(), portName)) {
             throw new WebServiceException("Port " + portName + "is not found in service " + serviceContext.getServiceName());
         }
