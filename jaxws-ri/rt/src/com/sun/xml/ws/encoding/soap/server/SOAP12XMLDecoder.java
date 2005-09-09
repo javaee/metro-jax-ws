@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.4 2005-08-29 19:37:30 kohlert Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.5 2005-09-09 18:35:11 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -26,12 +26,14 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.util.SOAPUtil;
 
+/**
+ * @author WS Development Team
+ */
 public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 
-    private static Set<String> requiredRoles;
+    private static final Set<String> requiredRoles = new HashSet<String>();
 
     public SOAP12XMLDecoder() {
-        requiredRoles = new HashSet<String>();
         requiredRoles.add("http://www.w3.org/2003/05/soap-envelope/role/next");
         requiredRoles.add("http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver");
     }

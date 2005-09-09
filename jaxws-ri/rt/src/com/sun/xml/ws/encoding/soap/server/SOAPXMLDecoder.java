@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLDecoder.java,v 1.3 2005-07-26 23:43:45 vivekp Exp $
+ * $Id: SOAPXMLDecoder.java,v 1.4 2005-09-09 18:35:11 bbissett Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -36,10 +36,9 @@ import com.sun.xml.ws.server.*;
  */
 public class SOAPXMLDecoder extends SOAPDecoder {
     
-    private static Set<String> requiredRoles;
+    private static final Set<String> requiredRoles = new HashSet<String>();
     
     public SOAPXMLDecoder() {
-        requiredRoles = new HashSet<String>();
         requiredRoles.add("http://schemas.xmlsoap.org/soap/actor/next");
         requiredRoles.add("");
     }
