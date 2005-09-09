@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.13 2005-09-03 02:10:34 jitu Exp $
+ * $Id: WSServletContextListener.java,v 1.14 2005-09-09 17:51:21 jitu Exp $
  */
 
 /*
@@ -194,9 +194,9 @@ public class WSServletContextListener
                 endpoint.generateWSDL();
             } else {
                 endpoint.setMetadata(copyDocs(docs));
-				if (endpoint.getWsdLUrl() != null) {
+				if (endpoint.getWsdlUrl() != null) {
 					docs = endpoint.getDocMetadata();
-					DocInfo wsdlDoc = docs.get(endpoint.getWsdLUrl().toString());
+					DocInfo wsdlDoc = docs.get(endpoint.getWsdlUrl().toString());
 					if (wsdlDoc != null) {
 						wsdlDoc.setQueryString("wsdl");
 					}

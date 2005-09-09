@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.56 2005-09-09 07:21:05 vivekp Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.57 2005-09-09 17:51:20 jitu Exp $
  */
 
 /*
@@ -128,7 +128,7 @@ public class RuntimeEndpointInfo extends Endpoint
         return wsdlResolver;
     }
     
-    public URL getWsdLUrl() {
+    public URL getWsdlUrl() {
         return wsdlUrl;
     }
 
@@ -168,26 +168,26 @@ public class RuntimeEndpointInfo extends Endpoint
             runtimeModel = rap.buildRuntimeModel();
         }else {
             try {
-                WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(getWsdLUrl(), getWsdlResolver());
+                WSDLDocument wsdlDoc = RuntimeWSDLParser.parse(getWsdlUrl(), getWsdlResolver());
                 com.sun.xml.ws.wsdl.parser.Binding wsdlBinding = null;
                 if(serviceName == null)
                     serviceName = RuntimeModeler.getServiceName(getImplementorClass());
                 if(getPortName() != null){
                     wsdlBinding = wsdlDoc.getBinding(getServiceName(), getPortName());
                     if(wsdlBinding == null)
-                        throw new ServerRtException("runtime.parser.wsdl.incorrectserviceport", new Object[]{serviceName, portName, getWsdLUrl()});
+                        throw new ServerRtException("runtime.parser.wsdl.incorrectserviceport", new Object[]{serviceName, portName, getWsdlUrl()});
                 }else{
                     Service service = wsdlDoc.getService(serviceName);
                     if(service == null)
-                        throw new ServerRtException("runtime.parser.wsdl.noservice", new Object[]{serviceName, getWsdLUrl()});
+                        throw new ServerRtException("runtime.parser.wsdl.noservice", new Object[]{serviceName, getWsdlUrl()});
 
                     String bindingId = ((BindingImpl)binding).getBindingId();
                     List<com.sun.xml.ws.wsdl.parser.Binding> bindings = wsdlDoc.getBindings(service, bindingId);
                     if(bindings.size() == 0)
-                        throw new ServerRtException("runtime.parser.wsdl.nobinding", new Object[]{bindingId, serviceName, getWsdLUrl()});
+                        throw new ServerRtException("runtime.parser.wsdl.nobinding", new Object[]{bindingId, serviceName, getWsdlUrl()});
 
                     if(bindings.size() > 1)
-                        throw new ServerRtException("runtime.parser.wsdl.multiplebinding", new Object[]{bindingId, serviceName, getWsdLUrl()});
+                        throw new ServerRtException("runtime.parser.wsdl.multiplebinding", new Object[]{bindingId, serviceName, getWsdlUrl()});
                 }
                 //now we got the Binding so lets build the model
                 RuntimeModeler rap = new RuntimeModeler(getImplementorClass(), getImplementor(), getServiceName(), wsdlBinding);
@@ -196,12 +196,12 @@ public class RuntimeEndpointInfo extends Endpoint
                 }
                 runtimeModel = rap.buildRuntimeModel();
             } catch (IOException e) {
-                throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
+                throw new ServerRtException("runtime.parser.wsdl", getWsdlUrl().toString());
             } catch (XMLStreamException e) {
                 throw new ServerRtException("runtime.saxparser.exception",
                         new Object[]{e.getMessage(), e.getLocation()});
             } catch (SAXException e) {
-                throw new ServerRtException("runtime.parser.wsdl", getWsdLUrl().toString());
+                throw new ServerRtException("runtime.parser.wsdl", getWsdlUrl().toString());
             }
         }
     }
@@ -332,7 +332,7 @@ public class RuntimeEndpointInfo extends Endpoint
     }
     
     public boolean needWSDLGeneration() {
-        return (getWsdLUrl() == null);
+        return (getWsdlUrl() == null);
     }
     
     public boolean isPublishingDone() {
