@@ -335,6 +335,7 @@ public class WSServiceDelegate extends ServiceDelegate {
         RuntimeModel model = eif.getRuntimeContext().getModel();
         if (portQName != null) {
             Binding binding = serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(), portQName);
+            eif.setBindingID(binding.getBindingId());
             model.applyParameterBinding(binding);
         }
 

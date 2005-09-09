@@ -9,6 +9,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,5 +92,13 @@ public class EndpointIFContext {
 
     public void setServiceName(QName serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public void setBindingID(String bindingId) {
+        try {
+            this.bindingId = new URI(bindingId);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  
+        }
     }
 }
