@@ -1,5 +1,5 @@
 /*
- * $Id: MessageContextUtil.java,v 1.1 2005-09-09 02:41:30 jitu Exp $
+ * $Id: MessageContextUtil.java,v 1.2 2005-09-09 17:39:37 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
@@ -39,5 +39,9 @@ public class MessageContextUtil {
      */
     public static Method getMethod(MessageContext ctxt) {
         return (Method)((MessageContextImpl)ctxt).getInternalMap().get(JAVA_METHOD);
+    }
+    
+    public static void setCanonicalization(MessageContext ctxt, String algorithm) {
+        // TODO
     }
 }
