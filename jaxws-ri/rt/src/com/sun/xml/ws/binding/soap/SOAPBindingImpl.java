@@ -1,11 +1,12 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.13 2005-09-07 19:54:28 bbissett Exp $
+ * $Id: SOAPBindingImpl.java,v 1.14 2005-09-09 23:45:24 arungupta Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.binding.soap;
 
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import static java.lang.Class.*;
 import static java.lang.Thread.currentThread;
 
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 
 
@@ -41,11 +43,11 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     public static final String X_SOAP12HTTP_BINDING = 
         "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
     
-    private static URI ROLE_NONE;
+    protected static URI ROLE_NONE;
 
-    private Set<URI> requiredRoles;
-    private Set<URI> roles;
-    private boolean enableMtom = false;
+    protected Set<URI> requiredRoles;
+    protected Set<URI> roles;
+    protected boolean enableMtom = false;
 
     // called by DispatchImpl
     public SOAPBindingImpl(String bindingId) {
@@ -61,18 +63,17 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     }
 
     // if the binding id is unknown, no roles are added
-    private void setup(String bindingId) {
+    protected void setup(String bindingId) {
         requiredRoles = new HashSet<URI>();
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
             requiredRoles.add(makeURI(
-                "http://schemas.xmlsoap.org/soap/actor/next"));
+                SOAPNamespaceConstants.ACTOR_NEXT));
         } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            requiredRoles.add(makeURI(SOAP12NamespaceConstants.ROLE_NEXT));
             requiredRoles.add(makeURI(
-                "http://www.w3.org/2003/05/soap-envelope/role/next"));
-            requiredRoles.add(makeURI(
-                "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver"));
+                SOAP12NamespaceConstants.ROLE_ULTIMATE_RECEIVER));
         }
-        ROLE_NONE = makeURI("http://www.w3.org/2003/05/soap-envelope/role/none");
+        ROLE_NONE = makeURI(SOAP12NamespaceConstants.ROLE_NONE);
         roles = new HashSet<URI>();
         addRequiredRoles();
         setRolesOnHandlerChain();
@@ -107,7 +108,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         setRolesOnHandlerChain();
     }
 
-    private void addRequiredRoles() {
+    protected void addRequiredRoles() {
         roles.addAll(requiredRoles);
     }
 
@@ -163,14 +164,14 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     }
 
     // handler chain caller only used on client side
-    private void setRolesOnHandlerChain() {
+    protected void setRolesOnHandlerChain() {
         if (chainCaller != null) {
             chainCaller.setRoles(roles);
         }
     }
 
     // used to create uri's to have exception code in one place
-    private URI makeURI(String str) {
+    protected URI makeURI(String str) {
         try {
             return new URI(str);
         } catch (URISyntaxException e) {
@@ -180,7 +181,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         }
     }
 
-    private void setupSystemHandlerDelegate() {
+    protected void setupSystemHandlerDelegate() {
         ClassLoader classLoader = null;
         Class shdClass = null;
         try {
