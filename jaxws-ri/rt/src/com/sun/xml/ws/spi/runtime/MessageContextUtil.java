@@ -1,5 +1,5 @@
 /**
- * $Id: MessageContextUtil.java,v 1.2 2005-09-09 17:39:37 jitu Exp $
+ * $Id: MessageContextUtil.java,v 1.3 2005-09-10 01:52:10 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -42,5 +42,14 @@ public class MessageContextUtil {
     public static void setCanonicalization(MessageContext ctxt, String algorithm) {
         com.sun.xml.ws.handler.MessageContextUtil.setCanonicalization(ctxt,
             algorithm);
+    }
+    
+    /**
+     * Returns the Invoker
+     *
+     * @return Invoker
+     */
+    public static Invoker getInvoker(MessageContext ctxt) {
+        return com.sun.xml.ws.handler.MessageContextUtil.getInvoker(ctxt);
     }
 }

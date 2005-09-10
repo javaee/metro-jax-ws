@@ -1,11 +1,12 @@
 /*
- * $Id: MessageContextUtil.java,v 1.2 2005-09-09 17:39:37 jitu Exp $
+ * $Id: MessageContextUtil.java,v 1.3 2005-09-10 01:52:08 jitu Exp $
  *
  * Copyright (c) 2005 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import java.lang.reflect.Method;
 
@@ -18,6 +19,7 @@ import java.lang.reflect.Method;
 public class MessageContextUtil {
     private static final String JAVA_METHOD = "com.sun.xml.ws.java.method";
     private static final String BINDING_ID = "com.sun.xml.ws.binding.id";
+    private static final String INVOKER = "com.sun.xml.ws.invoker";
     
     public static String getBindingId(MessageContext ctxt) {
         return (String)((MessageContextImpl)ctxt).getInternalMap().get(BINDING_ID);
@@ -43,5 +45,13 @@ public class MessageContextUtil {
     
     public static void setCanonicalization(MessageContext ctxt, String algorithm) {
         // TODO
+    }
+    
+    public static Invoker getInvoker(MessageContext ctxt) {
+        return (Invoker)((MessageContextImpl)ctxt).getInternalMap().get(INVOKER);
+    }
+    
+    public static void setInvoker(MessageContext ctxt, Invoker invoker) {
+        ((MessageContextImpl)ctxt).getInternalMap().put(INVOKER, invoker);
     }
 }

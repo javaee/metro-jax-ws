@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.20 2005-09-09 20:25:31 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.21 2005-09-10 01:52:09 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
+import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
@@ -44,6 +45,8 @@ import com.sun.xml.ws.server.AppMsgContextImpl;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 import com.sun.xml.ws.handler.MessageContextUtil;
+import java.lang.reflect.Method;
+import javax.xml.namespace.QName;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
 
@@ -90,92 +93,26 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 soapMessage);
             updateContextPropertyBag(messageInfo, context);
                     
-            boolean skipEndpoint = false;
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
+            SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
+                context, shd);
             if (shd != null) {
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
-                skipEndpoint = !shd.processRequest(
-                        context.getSOAPMessageContext());
+                MessageContextUtil.setInvoker(context.getMessageContext(),
+                    implementor);
+                shd.processRequest(context.getSOAPMessageContext());
                 // TODO: need to act if processRequest() retuns false
-            }
-            boolean peekOneWay = false;
-            if (!skipEndpoint) {
-                try {
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-                    SOAPDecoder decoder = eptf.getSOAPDecoder();
-                    peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
-                            messageInfo, context, true);                
-                    MessageContextUtil.setMethod(context.getMessageContext(),
-                            messageInfo.getMethod());
-                } catch (SOAPFaultException e) {
-                    skipEndpoint = true;
-                    RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
-                        messageInfo).getRuntimeEndpointInfo();
-                    String id = ((SOAPBindingImpl)
-                        rei.getBinding()).getBindingId();
-                    InternalMessage internalMessage = null;
-                    if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
-                        internalMessage = SOAPRuntimeModel.createFaultInBody(
-                            e, null, null, null);
-                    } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-                        internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
-                            e, null, null, null, null);
-                    }
-                    context.setInternalMessage(internalMessage);
-                    context.setSOAPMessage(null);
-                }
-            }
-
-            // Call inbound handlers. It also calls outbound handlers incase of
-            // reversal of flow.
-            if (!skipEndpoint) {
-                skipEndpoint = callHandlersOnRequest(
-                    messageInfo, context, !peekOneWay);
-            }
-
-            if (skipEndpoint) {
-                soapMessage = context.getSOAPMessage();
-                if (soapMessage == null) {
-                    InternalMessage internalMessage = context.getInternalMessage();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
-                    SOAPEncoder encoder = eptf.getSOAPEncoder();
-                    soapMessage = encoder.toSOAPMessage(internalMessage, messageInfo);
-                }
-                sendResponse(messageInfo, soapMessage);
             } else {
-                toMessageInfo(messageInfo, context);
-
-                if (isOneway(messageInfo)) {
-                    sendResponseOneway(messageInfo);
-                    if (!peekOneWay) { // handler chain didn't already clos
-                        closeHandlers(messageInfo, context);
-                    }
-                }
-
-                if (!isFailure(messageInfo)) {
-                    if (shd != null) {
-                        shd.preInvokeEndpointHook(context.getMessageContext());
-                    }
-                    updateWebServiceContext(messageInfo, context);
-                    invokeEndpoint(messageInfo, context);
-                }
-
-                if (isOneway(messageInfo)) {
-                    if (isFailure(messageInfo)) {
-                        // Just log the error. Not much to do
-                    }
-                } else {
-                    getResponse(messageInfo, context);
-                    if (shd != null) {
-                        context.getMessageContext().put(
-                            MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                        shd.processResponse(context.getSOAPMessageContext());
-                    }
-                    makeSOAPMessage(messageInfo, context);
-                    sendResponse(messageInfo, context.getSOAPMessage());
-                }
+                implementor.invoke();
             }
+            if (shd != null) {
+                context.getMessageContext().put(
+                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                shd.processResponse(context.getSOAPMessageContext());
+            }
+            makeSOAPMessage(messageInfo, context);
+            sendResponse(messageInfo, context.getSOAPMessage());
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             sendResponseError(messageInfo, e);
@@ -438,6 +375,103 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         return endpointInfo.getBinding().getSystemHandlerDelegate();
+    }
+    
+    private class SoapInvoker implements Invoker {
+    
+        MessageInfo messageInfo;
+        SOAPMessage soapMessage;
+        HandlerContext context;
+        boolean skipEndpoint;
+        SystemHandlerDelegate shd;
+        
+        SoapInvoker(MessageInfo messageInfo, SOAPMessage soapMessage,
+                HandlerContext context, SystemHandlerDelegate shd) {
+            this.messageInfo = messageInfo;
+            this.soapMessage = soapMessage;
+            this.context = context;
+            this.shd = shd;
+        }
+        
+        public void invoke() throws Exception {
+            boolean peekOneWay = false;
+            if (!skipEndpoint) {
+                try {
+                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPDecoder decoder = eptf.getSOAPDecoder();
+                    peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
+                            messageInfo, context, true);                
+                    MessageContextUtil.setMethod(context.getMessageContext(),
+                            messageInfo.getMethod());
+                } catch (SOAPFaultException e) {
+                    skipEndpoint = true;
+                    RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
+                        messageInfo).getRuntimeEndpointInfo();
+                    String id = ((SOAPBindingImpl)
+                        rei.getBinding()).getBindingId();
+                    InternalMessage internalMessage = null;
+                    if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+                        internalMessage = SOAPRuntimeModel.createFaultInBody(
+                            e, null, null, null);
+                    } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                        internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
+                            e, null, null, null, null);
+                    }
+                    context.setInternalMessage(internalMessage);
+                    context.setSOAPMessage(null);
+                }
+            }
+
+            // Call inbound handlers. It also calls outbound handlers incase of
+            // reversal of flow.
+            if (!skipEndpoint) {
+                skipEndpoint = callHandlersOnRequest(
+                    messageInfo, context, !peekOneWay);
+            }
+
+            if (skipEndpoint) {
+                soapMessage = context.getSOAPMessage();
+                if (soapMessage == null) {
+                    InternalMessage internalMessage = context.getInternalMessage();
+                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEncoder encoder = eptf.getSOAPEncoder();
+                    soapMessage = encoder.toSOAPMessage(internalMessage, messageInfo);
+                }
+                //sendResponse(messageInfo, soapMessage);
+                context.setSOAPMessage(soapMessage);
+                context.setInternalMessage(null);
+            } else {
+                toMessageInfo(messageInfo, context);
+
+                if (isOneway(messageInfo)) {
+                    sendResponseOneway(messageInfo);
+                    if (!peekOneWay) { // handler chain didn't already clos
+                        closeHandlers(messageInfo, context);
+                    }
+                }
+
+                if (!isFailure(messageInfo)) {
+                    if (shd != null) {
+                        shd.preInvokeEndpointHook(context.getMessageContext());
+                    }
+                    updateWebServiceContext(messageInfo, context);
+                    invokeEndpoint(messageInfo, context);
+                }
+
+                if (isOneway(messageInfo)) {
+                    if (isFailure(messageInfo)) {
+                        // Just log the error. Not much to do
+                    }
+                } else {
+                    getResponse(messageInfo, context);
+                }
+            }
+        }
+        
+        public Method getMethod(QName name) {
+            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+            return rtCtxt.getDispatchMethod(name, messageInfo);
+        }
     }
 
 }
