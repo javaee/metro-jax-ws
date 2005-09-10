@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.25 2005-09-06 22:48:46 kohlert Exp $
+ * $Id: CompileTool.java,v 1.26 2005-09-10 01:05:01 kohlert Exp $
  */
 
 /*
@@ -152,6 +152,16 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 if ((i + 1) < args.length) {
                     args[i] = null;
                     serviceName = QName.valueOf(args[++i]);
+                    if (serviceName.getNamespaceURI() == null || serviceName.getNamespaceURI().length() == 0) {
+                        onError(getMessage("wsgen.servicename.missing.namespace", args[i]));
+                        usage();
+                        return false;
+                    }
+                    if (serviceName.getLocalPart() == null || serviceName.getLocalPart().length() == 0) {
+                        onError(getMessage("wsgen.servicename.missing.localname", args[i]));
+                        usage();
+                        return false;
+                    }
                     args[i] = null;
                 } else {
                     onError(getMessage("wscompile.missingOptionArgument", args[i]));
@@ -167,6 +177,16 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 if ((i + 1) < args.length) {
                     args[i] = null;
                     portName = QName.valueOf(args[++i]);
+                    if (portName.getNamespaceURI() == null || portName.getNamespaceURI().length() == 0) {
+                        onError(getMessage("wsgen.portname.missing.namespace", args[i]));
+                        usage();
+                        return false;
+                    }
+                    if (portName.getLocalPart() == null || portName.getLocalPart().length() == 0) {
+                        onError(getMessage("wsgen.portname.missing.localname", args[i]));
+                        usage();
+                        return false;
+                    }
                     args[i] = null;                
                 } else {
                     onError(getMessage("wscompile.missingOptionArgument", args[i]));

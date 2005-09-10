@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceWrapperGenerator.java,v 1.22 2005-09-09 06:52:03 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.23 2005-09-10 01:04:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -245,6 +245,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
             }    
+        } else if (!(method.getReturnType() instanceof VoidType)) {
+            // this is an error, cannot be Oneway and have a return type
+            builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
+                    new Object[] {typeDecl.getQualifiedName(), method.toString()});
         }
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();

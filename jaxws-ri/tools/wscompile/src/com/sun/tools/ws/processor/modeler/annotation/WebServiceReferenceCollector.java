@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.9 2005-09-09 05:50:17 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.10 2005-09-10 01:04:59 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -124,6 +124,21 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     }
 
     private void collectTypes(MethodDeclaration method, WebMethod webMethod, boolean isDocLitWrapped) {
+        Oneway oneway = method.getAnnotation(Oneway.class);
+        if (oneway != null && !(method.getReturnType() instanceof VoidType)) {
+            // this is an error, cannot be Oneway and have a return type
+            builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
+                    new Object[] {typeDecl.getQualifiedName(), method.toString()});
+        }        
+/*        if (!isDocLitWrapped &&
+            soapStyle.equals(SOAPStyle.DOCUMENT)) {
+            if (method.getReturnType() instanceof VoidType) {
+                if (!hasOutParameter(method)) {
+                    
+                } 
+            } else if () {
+            }
+        }*/
         addSchemaElements(method, isDocLitWrapped);
     }        
     
