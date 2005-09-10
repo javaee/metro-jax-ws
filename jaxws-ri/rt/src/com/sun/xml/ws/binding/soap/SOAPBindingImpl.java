@@ -1,33 +1,33 @@
 /*
- * $Id: SOAPBindingImpl.java,v 1.14 2005-09-09 23:45:24 arungupta Exp $
+ * $Id: SOAPBindingImpl.java,v 1.15 2005-09-10 01:16:37 kwalsh Exp $
  *
  * Copyright (c) 2004 Sun Microsystems, Inc.
  * All rights reserved.
  */
 package com.sun.xml.ws.binding.soap;
 
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import static java.lang.Class.*;
-import static java.lang.Thread.currentThread;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegateFactory;
+import com.sun.xml.ws.util.SOAPUtil;
 
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
-import com.sun.xml.ws.util.SOAPUtil;
 
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.MessageFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
+import java.util.Set;
+
 
 
 /**
@@ -35,14 +35,10 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
  */
 public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
-    //this is currently hardcoded to xws SystemHandlerDelegate
-    //package is com.sun.xml.rpc
-    private final static String SHD_NAME =
-        "com.sun.xml.rpc.security.SystemHandlerDelegateImpl";
-    
-    public static final String X_SOAP12HTTP_BINDING = 
+
+    public static final String X_SOAP12HTTP_BINDING =
         "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
-    
+
     protected static URI ROLE_NONE;
 
     protected Set<URI> requiredRoles;
@@ -78,10 +74,10 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         addRequiredRoles();
         setRolesOnHandlerChain();
     }
-    
+
     /*
-     * For a non standard SOAP1.2 binding, return actual SOAP1.2 binding
-     */
+    * For a non standard SOAP1.2 binding, return actual SOAP1.2 binding
+    */
     @Override
     public String getBindingId() {
         String bindingId = super.getBindingId();
@@ -90,10 +86,10 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         }
         return bindingId;
     }
-    
+
     /*
-     * Use this to distinguish SOAP12HTTP_BINDING or X_SOAP12HTTP_BINDING
-     */ 
+    * Use this to distinguish SOAP12HTTP_BINDING or X_SOAP12HTTP_BINDING
+    */
     @Override
     public String getActualBindingId() {
         return super.getBindingId();
@@ -139,8 +135,9 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
 
     /**
-     *  Used typically by the runtime to enable/disable Mtom optimization
-     * @return  true or false
+     * Used typically by the runtime to enable/disable Mtom optimization
+     *
+     * @return true or false
      */
     public boolean isMTOMEnabled() {
         return enableMtom;
@@ -148,6 +145,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
     /**
      * Client application can set if the Mtom optimization should be enabled
+     *
      * @param b
      */
     public void setMTOMEnabled(boolean b) {
@@ -181,32 +179,13 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         }
     }
 
+
     protected void setupSystemHandlerDelegate() {
-        ClassLoader classLoader = null;
-        Class shdClass = null;
-        try {
-            classLoader = currentThread().getContextClassLoader();
-        } catch (Exception x) {
-            throw new WebServiceException(x);
-        }
 
-        try {
-            if (classLoader == null) {
-                shdClass = forName(SHD_NAME);
-            } else {
-                shdClass = classLoader.loadClass(SHD_NAME);
-            }
-
-            if (shdClass != null) {
-                setSystemHandlerDelegate((SystemHandlerDelegate)
-                    shdClass.newInstance());
-            }
-        } catch (ClassNotFoundException e) {
-            //e.printStackTrace(); //todo:need to add log
-        } catch (IllegalAccessException e) {
-            throw new WebServiceException(e);
-        } catch (InstantiationException e) {
-            throw new WebServiceException(e);
+        SystemHandlerDelegateFactory shdFactory = SystemHandlerDelegateFactory.getFactory();
+        if (shdFactory != null) {
+            setSystemHandlerDelegate((SystemHandlerDelegate)
+                shdFactory.create());
         }
     }
 }
