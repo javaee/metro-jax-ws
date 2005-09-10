@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceVisitor.java,v 1.16 2005-09-09 17:29:47 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.17 2005-09-10 02:38:36 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -310,10 +310,21 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean hasWebMethods(ClassDeclaration d) {
         if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return false;
-        boolean hasWebMethods = false;
-        for (MethodDeclaration methodDecl : d.getMethods()) {
-            if (methodDecl.getAnnotation(WebMethod.class) != null)
-                return true;
+        WebMethod webMethod;
+        for (MethodDeclaration method : d.getMethods()) {
+            webMethod = method.getAnnotation(WebMethod.class);
+            if (webMethod != null) {                
+                if (webMethod.exclude()) {
+                    if (webMethod.operationName().length() > 0)
+                        builder.onError(method.getPosition(), "webserviceap.invalid.webmethod.element.with.exclude",
+                            new Object[] {"operationName", d.getQualifiedName(), method.toString()});
+                    if (webMethod.action().length() > 0)
+                        builder.onError(method.getPosition(), "webserviceap.invalid.webmethod.element.with.exclude",
+                            new Object[] {"action", d.getQualifiedName(), method.toString()});
+                } else {
+                    return true;
+                }
+            }
         }
         return hasWebMethods(d.getSuperclass().getDeclaration());
     }

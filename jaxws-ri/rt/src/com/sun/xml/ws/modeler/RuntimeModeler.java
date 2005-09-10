@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModeler.java,v 1.55 2005-09-08 01:08:18 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.56 2005-09-10 02:38:31 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -190,6 +190,9 @@ public class RuntimeModeler {
         runtimeModel.setPortName(portName);
         
         processClass(clazz);
+        if (runtimeModel.getJavaMethods().size() == 0) 
+            throw new RuntimeModelerException("runtime.modeler.no.operations", 
+                    new Object[] {portClass.getName().toString()});
         runtimeModel.postProcess();
         return runtimeModel;
     }
@@ -247,8 +250,11 @@ public class RuntimeModeler {
          * will be processed.
          */
         if (clazz == portClass) {
+            WebMethod webMethod;
             for (Method method : clazz.getMethods()) {
-                if (method.isAnnotationPresent(WebMethod.class)) {
+                webMethod = (WebMethod)method.getAnnotation(WebMethod.class); 
+                if (webMethod != null &&
+                    !webMethod.exclude()) {
                     usesWebMethod = true;
                     break;
                 }

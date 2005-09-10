@@ -1,5 +1,5 @@
 /**
- * $Id: WebServiceReferenceCollector.java,v 1.10 2005-09-10 01:04:59 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.11 2005-09-10 02:38:35 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -130,7 +130,8 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
             builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
                     new Object[] {typeDecl.getQualifiedName(), method.toString()});
         }        
-/*        if (!isDocLitWrapped &&
+/*      TODO check to see that a void returning Doc/Bare has an out parameter  
+        if (!isDocLitWrapped &&
             soapStyle.equals(SOAPStyle.DOCUMENT)) {
             if (method.getReturnType() instanceof VoidType) {
                 if (!hasOutParameter(method)) {

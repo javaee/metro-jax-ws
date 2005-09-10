@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLGenerator.java,v 1.39 2005-09-09 06:52:02 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.40 2005-09-10 02:38:34 kohlert Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -697,6 +697,7 @@ public class WSDLGenerator {
         for (Parameter headerParam : parameters) {
             com.sun.xml.ws.wsdl.writer.document.soap12.Header header = writer._element(com.sun.xml.ws.wsdl.writer.document.soap12.Header.class);
             header.message(message);
+
             header.part(headerParam.getPartName());
             header.use(LITERAL);
         }
@@ -708,6 +709,8 @@ public class WSDLGenerator {
         Service service = serviceDefinitions.service().name(serviceQName.getLocalPart());
         Port port = service.port().name(portQName.getLocalPart());
         port.binding(new QName(serviceQName.getNamespaceURI(), portQName.getLocalPart()+BINDING));
+        if (model.getJavaMethods().size() == 0)
+            return;
         if (model.getJavaMethods().iterator().next().getBinding() instanceof SOAPBinding) {
             if(bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
                 com.sun.xml.ws.wsdl.writer.document.soap12.SOAPAddress address = port._element(com.sun.xml.ws.wsdl.writer.document.soap12.SOAPAddress.class);
