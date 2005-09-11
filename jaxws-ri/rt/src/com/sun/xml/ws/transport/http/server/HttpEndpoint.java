@@ -218,7 +218,7 @@ public class HttpEndpoint {
     public void stop() {
         if (address == null) {
             // Application created its own HttpContext
-            httpContext.setHandler(null);
+            // httpContext.setHandler(null);
             httpContext.getServer().removeContext(httpContext);
         } else {
             // Remove HttpContext created by JAXWS runtime 
