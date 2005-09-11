@@ -22,6 +22,7 @@ package com.sun.xml.ws.transport.http.server;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpsExchange;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
@@ -160,7 +161,7 @@ public class WSHttpHandler implements HttpHandler {
                 endpoints.add(endpointInfo);
 
                 String address =
-                     ((msg instanceof HttpExchange) ? "http" : "https")
+                     ((msg instanceof HttpsExchange) ? "https" : "http")
                         + "://"
                         + msg.getLocalAddress().getHostName()
                         + ":"
