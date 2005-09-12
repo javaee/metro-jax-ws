@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.34 2005-09-12 17:08:11 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.35 2005-09-12 18:34:16 kwalsh Exp $
  */
 
 /*
@@ -39,6 +39,7 @@ import com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
@@ -147,10 +148,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     decoder.toMessageInfo(im, messageInfo);
                     return sm;
                 }
-            } else {
-                if (sm == null)
-                    sm = encoder.toSOAPMessage(im, messageInfo);
-            }
+            } 
 
             SystemHandlerDelegate systemHandlerDelegate =
                 ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
@@ -172,6 +170,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                             handlerContext.getSOAPMessageContext());
                 sm = handlerContext.getSOAPMessage();
             }
+
+            if (sm == null)
+                sm = encoder.toSOAPMessage(im, messageInfo);
 
             // Setting encoder here is necessary for calls to getBindingId()
             messageInfo.setEncoder(encoder);
@@ -196,8 +197,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 logRequestMessage(sm, messageInfo);
                 SOAPConnectionUtil.sendResponse(connection, sm);
-//                connection.sendResponse(sm);
-            } // else return sm;
+            }
 
             // if handlerResult is false, the receive has already happened
             if (isRequestResponse && handlerResult) {            
@@ -489,6 +489,17 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         });
         return r;
+    }
+
+    private void makeSOAPMessage(MessageInfo messageInfo, HandlerContext context) {
+        InternalMessage internalMessage = context.getInternalMessage();
+        if (internalMessage != null) {
+            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEncoder encoder = eptf.getSOAPEncoder();
+            SOAPMessage soapMesage = encoder.toSOAPMessage(internalMessage, messageInfo);
+            context.setSOAPMessage(soapMesage);
+            context.setInternalMessage(null);
+        }
     }
 
     protected boolean callHandlersOnRequest(HandlerContext handlerContext) {
