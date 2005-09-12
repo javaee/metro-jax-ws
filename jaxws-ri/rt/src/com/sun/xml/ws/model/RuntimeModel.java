@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.22 2005-09-10 19:47:49 kohsuke Exp $
+ * $Id: RuntimeModel.java,v 1.23 2005-09-12 17:06:15 kwalsh Exp $
  */
 
 /*
@@ -250,6 +250,24 @@ public abstract class RuntimeModel {
      */
     public JavaMethod getJavaMethod(QName name) {
         return nameToJM.get(name);
+    }
+
+    /**
+     * @param jm
+     * @return the <code>QName</code> associated with the
+     * JavaMethod jm
+     */
+    public QName getQNameForJM(JavaMethod jm) {
+        Set<QName> set = nameToJM.keySet();
+        Iterator iter = set.iterator();
+        while (iter.hasNext()){
+            QName key = (QName) iter.next();
+            JavaMethod jmethod = (JavaMethod) nameToJM.get(key);
+            if (jmethod.getOperationName().equals(jm.getOperationName())){
+               return key;
+            }
+        }
+        return null;
     }
 
     /**
