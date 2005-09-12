@@ -26,21 +26,19 @@ import com.sun.net.httpserver.HttpServer;
 
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.EndpointFactory;
 
 import java.net.URI;
 
 public class AddWebservice {
     
     public static void main (String[] args) throws Exception {
-        EndpointFactory.newInstance ().publish (
+        Endpoint.publish (
             "http://localhost:8080/jaxws-fromjava/addnumbers",
             new AddNumbersImpl ());
     }
     
 //    public static void deployMethod2 () throws Exception {
-//        EndpointFactory factory = EndpointFactory.newInstance ();
-//        Endpoint endpoint = factory.createEndpoint (
+//        Endpoint endpoint = Endpoint.create(
 //            new URI (SOAPBinding.SOAP11HTTP_BINDING),
 //            new AddNumbersImpl ());
 //        

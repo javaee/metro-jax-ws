@@ -19,14 +19,10 @@
  */
 package fromjavahandler.client;
 
-import javax.xml.ws.ServiceFactory;
-
 public class AddNumbersClient {
     public static void main (String[] args) {
         try {
-            ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-            AddNumbersImplService service = (AddNumbersImplService)serviceFactory.createService ((java.net.URL)null, AddNumbersImplService.class);
-            AddNumbersImpl port = service.getAddNumbersImpl ();
+            AddNumbersImpl port = new AddNumbersImplService().getAddNumbersImplPort();
             
             int number1 = 10;
             int number2 = 20;
