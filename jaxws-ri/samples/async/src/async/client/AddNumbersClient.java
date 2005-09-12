@@ -25,15 +25,12 @@ import java.util.concurrent.Future;
 
 import javax.xml.ws.AsyncHandler;
 import javax.xml.ws.Response;
-import javax.xml.ws.ServiceFactory;
 
 public class AddNumbersClient {
     private AddNumbersImpl port;
     
     public AddNumbersClient () {
-        ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-        AddNumbersService service = (AddNumbersService)serviceFactory.createService ((java.net.URL)null, AddNumbersService.class);
-        port = service.getAddNumbersImpl ();
+        port = new AddNumbersService().getAddNumbersImplPort();
     }
     
     public static void main (String[] args) {

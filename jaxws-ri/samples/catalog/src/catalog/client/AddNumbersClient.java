@@ -22,8 +22,7 @@ package catalog.client;
 public class AddNumbersClient {
     public static void main (String[] args) {
         try {
-            AddNumbersService service = new AddNumbersService();
-            AddNumbersPortType port = service.getAddNumbersPort ();
+            AddNumbersPortType port = new AddNumbersService().getAddNumbersPort ();
             
             int number1 = 10;
             int number2 = 20;

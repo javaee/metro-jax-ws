@@ -19,14 +19,10 @@
  */
 package annotations.client;
 
-import javax.xml.ws.ServiceFactory;
-
 public class AddNumbersClient {
     public static void main(String[] args) {
         try {
-            ServiceFactory serviceFactory = ServiceFactory.newInstance();
-            AddNumbersIFService service = (AddNumbersIFService)serviceFactory.createService((java.net.URL)null, AddNumbersIFService.class);
-            AddNumbers port = service.getAddNumbers();
+            AddNumbers port = new AddNumbersImplService().getAddNumbersImplPort();
 
             int number1 = 10;
             int number2 = 20;
