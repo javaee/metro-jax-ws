@@ -34,7 +34,6 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.Response;
 import javax.xml.ws.Service;
-import javax.xml.ws.ServiceFactory;
 import javax.xml.ws.WebServiceException;
 
 import javax.xml.bind.JAXBContext;
@@ -72,8 +71,7 @@ public class AddNumbersClient {
             URI soapBindingURI = null;
 
             soapBindingURI = new URI(SOAPBinding.SOAP11HTTP_BINDING);
-            ServiceFactory serviceFactory = ServiceFactory.newInstance();
-            service = serviceFactory.createService(serviceQName);
+            service = new AddNumbersService();
             service.addPort(portQName, soapBindingURI, endpointAddress);
         } catch (URISyntaxException e) {
             e.printStackTrace();
