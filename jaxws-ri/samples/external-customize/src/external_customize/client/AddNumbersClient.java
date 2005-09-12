@@ -21,15 +21,11 @@ package external_customize.client;
 
 import java.rmi.RemoteException;
 
-import javax.xml.ws.ServiceFactory;
-
 public class AddNumbersClient {
     private MathUtil port;
     
     public AddNumbersClient () {
-        ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-        MathUtilService service = (MathUtilService)serviceFactory.createService ((java.net.URL)null, MathUtilService.class);
-        port = service.getMathUtil ();
+        port = new MathUtilService().getMathUtil ();
     }
     
     public static void main (String[] args) {

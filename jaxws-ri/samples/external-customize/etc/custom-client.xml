@@ -30,7 +30,6 @@
         <!-- default settings -->
         <enableWrapperStyle>true</enableWrapperStyle>
         <enableAsyncMapping>false</enableAsyncMapping>
-        <enableAdditionalSOAPHeaderMapping>false</enableAdditionalSOAPHeaderMapping>
     </bindings>
     
     <!-- wsdl:portType customization -->
@@ -69,7 +68,7 @@
     </bindings>
     
     <!-- change the port accessor method -->
-    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImpl']">
+    <bindings node="wsdl:definitions/wsdl:service[@name='AddNumbersService']/wsdl:port[@name='AddNumbersImplPort']">
         <method name="getMathUtil"/>
     </bindings>    
     

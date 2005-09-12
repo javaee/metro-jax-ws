@@ -19,14 +19,10 @@
  */
 package fromwsdl.client;
 
-import javax.xml.ws.ServiceFactory;
-
 public class AddNumbersClient {
     public static void main (String[] args) {
         try {
-            ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-            AddNumbersService service = (AddNumbersService)serviceFactory.createService ((java.net.URL)null, AddNumbersService.class);
-            AddNumbersPortType port = service.getAddNumbersPort ();
+            AddNumbersPortType port = new AddNumbersService().getAddNumbersPort ();
             
             int number1 = 10;
             int number2 = 20;
@@ -43,7 +39,7 @@ public class AddNumbersClient {
             result = port.addNumbers (number1, number2);
             System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
         } catch (AddNumbersFault_Exception ex) {
-            System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo ().getFaultInfo ());
+            System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo().getFaultInfo ());
         }
     }
 }

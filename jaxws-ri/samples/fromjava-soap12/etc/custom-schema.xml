@@ -24,7 +24,7 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns="http://java.sun.com/xml/ns/jaxb"
     version="1.0">    
-    <bindings schemaLocation="http://localhost:8080/jaxws-fromjava-soap12/addnumbers?xsd=schema1.xsd" node="/xsd:schema">
+    <bindings schemaLocation="http://localhost:8080/jaxws-fromjava-soap12/addnumbers?xsd=1" node="/xsd:schema">
         <schemaBindings>
             <package name="fromjava_soap12.client"/>
         </schemaBindings>

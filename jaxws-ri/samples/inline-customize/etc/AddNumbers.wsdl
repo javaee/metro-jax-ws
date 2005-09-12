@@ -9,7 +9,6 @@
   <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
       <jaxws:enableWrapperStyle>true</jaxws:enableWrapperStyle>
       <jaxws:enableAsyncMapping>false</jaxws:enableAsyncMapping>
-      <jaxws:enableAdditionalSOAPHeaderMapping>false</jaxws:enableAdditionalSOAPHeaderMapping>
   </jaxws:bindings>
 
   <types>
