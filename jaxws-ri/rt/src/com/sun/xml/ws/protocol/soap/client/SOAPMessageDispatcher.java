@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.33 2005-09-10 19:47:52 kohsuke Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.34 2005-09-12 17:08:11 kwalsh Exp $
  */
 
 /*
@@ -65,6 +65,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Proxy;
@@ -543,8 +544,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (rtContext != null) {
             RuntimeModel model = rtContext.getModel();
             JavaMethod javaMethod = model.getJavaMethod(messageInfo.getMethod());
-            if (javaMethod != null)
-                messageContext.put(MessageContext.WSDL_OPERATION, javaMethod.getOperationName());
+            if (javaMethod != null) {
+                QName operationName = model.getQNameForJM(javaMethod);
+                messageContext.put(MessageContext.WSDL_OPERATION, operationName);
+            }
+        }
+        
+        //now get value for ContentNegotiation
+        Object prop = messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+        if (prop != null){
+            messageContext.put(CONTENT_NEGOTIATION_PROPERTY, prop);
         }
     }
 
