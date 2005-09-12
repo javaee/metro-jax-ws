@@ -21,7 +21,6 @@ package mtom_soap12.client;
 
 import utils.AttachmentHelper;
 
-import javax.xml.ws.ServiceFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.ws.soap.SOAPBinding;
@@ -36,13 +35,7 @@ public class MtomApp {
     
     public static void main (String[] args){
         try {
-            
-            //obtain the service from ServiceFactory
-            ServiceFactory serviceFactory = ServiceFactory.newInstance ();
-            HelloService service = (HelloService)serviceFactory.createService (null, HelloService.class);
-            
-            //get the port
-            Object port = service.getHelloPort ();
+            Object port = new HelloService().getHelloPort ();
             if(port == null){
                 System.out.println ("TEST FAILURE: Couldnt get port!");
                 System.exit (-1);
