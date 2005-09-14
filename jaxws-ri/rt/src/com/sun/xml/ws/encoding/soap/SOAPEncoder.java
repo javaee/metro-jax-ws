@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.28 2005-09-14 04:43:55 jitu Exp $
+ * $Id: SOAPEncoder.java,v 1.29 2005-09-14 18:55:39 vivekp Exp $
  */
 
 /*
@@ -562,6 +562,9 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 ap.setContent(value, block.getType());
             }
             ap.setContentId(id);
+            //it may be safe to say the encoding is binary meaning the bytes are not subjected any 
+            // specific encoding.
+            ap.setMimeHeader("Content-transfer-encoding", "binary");
             msg.addAttachmentPart(ap);
         }
     }
