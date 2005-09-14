@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.58 2005-09-10 19:47:57 kohsuke Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.59 2005-09-14 20:58:33 jitu Exp $
  */
 
 /*
@@ -25,6 +25,7 @@
 package com.sun.xml.ws.server;
 
 import javax.annotation.Resource;
+import javax.annotation.InjectionComplete;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
@@ -97,6 +98,7 @@ public class RuntimeEndpointInfo extends Endpoint
     private boolean beginServiceDone;
     private boolean endServiceDone;
     private boolean injectedContext;
+    private boolean injectCompleted;
     private boolean publishingDone;
     private URL wsdlUrl;
     private EntityResolver wsdlResolver;
@@ -586,6 +588,21 @@ public class RuntimeEndpointInfo extends Endpoint
         }
     }
     
+    /*
+     * Calls the method with @InjectionComplete
+     */
+    public synchronized void injectComplete()
+    throws IllegalAccessException, InvocationTargetException {
+        if (injectCompleted) {
+            return;
+        }
+        try {
+            invokeOnceMethod(InjectionComplete.class);
+        } finally {
+            injectCompleted = true;
+        }
+    }
+    
     private void doFieldsInjection() {
         Class c = getImplementorClass();
         Field[] fields = c.getDeclaredFields();
@@ -691,7 +708,7 @@ public class RuntimeEndpointInfo extends Endpoint
             return;                 // Already called for this endpoint object
         }
         try {
-            invokeLifeCycleMethod(BeginService.class);
+            invokeOnceMethod(BeginService.class);
         } finally {
             beginServiceDone = true;
         }
@@ -708,24 +725,26 @@ public class RuntimeEndpointInfo extends Endpoint
             return;                 // Already called for this endpoint object
         }
         try {
-            invokeLifeCycleMethod(EndService.class);
+            invokeOnceMethod(EndService.class);
         } finally {
             endServiceDone = true;
         }
     }
     
     /*
-     * Helper method to invoke any lifecycle method
+     * Helper method to invoke methods which don't take any arguments
+     * Also the annType annotation should be set only on one method
      */
-    private void invokeLifeCycleMethod(Class annType) {
+    private void invokeOnceMethod(Class annType) {
         Class c = getImplementorClass();
         Method[] methods = c.getDeclaredMethods();
         boolean once = false;
         for(final Method method : methods) {
             if (method.getAnnotation(annType) != null) {
                 if (once) {
-                    // Err: Multiple methods have @xxxService annotation
-                    throw new ServerRtException("more.begin.or.end.service");
+                    // Err: Multiple methods have annType annotation
+                    throw new ServerRtException("annotation.only.once",
+                        new Object[] { annType } );
                 }
                 if (method.getParameterTypes().length != 0) {              
                     throw new ServerRtException("not.zero.parameters",
