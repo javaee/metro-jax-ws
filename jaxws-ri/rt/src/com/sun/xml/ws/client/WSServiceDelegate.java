@@ -157,6 +157,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     public void setHandlerResolver(HandlerResolver resolver) {
         handlerResolver = resolver;
     }
+    
     public Object getPort(QName portName, Class portInterface)
         throws WebServiceException {
         Object seiProxy = createEndpointIFBaseProxy(portName, portInterface);
@@ -291,8 +292,12 @@ public class WSServiceDelegate extends ServiceDelegate {
         // create binding
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
             bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            provider._setBinding(new SOAPBindingImpl(handlerChain,
-                bindingId.toString()));
+            SOAPBindingImpl bindingImpl = new SOAPBindingImpl(handlerChain,
+                bindingId.toString());
+            if (serviceContext.getRoles() != null) {
+                bindingImpl.setRoles(serviceContext.getRoles());
+            }
+            provider._setBinding(bindingImpl);
         } else if (bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
             provider._setBinding(new HTTPBindingImpl(handlerChain));
         }

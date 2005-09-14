@@ -182,10 +182,8 @@ public abstract class ServiceContextBuilder {
                     model.getServiceQName()),
                     chainInfo.getHandlers());
                 serviceContext.setHandlerResolver(resolver);
+                serviceContext.setRoles(chainInfo.getRoles());
 
-                // todo: need a place to store role information to
-                // place in binding
-                //chainInfo.getRoles();
             }
         }
     }
