@@ -65,12 +65,6 @@ public class ServerMgr {
             ServerState state = null;
             boolean started = false;
             URL url = new URL(address);
-            /*
-            int port = url.getPort(); 
-            if (port == -1) {
-                port = url.getDefaultPort();
-            }
-             */
             InetSocketAddress inetAddress = new InetSocketAddress(url.getHost(),
                     url.getPort());
             synchronized(servers) {
@@ -80,12 +74,7 @@ public class ServerMgr {
                         logger.fine("Creating new HTTP Server at "+inetAddress);
                         server = HttpServer.create(inetAddress, 5);
                     } else {
-                        logger.fine("Creating new HTTPS server = "+inetAddress);
-                        server = HttpsServer.create(inetAddress, 5);
-                        SSLContext sc = SSLContext.getInstance("SSL");
-                        sc.init(null, null, null);
-                        ((HttpsServer)server).setHttpsConfigurator(
-                                new HttpsConfigurator(sc));
+                        throw new IllegalArgumentException("https URL is not supported");
                     }
                     server.setExecutor(Executors.newFixedThreadPool(5));
                     logger.fine("Creating HTTP Context at = "+url.getPath());
