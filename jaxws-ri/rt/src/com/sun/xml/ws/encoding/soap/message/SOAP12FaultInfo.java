@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12FaultInfo.java,v 1.3 2005-09-10 19:47:44 kohsuke Exp $
+ * $Id: SOAP12FaultInfo.java,v 1.4 2005-09-14 04:43:55 jitu Exp $
  */
 
 /*
@@ -188,6 +188,9 @@ public class SOAP12FaultInfo extends SOAPFaultInfo {
         try {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                     SOAP12Constants.QNAME_SOAP_FAULT.getLocalPart(),
+                    SOAP12Constants.QNAME_SOAP_FAULT.getNamespaceURI());
+            // Writing NS since this may be called without writing envelope
+            writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                     SOAP12Constants.QNAME_SOAP_FAULT.getNamespaceURI());
 
             code.write(writer); //<soapenv:Code> ... </soapenv:Code>

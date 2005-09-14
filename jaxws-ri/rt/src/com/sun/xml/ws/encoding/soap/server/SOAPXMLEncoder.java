@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.7 2005-09-10 19:47:45 kohsuke Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.8 2005-09-14 04:43:56 jitu Exp $
  */
 
 /*
@@ -169,6 +169,9 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPConstants.QNAME_SOAP_FAULT.getLocalPart(),
                 SOAPConstants.QNAME_SOAP_FAULT.getNamespaceURI());
+            // Writing NS since this may be called without writing envelope
+            writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
+                    SOAPConstants.QNAME_SOAP_FAULT.getNamespaceURI());
 
             writer.writeStartElement(FAULTCODE_NAME);   // <faultcode>
             String prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;

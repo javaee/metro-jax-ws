@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.27 2005-09-10 19:47:39 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.28 2005-09-14 04:43:55 jitu Exp $
  */
 
 /*
@@ -26,7 +26,6 @@ package com.sun.xml.ws.encoding.soap;
 import java.io.OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +82,7 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.handler.HandlerContext;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
+import java.io.IOException;
 
 /**
  * @author WS Development Team
@@ -138,6 +138,8 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             writeFault(faultInfo, messageInfo, writer);
             writer.writeEndDocument();
+            writer.close();
+            baos.close();
             byte[] buf = baos.toByteArray();
             Transformer transformer = XmlUtil.newTransformer();
             StreamSource source = new StreamSource(new ByteArrayInputStream(buf));
@@ -150,6 +152,8 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
         catch (XMLStreamException xe) {
             throw new WebServiceException(xe);
+        } catch (IOException ioe) {
+            throw new WebServiceException(ioe);
         }
     }
 
