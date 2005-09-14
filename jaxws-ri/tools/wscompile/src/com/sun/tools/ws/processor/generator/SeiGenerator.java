@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.29 2005-09-14 17:59:26 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.30 2005-09-14 21:50:58 vivekp Exp $
  */
 
 /*
@@ -218,7 +218,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                         }else{
                             resultName = parameter.getName();
                         }
-                        if (isDocStyle) {
+                        if (isDocStyle || (parameter.getBlock().getLocation() == Block.HEADER)) {
                             nsURI = parameter.getType().getName().getNamespaceURI();
                         }
                     }else if(isDocStyle){
