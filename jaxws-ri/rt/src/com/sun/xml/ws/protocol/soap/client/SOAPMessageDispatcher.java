@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.36 2005-09-14 11:45:23 sandoz Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.37 2005-09-14 19:50:12 kwalsh Exp $
  */
 
 /*
@@ -50,6 +50,8 @@ import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.spi.runtime.MessageContextUtil;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
@@ -148,7 +150,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     decoder.toMessageInfo(im, messageInfo);
                     return sm;
                 }
-            } 
+            }
+
+            // Setting encoder here is necessary for calls to getBindingId()
+            messageInfo.setEncoder(encoder);
 
             SystemHandlerDelegate systemHandlerDelegate =
                 ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
@@ -164,6 +169,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 handlerContext.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                MessageContextUtil.getBindingId((com.sun.xml.ws.spi.runtime.MessageContext)handlerContext.getSOAPMessageContext());
                 handlerResult =
                     systemHandlerDelegate.processRequest(
                         (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
@@ -174,8 +180,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (sm == null)
                 sm = encoder.toSOAPMessage(im, messageInfo);
 
-            // Setting encoder here is necessary for calls to getBindingId()
-            messageInfo.setEncoder(encoder);
+
             Map<String, Object> context = processMetadata(messageInfo, sm);
 
             // set the MIME headers on connection headers
