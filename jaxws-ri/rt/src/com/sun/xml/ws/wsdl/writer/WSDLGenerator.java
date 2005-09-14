@@ -283,7 +283,7 @@ public class WSDLGenerator {
                             part.type(jaxbContext.getTypeName(childParam.getTypeReference()));
                         }
                     } else {
-                        part = message.part().name(param.getName().getLocalPart());
+                        part = message.part().name(param.getPartName());
                         part.element(param.getName());
                     }
                 }
@@ -359,7 +359,7 @@ public class WSDLGenerator {
         int i = 0;
         for (Parameter parameter : sortedParams) {
             if (parameter.getIndex() >= 0) {
-               partName = parameter.getName().getLocalPart();
+               partName = parameter.getPartName();
                 if (!partNames.contains(partName)) {
                     if (i++ > 0)
                         paramOrder.append(' ');
@@ -392,7 +392,7 @@ public class WSDLGenerator {
                     partName = RESPONSE;
                 }
             } else {
-               partName = parameter.getName().getLocalPart();
+               partName = parameter.getPartName();
             }
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
@@ -528,13 +528,13 @@ public class WSDLGenerator {
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
                                 parts.append(' ');
-                            parts.append(parameter.getName().getLocalPart());
+                            parts.append(parameter.getPartName());
                         }
                         body.parts(parts.toString());
                     } else if (param.isWrapperStyle()) {
                         body.parts(PARAMETERS);
                     } else {
-                       body.parts(param.getName().getLocalPart());
+                       body.parts(param.getPartName());
                     }
                     generateSOAPHeaders(input, headerParams, requestMessage);
                 }
@@ -564,7 +564,7 @@ public class WSDLGenerator {
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
                                 parts += " ";
-                            parts += parameter.getName().getLocalPart();
+                            parts += parameter.getPartName();
                         }
                     } else {
                         if (param != null) {
@@ -575,7 +575,7 @@ public class WSDLGenerator {
                                 else
                                     parts = UNWRAPPABLE_RESULT;
                             } else {
-                                parts = param.getName().getLocalPart();
+                                parts = param.getPartName();
                             }
                         } 
                     }
@@ -622,13 +622,13 @@ public class WSDLGenerator {
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
                                 parts.append(' ');
-                            parts.append(parameter.getName().getLocalPart());
+                            parts.append(parameter.getPartName());
                         }
                         body.parts(parts.toString());
                     } else if (param.isWrapperStyle()) {
                         body.parts(PARAMETERS);
                     } else {
-                       body.parts(param.getName().getLocalPart());
+                       body.parts(param.getPartName());
                     }
                     generateSOAP12Headers(input, headerParams, requestMessage);
                 }
@@ -658,7 +658,7 @@ public class WSDLGenerator {
                         for (Parameter parameter : ((WrapperParameter)param).getWrapperChildren()) {
                             if (i++>0)
                                 parts += " ";
-                            parts += parameter.getName().getLocalPart();
+                            parts += parameter.getPartName();
                         }
                         body.parts(parts);
                     } else if (param.isWrapperStyle()) {
@@ -668,7 +668,7 @@ public class WSDLGenerator {
                         else
                             body.parts(UNWRAPPABLE_RESULT);
                     } else {
-                        body.parts(param.getName().getLocalPart());
+                        body.parts(param.getPartName());
                     }
                     generateSOAP12Headers(output, headerParams, responseMessage);
                 }
