@@ -60,7 +60,7 @@ import java.lang.reflect.Method;
  *
  * @author WS Development Team
  */
-public class SOAPMessageContextImpl implements SOAPMessageContext,
+public class SOAPMessageContextImpl extends MessageContextImpl implements SOAPMessageContext,
     com.sun.xml.ws.spi.runtime.SOAPMessageContext {
 
     private HandlerContext handlerCtxt;
