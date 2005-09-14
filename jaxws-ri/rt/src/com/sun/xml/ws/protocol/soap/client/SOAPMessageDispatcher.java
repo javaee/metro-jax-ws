@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.35 2005-09-12 18:34:16 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.36 2005-09-14 11:45:23 sandoz Exp $
  */
 
 /*
@@ -350,6 +350,23 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         SOAPXMLDecoder decoder = (SOAPXMLDecoder) contactInfo.getDecoder(messageInfo);
 
         SOAPMessage sm = decoder.toSOAPMessage(messageInfo);
+
+        // Content negotiation logic
+        String contentNegotiationType = (String)messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+        // If XML request
+        if (contentNegotiationType == "pessimistic") {
+            try {
+                // If FI response (TODO: remove dep with SAAJ RI)
+                if (((com.sun.xml.messaging.saaj.soap.MessageImpl) sm).isFastInfoset()) {
+                    Map requestContext = (Map)messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
+                    // Further requests will be send using FI
+                    requestContext.put(CONTENT_NEGOTIATION_PROPERTY, "optimistic");
+                }
+            }
+            catch (ClassCastException e) {
+                // Content negotiation fails
+            }
+        }
 
         try {
             logResponseMessage(sm, messageInfo);
