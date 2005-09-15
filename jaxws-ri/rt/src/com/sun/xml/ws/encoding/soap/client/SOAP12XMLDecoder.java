@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.9 2005-09-10 19:47:40 kohsuke Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.10 2005-09-15 19:06:23 arungupta Exp $
  */
 
 /*
@@ -147,7 +147,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return new SOAP12FaultInfo (code, reason, node, role, detail);
     }
 
-    private QName readFaultValue (XMLStreamReader reader){
+    protected QName readFaultValue (XMLStreamReader reader){
         XMLStreamReaderUtil.verifyReaderState (reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_VALUE);
 
@@ -173,7 +173,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return new QName (uri, localPart);
     }
 
-    private FaultSubcode readFaultSubcode (XMLStreamReader reader){
+    protected FaultSubcode readFaultSubcode (XMLStreamReader reader){
         FaultSubcode code = null;
         QName name = reader.getName ();
         if(name.equals (SOAP12Constants.QNAME_FAULT_SUBCODE)){
@@ -190,7 +190,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return code;
     }
 
-    private FaultReason readFaultReason (XMLStreamReader reader){
+    protected FaultReason readFaultReason (XMLStreamReader reader){
         XMLStreamReaderUtil.verifyReaderState (reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_REASON);
         XMLStreamReaderUtil.nextElementContent (reader);
@@ -207,7 +207,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return new FaultReason (frt);
     }
 
-    private void readFaultReasonTexts (XMLStreamReader reader, List<FaultReasonText> texts) {
+    protected void readFaultReasonTexts (XMLStreamReader reader, List<FaultReasonText> texts) {
         QName name = reader.getName ();
         if (!name.equals (SOAP12Constants.QNAME_FAULT_REASON_TEXT)) {
             return;
@@ -239,7 +239,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         readFaultReasonTexts (reader, texts);
     }
 
-    private Object readFaultDetail (XMLStreamReader reader, MessageInfo mi){
+    protected Object readFaultDetail (XMLStreamReader reader, MessageInfo mi){
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext (mi);
         QName faultName = reader.getName ();
         if (((SOAPRuntimeModel) rtCtxt.getModel ()).isKnownFault (faultName, mi.getMethod ())) {

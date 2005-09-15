@@ -467,7 +467,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return jc;
     }
 
-    private String getBindingId(MessageInfo messageInfo){
+    protected String getBindingId(MessageInfo messageInfo){
         RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         String bindingId = null;
         if (requestContext != null){
@@ -475,7 +475,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             if (bindingId != null)
                 return bindingId;
         }
-           return getBindingId();
+        return getBindingId();
     }
 }
 

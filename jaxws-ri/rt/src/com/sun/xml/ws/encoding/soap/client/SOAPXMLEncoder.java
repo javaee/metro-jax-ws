@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.11 2005-09-10 19:47:41 kohsuke Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.12 2005-09-15 19:06:23 arungupta Exp $
  */
 
 /*
@@ -79,7 +79,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return jc;
     }
     
-    private boolean skipHeader (MessageInfo messageInfo) {
+    protected boolean skipHeader (MessageInfo messageInfo) {
         if (messageInfo.getMetaData (DispatchContext.DISPATCH_MESSAGE_MODE) ==
             Service.Mode.PAYLOAD) {
             return true;
@@ -214,108 +214,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         internalMessage.setBody (bodyBlock);
         return internalMessage;
     }
-
-//    /**
-//     * @param messageInfo
-//     */
-//    protected void processProperties(MessageInfo messageInfo) {
-//        SOAPMessageContext messageContext = new SOAPMessageContext();
-//        SOAPMessage soapMessage = messageContext.createMessage(getBindingId());
-//        MimeHeaders mimeHeaders = soapMessage.getMimeHeaders();
-//
-//        ContextMap properties = (ContextMap) messageInfo
-//            .getMetaData(JAXWS_CONTEXT_PROPERTY);
-//
-//        if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
-//            messageContext.put(ONE_WAY_OPERATION, "true");
-//
-//        ClientTransportFactory clientTransportFactory = null;
-//        boolean acceptPropertySet = false;
-//        boolean encodingPropertySet = false;
-//        // process the properties
-//        if (properties != null) {
-//            for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
-//                String propName = (String) names.next();
-//                // consume PEPT-specific properties
-//                if (propName.equals(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY)) {
-//                    clientTransportFactory = (ClientTransportFactory) properties
-//                        .get(propName);
-//                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
-//                    Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
-//                    if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
-//                        Object cookieJar = properties.get(HTTP_COOKIE_JAR);
-//                        if (cookieJar != null)
-//                            messageContext.put(HTTP_COOKIE_JAR, cookieJar);
-//                    }
-//                } else if (propName.equals(XMLFAST_ENCODING_PROPERTY)) {
-//                    encodingPropertySet = true;
-//                    String encoding = (String) properties.get(XMLFAST_ENCODING_PROPERTY);
-//                    if (encoding != null) {
-//                        if (encoding.equals(FAST_ENCODING_VALUE)) {
-//                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, FAST_CONTENT_TYPE_VALUE);
-//                        } else {
-//                            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, getContentType(messageInfo));
-//                        }
-//                    } else { // default is XML encoding
-//                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    }
-//                } else if (propName.equals(ACCEPT_ENCODING_PROPERTY)) {
-//                    acceptPropertySet = true;
-//                    String accept = (String) properties.get(ACCEPT_ENCODING_PROPERTY);
-//                    if (accept != null) {
-//                        if (accept.equals(FAST_ENCODING_VALUE))
-//                            mimeHeaders.addHeader(ACCEPT_PROPERTY, FAST_ACCEPT_VALUE);
-//                        else
-//                            mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    } else { // default is XML encoding
-//                        mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//                    }
-//                } else {
-//                    messageContext.put(propName, properties.get(propName));
-//                }
-//            }
-//        }
-//
-//        // default Content-Type is XML encoding
-//        if (!encodingPropertySet) {
-//            mimeHeaders.addHeader(CONTENT_TYPE_PROPERTY, XML_CONTENT_TYPE_VALUE);
-//        }
-//
-//        // default Accept is XML encoding
-//        if (!acceptPropertySet) {
-//            if (getBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-//                mimeHeaders.addHeader(ACCEPT_PROPERTY, SOAP12_XML_ACCEPT_VALUE);
-//            } else {
-//                mimeHeaders.addHeader(ACCEPT_PROPERTY, XML_ACCEPT_VALUE);
-//            }
-//        }
-//
-//        RuntimeContext runtimeContext = (RuntimeContext) messageInfo.getMetaData(JAXWS_RUNTIME_CONTEXT);
-//        if (runtimeContext != null) {
-//            JavaMethod javaMethod = runtimeContext.getModel().getJavaMethod(messageInfo.getMethod());
-//            if (javaMethod != null) {
-//                String soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
-//                if (soapAction != null)
-//                    messageContext.put(javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY, soapAction);
-//            }
-//        }
-//
-//        messageContext.setMessage(soapMessage);
-//        ClientTransport clientTransport = null;
-//
-//
-//            if (clientTransportFactory == null) {
-//                clientTransportFactory = new HttpClientTransportFactory();
-//            }
-//            if (clientTransportFactory instanceof HttpClientTransportFactory) {
-//                clientTransport = ((HttpClientTransportFactory) clientTransportFactory).create(getBindingId());
-//            } else {
-//                //local transport
-//                clientTransport = clientTransportFactory.create();
-//            }
-//            messageInfo.setConnection(new ClientConnectionBase((String) properties.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY), clientTransport,
-//            messageContext));
-//    }
 
     protected JAXWSAttachmentMarshaller getAttachmentMarshaller(MessageInfo messageInfo) {
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
