@@ -544,4 +544,31 @@
           zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
       <delete dir="${source.drop.dir}"/>
     </target>
+
+
+
+  <!-- =====================
+       SVR4 DISTRIBUTION 
+       ===================== -->
+  <!-- assumes the dist target has been run -->
+  <target name="create.pkg" description="Create JAX-WS svr4 package">
+    <ant antfile="build-pkg.xml" target="create.pkg" inheritrefs="true"/>
+  </target>
+
+  <!-- =====================
+       RPM DISTRIBUTION 
+       ===================== -->
+  <!-- assumes the dist target has been called -->
+  <target name="create.rpm" description="Create JAX-WS RPM">
+    <ant antfile="build-pkg.xml" target="create.rpm" inheritrefs="true"/>
+  </target>
+
+  <!-- =======================
+       ZIP FILE DISTRIBUTION 
+       ======================= -->
+  <!-- assumes the dist target has been called -->
+  <target name="create.zip" description="Create JAX-WS ZIP">
+    <ant antfile="build-pkg.xml" target="create.zip" inheritrefs="true"/>
+  </target>
+
 </project>

@@ -1,0 +1,35 @@
+%define _topdir @build.dir@
+Summary: The Java API for XML Web Services
+Name: sun-jaxws
+Version: @jaxrpc.version@ 
+Release: @jaxrpc.release@ 
+License: Copyright 2004 Sun Microsystems, Inc.  All rights reserved.  Use is subject to license terms.
+Group: Development/Libraries
+Source: %{name}-%{version}.tar
+Distribution: @prod.name@
+Vendor: Sun Microsystems, Inc.
+Provides: %{name}-@jaxrpc.version@-@jaxrpc.release@
+Requires: sun-saaj, sun-jaxb, sun-wscl
+BuildRoot: %{_topdir}/BUILD/%{name}-%{version}
+URL: http://www.sun.com
+
+%description
+Java API for XML Web Services
+
+%prep
+
+%setup
+
+%build
+
+%install
+
+%clean
+
+%files
+%attr(755,root,root) @install.prefix@/bin/wsgen
+%attr(755,root,root) @install.prefix@/bin/wsimport
+%attr(-,root,root) @install.prefix@/share/lib/jaxws-api.jar
+%attr(-,root,root) @install.prefix@/share/lib/jaxws-tools.jar
+%attr(-,root,root) @install.prefix@/share/lib/jaxws-rt.jar
+
