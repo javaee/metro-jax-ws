@@ -37,6 +37,10 @@ public class MessageContextUtil {
     public static String getBindingId(MessageContext ctxt) {
         return (String)((MessageContextImpl)ctxt).getInternalMap().get(BINDING_ID);
     }
+
+     public static void setBindingId(MessageContext ctxt, String bindingId) {
+        ((MessageContextImpl)ctxt).getInternalMap().put(BINDING_ID, bindingId);
+    }
     
     /**
      * Sets the invocation method.
