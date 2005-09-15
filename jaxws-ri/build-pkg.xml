@@ -164,44 +164,44 @@
     <mkdir dir="${rpm.build.dir}/SRPMS"/>
 
     <!-- copy template spec file to spec file in build dir and replace variables -->
-    <copy tofile="${rpm.build.dir}/SPECS/JAXRPC.spec" file="${basedir}/rpm/JAXRPC.spec.tmpl"
+    <copy tofile="${rpm.build.dir}/SPECS/JAXWS.spec" file="${basedir}/rpm/JAXWS.spec.tmpl"
       overwrite="yes"/>
 
     <!-- replace jaxws version -->
-    <replace file="${rpm.build.dir}/SPECS/JAXRPC.spec" value="${rpm.version}">
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.version}">
       <replacetoken>@jaxws.version@</replacetoken>
     </replace>
 
     <!-- replace jaxws release -->
-    <replace file="${rpm.build.dir}/SPECS/JAXRPC.spec" value="${rpm.release}">
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.release}">
       <replacetoken>@jaxws.release@</replacetoken>
     </replace>
 
     <!-- replace product name -->
-    <replace file="${rpm.build.dir}/SPECS/JAXRPC.spec" value="${pkg.prod.name}">
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${pkg.prod.name}">
       <replacetoken>@prod.name@</replacetoken>
     </replace>
 
     <!-- replace build dir  -->
-    <replace file="${rpm.build.dir}/SPECS/JAXRPC.spec" value="${rpm.build.dir}">
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.build.dir}">
       <replacetoken>@build.dir@</replacetoken>
     </replace>
 
     <!-- replace prefix value  -->
-    <replace file="${rpm.build.dir}/SPECS/JAXRPC.spec" value="${rpm.install.base}">
+    <replace file="${rpm.build.dir}/SPECS/JAXWS.spec" value="${rpm.install.base}">
       <replacetoken>@install.prefix@</replacetoken>
     </replace>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wscompile" overwrite="yes">
+    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wsgen" overwrite="yes">
       <fileset dir="${basedir}/rpm">
-        <include name="wscompile.template"/>
+        <include name="wsgen.template"/>
       </fileset>
     </copy>
 
-    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wsdeploy" overwrite="yes">
+    <copy tofile="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/bin/wsimport" overwrite="yes">
       <fileset dir="${basedir}/rpm">
-        <include name="wsdeploy.template"/>
+        <include name="wsimport.template"/>
       </fileset>
     </copy>
 
@@ -218,7 +218,7 @@
 
     <!-- copy jaxws specific jar files into the right directory structure -->
     <copy todir="${rpm.build.dir}/SOURCES/sun-jaxws-${rpm.version}${rpm.install.base}/share/lib" overwrite="yes">
-      <fileset dir="${dist.home}/lib">
+	    <fileset dir="${dist.home}/jaxws-ri/lib">
         <include name="jaxws-*.jar"/>
       </fileset>
     </copy>
@@ -230,7 +230,7 @@
     <exec executable="rpmbuild" failonerror="true"
      dir="${rpm.build.dir}">
       <arg value="-bb"/>
-      <arg value="SPECS/JAXRPC.spec"/>
+      <arg value="SPECS/JAXWS.spec"/>
     </exec>
 		
     <!-- make output directory -->
@@ -254,28 +254,28 @@
     <mkdir dir="${zip.release.dir}"/>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy tofile="${zip.build.dir}/jaxws/bin/wscompile.bat" overwrite="yes">
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.bat" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="wscompile.bat"/>
+        <include name="wsgen.bat"/>
       </fileset>
     </copy>
 
-    <copy tofile="${zip.build.dir}/jaxws/bin/wsdeploy.bat" overwrite="yes">
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.bat" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="wsdeploy.bat"/>
+        <include name="wsimport.bat"/>
       </fileset>
     </copy>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy tofile="${zip.build.dir}/jaxws/bin/wscompile.sh" overwrite="yes">
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.sh" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="wscompile.sh"/>
+        <include name="wsgen.sh"/>
       </fileset>
     </copy>
 
-    <copy tofile="${zip.build.dir}/jaxws/bin/wsdeploy.sh" overwrite="yes">
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.sh" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="wsdeploy.sh"/>
+        <include name="wsimport.sh"/>
       </fileset>
     </copy>
 
