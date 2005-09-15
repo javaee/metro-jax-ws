@@ -40,21 +40,16 @@ import java.lang.reflect.Method;
  * @author WS Development Team
  * @author WS Development Team
  */
-public class XMLHandlerContext {
+public class XMLHandlerContext extends HandlerContext {
 
-    private MessageInfo messageInfo;
-    private InternalMessage internalMessage;
     private XMLMessage xmlMessage;
     private LogicalMessageContext logicalContext;
-    private MessageContext msgContext;
 
     public XMLHandlerContext(MessageInfo messageInfo,
             InternalMessage internalMessage,
             XMLMessage xmlMessage) {
-        this.messageInfo = messageInfo;
-        this.internalMessage = internalMessage;
+        super(messageInfo, internalMessage);
         this.xmlMessage = xmlMessage;
-        this.msgContext = new MessageContextImpl();
     }
 
     public LogicalMessageContext getLogicalMessageContext() {
@@ -62,14 +57,6 @@ public class XMLHandlerContext {
             logicalContext = new XMLLogicalMessageContextImpl(this);
         }
         return logicalContext;
-    }
-    
-    public MessageContext getMessageContext() {
-        return msgContext;
-    }
-    
-    public void setMessageContext(MessageContext msgContext) {
-        this.msgContext = msgContext;
     }
     
     /**
@@ -84,28 +71,6 @@ public class XMLHandlerContext {
      */
     public void setXMLMessage(XMLMessage xmlMessage) {
         this.xmlMessage = xmlMessage;
-    }
-
-    public InternalMessage getInternalMessage() {
-        return internalMessage;
-    }
-
-    /**
-    * @param internalMessage The internalMessage to set.
-    */
-    public void setInternalMessage(InternalMessage internalMessage) {
-        this.internalMessage = internalMessage;
-    }
-
-    public MessageInfo getMessageInfo() {
-        return messageInfo;
-    }
-
-    /**
-    * @param messageInfo The messageInfo to set.
-    */
-    public void setMessageInfo(MessageInfo messageInfo) {
-        this.messageInfo = messageInfo;
     }
 
 }

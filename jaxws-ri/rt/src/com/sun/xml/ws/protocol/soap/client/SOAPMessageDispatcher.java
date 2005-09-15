@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.37 2005-09-14 19:50:12 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.38 2005-09-15 03:08:23 jitu Exp $
  */
 
 /*
@@ -43,7 +43,7 @@ import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
-import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.handler.SOAPMessageContextImpl;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.model.RuntimeModel;
@@ -129,12 +129,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             sm = (SOAPMessage) messageInfo.getData()[0];
         }
         try {
-            HandlerContext handlerContext = null;
+            SOAPHandlerContext handlerContext = null;
             InternalMessage im = encoder.toInternalMessage(messageInfo);
 
             HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
             if (caller.hasHandlers()) {
-                handlerContext = new HandlerContext(messageInfo, im, sm);
+                handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                 updateMessageContext(messageInfo, handlerContext);
 
                 handlerResult = callHandlersOnRequest(handlerContext);
@@ -160,7 +160,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     getSystemHandlerDelegate();
             if (systemHandlerDelegate != null) {
                 if (handlerContext == null) {
-                    handlerContext = new HandlerContext(messageInfo, im, sm);
+                    handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                     updateMessageContext(messageInfo, handlerContext);
                 }
                 //already used im, we can set that to null
@@ -378,7 +378,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        HandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
+        SOAPHandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
 
         SystemHandlerDelegate systemHandlerDelegate =
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
@@ -425,14 +425,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    private HandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {
-        HandlerContext handlerContext = (HandlerContext) messageInfo
+    private SOAPHandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {
+        SOAPHandlerContext handlerContext = (SOAPHandlerContext) messageInfo
             .getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY);
         if (handlerContext != null) {
             handlerContext.setSOAPMessage(sm);
             handlerContext.setInternalMessage(null);
         } else
-            handlerContext = new HandlerContext(messageInfo, null, sm);
+            handlerContext = new SOAPHandlerContext(messageInfo, null, sm);
         return handlerContext;
     }
 
@@ -513,7 +513,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return r;
     }
 
-    private void makeSOAPMessage(MessageInfo messageInfo, HandlerContext context) {
+    private void makeSOAPMessage(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         if (internalMessage != null) {
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
@@ -524,14 +524,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    protected boolean callHandlersOnRequest(HandlerContext handlerContext) {
+    protected boolean callHandlersOnRequest(SOAPHandlerContext handlerContext) {
         HandlerChainCaller caller = getHandlerChainCaller(handlerContext.getMessageInfo());
         boolean responseExpected = (handlerContext.getMessageInfo().getMEP() != MessageStruct.ONE_WAY_MEP);
         return caller.callHandlers(Direction.OUTBOUND, RequestOrResponse.REQUEST, handlerContext,
             responseExpected);
     }
 
-    protected boolean callHandlersOnResponse(HandlerContext handlerContext) {
+    protected boolean callHandlersOnResponse(SOAPHandlerContext handlerContext) {
         HandlerChainCaller caller = getHandlerChainCaller(handlerContext.getMessageInfo());
         return caller.callHandlers(Direction.INBOUND, RequestOrResponse.RESPONSE, handlerContext,
             false);
@@ -550,7 +550,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return binding.getHandlerChainCaller();
     }
 
-    protected void updateMessageContext(MessageInfo messageInfo, HandlerContext context) {
+    protected void updateMessageContext(MessageInfo messageInfo, SOAPHandlerContext context) {
         SOAPMessageContext messageContext = context.getSOAPMessageContext();
         messageInfo.setMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY, context);
         RequestContext ctxt = (RequestContext) messageInfo
@@ -590,7 +590,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    protected void updateResponseContext(MessageInfo messageInfo, HandlerContext context) {
+    protected void updateResponseContext(MessageInfo messageInfo, SOAPHandlerContext context) {
 
         ResponseContext responseContext = new ResponseContext(null);
         javax.xml.ws.handler.soap.SOAPMessageContext messageContext = (javax.xml.ws.handler.soap.SOAPMessageContext) context
@@ -704,7 +704,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    private void closeAllHandlers(HandlerContext context) {
+    private void closeAllHandlers(SOAPHandlerContext context) {
         HandlerChainCaller caller = getHandlerChainCaller(context.getMessageInfo());
         if (caller != null && caller.hasHandlers()) {
             caller.forceCloseHandlers(context);

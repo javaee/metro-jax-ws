@@ -33,7 +33,7 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
-import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
@@ -101,7 +101,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // Content negotiation fails
             }
             
-            HandlerContext context = new HandlerContext(messageInfo, null,
+            SOAPHandlerContext context = new SOAPHandlerContext(messageInfo, null,
                 soapMessage);
             updateContextPropertyBag(messageInfo, context);
                     
@@ -131,7 +131,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    protected void toMessageInfo(MessageInfo messageInfo, HandlerContext context) {
+    protected void toMessageInfo(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         try {
             SOAPMessage soapMessage = context.getSOAPMessage();
@@ -187,7 +187,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * Sets the WebServiceContext with correct MessageContext which contains
      * APPLICATION scope properties
      */
-    protected void updateWebServiceContext(MessageInfo messageInfo, HandlerContext hc) {
+    protected void updateWebServiceContext(MessageInfo messageInfo, SOAPHandlerContext hc) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         rtCtxt.setHandlerContext(hc);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
@@ -201,14 +201,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     /*
      * Invokes the endpoint.
      */
-    protected void invokeEndpoint(MessageInfo messageInfo, HandlerContext hc) {
+    protected void invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
         TargetFinder targetFinder =
             messageInfo.getEPTFactory().getTargetFinder(messageInfo);
         Tie tie = targetFinder.findTarget(messageInfo);
         tie._invoke(messageInfo);
     }
 
-    protected void getResponse(MessageInfo messageInfo, HandlerContext context) {
+    protected void getResponse(MessageInfo messageInfo, SOAPHandlerContext context) {
         setResponseInContext(messageInfo, context);
         try {
             HandlerChainCaller handlerCaller =
@@ -232,7 +232,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
     
-    private void makeSOAPMessage(MessageInfo messageInfo, HandlerContext context) {
+    private void makeSOAPMessage(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         if (internalMessage != null) {
             LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
@@ -248,7 +248,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * is converted to InternalMessage or SOAPMessage and set in HandlerContext
      */
     protected void setResponseInContext(MessageInfo messageInfo,
-            HandlerContext context) {
+            SOAPHandlerContext context) {
         // MessageInfo to InternalMessage
         LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
         InternalMessage internalMessage = (InternalMessage)eptf.getInternalEncoder().toInternalMessage(
@@ -291,7 +291,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * returns whether to invoke endpoint or not.
      */
     private boolean callHandlersOnRequest(MessageInfo messageInfo,
-        HandlerContext context, boolean responseExpected) {
+        SOAPHandlerContext context, boolean responseExpected) {
 
         boolean skipEndpoint = false;
         HandlerChainCaller handlerCaller =
@@ -327,7 +327,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     protected boolean callHandlersOnResponse(HandlerChainCaller caller,
-        HandlerContext context) {
+        SOAPHandlerContext context) {
 
         return caller.callHandlers(Direction.OUTBOUND,
             RequestOrResponse.RESPONSE, context, false);
@@ -337,7 +337,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * Used when the endpoint throws an exception. HandleFault is called
      * on the server handlers rather than handleMessage.
      */
-    protected boolean  callHandleFault(HandlerChainCaller caller, HandlerContext context) {
+    protected boolean  callHandleFault(HandlerChainCaller caller, SOAPHandlerContext context) {
         return caller.callHandleFault(context);
     }
 
@@ -347,7 +347,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * it is a one-way message, have the handler chain caller
      * call close on the handlers.
      */
-    private void closeHandlers(MessageInfo info, HandlerContext context) {
+    private void closeHandlers(MessageInfo info, SOAPHandlerContext context) {
         HandlerChainCaller handlerCaller =
             (HandlerChainCaller) info.getMetaData(
                 HandlerChainCaller.HANDLER_CHAIN_CALLER);
@@ -373,7 +373,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     // copy from message info to handler context
     private void updateContextPropertyBag(MessageInfo messageInfo,
-            HandlerContext context) {
+            SOAPHandlerContext context) {
         
         RuntimeEndpointInfo endpointInfo = 
             MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
@@ -393,12 +393,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     
         MessageInfo messageInfo;
         SOAPMessage soapMessage;
-        HandlerContext context;
+        SOAPHandlerContext context;
         boolean skipEndpoint;
         SystemHandlerDelegate shd;
         
         SoapInvoker(MessageInfo messageInfo, SOAPMessage soapMessage,
-                HandlerContext context, SystemHandlerDelegate shd) {
+                SOAPHandlerContext context, SystemHandlerDelegate shd) {
             this.messageInfo = messageInfo;
             this.soapMessage = soapMessage;
             this.context = context;

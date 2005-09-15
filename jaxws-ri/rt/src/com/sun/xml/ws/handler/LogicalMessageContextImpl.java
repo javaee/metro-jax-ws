@@ -43,10 +43,10 @@ import com.sun.xml.ws.spi.runtime.MessageContext;
  */
 public class LogicalMessageContextImpl implements LogicalMessageContext {
     
-    HandlerContext handlerCtxt;
+    SOAPHandlerContext handlerCtxt;
     MessageContext ctxt;
 
-    public LogicalMessageContextImpl(HandlerContext handlerCtxt) {
+    public LogicalMessageContextImpl(SOAPHandlerContext handlerCtxt) {
         this.handlerCtxt = handlerCtxt;
         ctxt = handlerCtxt.getMessageContext();
     }

@@ -30,7 +30,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.handler.LogicalMessageImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
@@ -51,7 +51,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      * invoke(SOAPMessage, HandlerContext) to Object[]
      */
     @Override
-    protected void toMessageInfo(MessageInfo messageInfo, HandlerContext context) {
+    protected void toMessageInfo(MessageInfo messageInfo, SOAPHandlerContext context) {
         Object[] data = new Object[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
@@ -106,7 +106,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      */
     @Override
     protected void setResponseInContext(MessageInfo messageInfo,
-            HandlerContext context) {
+            SOAPHandlerContext context) {
         Object obj = messageInfo.getResponse();
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
@@ -148,7 +148,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      * This is taken care here after invoking the endpoint.
      */
     @Override
-    protected void invokeEndpoint(MessageInfo messageInfo, HandlerContext hc) {
+    protected void invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
         super.invokeEndpoint(messageInfo, hc);
         if (isOneway(messageInfo)) {
             sendResponseOneway(messageInfo);

@@ -63,13 +63,13 @@ import java.lang.reflect.Method;
 public class SOAPMessageContextImpl extends MessageContextImpl implements SOAPMessageContext,
     com.sun.xml.ws.spi.runtime.SOAPMessageContext {
 
-    private HandlerContext handlerCtxt;
+    private SOAPHandlerContext handlerCtxt;
     private MessageContext ctxt;
     private Set<String> roles;
     private static Map<String, Class> allowedTypes = null;
     private boolean failure;
 
-    public SOAPMessageContextImpl(HandlerContext handlerCtxt) {
+    public SOAPMessageContextImpl(SOAPHandlerContext handlerCtxt) {
         this.handlerCtxt = handlerCtxt;
         this.ctxt = handlerCtxt.getMessageContext();
         if (allowedTypes == null) {

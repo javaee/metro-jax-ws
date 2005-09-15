@@ -277,7 +277,7 @@ public class HandlerChainCaller {
      */
     public boolean callHandlers(Direction direction,
         RequestOrResponse messageType,
-        HandlerContext context,
+        SOAPHandlerContext context,
         boolean responseExpected) {
         
         return internalCallHandlers(direction, messageType,
@@ -364,7 +364,7 @@ public class HandlerChainCaller {
      * handlers have been called during the request and so all are
      * closed.
      */
-    public boolean callHandleFault(HandlerContext context) {
+    public boolean callHandleFault(SOAPHandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, true);
         ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
@@ -744,7 +744,7 @@ public class HandlerChainCaller {
      * by the client when an MU fault occurs since the handler chain
      * never gets invoked. Either way, the direction is an inbound message.
      */
-    public void forceCloseHandlers(HandlerContext context) {
+    public void forceCloseHandlers(SOAPHandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
 
         // only called after an inbound request
@@ -820,10 +820,10 @@ public class HandlerChainCaller {
     static class ContextHolder {
 
         boolean logicalOnly;
-        HandlerContext context;
+        SOAPHandlerContext context;
         XMLHandlerContext xmlContext;
 
-        ContextHolder(HandlerContext context) {
+        ContextHolder(SOAPHandlerContext context) {
             this.context = context;
             logicalOnly = false;
         }

@@ -59,9 +59,9 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
  */
 public class LogicalMessageImpl implements LogicalMessage {
 
-    private HandlerContext ctxt;
+    private SOAPHandlerContext ctxt;
 
-    public LogicalMessageImpl(HandlerContext ctxt) {
+    public LogicalMessageImpl(SOAPHandlerContext ctxt) {
         this.ctxt = ctxt;
     }
 

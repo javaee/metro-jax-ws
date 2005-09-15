@@ -46,50 +46,47 @@ import java.lang.reflect.Method;
  *
  * @author WS Development Team
  */
-public class HandlerContext {
+public class SOAPHandlerContext extends HandlerContext {
 
-    private MessageInfo messageInfo;
-    private InternalMessage internalMessage;
-    private MessageContext msgContext;
+    private SOAPMessage soapMessage;
+    private SOAPMessageContext soapContext;
+    private LogicalMessageContext logicalContext;
 
-    public HandlerContext(MessageInfo messageInfo,
-            InternalMessage internalMessage) {
-        this.messageInfo = messageInfo;
-        this.internalMessage = internalMessage;
-        this.msgContext = new MessageContextImpl();
+    public SOAPHandlerContext(MessageInfo messageInfo,
+            InternalMessage internalMessage,
+            SOAPMessage soapMessage) {
+        super(messageInfo, internalMessage);
+        this.soapMessage = soapMessage;
+    }
+
+    public SOAPMessageContext getSOAPMessageContext() {
+        if (soapContext == null) {
+            soapContext = new SOAPMessageContextImpl(this);
+        }
+        return soapContext;
     }
     
+    public LogicalMessageContext getLogicalMessageContext() {
+        if (logicalContext == null) {
+            logicalContext = new LogicalMessageContextImpl(this);
+        }
+        return logicalContext;
+    }
+
+
     /**
      * @return Returns the soapMessage.
      */
-    public MessageContext getMessageContext() {
-        return msgContext;
-    }
-    
-    public void setMessageContext(MessageContext msgContext) {
-        this.msgContext = msgContext;
+    public SOAPMessage getSOAPMessage() {
+        return soapMessage;
     }
 
-    public InternalMessage getInternalMessage() {
-        return internalMessage;
-    }
 
     /**
-    * @param internalMessage The internalMessage to set.
-    */
-    public void setInternalMessage(InternalMessage internalMessage) {
-        this.internalMessage = internalMessage;
-    }
-
-    public MessageInfo getMessageInfo() {
-        return messageInfo;
-    }
-
-    /**
-    * @param messageInfo The messageInfo to set.
-    */
-    public void setMessageInfo(MessageInfo messageInfo) {
-        this.messageInfo = messageInfo;
+     * @param soapMessage The soapMessage to set.
+     */
+    public void setSOAPMessage(SOAPMessage soapMessage) {
+        this.soapMessage = soapMessage;
     }
 
 }
