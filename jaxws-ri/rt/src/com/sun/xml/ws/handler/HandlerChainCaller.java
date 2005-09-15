@@ -516,7 +516,9 @@ public class HandlerChainCaller {
 
                         if (responseExpected) {
                             // reverse and call handle message/response
-                            callProtocolHandleMessage(holder, i, 0);
+                            if (i>0) {
+                                callProtocolHandleMessage(holder, i-1, 0);
+                            }
                             callLogicalHandleMessage(holder,
                                 logicalHandlers.size()-1, 0);
                         }
@@ -562,9 +564,9 @@ public class HandlerChainCaller {
                     if (soapHandlers.get(i).
                         handleMessage(holder.getSMC()) == false) {
 
-                        if (responseExpected) {
-                            // reverse and call handle message/response
-                            callProtocolHandleMessage(holder, i,
+                        // reverse and call handle message/response
+                        if (responseExpected && i != soapHandlers.size()-1) {
+                            callProtocolHandleMessage(holder, i+1,
                                 soapHandlers.size()-1);
                         }
                         if (type == RequestOrResponse.RESPONSE) {
