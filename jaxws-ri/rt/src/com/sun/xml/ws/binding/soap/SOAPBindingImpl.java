@@ -22,6 +22,7 @@ package com.sun.xml.ws.binding.soap;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegateFactory;
 import com.sun.xml.ws.util.SOAPUtil;
@@ -174,7 +175,12 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         return SOAPUtil.getMessageFactory(getBindingId());
     }
 
-    // handler chain caller only used on client side
+    public HandlerChainCaller getHandlerChainCaller() {
+        HandlerChainCaller caller = super.getHandlerChainCaller();
+        caller.setRoles(roles);
+        return chainCaller;
+    }
+    
     protected void setRolesOnHandlerChain() {
         if (chainCaller != null) {
             chainCaller.setRoles(roles);

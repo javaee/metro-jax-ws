@@ -244,10 +244,7 @@ public class HandlerAnnotationProcessor {
                     XMLStreamReaderUtil.nextContent(reader);
                 }
 
-                // finish handler info and add to chain
-                if (!initParams.isEmpty()) {
-                    handler.init(initParams);
-                }
+                handler.init(initParams);
                 handlerChain.add(handler);
 
                 // move past </handler>

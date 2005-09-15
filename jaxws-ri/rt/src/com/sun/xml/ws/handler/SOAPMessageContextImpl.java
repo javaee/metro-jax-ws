@@ -65,7 +65,7 @@ public class SOAPMessageContextImpl extends MessageContextImpl implements SOAPMe
 
     private SOAPHandlerContext handlerCtxt;
     private MessageContext ctxt;
-    private Set<String> roles;
+    private Set<URI> roles;
     private static Map<String, Class> allowedTypes = null;
     private boolean failure;
 
@@ -143,20 +143,11 @@ public class SOAPMessageContextImpl extends MessageContextImpl implements SOAPMe
         }
     }
 
-    // todo: change underlying set to URI instead of String?
     public Set<URI> getRoles() {
-        try {
-            Set<URI> uris = new HashSet<URI>(roles.size());
-            for (String role : roles) {
-                uris.add(new URI(role));
-            }
-            return uris;
-        } catch (URISyntaxException e) {
-            throw new WebServiceException(e);
-        }
+        return roles;
     }
 
-    void setRoles(Set<String> roles) {
+    void setRoles(Set<URI> roles) {
         this.roles = roles;
     }
 

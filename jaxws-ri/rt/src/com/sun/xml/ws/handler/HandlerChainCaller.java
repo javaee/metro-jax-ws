@@ -321,7 +321,7 @@ public class HandlerChainCaller {
         
         // if there is as soap message context, set roles
         if (ch.getSMC() != null) {
-            ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+            ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
         }
 
         // call handlers
@@ -367,7 +367,7 @@ public class HandlerChainCaller {
     public boolean callHandleFault(SOAPHandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, true);
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
 
         int i = 0; // counter for logical handlers
         int j = 0; // counter for protocol handlers
@@ -749,7 +749,7 @@ public class HandlerChainCaller {
 
         // only called after an inbound request
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
-        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoleStrings());
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
         closeHandlers(ch);
     }
 
