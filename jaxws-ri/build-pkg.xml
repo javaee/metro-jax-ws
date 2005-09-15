@@ -281,7 +281,7 @@
 
     <!-- copy jaxws specific jar files into the right directory structure -->
     <copy todir="${zip.build.dir}/jaxws/lib" overwrite="yes">
-      <fileset dir="${dist.home}/lib">
+	<fileset dir="${dist.home}/jaxws-ri/lib">
         <include name="jaxws-*.jar"/>
       </fileset>
     </copy>
