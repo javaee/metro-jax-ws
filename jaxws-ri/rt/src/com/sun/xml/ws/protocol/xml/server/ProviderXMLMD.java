@@ -34,6 +34,7 @@ import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import javax.activation.DataSource;
 
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 
 /**
  * @author WS Development Team
@@ -96,13 +97,17 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
         Class providerClass = provider.getClass();
+        
+        boolean useFastInfoset = 
+            messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic";
+        
         XMLMessage xmlMessage = null;
         if (messageInfo.getResponseType() == MessageInfo.NORMAL_RESPONSE) {
             xmlMessage = (obj instanceof DataSource) 
-                ? new XMLMessage((DataSource)obj) 
-                : new XMLMessage((Source)obj);
+                ? new XMLMessage((DataSource)obj, useFastInfoset) 
+                : new XMLMessage((Source)obj, useFastInfoset);
         } else {
-            xmlMessage = new XMLMessage((Exception)obj);
+            xmlMessage = new XMLMessage((Exception)obj, useFastInfoset);
         }
         context.setXMLMessage(xmlMessage);
         context.setInternalMessage(null);

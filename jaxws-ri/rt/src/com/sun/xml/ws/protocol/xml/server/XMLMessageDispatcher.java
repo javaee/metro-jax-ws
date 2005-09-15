@@ -47,6 +47,8 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 
+import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
+
 /**
  * @author WS Development Team
  *
@@ -77,6 +79,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 sendResponseError(messageInfo, e);
                 return;
             }
+            
+            // If FI is accepted by client, set property to optimistic
+            if (xmlMessage.acceptFastInfoset()) {
+                messageInfo.setMetaData(CONTENT_NEGOTIATION_PROPERTY, "optimistic");
+            }                
 
             XMLHandlerContext context = new XMLHandlerContext(messageInfo, null,
                 xmlMessage);

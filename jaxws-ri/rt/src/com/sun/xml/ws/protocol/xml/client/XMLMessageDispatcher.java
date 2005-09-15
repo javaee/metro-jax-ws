@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.8 2005-09-10 19:47:54 kohsuke Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.9 2005-09-15 23:18:30 spericas Exp $
  */
 
 /*
@@ -119,15 +119,23 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS) != DispatchContext.MessageClass.JAXBOBJECT) {
             throw new WebServiceException();
         }
+        
+        // Determine if Fast Infoset is to be used
+        boolean useFastInfoset = 
+            messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic";
+        
         XMLMessage xm = null;
 
         Object object = messageInfo.getData()[0];
-        if (object instanceof Source)
-            xm = new XMLMessage((Source) object);
-        else if (object instanceof DataSource)
-            xm = new XMLMessage((DataSource) object);
-        else
-            xm = new XMLMessage(object, getJAXBContext(messageInfo));
+        if (object instanceof Source) {
+            xm = new XMLMessage((Source) object, useFastInfoset);
+        }
+        else if (object instanceof DataSource) {
+            xm = new XMLMessage((DataSource) object, useFastInfoset);
+        }
+        else {
+            xm = new XMLMessage(object, getJAXBContext(messageInfo), useFastInfoset);
+        }
 
         try {
             HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
@@ -230,7 +238,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
-        } else {
+        } 
+        else {
             xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
@@ -300,6 +309,23 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //        SOAPMessage sm = decoder.toSOAPMessage(messageInfo);
         XMLMessage xm = getXMLMessage(messageInfo);
 
+        // Content negotiation logic
+        String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+        
+        // If XML request
+        if (contentNegotiation == "pessimistic") {
+            try {
+                if (xm.isFastInfoset()) {
+                    Map requestContext = (Map) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
+                    // Further requests will be send using FI
+                    requestContext.put(CONTENT_NEGOTIATION_PROPERTY, "optimistic");
+                }
+            }
+            catch (ClassCastException e) {
+                // Content negotiation fails
+            }
+        }
+                
         try {
             logResponseMessage(xm, messageInfo);
         } catch (Exception ex) {

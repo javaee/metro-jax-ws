@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.6 2005-09-10 19:48:14 kohsuke Exp $
+ * $Id: XMLConnectionUtil.java,v 1.7 2005-09-15 23:18:31 spericas Exp $
  */
 
 /*
@@ -103,7 +103,10 @@ public class XMLConnectionUtil {
         try {
             StreamSource source = new StreamSource(
                     new ByteArrayInputStream(DEFAULT_SERVER_ERROR.getBytes()));
-            XMLMessage message = new XMLMessage(source);
+            
+            // TODO: FI content negotiation, second param to XMLMessage() constructor
+            
+            XMLMessage message = new XMLMessage(source, false);
             setStatus(con, WSConnection.INTERNAL_ERR);
             send(con, message);
         } catch(Exception e) {

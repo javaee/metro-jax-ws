@@ -19,6 +19,7 @@
  */
 
 package com.sun.xml.ws.encoding.xml;
+
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
@@ -29,6 +30,8 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.util.FastInfosetReflection;
+import com.sun.xml.ws.util.FastInfosetUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,6 +42,7 @@ import javax.activation.DataSource;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -59,14 +63,22 @@ public class XMLMessage {
     private static final Logger log = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".protocol.xml");
 
-    private static final int PLAIN_XML_FLAG = 1;
-    private static final int MIME_MULTIPART_FLAG = 2;
+    private static final int PLAIN_XML_FLAG      = 1;       // 00001
+    private static final int MIME_MULTIPART_FLAG = 2;       // 00010
+    private static final int FI_ENCODED_FLAG     = 16;      // 10000
     
     protected MimeHeaders headers;
     protected XMLDataSource xmlDataSource;
     protected XMLSource xmlSource;
     protected XMLJaxb jaxbObject;
     protected Exception err;
+    
+    /**
+     * Indicates when Fast Infoset should be used to serialize
+     * this message.
+     */
+    protected boolean useFastInfoset = false;
+    
     private static final String DEFAULT_SERVER_ERROR =
         "<?xml version='1.0' encoding='UTF-8'?>"
         + "<err>Internal Server Error: Unknown content in XMLMessage</err>";
@@ -103,10 +115,12 @@ public class XMLMessage {
             int contentTypeId = identifyContentType(contentType);
 
             if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                xmlSource = new XMLSource(in);
-            } else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                xmlDataSource = new XMLDataSource(ct, in);
-            } else {
+                xmlSource = new XMLSource(in, (contentTypeId & FI_ENCODED_FLAG) > 0);
+            } 
+            else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
+                xmlDataSource = new XMLDataSource(ct, in);      // TODO: Fast Infoset
+            } 
+            else {
                 throw new XMLMessageException("xml.unknown.Content-Type");
             }
         } catch (Exception ex) {
@@ -115,28 +129,58 @@ public class XMLMessage {
         }
     }
     
-    public XMLMessage(Source source) {
+    public XMLMessage(Source source, boolean useFastInfoset) {
         this.xmlSource = new XMLSource(source);
         this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type", "text/xml");
+        this.useFastInfoset = useFastInfoset;
+        headers.addHeader("Content-Type", 
+            useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
     
-    public XMLMessage(Exception err) {
+    public XMLMessage(Exception err, boolean useFastInfoset) {
         this.err = err;
         this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type", "text/xml");
+        this.useFastInfoset = useFastInfoset;
+        headers.addHeader("Content-Type", 
+            useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
     
-    public XMLMessage(DataSource dataSource) {
+    public XMLMessage(DataSource dataSource, boolean useFastInfoset) {
         this.xmlDataSource = new XMLDataSource(dataSource);
         this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type", dataSource.getContentType());
+        this.useFastInfoset = useFastInfoset;
+        headers.addHeader("Content-Type", dataSource.getContentType());     // TODO FI
     }
     
-    public XMLMessage(Object object, JAXBContext context) {
+    public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
         this.jaxbObject = new XMLJaxb(object, context);
         this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type", "text/xml");
+        this.useFastInfoset = useFastInfoset;
+        headers.addHeader("Content-Type", 
+            useFastInfoset ? "application/fastinfoset" : "text/xml");
+    }
+
+    /**
+     * Returns true if the underlying encoding of this message is FI.
+     */
+    public boolean isFastInfoset() {
+        if (xmlSource != null) {
+            return xmlSource.isFastInfoset();
+        } 
+        else if (xmlDataSource != null) {
+            return xmlDataSource.isFastInfoset();
+        } 
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the sender of this message accepts FI. Slow, but
+     * should only be called once.
+     */
+    public boolean acceptFastInfoset() {
+        return FastInfosetUtil.isFastInfosetAccepted(headers.getHeader("Accept"));
     }
     
     public Source getSource() {
@@ -151,7 +195,6 @@ public class XMLMessage {
     
     public DataSource getDataSource() {
         return xmlDataSource.getDataSource();
-
     }
 
     /**
@@ -169,17 +212,27 @@ public class XMLMessage {
                 String type = contentType.getParameter("type");
                 if (isXMLType(type)) {
                     return MIME_MULTIPART_FLAG;
-                } else {
+                }
+                else if (isFastInfosetType(type)) {
+                    return MIME_MULTIPART_FLAG | FI_ENCODED_FLAG;
+                } 
+                else {
                     throw new XMLMessageException(
                             "xml.content-type.mustbe.multipart");
                 }
-            } else {
+            } 
+            else {
                 throw new XMLMessageException("xml.invalid.content-type",
                         new Object[] { primary+"/"+sub } );
             }
-        } else if (isXMLType(primary, sub)) {
+        } 
+        else if (isXMLType(primary, sub)) {
             return PLAIN_XML_FLAG;
-        } else {
+        }
+        else if (isFastInfosetType(primary, sub)) {
+            return PLAIN_XML_FLAG | FI_ENCODED_FLAG;
+        }
+        else {
             throw new XMLMessageException("xml.invalid.content-type",
                     new Object[] { primary+"/"+sub } );
         }
@@ -193,6 +246,14 @@ public class XMLMessage {
         return type.toLowerCase().startsWith("text/xml");
     }
 
+    protected static boolean isFastInfosetType(String primary, String sub) {
+        return primary.equalsIgnoreCase("application") && sub.equalsIgnoreCase("fastinfoset");
+    }
+    
+    protected static boolean isFastInfosetType(String type) {
+        return type.toLowerCase().startsWith("application/fastinfoset");
+    }
+    
     public MimeHeaders getMimeHeaders() {
         return this.headers;
     }
@@ -231,25 +292,40 @@ public class XMLMessage {
         }
         return WSConnection.OK;
     }
-
+    
     public void writeTo(OutputStream out)
-    throws MessagingException, IOException, TransformerException {
+        throws MessagingException, IOException, TransformerException 
+    {
         if (xmlDataSource != null) {
-            xmlDataSource.writeTo(out);
-        } else if (xmlSource != null) {
-            xmlSource.writeTo(out);
-
-        } else if (jaxbObject != null) {
-            jaxbObject.writeTo(out);
-        } else if (err != null) {
+            xmlDataSource.writeTo(out); // TODO: useFastInfoset
+        } 
+        else if (xmlSource != null) {
+            xmlSource.writeTo(out, useFastInfoset);
+        } 
+        else if (jaxbObject != null) {
+            jaxbObject.writeTo(out, useFastInfoset);
+        } 
+        else if (err != null) {
             String msg = err.getMessage();
             if (msg == null) {
                 msg = err.toString();
             }
             msg = "<err>"+msg+"</err>";
-            out.write(msg.getBytes());
-        } else {
-            out.write(DEFAULT_SERVER_ERROR.getBytes());
+            
+            if (useFastInfoset) {
+                FastInfosetUtil.transcodeXMLStringToFI(msg, out);
+            }
+            else {
+                out.write(msg.getBytes());
+            }
+        } 
+        else {
+            if (useFastInfoset) {
+                FastInfosetUtil.transcodeXMLStringToFI(DEFAULT_SERVER_ERROR, out);
+            }
+            else {
+                out.write(DEFAULT_SERVER_ERROR.getBytes());
+            }
         }
     }
     
@@ -326,6 +402,10 @@ public class XMLMessage {
             this.dataSource = dataSource;
         }
         
+        public boolean isFastInfoset() {
+            return false;       // TODO
+        }
+        
         public DataSource getDataSource() {
             if (dataSource != null) {
                 return dataSource;
@@ -388,7 +468,7 @@ public class XMLMessage {
                 multipart.removeBodyPart(sourcePart);
                 
                 ByteOutputStream bos = new ByteOutputStream();
-                xmlSource.writeTo(bos);
+                xmlSource.writeTo(bos, false);
                 InternetHeaders headers = new InternetHeaders();
                 headers.addHeader("Content-Type", ctype);
                 sourcePart = new MimeBodyPart(headers, bos.getBytes(),bos.getCount());
@@ -481,36 +561,70 @@ public class XMLMessage {
     }
     
     public static class XMLSource {
-        private Source source;
         
-        public XMLSource(InputStream in) {
-            this.source = new StreamSource(in);
+        private Source source;
+        private boolean isFastInfoset;
+        
+        public XMLSource(InputStream in, boolean isFastInfoset) throws Exception {
+            this.source = isFastInfoset ? 
+                FastInfosetReflection.FastInfosetSource_new(in) 
+                : new StreamSource(in);
+            this.isFastInfoset = isFastInfoset;
         }
 
         public XMLSource(Source source) {
             this.source = source;
+            this.isFastInfoset = 
+                (source.getClass() == FastInfosetReflection.fiFastInfosetSource);
+        }
+        
+        /**
+         * Returns true whenever the underlying representation of this message
+         * is a Fast Infoset stream.
+         */
+        public boolean isFastInfoset() {
+           return isFastInfoset; 
         }
         
         /*
-         * If there is a StreamSource with ByteInputStream, write the underlying
-         * buffer to stream. Otherwise, use Transformer to write Source to the
-         * ouput stream.
+         * If there is a ByteInputStream available, then write it to the output
+         * stream. Otherwise, use Transformer to write Source to output stream.
          */
-        public void writeTo(OutputStream out) {
+        public void writeTo(OutputStream out, boolean useFastInfoset) {
             try {
+                InputStream is = null;
+                boolean canAvoidTransform = false;
+                
                 if (source instanceof StreamSource) {
-                    InputStream is = ((StreamSource)source).getInputStream();
-                    if (is != null && is instanceof ByteInputStream) {
-                        ByteInputStream bis = (ByteInputStream)is;
-                        bis.close();                // Reset the stream
-                        byte[] buf = bis.getBytes();
-                        out.write(buf);
-                        return;
-                    }
+                    is = ((StreamSource)source).getInputStream();
+                    // If use of FI is requested, need to transcode
+                    canAvoidTransform = !useFastInfoset;                        
                 }
+                else if (source.getClass() == FastInfosetReflection.fiFastInfosetSource) {
+                    is = FastInfosetReflection.FastInfosetSource_getInputStream(source);
+                    // If use of FI is not requested, need to transcode
+                    canAvoidTransform = useFastInfoset;
+                }
+                
+                assert is != null;
+                
+                if (canAvoidTransform && is instanceof ByteInputStream) {
+                    ByteInputStream bis = (ByteInputStream)is;
+                    bis.close();                // Reset the stream
+                    byte[] buf = bis.getBytes();
+                    out.write(buf);
+                    return;
+                }                
+                
+                // TODO: Use an efficient transformer from SAAJ that knows how to optimally
+                // write to FI results
+                
                 Transformer transformer = XmlUtil.newTransformer();
-                transformer.transform(source, new StreamResult(out));
-            } catch(Exception e) {
+                transformer.transform(source, 
+                    useFastInfoset ? FastInfosetReflection.FastInfosetResult_new(out)
+                                   : new StreamResult(out));
+            } 
+            catch (Exception e) {
                 throw new WebServiceException(e);
             }
         }
@@ -528,25 +642,51 @@ public class XMLMessage {
             try {
                 if (source instanceof DOMSource) {
                     return source;
-                } else if (source instanceof StreamSource) {
-                    InputStream is = ((StreamSource)source).getInputStream();
-                    if (is != null && is instanceof ByteInputStream) {
-                        ByteInputStream bis = (ByteInputStream)is;
-                        bis.close();                // Reset the stream
-                        byte[] buf = bis.getBytes();
-                        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-                        return new StreamSource(bais);
-                    }
+                } 
+                
+                InputStream is = null;
+                
+                if (source instanceof StreamSource) {
+                    is = ((StreamSource)source).getInputStream();
                 }
+                else if (source.getClass() == FastInfosetReflection.fiFastInfosetSource) {
+                    is = FastInfosetReflection.FastInfosetSource_getInputStream(source);
+                }
+                
+                assert is != null;
+                
+                if (is != null && is instanceof ByteInputStream) {
+                    ByteInputStream bis = (ByteInputStream)is;
+                    bis.close();                // Reset the stream
+                    byte[] buf = bis.getBytes();
+                    ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                    return isFastInfoset ? 
+                        FastInfosetReflection.FastInfosetSource_new(is)
+                        : new StreamSource(bais);
+                }
+                
+                // Copy source to result respecting desired encoding
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 Transformer transformer = XmlUtil.newTransformer();
-                transformer.transform(source, new StreamResult(baos));
+                transformer.transform(source, isFastInfoset ? 
+                    FastInfosetReflection.FastInfosetResult_new(baos)
+                    : new StreamResult(baos));
                 baos.close();
+                
+                // Set internal source 
                 byte[] buf = baos.toByteArray();
-                source = new StreamSource(new ByteInputStream(buf, buf.length));
+                ByteInputStream bis = new ByteInputStream(buf, buf.length);
+                source = isFastInfoset ?
+                    FastInfosetReflection.FastInfosetSource_new(bis) 
+                    : new StreamSource(bis);
+                
+                // Return fresh source back to handler
                 ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-                return new StreamSource(bais);
-            } catch(Exception e) {
+                return isFastInfoset ? 
+                    FastInfosetReflection.FastInfosetSource_new(bais)
+                    : new StreamSource(bais);
+            } 
+            catch (Exception e) {
                 throw new WebServiceException(e);
             }
         }
@@ -571,17 +711,32 @@ public class XMLMessage {
         /*
          * Usually called from logical handler
          *
-         * Convert to StreamSource. In the process of converting, if there is a
-         * JAXB exception, propagate it
+         * Convert to StreamSource or FastInfosetSource. In the process of converting, 
+         * if there is a JAXB exception, propagate it
          */
         public void setPayload(Object jaxbObj, JAXBContext ctxt) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                JAXBTypeSerializer.getInstance().serialize(jaxbObj, baos, ctxt);
-                baos.close();
+                
+                // If old source was FI, re-encode using FI
+                if (isFastInfoset) {
+                    JAXBTypeSerializer.getInstance().serialize(jaxbObj, 
+                        XMLStreamWriterFactory.createFIStreamWriter(baos),
+                        ctxt);                    
+                }
+                else {
+                    JAXBTypeSerializer.getInstance().serialize(jaxbObj, baos, ctxt);
+                }
+                
+                // Return XML or FI source
+                baos.close();                
                 byte[] buf = baos.toByteArray();
-                source = new StreamSource(new ByteInputStream(buf, buf.length));
-            } catch(Exception e) {
+                ByteInputStream bis = new ByteInputStream(buf, buf.length);
+                source = isFastInfoset ?
+                    FastInfosetReflection.FastInfosetSource_new(bis)
+                    : new StreamSource(bis);
+            } 
+            catch (Exception e) {
                 throw new WebServiceException(e);
             }
         }
@@ -597,14 +752,24 @@ public class XMLMessage {
             this.jaxbContext = jaxbContext;
         }
         
-        public void writeTo(OutputStream out) {
+        public void writeTo(OutputStream out, boolean useFastInfoset) {
             try {
                 JAXBBeanInfo beanInfo = new JAXBBeanInfo(object, jaxbContext);
                 baos = new ByteArrayOutputStream();
-                JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
-                    baos, beanInfo.getJAXBContext());
+                
+                if (useFastInfoset) {
+                    JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+                        XMLStreamWriterFactory.createFIStreamWriter(out), 
+                        beanInfo.getJAXBContext());
+                }
+                else {
+                    JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+                        baos, beanInfo.getJAXBContext());
+                }
+                
                 out.write(baos.toByteArray());
-            } catch(Exception e) {
+            } 
+            catch(Exception e) {
                 throw new WebServiceException(e);
             }
         }
