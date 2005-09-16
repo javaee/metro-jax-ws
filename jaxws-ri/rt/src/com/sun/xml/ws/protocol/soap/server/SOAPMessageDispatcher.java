@@ -108,20 +108,18 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
                 context, shd);
-            if (shd != null) {
+            if (shd == null) {
+                implementor.invoke();
+            } else {
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
-                MessageContextUtil.setInvoker(context.getMessageContext(),
-                    implementor);
-                shd.processRequest(context.getSOAPMessageContext());
-                // TODO: need to act if processRequest() retuns false
-            } else {
-                implementor.invoke();
-            }
-            if (shd != null) {
-                context.getMessageContext().put(
-                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                shd.processResponse(context.getSOAPMessageContext());
+                MessageContextUtil.setInvoker(context.getMessageContext(), implementor);
+                if (shd.processRequest(context.getSOAPMessageContext())) {
+                    implementor.invoke();
+                    context.getMessageContext().put(
+                        MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                    shd.processResponse(context.getSOAPMessageContext());
+                }
             }
             makeSOAPMessage(messageInfo, context);
             sendResponse(messageInfo, context.getSOAPMessage());
