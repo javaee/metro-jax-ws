@@ -1,20 +1,36 @@
 #!/bin/sh
+
 #
-# Copyright 2002 Sun Microsystems, Inc.  All rights reserved.
-# Use is subject to license terms.
+# $Id: wsimport.template,v 1.2 2005-09-16 21:53:53 jitu Exp $
 #
 
 #
-# Script to run WSDeploy
+# The contents of this file are subject to the terms
+# of the Common Development and Distribution License
+# (the "License").  You may not use this file except
+# in compliance with the License.
+# 
+# You can obtain a copy of the license at
+# https://jwsdp.dev.java.net/CDDLv1.0.html
+# See the License for the specific language governing
+# permissions and limitations under the License.
+# 
+# When distributing Covered Code, include this CDDL
+# HEADER in each file and include the License file at
+# https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
+# add the following below this CDDL HEADER, with the
+# fields enclosed by brackets "[]" replaced with your
+# own identifying information: Portions Copyright [yyyy]
+# [name of copyright owner]
+#
 
 if [ -z "$JAVA_HOME" ]; then
-	echo "ERROR: Set JAVA_HOME to the path where the J2SE (JDK) is installed (e.g., /usr/java/jdk1.4)"
-	exit 1
+    echo "ERROR: Set JAVA_HOME to the path where the J2SE (JDK) is installed (e.g., /usr/java/jdk1.3)"
+    exit 1
 fi
 
 WEBSERVICES_LIB=%WEBSERVICES_LIB%
 
-# Set CLASSPATH
-CLASSPATH=.:$WEBSERVICES_LIB/jaxrpc-impl.jar:$WEBSERVICES_LIB/jaxrpc-api.jar:$WEBSERVICES_LIB/jaxrpc-spi.jar:$WEBSERVICES_LIB/activation.jar:$WEBSERVICES_LIB/saaj-api.jar:$WEBSERVICES_LIB/saaj-impl.jar:$WEBSERVICES_LIB/mail.jar:$WEBSERVICES_LIB/dom.jar:$WEBSERVICES_LIB/xalan.jar:$WEBSERVICES_LIB/xercesImpl.jar:$WEBSERVICES_LIB/jax-qname.jar:$WEBSERVICES_LIB/relaxngDatatype.jar:$WEBSERVICES_LIB/xsdlib.jar:$JAVA_HOME/lib/tools.jar
+CLASSPATH=.:$WEBSERVICES_LIB/lib/jaxws-rt.jar:$WEBSERVICES_LIB/lib/jaxws-tools.jar:$WEBSERVICES_LIB/lib/jaxws-api.jar:$WEBSERVICES_LIB/lib/activation.jar:$WEBSERVICES_LIB/lib/saaj-api.jar:$WEBSERVICES_LIB/lib/saaj-impl.jar:$WEBSERVICES_LIB/lib/relaxngDatatype.jar:$WEBSERVICES_LIB/lib/jaxb-xjc.jar:$WEBSERVICES_LIB/lib/jsr173_api.jar:$WEBSERVICES_LIB/lib/sjsxp.jar:$WEBSERVICES_LIB/lib/jaxb-api.jar:$WEBSERVICES_LIB/lib/jaxb-impl.jar:$WEBSERVICES_LIB/lib/jaxb-libs.jar:$WEBSERVICES_LIB/lib/jsr181-api.jar:$JAVA_HOME/lib/tools.jar
 
-$JAVA_HOME/bin/java -classpath "$CLASSPATH" com.sun.xml.rpc.tools.wsdeploy.Main "$@"
+$JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsImport "$@"
