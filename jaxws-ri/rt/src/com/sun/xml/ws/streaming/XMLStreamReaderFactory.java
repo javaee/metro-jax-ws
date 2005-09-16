@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.11 2005-09-10 19:48:04 kohsuke Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.12 2005-09-16 11:41:40 sandoz Exp $
  */
 
 /*
@@ -38,6 +38,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.MalformedURLException;
 
+import com.sun.xml.ws.util.SunStAXReflection;
+import com.sun.xml.ws.util.FastInfosetReflection;
+
 /**
  * <p>A factory to create XML and FI parsers.</p>
  *
@@ -49,37 +52,7 @@ public class XMLStreamReaderFactory {
      * StAX input factory shared by all threads.
      */
     static XMLInputFactory xmlInputFactory;
-    
-    /**
-     * FI StAXDocumentParser constructor using reflection.
-     */
-    static Constructor fiStAXDocumentParser_new;
-    
-    /**
-     * FI <code>StAXDocumentParser.reset()</code> method via reflection.
-     */
-    static Method fiStAXDocumentParser_reset;
-    
-    /**
-     * FI <code>StAXDocumentParser.setInputStream()</code> method via reflection.
-     */
-    static Method fiStAXDocumentParser_setInputStream;
-    
-    /**
-     * FI <code>StAXDocumentParser.setStringInterning()</code> method via reflection.
-     */
-    static Method fiStAXDocumentParser_setStringInterning;
-    
-    /**
-     * Zephyr's <code>XMLReaderImpl.setInputSource()</code> method via reflection.
-     */
-    static Method XMLReaderImpl_setInputSource;
-    
-    /**
-     * Zephyr's <code>XMLReaderImpl.reset()</code> method via reflection.
-     */
-    static Method XMLReaderImpl_reset;
-    
+            
     /**
      * FI stream reader for each thread.
      */
@@ -101,30 +74,6 @@ public class XMLStreamReaderFactory {
         }
         catch (IllegalArgumentException e) {
             // falls through
-        }
-            
-        // Use reflection to avoid static dependency with FI and Zephyr jar
-        try {
-            Class clazz;
-            
-            clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
-            fiStAXDocumentParser_new = clazz.getConstructor();
-            fiStAXDocumentParser_setInputStream =
-                clazz.getMethod("setInputStream", java.io.InputStream.class);
-            fiStAXDocumentParser_setStringInterning =
-                clazz.getMethod("setStringInterning", boolean.class);
-           
-            clazz = Class.forName("com.sun.xml.stream.XMLReaderImpl");
-            // Are we running on top of JAXP 1.4?
-            if (clazz == null) {
-                clazz = Class.forName("com.sun.xml.stream.XMLStreamReaderImpl");
-            }
-            XMLReaderImpl_setInputSource = 
-                clazz.getMethod("setInputSource", org.xml.sax.InputSource.class);
-            XMLReaderImpl_reset = clazz.getMethod("reset");
-        } 
-        catch (Exception e) {
-            // Falls through
         }
     }
     
@@ -183,7 +132,7 @@ public class XMLStreamReaderFactory {
         InputStream in, boolean rejectDTDs) {
         try {
             // If using Zephyr, try re-using the last instance
-            if (XMLReaderImpl_setInputSource != null) {
+            if (SunStAXReflection.XMLReaderImpl_setInputSource != null) {
                 Object xsr = xmlStreamReader.get();                
                 if (xsr == null) {
                     synchronized (xmlInputFactory) {
@@ -192,10 +141,10 @@ public class XMLStreamReaderFactory {
                     }
                 }              
                 else {
-                    XMLReaderImpl_reset.invoke(xsr);
+                    SunStAXReflection.XMLReaderImpl_reset.invoke(xsr);
                     InputSource inputSource = new InputSource(in);
                     inputSource.setSystemId(systemId);
-                    XMLReaderImpl_setInputSource.invoke(xsr, inputSource);
+                    SunStAXReflection.XMLReaderImpl_setInputSource.invoke(xsr, inputSource);
                 }                
                 return (XMLStreamReader) xsr;
             }
@@ -220,7 +169,7 @@ public class XMLStreamReaderFactory {
         boolean rejectDTDs) {
         try {
             // If using Zephyr, try re-using the last instance
-            if (XMLReaderImpl_setInputSource != null) {
+            if (SunStAXReflection.XMLReaderImpl_setInputSource != null) {
                 Object xsr = xmlStreamReader.get();                
                 if (xsr == null) {
                     synchronized (xmlInputFactory) {
@@ -229,8 +178,8 @@ public class XMLStreamReaderFactory {
                     }
                 }              
                 else {
-                    XMLReaderImpl_reset.invoke(xsr);
-                    XMLReaderImpl_setInputSource.invoke(xsr, new InputSource(reader));
+                    SunStAXReflection.XMLReaderImpl_reset.invoke(xsr);
+                    SunStAXReflection.XMLReaderImpl_setInputSource.invoke(xsr, new InputSource(reader));
                 }                
                 return (XMLStreamReader) xsr;
             }
@@ -257,7 +206,7 @@ public class XMLStreamReaderFactory {
      */
     public static XMLStreamReader createFIStreamReader(InputStream in) {
         // Check if compatible implementation of FI was found
-        if (fiStAXDocumentParser_new == null) {
+        if (FastInfosetReflection.fiStAXDocumentParser_new == null) {
             throw new XMLReaderException("fastinfoset.noImplementation");
         }
         
@@ -265,10 +214,10 @@ public class XMLStreamReaderFactory {
             Object sdp = fiStreamReader.get();
             if (sdp == null) {
                 // Do not use StAX pluggable layer for FI
-                fiStreamReader.set(sdp = fiStAXDocumentParser_new.newInstance());
+                fiStreamReader.set(sdp = FastInfosetReflection.fiStAXDocumentParser_new.newInstance());
+                FastInfosetReflection.fiStAXDocumentParser_setStringInterning.invoke(sdp, Boolean.TRUE);
             } 
-            fiStAXDocumentParser_setInputStream.invoke(sdp, in);
-            fiStAXDocumentParser_setStringInterning.invoke(sdp, Boolean.TRUE);
+            FastInfosetReflection.fiStAXDocumentParser_setInputStream.invoke(sdp, in);
             return (XMLStreamReader) sdp;
         } 
         catch (Exception e) {
