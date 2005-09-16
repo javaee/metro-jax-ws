@@ -92,9 +92,11 @@ public class XMLMessage {
     public XMLMessage(MimeHeaders headers, final InputStream in) {
         this.headers = headers;
         final String ct;
+        
         if (headers != null) {
             ct = getContentType(headers);
-        } else {
+        } 
+        else {
             throw new XMLMessageException("xml.null.headers");
         }
 
@@ -108,17 +110,18 @@ public class XMLMessage {
             // In the absence of type attribute we assume it to be text/xml.
             // That would mean we're easy on accepting the message and 
             // generate the correct thing
-            if(contentType.getParameter("type") == null) {
+            if (contentType.getParameter("type") == null) {
                 contentType.setParameter("type", "text/xml");
             }
 
             int contentTypeId = identifyContentType(contentType);
+            boolean isFastInfoset = (contentTypeId & FI_ENCODED_FLAG) > 0;
 
             if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                xmlSource = new XMLSource(in, (contentTypeId & FI_ENCODED_FLAG) > 0);
+                xmlSource = new XMLSource(in, isFastInfoset);
             } 
             else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                xmlDataSource = new XMLDataSource(ct, in);      // TODO: Fast Infoset
+                xmlDataSource = new XMLDataSource(ct, in, isFastInfoset);
             } 
             else {
                 throw new XMLMessageException("xml.unknown.Content-Type");
@@ -146,10 +149,14 @@ public class XMLMessage {
     }
     
     public XMLMessage(DataSource dataSource, boolean useFastInfoset) {
-        this.xmlDataSource = new XMLDataSource(dataSource);
+        String contentType = dataSource.getContentType();
+        this.xmlDataSource = new XMLDataSource(dataSource, 
+            contentType.indexOf("application/fastinfoset") > 0);
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
-        headers.addHeader("Content-Type", dataSource.getContentType());     // TODO FI
+        headers.addHeader("Content-Type", 
+            !useFastInfoset ? contentType 
+                : contentType.replaceFirst("text/xml", "application/fastinfoset"));
     }
     
     public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
@@ -297,7 +304,7 @@ public class XMLMessage {
         throws MessagingException, IOException, TransformerException 
     {
         if (xmlDataSource != null) {
-            xmlDataSource.writeTo(out); // TODO: useFastInfoset
+            xmlDataSource.writeTo(out, useFastInfoset);
         } 
         else if (xmlSource != null) {
             xmlSource.writeTo(out, useFastInfoset);
@@ -376,9 +383,13 @@ public class XMLMessage {
     public static class XMLDataSource {
         private DataSource dataSource;
         private MimeMultipart multipart;
-        private XMLSource xmlSource;
+        private XMLSource xmlSource;               
+        private boolean isFastInfoset;
         
-        public XMLDataSource(final String contentType, final InputStream is) {
+        public XMLDataSource(final String contentType, final InputStream is,
+            boolean isFastInfoset) 
+        {
+            this.isFastInfoset = isFastInfoset;
             dataSource = new DataSource() {
                 public InputStream getInputStream() {
                     return is;
@@ -398,23 +409,25 @@ public class XMLMessage {
             };
         }
         
-        public XMLDataSource(DataSource dataSource) {
+        public XMLDataSource(DataSource dataSource, boolean isFastInfoset) {
             this.dataSource = dataSource;
+            this.isFastInfoset = isFastInfoset;
         }
         
         public boolean isFastInfoset() {
-            return false;       // TODO
+            return isFastInfoset;
         }
         
         public DataSource getDataSource() {
             if (dataSource != null) {
                 return dataSource;
-            } else if (multipart != null) {
+            } 
+            else if (multipart != null) {
                 return new DataSource() {
                     public InputStream getInputStream() {
                         try {
                             if (xmlSource != null) {
-                                replaceRootPart();
+                                replaceRootPart(false);
                             }
                             ByteOutputStream bos = new ByteOutputStream();
                             multipart.writeTo(bos);
@@ -452,13 +465,14 @@ public class XMLMessage {
                     ? (MimeBodyPart)multipart.getBodyPart(0)
                     : (MimeBodyPart)multipart.getBodyPart(startParam);
                 return sourcePart;
-            } catch (MessagingException ex) {
+            } 
+            catch (MessagingException ex) {
                 throw new XMLMessageException("xml.get.source.err",
                         new LocalizableExceptionAdapter(ex));
             }
         }
         
-        private void replaceRootPart() {
+        private void replaceRootPart(boolean useFastInfoset) {
             if (xmlSource == null) {
                 return;
             }
@@ -468,12 +482,15 @@ public class XMLMessage {
                 multipart.removeBodyPart(sourcePart);
                 
                 ByteOutputStream bos = new ByteOutputStream();
-                xmlSource.writeTo(bos, false);
+                xmlSource.writeTo(bos, useFastInfoset);
                 InternetHeaders headers = new InternetHeaders();
-                headers.addHeader("Content-Type", ctype);
+                headers.addHeader("Content-Type", 
+                    useFastInfoset ? "application/fastinfoset" : ctype);
+                
                 sourcePart = new MimeBodyPart(headers, bos.getBytes(),bos.getCount());
                 multipart.addBodyPart(sourcePart, 0);
-            } catch (MessagingException ex) {
+            } 
+            catch (MessagingException ex) {
                 throw new XMLMessageException("xml.get.source.err",
                         new LocalizableExceptionAdapter(ex));
             }
@@ -491,29 +508,41 @@ public class XMLMessage {
             }
         }
         
-        /*
-         *
+        /**
          * Returns root part of the MIME message
          */
         public Source getSource() {
             try {
+                // If there is an XMLSource, return that
                 if (xmlSource != null) {
                     return xmlSource.getPayload();
                 }
+                
+                // Otherwise, parse MIME package and find root part
                 convertToMultipart();
                 MimeBodyPart sourcePart = getRootPart();
                 ContentType ctype = new ContentType(sourcePart.getContentType());
                 String baseType = ctype.getBaseType();
-                if (!(isXMLType(baseType))) {
+                
+                // Return a StreamSource or FastInfosetSource depending on type
+                if (isXMLType(baseType)) {
+                    return new StreamSource(sourcePart.getInputStream());                    
+                }
+                else if (isFastInfosetType(baseType)) {
+                    return FastInfosetReflection.FastInfosetSource_new(
+                        sourcePart.getInputStream());
+                }
+                else {
                     throw new XMLMessageException(
                             "xml.root.part.invalid.Content-Type",
                             new Object[] {baseType});
                 }
-                return new StreamSource(sourcePart.getInputStream());
-            } catch (MessagingException ex) {
+            } 
+            catch (MessagingException ex) {
                 throw new XMLMessageException("xml.get.source.err",
                         new LocalizableExceptionAdapter(ex));
-            } catch (IOException ioe) {
+            } 
+            catch (Exception ioe) {
                 throw new XMLMessageException("xml.get.source.err",
                         new LocalizableExceptionAdapter(ioe));
             }
@@ -537,23 +566,36 @@ public class XMLMessage {
             xmlSource.setPayload(jaxbObj, ctxt);
         }
         
-        public void writeTo(OutputStream out) {
+        public void writeTo(OutputStream out, boolean useFastInfoset) {
             try {
+                // If a source has been set, ensure MIME parsing
                 if (xmlSource != null) {
                     convertToMultipart();
                 }
+                
+                // Try to use dataSource whenever possible
                 if (dataSource != null) {
-                    InputStream is = dataSource.getInputStream();
-                    byte[] buf = new byte[1024];
-                    int len;
-                    while ((len = is.read(buf)) != -1) {
-                        out.write(buf, 0, len);
+                    // If already encoded correctly, just copy the bytes 
+                    if (isFastInfoset == useFastInfoset) {    
+                        InputStream is = dataSource.getInputStream();
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while ((len = is.read(buf)) != -1) {
+                            out.write(buf, 0, len);
+                        }                        
+                        return;     // we're done
                     }
-                } else {
-                    replaceRootPart();
-                    multipart.writeTo(out);
-                }
-            } catch(Exception e) {
+                    else {
+                        // Parse MIME and create source for root part
+                        xmlSource = new XMLSource(getSource());
+                    }
+                } 
+            
+                // Finally, possibly re-encode root part and write it out
+                replaceRootPart(useFastInfoset);
+                multipart.writeTo(out);
+            } 
+            catch(Exception e) {
                 throw new WebServiceException(e);
             }
         }
