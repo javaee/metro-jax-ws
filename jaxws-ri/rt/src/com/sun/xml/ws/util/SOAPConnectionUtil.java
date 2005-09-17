@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.14 2005-09-10 19:48:13 kohsuke Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.15 2005-09-17 01:11:16 jitu Exp $
  */
 
 /*
@@ -101,7 +101,7 @@ public class SOAPConnectionUtil {
     }
 
     public static void sendResponse(WSConnection con, SOAPMessage soapMessage) {
-        setStatus(con, WSConnection.OK);
+        //setStatus(con, WSConnection.OK);
         send(con, soapMessage);
     }
 

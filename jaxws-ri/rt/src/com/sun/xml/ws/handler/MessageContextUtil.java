@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 
 
 /**
- * Utility to manipulate MessageContext internal properties
+ * Utility to manipulate MessageContext properties
  *
  * @author WS Development Team
  */
@@ -70,5 +70,13 @@ public class MessageContextUtil {
     
     public static void setInvoker(MessageContext ctxt, Invoker invoker) {
         ((MessageContextImpl)ctxt).getInternalMap().put(INVOKER, invoker);
+    }
+    
+    public static Integer getHttpStatusCode(javax.xml.ws.handler.MessageContext ctxt) {
+        return (Integer)ctxt.get(MessageContext.HTTP_RESPONSE_CODE);
+    }
+    
+    public static void setHttpStatusCode(javax.xml.ws.handler.MessageContext ctxt, Integer code) {
+        ctxt.put(MessageContext.HTTP_RESPONSE_CODE, code);
     }
 }

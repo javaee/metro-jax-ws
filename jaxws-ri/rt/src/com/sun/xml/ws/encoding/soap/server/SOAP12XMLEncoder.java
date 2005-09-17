@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.8 2005-09-10 19:47:45 kohsuke Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.9 2005-09-17 01:11:15 jitu Exp $
  */
 
 /*
@@ -26,30 +26,22 @@ package com.sun.xml.ws.encoding.soap.server;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.WebServiceException;
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
-import javax.xml.soap.Detail;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.server.*;
-import com.sun.xml.ws.streaming.DOMStreamReader;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import javax.xml.ws.handler.MessageContext;
 
 public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     /*
@@ -105,6 +97,10 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
     protected void writeFault(SOAPFaultInfo faultInfo, MessageInfo messageInfo, XMLStreamWriter writer) {
         if(!(faultInfo instanceof SOAP12FaultInfo))
             return;
+        // Set a status code for Fault
+        MessageContext ctxt = MessageInfoUtil.getMessageContext(messageInfo);
+        MessageContextUtil.setHttpStatusCode(ctxt, WSConnection.INTERNAL_ERR);
+        
         ((SOAP12FaultInfo)faultInfo).write(writer, messageInfo);
     }
     

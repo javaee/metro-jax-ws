@@ -122,7 +122,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 }
             }
             makeSOAPMessage(messageInfo, context);
-            sendResponse(messageInfo, context.getSOAPMessage());
+            sendResponse(messageInfo, context);
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             sendResponseError(messageInfo, e);
@@ -259,12 +259,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     /*
      * Sends SOAPMessage response on the connection
      */
-    // TODO: HTTP response code
-    private void sendResponse(MessageInfo messageInfo, SOAPMessage soapMessage) {
+    private void sendResponse(MessageInfo messageInfo, SOAPHandlerContext ctxt) {
+        SOAPMessage soapMessage = ctxt.getSOAPMessage();
         WSConnection con = (WSConnection)messageInfo.getConnection();
+        Integer status = MessageContextUtil.getHttpStatusCode(ctxt.getMessageContext());
+        int statusCode = (status == null) ? WSConnection.OK : status;
+        SOAPConnectionUtil.setStatus(con, statusCode);
         SOAPConnectionUtil.sendResponse(con, soapMessage);
     }
-
+    
     protected void sendResponseOneway(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
         SOAPConnectionUtil.sendResponseOneway(con);

@@ -22,6 +22,8 @@ package com.sun.xml.ws.util;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.handler.HandlerContext;
+import javax.xml.ws.handler.MessageContext;
 
 /**
  * @author WS RI Development Team
@@ -35,6 +37,12 @@ public class MessageInfoUtil {
 
     public static RuntimeContext getRuntimeContext(MessageInfo messageInfo) {
         return (RuntimeContext)messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+    }
+    
+    public static MessageContext getMessageContext(MessageInfo messageInfo) {
+        RuntimeContext rtCtxt = getRuntimeContext(messageInfo);
+        HandlerContext hdCtxt = rtCtxt.getHandlerContext();
+        return (hdCtxt == null) ? null : hdCtxt.getMessageContext();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.8 2005-09-14 04:43:56 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.9 2005-09-17 01:11:15 jitu Exp $
  */
 
 /*
@@ -49,10 +49,13 @@ import javax.xml.soap.Detail;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 import com.sun.xml.ws.server.*;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import javax.xml.ws.handler.MessageContext;
 
 /**
  * @author WS Development Team
@@ -166,6 +169,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      */
     protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
         try {
+            // Set a status code for Fault
+            MessageContext ctxt = MessageInfoUtil.getMessageContext(messageInfo);
+            MessageContextUtil.setHttpStatusCode(ctxt, WSConnection.INTERNAL_ERR);
+            
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPConstants.QNAME_SOAP_FAULT.getLocalPart(),
                 SOAPConstants.QNAME_SOAP_FAULT.getNamespaceURI());
