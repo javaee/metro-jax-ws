@@ -24,32 +24,32 @@ import java.lang.reflect.Method;
 /**
  */
 public interface MessageContext extends javax.xml.ws.handler.MessageContext {
-        /**
+    /**
      * Returns binding id defined in API
      * bindingId is one of these values:
      * javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
      * javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING,
      * javax.xml.ws.http.HTTPBinding.HTTP_BINDING
      */
-    public String getBindingId(MessageContext ctxt);
+    public String getBindingId();
     
     /**
      * Returns the invocation method.
      *
      * @return invocation method, null if the model doesn't know
      */
-    public Method getMethod(MessageContext ctxt);
+    public Method getMethod();
     
     /**
      * Sets cannonicalization algorithm that is used while writing JAXB objects
      *
      */
-    public void setCanonicalization(MessageContext ctxt, String algorithm);
+    public void setCanonicalization(String algorithm);
     
     /**
      * Returns the Invoker
      *
      * @return Invoker
      */
-    public Invoker getInvoker(MessageContext ctxt);
+    public Invoker getInvoker();
 }

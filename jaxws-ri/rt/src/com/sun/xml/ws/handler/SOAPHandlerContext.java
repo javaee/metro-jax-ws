@@ -104,6 +104,4 @@ public class SOAPHandlerContext extends HandlerContext {
         return getSOAPMessage() != null;
     }
     
-    public void setInvoker(Invoker invoker) {
-    }
 }

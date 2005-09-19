@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.40 2005-09-19 04:03:14 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.41 2005-09-19 05:39:19 jitu Exp $
  */
 
 /*
@@ -43,14 +43,13 @@ import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
+import com.sun.xml.ws.handler.SHDSOAPMessageContext;
 import com.sun.xml.ws.handler.SOAPHandlerContext;
-import com.sun.xml.ws.handler.SOAPMessageContextImpl;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
@@ -171,8 +170,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerContext.getBindingId();
                 handlerResult =
                     systemHandlerDelegate.processRequest(
-                        (com.sun.xml.ws.spi.runtime.SOAPMessageContext)
-                            handlerContext.getSOAPMessageContext());
+                            handlerContext.getSHDSOAPMessageContext());
                 sm = handlerContext.getSOAPMessage();
             }
 
@@ -386,8 +384,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             handlerContext.getMessageContext().put(
                 MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
             try {
-            systemHandlerDelegate.processResponse((com.sun.xml.ws.spi.runtime.SOAPMessageContext)
-                new SOAPMessageContextImpl(handlerContext));
+            systemHandlerDelegate.processResponse(handlerContext.getSHDSOAPMessageContext());
             } catch (Exception e){
                 throw new RuntimeException(e);
             }

@@ -42,13 +42,6 @@ public class SHDSOAPMessageContext extends SOAPMessageContextImpl implements com
         this.handlerCtxt = handlerCtxt;
     }
     
-    /*
-     * Returns the invocation method
-     */
-    public Method getMethod() {
-        return handlerCtxt.getMessageInfo().getMethod();
-    }
-    
     /**
      * If there is a SOAPMessage already, use getSOAPMessage(). Ignore all other
      * methods
@@ -61,16 +54,14 @@ public class SHDSOAPMessageContext extends SOAPMessageContextImpl implements com
      * Returns InternalMessage's BodyBlock value
      */
     public Object getBody() {
-        InternalMessage im = handlerCtxt.getInternalMessage();
-        return (im == null)?null:im.getBody();
+        return handlerCtxt.getBody();
     }
     
     /*
      * Returns InternalMessage's HeaderBlock values
      */
     public List getHeaders() {
-        InternalMessage im = handlerCtxt.getInternalMessage();
-        return (im == null)?null:im.getHeaders();
+        return handlerCtxt.getHeaders();
     }
     
     /*
@@ -87,20 +78,20 @@ public class SHDSOAPMessageContext extends SOAPMessageContextImpl implements com
         return (InternalSoapEncoder)handlerCtxt.getMessageInfo().getEncoder();
     }
     
-    public String getBindingId(MessageContext ctxt) {
-        return null;
+    public String getBindingId() {
+        return handlerCtxt.getBindingId();
     }
     
-    public Method getMethod(MessageContext ctxt) {
-        return null;
+    public Method getMethod() {
+        return handlerCtxt.getMethod();
     }
     
-    public void setCanonicalization(MessageContext ctxt, String algorithm) {
-        
+    public void setCanonicalization(String algorithm) {
+        handlerCtxt.setCanonicalization(algorithm);
     }
     
-    public Invoker getInvoker(MessageContext ctxt) {
-        return null;
+    public Invoker getInvoker() {
+        return handlerCtxt.getInvoker();
     }
 
 }

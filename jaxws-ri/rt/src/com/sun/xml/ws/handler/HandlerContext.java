@@ -50,6 +50,11 @@ public class HandlerContext {
     private MessageInfo messageInfo;
     private InternalMessage internalMessage;
     private MessageContext msgContext;
+    
+    private Method method;
+    private Invoker invoker;
+    private String algorithm;
+    private String bindingId;
 
     public HandlerContext(MessageInfo messageInfo,
             InternalMessage internalMessage) {
@@ -95,12 +100,12 @@ public class HandlerContext {
      * Returns the invocation method
      */
     public Method getMethod() {
-        return getMessageInfo().getMethod();
+        return method;
     }
     
     public void setMethod(Method method) {
+        this.method = method;
     }
-    
     
     /*
      * Returns InternalMessage's BodyBlock value
@@ -117,19 +122,19 @@ public class HandlerContext {
     }
     
     public String getBindingId() {
-        return null;
+        return bindingId;
     }
     
-    public Method getMethod(MessageContext ctxt) {
-        return null;
+    public void setCanonicalization(String algorithm) {
+        this.algorithm = algorithm;
     }
     
-    public void setCanonicalization(MessageContext ctxt, String algorithm) {
-        
+    public Invoker getInvoker() {
+        return invoker;
     }
     
-    public Invoker getInvoker(MessageContext ctxt) {
-        return null;
+    public void setInvoker(Invoker invoker) {
+        this.invoker = invoker;
     }
     
 }
