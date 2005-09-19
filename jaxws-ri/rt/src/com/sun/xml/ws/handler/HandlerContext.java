@@ -22,10 +22,12 @@ import javax.xml.ws.handler.MessageContext;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.spi.runtime.Invoker;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * The HandlerContext is used in the client and server runtime
@@ -50,26 +52,26 @@ public class HandlerContext {
     private MessageInfo messageInfo;
     private InternalMessage internalMessage;
     private MessageContext msgContext;
-    
+
     private Method method;
     private Invoker invoker;
     private String algorithm;
     private String bindingId;
 
     public HandlerContext(MessageInfo messageInfo,
-            InternalMessage internalMessage) {
+                          InternalMessage internalMessage) {
         this.messageInfo = messageInfo;
         this.internalMessage = internalMessage;
         this.msgContext = new MessageContextImpl();
     }
-    
+
     /**
      * @return Returns the soapMessage.
      */
     public MessageContext getMessageContext() {
         return msgContext;
     }
-    
+
     public void setMessageContext(MessageContext msgContext) {
         this.msgContext = msgContext;
     }
@@ -102,39 +104,50 @@ public class HandlerContext {
     public Method getMethod() {
         return method;
     }
-    
+
     public void setMethod(Method method) {
         this.method = method;
     }
-    
+
     /*
-     * Returns InternalMessage's BodyBlock value
-     */
+    * Returns InternalMessage's BodyBlock value
+    */
     public Object getBody() {
-        return (internalMessage == null) ? null : internalMessage.getBody();
+        return (internalMessage == null) ? null : internalMessage.getBody().getValue();
     }
-    
+
     /*
-     * Returns InternalMessage's HeaderBlock values
-     */
+    * Returns InternalMessage's HeaderBlock values
+    */
     public List getHeaders() {
-        return (internalMessage == null) ? null : internalMessage.getHeaders();
+        List<HeaderBlock> headerBlocks =
+            (internalMessage == null) ? null : internalMessage.getHeaders();
+        if (headerBlocks!= null) {
+             List<Object> headers = new ArrayList();
+             for (HeaderBlock headerBlock : headerBlocks  ){
+
+                if (  headerBlock.getValue() != null)
+                    headers.add(headerBlock.getValue());                             
+             return headers;
+             }
+        }
+        return null;
     }
-    
+
     public String getBindingId() {
         return bindingId;
     }
-    
+
     public void setCanonicalization(String algorithm) {
         this.algorithm = algorithm;
     }
-    
+
     public Invoker getInvoker() {
         return invoker;
     }
-    
+
     public void setInvoker(Invoker invoker) {
         this.invoker = invoker;
     }
-    
+
 }
