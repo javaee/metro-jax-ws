@@ -30,12 +30,12 @@ import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import org.xml.sax.EntityResolver;
 
-import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceException;
+import javax.jws.WebService;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -200,7 +200,7 @@ public abstract class ServiceContextBuilder {
         return serviceContext.getHandlerResolver();
     }
 
-    private ArrayList<Class> getSEI(Class sc) {
+    private ArrayList<Class> getSEI(final Class sc) {
 
         if (sc == null) {
             throw new WebServiceException();
@@ -212,21 +212,20 @@ public abstract class ServiceContextBuilder {
                 sc.getName());
         }
 
-        Method[] methods = sc.getDeclaredMethods();
-        ArrayList<Class> classes = new ArrayList<Class>(methods.length);
-        for (final Method method : methods) {
-
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run() {
+        final ArrayList<Class> classes = new ArrayList();
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                Method[] methods = sc.getDeclaredMethods();
+                for (final Method method : methods) {
                     method.setAccessible(true);
-                    return null; // nothing to return
+                    Class seiClazz = method.getReturnType();
+                    if ((seiClazz != null) && (!seiClazz.equals("void"))) 
+                        classes.add(seiClazz);
+
                 }
-            });
-            Class seiClazz = method.getReturnType();
-            if ((seiClazz != null) && (!seiClazz.equals("void"))) {
-                classes.add(seiClazz);
+                return null;
             }
-        }
+        });
 
         return classes;
     }
@@ -236,7 +235,7 @@ public abstract class ServiceContextBuilder {
      *
      * @return the URL of the location of the WSDL for the sei, or null if none was found.
      */
-    //this will change
+//this will change
     private static String getWSDLLocation(Class<?> sei) throws MalformedURLException {
         WebService ws = sei.getAnnotation(WebService.class);
         if (ws == null)
@@ -244,7 +243,8 @@ public abstract class ServiceContextBuilder {
         return ws.wsdlLocation();
     }
 
-    //this will change
+//this will change
+
     private static SCAnnotations getSCAnnotations(Class sc) {
 
         SCAnnotations SCAnnotations = new SCAnnotations();
