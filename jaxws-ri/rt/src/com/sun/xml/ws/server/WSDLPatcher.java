@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.10 2005-09-10 19:47:58 kohsuke Exp $
+ * $Id: WSDLPatcher.java,v 1.11 2005-09-19 23:24:18 jitu Exp $
  *
  */
 
@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.XMLEvent;
 
 public class WSDLPatcher {
@@ -101,14 +102,21 @@ public class WSDLPatcher {
         XMLEventWriter writer = null;
         try {
             reader = inputFactory.createXMLEventReader(in);
-            writer = outputFactory.createXMLEventWriter(out);
             StartElement start = null;
             QName serviceName = null;
             QName portName = null;
             String targetNamespace = null;
             while(reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
-                if (event.isStartElement()) {
+                if (event.isStartDocument()) {
+                    StartDocument sd = (StartDocument)event;
+                    String encoding = sd.encodingSet() 
+                        ? sd.getCharacterEncodingScheme() 
+                        : null;
+                    writer = (encoding != null)
+                        ? outputFactory.createXMLEventWriter(out, encoding)
+                        : outputFactory.createXMLEventWriter(out);
+               } else if (event.isStartElement()) {
                     start = event.asStartElement();
                     QName name = start.getName();                    
                     if (name.equals(SCHEMA_INCLUDE_QNAME)) {
