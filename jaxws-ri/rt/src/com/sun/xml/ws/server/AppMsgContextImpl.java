@@ -18,7 +18,7 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.server;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;

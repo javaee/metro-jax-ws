@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.7 2005-09-10 19:48:14 kohsuke Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.8 2005-09-19 03:59:34 jitu Exp $
  */
 
 /*
@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 import org.xml.sax.EntityResolver;
+import javax.xml.ws.handler.MessageContext;
 
 /**
  * Singleton factory class to instantiate concrete objects.
@@ -91,7 +92,7 @@ public class WSRtObjectFactoryImpl
     }
     
     @Override
-    public com.sun.xml.ws.spi.runtime.MessageContext createMessageContext() {
+    public MessageContext createMessageContext() {
         return new MessageContextImpl();
     }
     

@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.8 2005-09-14 20:58:33 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.9 2005-09-19 03:59:33 jitu Exp $
  *
  */
 
@@ -52,7 +52,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;

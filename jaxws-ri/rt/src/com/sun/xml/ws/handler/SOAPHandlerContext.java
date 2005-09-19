@@ -20,13 +20,12 @@
 package com.sun.xml.ws.handler;
 
 import javax.xml.ws.handler.LogicalMessageContext;
-import com.sun.xml.ws.spi.runtime.SOAPMessageContext;
-import com.sun.xml.ws.spi.runtime.MessageContext;
 import javax.xml.soap.SOAPMessage;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import java.lang.reflect.Method;
+import com.sun.xml.ws.spi.runtime.Invoker;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 /**
  * The HandlerContext is used in the client and server runtime
@@ -50,6 +49,7 @@ public class SOAPHandlerContext extends HandlerContext {
 
     private SOAPMessage soapMessage;
     private SOAPMessageContext soapContext;
+    private SHDSOAPMessageContext shdsoapContext;
     private LogicalMessageContext logicalContext;
 
     public SOAPHandlerContext(MessageInfo messageInfo,
@@ -64,6 +64,13 @@ public class SOAPHandlerContext extends HandlerContext {
             soapContext = new SOAPMessageContextImpl(this);
         }
         return soapContext;
+    }
+    
+    public SHDSOAPMessageContext getSHDSOAPMessageContext() {
+        if (shdsoapContext == null) {
+            shdsoapContext = new SHDSOAPMessageContext(this);
+        }
+        return shdsoapContext;
     }
     
     public LogicalMessageContext getLogicalMessageContext() {
@@ -89,4 +96,14 @@ public class SOAPHandlerContext extends HandlerContext {
         this.soapMessage = soapMessage;
     }
 
+    /**
+     * If there is a SOAPMessage already, use getSOAPMessage(). Ignore all other
+     * methods
+     */
+    public boolean isAlreadySoap() {
+        return getSOAPMessage() != null;
+    }
+    
+    public void setInvoker(Invoker invoker) {
+    }
 }

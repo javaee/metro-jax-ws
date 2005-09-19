@@ -128,7 +128,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
                 if (!isFailure(messageInfo)) {
                     if (shd != null) {
-                        shd.preInvokeEndpointHook(context.getMessageContext());
+                        //shd.preInvokeEndpointHook(context.getMessageContext());
                     }
                     updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);

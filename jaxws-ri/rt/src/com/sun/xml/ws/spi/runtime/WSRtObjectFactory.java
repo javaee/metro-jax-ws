@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.xml.ws.util.WSRtObjectFactoryImpl;
 import java.net.URL;
 import org.xml.sax.EntityResolver;
+import javax.xml.ws.handler.MessageContext;
 
 /**
  * Singleton abstract factory used to produce JAX-WS runtime related objects.

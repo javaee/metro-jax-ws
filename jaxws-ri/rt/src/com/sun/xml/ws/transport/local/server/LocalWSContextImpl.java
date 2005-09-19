@@ -20,7 +20,7 @@
 package com.sun.xml.ws.transport.local.server;
 import java.security.Principal;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 
 
 public class LocalWSContextImpl implements WebServiceContext  {

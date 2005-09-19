@@ -113,12 +113,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             } else {
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
-                MessageContextUtil.setInvoker(context.getMessageContext(), implementor);
-                if (shd.processRequest(context.getSOAPMessageContext())) {
+                context.setInvoker(implementor);
+                if (shd.processRequest(context.getSHDSOAPMessageContext())) {
                     implementor.invoke();
                     context.getMessageContext().put(
                         MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                    shd.processResponse(context.getSOAPMessageContext());
+                    shd.processResponse(context.getSHDSOAPMessageContext());
                 }
             }
             makeSOAPMessage(messageInfo, context);
@@ -414,8 +414,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     SOAPDecoder decoder = eptf.getSOAPDecoder();
                     peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
                             messageInfo, context, true);                
-                    MessageContextUtil.setMethod(context.getMessageContext(),
-                            messageInfo.getMethod());
+                    context.setMethod(messageInfo.getMethod());
                 } catch (SOAPFaultException e) {
                     skipEndpoint = true;
                     RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
@@ -465,7 +464,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 if (!isFailure(messageInfo)) {
                     if (shd != null) {
-                        shd.preInvokeEndpointHook(context.getMessageContext());
+                        shd.preInvokeEndpointHook(context.getSHDSOAPMessageContext());
                     }
                     updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);

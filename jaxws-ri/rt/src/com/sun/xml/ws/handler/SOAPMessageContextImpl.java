@@ -60,8 +60,7 @@ import java.lang.reflect.Method;
  *
  * @author WS Development Team
  */
-public class SOAPMessageContextImpl implements SOAPMessageContext,
-    com.sun.xml.ws.spi.runtime.SOAPMessageContext {
+public class SOAPMessageContextImpl implements SOAPMessageContext {
 
     private SOAPHandlerContext handlerCtxt;
     private MessageContext ctxt;
@@ -220,50 +219,5 @@ public class SOAPMessageContextImpl implements SOAPMessageContext,
         return ctxt.values();
     }
     
-    /*
-     * Returns the invocation method
-     */
-    public Method getMethod() {
-        return handlerCtxt.getMessageInfo().getMethod();
-    }
-    
-    /**
-     * If there is a SOAPMessage already, use getSOAPMessage(). Ignore all other
-     * methods
-     */
-    public boolean isAlreadySoap() {
-        return handlerCtxt.getSOAPMessage() != null;
-    }
-    
-    /*
-     * Returns InternalMessage's BodyBlock value
-     */
-    public Object getBody() {
-        InternalMessage im = handlerCtxt.getInternalMessage();
-        return (im == null)?null:im.getBody();
-    }
-    
-    /*
-     * Returns InternalMessage's HeaderBlock values
-     */
-    public List getHeaders() {
-        InternalMessage im = handlerCtxt.getInternalMessage();
-        return (im == null)?null:im.getHeaders();
-    }
-    
-    /*
-     * Use this MessageInfo to pass to InternalSoapEncoder write methods
-     */
-    public Object getMessageInfo() {
-        return handlerCtxt.getMessageInfo();
-    }
-    
-    /*
-     * Encoder to marshall all JAXWS objects: RpcLitPayload, JAXBBridgeInfo etc
-     */
-    public InternalSoapEncoder getEncoder() {
-        return (InternalSoapEncoder)handlerCtxt.getMessageInfo().getEncoder();
-    }
-
 }
     

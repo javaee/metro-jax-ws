@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 
 /**
  * Implementation of LogicalMessageContext that is used in

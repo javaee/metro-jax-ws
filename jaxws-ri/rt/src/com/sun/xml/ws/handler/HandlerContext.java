@@ -18,15 +18,14 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.handler;
-
-import javax.xml.ws.handler.LogicalMessageContext;
-import com.sun.xml.ws.spi.runtime.SOAPMessageContext;
-import com.sun.xml.ws.spi.runtime.MessageContext;
-import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.handler.MessageContext;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
+import com.sun.xml.ws.spi.runtime.Invoker;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * The HandlerContext is used in the client and server runtime
@@ -92,4 +91,45 @@ public class HandlerContext {
         this.messageInfo = messageInfo;
     }
 
+    /*
+     * Returns the invocation method
+     */
+    public Method getMethod() {
+        return getMessageInfo().getMethod();
+    }
+    
+    public void setMethod(Method method) {
+    }
+    
+    
+    /*
+     * Returns InternalMessage's BodyBlock value
+     */
+    public Object getBody() {
+        return (internalMessage == null) ? null : internalMessage.getBody();
+    }
+    
+    /*
+     * Returns InternalMessage's HeaderBlock values
+     */
+    public List getHeaders() {
+        return (internalMessage == null) ? null : internalMessage.getHeaders();
+    }
+    
+    public String getBindingId() {
+        return null;
+    }
+    
+    public Method getMethod(MessageContext ctxt) {
+        return null;
+    }
+    
+    public void setCanonicalization(MessageContext ctxt, String algorithm) {
+        
+    }
+    
+    public Invoker getInvoker(MessageContext ctxt) {
+        return null;
+    }
+    
 }

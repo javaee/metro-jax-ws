@@ -19,6 +19,8 @@
  */
 package com.sun.xml.ws.spi.runtime;
 
+import javax.xml.ws.handler.MessageContext;
+
 public interface WebServiceContext extends javax.xml.ws.WebServiceContext {
     
     /**
@@ -26,7 +28,5 @@ public interface WebServiceContext extends javax.xml.ws.WebServiceContext {
      *
      */
     public void setMessageContext(MessageContext ctxt);
-    
-    public MessageContext getMessageContext();
     
 }

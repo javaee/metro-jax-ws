@@ -21,9 +21,7 @@ package com.sun.xml.ws.handler;
 
 import java.util.HashMap;
 
-import com.sun.xml.ws.spi.runtime.MessageContext;
-import java.lang.reflect.Method;
-import java.util.Map;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 
 /**
@@ -34,9 +32,6 @@ import javax.xml.ws.handler.MessageContext.Scope;
  */
 public class MessageContextImpl extends HashMap<String, Object>
     implements MessageContext {
-
-    // implementation specific properties
-    private Map<String, Object> internalMap = new HashMap<String, Object>();
     
     private HashMap<String, Scope> propertyScopes =
         new HashMap<String, Scope>();
@@ -44,11 +39,6 @@ public class MessageContextImpl extends HashMap<String, Object>
     // todo: check property names
     public void setScope(String name, Scope scope) {
         propertyScopes.put(name, scope);
-    }
-    
-    // No public access
-    Map<String, Object> getInternalMap() {
-        return internalMap;
     }
 
     public Scope getScope(String name) {

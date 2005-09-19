@@ -20,7 +20,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 import java.security.Principal;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 import javax.servlet.http.HttpServletRequest;
 
 public class WebServiceContextImpl implements WebServiceContext  {

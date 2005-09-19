@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.38 2005-09-15 03:08:23 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.39 2005-09-19 03:59:30 jitu Exp $
  */
 
 /*
@@ -169,7 +169,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 handlerContext.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                MessageContextUtil.getBindingId((com.sun.xml.ws.spi.runtime.MessageContext)handlerContext.getSOAPMessageContext());
+                handlerContext.getBindingId();
                 handlerResult =
                     systemHandlerDelegate.processRequest(
                         (com.sun.xml.ws.spi.runtime.SOAPMessageContext)

@@ -26,7 +26,7 @@ import com.sun.net.httpserver.HttpsServer;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+import javax.xml.ws.handler.MessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.WSConnection;
