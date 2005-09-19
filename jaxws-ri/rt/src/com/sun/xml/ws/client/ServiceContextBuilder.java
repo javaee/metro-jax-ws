@@ -211,7 +211,7 @@ public abstract class ServiceContextBuilder {
         Method[] methods = sc.getDeclaredMethods();
         ArrayList<Class> classes = new ArrayList<Class>(methods.length);
         for (Method method : methods) {
-            method.setAccessible(true);
+           // method.setAccessible(true);
             Class seiClazz = method.getReturnType();
             if ((seiClazz != null) && (!seiClazz.equals("void"))) {
                 classes.add(seiClazz);
@@ -253,7 +253,7 @@ public abstract class ServiceContextBuilder {
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
                     for (Method method : methods) {
-                        method.setAccessible(true);
+                        //method.setAccessible(true);
                         WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
                         if (webEndpoint != null) {
                             String endpointName = webEndpoint.name();
