@@ -39,13 +39,16 @@ import javax.xml.ws.WebServiceException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 /**
  * $author: WS Development Team
  */
 public abstract class ServiceContextBuilder {
-    private ServiceContextBuilder() {}  // no instantication please
+    private ServiceContextBuilder() {
+    }  // no instantication please
 
     /**
      * Creates a new {@link ServiceContext}.
@@ -59,7 +62,8 @@ public abstract class ServiceContextBuilder {
             serviceCAnnotations = getSCAnnotations(service);
             if ((serviceCAnnotations == null) && (service != javax.xml.ws.Service.class))
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
-            else serviceContext.setSCAnnotations(serviceCAnnotations);
+            else
+                serviceContext.setSCAnnotations(serviceCAnnotations);
 
             if ((wsdlLocation == null) && (serviceCAnnotations != null)) {
                 try {
@@ -143,8 +147,8 @@ public abstract class ServiceContextBuilder {
             }
 
             //toDo:
-             QName serviceName = serviceContext.getServiceName();
-             QName portName = eifc.getPortName();
+            QName serviceName = serviceContext.getServiceName();
+            QName portName = eifc.getPortName();
             if (serviceContext.getServiceClass() != null) {
                 if (serviceName == null)
                     serviceName = getServiceName(serviceContext.getServiceClass());
@@ -152,7 +156,7 @@ public abstract class ServiceContextBuilder {
                     portName = getPortName(portInterface, serviceContext.getServiceClass());
             }
 
-            if (portName == null){
+            if (portName == null) {
                 portName = serviceContext.getWsdlContext().getPortName();
             }
 
@@ -167,8 +171,8 @@ public abstract class ServiceContextBuilder {
             // get handler information
             String bindingId = modeler.getBindingId();
             HandlerAnnotationInfo chainInfo =
-                HandlerAnnotationProcessor.buildHandlerInfo(portInterface, 
-                model.getServiceQName(), model.getPortName(), bindingId);
+                HandlerAnnotationProcessor.buildHandlerInfo(portInterface,
+                    model.getServiceQName(), model.getPortName(), bindingId);
 
             if (serviceContext.getServiceName() == null)
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
@@ -210,8 +214,14 @@ public abstract class ServiceContextBuilder {
 
         Method[] methods = sc.getDeclaredMethods();
         ArrayList<Class> classes = new ArrayList<Class>(methods.length);
-        for (Method method : methods) {
-           // method.setAccessible(true);
+        for (final Method method : methods) {
+
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    method.setAccessible(true);
+                    return null; // nothing to return
+                }
+            });
             Class seiClazz = method.getReturnType();
             if ((seiClazz != null) && (!seiClazz.equals("void"))) {
                 classes.add(seiClazz);
@@ -252,8 +262,15 @@ public abstract class ServiceContextBuilder {
                 Method[] methods = sc.getDeclaredMethods();
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
-                    for (Method method : methods) {
-                        //method.setAccessible(true);
+                    for (final Method method : methods) {
+
+                        AccessController.doPrivileged(new PrivilegedAction() {
+                            public Object run() {
+                                method.setAccessible(true);
+                                return null; // nothing to return
+                            }
+                        });
+
                         WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
                         if (webEndpoint != null) {
                             String endpointName = webEndpoint.name();
