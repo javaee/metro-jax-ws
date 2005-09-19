@@ -103,7 +103,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             
             SOAPHandlerContext context = new SOAPHandlerContext(messageInfo, null,
                 soapMessage);
-            updateContextPropertyBag(messageInfo, context);
+            updateHandlerContext(messageInfo, context);
                     
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
@@ -163,13 +163,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                             SOAPConstants.FAULT_CODE_SERVER,
                             null, null, bindingId);
                 messageInfo.setResponse(faultInfo);
-            } else {
-                /* TODO
-                context.put(MessageContext.WSDL_OPERATION,
-                    messageInfo.getMetaData("METHOD_QNAME"));
-                 */
             }
-            //updateMessageInfoPropertyBag(context, messageInfo);
         }
     }
 
@@ -187,7 +181,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      */
     protected void updateWebServiceContext(MessageInfo messageInfo, SOAPHandlerContext hc) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
-        rtCtxt.setHandlerContext(hc);
+        //rtCtxt.setHandlerContext(hc);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
         if (wsContext != null) {
@@ -372,10 +366,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 */
 
 
-    // copy from message info to handler context
-    private void updateContextPropertyBag(MessageInfo messageInfo,
+    /*
+     * Sets MessageContext into HandlerContext and sets HandlerContext in
+     * RuntimeContext
+     */
+    private void updateHandlerContext(MessageInfo messageInfo,
             SOAPHandlerContext context) {
-        
+        MessageInfoUtil.getRuntimeContext(messageInfo).setHandlerContext(context);
         RuntimeEndpointInfo endpointInfo = 
             MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();

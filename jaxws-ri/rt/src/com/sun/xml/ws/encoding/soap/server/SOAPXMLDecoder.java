@@ -20,6 +20,7 @@
 
 package com.sun.xml.ws.encoding.soap.server;
 
+import com.sun.xml.ws.handler.MessageContextUtil;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +43,7 @@ import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.server.*;
+import javax.xml.ws.handler.MessageContext;
 
 
 /**
@@ -111,9 +113,14 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return request;
     }
 
+    @Override
     public void decodeDispatchMethod(XMLStreamReader reader, InternalMessage request, MessageInfo messageInfo) {
         // Operation's QName. takes care of <body/>
         QName name = (reader.getEventType() == XMLStreamConstants.START_ELEMENT) ? reader.getName() : null;
+        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);        
+        if (msgCtxt != null) {
+            MessageContextUtil.setWsdlOperation(msgCtxt, name);
+        }
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         Method method = rtCtxt.getDispatchMethod(name, messageInfo);
         if (method == null) {

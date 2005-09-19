@@ -18,10 +18,8 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.handler;
-
-import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.spi.runtime.MessageContext;
-import java.lang.reflect.Method;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -37,5 +35,9 @@ public class MessageContextUtil {
     
     public static void setHttpStatusCode(javax.xml.ws.handler.MessageContext ctxt, Integer code) {
         ctxt.put(MessageContext.HTTP_RESPONSE_CODE, code);
+    }
+    
+    public static void setWsdlOperation(javax.xml.ws.handler.MessageContext ctxt, QName name) {
+        ctxt.put(MessageContext.WSDL_OPERATION, name);
     }
 }
