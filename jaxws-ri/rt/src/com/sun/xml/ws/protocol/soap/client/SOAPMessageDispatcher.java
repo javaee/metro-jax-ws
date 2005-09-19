@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.39 2005-09-19 03:59:30 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.40 2005-09-19 04:03:14 jitu Exp $
  */
 
 /*
@@ -50,7 +50,6 @@ import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.spi.runtime.MessageContextUtil;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.Base64Util;
