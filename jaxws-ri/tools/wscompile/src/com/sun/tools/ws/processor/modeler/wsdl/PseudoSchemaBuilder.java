@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.5 2005-09-10 19:49:48 kohsuke Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.6 2005-09-20 00:57:13 vivekp Exp $
  */
 
 /*
@@ -48,10 +48,7 @@ import com.sun.tools.ws.wsdl.document.WSDLDocument;
 import com.sun.tools.ws.wsdl.document.Binding;
 import com.sun.tools.ws.wsdl.document.BindingOperation;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
-import com.sun.tools.ws.wsdl.document.soap.SOAPOperation;
-import com.sun.tools.ws.wsdl.document.soap.SOAPHeader;
-import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.tools.ws.wsdl.document.soap.SOAPBinding;
+import com.sun.tools.ws.wsdl.document.soap.*;
 
 
 
@@ -103,6 +100,12 @@ public class PseudoSchemaBuilder {
 
         SOAPBinding soapBinding =
                     (SOAPBinding)getExtensionOfType(binding, SOAPBinding.class);
+        //lets try and see if its SOAP 1.2. dont worry about extension flag, its
+        // handled much earlier
+        if (soapBinding == null) {
+                    soapBinding =
+                            (SOAPBinding)getExtensionOfType(binding, SOAP12Binding.class);
+        }
         if(soapBinding == null)
             return;
         PortType portType = binding.resolvePortType(wsdlDocument);
