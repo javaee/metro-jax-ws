@@ -116,10 +116,9 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 BodyBlock responseBody = null;
 
                 QName responseBodyName = reader.getName();   // Operation name
-                if (responseBodyName.getNamespaceURI().equals(getEnvelopeTag()) &&
-                    responseBodyName.getLocalPart().equals(getFaultTag())) {
+                
+                if (responseBodyName.equals(getFaultTag())){
                     SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
-
                     responseBody = new BodyBlock(soapFaultInfo);
                 } else {
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
