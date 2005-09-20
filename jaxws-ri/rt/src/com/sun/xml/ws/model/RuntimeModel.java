@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.23 2005-09-12 17:06:15 kwalsh Exp $
+ * $Id: RuntimeModel.java,v 1.24 2005-09-20 21:44:40 jitu Exp $
  */
 
 /*
@@ -35,11 +35,12 @@ import com.sun.xml.ws.wsdl.parser.Binding;
 import com.sun.xml.ws.wsdl.parser.Part;
 import com.sun.xml.ws.wsdl.parser.BindingOperation;
 import com.sun.xml.ws.model.soap.SOAPBinding;
-
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.*;
 
 /**
@@ -137,17 +138,25 @@ public abstract class RuntimeModel {
      * @return
      */
     private JAXBRIContext createJAXBContext() {
-        List<TypeReference> types = getAllTypeReferences();
-        Class[] cls = new Class[types.size()];
+        final List<TypeReference> types = getAllTypeReferences();
+        final Class[] cls = new Class[types.size()];
+        final String ns = targetNamespace;
         int i = 0;
         for (TypeReference type : types) {
             cls[i++] = (Class) type.type;
         }
         try {
-            jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
+            //jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
+            // Need to avoid doPriv block once JAXB is fixed. Afterwards, use the above
+            jaxbContext = (JAXBRIContext)
+                 AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                     public java.lang.Object run() throws Exception {
+                         return JAXBRIContext.newInstance(cls, types, ns, false);
+                     }
+                 });
             createBridgeMap(types);
-        } catch (JAXBException e) {
-            throw new WebServiceException(e.getMessage(), e);
+        } catch (PrivilegedActionException e) {
+            throw new WebServiceException(e.getMessage(), e.getException());
         }
         return jaxbContext;
     }
