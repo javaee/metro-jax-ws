@@ -417,11 +417,12 @@ public class RuntimeModeler {
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
             javaMethod.setBinding(mySOAPBinding);
         } else {
+            com.sun.xml.ws.model.soap.SOAPBinding sb = new com.sun.xml.ws.model.soap.SOAPBinding(defaultBinding);
             if (action != null)
-                defaultBinding.setSOAPAction(action);
+                sb.setSOAPAction(action);
             else
-                defaultBinding.setSOAPAction("");
-            javaMethod.setBinding(defaultBinding);
+                sb.setSOAPAction("");
+            javaMethod.setBinding(sb);
         }
         if (!methodIsWrapped) {
             processDocBareMethod(javaMethod, methodName, webMethod, operationName,

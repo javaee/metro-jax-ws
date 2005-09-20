@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPBinding.java,v 1.4 2005-09-10 19:47:50 kohsuke Exp $
+ * $Id: SOAPBinding.java,v 1.5 2005-09-20 02:35:28 vivekp Exp $
  */
 
 /*
@@ -32,6 +32,13 @@ import com.sun.xml.ws.encoding.soap.SOAPVersion;
  */
 public class SOAPBinding {
     public SOAPBinding() {
+    }
+
+    public SOAPBinding(SOAPBinding sb){
+        this.use = sb.use;
+        this.style = sb.style;
+        this.soapVersion = sb.soapVersion;
+        this.soapAction = sb.soapAction;
     }
 
     /**
