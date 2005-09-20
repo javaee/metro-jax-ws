@@ -42,17 +42,12 @@ public class ProviderImpl extends Provider {
 
     @Override
     public ServiceDelegate createServiceDelegate(
-        final java.net.URL wsdlDocumentLocation,
-        final QName serviceName, final Class serviceClass) {
+         java.net.URL wsdlDocumentLocation,
+         QName serviceName, Class serviceClass) {
 
-        //workaround for Appserver integration so that securityException not
-        //not thrown when using reflection
-        ServiceDelegate delegate = (ServiceDelegate) AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
-            }
-        });
-        return delegate;
+
+
+         return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
 
     @Override
