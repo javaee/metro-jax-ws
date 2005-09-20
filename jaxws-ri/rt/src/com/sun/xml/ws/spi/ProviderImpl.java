@@ -23,38 +23,44 @@ package com.sun.xml.ws.spi;
 import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.transport.http.server.EndpointImpl;
 
-import javax.xml.ws.Service;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.spi.ServiceDelegate;
-import javax.xml.ws.spi.Provider;
 import javax.xml.namespace.QName;
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.spi.Provider;
+import javax.xml.ws.spi.ServiceDelegate;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
- *
  * @author WS Development Team
  */
 public class ProviderImpl extends Provider {
-    
+
     @Override
     public Endpoint createEndpoint(String bindingId, Object implementor) {
         return new EndpointImpl(bindingId, implementor);
     }
-    
+
     @Override
     public ServiceDelegate createServiceDelegate(
-                                    java.net.URL wsdlDocumentLocation,
-                                    QName serviceName, Class serviceClass){
-          return
-              new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
+        final java.net.URL wsdlDocumentLocation,
+        final QName serviceName, final Class serviceClass) {
+
+        //workaround for Appserver integration so that securityException not
+        //not thrown when using reflection
+        ServiceDelegate delegate = (ServiceDelegate) AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
+            }
+        });
+        return delegate;
     }
-    
+
     @Override
     public Endpoint createAndPublishEndpoint(String address,
-                          Object implementor) {
+                                             Object implementor) {
         Endpoint endpoint = new EndpointImpl(null, implementor);
         endpoint.publish(address);
         return endpoint;
     }
-    
+
 }
