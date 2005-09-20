@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.12 2005-09-10 19:48:09 kohsuke Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.13 2005-09-20 03:24:06 jitu Exp $
  */
 
 /*
@@ -100,12 +100,13 @@ public class RuntimeEndpointInfoParser {
                 rei.setImplementorClass(implementorClass);
                 rei.setImplementor(getImplementor(implementorClass));
                 String wsdlFile = getAttribute(attrs, ATTR_WSDL);
-                if (wsdlFile != null &&
-                        !wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
-                    logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
-                            +WSServletContextListener.JAXWS_WSDL_DD_DIR
-                            +". Going to generate and publish a new WSDL.");
-                    wsdlFile = null;
+                if (wsdlFile != null) {
+                    if (!wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
+                        logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
+                                +WSServletContextListener.JAXWS_WSDL_DD_DIR
+                                +". Going to generate and publish a new WSDL.");
+                        wsdlFile = null;
+                    }
                 } else {
                     WebServiceProvider wsProvider =
                         (WebServiceProvider)implementorClass.getAnnotation(
