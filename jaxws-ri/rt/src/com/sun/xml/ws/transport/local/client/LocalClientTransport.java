@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.7 2005-09-10 19:48:11 kohsuke Exp $
+ * $Id: LocalClientTransport.java,v 1.8 2005-09-20 13:09:34 spericas Exp $
  */
 
 /*
@@ -38,8 +38,12 @@ import com.sun.xml.ws.util.localization.Localizable;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import com.sun.xml.ws.transport.local.server.LocalConnectionImpl;
 import com.sun.xml.ws.transport.local.LocalMessage;
+
+import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 /**
  * @author WS Development Team
@@ -79,6 +83,45 @@ public class LocalClientTransport extends WSConnectionImpl {
             }
         }
     }
+
+    private static void checkMessageContentType(WSConnection con, boolean response) {
+        String negotiation = System.getProperty(CONTENT_NEGOTIATION_PROPERTY).intern();
+        String contentType = con.getHeaders().get("Content-Type").get(0);
+        
+        // Use indexOf() to handle Multipart/related types
+        if (negotiation == "none") {
+            // OK only if XML
+            if (contentType.indexOf("text/xml") < 0 &&
+                   contentType.indexOf("application/soap+xml") < 0 &&
+                   contentType.indexOf("application/xop+xml") < 0) 
+            {
+                throw new RuntimeException("Invalid content type '" + contentType 
+                    + "' with content negotiation set to '" + negotiation + "'.");
+            }
+        }
+        else if (negotiation == "optimistic") {
+            // OK only if FI
+            if (contentType.indexOf("application/fastinfoset") < 0 && 
+                   contentType.indexOf("application/soap+fastinfoset") < 0) 
+            {
+                throw new RuntimeException("Invalid content type '" + contentType 
+                    + "' with content negotiation set to '" + negotiation + "'.");
+            }
+        }
+        else if (negotiation == "pessimistic") {
+            // OK if FI or if this is a request in XML
+            if (contentType.indexOf("application/fastinfoset") < 0 && 
+                   contentType.indexOf("application/soap+fastinfoset") < 0 || 
+                   (!response &&
+                        (contentType.indexOf("text/xml") < 0 &&
+                         contentType.indexOf("application/soap+xml") < 0 &&
+                         contentType.indexOf("application/xop+xml") < 0))) 
+            {
+                throw new RuntimeException("Invalid content type '" + contentType 
+                    + "' with content negotiation set to '" + negotiation + "'.");                
+            }
+        }
+    }
     
     @Override
     public void closeOutput() {
@@ -87,13 +130,19 @@ public class LocalClientTransport extends WSConnectionImpl {
         
         // Copy headers for content negotiation
         con.setHeaders(getHeaders());
+        
+        // Check request content type based on negotiation property
+        checkMessageContentType(this, true);
      
         try {
             // Set a MessageContext per invocation
             WebServiceContext wsContext = endpointInfo.getWebServiceContext();
             wsContext.setMessageContext(new MessageContextImpl());
             tie.handle(con, endpointInfo);
-        } catch (Exception ex) {
+            
+            checkMessageContentType(con, false);
+        } 
+        catch (Exception ex) {
             if (ex instanceof Localizable) {
                 throw new ClientTransportException("local.client.failed",
                         (Localizable) ex);
