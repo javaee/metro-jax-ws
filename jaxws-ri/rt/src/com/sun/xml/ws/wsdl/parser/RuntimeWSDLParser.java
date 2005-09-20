@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.26 2005-09-10 19:48:22 kohsuke Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.27 2005-09-20 20:56:15 vivekp Exp $
  */
 
 /*
@@ -389,6 +389,10 @@ public class RuntimeWSDLParser {
             if(SOAPConstants.QNAME_BODY.equals(name) && !bodyFound){
                 bodyFound = true;
                 parseSOAPBodyBinding(reader, parts);
+                XMLStreamReaderUtil.next(reader);
+            }else if(SOAPConstants.QNAME_HEADER.equals(name)){
+                bodyFound = true;
+                parseSOAPHeaderBinding(reader, parts);
                 XMLStreamReaderUtil.next(reader);
             }else if(MIMEConstants.QNAME_CONTENT.equals(name)){
                 String part = reader.getAttributeValue(null, "part");
