@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.8 2005-09-20 13:09:34 spericas Exp $
+ * $Id: LocalClientTransport.java,v 1.9 2005-09-20 16:38:47 spericas Exp $
  */
 
 /*
@@ -85,7 +85,7 @@ public class LocalClientTransport extends WSConnectionImpl {
     }
 
     private static void checkMessageContentType(WSConnection con, boolean response) {
-        String negotiation = System.getProperty(CONTENT_NEGOTIATION_PROPERTY).intern();
+        String negotiation = System.getProperty(CONTENT_NEGOTIATION_PROPERTY, "none").intern();
         String contentType = con.getHeaders().get("Content-Type").get(0);
         
         // Use indexOf() to handle Multipart/related types
