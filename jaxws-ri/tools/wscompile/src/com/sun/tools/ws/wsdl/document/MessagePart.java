@@ -1,5 +1,5 @@
 /*
- * $Id: MessagePart.java,v 1.3 2005-09-10 19:49:56 kohsuke Exp $
+ * $Id: MessagePart.java,v 1.4 2005-09-20 02:37:02 vivekp Exp $
  */
 
 /*
@@ -104,6 +104,8 @@ public class MessagePart extends Entity {
     public void validateThis() {
         if (_descriptorKind == null || _descriptor == null) {
             failValidation("validation.missingRequiredProperty", "descriptor");
+        }else if(_descriptor.getLocalPart().equals("")){
+            failValidation("validation.invalidElement", _descriptor.toString());               
         }
     }
 
