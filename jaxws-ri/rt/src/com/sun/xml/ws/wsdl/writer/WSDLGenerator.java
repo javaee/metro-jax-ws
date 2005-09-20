@@ -1,4 +1,7 @@
 /*
+ * $Id: WSDLGenerator.java,v 1.43 2005-09-20 03:17:43 kohlert Exp $
+ */
+/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
@@ -710,6 +713,7 @@ public class WSDLGenerator {
         for (Parameter headerParam : parameters) {
             com.sun.xml.ws.wsdl.writer.document.soap12.Header header = writer._element(com.sun.xml.ws.wsdl.writer.document.soap12.Header.class);
             header.message(message);
+
 
             header.part(headerParam.getPartName());
             header.use(LITERAL);

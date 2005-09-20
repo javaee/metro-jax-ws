@@ -1,4 +1,7 @@
 /*
+ * $Id: WebServiceReferenceCollector.java,v 1.13 2005-09-20 03:18:41 kohlert Exp $
+ */
+/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
@@ -35,6 +38,7 @@ import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
@@ -138,23 +142,45 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
 
     private void collectTypes(MethodDeclaration method, WebMethod webMethod, boolean isDocLitWrapped) {
         Oneway oneway = method.getAnnotation(Oneway.class);
-        if (oneway != null && !(method.getReturnType() instanceof VoidType)) {
-            // this is an error, cannot be Oneway and have a return type
-            builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
-                    new Object[] {typeDecl.getQualifiedName(), method.toString()});
-        }        
-/*      TODO check to see that a void returning Doc/Bare has an out parameter  
+        SourcePosition outPos = getOutParamPosition(method);
+        System.out.println("outPos: "+outPos);
+        if (oneway != null) {   
+            if(!(method.getReturnType() instanceof VoidType)) {
+                // this is an error, cannot be Oneway and have a return type
+                builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
+                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            } 
+            if (outPos != null) {
+                builder.onError(outPos,
+                        "webserviceap.oneway.and.out",
+                         new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            }
+        }     
+        // TODO check to see that a void returning Doc/Bare has an out parameter  
         if (!isDocLitWrapped &&
             soapStyle.equals(SOAPStyle.DOCUMENT)) {
+//            System.out.println("getOutParamPosition: "+getOutParamPosition);
             if (method.getReturnType() instanceof VoidType) {
-                if (!hasOutParameter(method)) {
-                    
+                if (outPos != null) {
+                    builder.onError(method.getPosition(),
+                            "webserviceap.doc.bare.no.out",
+                            new Object[] {typeDecl.getQualifiedName(), method.toString()});
                 } 
-            } else if () {
-            }
-        }*/
+            } 
+        }
         addSchemaElements(method, isDocLitWrapped);
     }        
+    
+    protected SourcePosition getOutParamPosition(MethodDeclaration method) {
+        WebParam webParam;
+        for (ParameterDeclaration param : method.getParameters()) {
+            webParam = (WebParam)param.getAnnotation(WebParam.class);
+            if (webParam != null &&
+                !webParam.mode().equals(WebParam.Mode.IN)) 
+                return param.getPosition();
+        }
+        return null;
+    }
     
     private void collectExceptionBeans(MethodDeclaration method) {
         AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
