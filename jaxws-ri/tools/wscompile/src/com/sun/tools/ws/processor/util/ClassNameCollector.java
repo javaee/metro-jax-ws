@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameCollector.java,v 1.4 2005-09-10 19:49:48 kohsuke Exp $
+ * $Id: ClassNameCollector.java,v 1.5 2005-09-20 00:53:41 vivekp Exp $
  */
 
 /*
@@ -124,8 +124,7 @@ public class ClassNameCollector extends ExtendedModelVisitor
     }
 
     private void addSEIClassName(String s) {
-        if(_allClassNames.contains(s))
-            _seiClassNames.add(s);
+        _seiClassNames.add(s);
         registerClassName(s);
     }
 
