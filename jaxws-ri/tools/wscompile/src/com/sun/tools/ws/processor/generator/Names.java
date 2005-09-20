@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.6 2005-09-10 19:49:36 kohsuke Exp $
+ * $Id: Names.java,v 1.7 2005-09-20 19:25:46 vivekp Exp $
  */
 
 /*
@@ -417,5 +417,6 @@ public class Names implements GeneratorConstants{
         reservedWords.put("void", "_void");
         reservedWords.put("volatile", "_volatile");
         reservedWords.put("while", "_while");
+        reservedWords.put("enum", "_enum");
     }
 }
