@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.41 2005-09-19 05:39:19 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.42 2005-09-20 02:32:48 vivekp Exp $
  */
 
 /*
@@ -296,7 +296,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 if (soapAction == null) {
                     soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
                 } else {
-                    soapMessage.getMimeHeaders().addHeader("SOAPAction", soapAction);
+                    soapMessage.getMimeHeaders().addHeader("SOAPAction", "\""+soapAction+"\"");
                 }
             }
         }
