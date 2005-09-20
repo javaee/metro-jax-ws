@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.59 2005-09-20 03:14:11 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.60 2005-09-20 21:23:53 kohlert Exp $
  */
 
 /*
@@ -691,7 +691,6 @@ public class RuntimeModeler {
         }
 
         Class returnType = method.getReturnType();
-
         String resultName = RETURN;
         String resultTNS = targetNamespace;
         String resultPartName = resultName; 
@@ -754,7 +753,7 @@ public class RuntimeModeler {
             Parameter param = null;
             String paramName = "";
             String paramNamespace = "";
-            String partName = null;
+            String partName = "";
             boolean isHeader = false;
 
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
@@ -788,8 +787,14 @@ public class RuntimeModeler {
             }
 
             if (paramName.length() == 0) {
-                paramName = "arg"+pos;
+                if (partName.length() > 0)
+                    paramName = partName;
+                else
+                    paramName = "arg"+pos;
             }
+            if (partName.length() == 0) {
+                partName = paramName;
+            } 
 
             if (!isHeader) {
                 //its rpclit body param, set namespace to ""
@@ -803,9 +808,6 @@ public class RuntimeModeler {
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
 
             param = new Parameter(typeRef, paramMode, pos++);
-            if(partName == null || (partName.length() == 0)){
-                partName = paramName;
-            }
             param.setPartName(partName);
 
             if(paramMode == Mode.INOUT){
