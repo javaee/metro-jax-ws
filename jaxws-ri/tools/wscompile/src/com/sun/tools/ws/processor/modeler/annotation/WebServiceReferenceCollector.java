@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceReferenceCollector.java,v 1.13 2005-09-20 03:18:41 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.14 2005-09-20 20:35:42 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -143,7 +143,7 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     private void collectTypes(MethodDeclaration method, WebMethod webMethod, boolean isDocLitWrapped) {
         Oneway oneway = method.getAnnotation(Oneway.class);
         SourcePosition outPos = getOutParamPosition(method);
-        System.out.println("outPos: "+outPos);
+//        System.out.println("outPos: "+outPos);
         if (oneway != null) {   
             if(!(method.getReturnType() instanceof VoidType)) {
                 // this is an error, cannot be Oneway and have a return type
