@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.60 2005-09-20 21:23:53 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.61 2005-09-21 01:43:36 jitu Exp $
  */
 
 /*
@@ -50,6 +50,10 @@ import java.util.concurrent.Future;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.http.HTTPBinding;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 /**
  * Creates a runtime model of a SEI (portClass).
@@ -163,6 +167,29 @@ public class RuntimeModeler {
         this.portName = portName;
     }
     
+    private static <T> T getPrivClassAnnotation(final Class clazz, final Class T) {
+        return (T)AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+               return clazz.getAnnotation(T);
+           } 
+        });
+    }
+    
+    private static <T> T getPrivMethodAnnotation(final Method method, final Class T) {
+        return (T)AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+               return method.getAnnotation(T);
+           } 
+        });
+    }
+    
+    private static Annotation[][] getPrivParameterAnnotations(final Method method) {
+        return (Annotation[][])AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+               return method.getParameterAnnotations();
+           } 
+        });
+    }
     
     //currently has many local vars which will be eliminated after debugging issues
     //first draft
@@ -172,16 +199,16 @@ public class RuntimeModeler {
      */
     public RuntimeModel buildRuntimeModel() {
         runtimeModel = new SOAPRuntimeModel();
-        if (!portClass.isAnnotationPresent(javax.jws.WebService.class))
+        Class clazz = portClass;
+        WebService webService = getPrivClassAnnotation(portClass, WebService.class);
+        if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                                        new Object[] {portClass.getCanonicalName()});
-
-        Class clazz = portClass;
-        WebService webService =
-            (WebService) portClass.getAnnotation(WebService.class);
+        }
         if (webService.endpointInterface().length() > 0) {
             clazz = getClass(webService.endpointInterface());
-            if (!clazz.isAnnotationPresent(javax.jws.WebService.class)) {
+            WebService seiService = getPrivClassAnnotation(clazz, WebService.class);
+            if (seiService == null) {
                 throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
                                     new Object[] {webService.endpointInterface()});
             }
@@ -233,8 +260,7 @@ public class RuntimeModeler {
 
 
     void processClass(Class clazz) {
-        WebService webService =
-            (WebService) clazz.getAnnotation(WebService.class);
+        WebService webService = getPrivClassAnnotation(clazz, WebService.class);
         String portTypeLocalName  = clazz.getSimpleName();
         if (webService.name().length() >0)
             portTypeLocalName = webService.name();
@@ -252,8 +278,7 @@ public class RuntimeModeler {
         runtimeModel.setPortTypeName(portTypeName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
         
-        javax.jws.soap.SOAPBinding soapBinding =
-            (javax.jws.soap.SOAPBinding) clazz.getAnnotation(javax.jws.soap.SOAPBinding.class);
+        javax.jws.soap.SOAPBinding soapBinding = getPrivClassAnnotation(clazz, javax.jws.soap.SOAPBinding.class);
         if (soapBinding != null) {
             isWrapped = soapBinding.parameterStyle().equals(
                 javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED);
@@ -269,7 +294,7 @@ public class RuntimeModeler {
         if (clazz == portClass) {
             WebMethod webMethod;
             for (Method method : clazz.getMethods()) {
-                webMethod = (WebMethod)method.getAnnotation(WebMethod.class); 
+                webMethod = getPrivMethodAnnotation(method, WebMethod.class);
                 if (webMethod != null &&
                     !webMethod.exclude()) {
                     usesWebMethod = true;
@@ -282,9 +307,11 @@ public class RuntimeModeler {
             if (method.getDeclaringClass().equals(Object.class) ||
                 !isWebMethod(method, clazz))
                 continue;
+            /*
             if (!method.isAccessible()) {
                 method.setAccessible(true);
             }
+             */
             processMethod(method, webService);
         }
     }
@@ -295,9 +322,9 @@ public class RuntimeModeler {
         Class declClass = method.getDeclaringClass();
         if (declClass.equals(clazz))
             return true;
-        if (method.getAnnotation(WebMethod.class) != null)
+        if (getPrivMethodAnnotation(method, WebMethod.class) != null)
             return true;
-        if (declClass.getAnnotation(WebService.class) != null)
+        if (getPrivClassAnnotation(declClass, WebService.class) != null)
             return true;
         return false;
     }
@@ -359,7 +386,7 @@ public class RuntimeModeler {
      */
     protected void processMethod(Method method, WebService webService) {
         
-        WebMethod webMethod = method.getAnnotation(WebMethod.class);
+        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null && webMethod.exclude())
             return;
         
@@ -574,7 +601,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = method.getParameterAnnotations();
+        Annotation[][] pannotations = getPrivParameterAnnotations(method);
         int pos = 0;
         QName paramQName = null;
         for (Class clazzType : parameterTypes) {
@@ -746,7 +773,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = method.getParameterAnnotations();
+        Annotation[][] pannotations = getPrivParameterAnnotations(method);
         int pos = 0;
         QName paramQName = null;
         for (Class clazzType : parameterTypes) {
@@ -972,7 +999,7 @@ public class RuntimeModeler {
         //get WebParam
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] genericParameterTypes = method.getGenericParameterTypes();
-        Annotation[][] pannotations = method.getParameterAnnotations();
+        Annotation[][] pannotations = getPrivParameterAnnotations(method);
         QName requestQName = null;
         int pos = 0;
         for (Class clazzType : parameterTypes) {
