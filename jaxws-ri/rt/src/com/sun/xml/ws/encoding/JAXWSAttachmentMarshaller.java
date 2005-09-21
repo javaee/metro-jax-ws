@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.14 2005-09-10 19:47:34 kohsuke Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.15 2005-09-21 22:20:49 vivekp Exp $
  */
 
 /*
@@ -31,6 +31,7 @@ import com.sun.pept.ept.MessageInfo;
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -179,8 +180,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
                 try {
                     cid = URLEncoder.encode(ns, "UTF-8");
                 } catch (UnsupportedEncodingException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    throw new WebServiceException(e);
                 }
             }
         }

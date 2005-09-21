@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.7 2005-09-10 19:47:34 kohsuke Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.8 2005-09-21 22:20:49 vivekp Exp $
  */
 
 /*
@@ -33,6 +33,9 @@ import javax.xml.soap.SOAPException;
 import javax.xml.ws.WebServiceException;
 import java.util.Map;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
 
 /**
  * @author Vivek Pandey
@@ -55,7 +58,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     public DataHandler getAttachmentAsDataHandler(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
         //TODO localize exception message
-        if((ab == null)&& ((ab != null) && (ab.getAttachmentPart() == null)))
+        if((ab == null) || ((ab != null) && (ab.getAttachmentPart() == null)))
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
         try {
             AttachmentPart ap = ab.getAttachmentPart();
@@ -78,7 +81,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
      */
     public byte[] getAttachmentAsByteArray(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
-        if((ab == null) && ((ab != null) && (ab.getAttachmentPart() == null)))
+        if((ab == null) || ((ab != null) && (ab.getAttachmentPart() == null)))
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
         try {
             return ASCIIUtility.getBytes(ab.getAttachmentPart().getRawContent());
@@ -121,7 +124,11 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     private String decodeCid(String cid){
         if(cid.startsWith("cid:"))
             cid = cid.substring(4, cid.length());
-        return "<"+cid+">";
+        try {
+            return "<"+URLDecoder.decode(cid, "UTF-8")+">";
+        } catch (UnsupportedEncodingException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     private Map<String, AttachmentBlock> attachments;
