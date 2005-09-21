@@ -263,15 +263,16 @@ public abstract class ServiceContextBuilder {
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
                     for (final Method method : methods) {
-
+/*
                         AccessController.doPrivileged(new PrivilegedAction() {
                             public Object run() {
                                 method.setAccessible(true);
                                 return null; // nothing to return
                             }
                         });
+ */
 
-                        WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
+                        WebEndpoint webEndpoint = getPrivMethodAnnotation(method, WebEndpoint.class);
                         if (webEndpoint != null) {
                             String endpointName = webEndpoint.name();
                             QName portQName = new QName(tns, endpointName);
@@ -288,5 +289,13 @@ public abstract class ServiceContextBuilder {
             }
         }
         return SCAnnotations;
+    }
+    
+    private static <T> T getPrivMethodAnnotation(final Method method, final Class T) {
+        return (T)AccessController.doPrivileged(new PrivilegedAction() {
+           public Object run() {
+               return method.getAnnotation(T);
+           } 
+        });
     }
 }
