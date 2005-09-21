@@ -117,8 +117,6 @@ public abstract class ServiceContextBuilder {
         QName portName = null;
         WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
         for (Method method : serviceInterface.getMethods()) {
-            if (!method.isAccessible())
-                continue;
             if (!method.getDeclaringClass().equals(serviceInterface)) {
                 continue;
             }
@@ -264,17 +262,14 @@ public abstract class ServiceContextBuilder {
                 Method[] methods = sc.getDeclaredMethods();
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
-                    for (Method method : methods){
-                        if (!method.isAccessible())
-                            continue;
-                    //for (final Method method : methods) {
+                    for (final Method method : methods) {
 
-                    //    AccessController.doPrivileged(new PrivilegedAction() {
-                    //        public Object run() {
-                    //            method.setAccessible(true);
-                    //            return null; // nothing to return
-                    //        }
-                    //    });
+                        AccessController.doPrivileged(new PrivilegedAction() {
+                            public Object run() {
+                                method.setAccessible(true);
+                                return null; // nothing to return
+                            }
+                        });
 
                         WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
                         if (webEndpoint != null) {
