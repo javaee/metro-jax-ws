@@ -120,14 +120,14 @@ public class ServiceContext {
     public QName getServiceName() {
         if (serviceName == null) {
             if (wsdlContext != null) {
-                serviceName = wsdlContext.getFirstServiceName();
-                return serviceName;
+                setServiceName(wsdlContext.getFirstServiceName());
             }
         }
         return serviceName;
     }
 
     public void setServiceName(QName serviceName) {
+        assert(serviceName != null);
         this.serviceName = serviceName;
     }
 
