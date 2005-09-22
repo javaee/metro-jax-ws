@@ -70,7 +70,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             InternalMessage request = new InternalMessage();
             processAttachments(messageInfo, request, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
-            reader = SourceReaderFactory.createSourceReader(source, true);
+            reader = SourceReaderFactory.createSourceReader(source, true,getSOAPMessageCharsetEncoding(soapMessage));
             XMLStreamReaderUtil.nextElementContent(reader);
             decodeEnvelope(reader, request, false, messageInfo);
             return request;
@@ -99,7 +99,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         try {
             processAttachments(messageInfo, request, soapMessage);
             Source source = soapMessage.getSOAPPart().getContent();
-            reader = SourceReaderFactory.createSourceReader(source, true);
+            reader = SourceReaderFactory.createSourceReader(source, true,getSOAPMessageCharsetEncoding(soapMessage));
             XMLStreamReaderUtil.nextElementContent(reader);
             decodeEnvelope(reader, request, true, messageInfo);
             convertBodyBlock(request, messageInfo);

@@ -566,7 +566,12 @@ public abstract class SOAPDecoder implements Decoder {
             }
         }
     }
-    
+
+    protected String getSOAPMessageCharsetEncoding(SOAPMessage sm) throws SOAPException {
+        String charset = (String)sm.getProperty(SOAPMessage.CHARACTER_SET_ENCODING);
+        return (charset!=null)?charset:"UTF-8";
+    }
+
     /*
      * @throws ServerRtException using this any known error is thrown
      */
