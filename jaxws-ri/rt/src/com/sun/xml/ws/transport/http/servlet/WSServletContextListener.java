@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletContextListener.java,v 1.15 2005-09-10 19:48:10 kohsuke Exp $
+ * $Id: WSServletContextListener.java,v 1.16 2005-09-22 23:10:01 jitu Exp $
  */
 
 /*
@@ -204,7 +204,7 @@ public class WSServletContextListener
                 }
             }
             
-            endpoint.deploy();
+            endpoint.init();
             if (endpoint.needWSDLGeneration()) {
                 endpoint.generateWSDL();
             } else {

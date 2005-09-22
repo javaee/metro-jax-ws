@@ -30,10 +30,14 @@ import org.xml.sax.EntityResolver;
 public interface RuntimeEndpointInfo {
         
     /**
-     * Builds runtime model from implementor object. It also generates required
-     * WSDL, schema documents if there is no corresponding metadata. 
+     * Builds runtime model from implementor object.
      */
-    public void deploy();
+    public void init();
+    
+    /**
+     * Calls destory() on handlers
+     */
+    public void destroy();
     
     /**
      * This object is used for method invocations. It could be actual

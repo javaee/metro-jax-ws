@@ -232,7 +232,7 @@ public class HttpEndpoint {
 
     private void publish (HttpContext context) throws Exception {
         fillEndpointInfo();
-        endpointInfo.deploy();
+        endpointInfo.init();
         generateWSDLDocs();
         RuntimeEndpointInfo.publishWSDLDocs(endpointInfo);
         System.out.println("Doc Metadata="+endpointInfo.getDocMetadata());

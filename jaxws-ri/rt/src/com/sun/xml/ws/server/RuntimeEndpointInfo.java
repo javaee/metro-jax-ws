@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.60 2005-09-22 18:25:02 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.61 2005-09-22 23:10:00 jitu Exp $
  */
 
 /*
@@ -291,7 +291,7 @@ public class RuntimeEndpointInfo extends Endpoint
      * RuntimeModel is read only and is accessed from multiple threads afterwards.
 
      */
-    public void deploy() {
+    public void init() {
         if (implementor == null) {
             throw new ServerRtException("null.implementor");
         }
