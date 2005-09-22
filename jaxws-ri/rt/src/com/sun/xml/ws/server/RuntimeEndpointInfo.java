@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.59 2005-09-14 20:58:33 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.60 2005-09-22 18:25:02 bbissett Exp $
  */
 
 /*
@@ -42,6 +42,7 @@ import java.util.*;
 import javax.xml.namespace.QName;
 import com.sun.xml.ws.spi.runtime.Binding;
 import javax.xml.ws.Provider;
+import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
@@ -726,6 +727,7 @@ public class RuntimeEndpointInfo extends Endpoint
         }
         try {
             invokeOnceMethod(EndService.class);
+            destroy();
         } finally {
             endServiceDone = true;
         }
@@ -753,6 +755,30 @@ public class RuntimeEndpointInfo extends Endpoint
                 invokeMethod(method, new Object[]{ });
                 once = true;
             } 
+        }
+    }
+    
+    /*
+     * Called when the container calls endService(). Used for any
+     * cleanup. Currently calls destroy() on existing handlers.
+     * Destroy should not throw an exception, but we ignore it if
+     * it happens and continue with the next handler.
+     */
+    public void destroy() {
+        Binding binding = getBinding();
+        if (binding != null) {
+            List<Handler> handlers = binding.getHandlerChain();
+            if (handlers != null) {
+                for (Handler handler : handlers) {
+                    try {
+                        handler.destroy();
+                    } catch (RuntimeException re) {
+                        logger.warning(
+                            "exception ignored from handler.destroy(): " +
+                            re.getMessage());
+                    }
+                }
+            }
         }
     }
     

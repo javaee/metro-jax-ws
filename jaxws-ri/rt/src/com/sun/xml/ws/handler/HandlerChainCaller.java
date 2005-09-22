@@ -174,15 +174,6 @@ public class HandlerChainCaller {
     }
 
     /**
-     * Called before losing instance of this handler chain caller.
-     */
-    public void cleanup() {
-        for (Handler handler : handlers) {
-            handler.destroy();
-        }
-    }
-
-    /**
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
@@ -540,7 +531,8 @@ public class HandlerChainCaller {
 
                     // reverse direction and handle fault
                     try {
-                        if (callProtocolHandleFault(holder, i, 0)) {
+                        if (i == 0 || // still on first handler
+                            callProtocolHandleFault(holder, i-1, 0)) {
                             callLogicalHandleFault(holder,
                                 logicalHandlers.size()-1, 0);
                         }
@@ -586,8 +578,10 @@ public class HandlerChainCaller {
 
                     // reverse direction and handle fault
                     try {
-                        callProtocolHandleFault(holder, i,
-                            soapHandlers.size()-1);
+                        if (i < soapHandlers.size()-1) {
+                            callProtocolHandleFault(holder, i+1,
+                                soapHandlers.size()-1);
+                        }
                     } catch (RuntimeException re2) {
                         re = re2;
                         setIgnoreFaultProperty(holder);

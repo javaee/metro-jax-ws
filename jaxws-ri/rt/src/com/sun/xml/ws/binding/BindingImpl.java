@@ -87,7 +87,6 @@ public abstract class BindingImpl implements
 
     public void setHandlerChain(List<Handler> chain) {
         if (chainCaller != null) {
-            chainCaller.cleanup();
             chainCaller = new HandlerChainCaller(chain);
             handlers = chainCaller.getHandlerChain();
         } else {
