@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.42 2005-09-20 02:32:48 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.43 2005-09-22 15:46:47 kwalsh Exp $
  */
 
 /*
@@ -139,6 +139,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sm = handlerContext.getSOAPMessage();
                 if (sm == null) {
                     sm = encoder.toSOAPMessage(handlerContext.getInternalMessage(), messageInfo);
+                } else if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+                    sm.saveChanges();
                 }
 
                 // the only case where no message is sent
