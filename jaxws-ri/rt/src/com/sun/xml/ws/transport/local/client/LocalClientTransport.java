@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.9 2005-09-20 16:38:47 spericas Exp $
+ * $Id: LocalClientTransport.java,v 1.10 2005-09-22 20:02:55 spericas Exp $
  */
 
 /*
@@ -109,13 +109,10 @@ public class LocalClientTransport extends WSConnectionImpl {
             }
         }
         else if (negotiation == "pessimistic") {
-            // OK if FI or if this is a request in XML
-            if (contentType.indexOf("application/fastinfoset") < 0 && 
-                   contentType.indexOf("application/soap+fastinfoset") < 0 || 
-                   (!response &&
-                        (contentType.indexOf("text/xml") < 0 &&
-                         contentType.indexOf("application/soap+xml") < 0 &&
-                         contentType.indexOf("application/xop+xml") < 0))) 
+            // OK if FI request is anything and response is FI
+            if (response && 
+                    contentType.indexOf("application/fastinfoset") < 0 && 
+                    contentType.indexOf("application/soap+fastinfoset") < 0)
             {
                 throw new RuntimeException("Invalid content type '" + contentType 
                     + "' with content negotiation set to '" + negotiation + "'.");                
@@ -132,7 +129,7 @@ public class LocalClientTransport extends WSConnectionImpl {
         con.setHeaders(getHeaders());
         
         // Check request content type based on negotiation property
-        checkMessageContentType(this, true);
+        checkMessageContentType(this, false);
      
         try {
             // Set a MessageContext per invocation
@@ -140,7 +137,7 @@ public class LocalClientTransport extends WSConnectionImpl {
             wsContext.setMessageContext(new MessageContextImpl());
             tie.handle(con, endpointInfo);
             
-            checkMessageContentType(con, false);
+            checkMessageContentType(con, true);
         } 
         catch (Exception ex) {
             if (ex instanceof Localizable) {
