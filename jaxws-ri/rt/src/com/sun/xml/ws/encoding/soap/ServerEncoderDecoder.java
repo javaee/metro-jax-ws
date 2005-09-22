@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.19 2005-09-10 19:47:40 kohsuke Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.20 2005-09-22 03:29:53 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -24,6 +24,8 @@ package com.sun.xml.ws.encoding.soap;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.binding.BindingImpl;
+
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -35,6 +37,7 @@ import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
@@ -105,23 +108,18 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
      * @see com.sun.xml.ws.encoding.util.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
      */
     public Object toInternalMessage(MessageInfo mi) {
-        RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(mi);
         RuntimeModel model = rtContext.getModel();
         JavaMethod jm = model.getJavaMethod(mi.getMethod());
         Object[] data = mi.getData();
         Object result = mi.getResponse();
         InternalMessage im = new InternalMessage();
-        SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
+        BindingImpl bindingImpl = 
+            (BindingImpl)rtContext.getRuntimeEndpointInfo().getBinding();
+        String bindingId = bindingImpl.getBindingId();
 
         switch (mi.getResponseType()) {
             case MessageStruct.CHECKED_EXCEPTION_RESPONSE:
-                if (result instanceof java.rmi.RemoteException) {
-                    if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
-                    SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
-                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
-                    SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, null, im);
-                    return im;
-                }
                 if(!(result instanceof java.lang.Exception)){
                     throw new SerializationException("exception.incorrectType", result.getClass().toString());
                 }
@@ -132,21 +130,22 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                 Object detail = getDetail(jm.getCheckedException(result.getClass()), result);
                 JAXBBridgeInfo di = new JAXBBridgeInfo(model.getBridge(ce.getDetailType()), detail);
 
-                if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
+                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)) {
                     SOAPRuntimeModel.createFaultInBody(result, null, di, im);
-                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
+                } else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
                     SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, di, im);
                 }
 
                 return im;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
-                if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
+                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
                     SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
-                else if(soapBinding.getSOAPVersion().equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
+                else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
                     SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, null, im);
                 return im;
         }
-
+        
+        SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
         Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         while (iter.hasNext()) {
             Parameter param = iter.next();
