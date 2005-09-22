@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.19 2005-09-20 03:18:19 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.20 2005-09-22 04:22:21 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -311,9 +311,24 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return RuntimeModeler.getNamespace(packageDecl.getQualifiedName(), className);
     }
 
-    abstract protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf);
+//    abstract protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf);
 
-    abstract protected boolean shouldProcessWebService(WebService webService, ClassDeclaration decl);
+//    abstract protected boolean shouldProcessWebService(WebService webService, ClassDeclaration decl);
+    protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
+        
+        if (webService == null)
+            builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
+                    new Object[] {intf.getQualifiedName()});
+        if (isLegalSEI(intf))
+            return true;
+        return false;
+    }        
+
+    protected boolean shouldProcessWebService(WebService webService, ClassDeclaration classDecl) {   
+        if (webService == null)
+            return false;
+        return isLegalImplementation(classDecl); 
+    }       
 
     abstract protected void processWebService(WebService webService, TypeDeclaration d);
 
@@ -342,7 +357,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 }
             }
         }
-        return hasWebMethods(d.getSuperclass().getDeclaration());
+        return false;//hasWebMethods(d.getSuperclass().getDeclaration());
     }
 
     protected void processMethods(TypeDeclaration d) {
@@ -356,11 +371,13 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 methodDecl.accept((DeclarationVisitor)this);
             }
         }
+        hasWebMethods = false;
         if (d instanceof InterfaceDeclaration) {
             for (InterfaceType superType : d.getSuperinterfaces())
                 processMethods(superType.getDeclaration());
         } else {
             ClassDeclaration classDecl = (ClassDeclaration)d;
+            hasWebMethods = hasWebMethods(classDecl.getSuperclass().getDeclaration());
             processMethods(classDecl.getSuperclass().getDeclaration());
         }
     }
@@ -390,8 +407,30 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (processedMethod(method))
             return;
         WebMethod webMethod = method.getAnnotation(WebMethod.class);
-        if (shouldProcessMethod(method, webMethod))
-            processMethod(method, webMethod);
+        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
+        if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
+            if (method.getDeclaringType() instanceof ClassDeclaration) {
+                soapBinding = method.getDeclaringType().getAnnotation(SOAPBinding.class);            
+                if (soapBinding != null)
+                    builder.log("using "+method.getDeclaringType()+"'s SOAPBinding.");            
+                else {
+                    soapBinding = new MySOAPBinding();
+                }
+            }
+        }        
+        boolean newBinding = false;
+        if (soapBinding != null) {
+            newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
+        }            
+        try {
+            if (shouldProcessMethod(method, webMethod)) {
+                processMethod(method, webMethod);
+            }
+        } finally {
+            if (newBinding) {
+                popSOAPBinding();
+            }
+        }            
     }
     
     protected boolean processedMethod(MethodDeclaration method) {
@@ -402,16 +441,45 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return false;
     }
     
-    abstract protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod);
+//    abstract protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod);
+    
+    protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
+        if (hasWebMethods && webMethod == null)
+            return false;
+        if (webMethod != null && webMethod.exclude() ||
+            !isLegalMethod(method, typeDecl))
+            return false;
+//        return !hasWebMethods || webMethod != null;
+        return webMethod != null || endpointReferencesInterface ||
+                method.getDeclaringType().equals(typeDecl) || 
+                (method.getDeclaringType().getAnnotation(WebService.class) != null);
+    }
+    
     abstract protected void processMethod(MethodDeclaration method, WebMethod webMethod);
 
 
     protected boolean isLegalImplementation(ClassDeclaration classDecl) {
         Collection<Modifier> modifiers = classDecl.getModifiers();
-        if (!modifiers.contains(Modifier.PUBLIC) ||
-            modifiers.contains(Modifier.FINAL) ||
-            modifiers.contains(Modifier.ABSTRACT))
-            return false;
+        if (!modifiers.contains(Modifier.PUBLIC)){
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.not.public",
+                    new Object[] {classDecl.getQualifiedName()});
+            return false;            
+        }
+        if (modifiers.contains(Modifier.FINAL)) {
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.is.final",
+                    new Object[] {classDecl.getQualifiedName()});
+            return false;            
+        }    
+        if (modifiers.contains(Modifier.ABSTRACT)) {
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.is.abstract",
+                    new Object[] {classDecl.getQualifiedName()});
+            return false;            
+        }        
+        if (classDecl.getDeclaringType() != null) {
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.is.innerclass",
+                    new Object[] {classDecl.getQualifiedName()});
+            return false;            
+        }
         boolean hasDefaultConstructor = false;
         for (ConstructorDeclaration constructor : classDecl.getConstructors()) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) &&
@@ -419,12 +487,16 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                     hasDefaultConstructor = true;
                     break;
             }
-
+        }
+        if (!hasDefaultConstructor) {
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.no.default.constructor",
+                    new Object[] {classDecl.getQualifiedName()});            
+            return false;
         }
         if (!methodsAreLegal(classDecl))
             return false;
 
-        return hasDefaultConstructor;
+        return true;
     }
 
     protected boolean hasLegalSEI(ClassDeclaration classDecl) {
@@ -453,31 +525,182 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
 
     protected boolean methodsAreLegal(TypeDeclaration typeDecl) {
-        for (MethodDeclaration method : typeDecl.getMethods()) {
-            if (!isLegalMethod(method, typeDecl))
-                return false;
-        }
+//        for (MethodDeclaration method : typeDecl.getMethods()) {
+//            if (!isLegalMethod(method, typeDecl))
+//                return false;
+//        }
         return true;
     }
 
-    protected boolean isLegalMethod(MethodDeclaration method,TypeDeclaration typeDecl) {
+    protected boolean isLegalMethod(MethodDeclaration method, TypeDeclaration typeDecl) {
+        if (typeDecl instanceof ClassDeclaration && method.getModifiers().contains(Modifier.ABSTRACT)) {
+            builder.onError(method.getPosition(), "webserviceap.webservice.method.is.abstract",
+                    new Object[] {typeDecl.getQualifiedName(), method.getSimpleName()});
+            return false;            
+        }        
+        
         if (!isLegalType(method.getReturnType())) {
-            builder.onError("webserviceap.method.return.type.cannot.implement.remote",
+            builder.onError(method.getPosition(), "webserviceap.method.return.type.cannot.implement.remote",
                              new Object[] {typeDecl.getQualifiedName(),
                                            method.getSimpleName(),
                                            method.getReturnType()});
         }
+        boolean isOneway = method.getAnnotation(Oneway.class) != null;
+        if (isOneway && !isValidOnewayMethod(method, typeDecl))
+            return false;
+
+        
+        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
+        if (soapBinding != null) {
+            if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
+                builder.onError(method.getPosition(),"webserviceap.rpc.soapbinding.not.allowed.on.method",
+                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            }
+        }        
+        
+        int paramIndex = 0;
         for (ParameterDeclaration parameter : method.getParameters()) {
-            if (!isLegalType(parameter.getType()))
-                builder.onError("webserviceap.method.parameter.types.cannot.implement.remote",
-                                 new Object[] {typeDecl.getQualifiedName(),
-                                               method.getSimpleName(),
-                                               parameter.getSimpleName(),
-                                               parameter.getType().toString()});
+            if (!isLegalParameter(parameter, method, typeDecl, paramIndex++))
+                return false;
+        }
+        
+        if (!isDocLitWrapped() &&
+                soapStyle.equals(SOAPStyle.DOCUMENT)) {
+            ParameterDeclaration outParam = getOutParameter(method);
+//            System.out.println("method: "+method.getSimpleName());
+//            System.out.println("outParam: "+outParam);
+            int inParams = getModeParameterCount(method, WebParam.Mode.IN);
+            int outParams = getModeParameterCount(method, WebParam.Mode.OUT);
+//            System.out.println("inParams: "+inParams);
+//            System.out.println("outParams: "+outParams);
+            // TODO check to see that a void returning Doc/Bare has only one out  
+            if (inParams != 1) {
+                builder.onError(method.getPosition(),
+                        "webserviceap.doc.bare.and.no.one.in",
+                        new Object[] {typeDecl.getQualifiedName(), method.toString()});                    
+            }
+            if (method.getReturnType() instanceof VoidType) {
+                if (outParam == null && !isOneway) {
+                    builder.onError(method.getPosition(),
+                            "webserviceap.doc.bare.no.out",
+                            new Object[] {typeDecl.getQualifiedName(), method.toString()});
+                } 
+                if (outParams != 1) {
+                    if (!isOneway && outParams != 0)
+                        builder.onError(method.getPosition(),
+                                "webserviceap.doc.bare.no.return.and.no.out",
+                                new Object[] {typeDecl.getQualifiedName(), method.toString()});                    
+                }
+            } else {
+                if (outParams > 0) {
+                    builder.onError(outParam.getPosition(),
+                            "webserviceap.doc.bare.return.and.out",
+                            new Object[] {typeDecl.getQualifiedName(), method.toString()});                
+                }
+            }
         }
         return true;
     }
 
+    protected boolean isLegalParameter(ParameterDeclaration param, 
+                                       MethodDeclaration method, 
+                                       TypeDeclaration typeDecl,
+                                       int paramIndex) {
+        if (!isLegalType(param.getType())) {
+            builder.onError(param.getPosition(), "webserviceap.method.parameter.types.cannot.implement.remote",
+                             new Object[] {typeDecl.getQualifiedName(),
+                                           method.getSimpleName(),
+                                           param.getSimpleName(),
+                                           param.getType().toString()});
+             return false;             
+        }
+        TypeMirror holderType;
+        holderType = builder.getHolderValueType(param.getType());
+        WebParam webParam = param.getAnnotation(WebParam.class);
+        WebParam.Mode mode = null;
+        if (webParam != null)
+            mode = webParam.mode(); 
+            
+        if (holderType != null) {          
+            if (mode == null ||  mode.equals(WebParam.Mode.IN))
+                builder.onError(param.getPosition(), "webserviceap.holder.parameters.must.not.be.in.only", 
+                            new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});
+        } else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
+            builder.onError(param.getPosition(), "webserviceap.non.in.parameters.must.be.holder", 
+                            new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});                
+        } 
+        
+        return true;
+    }
+    
+    protected boolean isDocLitWrapped() {
+//        String str = null;
+//        if (str.length() > 0)
+//        System.out.println("wrapped3: "+wrapped);
+//        System.out.println("isDocLitWrapped: "+(soapStyle.equals(SOAPStyle.DOCUMENT) && wrapped));
+        return soapStyle.equals(SOAPStyle.DOCUMENT) && wrapped;
+    }
+    
+    protected boolean isValidOnewayMethod(MethodDeclaration method, TypeDeclaration typeDecl) {
+        if (!(method.getReturnType() instanceof VoidType)) {
+            // this is an error, cannot be Oneway and have a return type
+            builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
+                    new Object[] {typeDecl.getQualifiedName(), method.toString()});
+        }
+        ParameterDeclaration outParam = getOutParameter(method);
+        if (outParam != null) {
+            builder.onError(outParam.getPosition(),
+                    "webserviceap.oneway.and.out",
+                     new Object[] {typeDecl.getQualifiedName(), method.toString()});            
+        }
+        if (!isDocLitWrapped() && soapStyle.equals(SOAPStyle.DOCUMENT)) {
+            int inCnt = getModeParameterCount(method, WebParam.Mode.IN);
+            if (inCnt != 1) {
+                builder.onError(method.getPosition(),
+                    "webserviceap.oneway.and.not.one.in",
+                     new Object[] {typeDecl.getQualifiedName(), method.toString()});                            
+            }
+        }
+        return true;
+    }
+    
+    protected int getModeParameterCount(MethodDeclaration method, WebParam.Mode mode) {
+        WebParam webParam;
+        int cnt = 0;
+        for (ParameterDeclaration param : method.getParameters()) {
+            webParam = param.getAnnotation(WebParam.class);
+            if (webParam != null) {
+                if (webParam.header())
+                    continue;
+                if (isEquivalentModes(mode, webParam.mode()))
+                    cnt++;
+            } else {
+                if (isEquivalentModes(mode, WebParam.Mode.IN)) {
+                    cnt++;
+                }  
+            }                                
+        }        
+        return cnt;
+    }
+    
+    protected boolean isEquivalentModes(WebParam.Mode mode1, WebParam.Mode mode2) {
+        if (mode1.equals(mode2))
+            return true;
+        assert(mode1.equals(WebParam.Mode.IN) ||
+               mode1.equals(WebParam.Mode.OUT));
+        if (mode1.equals(WebParam.Mode.IN) &&
+            !(mode2.equals(WebParam.Mode.OUT)))
+            return true;
+        if (mode1.equals(WebParam.Mode.OUT) &&
+            !(mode2.equals(WebParam.Mode.IN)))
+            return true;
+        return false;
+    }
+    
+    protected boolean isHolder(ParameterDeclaration param) {
+        return builder.getHolderValueType(param.getType()) != null;
+    }
+    
     protected boolean isLegalType(TypeMirror type) {
         if (!(type instanceof DeclaredType))
             return true;
@@ -550,6 +773,18 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return isInParam;
     }
 
+    protected ParameterDeclaration getOutParameter(MethodDeclaration method) {
+        WebParam webParam;
+        for (ParameterDeclaration param : method.getParameters()) {
+            webParam = (WebParam)param.getAnnotation(WebParam.class);
+            if (webParam != null &&
+                !webParam.mode().equals(WebParam.Mode.IN)) {
+                return param;
+            }
+        }
+        return null;
+    }    
+    
     protected static class MySOAPBinding implements SOAPBinding {
         public Style style() {return SOAPBinding.Style.DOCUMENT;}
         public Use use() {return SOAPBinding.Use.LITERAL; }

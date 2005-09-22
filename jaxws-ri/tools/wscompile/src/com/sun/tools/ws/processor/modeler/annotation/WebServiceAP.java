@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.12 2005-09-20 03:18:32 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.13 2005-09-22 04:22:21 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -389,14 +389,14 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         for (SEIContext seiContext : context.getSEIContexts()) {
             TypeDeclaration decl = apEnv.getTypeDeclaration(seiContext.getSEIName());
             Collection<Reference> schemaMirrors = seiContext.getSchemaReferences(this);
-/*
-            System.out.println("schemaMirrors count: " + schemaMirrors.size());
-            for (Reference reference : schemaMirrors) {System.out.println("reference: "+reference.type);}
-        System.out.println("schemaElementMap count: "+ seiContext.getSchemaElementMap(this).entrySet().size());
-            for (Map.Entry<QName, ? extends Reference> entry : seiContext.getSchemaElementMap(this).entrySet()) {
-               System.out.println("name: " + entry.getKey()+" value: "+entry.getValue().type);
-            }
-*/
+
+//            System.out.println("schemaMirrors count: " + schemaMirrors.size());
+//            for (Reference reference : schemaMirrors) {System.out.println("reference: "+reference.type);}
+//        System.out.println("schemaElementMap count: "+ seiContext.getSchemaElementMap(this).entrySet().size());
+//            for (Map.Entry<QName, ? extends Reference> entry : seiContext.getSchemaElementMap(this).entrySet()) {
+//               System.out.println("name: " + entry.getKey()+" value: "+entry.getValue().type);
+//            }
+
 //            System.out.println("setting default namespaceURI: "+seiContext.getNamespaceURI());
             jaxBModel = new JAXBModel(javaC.bind(schemaMirrors, seiContext.getSchemaElementMap(this),
                 seiContext.getNamespaceURI(), apEnv));

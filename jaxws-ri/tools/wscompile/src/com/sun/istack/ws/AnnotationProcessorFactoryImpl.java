@@ -25,8 +25,9 @@ import java.util.*;
 import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;
 
-import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 
+import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
+import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
 
 /*
  * The JAX-WS {@com.sun.mirror.apt.AnnotationProcessorFactory AnnotationProcessorFactory}
@@ -35,7 +36,7 @@ import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
  */
 public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactory {
 
-    private static WSAP wsAP;
+    private static WebServiceAP wsAP;
     /*
      * Processor doesn't examine any options.
      */
@@ -95,7 +96,9 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
                                             
         if (wsAP == null) {
             AnnotationProcessorContext context = new AnnotationProcessorContext();
-            wsAP = new WSAP(context);
+//            wsAP = new WebServiceAP(context);
+            wsAP = new WebServiceAP(null, null, null, context);    
+
         }
         wsAP.init(apEnv);
         return wsAP;

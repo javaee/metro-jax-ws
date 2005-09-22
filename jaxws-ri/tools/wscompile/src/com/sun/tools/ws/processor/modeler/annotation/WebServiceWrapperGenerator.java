@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.25 2005-09-20 03:16:57 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.26 2005-09-22 04:22:21 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -89,7 +89,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         super(builder, context);
     }
  
-    protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
+/*    protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
         
         if (webService == null)
             builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
@@ -103,7 +103,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (webService == null)
             return false;
         return isLegalImplementation(classDecl); 
-    }   
+    }   */
     
     protected void processWebService(WebService webService, TypeDeclaration d) {
         cm =  new JCodeModel();
@@ -128,20 +128,20 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }    
 
-    protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
+/*    protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
         if (webMethod != null && webMethod.exclude())
             return false;
 //        return !hasWebMethods || webMethod != null;
         return webMethod != null || endpointReferencesInterface ||
                 method.getDeclaringType().equals(typeDecl) || 
                 (method.getDeclaringType().getAnnotation(WebService.class) != null);
-    }
+    }*/
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         builder.log("WrapperGen - method: "+method);
         builder.log("method.getDeclaringType(): "+method.getDeclaringType());
         boolean generatedWrapper = false;
-        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
+/*        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
             if (method.getDeclaringType() instanceof ClassDeclaration) {
                 soapBinding = method.getDeclaringType().getAnnotation(SOAPBinding.class);            
@@ -154,13 +154,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }        
         boolean newBinding = false;
         if (soapBinding != null) {
-            if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
-                builder.onError(method.getPosition(),"webserviceap.rpc.soapbinding.not.allowed.on.method",
-                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
-            }
+//            if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
+//                builder.onError(method.getPosition(),"webserviceap.rpc.soapbinding.not.allowed.on.method",
+//                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
+//            }
             newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
         }
-        try {
+        try {*/
             if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {
                 generatedWrapper = generateWrappers(method, webMethod);
             } 
@@ -169,11 +169,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 // Theres not going to be a second round
                 builder.setWrapperGenerated(generatedWrapper);
             }
-        } finally {
+/*        } finally {
             if (newBinding) {
                 popSOAPBinding();
             }
-        }
+        }*/
     }
     
     private boolean generateExceptionBeans(MethodDeclaration method) {
@@ -261,11 +261,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
             }    
-        } else if (!(method.getReturnType() instanceof VoidType)) {
+        } /*else if (!(method.getReturnType() instanceof VoidType)) {
             // this is an error, cannot be Oneway and have a return type
             builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
                     new Object[] {typeDecl.getQualifiedName(), method.toString()});
-        }
+        }*/
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
         WrapperInfo reqWrapperInfo = new WrapperInfo(requestClassName);
@@ -411,17 +411,17 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             MemberInfo memInfo = new MemberInfo(paramIndex, paramType, paramName, 
                 new QName(paramNamespace, paramName));
             if (holderType != null) {          
-                if (mode != null &&  mode.equals(WebParam.Mode.IN))
+/*                if (mode != null &&  mode.equals(WebParam.Mode.IN))
                     builder.onError(param.getPosition(), "webserviceap.holder.parameters.must.not.be.in.only", 
                                 new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});
-                else if (mode == null || mode.equals(WebParam.Mode.INOUT)) {   
+                else */if (mode == null || mode.equals(WebParam.Mode.INOUT)) {   
                     requestMembers.add(memInfo);
                 }
                 responseMembers.add(memInfo);
-            } else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
+            } /*else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
                 builder.onError(param.getPosition(), "webserviceap.non.in.parameters.must.be.holder", 
                                 new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});                
-            } else {
+            } */else {
                 requestMembers.add(memInfo);
             }
         }

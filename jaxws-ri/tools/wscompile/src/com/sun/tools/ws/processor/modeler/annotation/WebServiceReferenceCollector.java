@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceReferenceCollector.java,v 1.14 2005-09-20 20:35:42 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.15 2005-09-22 04:22:21 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -65,18 +65,20 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     }
  
     protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
-        if (webService == null)
-            builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
-                    new Object[] {intf.getQualifiedName()});
-        if (isLegalSEI(intf))
-            return true;
-        return false;
+//        if (webService == null)
+//            builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
+//                    new Object[] {intf.getQualifiedName()});
+//        if (isLegalSEI(intf))
+//            return true;
+//        return false;
+        return true;
     }        
 
     protected boolean shouldProcessWebService(WebService webService, ClassDeclaration classDecl) {   
-        if (webService == null)
-            return false;
-        return isLegalImplementation(classDecl); 
+//        if (webService == null)
+//            return false;
+//        return isLegalImplementation(classDecl); 
+        return true;
     }   
     
     protected void processWebService(WebService webService, TypeDeclaration d) {
@@ -85,21 +87,22 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     }
 
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
-        if (webMethod != null && webMethod.exclude())
-            return false;
+//        if (webMethod != null && webMethod.exclude())
+//            return false;
         
 //        return !hasWebMethods || webMethod != null;
-        return webMethod != null || endpointReferencesInterface ||
-                method.getDeclaringType().equals(typeDecl) || 
-                (method.getDeclaringType().getAnnotation(WebService.class) != null);
+//        return webMethod != null || endpointReferencesInterface ||
+//                method.getDeclaringType().equals(typeDecl) || 
+//                (method.getDeclaringType().getAnnotation(WebService.class) != null);
+        return true;
     }
     
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         boolean generatedWrapper = false;
-//        builder.log("WebServiceReferenceCollector - method: "+method);
+        builder.log("WebServiceReferenceCollector - method: "+method);
 //        builder.log("method.getDeclaringType(): "+method.getDeclaringType());            
-        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
+/*        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
             if (method.getDeclaringType() instanceof ClassDeclaration) {
                 soapBinding = method.getDeclaringType().getAnnotation(SOAPBinding.class);            
@@ -113,14 +116,14 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
         
         boolean newBinding = false;
         if (soapBinding != null) {
-            if (soapBinding.style().equals(Style.RPC)) {
-                builder.onError(method.getPosition(), "webserviceap.rpc.soapbinding.not.allowed.on.method",
-                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
-            }
+//            if (soapBinding.style().equals(Style.RPC)) {
+//                builder.onError(method.getPosition(), "webserviceap.rpc.soapbinding.not.allowed.on.method",
+//                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
+//            }
             
             newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
         }
-        try {
+        try {*/
             collectTypes(method, webMethod, seiContext.getReqOperationWrapper(method) != null);
             if (seiContext.getReqOperationWrapper(method) != null) {
                 AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
@@ -133,17 +136,17 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
                 }
             }
             collectExceptionBeans(method);
-        } finally {
+/*        } finally {
             if (newBinding) {
                 popSOAPBinding();
             }
-        }
+        }*/
     }
 
     private void collectTypes(MethodDeclaration method, WebMethod webMethod, boolean isDocLitWrapped) {
-        Oneway oneway = method.getAnnotation(Oneway.class);
+/*        Oneway oneway = method.getAnnotation(Oneway.class);
         SourcePosition outPos = getOutParamPosition(method);
-//        System.out.println("outPos: "+outPos);
+        System.out.println("outPos: "+outPos);
         if (oneway != null) {   
             if(!(method.getReturnType() instanceof VoidType)) {
                 // this is an error, cannot be Oneway and have a return type
@@ -159,7 +162,7 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
         // TODO check to see that a void returning Doc/Bare has an out parameter  
         if (!isDocLitWrapped &&
             soapStyle.equals(SOAPStyle.DOCUMENT)) {
-//            System.out.println("getOutParamPosition: "+getOutParamPosition);
+        System.out.println("outPos2: "+outPos);
             if (method.getReturnType() instanceof VoidType) {
                 if (outPos != null) {
                     builder.onError(method.getPosition(),
@@ -167,20 +170,11 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
                             new Object[] {typeDecl.getQualifiedName(), method.toString()});
                 } 
             } 
-        }
+        }*/
         addSchemaElements(method, isDocLitWrapped);
     }        
     
-    protected SourcePosition getOutParamPosition(MethodDeclaration method) {
-        WebParam webParam;
-        for (ParameterDeclaration param : method.getParameters()) {
-            webParam = (WebParam)param.getAnnotation(WebParam.class);
-            if (webParam != null &&
-                !webParam.mode().equals(WebParam.Mode.IN)) 
-                return param.getPosition();
-        }
-        return null;
-    }
+
     
     private void collectExceptionBeans(MethodDeclaration method) {
         AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
