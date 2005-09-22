@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.43 2005-09-22 15:46:47 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.44 2005-09-22 20:36:36 spericas Exp $
  */
 
 /*
@@ -32,6 +32,7 @@ import com.sun.xml.ws.client.*;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
+import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder;
@@ -53,6 +54,7 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.xml.ws.util.FastInfosetUtil;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.MimeHeader;
@@ -123,10 +125,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         boolean handlerResult = true;
         boolean isRequestResponse = (messageInfo.getMEP() == MessageStruct.REQUEST_RESPONSE_MEP);
 
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
-            sm = (SOAPMessage) messageInfo.getData()[0];
-        }
         try {
+            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+                sm = (SOAPMessage) messageInfo.getData()[0];
+                // Ensure supplied message is encoded according to conneg
+                FastInfosetUtil.ensureCorrectEncoding(messageInfo, sm);
+            }
+        
             SOAPHandlerContext handlerContext = null;
             InternalMessage im = encoder.toInternalMessage(messageInfo);
 
@@ -279,10 +284,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         String bindingId = getBindingId(messageInfo);
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
+            soapMessage.getMimeHeaders().setHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
         } else {
-            soapMessage.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
+            soapMessage.getMimeHeaders().setHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
 

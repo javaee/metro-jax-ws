@@ -25,8 +25,14 @@ import java.io.StringReader;
 import java.util.StringTokenizer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPException;
 
+import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.messaging.saaj.soap.MessageImpl;
 import com.sun.xml.ws.util.xml.XmlUtil;
+
+import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 public class FastInfosetUtil {
     
@@ -60,6 +66,22 @@ public class FastInfosetUtil {
         }
         catch (Exception e) {
             // Ignore
+        }
+    }
+    
+    public static void ensureCorrectEncoding(MessageInfo messageInfo, 
+        SOAPMessage message) throws SOAPException
+    {
+        MessageImpl messageImpl = (MessageImpl) message;
+        String conneg = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
+        
+        // Determine if XML <-> FI transcoding is necessary
+        if (conneg != "pessimistic") {
+            messageImpl.setIsFastInfoset(conneg == "optimistic");   // forces re-encoding
+        }
+        else {
+            // TODO: In pessimistic mode, we don't know if this is the
+            // first message or not, so no guarantees in this case
         }
     }
 
