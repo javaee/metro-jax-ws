@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.20 2005-09-22 04:22:21 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.21 2005-09-22 18:48:48 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -315,7 +315,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
 //    abstract protected boolean shouldProcessWebService(WebService webService, ClassDeclaration decl);
     protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
-        
+        hasWebMethods = false;
         if (webService == null)
             builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
                     new Object[] {intf.getQualifiedName()});
@@ -327,17 +327,23 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean shouldProcessWebService(WebService webService, ClassDeclaration classDecl) {   
         if (webService == null)
             return false;
+        hasWebMethods = hasWebMethods(classDecl);        
         return isLegalImplementation(classDecl); 
     }       
 
     abstract protected void processWebService(WebService webService, TypeDeclaration d);
 
-    protected void postProcessWebService(WebService webService, TypeDeclaration d) {
-        hasWebMethods = d instanceof ClassDeclaration ? hasWebMethods((ClassDeclaration)d) : false;
+    protected void postProcessWebService(WebService webService, InterfaceDeclaration d) {
         processMethods(d);
         popSOAPBinding();
     }
 
+    protected void postProcessWebService(WebService webService, ClassDeclaration d) {
+        processMethods(d);
+        popSOAPBinding();
+    }
+    
+    
     protected boolean hasWebMethods(ClassDeclaration d) {
         if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return false;
@@ -360,28 +366,33 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return false;//hasWebMethods(d.getSuperclass().getDeclaration());
     }
 
-    protected void processMethods(TypeDeclaration d) {
-        builder.log("ProcessedMethods: "+d);
+    protected void processMethods(InterfaceDeclaration d) {
+        builder.log("ProcessedMethods Interface: "+d);
+        hasWebMethods = false;
+        for (MethodDeclaration methodDecl : d.getMethods()) {
+            methodDecl.accept((DeclarationVisitor)this);
+        }
+        for (InterfaceType superType : d.getSuperinterfaces())
+            processMethods(superType.getDeclaration());
+    }
+
+    protected void processMethods(ClassDeclaration d) {
+        builder.log("ProcessedMethods Class: "+d);
+        hasWebMethods = hasWebMethods(d);
         if (d.getQualifiedName().equals(JAVA_LANG_OBJECT))
             return;
-        if (d instanceof InterfaceDeclaration ||
-               ((ClassDeclaration)d).getAnnotation(WebService.class) != null) {
+        if (d.getAnnotation(WebService.class) != null) {
             // Super classes must have @WebService annotations to pick up their methods
             for (MethodDeclaration methodDecl : d.getMethods()) {
                 methodDecl.accept((DeclarationVisitor)this);
             }
         }
-        hasWebMethods = false;
-        if (d instanceof InterfaceDeclaration) {
-            for (InterfaceType superType : d.getSuperinterfaces())
-                processMethods(superType.getDeclaration());
-        } else {
-            ClassDeclaration classDecl = (ClassDeclaration)d;
-            hasWebMethods = hasWebMethods(classDecl.getSuperclass().getDeclaration());
-            processMethods(classDecl.getSuperclass().getDeclaration());
+        if (d.getSuperclass() != null) {
+            processMethods(d.getSuperclass().getDeclaration());
         }
     }
-
+    
+    
     private void inspectEndpointInterface(String endpointInterfaceName, ClassDeclaration d) {
         TypeDeclaration intTypeDecl = null;
         for (InterfaceType interfaceType : d.getSuperinterfaces()) {
@@ -444,15 +455,23 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 //    abstract protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod);
     
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
-        if (hasWebMethods && webMethod == null)
+        builder.log("should process method: "+method.getSimpleName()+" hasWebMethods: "+ hasWebMethods+" ");
+        if (hasWebMethods && webMethod == null) {
+        builder.log("webMethod == null");
             return false;
+        }
         if (webMethod != null && webMethod.exclude() ||
-            !isLegalMethod(method, typeDecl))
+            !isLegalMethod(method, typeDecl)) {
+            builder.log("not a legal method");
             return false;
-//        return !hasWebMethods || webMethod != null;
-        return webMethod != null || endpointReferencesInterface ||
+        }
+        boolean retval = (endpointReferencesInterface ||
                 method.getDeclaringType().equals(typeDecl) || 
-                (method.getDeclaringType().getAnnotation(WebService.class) != null);
+                (method.getDeclaringType().getAnnotation(WebService.class) != null));
+        builder.log("endpointReferencesInterface: "+endpointReferencesInterface);
+        builder.log("declaring class has WebSevice: "+(method.getDeclaringType().getAnnotation(WebService.class) != null));
+        builder.log("returning: "+retval);
+        return  retval;
     }
     
     abstract protected void processMethod(MethodDeclaration method, WebMethod webMethod);
@@ -499,7 +518,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return true;
     }
 
-    protected boolean hasLegalSEI(ClassDeclaration classDecl) {
+/*    protected boolean hasLegalSEI(ClassDeclaration classDecl) {
         for (InterfaceType interfaceType : classDecl.getSuperinterfaces()) {
             if (interfaceType.getDeclaration().getQualifiedName().equals(REMOTE_CLASSNAME)) {
                 if (isLegalSEI(interfaceType.getDeclaration()))
@@ -509,7 +528,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             }
         }
         return false;
-    }
+    }*/
 
     protected boolean isLegalSEI(InterfaceDeclaration intf) {
         for (FieldDeclaration field : intf.getFields()) {
@@ -524,15 +543,36 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return true;
     }
 
-    protected boolean methodsAreLegal(TypeDeclaration typeDecl) {
-//        for (MethodDeclaration method : typeDecl.getMethods()) {
-//            if (!isLegalMethod(method, typeDecl))
-//                return false;
-//        }
+    protected boolean methodsAreLegal(InterfaceDeclaration intfDecl) {
+        hasWebMethods = false;
+        for (MethodDeclaration method : intfDecl.getMethods()) {
+            if (!isLegalMethod(method, intfDecl))
+                return false;
+        }
+        for (InterfaceType superIntf : intfDecl.getSuperinterfaces()) {
+            if (!methodsAreLegal(superIntf.getDeclaration()))
+                return false;
+        }
         return true;
     }
 
+    protected boolean methodsAreLegal(ClassDeclaration classDecl) {
+        hasWebMethods = hasWebMethods(classDecl);
+        for (MethodDeclaration method : classDecl.getMethods()) {
+            if (!isLegalMethod(method, classDecl))
+                return false;
+        }
+        ClassType superClass = classDecl.getSuperclass();
+        if (superClass != null && !methodsAreLegal(superClass.getDeclaration())) {
+            return false;
+        }
+        return true;
+    }
+    
+    
     protected boolean isLegalMethod(MethodDeclaration method, TypeDeclaration typeDecl) {
+        if (hasWebMethods && method.getAnnotation(WebMethod.class) == null)
+            return true;
         if (typeDecl instanceof ClassDeclaration && method.getModifiers().contains(Modifier.ABSTRACT)) {
             builder.onError(method.getPosition(), "webserviceap.webservice.method.is.abstract",
                     new Object[] {typeDecl.getQualifiedName(), method.getSimpleName()});

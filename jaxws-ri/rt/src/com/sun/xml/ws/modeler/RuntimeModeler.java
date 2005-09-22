@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.61 2005-09-21 01:43:36 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.62 2005-09-22 18:48:47 kohlert Exp $
  */
 
 /*
@@ -74,6 +74,7 @@ public class RuntimeModeler {
     private com.sun.xml.ws.wsdl.parser.Binding binding;
     private QName serviceName;
     private QName portName;
+    private Map<Class, Boolean> classUsesWebMethod = new HashMap<Class, Boolean>();
 
     /**
      * 
@@ -257,9 +258,38 @@ public class RuntimeModeler {
                              new Object[] {className});
         }
     }
+    
+    protected void setUsesWebMethod(Class clazz, Boolean usesWebMethod) {
+//        System.out.println("class: "+clazz.getName()+" uses WebMethod: "+usesWebMethod);
+        classUsesWebMethod.put(clazz, usesWebMethod);
+    }
 
-
+    protected void determineWebMethodUse(Class clazz) {
+        if (clazz == null)
+            return;
+        if (clazz.isInterface()) {
+            setUsesWebMethod(clazz, false);
+        }
+        else {
+            WebMethod webMethod;
+            boolean hasWebMethod = false;
+            for (Method method : clazz.getMethods()) {
+                if (!method.getDeclaringClass().equals(clazz))
+                    continue;
+                webMethod = getPrivMethodAnnotation(method, WebMethod.class);
+                if (webMethod != null &&
+                    !webMethod.exclude()) {
+                    hasWebMethod = true;
+                    break;
+                }
+            }
+            setUsesWebMethod(clazz, hasWebMethod);
+        }
+        determineWebMethodUse(clazz.getSuperclass());
+    }
+    
     void processClass(Class clazz) {
+        determineWebMethodUse(clazz);
         WebService webService = getPrivClassAnnotation(clazz, WebService.class);
         String portTypeLocalName  = clazz.getSimpleName();
         if (webService.name().length() >0)
@@ -291,7 +321,7 @@ public class RuntimeModeler {
          * WebMethod annotation, then only methods with this annotation
          * will be processed.
          */
-        if (clazz == portClass) {
+/*        if (clazz == portClass) {
             WebMethod webMethod;
             for (Method method : clazz.getMethods()) {
                 webMethod = getPrivMethodAnnotation(method, WebMethod.class);
@@ -301,31 +331,36 @@ public class RuntimeModeler {
                     break;
                 }
             }
-        }
+        }*/
 
         for (Method method : clazz.getMethods()) {
+//            System.out.println("method: "+method.getName());
             if (method.getDeclaringClass().equals(Object.class) ||
-                !isWebMethod(method, clazz))
+                !isWebMethod(method, clazz)) {
                 continue;
-            /*
-            if (!method.isAccessible()) {
-                method.setAccessible(true);
             }
-             */
             processMethod(method, webService);
         }
     }
 
     protected boolean isWebMethod(Method method, Class clazz) {
-        if (clazz.isInterface())
+//        System.out.print("method: "+method.getName()+" ");
+        if (clazz.isInterface()) {
+//            System.out.println("class: "+clazz.getName()+" is interface");
             return true;
+        }
         Class declClass = method.getDeclaringClass();
-        if (declClass.equals(clazz))
+        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
+        if (webMethod != null &&
+            webMethod.exclude() == false) {
+//            System.out.println("has WebMethod");
             return true;
-        if (getPrivMethodAnnotation(method, WebMethod.class) != null)
+        }
+        if (getPrivClassAnnotation(declClass, WebService.class) != null &&
+            !classUsesWebMethod.get(declClass)) {
+//            System.out.println("class: "+declClass.getName()+" does not use WebMethod");
             return true;
-        if (getPrivClassAnnotation(declClass, WebService.class) != null)
-            return true;
+        }
         return false;
     }
     

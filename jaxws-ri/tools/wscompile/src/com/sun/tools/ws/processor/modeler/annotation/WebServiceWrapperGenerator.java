@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.26 2005-09-22 04:22:21 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.27 2005-09-22 18:48:49 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -111,8 +111,16 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         processedExceptions = new HashSet<String>();
     }
     
-    protected void postProcessWebService(WebService webService, TypeDeclaration d) {
+    protected void postProcessWebService(WebService webService, InterfaceDeclaration d) {
         super.postProcessWebService(webService, d);
+        doPostProcessWebService(webService, d);
+    }
+    protected void postProcessWebService(WebService webService, ClassDeclaration d) {
+        super.postProcessWebService(webService, d);
+        doPostProcessWebService(webService, d);
+    }
+    
+    protected  void doPostProcessWebService(WebService webService, TypeDeclaration d) {
         if (cm != null) {
             File sourceDir = builder.getSourceDir();
             ProcessorEnvironment env = builder.getProcessorEnvironment();          
@@ -141,39 +149,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         builder.log("WrapperGen - method: "+method);
         builder.log("method.getDeclaringType(): "+method.getDeclaringType());
         boolean generatedWrapper = false;
-/*        SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
-        if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
-            if (method.getDeclaringType() instanceof ClassDeclaration) {
-                soapBinding = method.getDeclaringType().getAnnotation(SOAPBinding.class);            
-                if (soapBinding != null)
-                    builder.log("using "+method.getDeclaringType()+"'s SOAPBinding.");            
-                else {
-                    soapBinding = new MySOAPBinding();
-                }
-            }
-        }        
-        boolean newBinding = false;
-        if (soapBinding != null) {
-//            if (soapBinding.style().equals(SOAPBinding.Style.RPC)) {
-//                builder.onError(method.getPosition(),"webserviceap.rpc.soapbinding.not.allowed.on.method",
-//                        new Object[] {typeDecl.getQualifiedName(), method.toString()});
-//            }
-            newBinding = pushSOAPBinding(soapBinding, method, typeDecl);
+        if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {
+            generatedWrapper = generateWrappers(method, webMethod);
+        } 
+        generatedWrapper = generateExceptionBeans(method) || generatedWrapper;
+        if (generatedWrapper) {
+            // Theres not going to be a second round
+            builder.setWrapperGenerated(generatedWrapper);
         }
-        try {*/
-            if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {
-                generatedWrapper = generateWrappers(method, webMethod);
-            } 
-            generatedWrapper = generateExceptionBeans(method) || generatedWrapper;
-            if (generatedWrapper) {
-                // Theres not going to be a second round
-                builder.setWrapperGenerated(generatedWrapper);
-            }
-/*        } finally {
-            if (newBinding) {
-                popSOAPBinding();
-            }
-        }*/
     }
     
     private boolean generateExceptionBeans(MethodDeclaration method) {
