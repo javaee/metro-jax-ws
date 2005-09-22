@@ -22,6 +22,7 @@ package com.sun.xml.ws.streaming;
 
 import java.io.Reader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import javax.xml.transform.Source;
@@ -69,50 +70,53 @@ public class SourceReaderFactory {
     public static XMLStreamReader createSourceReader(Source source,
         boolean rejectDTDs) 
     {
-        if (source instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) source;
-            InputStream is = streamSource.getInputStream();
-            
-            if (is != null) {
-                return XMLStreamReaderFactory.createXMLStreamReader(is, 
-                    rejectDTDs);
-            }
-            else {
-                Reader reader = streamSource.getReader();
-                if (reader != null) {
-                    return XMLStreamReaderFactory.createXMLStreamReader(reader, 
-                        rejectDTDs);
+        return createSourceReader(source, rejectDTDs, null);
+    }
+    
+    public static XMLStreamReader createSourceReader(Source source,
+        boolean rejectDTDs, String charsetName) 
+    {
+        try {
+            if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+                InputStream is = streamSource.getInputStream();
+
+                if (is != null) {
+                    // Wrap input stream in Reader if charset is specified
+                    if (charsetName != null) {
+                        return XMLStreamReaderFactory.createXMLStreamReader(
+                            new InputStreamReader(is, charsetName), rejectDTDs);                    
+                    }
+                    else {
+                        return XMLStreamReaderFactory.createXMLStreamReader(is, 
+                            rejectDTDs);
+                    }
                 }
                 else {
-                    throw new XMLReaderException("sourceReader.invalidSource", 
-                        new Object[] { source.getClass().getName() });
+                    Reader reader = streamSource.getReader();
+                    if (reader != null) {
+                        return XMLStreamReaderFactory.createXMLStreamReader(reader, 
+                            rejectDTDs);
+                    }
+                    else {
+                        throw new XMLReaderException("sourceReader.invalidSource", 
+                            new Object[] { source.getClass().getName() });
+                    }
                 }
             }
-        }
-        else if (source.getClass() == fastInfosetSourceClass) {
-            try {
+            else if (source.getClass() == fastInfosetSourceClass) {
                 return XMLStreamReaderFactory.createFIStreamReader((InputStream) 
                     fastInfosetSource_getInputStream.invoke(source));
             }
-            catch (Exception e) {
-                throw new XMLReaderException(new LocalizableExceptionAdapter(e));
-            }
-        }
-        else if (source instanceof DOMSource) {
-            try {
+            else if (source instanceof DOMSource) {
                 DOMStreamReader dsr = domStreamReader.get();
                 if (dsr == null) {
                     domStreamReader.set(dsr = new DOMStreamReader());
                 } 
                 dsr.setCurrentNode(((DOMSource) source).getNode());
                 return dsr;
-            } 
-            catch (Exception e) {
-                throw new XMLReaderException(new LocalizableExceptionAdapter(e));
             }
-        }
-        else if (source instanceof SAXSource) {
-            try { 
+            else if (source instanceof SAXSource) {
                 // TODO: need SAX to StAX adapter here -- Use transformer for now
                 javax.xml.transform.Transformer tx = 
                     javax.xml.transform.TransformerFactory.newInstance().newTransformer();
@@ -123,14 +127,14 @@ public class SourceReaderFactory {
                     new javax.xml.transform.dom.DOMSource(domResult.getNode()),
                     rejectDTDs);
             }
-            catch (Exception e) {
-                throw new XMLReaderException(new LocalizableExceptionAdapter(e));
+            else {
+                throw new XMLReaderException("sourceReader.invalidSource", 
+                    new Object[] { source.getClass().getName() });
             }        
         }
-        else {
-            throw new XMLReaderException("sourceReader.invalidSource", 
-                new Object[] { source.getClass().getName() });
-        }        
+        catch (Exception e) {
+            throw new XMLReaderException(new LocalizableExceptionAdapter(e));            
+        }
     }
 
 }
