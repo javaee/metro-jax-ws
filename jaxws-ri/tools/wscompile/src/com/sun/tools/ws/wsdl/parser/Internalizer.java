@@ -155,7 +155,10 @@ public class Internalizer {
         }else if(isGlobalBinding(bindings) && !isWSDLDefinition(target) && isTopLevelBinding(bindings.getParentNode())){
             target = getWSDLDefintionNode(target);
         }
-
+        //if target is null it means the xpath evaluation has some problem,
+        // just return
+        if(target == null)
+            return;
         // update the result map
         result.put( bindings, target );
 
@@ -234,23 +237,23 @@ public class Internalizer {
             error("internalizer.XPathEvaluationError", new Object[]{e.getMessage()});
             if(env.verbose())
                 e.printStackTrace();
-            return target; // abort processing this <jaxb:bindings>
+            return null; // abort processing this <jaxb:bindings>
         }
 
         if( nlst.getLength()==0 ) {
             error("internalizer.XPathEvaluatesToNoTarget", new Object[]{expression});
-            return target; // abort
+            return null; // abort
         }
 
         if( nlst.getLength()!=1 ) {
             error("internalizer.XPathEvaulatesToTooManyTargets", new Object[]{expression, nlst.getLength()});
-            return target; // abort
+            return null; // abort
         }
 
         Node rnode = nlst.item(0);
         if(!(rnode instanceof Element )) {
             error("internalizer.XPathEvaluatesToNonElement", new Object[]{expression});
-            return target; // abort
+            return null; // abort
         }
         return (Element)rnode;
     }

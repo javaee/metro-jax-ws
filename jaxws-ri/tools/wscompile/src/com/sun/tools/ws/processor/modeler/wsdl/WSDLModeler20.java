@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.28 2005-09-10 19:49:48 kohsuke Exp $
+ * $Id: WSDLModeler20.java,v 1.29 2005-09-23 18:54:14 vivekp Exp $
  */
 
 /*
@@ -2250,7 +2250,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             for(Iterator mimeTypeIter = mimeTypes.iterator(); mimeTypeIter.hasNext();) {
                 String mimeType = (String)mimeTypeIter.next();
                 if((!mimeType.equals("text/xml") &&
-                        !mimeType.equals("applicatioon/xml"))){
+                        !mimeType.equals("application/xml"))){
                     //According to AP 1.0,
                     //RZZZZ: In a DESCRIPTION, if a wsdl:part element refers to a
                     //global element declaration (via the element attribute of the wsdl:part
