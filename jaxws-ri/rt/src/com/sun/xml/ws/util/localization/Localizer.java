@@ -1,5 +1,5 @@
 /*
- * $Id: Localizer.java,v 1.4 2005-09-23 22:05:38 kohsuke Exp $
+ * $Id: Localizer.java,v 1.5 2005-09-23 22:12:18 kohsuke Exp $
  */
 
 /*
@@ -31,12 +31,15 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
+ * Localizes the {@link Localizable} into a message
+ * by using a configured {@link Locale}.
+ *
  * @author WS Development Team
  */
 public class Localizer {
 
-    protected Locale _locale;
-    protected HashMap _resourceBundles;
+    private final Locale _locale;
+    private final HashMap _resourceBundles;
 
     public Localizer() {
         this(Locale.getDefault());
@@ -126,10 +129,10 @@ public class Localizer {
 
     }
 
-    protected String getDefaultMessage(Localizable l) {
+    private String getDefaultMessage(Localizable l) {
         String key = l.getKey();
         Object[] args = l.getArguments();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("[failed to localize] ");
         sb.append(key);
         if (args != null) {
