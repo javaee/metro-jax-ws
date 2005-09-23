@@ -281,7 +281,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
         logger.log(Level.SEVERE, e.getMessage(), e);
         WSConnection con = (WSConnection)messageInfo.getConnection();
-        XMLConnectionUtil.sendResponseError(con);
+        XMLConnectionUtil.sendResponseError(con, messageInfo);
     }
 
 

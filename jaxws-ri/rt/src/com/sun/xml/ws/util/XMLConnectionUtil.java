@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConnectionUtil.java,v 1.7 2005-09-15 23:18:31 spericas Exp $
+ * $Id: XMLConnectionUtil.java,v 1.8 2005-09-23 15:18:18 spericas Exp $
  */
 
 /*
@@ -40,6 +40,8 @@ import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.server.*;
 import java.io.ByteArrayInputStream;
 import javax.xml.transform.stream.StreamSource;
+
+import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 /**
  * @author WS Development Team
@@ -99,17 +101,16 @@ public class XMLConnectionUtil {
         con.closeOutput();
     }
         
-    public static void sendResponseError(WSConnection con) {
+    public static void sendResponseError(WSConnection con, MessageInfo messageInfo) {
         try {
             StreamSource source = new StreamSource(
-                    new ByteArrayInputStream(DEFAULT_SERVER_ERROR.getBytes()));
-            
-            // TODO: FI content negotiation, second param to XMLMessage() constructor
-            
-            XMLMessage message = new XMLMessage(source, false);
+                    new ByteArrayInputStream(DEFAULT_SERVER_ERROR.getBytes()));            
+            String conneg = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);                       
+            XMLMessage message = new XMLMessage(source, conneg == "optimistic");
             setStatus(con, WSConnection.INTERNAL_ERR);
             send(con, message);
-        } catch(Exception e) {
+        } 
+        catch(Exception e) {
             throw new WebServiceException(e);
         }
     }
