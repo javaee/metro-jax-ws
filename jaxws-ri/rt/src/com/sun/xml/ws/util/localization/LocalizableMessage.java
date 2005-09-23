@@ -1,5 +1,5 @@
 /*
- * $Id: LocalizableMessage.java,v 1.4 2005-09-23 22:05:38 kohsuke Exp $
+ * $Id: LocalizableMessage.java,v 1.5 2005-09-23 22:13:01 kohsuke Exp $
  */
 
 /*
@@ -27,16 +27,13 @@ package com.sun.xml.ws.util.localization;
 /**
  * @author WS Development Team
  */
-public class LocalizableMessage implements Localizable {
+public final class LocalizableMessage implements Localizable {
 
-    protected String _bundlename;
-    protected String _key;
-    protected Object[] _args;
+    private final String _bundlename;
+    private final String _key;
+    private final Object[] _args;
 
-    public LocalizableMessage(
-        String bundlename,
-        String key,
-        Object... args) {
+    public LocalizableMessage(String bundlename, String key, Object... args) {
         _bundlename = bundlename;
         _key = key;
         _args = args;
