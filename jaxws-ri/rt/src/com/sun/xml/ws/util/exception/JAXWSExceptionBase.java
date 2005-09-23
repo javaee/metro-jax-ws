@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSExceptionBase.java,v 1.4 2005-09-23 22:05:37 kohsuke Exp $
+ * $Id: JAXWSExceptionBase.java,v 1.5 2005-09-23 22:12:35 kohsuke Exp $
  */
 
 /*
@@ -48,6 +48,9 @@ public abstract class JAXWSExceptionBase
         this.args = args;
     }
 
+    /**
+     * Creates a new exception that wraps the specified exception.
+     */
     protected JAXWSExceptionBase(Throwable throwable) {
         super(throwable);
         this.key = Localizable.NOT_LOCALIZABLE;
