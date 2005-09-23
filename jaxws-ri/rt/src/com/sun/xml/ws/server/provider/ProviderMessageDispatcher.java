@@ -56,7 +56,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
-        Class providerClass = provider.getClass();
+        Class providerClass = endpointInfo.getImplementorClass();
         boolean isSource = isSource(providerClass);
         boolean isSoapMessage = isSoapMessage(providerClass);
         if (!(isSource || isSoapMessage)) {
@@ -111,7 +111,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
-        Class providerClass = provider.getClass();
+        Class providerClass = endpointInfo.getImplementorClass();
         if (messageInfo.getResponseType() == MessageInfo.NORMAL_RESPONSE &&
                 getServiceMode(providerClass) == Service.Mode.MESSAGE) {
             SOAPMessage soapMessage = null;
