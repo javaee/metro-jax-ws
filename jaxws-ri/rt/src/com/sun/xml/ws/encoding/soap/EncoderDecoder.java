@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.18 2005-09-10 19:47:39 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.19 2005-09-23 20:11:16 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -251,19 +251,17 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
     private Object createJAXBBeanPayload(RuntimeContext context, WrapperParameter param,
             Object[] data, Object result) {
         Class bean = (Class) param.getTypeReference().type;
-        Iterator<Parameter> wc = param.getWrapperChildren().iterator();
         try {
             Object obj = bean.newInstance();
-            while (wc.hasNext()) {
-                Parameter p = wc.next();
-                Object value = null;
+            for( Parameter p : param.getWrapperChildren() ) {
+                Object value;
                 if (p.isResponse())
                     value = result;
                 else
                     value = p.getHolderValue(data[p.getIndex()]);
                 QName name = p.getName();
-                setWrapperChildValue(context, obj, value, name.getNamespaceURI(), name
-                        .getLocalPart());
+                setWrapperChildValue(context, obj, value,
+                    name.getNamespaceURI(), name.getLocalPart());
             }
             return obj;
         } catch(Exception e){
