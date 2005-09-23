@@ -138,6 +138,10 @@ public class HandlerContext {
         return bindingId;
     }
 
+    public void setBindingId(String bindingID) {
+        bindingId = bindingID;
+    }
+
     public void setCanonicalization(String algorithm) {
         this.algorithm = algorithm;
     }

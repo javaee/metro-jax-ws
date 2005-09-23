@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.28 2005-09-20 03:16:12 kohlert Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.29 2005-09-23 19:14:14 kwalsh Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -26,6 +26,7 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.pept.encoding.Encoder;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
@@ -55,6 +56,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.server.AppMsgContextImpl;
 
@@ -114,6 +116,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (shd == null) {
                 implementor.invoke();
             } else {
+                //set encoder
+                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                messageInfo.setEncoder((Encoder) eptf.getInternalEncoder());
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
                 context.setInvoker(implementor);
@@ -378,6 +383,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         MessageInfoUtil.getRuntimeContext(messageInfo).setHandlerContext(context);
         RuntimeEndpointInfo endpointInfo = 
             MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo();
+        context.setBindingId(((BindingImpl)endpointInfo.getBinding()).getActualBindingId());
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
         if (wsContext != null) {
             context.setMessageContext(wsContext.getMessageContext());

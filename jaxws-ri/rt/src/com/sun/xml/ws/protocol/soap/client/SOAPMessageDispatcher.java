@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.44 2005-09-22 20:36:36 spericas Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.45 2005-09-23 19:14:13 kwalsh Exp $
  */
 
 /*
@@ -567,12 +567,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         BindingProvider provider = (BindingProvider) context.getMessageContext()
             .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
+
+        //context.setBindingId(.);
         if (provider != null) {
             if (Proxy.isProxyClass(provider.getClass())) {
                 EndpointIFInvocationHandler invocationHandler = (EndpointIFInvocationHandler) Proxy.getInvocationHandler(provider);
                 EndpointIFContext endpointContext = invocationHandler.getEndpointContext();
                 messageContext.put(MessageContext.WSDL_SERVICE, invocationHandler.getServiceQName());
                 messageContext.put(MessageContext.WSDL_PORT, endpointContext.getPortName());
+                context.setBindingId(endpointContext.getBindingID().toString());
                 //this should already be in messageContext String endpointAddress = endpointContext.getEndpointAddress();
             }
         }
