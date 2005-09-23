@@ -52,7 +52,7 @@ public class ProviderSED implements InternalEncoder {
                 break;
 
             case MessageStruct.CHECKED_EXCEPTION_RESPONSE :
-                // invoke() throws only RemoteException
+                // invoke() doesn't throw any checked exception
                 // Fallthrough
 
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE :
