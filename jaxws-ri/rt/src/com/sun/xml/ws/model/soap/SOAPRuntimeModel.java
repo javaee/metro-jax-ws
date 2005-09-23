@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.12 2005-09-23 22:05:31 kohsuke Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.13 2005-09-23 22:45:37 kohlert Exp $
  */
 
 /*
@@ -23,6 +23,7 @@
  */
 package com.sun.xml.ws.model.soap;
 
+import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.messaging.saaj.soap.SOAPVersionMismatchException;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -65,25 +66,40 @@ public class SOAPRuntimeModel extends RuntimeModel {
 
     private void setDecoderInfo(List<Parameter> params, SOAPBinding binding, Mode mode){
         for (Parameter param : params) {
-                ParameterBinding paramBinding = (mode == Mode.IN)?param.getInBinding():param.getOutBinding();
-                if (paramBinding.isBody() && binding.isRpcLit()) {
-                    RpcLitPayload payload = new RpcLitPayload(param.getName());
-                    WrapperParameter wp = (WrapperParameter) param;
-                    List<Parameter> wc = wp.getWrapperChildren();
-                    for (Parameter p : wc) {
-                        if(p.getBinding().isUnbound())
-                            continue;
-                        JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(p.getTypeReference()),
-                            null);
-                        payload.addParameter(bi);
-                    }
-                    addDecoderInfo(param.getName(), payload);
-                } else {
-                    JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()),
+            ParameterBinding paramBinding = (mode == Mode.IN)?param.getInBinding():param.getOutBinding();
+            if (paramBinding.isBody() && binding.isRpcLit()) {
+                RpcLitPayload payload = new RpcLitPayload(param.getName());
+                WrapperParameter wp = (WrapperParameter) param;
+                for (Parameter p : wp.getWrapperChildren()) {
+                    if(p.getBinding().isUnbound())
+                        continue;
+                    JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(p.getTypeReference()),
                         null);
-                    addDecoderInfo(param.getName(), bi);
+                    payload.addParameter(bi);
                 }
+                addDecoderInfo(param.getName(), payload);
+            } else {
+/*                if (param instanceof WrapperParameter) {
+                    WrapperParameter wp = (WrapperParameter) param;
+                    Class wrapperClass = (Class)wp.getTypeReference().type;
+                    RawAccessor ra;
+                    for (Parameter p : wp.getWrapperChildren()) {
+                        ra = null;
+                        try {
+                            ra = jaxbContext.getElementPropertyAccessor(wrapperClass, 
+                                    p.getName().getNamespaceURI(), p.getName().getLocalPart());                        
+                        } catch (Exception e) {
+                            // TODO throw an exception
+                            e.printStackTrace();
+                        }
+                        p.setRawAccessor(ra);
+                    }                        
+                }*/
+                JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()),
+                    null);
+                addDecoderInfo(param.getName(), bi);
             }
+        }
     }
 
     /*

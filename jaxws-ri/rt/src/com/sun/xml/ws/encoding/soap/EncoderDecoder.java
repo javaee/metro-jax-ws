@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.20 2005-09-23 22:05:28 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.21 2005-09-23 22:45:36 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -77,8 +77,15 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 QName name = p.getName();
                 Object value = null;
                 if (binding.isDocLit()){
-                    value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), name.getNamespaceURI(), name
-                            .getLocalPart());
+/*                    if (p.getRawAccessor() != null) {
+                        try {
+                            p.getRawAccessor().get(((JAXBBridgeInfo)obj).getValue());
+                        } catch (Exception e) {
+                            throw new SerializationException(new LocalizableExceptionAdapter(e));
+                        }
+                    } else*/
+                        value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), 
+                                    name.getNamespaceURI(), name.getLocalPart());
                 }else if (binding.isRpcLit()){
                     value = getWrapperChildValue(context, obj, name.getNamespaceURI(), name
                             .getLocalPart());
@@ -259,8 +266,11 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 else
                     value = p.getHolderValue(data[p.getIndex()]);
                 QName name = p.getName();
-                setWrapperChildValue(context, obj, value,
-                    name.getNamespaceURI(), name.getLocalPart());
+//                if (p.getRawAccessor() != null)
+//                    p.getRawAccessor().set(obj, value);
+//                else
+                    setWrapperChildValue(context, obj, value,
+                        name.getNamespaceURI(), name.getLocalPart());
             }
             return obj;
         } catch(Exception e){
@@ -279,11 +289,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      */
     private Object createRpcLitPayload(RuntimeContext context, WrapperParameter param,
             Object[] data, Object result) {
-        Iterator<Parameter> wc = param.getWrapperChildren().iterator();
         RpcLitPayload payload = new RpcLitPayload(param.getName());
 
-        while (wc.hasNext()) {
-            Parameter p = wc.next();
+        for  (Parameter p : param.getWrapperChildren()) {
             if(p.getBinding().isUnbound())
                 continue;
             Object value = null;

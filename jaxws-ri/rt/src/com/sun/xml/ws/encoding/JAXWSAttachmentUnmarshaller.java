@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.8 2005-09-21 22:20:49 vivekp Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.9 2005-09-23 22:45:36 kohlert Exp $
  */
 
 /*
@@ -64,7 +64,7 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
             AttachmentPart ap = ab.getAttachmentPart();
             if(ap != null){
                 byte[] data = ASCIIUtility.getBytes(ap.getRawContent());
-                return new DataHandler(new com.sun.xml.bind.v2.ByteArrayDataSource(data,  ap.getContentType()));
+                return new DataHandler(new com.sun.xml.ws.util.ByteArrayDataSource(data,  ap.getContentType()));
             }
         } catch (SOAPException e) {
             throw new WebServiceException(e);

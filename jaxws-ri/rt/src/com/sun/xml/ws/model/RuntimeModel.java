@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.24 2005-09-20 21:44:40 jitu Exp $
+ * $Id: RuntimeModel.java,v 1.25 2005-09-23 22:45:37 kohlert Exp $
  */
 
 /*
@@ -490,7 +490,7 @@ public abstract class RuntimeModel {
 
     private boolean enableMtom = false;
     private ThreadLocal<BridgeContext> bridgeContext = new ThreadLocal<BridgeContext>();
-    private JAXBRIContext jaxbContext;
+    protected JAXBRIContext jaxbContext;
     private String wsdlLocation;
     private QName serviceName;
     private QName portName;

@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.9 2005-09-10 19:47:49 kohsuke Exp $
+ * $Id: Parameter.java,v 1.10 2005-09-23 22:45:37 kohlert Exp $
  */
 
 /*
@@ -27,6 +27,7 @@ package com.sun.xml.ws.model;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 
+import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.model.soap.SOAPBlock;
 
@@ -177,6 +178,14 @@ public class Parameter {
     public void setPartName(String partName) {
         this.partName = partName;
     }
+    
+    public RawAccessor getRawAccessor() {
+        return rawAccessor;
+    }
+    
+    public void setRawAccessor(RawAccessor rawAccessor) {
+        this.rawAccessor = rawAccessor;
+    }
 
     protected ParameterBinding binding;
     protected ParameterBinding outBinding;
@@ -185,5 +194,6 @@ public class Parameter {
     protected TypeReference typeReference;
     protected QName name;
     protected String partName;
+    protected RawAccessor rawAccessor;
 
 }
