@@ -1,5 +1,5 @@
 /*
- * $Id: Localizable.java,v 1.3 2005-09-10 19:48:18 kohsuke Exp $
+ * $Id: Localizable.java,v 1.4 2005-09-23 22:05:38 kohsuke Exp $
  */
 
 /*
@@ -25,11 +25,38 @@
 package com.sun.xml.ws.util.localization;
 
 /**
+ * Localizable message.
+ *
  * @author WS Development Team
  */
 public interface Localizable {
-
+    /**
+     * Gets the key in the resource bundle.
+     *
+     * @return
+     *      if this method returns {@link #NOT_LOCALIZABLE},
+     *      that means the message is not localizable, and
+     *      the first item of {@link #getArguments()} array
+     *      holds a String.
+     */
     public String getKey();
+
+    /**
+     * Returns the arguments for message formatting.
+     *
+     * @return
+     *      can be an array of length 0 but never be null.
+     */
     public Object[] getArguments();
     public String getResourceBundleName();
+
+
+    /**
+     * Special constant that represents a message that
+     * is not localizable.
+     *
+     * <p>
+     * Use of "new" is to create an unique instance.
+     */
+    public static final String NOT_LOCALIZABLE = new String("\u0000");
 }

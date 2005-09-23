@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorException.java,v 1.5 2005-09-10 19:49:31 kohsuke Exp $
+ * $Id: ProcessorException.java,v 1.6 2005-09-23 22:05:45 kohsuke Exp $
  */
 
 /*
@@ -37,20 +37,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ProcessorException extends JAXWSExceptionBase {
 
-    public ProcessorException(String key) {
-        super(key);
-    }
-
-    public ProcessorException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ProcessorException(String key, Object[] args) {
+    public ProcessorException(String key, Object... args) {
         super(key, args);
     }
 
-    public ProcessorException(String key, Localizable arg) {
-        super(key, arg);
+    public ProcessorException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

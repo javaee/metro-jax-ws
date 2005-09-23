@@ -1,5 +1,5 @@
 /*
- * $Id: ParseException.java,v 1.4 2005-09-10 19:50:09 kohsuke Exp $
+ * $Id: ParseException.java,v 1.5 2005-09-23 22:05:47 kohsuke Exp $
  */
 
 /*
@@ -34,24 +34,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ParseException extends JAXWSExceptionBase {
 
-    public ParseException(String key) {
-        super(key);
-    }
-
-    public ParseException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ParseException(String key, Localizable localizable) {
-        super(key, localizable);
-    }
-
-    public ParseException(String key, String arg, Localizable localizable) {
-        this(key, new Object[] { arg, localizable });
-    }
-
-    public ParseException(String key, Object[] args) {
+    public ParseException(String key, Object... args) {
         super(key, args);
+    }
+
+    public ParseException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

@@ -1,5 +1,5 @@
 /*
- * $Id: Localizer.java,v 1.3 2005-09-10 19:48:18 kohsuke Exp $
+ * $Id: Localizer.java,v 1.4 2005-09-23 22:05:38 kohsuke Exp $
  */
 
 /*
@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  * @author WS Development Team
@@ -95,10 +93,16 @@ public class Localizer {
             }
 
             String key = l.getKey();
+            if(key==Localizable.NOT_LOCALIZABLE) {
+                // this message is not localizable
+                return (String)l.getArguments()[0];
+            }
+
+
             if (key == null)
                 key = "undefined";
 
-            String msg = null;
+            String msg;
             try {
                 msg = bundle.getString(key);
             } catch (MissingResourceException e) {
@@ -108,11 +112,9 @@ public class Localizer {
 
             // localize all arguments to the given localizable object
             Object[] args = l.getArguments();
-            if (args != null) {
-                for (int i = 0; i < args.length; ++i) {
-                    if (args[i] instanceof Localizable)
-                        args[i] = localize((Localizable) args[i]);
-                }
+            for (int i = 0; i < args.length; ++i) {
+                if (args[i] instanceof Localizable)
+                    args[i] = localize((Localizable) args[i]);
             }
 
             String message = MessageFormat.format(msg, args);
@@ -128,11 +130,8 @@ public class Localizer {
         String key = l.getKey();
         Object[] args = l.getArguments();
         StringBuffer sb = new StringBuffer();
-        if (!(l instanceof LocalizableExceptionAdapter)) {
-            // avoid to point out the failure to localize an exception that cannot possibly be localized
-            sb.append("[failed to localize] ");
-        }
-        sb.append(String.valueOf(key));
+        sb.append("[failed to localize] ");
+        sb.append(key);
         if (args != null) {
             sb.append('(');
             for (int i = 0; i < args.length; ++i) {

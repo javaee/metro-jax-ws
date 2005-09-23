@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.13 2005-09-22 04:22:21 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.14 2005-09-23 22:05:43 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -58,7 +58,6 @@ import com.sun.tools.xjc.api.JavaCompiler;
 import com.sun.tools.xjc.api.Reference;
 import com.sun.tools.xjc.api.XJC;
 import com.sun.xml.ws.util.Version;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessage;
 

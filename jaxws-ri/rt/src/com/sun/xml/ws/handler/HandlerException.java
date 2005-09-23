@@ -33,21 +33,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author WS Development Team
  */
 public class HandlerException extends JAXWSExceptionBase {
-
-    public HandlerException(String key) {
-        super(key);
-    }
-
-    public HandlerException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public HandlerException(String key, Object[] args) {
+    public HandlerException(String key, Object... args) {
         super(key, args);
     }
 
-    public HandlerException(String key, Localizable arg) {
-        super(key, arg);
+    public HandlerException(Throwable throwable) {
+        super(throwable);
     }
 
     public HandlerException(Localizable arg) {

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParseException.java,v 1.4 2005-09-10 19:49:51 kohsuke Exp $
+ * $Id: WSDLParseException.java,v 1.5 2005-09-23 22:05:46 kohsuke Exp $
  */
 
 /*
@@ -32,20 +32,12 @@ import com.sun.xml.ws.util.localization.Localizable;
   */
 public class WSDLParseException extends JAXWSExceptionBase {
 
-    public WSDLParseException(String key) {
-        super(key);
-    }
-
-    public WSDLParseException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public WSDLParseException(String key, Localizable localizable) {
-        super(key, localizable);
-    }
-
-    public WSDLParseException(String key, Object[] args) {
+    public WSDLParseException(String key, Object... args) {
         super(key, args);
+    }
+
+    public WSDLParseException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

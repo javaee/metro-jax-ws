@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.20 2005-09-10 19:47:38 kohsuke Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.21 2005-09-23 22:05:28 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -35,11 +35,16 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.model.*;
+import com.sun.xml.ws.model.CheckedException;
+import com.sun.xml.ws.model.ExceptionType;
+import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.model.Parameter;
+import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -252,7 +257,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         try {
             return asyncWrapper.newInstance();
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -267,7 +272,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             Object exception = constructor.newInstance(new Object[]{message, detail});
             return (Exception)exception;
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -289,7 +294,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             }
             return (Exception)exception;
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 

@@ -33,20 +33,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class XMLStreamWriterException extends JAXWSExceptionBase {
 
-    public XMLStreamWriterException(String key) {
-        super(key);
-    }
-
-    public XMLStreamWriterException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public XMLStreamWriterException(String key, Object[] args) {
+    public XMLStreamWriterException(String key, Object... args) {
         super(key, args);
     }
 
-    public XMLStreamWriterException(String key, Localizable arg) {
-        super(key, arg);
+    public XMLStreamWriterException(Throwable throwable) {
+        super(throwable);
     }
 
     public XMLStreamWriterException(Localizable arg) {

@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModelerException.java,v 1.4 2005-09-10 19:47:51 kohsuke Exp $
+ * $Id: RuntimeModelerException.java,v 1.5 2005-09-23 22:05:31 kohsuke Exp $
  */
 
 /*
@@ -36,20 +36,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class RuntimeModelerException extends JAXWSExceptionBase {
 
-    public RuntimeModelerException(String key) {
-        super(key);
-    }
-
-    public RuntimeModelerException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public RuntimeModelerException(String key, Object[] args) {
+    public RuntimeModelerException(String key, Object... args) {
         super(key, args);
     }
 
-    public RuntimeModelerException(String key, Localizable arg) {
-        super(key, arg);
+    public RuntimeModelerException(Throwable throwable) {
+        super(throwable);
     }
 
     public RuntimeModelerException(Localizable arg) {

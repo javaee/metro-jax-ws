@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceReferenceCollector.java,v 1.16 2005-09-22 18:48:47 kohlert Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.17 2005-09-23 22:05:43 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -41,7 +41,6 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.Version;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.ClassNameInfo;
 import javax.jws.soap.SOAPBinding.Style;
 

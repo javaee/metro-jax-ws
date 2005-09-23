@@ -1,5 +1,5 @@
 /*
- * $Id: CustomExceptionGenerator.java,v 1.5 2005-09-10 19:49:35 kohsuke Exp $
+ * $Id: CustomExceptionGenerator.java,v 1.6 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -29,7 +29,6 @@ import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.model.Fault;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.ws.WebFault;
 import java.util.HashMap;
@@ -94,9 +93,7 @@ public class CustomExceptionGenerator extends GeneratorBase {
             write(fault);
             faults.put(fault.getJavaException().getName(), fault.getExceptionClass()); 
         } catch (Exception e) {
-            throw new GeneratorException(
-                "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+            throw new GeneratorException("generator.nestedGeneratorError",e);
         }
     }
 

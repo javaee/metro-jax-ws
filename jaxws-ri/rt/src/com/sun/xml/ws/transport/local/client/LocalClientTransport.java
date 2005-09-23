@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.10 2005-09-22 20:02:55 spericas Exp $
+ * $Id: LocalClientTransport.java,v 1.11 2005-09-23 22:05:36 kohsuke Exp $
  */
 
 /*
@@ -33,7 +33,6 @@ import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.transport.WSConnectionImpl;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import java.io.InputStream;
 import java.util.List;
@@ -74,13 +73,7 @@ public class LocalClientTransport extends WSConnectionImpl {
             return lm.getOutput();
         }
         catch (Exception ex) {
-            if (ex instanceof Localizable) {
-                throw new ClientTransportException("local.client.failed",
-                        (Localizable) ex);
-            } else {
-                throw new ClientTransportException("local.client.failed",
-                        new LocalizableExceptionAdapter(ex));
-            }
+            throw new ClientTransportException("local.client.failed",ex);
         }
     }
 
@@ -140,13 +133,7 @@ public class LocalClientTransport extends WSConnectionImpl {
             checkMessageContentType(con, true);
         } 
         catch (Exception ex) {
-            if (ex instanceof Localizable) {
-                throw new ClientTransportException("local.client.failed",
-                        (Localizable) ex);
-            } else {
-                throw new ClientTransportException("local.client.failed",
-                        new LocalizableExceptionAdapter(ex));
-            }
+            throw new ClientTransportException("local.client.failed",ex);
         }
     }
     
@@ -157,13 +144,7 @@ public class LocalClientTransport extends WSConnectionImpl {
             return bis;
         } 
         catch (Exception ex) {
-            if (ex instanceof Localizable) {
-                throw new ClientTransportException("local.client.failed",
-                        (Localizable) ex);
-            } else {
-                throw new ClientTransportException("local.client.failed",
-                        new LocalizableExceptionAdapter(ex));
-            }
+            throw new ClientTransportException("local.client.failed",ex);
         }
     }
     

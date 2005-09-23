@@ -1,5 +1,5 @@
 /*
- * $Id: SerializationException.java,v 1.5 2005-09-10 19:47:40 kohsuke Exp $
+ * $Id: SerializationException.java,v 1.6 2005-09-23 22:05:28 kohsuke Exp $
  */
 
 /*
@@ -36,24 +36,16 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class SerializationException extends JAXWSExceptionBase {
 
-    public SerializationException(String key) {
-        super(key);
-    }
-
-    public SerializationException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public SerializationException(String key, Object[] args) {
+    public SerializationException(String key, Object... args) {
         super(key, args);
-    }
-
-    public SerializationException(String key, Localizable arg) {
-        super(key, arg);
     }
 
     public SerializationException(Localizable arg) {
         super("nestedSerializationError", arg);
+    }
+
+    public SerializationException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

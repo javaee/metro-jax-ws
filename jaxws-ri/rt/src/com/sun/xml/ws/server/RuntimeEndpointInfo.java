@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.61 2005-09-22 23:10:00 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.62 2005-09-23 22:05:32 kohsuke Exp $
  */
 
 /*
@@ -46,7 +46,6 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.transform.Source;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import java.lang.annotation.Annotation;
@@ -389,8 +388,7 @@ public class RuntimeEndpointInfo extends Endpoint
         try {
             wsdlGen.doGeneration();
         } catch(Exception e) {
-            throw new ServerRtException("server.rt.err",
-                    new LocalizableExceptionAdapter(e));
+            throw new ServerRtException("server.rt.err",e);
         }
         //setMetadata(wsdlResolver.getDocs());
         setWSDLFileName(wsdlResolver.getWSDLFile());
@@ -672,8 +670,7 @@ public class RuntimeEndpointInfo extends Endpoint
                 }
             });
         } catch(PrivilegedActionException e) {
-            throw new ServerRtException("server.rt.err",
-                new LocalizableExceptionAdapter(e.getException()));
+            throw new ServerRtException("server.rt.err",e.getException());
         }
     }
     
@@ -693,8 +690,7 @@ public class RuntimeEndpointInfo extends Endpoint
                 }
             });
         } catch(PrivilegedActionException e) {
-            throw new ServerRtException("server.rt.err",
-                new LocalizableExceptionAdapter(e.getException()));
+            throw new ServerRtException("server.rt.err",e.getException());
         }
     }
     

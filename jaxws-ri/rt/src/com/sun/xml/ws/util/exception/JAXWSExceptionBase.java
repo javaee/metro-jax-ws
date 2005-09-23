@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSExceptionBase.java,v 1.3 2005-09-10 19:48:17 kohsuke Exp $
+ * $Id: JAXWSExceptionBase.java,v 1.4 2005-09-23 22:05:37 kohsuke Exp $
  */
 
 /*
@@ -24,66 +24,53 @@
 
 package com.sun.xml.ws.util.exception;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.util.localization.Localizer;
 
 import javax.xml.ws.WebServiceException;
 
-import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.localization.LocalizableSupport;
-import com.sun.xml.ws.util.localization.Localizer;
-
 /**
- * JAXWSExceptionBase
+ * Represents a {@link WebServiceException} with
+ * localizable message.
  * 
  * @author WS Development Team
  */
 public abstract class JAXWSExceptionBase
-    extends WebServiceException
-    implements Localizable {
-    protected LocalizableSupport localizablePart;
-    protected NestableExceptionSupport nestablePart;
+    extends WebServiceException implements Localizable {
 
-    public JAXWSExceptionBase() {
-        nestablePart = new NestableExceptionSupport();
+    private final String key;
+    private final Object[] args;
+
+    protected JAXWSExceptionBase(String key, Object... args) {
+        super(findNestedException(args));
+        if(args==null)  args = new Object[0];
+        this.key = key;
+        this.args = args;
     }
 
-    public JAXWSExceptionBase(String key) {
-        this();
-        localizablePart = new LocalizableSupport(key);
+    protected JAXWSExceptionBase(Throwable throwable) {
+        super(throwable);
+        this.key = Localizable.NOT_LOCALIZABLE;
+        this.args = new Object[]{throwable.toString()};
     }
 
-    public JAXWSExceptionBase(String key, String arg) {
-        this();
-        localizablePart = new LocalizableSupport(key, arg);
-    }
+    private static Throwable findNestedException(Object[] args) {
+        if (args == null)
+            return null;
 
-    public JAXWSExceptionBase(String key, Localizable localizable) {
-        this(key, new Object[] { localizable });
-    }
-
-    protected JAXWSExceptionBase(String key, Object[] args) {
-        this();
-        localizablePart = new LocalizableSupport(key, args);
-        if (args != null && nestablePart.getCause() == null) {
-            for (int i = 0; i < args.length; ++i) {
-                if (args[i] instanceof Throwable) {
-                    nestablePart.setCause((Throwable) args[i]);
-                    break;
-                }
-            }
-        }
+        for( Object o : args )
+            if(o instanceof Throwable)
+                return (Throwable)o;
+        return null;
     }
 
     public String getKey() {
-        return localizablePart.getKey();
+        return key;
     }
 
     public Object[] getArguments() {
-        return localizablePart.getArguments();
+        return args;
     }
-
-    public abstract String getResourceBundleName();
 
     public String toString() {
         // for debug purposes only
@@ -94,24 +81,5 @@ public abstract class JAXWSExceptionBase
     public String getMessage() {
         Localizer localizer = new Localizer();
         return localizer.localize(this);
-    }
-
-    public Throwable getLinkedException() {
-        return nestablePart.getCause();
-    }
-
-    public void printStackTrace() {
-        super.printStackTrace();
-        nestablePart.printStackTrace();
-    }
-
-    public void printStackTrace(PrintStream s) {
-        super.printStackTrace(s);
-        nestablePart.printStackTrace(s);
-    }
-
-    public void printStackTrace(PrintWriter s) {
-        super.printStackTrace(s);
-        nestablePart.printStackTrace(s);
     }
 }

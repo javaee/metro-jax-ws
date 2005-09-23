@@ -20,20 +20,18 @@
 package com.sun.xml.ws.handler;
 
 import javax.xml.namespace.QName;
-
-import javax.xml.ws.LogicalMessage;
-import javax.xml.ws.ProtocolException;
-import javax.xml.ws.handler.*;
-import javax.xml.ws.handler.soap.*;
-import javax.xml.ws.soap.SOAPFaultException;
-
-import javax.xml.soap.Detail;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
-
+import javax.xml.ws.LogicalMessage;
+import javax.xml.ws.ProtocolException;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.LogicalHandler;
+import javax.xml.ws.handler.LogicalMessageContext;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,11 +39,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.pept.ept.MessageInfo;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.util.HandlerAnnotationInfo;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  * The class stores the actual "chain" of handlers that is called

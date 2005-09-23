@@ -1,5 +1,5 @@
 /*
- * $Id: ModelException.java,v 1.4 2005-09-10 19:49:37 kohsuke Exp $
+ * $Id: ModelException.java,v 1.5 2005-09-23 22:05:42 kohsuke Exp $
  */
 
 /*
@@ -37,20 +37,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ModelException extends ProcessorException {
 
-    public ModelException(String key) {
-        super(key);
-    }
-
-    public ModelException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ModelException(String key, Object[] args) {
+    public ModelException(String key, Object... args) {
         super(key, args);
     }
 
-    public ModelException(String key, Localizable arg) {
-        super(key, arg);
+    public ModelException(Throwable throwable) {
+        super(throwable);
     }
 
     public ModelException(Localizable arg) {

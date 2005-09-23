@@ -1,5 +1,5 @@
 /*
- * $Id: UtilException.java,v 1.4 2005-09-10 19:48:14 kohsuke Exp $
+ * $Id: UtilException.java,v 1.5 2005-09-23 22:05:39 kohsuke Exp $
  */
 
 /*
@@ -36,21 +36,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author JAX-WS Development Team
  */
 public class UtilException extends JAXWSExceptionBase {
-
-    public UtilException(String key) {
-        super(key);
-    }
-
-    public UtilException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public UtilException(String key, Object[] args) {
+    public UtilException(String key, Object... args) {
         super(key, args);
     }
 
-    public UtilException(String key, Localizable arg) {
-        super(key, arg);
+    public UtilException(Throwable throwable) {
+        super(throwable);
     }
 
     public UtilException(Localizable arg) {

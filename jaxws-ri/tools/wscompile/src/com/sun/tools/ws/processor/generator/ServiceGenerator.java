@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.4 2005-09-10 19:49:36 kohsuke Exp $
+ * $Id: ServiceGenerator.java,v 1.5 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -50,7 +50,6 @@ import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.StringUtils;
 import java.io.File;
@@ -213,7 +212,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
         } catch (IOException e) {
             throw new GeneratorException(
                 "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+                e);
         }
     }
 

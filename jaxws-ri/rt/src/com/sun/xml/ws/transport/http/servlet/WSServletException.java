@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletException.java,v 1.3 2005-09-10 19:48:10 kohsuke Exp $
+ * $Id: WSServletException.java,v 1.4 2005-09-23 22:05:35 kohsuke Exp $
  */
 
 /*
@@ -33,21 +33,12 @@ import com.sun.xml.ws.server.*;
  * @author WS Development Team
  */
 public class WSServletException extends JAXWSExceptionBase {
-
-    public WSServletException(String key) {
-        super(key);
-    }
-
-    public WSServletException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public WSServletException(String key, Object[] args) {
+    public WSServletException(String key, Object... args) {
         super(key, args);
     }
 
-    public WSServletException(String key, Localizable arg) {
-        super(key, arg);
+    public WSServletException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

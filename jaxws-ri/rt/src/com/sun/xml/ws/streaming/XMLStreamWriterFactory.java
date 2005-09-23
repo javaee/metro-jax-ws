@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamWriterFactory.java,v 1.8 2005-09-10 19:48:05 kohsuke Exp $
+ * $Id: XMLStreamWriterFactory.java,v 1.9 2005-09-23 22:05:33 kohsuke Exp $
  */
 
 /*
@@ -30,8 +30,6 @@ import java.lang.reflect.Constructor;
 
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLOutputFactory;
-
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  * <p>A factory to create XML and FI serializers.</p>
@@ -113,8 +111,7 @@ public class XMLStreamWriterFactory {
             }
         }
         catch (Exception e) {
-            throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("stax.cantCreate",e);
         }
     }
     
@@ -145,9 +142,8 @@ public class XMLStreamWriterFactory {
             fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
             fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
             return (XMLStreamWriter) sds;
-        } 
-        catch (Exception e) {
-            throw new XMLStreamWriterException(new LocalizableExceptionAdapter(e));
+        }  catch (Exception e) {
+            throw new XMLStreamWriterException(e);
         }        
     }
     

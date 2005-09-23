@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser.java,v 1.4 2005-09-10 19:50:12 kohsuke Exp $
+ * $Id: WSDLParser.java,v 1.5 2005-09-23 22:05:48 kohsuke Exp $
  */
 
 /*
@@ -49,7 +49,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import com.sun.tools.ws.util.xml.NullEntityResolver;
@@ -135,9 +134,7 @@ public class WSDLParser {
         try {
             wsdlInputStream = new BufferedInputStream(wsdlURL.openStream());
         } catch (IOException e) {
-            throw new ParseException(
-                "parsing.ioException",
-                new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.ioException",e);
         }
         InputSource wsdlDocumentSource = new InputSource(wsdlInputStream);
         setFollowImports(true);
@@ -165,9 +162,7 @@ public class WSDLParser {
         try {
             wsdlInputStream.close();
         } catch (IOException ioe) {
-            throw new ParseException(
-                "parsing.ioException",
-                new LocalizableExceptionAdapter(ioe));
+            throw new ParseException("parsing.ioException",ioe);
         }
 
         return wsdlDoc;
@@ -356,33 +351,24 @@ public class WSDLParser {
                 if (source.getSystemId() != null) {
                     throw new ParseException(
                         "parsing.ioExceptionWithSystemId",
-                        source.getSystemId(),
-                        new LocalizableExceptionAdapter(e));
+                        source.getSystemId(),e);
                 } else {
-                    throw new ParseException(
-                        "parsing.ioException",
-                        new LocalizableExceptionAdapter(e));
+                    throw new ParseException("parsing.ioException",e);
                 }
             } catch (SAXException e) {
                 if (source.getSystemId() != null) {
                     throw new ParseException(
                         "parsing.saxExceptionWithSystemId",
                         source.getSystemId(),
-                        new LocalizableExceptionAdapter(e));
+                        e);
                 } else {
-                    throw new ParseException(
-                        "parsing.saxException",
-                        new LocalizableExceptionAdapter(e));
+                    throw new ParseException("parsing.saxException",e);
                 }
             }
         } catch (ParserConfigurationException e) {
-            throw new ParseException(
-                "parsing.parserConfigException",
-                new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.parserConfigException",e);
         } catch (FactoryConfigurationError e) {
-            throw new ParseException(
-                "parsing.factoryConfigException",
-                new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.factoryConfigException",e);
         }
     }
 

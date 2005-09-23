@@ -24,7 +24,6 @@ import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsServer;
 import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.HashMap;
@@ -100,8 +99,7 @@ public class ServerMgr {
             state.oneMoreContext();
             return context;
         } catch(Exception e) {
-            throw new ServerRtException("server.rt.err",
-                new LocalizableExceptionAdapter(e) );
+            throw new ServerRtException("server.rt.err",e );
         }
     }
     

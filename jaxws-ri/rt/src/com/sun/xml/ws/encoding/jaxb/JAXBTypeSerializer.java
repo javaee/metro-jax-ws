@@ -46,7 +46,6 @@ import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.StAXReader;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.w3c.dom.Node;
 
 /**
@@ -67,7 +66,7 @@ public class JAXBTypeSerializer {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }    
     
@@ -79,7 +78,7 @@ public class JAXBTypeSerializer {
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
         
@@ -94,7 +93,7 @@ public class JAXBTypeSerializer {
             marshaller.marshal(bean, domResult);
             return new DOMSource(domResult.getNode());
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
     
@@ -117,11 +116,8 @@ public class JAXBTypeSerializer {
             
         } catch (DeserializationException e) {
             throw e;
-        } catch (JAXWSExceptionBase e) {
-            throw new DeserializationException(e);
         } catch (Exception e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
+            throw new DeserializationException(e);
         }
     }
         
@@ -152,8 +148,7 @@ public class JAXBTypeSerializer {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             return unmarshaller.unmarshal(source);
         } catch (JAXBException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
+            throw new DeserializationException(e);
         }
     }
 
@@ -169,7 +164,7 @@ public class JAXBTypeSerializer {
             Object value = bridgeInfo.getValue();
             bridge.marshal(bridgeContext, value, writer);
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
     
@@ -185,7 +180,7 @@ public class JAXBTypeSerializer {
             Object value = bridgeInfo.getValue();
             bridge.marshal(bridgeContext, value, os);
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
     
@@ -199,7 +194,7 @@ public class JAXBTypeSerializer {
             Object value = bridgeInfo.getValue();
             bridge.marshal(bridgeContext, value, node);
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
     
@@ -223,8 +218,7 @@ public class JAXBTypeSerializer {
                 XMLStreamReaderUtil.nextContent(reader);
             }
         } catch (JAXBException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
+            throw new DeserializationException(e);
         }
     }
 
@@ -236,8 +230,7 @@ public class JAXBTypeSerializer {
             Object value = bridge.unmarshal(bridgeContext, source);
             bridgeInfo.setValue(value);
         } catch (JAXBException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
+            throw new DeserializationException(e);
         }
     }
 
@@ -249,8 +242,7 @@ public class JAXBTypeSerializer {
             Object value = bridge.unmarshal(bridgeContext, stream);
             bridgeInfo.setValue(value);
         } catch (JAXBException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
+            throw new DeserializationException(e);
         }
     }
     /*

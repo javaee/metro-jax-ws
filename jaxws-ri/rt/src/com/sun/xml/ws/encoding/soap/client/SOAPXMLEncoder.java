@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.13 2005-09-23 22:02:33 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.14 2005-09-23 22:05:26 kohsuke Exp $
  */
 
 /*
@@ -35,7 +35,6 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -174,13 +173,13 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }                        
         } 
         catch (IOException e) {
-            throw new SenderException ("sender.request.messageNotReady", new LocalizableExceptionAdapter (e));
+            throw new SenderException("sender.request.messageNotReady", e);
         } 
         catch (SOAPException e) {
-            throw new SenderException (new LocalizableExceptionAdapter (e));
+            throw new SenderException(e);
         } 
         catch (XMLStreamException e) {
-            throw new SenderException (new LocalizableExceptionAdapter (e));
+            throw new SenderException(e);
         }
         finally {
             if (writer != null) {
@@ -188,7 +187,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                     writer.close();
                 }
                 catch (XMLStreamException e) {
-                    throw new SenderException(new LocalizableExceptionAdapter(e));            
+                    throw new SenderException(e);
                 }
             }
         }

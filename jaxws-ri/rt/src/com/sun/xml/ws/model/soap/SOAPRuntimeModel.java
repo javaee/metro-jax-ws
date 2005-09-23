@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.11 2005-09-10 19:47:50 kohsuke Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.12 2005-09-23 22:05:31 kohsuke Exp $
  */
 
 /*
@@ -201,7 +201,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
         if (obj instanceof SOAPFaultInfo) {
             faultInfo = (SOAPFaultInfo)obj;
         } else if (obj instanceof ServerRtException) {
-            Throwable cause = ((ServerRtException)obj).getLinkedException();
+            Throwable cause = ((ServerRtException)obj).getCause();
             Throwable th = (cause == null) ? (ServerRtException)obj : cause;
             faultInfo = createSOAPFaultInfo(th, actor, detail);
 
@@ -240,7 +240,7 @@ public class SOAPRuntimeModel extends RuntimeModel {
         if (obj instanceof SOAP12FaultInfo) {
             faultInfo = (SOAP12FaultInfo)obj;
         } else if (obj instanceof ServerRtException) {
-            Throwable cause = ((ServerRtException)obj).getLinkedException();
+            Throwable cause = ((ServerRtException)obj).getCause();
             Throwable th = (cause == null) ? (ServerRtException)obj : cause;
             faultInfo = createSOAP12FaultInfo(th, role, node, detail);
 

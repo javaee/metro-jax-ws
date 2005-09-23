@@ -31,8 +31,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.stream.XMLStreamReader;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
-
 /**
  * @author Santiago.PericasGeertsen@sun.com
  */
@@ -133,7 +131,7 @@ public class SourceReaderFactory {
             }        
         }
         catch (Exception e) {
-            throw new XMLReaderException(new LocalizableExceptionAdapter(e));            
+            throw new XMLReaderException(e);
         }
     }
 

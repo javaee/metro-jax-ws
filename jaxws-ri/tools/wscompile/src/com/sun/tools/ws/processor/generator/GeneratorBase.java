@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorBase.java,v 1.10 2005-09-10 19:49:35 kohsuke Exp $
+ * $Id: GeneratorBase.java,v 1.11 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -52,7 +52,6 @@ import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.codemodel.JCodeModel;
@@ -156,9 +155,7 @@ public abstract class GeneratorBase
         } catch (Exception e) {
             if (env.verbose())
                 e.printStackTrace();
-            throw new GeneratorException(
-                "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+            throw new GeneratorException("generator.nestedGeneratorError",e);
         }
     }
 
@@ -520,7 +517,7 @@ public abstract class GeneratorBase
     protected static void fail(Throwable arg) {
         throw new GeneratorException(
             "generator.nestedGeneratorError",
-            new LocalizableExceptionAdapter(arg));
+            arg);
     }
 
     /* (non-Javadoc)

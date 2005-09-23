@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.8 2005-09-23 20:32:02 jitu Exp $
+ * $Id: XmlUtil.java,v 1.9 2005-09-23 22:05:39 kohsuke Exp $
  */
 
 /*
@@ -48,7 +48,6 @@ import org.w3c.dom.Text;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.net.URL;
 import java.util.Enumeration;
 import javax.xml.ws.WebServiceException;
@@ -220,8 +219,7 @@ public class XmlUtil {
                 manager.getCatalog().parseCatalog(catalogUrl);
             }
         } catch (IOException e) {
-            throw new ServerRtException("server.rt.err",
-                new LocalizableExceptionAdapter(e));
+            throw new ServerRtException("server.rt.err",e);
         }
         return new CatalogResolver(manager);
     }

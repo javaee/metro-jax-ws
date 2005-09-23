@@ -1,5 +1,5 @@
 /**
- * $Id: StAXReader.java,v 1.3 2005-09-10 19:48:03 kohsuke Exp $
+ * $Id: StAXReader.java,v 1.4 2005-09-23 22:05:33 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -38,7 +38,6 @@ import javax.xml.stream.*;
 import javax.xml.transform.Source;
 
 import com.sun.xml.ws.util.NamespaceSupport;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.CDATA;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
@@ -94,8 +93,7 @@ public class StAXReader extends XMLReaderBase {
                 source.getByteStream(), source.getEncoding());
             finishSetup();
         } catch (XMLStreamException e) {
-            throw new XMLReaderException("staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("staxreader.xmlstreamexception",e);
         }
     }
 
@@ -119,12 +117,10 @@ public class StAXReader extends XMLReaderBase {
             }
             finishSetup();
         } catch (XMLStreamException e) {
-            throw new XMLReaderException("staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("staxreader.xmlstreamexception",e);
         } catch (TransformerException te) {
             // thrown by the workaround code. todo (bobby) remove later
-            throw new XMLReaderException("staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(te));
+            throw new XMLReaderException("staxreader.xmlstreamexception",te);
         }
     }
 
@@ -133,8 +129,7 @@ public class StAXReader extends XMLReaderBase {
             reader = getInputFactory().createXMLStreamReader(stringReader);
             finishSetup();
         } catch (XMLStreamException e) {
-            throw new XMLReaderException("staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("staxreader.xmlstreamexception",e);
         }
     }
 
@@ -214,9 +209,7 @@ public class StAXReader extends XMLReaderBase {
             }
 
         } catch (XMLStreamException e) {
-            throw new XMLReaderException(
-                "staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("staxreader.xmlstreamexception",e);
         }
 
         return state;
@@ -327,8 +320,7 @@ public class StAXReader extends XMLReaderBase {
         try {
             reader.close();
         } catch (XMLStreamException e) {
-            throw new XMLReaderException("staxreader.xmlstreamexception",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("staxreader.xmlstreamexception",e);
         }
     }
 

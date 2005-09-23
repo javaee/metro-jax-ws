@@ -4,30 +4,26 @@
 
 package com.sun.xml.ws.client.dispatch.impl.encoding;
 
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
+import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
-
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.soap.SerializationException;
-import com.sun.xml.ws.encoding.soap.DeserializationException;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.SourceReaderFactory;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 
@@ -155,7 +151,7 @@ public class Dispatch12Serializer implements SerializerIF{
             } while (state != END_DOCUMENT);
         }
         catch (XMLStreamException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 }

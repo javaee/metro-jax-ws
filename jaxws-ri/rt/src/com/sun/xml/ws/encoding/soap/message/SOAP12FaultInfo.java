@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12FaultInfo.java,v 1.4 2005-09-14 04:43:55 jitu Exp $
+ * $Id: SOAP12FaultInfo.java,v 1.5 2005-09-23 22:05:26 kohsuke Exp $
  */
 
 /*
@@ -37,7 +37,6 @@ import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
@@ -230,7 +229,7 @@ public class SOAP12FaultInfo extends SOAPFaultInfo {
             }
             writer.writeEndElement();                // </soapenv:Fault>
         } catch (XMLStreamException e) {
-            throw new ServerRtException(new LocalizableExceptionAdapter(e));
+            throw new ServerRtException(e);
         }
     }
 

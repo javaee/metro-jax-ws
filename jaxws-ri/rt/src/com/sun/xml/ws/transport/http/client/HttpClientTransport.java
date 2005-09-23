@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.15 2005-09-10 19:48:06 kohsuke Exp $
+ * $Id: HttpClientTransport.java,v 1.16 2005-09-23 22:05:34 kohsuke Exp $
  */
 
 /*
@@ -47,7 +47,6 @@ import java.util.Map;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 
@@ -110,13 +109,7 @@ public class HttpClientTransport extends WSConnectionImpl {
             connectForResponse();
         
         } catch (Exception ex) {
-            if (ex instanceof Localizable) {
-                throw new ClientTransportException("http.client.failed",
-                        (Localizable) ex);
-            } else {
-                throw new ClientTransportException("http.client.failed",
-                        new LocalizableExceptionAdapter(ex));
-            }
+            throw new ClientTransportException("http.client.failed",ex);
         }
         
         return outputStream;

@@ -27,20 +27,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ServerRtException extends JAXWSExceptionBase {
 
-    public ServerRtException(String key) {
-        super(key);
-    }
-
-    public ServerRtException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ServerRtException(String key, Object[] args) {
+    public ServerRtException(String key, Object... args) {
         super(key, args);
     }
 
-    public ServerRtException(String key, Localizable arg) {
-        super(key, arg);
+    public ServerRtException(Throwable throwable) {
+        super(throwable);
     }
 
     public ServerRtException(Localizable arg) {

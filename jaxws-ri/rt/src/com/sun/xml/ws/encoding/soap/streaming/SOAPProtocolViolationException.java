@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPProtocolViolationException.java,v 1.4 2005-09-10 19:47:46 kohsuke Exp $
+ * $Id: SOAPProtocolViolationException.java,v 1.5 2005-09-23 22:05:27 kohsuke Exp $
  */
 
 /*
@@ -31,20 +31,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author WS Development Team
  */
 public class SOAPProtocolViolationException extends JAXWSExceptionBase {
-    public SOAPProtocolViolationException(String key) {
-        super(key);
+    public SOAPProtocolViolationException(String key, Object... args) {
+        super(key, args);
     }
 
-    public SOAPProtocolViolationException(String key, String argument) {
-        super(key, argument);
-    }
-
-    public SOAPProtocolViolationException(String key, Object[] arguments) {
-        super(key, arguments);
-    }
-
-    public SOAPProtocolViolationException(String key, Localizable argument) {
-        super(key, argument);
+    public SOAPProtocolViolationException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

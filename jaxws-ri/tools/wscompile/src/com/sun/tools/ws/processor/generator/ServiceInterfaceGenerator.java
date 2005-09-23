@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceInterfaceGenerator.java,v 1.12 2005-09-10 19:49:36 kohsuke Exp $
+ * $Id: ServiceInterfaceGenerator.java,v 1.13 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -46,7 +46,6 @@ import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.ws.WebEndpoint;
@@ -131,9 +130,7 @@ public class ServiceInterfaceGenerator extends GeneratorBase implements Processo
             cm.build(cw);            
             
         } catch (IOException e) {
-            throw new GeneratorException(
-                "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+            throw new GeneratorException("generator.nestedGeneratorError",e);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * $Id: ServerEncoderDecoder.java,v 1.20 2005-09-22 03:29:53 jitu Exp $
+ * $Id: ServerEncoderDecoder.java,v 1.21 2005-09-23 22:05:28 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -25,7 +25,6 @@ package com.sun.xml.ws.encoding.soap;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.binding.BindingImpl;
-
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -33,17 +32,21 @@ import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.model.*;
+import com.sun.xml.ws.model.CheckedException;
+import com.sun.xml.ws.model.ExceptionType;
+import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.model.Parameter;
+import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.ws.Holder;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
@@ -170,7 +173,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             Method m = exception.getClass().getMethod("getFaultInfo");
             return m.invoke(exception);
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -186,7 +189,7 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
             }
             return detail;
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 

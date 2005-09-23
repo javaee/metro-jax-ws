@@ -1,5 +1,5 @@
 /*
- * $Id: NoSuchEntityException.java,v 1.3 2005-09-10 19:50:09 kohsuke Exp $
+ * $Id: NoSuchEntityException.java,v 1.4 2005-09-23 22:05:47 kohsuke Exp $
  */
 
 /*
@@ -36,7 +36,7 @@ public class NoSuchEntityException extends ValidationException {
     public NoSuchEntityException(QName name) {
         super(
             "entity.notFoundByQName",
-            new Object[] { name.getLocalPart(), name.getNamespaceURI()});
+                name.getLocalPart(), name.getNamespaceURI());
     }
 
     public NoSuchEntityException(String id) {

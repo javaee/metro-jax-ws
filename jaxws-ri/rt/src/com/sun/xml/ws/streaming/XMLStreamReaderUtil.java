@@ -25,7 +25,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
@@ -200,9 +199,8 @@ public class XMLStreamReaderUtil {
         if (!name.equals(reader.getName())) {
             throw new XMLStreamReaderException(
                 "xmlreader.unexpectedState.tag",
-                new Object[] {
                     name,
-                    reader.getName()});
+                    reader.getName());
         }
     }
 
@@ -248,9 +246,7 @@ public class XMLStreamReaderUtil {
     }
     
     private static XMLStreamReaderException wrapException(XMLStreamException e) {
-        return new XMLStreamReaderException(
-            "xmlreader.ioException",
-            new LocalizableExceptionAdapter(e));
+        return new XMLStreamReaderException("xmlreader.ioException",e);
     }
     
     // -- Auxiliary classes ----------------------------------------------

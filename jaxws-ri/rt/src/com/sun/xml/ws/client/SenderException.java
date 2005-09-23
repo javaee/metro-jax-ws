@@ -1,5 +1,5 @@
 /*
- * $Id: SenderException.java,v 1.5 2005-09-10 19:47:26 kohsuke Exp $
+ * $Id: SenderException.java,v 1.6 2005-09-23 22:05:25 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -30,20 +30,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author WS Development Team
  */
 public class SenderException extends JAXWSExceptionBase {
-    public SenderException(String key) {
-        super(key);
-    }
-
-    public SenderException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public SenderException(String key, Object[] args) {
+    public SenderException(String key, Object... args) {
         super(key, args);
     }
 
-    public SenderException(String key, Localizable arg) {
-        super(key, arg);
+    public SenderException(Throwable throwable) {
+        super(throwable);
     }
 
     public SenderException(Localizable arg) {

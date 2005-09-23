@@ -1,5 +1,5 @@
 /*
- * $Id: ClientTransportException.java,v 1.5 2005-09-10 19:47:23 kohsuke Exp $
+ * $Id: ClientTransportException.java,v 1.6 2005-09-23 22:05:25 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -30,20 +30,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author WS Development Team
  */
 public class ClientTransportException extends JAXWSExceptionBase {
-    public ClientTransportException(String key) {
-        super(key);
+    public ClientTransportException(String key, Object... args) {
+        super(key, args);
     }
 
-    public ClientTransportException(String key, String argument) {
-        super(key, argument);
-    }
-
-    public ClientTransportException(String key, Object[] arguments) {
-        super(key, arguments);
-    }
-
-    public ClientTransportException(String key, Localizable argument) {
-        super(key, argument);
+    public ClientTransportException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

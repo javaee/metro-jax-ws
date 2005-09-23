@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.19 2005-09-23 20:11:16 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.20 2005-09-23 22:05:28 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -35,7 +35,6 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.bind.api.TypeReference;
 
@@ -265,7 +264,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             }
             return obj;
         } catch(Exception e){
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -320,7 +319,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     else
                         obj = ap.getRawContent();
                 } catch (SOAPException e) {
-                    throw new SerializationException(new LocalizableExceptionAdapter(e));
+                    throw new SerializationException(e);
                 }
                 if((obj != null) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(type)){
                     JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
@@ -338,7 +337,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     try {
                         return ASCIIUtility.getBytes((InputStream)obj);
                     } catch (IOException e) {
-                        throw new WebServiceException(new LocalizableExceptionAdapter(e));
+                        throw new WebServiceException(e);
                     }
                 }
                 return obj;
@@ -367,7 +366,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         try {
             contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
         } catch (UnsupportedEncodingException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
 
         if(!DataHandler.class.isAssignableFrom(obj.getClass()) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
@@ -419,7 +418,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         try {
             return java.net.URLDecoder.decode(localPart.substring(0, index), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 }

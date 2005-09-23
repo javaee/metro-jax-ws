@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModelerBase.java,v 1.10 2005-09-10 19:49:48 kohsuke Exp $
+ * $Id: WSDLModelerBase.java,v 1.11 2005-09-23 22:05:44 kohsuke Exp $
  */
 
 /*
@@ -225,11 +225,11 @@ public abstract class WSDLModelerBase implements Modeler {
             }
 
         } catch (ModelException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         } catch (ParseException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         } catch (ValidationException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         } finally {
 //            _analyzer = null;
             _conflictingClassNames = null;

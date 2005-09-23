@@ -1,5 +1,5 @@
 /*
- * $Id: ValidationException.java,v 1.4 2005-09-10 19:50:09 kohsuke Exp $
+ * $Id: ValidationException.java,v 1.5 2005-09-23 22:05:47 kohsuke Exp $
  */
 
 /*
@@ -34,20 +34,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ValidationException extends JAXWSExceptionBase {
 
-    public ValidationException(String key) {
-        super(key);
-    }
-
-    public ValidationException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ValidationException(String key, Localizable localizable) {
-        super(key, localizable);
-    }
-
-    public ValidationException(String key, Object[] args) {
+    public ValidationException(String key, Object... args) {
         super(key, args);
+    }
+
+    public ValidationException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

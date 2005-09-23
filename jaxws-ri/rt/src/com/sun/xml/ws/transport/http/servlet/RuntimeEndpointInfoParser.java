@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.13 2005-09-20 03:24:06 jitu Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.14 2005-09-23 22:05:35 kohsuke Exp $
  */
 
 /*
@@ -48,7 +48,6 @@ import com.sun.xml.ws.spi.runtime.Binding;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 
@@ -68,8 +67,7 @@ public class RuntimeEndpointInfoParser {
             XMLStreamReaderUtil.nextElementContent(reader);
             return parseEndpoints(reader);
         } catch (XMLStreamException e) {
-            throw new ServerRtException("runtime.parser.xmlReader",
-                new LocalizableExceptionAdapter(e));
+            throw new ServerRtException("runtime.parser.xmlReader",e);
         }
     }
 

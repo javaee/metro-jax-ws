@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoderBase.java,v 1.4 2005-09-23 20:37:58 kohsuke Exp $
+ * $Id: EncoderDecoderBase.java,v 1.5 2005-09-23 22:05:30 kohsuke Exp $
  */
 
 /*
@@ -23,15 +23,14 @@
  */
 package com.sun.xml.ws.encoding;
 
-import javax.xml.bind.JAXBException;
-
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.AccessorException;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * @author Vivek Pandey
@@ -84,9 +83,9 @@ public abstract class EncoderDecoderBase {
                     localName);
             return ra.get(wrapperBean);
         } catch (AccessorException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -118,9 +117,9 @@ public abstract class EncoderDecoderBase {
                     localName);
             ra.set(wrapperBean, value);
         } catch (AccessorException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         } catch (JAXBException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 }

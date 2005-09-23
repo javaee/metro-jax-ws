@@ -42,7 +42,6 @@ import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 
@@ -436,13 +435,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             detail = fault.addDetail();
             detail.addChildElement(soapElement);
         } catch (SOAPException e) {
-            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerException e) {
-            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerFactoryConfigurationError e) {
-             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (XMLStreamException e) {
-             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", new LocalizableExceptionAdapter(e));
+             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         }
 
         return detail;

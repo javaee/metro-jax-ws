@@ -46,7 +46,6 @@ import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.protocol.xml.XMLMessageException;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import javax.xml.bind.JAXBContext;
@@ -127,8 +126,7 @@ public class XMLMessage {
                 throw new XMLMessageException("xml.unknown.Content-Type");
             }
         } catch (Exception ex) {
-            throw new XMLMessageException("xml.cannot.internalize.message",
-                    new LocalizableExceptionAdapter(ex));
+            throw new XMLMessageException("xml.cannot.internalize.message",ex);
         }
     }
     
@@ -433,11 +431,9 @@ public class XMLMessage {
                             multipart.writeTo(bos);
                             return bos.newInputStream();
                         } catch(MessagingException me) {
-                            throw new XMLMessageException("xml.get.ds.err",
-                                    new LocalizableExceptionAdapter(me));
+                            throw new XMLMessageException("xml.get.ds.err",me);
                         } catch(IOException ioe) {
-                            throw new XMLMessageException("xml.get.ds.err",
-                                    new LocalizableExceptionAdapter(ioe));
+                            throw new XMLMessageException("xml.get.ds.err",ioe);
                         }
                     }
 
@@ -467,8 +463,7 @@ public class XMLMessage {
                 return sourcePart;
             } 
             catch (MessagingException ex) {
-                throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ex));
+                throw new XMLMessageException("xml.get.source.err",ex);
             }
         }
         
@@ -491,8 +486,7 @@ public class XMLMessage {
                 multipart.addBodyPart(sourcePart, 0);
             } 
             catch (MessagingException ex) {
-                throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ex));
+                throw new XMLMessageException("xml.get.source.err",ex);
             }
         }
         
@@ -502,8 +496,7 @@ public class XMLMessage {
                     multipart = new MimeMultipart(dataSource,null);
                     dataSource = null;
                 } catch (MessagingException ex) {
-                    throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ex));
+                    throw new XMLMessageException("xml.get.source.err",ex);
                 }
             }
         }
@@ -537,14 +530,10 @@ public class XMLMessage {
                             "xml.root.part.invalid.Content-Type",
                             new Object[] {baseType});
                 }
-            } 
-            catch (MessagingException ex) {
-                throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ex));
-            } 
-            catch (Exception ioe) {
-                throw new XMLMessageException("xml.get.source.err",
-                        new LocalizableExceptionAdapter(ioe));
+            } catch (MessagingException ex) {
+                throw new XMLMessageException("xml.get.source.err",ex);
+            } catch (Exception ioe) {
+                throw new XMLMessageException("xml.get.source.err",ioe);
             }
         }
         

@@ -1,5 +1,5 @@
 /*
- * $Id: NullLocalizable.java,v 1.3 2005-09-10 19:48:18 kohsuke Exp $
+ * $Id: NullLocalizable.java,v 1.4 2005-09-23 22:05:39 kohsuke Exp $
  */
 
 /*
@@ -25,34 +25,24 @@
 package com.sun.xml.ws.util.localization;
 
 /**
- * NullLocalizable
+ * {@link Localizable} that wraps a non-localizable string.
  *
  * @author WS Development Team
  */
+public final class NullLocalizable implements Localizable {
+    private final String msg;
 
-public class NullLocalizable implements Localizable {
-    protected static NullLocalizable instance = null;
-
-    public NullLocalizable(String key) {
-        _key = key;
+    public NullLocalizable(String msg) {
+        this.msg = msg;
     }
 
     public String getKey() {
-        return _key;
+        return Localizable.NOT_LOCALIZABLE;
     }
     public Object[] getArguments() {
-        return null;
+        return new Object[]{msg};
     }
     public String getResourceBundleName() {
         return "";
-    }
-
-    private String _key;
-
-    public static NullLocalizable instance() {
-        if (instance == null) {
-            instance = new NullLocalizable(null);
-        }
-        return instance;
     }
 }

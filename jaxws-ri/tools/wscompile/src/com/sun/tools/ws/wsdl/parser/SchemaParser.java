@@ -1,5 +1,5 @@
 /*
- * $Id: SchemaParser.java,v 1.3 2005-09-10 19:50:12 kohsuke Exp $
+ * $Id: SchemaParser.java,v 1.4 2005-09-23 22:05:48 kohsuke Exp $
  */
 
 /*
@@ -40,7 +40,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.NamedNodeMapIterator;
 import com.sun.tools.ws.util.xml.NullEntityResolver;
 import com.sun.tools.ws.wsdl.document.schema.Schema;
@@ -217,21 +216,17 @@ public class SchemaParser {
                     expectedTargetNamespaceURI);
             } catch (IOException e) {
                 throw new ParseException(
-                    "parsing.ioException",
-                    new LocalizableExceptionAdapter(e));
+                    "parsing.ioException",e);
             } catch (SAXException e) {
                 throw new ParseException(
-                    "parsing.saxException",
-                    new LocalizableExceptionAdapter(e));
+                    "parsing.saxException",e);
             }
         } catch (ParserConfigurationException e) {
             throw new ParseException(
-                "parsing.parserConfigException",
-                new LocalizableExceptionAdapter(e));
+                "parsing.parserConfigException",e);
         } catch (FactoryConfigurationError e) {
             throw new ParseException(
-                "parsing.factoryConfigException",
-                new LocalizableExceptionAdapter(e));
+                "parsing.factoryConfigException",e);
         }
     }
 

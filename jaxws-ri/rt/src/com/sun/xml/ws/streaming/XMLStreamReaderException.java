@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderException.java,v 1.5 2005-09-10 19:48:04 kohsuke Exp $
+ * $Id: XMLStreamReaderException.java,v 1.6 2005-09-23 22:05:33 kohsuke Exp $
  */
 
 /*
@@ -37,20 +37,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class XMLStreamReaderException extends JAXWSExceptionBase {
 
-    public XMLStreamReaderException(String key) {
-        super(key);
-    }
-
-    public XMLStreamReaderException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public XMLStreamReaderException(String key, Object[] args) {
+    public XMLStreamReaderException(String key, Object... args) {
         super(key, args);
     }
 
-    public XMLStreamReaderException(String key, Localizable arg) {
-        super(key, arg);
+    public XMLStreamReaderException(Throwable throwable) {
+        super(throwable);
     }
 
     public XMLStreamReaderException(Localizable arg) {

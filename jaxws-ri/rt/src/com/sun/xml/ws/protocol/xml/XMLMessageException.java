@@ -28,20 +28,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class XMLMessageException extends JAXWSExceptionBase {
 
-    public XMLMessageException(String key) {
-        super(key);
-    }
-
-    public XMLMessageException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public XMLMessageException(String key, Object[] args) {
+    public XMLMessageException(String key, Object... args) {
         super(key, args);
     }
 
-    public XMLMessageException(String key, Localizable arg) {
-        super(key, arg);
+    public XMLMessageException(Throwable throwable) {
+        super(throwable);
     }
 
     public XMLMessageException(Localizable arg) {

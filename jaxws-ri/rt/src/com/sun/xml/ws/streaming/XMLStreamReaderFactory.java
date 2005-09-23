@@ -1,5 +1,5 @@
 /*
- * $Id: XMLStreamReaderFactory.java,v 1.12 2005-09-16 11:41:40 sandoz Exp $
+ * $Id: XMLStreamReaderFactory.java,v 1.13 2005-09-23 22:05:33 kohsuke Exp $
  */
 
 /*
@@ -24,7 +24,6 @@
 
 package com.sun.xml.ws.streaming;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.xml.sax.InputSource;
 
 import javax.xml.stream.XMLInputFactory;
@@ -107,8 +106,7 @@ public class XMLStreamReaderFactory {
             }
         }
         catch (Exception e) {
-            throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));            
+            throw new XMLReaderException("stax.cantCreate",e);
         }
     }
     
@@ -154,8 +152,7 @@ public class XMLStreamReaderFactory {
                 }                
             }
         } catch (Exception e) {
-            throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("stax.cantCreate",e);
         }
     }
     
@@ -190,8 +187,7 @@ public class XMLStreamReaderFactory {
             }
         } 
         catch (Exception e) {
-            throw new XMLReaderException("stax.cantCreate",
-                new LocalizableExceptionAdapter(e));
+            throw new XMLReaderException("stax.cantCreate",e);
         }
     }
     
@@ -221,7 +217,7 @@ public class XMLStreamReaderFactory {
             return (XMLStreamReader) sdp;
         } 
         catch (Exception e) {
-            throw new XMLStreamReaderException(new LocalizableExceptionAdapter(e));
+            throw new XMLStreamReaderException(e);
         }
     }
     

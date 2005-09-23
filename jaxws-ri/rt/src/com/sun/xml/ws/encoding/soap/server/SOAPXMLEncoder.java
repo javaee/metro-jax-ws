@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.9 2005-09-17 01:11:15 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.10 2005-09-23 22:05:27 kohsuke Exp $
  */
 
 /*
@@ -40,7 +40,6 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.SOAPUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.ws.soap.SOAPBinding;
@@ -126,7 +125,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                     writer.close();
                 }
                 catch (XMLStreamException e) {
-                    throw new ServerRtException(new LocalizableExceptionAdapter(e));            
+                    throw new ServerRtException(e);
                 }
             }
         }
@@ -231,7 +230,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             writer.writeEndElement();                // </env:Fault>
         }
         catch (XMLStreamException e) {
-            throw new ServerRtException(new LocalizableExceptionAdapter(e));
+            throw new ServerRtException(e);
         }
     }
 

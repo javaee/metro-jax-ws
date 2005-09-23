@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.5 2005-09-10 19:48:05 kohsuke Exp $
+ * $Id: WSConnectionImpl.java,v 1.6 2005-09-23 22:05:36 kohsuke Exp $
  */
 
 /*
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 /**
  * Abstract class for WSConnection. All client-side and server-side
@@ -131,8 +130,7 @@ public abstract class WSConnectionImpl implements WSConnection {
             os.write(newLine);
         }
         catch (Exception ex) {
-            throw new ClientTransportException("local.client.failed",
-                new LocalizableExceptionAdapter(ex));
+            throw new ClientTransportException("local.client.failed",ex);
         }
     } 
 
@@ -182,8 +180,7 @@ public abstract class WSConnectionImpl implements WSConnection {
             }
         }
         catch (Exception ex) {
-            throw new ClientTransportException("local.client.failed",
-                new LocalizableExceptionAdapter(ex));            
+            throw new ClientTransportException("local.client.failed",ex);
         }            
     }
     

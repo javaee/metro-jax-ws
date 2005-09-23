@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.9 2005-09-17 01:11:15 jitu Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.10 2005-09-23 22:05:27 kohsuke Exp $
  */
 
 /*
@@ -33,7 +33,6 @@ import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.server.*;
@@ -58,7 +57,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                                   SOAP12NamespaceConstants.ENVELOPE);
         }
         catch (XMLStreamException e) {
-            throw new ServerRtException(new LocalizableExceptionAdapter(e));           
+            throw new ServerRtException(e);
         }
     }
 
@@ -72,7 +71,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE);
         }
         catch (XMLStreamException e) {
-            throw new ServerRtException(new LocalizableExceptionAdapter(e));           
+            throw new ServerRtException(e);
         }        
     }
 
@@ -86,7 +85,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAPNamespaceConstants.TAG_HEADER, SOAP12NamespaceConstants.ENVELOPE); // <env:Header>
         }
         catch (XMLStreamException e) {
-            throw new ServerRtException(new LocalizableExceptionAdapter(e));           
+            throw new ServerRtException(e);
         }       
     }
 

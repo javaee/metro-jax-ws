@@ -1,5 +1,5 @@
 /*
- * $Id: DeserializationException.java,v 1.5 2005-09-10 19:47:38 kohsuke Exp $
+ * $Id: DeserializationException.java,v 1.6 2005-09-23 22:05:28 kohsuke Exp $
  */
 
 /*
@@ -37,20 +37,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class DeserializationException extends JAXWSExceptionBase {
 
-    public DeserializationException(String key) {
-        super(key);
-    }
-
-    public DeserializationException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public DeserializationException(String key, Object[] args) {
+    public DeserializationException(String key, Object... args) {
         super(key, args);
     }
 
-    public DeserializationException(String key, Localizable arg) {
-        super(key, arg);
+    public DeserializationException(Throwable throwable) {
+        super(throwable);
     }
 
     public DeserializationException(Localizable arg) {

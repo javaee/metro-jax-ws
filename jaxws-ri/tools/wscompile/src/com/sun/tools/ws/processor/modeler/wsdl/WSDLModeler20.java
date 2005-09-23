@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.29 2005-09-23 18:54:14 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.30 2005-09-23 22:05:44 kohsuke Exp $
  */
 
 /*
@@ -202,11 +202,11 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 conflictList.toString());
 
         } catch (ModelException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         } catch (ParseException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         } catch (ValidationException e) {
-            throw new ModelerException(e);
+            throw new ModelerException((Exception)e);
         }
     }
 

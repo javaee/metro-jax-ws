@@ -1,5 +1,5 @@
 /*
- * $Id: DuplicateEntityException.java,v 1.3 2005-09-10 19:50:07 kohsuke Exp $
+ * $Id: DuplicateEntityException.java,v 1.4 2005-09-23 22:05:47 kohsuke Exp $
  */
 
 /*
@@ -34,23 +34,21 @@ public class DuplicateEntityException extends ValidationException {
     public DuplicateEntityException(GloballyKnown entity) {
         super(
             "entity.duplicateWithType",
-            new Object[] {
                 entity.getElementName().getLocalPart(),
-                entity.getName()});
+                entity.getName());
     }
 
     public DuplicateEntityException(Identifiable entity) {
         super(
             "entity.duplicateWithType",
-            new Object[] {
                 entity.getElementName().getLocalPart(),
-                entity.getID()});
+                entity.getID());
     }
 
     public DuplicateEntityException(Entity entity, String name) {
         super(
             "entity.duplicateWithType",
-            new Object[] { entity.getElementName().getLocalPart(), name });
+                entity.getElementName().getLocalPart(), name);
     }
 
     public String getResourceBundleName() {

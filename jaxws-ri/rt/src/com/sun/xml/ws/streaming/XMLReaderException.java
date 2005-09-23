@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReaderException.java,v 1.5 2005-09-10 19:48:03 kohsuke Exp $
+ * $Id: XMLReaderException.java,v 1.6 2005-09-23 22:05:33 kohsuke Exp $
  */
 
 /*
@@ -38,20 +38,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class XMLReaderException extends JAXWSExceptionBase {
 
-    public XMLReaderException(String key) {
-        super(key);
-    }
-
-    public XMLReaderException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public XMLReaderException(String key, Object[] args) {
+    public XMLReaderException(String key, Object... args) {
         super(key, args);
     }
 
-    public XMLReaderException(String key, Localizable arg) {
-        super(key, arg);
+    public XMLReaderException(Throwable throwable) {
+        super(throwable);
     }
 
     public XMLReaderException(Localizable arg) {

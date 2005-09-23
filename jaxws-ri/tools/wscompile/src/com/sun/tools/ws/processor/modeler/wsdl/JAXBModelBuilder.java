@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.7 2005-09-10 19:49:48 kohsuke Exp $
+ * $Id: JAXBModelBuilder.java,v 1.8 2005-09-23 22:05:43 kohsuke Exp $
  */
 
 /*
@@ -50,7 +50,6 @@ import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.JAXWSUtils;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 
 /**
@@ -100,7 +99,7 @@ public class JAXBModelBuilder {
                 }
             }
         } catch (Exception e) {
-            throw new ModelException(new LocalizableExceptionAdapter(e));
+            throw new ModelException(e);
         }
     }
 

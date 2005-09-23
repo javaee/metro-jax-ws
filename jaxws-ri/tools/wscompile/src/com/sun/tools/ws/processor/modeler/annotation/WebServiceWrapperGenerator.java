@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.27 2005-09-22 18:48:49 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.28 2005-09-23 22:05:43 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -36,7 +36,6 @@ import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.ws.util.Version;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 
@@ -174,9 +173,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 beanGenerated = beanGenerated || tmp;                    
             }       
         } catch (Exception e) {
-            throw new ModelerException(
-                "modeler.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+            throw new ModelerException("modeler.nestedGeneratorError",e);
         }                 
         return beanGenerated;
     }
@@ -295,9 +292,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             writeMembers(reqCls, reqMembers);
             writeMembers(resCls, resMembers);            
         } catch (Exception e) {
-            throw new ModelerException(
-                "modeler.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+            throw new ModelerException("modeler.nestedGeneratorError",e);
         }      
         return true;
     }

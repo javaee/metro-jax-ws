@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.30 2005-09-14 21:50:58 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.31 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -42,7 +42,6 @@ import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -82,7 +81,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                 e.printStackTrace();
             throw new GeneratorException(
                 "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+                e);
         }
     }
 
@@ -477,7 +476,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         } catch (Exception e) {
             throw new GeneratorException(
                 "generator.nestedGeneratorError",
-                new LocalizableExceptionAdapter(e));
+                e);
         }
     }
 
@@ -509,7 +508,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         } catch (Exception e) {
             throw new GeneratorException(
                     "generator.nestedGeneratorError",
-                    new LocalizableExceptionAdapter(e));
+                    e);
         }
     }
 }

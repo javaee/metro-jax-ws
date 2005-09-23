@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMsgFactoryCreateException.java,v 1.4 2005-09-10 19:47:44 kohsuke Exp $
+ * $Id: SOAPMsgFactoryCreateException.java,v 1.5 2005-09-23 22:05:26 kohsuke Exp $
  */
 
 /*
@@ -31,7 +31,7 @@ import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
  */
 public class SOAPMsgFactoryCreateException extends JAXWSExceptionBase {
 
-    public SOAPMsgFactoryCreateException(String key, Object[] args) {
+    public SOAPMsgFactoryCreateException(String key, Object... args) {
         super(key, args);
     }
 

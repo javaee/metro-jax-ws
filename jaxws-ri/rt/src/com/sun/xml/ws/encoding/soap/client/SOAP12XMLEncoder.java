@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.9 2005-09-10 19:47:40 kohsuke Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.10 2005-09-23 22:05:26 kohsuke Exp $
  */
 
 /*
@@ -39,7 +39,6 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.pept.ept.MessageInfo;
 
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
@@ -73,7 +72,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                                   SOAP12NamespaceConstants.ENVELOPE);
         } catch (XMLStreamException e) {
-            throw new SenderException(new LocalizableExceptionAdapter(e));
+            throw new SenderException(e);
         }
     }
 
@@ -86,7 +85,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_BODY, SOAP12NamespaceConstants.ENVELOPE);
         } catch (XMLStreamException e) {
-            throw new SenderException(new LocalizableExceptionAdapter(e));
+            throw new SenderException(e);
         }
     }
 
@@ -100,7 +99,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
                 SOAPNamespaceConstants.TAG_HEADER,
                 SOAP12NamespaceConstants.ENVELOPE);     // <env:Header>
         } catch (XMLStreamException e) {
-            throw new SenderException(new LocalizableExceptionAdapter(e));
+            throw new SenderException(e);
         }
     }
     

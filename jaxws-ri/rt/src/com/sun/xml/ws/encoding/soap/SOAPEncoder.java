@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.29 2005-09-14 18:55:39 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.30 2005-09-23 22:05:28 kohsuke Exp $
  */
 
 /*
@@ -593,7 +593,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     public void write(Object value, Object obj, OutputStream writer, MtomCallback mtomCallback){
         if(!(obj instanceof MessageInfo))
-            throw new SerializationException("incorrect.messageinfo", new Object[]{obj.getClass().getName()});
+            throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
         MessageInfo mi = (MessageInfo)obj;
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
@@ -614,12 +614,12 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         } else if (value instanceof JAXBBeanInfo) {
             writeJAXBBeanInfo((JAXBBeanInfo)value, mi, writer);
         }else {
-            throw new SerializationException("unknown.object", new Object[]{value.getClass().getName()});
+            throw new SerializationException("unknown.object", value.getClass().getName());
         }
     }
     public void write(Object value, Object obj, XMLStreamWriter writer, MtomCallback mtomCallback){
         if(!(obj instanceof MessageInfo))
-            throw new SerializationException("incorrect.messageinfo", new Object[]{obj.getClass().getName()});
+            throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
         MessageInfo mi = (MessageInfo)obj;
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if(rtc != null){
@@ -640,7 +640,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         } else if (value instanceof JAXBBeanInfo) {
             writeJAXBBeanInfo((JAXBBeanInfo)value, mi, writer);
         }else {
-            throw new SerializationException("unknown.object", new Object[]{value.getClass().getName()});
+            throw new SerializationException("unknown.object", value.getClass().getName());
         }
     }
 }

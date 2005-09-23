@@ -1,5 +1,5 @@
 /*
- * $Id: LocalizableMessageFactory.java,v 1.3 2005-09-10 19:48:18 kohsuke Exp $
+ * $Id: LocalizableMessageFactory.java,v 1.4 2005-09-23 22:05:38 kohsuke Exp $
  */
 
 /*
@@ -29,25 +29,13 @@ package com.sun.xml.ws.util.localization;
  */
 public class LocalizableMessageFactory {
 
-    protected String _bundlename;
+    private final String _bundlename;
 
     public LocalizableMessageFactory(String bundlename) {
         _bundlename = bundlename;
     }
 
-    public Localizable getMessage(String key) {
-        return getMessage(key, (Object[]) null);
-    }
-
-    public Localizable getMessage(String key, String arg) {
-        return getMessage(key, new Object[] { arg });
-    }
-
-    public Localizable getMessage(String key, Localizable localizable) {
-        return getMessage(key, new Object[] { localizable });
-    }
-
-    public Localizable getMessage(String key, Object[] args) {
+    public Localizable getMessage(String key, Object... args) {
         return new LocalizableMessage(_bundlename, key, args);
     }
 

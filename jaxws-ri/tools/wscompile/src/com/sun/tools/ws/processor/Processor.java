@@ -1,5 +1,5 @@
 /*
- * $Id: Processor.java,v 1.5 2005-09-10 19:49:30 kohsuke Exp $
+ * $Id: Processor.java,v 1.6 2005-09-23 22:05:45 kohsuke Exp $
  */
 
 /*
@@ -34,7 +34,7 @@ import com.sun.tools.ws.processor.config.ModelInfo;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+import com.sun.xml.ws.util.localization.NullLocalizable;
 
 /**
  * This abstract class contains methods for getting a Modeler and creating a model
@@ -102,7 +102,7 @@ public class Processor {
             if (_printStackTrace) {
                 _env.printStackTrace(e);
             }
-            _env.error(new LocalizableExceptionAdapter(e));
+            _env.error(new NullLocalizable(e.getMessage()));
         }
     }
 
@@ -127,7 +127,7 @@ public class Processor {
             if (_printStackTrace || _env.verbose()) {
                 _env.printStackTrace(e);
             }
-            _env.error(new LocalizableExceptionAdapter(e));
+            _env.error(new NullLocalizable(e.getMessage()));
         }
     }
 

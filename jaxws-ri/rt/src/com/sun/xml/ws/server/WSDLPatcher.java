@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.11 2005-09-19 23:24:18 jitu Exp $
+ * $Id: WSDLPatcher.java,v 1.12 2005-09-23 22:05:32 kohsuke Exp $
  *
  */
 
@@ -28,7 +28,6 @@ package com.sun.xml.ws.server;
 import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -150,8 +149,7 @@ public class WSDLPatcher {
                 writer.add(event);
             }
         } catch (XMLStreamException e) {
-            throw new ServerRtException("runtime.wsdl.patcher",
-                new LocalizableExceptionAdapter(e));
+            throw new ServerRtException("runtime.wsdl.patcher",e);
         } finally {
             if (reader != null) {
                 try {

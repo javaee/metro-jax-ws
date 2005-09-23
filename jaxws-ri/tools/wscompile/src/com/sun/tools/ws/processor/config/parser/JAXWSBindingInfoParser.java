@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingInfoParser.java,v 1.2 2005-09-10 19:49:34 kohsuke Exp $
+ * $Id: JAXWSBindingInfoParser.java,v 1.3 2005-09-23 22:05:40 kohsuke Exp $
  */
 
 /*
@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.xml.NullEntityResolver;
 import com.sun.tools.ws.wsdl.framework.ParseException;
 
@@ -88,21 +87,13 @@ public class JAXWSBindingInfoParser {
             Element root = dom.getDocumentElement();
             return root;
         } catch (ParserConfigurationException e) {
-            throw new ParseException(
-                "parsing.parserConfigException",
-                new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.parserConfigException",e);
         } catch (FactoryConfigurationError e) {
-            throw new ParseException(
-                "parsing.factoryConfigException",
-                new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.factoryConfigException",e);
         }catch(SAXException e){
-            throw new ParseException(
-                    "parsing.saxException",
-                    new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.saxException",e);
         }catch(IOException e){
-            throw new ParseException(
-                    "parsing.saxException",
-                    new LocalizableExceptionAdapter(e));
+            throw new ParseException("parsing.saxException",e);
         }
     }
 

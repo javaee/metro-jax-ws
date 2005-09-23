@@ -19,23 +19,13 @@
  */
 package com.sun.xml.ws.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-
-import com.sun.xml.ws.encoding.soap.DeserializationException;
-import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 
 public class LogicalEncoderImpl implements LogicalEncoder {
 

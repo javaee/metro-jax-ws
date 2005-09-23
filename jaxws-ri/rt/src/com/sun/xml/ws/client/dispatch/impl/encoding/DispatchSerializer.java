@@ -28,7 +28,6 @@ import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
@@ -36,7 +35,11 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
@@ -175,7 +178,7 @@ public class DispatchSerializer implements SerializerIF{
                 }
             } while (state != END_DOCUMENT);
         } catch (XMLStreamException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 

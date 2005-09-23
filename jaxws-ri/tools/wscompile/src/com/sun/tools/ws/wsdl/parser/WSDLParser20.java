@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser20.java,v 1.5 2005-09-10 19:50:13 kohsuke Exp $
+ * $Id: WSDLParser20.java,v 1.6 2005-09-23 22:05:49 kohsuke Exp $
  */
 
 /*
@@ -51,7 +51,6 @@ import org.xml.sax.SAXParseException;
 import com.sun.tools.ws.processor.config.ModelInfo;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.tools.ws.util.xml.NullEntityResolver;
 import com.sun.tools.ws.wsdl.document.Definitions;
 import com.sun.tools.ws.wsdl.document.Types;
@@ -198,33 +197,25 @@ public class WSDLParser20 extends WSDLParser {
                 if (source.getSystemId() != null) {
                     throw new ParseException(
                         "parsing.ioExceptionWithSystemId",
-                        source.getSystemId(),
-                        new LocalizableExceptionAdapter(e));
+                        source.getSystemId(),e);
                 } else {
-                    throw new ParseException(
-                        "parsing.ioException",
-                        new LocalizableExceptionAdapter(e));
+                    throw new ParseException("parsing.ioException",e);
                 }
             } catch (SAXException e) {
                 if (source.getSystemId() != null) {
                     throw new ParseException(
                         "parsing.saxExceptionWithSystemId",
-                        source.getSystemId(),
-                        new LocalizableExceptionAdapter(e));
+                        source.getSystemId(),e);
                 } else {
-                    throw new ParseException(
-                        "parsing.saxException",
-                        new LocalizableExceptionAdapter(e));
+                    throw new ParseException("parsing.saxException",e);
                 }
             }
         } catch (ParserConfigurationException e) {
             throw new ParseException(
-                "parsing.parserConfigException",
-                new LocalizableExceptionAdapter(e));
+                "parsing.parserConfigException",e);
         } catch (FactoryConfigurationError e) {
             throw new ParseException(
-                "parsing.factoryConfigException",
-                new LocalizableExceptionAdapter(e));
+                "parsing.factoryConfigException",e);
         }
     }
 

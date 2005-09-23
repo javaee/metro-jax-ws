@@ -37,7 +37,6 @@ import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 
@@ -88,7 +87,7 @@ public class RpcLitPayloadSerializer {
             writer.writeEndElement();            // </ans:operation>
         }
         catch (XMLStreamException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 
@@ -105,7 +104,7 @@ public class RpcLitPayloadSerializer {
             }
             writer.write(endElm.getBytes());
         } catch (IOException e) {
-            throw new SerializationException(new LocalizableExceptionAdapter(e));
+            throw new SerializationException(e);
         }
     }
 

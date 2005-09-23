@@ -1,5 +1,5 @@
 /*
- * $Id: GeneratorException.java,v 1.3 2005-09-10 19:49:36 kohsuke Exp $
+ * $Id: GeneratorException.java,v 1.4 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -33,20 +33,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class GeneratorException extends ProcessorException {
 
-    public GeneratorException(String key) {
-        super(key);
-    }
-
-    public GeneratorException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public GeneratorException(String key, Object[] args) {
+    public GeneratorException(String key, Object... args) {
         super(key, args);
     }
 
-    public GeneratorException(String key, Localizable arg) {
-        super(key, arg);
+    public GeneratorException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

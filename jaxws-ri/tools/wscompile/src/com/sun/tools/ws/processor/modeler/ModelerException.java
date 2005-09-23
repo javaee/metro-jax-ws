@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerException.java,v 1.4 2005-09-10 19:49:44 kohsuke Exp $
+ * $Id: ModelerException.java,v 1.5 2005-09-23 22:05:45 kohsuke Exp $
  */
 
 /*
@@ -37,20 +37,12 @@ import com.sun.xml.ws.util.localization.Localizable;
 */
 public class ModelerException extends ProcessorException {
 
-    public ModelerException(String key) {
-        super(key);
-    }
-
-    public ModelerException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ModelerException(String key, Object[] args) {
+    public ModelerException(String key, Object... args) {
         super(key, args);
     }
 
-    public ModelerException(String key, Localizable arg) {
-        super(key, arg);
+    public ModelerException(Throwable throwable) {
+        super(throwable);
     }
 
     public ModelerException(Localizable arg) {

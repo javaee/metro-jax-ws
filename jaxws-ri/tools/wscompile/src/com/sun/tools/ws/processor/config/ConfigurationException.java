@@ -1,5 +1,5 @@
 /*
- * $Id: ConfigurationException.java,v 1.3 2005-09-10 19:49:32 kohsuke Exp $
+ * $Id: ConfigurationException.java,v 1.4 2005-09-23 22:05:41 kohsuke Exp $
  */
 
 /*
@@ -33,20 +33,12 @@ import com.sun.xml.ws.util.localization.Localizable;
  */
 public class ConfigurationException extends ProcessorException {
 
-    public ConfigurationException(String key) {
-        super(key);
-    }
-
-    public ConfigurationException(String key, String arg) {
-        super(key, arg);
-    }
-
-    public ConfigurationException(String key, Object[] args) {
+    public ConfigurationException(String key, Object... args) {
         super(key, args);
     }
 
-    public ConfigurationException(String key, Localizable arg) {
-        super(key, arg);
+    public ConfigurationException(Throwable throwable) {
+        super(throwable);
     }
 
     public String getResourceBundleName() {

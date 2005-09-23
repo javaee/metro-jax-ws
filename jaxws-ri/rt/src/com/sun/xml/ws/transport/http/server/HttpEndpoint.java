@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
@@ -112,11 +111,9 @@ public class HttpEndpoint {
                     transformer.transform(source, new StreamResult(baos));
                     baos.close();
                 } catch(IOException ioe) {
-                    throw new ServerRtException("server.rt.err",
-                        new LocalizableExceptionAdapter(ioe));
+                    throw new ServerRtException("server.rt.err",ioe);
                 } catch (TransformerException te) {
-                    throw new ServerRtException("server.rt.err",
-                        new LocalizableExceptionAdapter(te));
+                    throw new ServerRtException("server.rt.err",te);
                 }
                 String systemId = source.getSystemId();
                 URL url = new URL(systemId);
@@ -196,7 +193,7 @@ public class HttpEndpoint {
                 throw e;
             }
         } catch(Exception e) {
-            throw new ServerRtException("server.rt.err", new LocalizableExceptionAdapter(e) );
+            throw new ServerRtException("server.rt.err", e );
         }
     }
 
