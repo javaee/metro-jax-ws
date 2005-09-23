@@ -31,7 +31,7 @@ import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
@@ -145,7 +145,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         RuntimeContext rtContext =
             (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if (rtContext != null) {
-            LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory) messageInfo.getEPTFactory();
             InternalEncoder encoder = eptf.getInternalEncoder();
             encoder.toMessageInfo(internalMessage, messageInfo);
 

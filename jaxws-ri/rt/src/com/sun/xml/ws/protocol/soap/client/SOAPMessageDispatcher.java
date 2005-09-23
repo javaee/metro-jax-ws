@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.45 2005-09-23 19:14:13 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.46 2005-09-23 22:02:33 jitu Exp $
  */
 
 /*
@@ -40,7 +40,7 @@ import com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
@@ -519,7 +519,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void makeSOAPMessage(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         if (internalMessage != null) {
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             SOAPEncoder encoder = eptf.getSOAPEncoder();
             SOAPMessage soapMesage = encoder.toSOAPMessage(internalMessage, messageInfo);
             context.setSOAPMessage(soapMesage);

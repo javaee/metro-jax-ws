@@ -46,7 +46,7 @@ import javax.xml.transform.dom.DOMSource;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
@@ -91,13 +91,13 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         } else if (intr != null && soap != null) {
             // Overlay BodyBlock of InternalMessage on top of existing SOAPMessage
             MessageInfo messageInfo = handlerCtxt.getMessageInfo();
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             soap = eptf.getSOAPEncoder().toSOAPMessage(intr, soap);
             setMessage(soap);        // It also sets InernalMessage to null
         } else if (intr != null && soap == null) {
             // Convert InternalMessage to a SOAPMessage
             MessageInfo messageInfo = handlerCtxt.getMessageInfo();
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             soap = eptf.getSOAPEncoder().toSOAPMessage(intr, messageInfo);
             setMessage(soap);        // It also sets InernalMessage to null
         } else {
@@ -131,7 +131,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
                 Source source = new DOMSource(child);
                 MessageInfo messageInfo = handlerCtxt.getMessageInfo();
-                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                 LogicalEncoder encoder = eptf.getLogicalEncoder();
                 JAXBBeanInfo beanInfo = encoder.toJAXBBeanInfo(source, jaxbContext);
                 beanList.add(beanInfo.getBean());

@@ -28,7 +28,7 @@ import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -37,7 +37,7 @@ import com.sun.xml.ws.encoding.soap.ServerEncoderDecoder;
 /**
  * @author WS Development Team
  */
-public class EPTFactoryBase implements EPTFactory, LogicalEPTFactory {
+public class EPTFactoryBase implements EPTFactory, SOAPEPTFactory {
     private Encoder encoder;
     private Decoder decoder;
     private SOAPEncoder soapEncoder;

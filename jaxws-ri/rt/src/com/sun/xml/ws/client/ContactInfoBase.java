@@ -29,7 +29,7 @@ import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.transport.Connection;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.ClientEncoderDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
@@ -42,7 +42,7 @@ import javax.xml.ws.soap.SOAPBinding;
 /**
  * @author WS Development Team
  */
-public class ContactInfoBase implements ContactInfo, LogicalEPTFactory {
+public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
     protected Connection _connection;
     protected MessageDispatcher _messageDispatcher;
     protected Encoder _encoder;

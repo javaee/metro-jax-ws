@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -104,28 +104,28 @@ public class LogicalMessageImpl implements LogicalMessage {
                     return domSource;
                 } else if (obj instanceof JAXBBridgeInfo) {
                     MessageInfo messageInfo = ctxt.getMessageInfo();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     DOMSource domSource = encoder.toDOMSource((JAXBBridgeInfo)obj, messageInfo);
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else if (obj instanceof JAXBBeanInfo) {
                     MessageInfo messageInfo = ctxt.getMessageInfo();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     LogicalEncoder encoder = eptf.getLogicalEncoder();
                     DOMSource domSource = encoder.toDOMSource((JAXBBeanInfo)obj);
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else if (obj instanceof RpcLitPayload) {
                     MessageInfo messageInfo = ctxt.getMessageInfo();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     DOMSource domSource = encoder.toDOMSource((RpcLitPayload)obj, messageInfo);
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else if (obj instanceof SOAPFaultInfo) {
                     MessageInfo messageInfo = ctxt.getMessageInfo();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     DOMSource domSource = encoder.toDOMSource((SOAPFaultInfo)obj, messageInfo);
                     bodyBlock.setSource(domSource);
@@ -157,7 +157,7 @@ public class LogicalMessageImpl implements LogicalMessage {
     public Object getPayload(JAXBContext jaxbContext) {
         DOMSource source = (DOMSource)getPayload();
         MessageInfo messageInfo = ctxt.getMessageInfo();
-        LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+        SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
         LogicalEncoder encoder = eptf.getLogicalEncoder();
         JAXBBeanInfo beanInfo = encoder.toJAXBBeanInfo(source, jaxbContext);
         return beanInfo.getBean();
@@ -172,7 +172,7 @@ public class LogicalMessageImpl implements LogicalMessage {
         Source source = null;
         try {
             MessageInfo messageInfo = ctxt.getMessageInfo();
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             LogicalEncoder encoder = eptf.getLogicalEncoder();
             source = encoder.toDOMSource(new JAXBBeanInfo(bean, jaxbContext));
         } catch(Exception e) {

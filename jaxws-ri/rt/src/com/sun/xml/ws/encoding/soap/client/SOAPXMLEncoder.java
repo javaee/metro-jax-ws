@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.12 2005-09-15 19:06:23 arungupta Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.13 2005-09-23 22:02:33 jitu Exp $
  */
 
 /*
@@ -30,7 +30,7 @@ import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.server.RuntimeContext;
@@ -113,7 +113,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 internalMessage.setBody (bodyBlock);
             
         } else {
-            LogicalEPTFactory eptf = (LogicalEPTFactory) messageInfo.getEPTFactory ();
+            SOAPEPTFactory eptf = (SOAPEPTFactory) messageInfo.getEPTFactory ();
             InternalEncoder internalEncoder = eptf.getInternalEncoder ();
             //processProperties(messageInfo);
             return (InternalMessage) internalEncoder.toInternalMessage (messageInfo);

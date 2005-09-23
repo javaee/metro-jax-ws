@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.29 2005-09-23 19:14:14 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.30 2005-09-23 22:02:34 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -28,7 +28,7 @@ import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.encoding.Encoder;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -117,7 +117,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 implementor.invoke();
             } else {
                 //set encoder
-                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                 messageInfo.setEncoder((Encoder) eptf.getInternalEncoder());
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
@@ -143,12 +143,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SOAPMessage soapMessage = context.getSOAPMessage();
             if (internalMessage == null) {
                 // Bind headers, body from SOAPMessage
-                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                 SOAPDecoder decoder = eptf.getSOAPDecoder();
                 internalMessage = decoder.toInternalMessage(soapMessage, messageInfo);
             } else {
                 // Bind headers from SOAPMessage
-                LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                 SOAPDecoder decoder = eptf.getSOAPDecoder();
                 internalMessage = decoder.toInternalMessage(soapMessage, internalMessage, messageInfo);
             }
@@ -159,7 +159,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         // InternalMessage to MessageInfo
         if (!isFailure(messageInfo)) {
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             eptf.getInternalEncoder().toMessageInfo(internalMessage, messageInfo);
             Binding binding = MessageInfoUtil.getRuntimeContext(messageInfo).getRuntimeEndpointInfo().getBinding();
             String bindingId = (binding != null)?((SOAPBindingImpl)binding).getBindingId():SOAPBinding.SOAP11HTTP_BINDING;
@@ -235,7 +235,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void makeSOAPMessage(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         if (internalMessage != null) {
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             SOAPEncoder encoder = eptf.getSOAPEncoder();
             SOAPMessage soapMesage = encoder.toSOAPMessage(internalMessage, messageInfo);
             context.setSOAPMessage(soapMesage);
@@ -250,7 +250,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     protected void setResponseInContext(MessageInfo messageInfo,
             SOAPHandlerContext context) {
         // MessageInfo to InternalMessage
-        LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+        SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
         InternalMessage internalMessage = (InternalMessage)eptf.getInternalEncoder().toInternalMessage(
                 messageInfo);
         // set handler context
@@ -416,7 +416,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             boolean peekOneWay = false;
             if (!skipEndpoint) {
                 try {
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPDecoder decoder = eptf.getSOAPDecoder();
                     peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
                             messageInfo, context, true);                
@@ -451,7 +451,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 soapMessage = context.getSOAPMessage();
                 if (soapMessage == null) {
                     InternalMessage internalMessage = context.getInternalMessage();
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     soapMessage = encoder.toSOAPMessage(internalMessage, messageInfo);
                 }

@@ -33,7 +33,7 @@ import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.handler.LogicalMessageImpl;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
@@ -77,7 +77,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
             try {
                 if (internalMessage != null) {
                     // SOAPMessage's body is replaced by InternalMessage's BodyBlock
-                    LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     soapMessage = encoder.toSOAPMessage(internalMessage, soapMessage);
                 }
@@ -132,7 +132,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
             context.setInternalMessage(null);
         } else {
             // set Source or any Exception in InternalMessage's BodyBlock
-            LogicalEPTFactory eptf = (LogicalEPTFactory)messageInfo.getEPTFactory();
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             InternalEncoder ine = eptf.getInternalEncoder();
             InternalMessage internalMessage =
                 (InternalMessage)ine.toInternalMessage(messageInfo);

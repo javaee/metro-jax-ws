@@ -17,17 +17,16 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package com.sun.xml.ws.encoding.jaxb;
+package com.sun.xml.ws.encoding.soap;
 
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.soap.SOAPDecoder;
-import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.encoding.jaxb.*;
 
 /**
  * Change the name of this class to JaxwsEPTFactory or something else. OR
  * split into multiple factories.
  */
-public interface LogicalEPTFactory {
+public interface SOAPEPTFactory {
 	public LogicalEncoder getLogicalEncoder();
 
     public InternalEncoder getInternalEncoder();
