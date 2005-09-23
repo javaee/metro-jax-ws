@@ -12,8 +12,8 @@ import com.sun.xml.ws.handler.HandlerResolverImpl;
 import com.sun.xml.ws.handler.PortInfoImpl;
 import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
-import org.apache.xml.resolver.CatalogManager;
-import org.apache.xml.resolver.tools.CatalogResolver;
+import com.sun.org.apache.xml.internal.resolver.CatalogManager;
+import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
 import org.xml.sax.EntityResolver;
 
 

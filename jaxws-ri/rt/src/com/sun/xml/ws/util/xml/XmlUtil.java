@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.7 2005-09-10 19:48:19 kohsuke Exp $
+ * $Id: XmlUtil.java,v 1.8 2005-09-23 20:32:02 jitu Exp $
  */
 
 /*
@@ -52,8 +52,8 @@ import com.sun.xml.ws.util.exception.LocalizableExceptionAdapter;
 import java.net.URL;
 import java.util.Enumeration;
 import javax.xml.ws.WebServiceException;
-import org.apache.xml.resolver.CatalogManager;
-import org.apache.xml.resolver.tools.CatalogResolver;
+import com.sun.org.apache.xml.internal.resolver.CatalogManager;
+import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
 import org.xml.sax.EntityResolver;
 
 /**
