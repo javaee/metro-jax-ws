@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoderBase.java,v 1.3 2005-09-10 19:47:34 kohsuke Exp $
+ * $Id: EncoderDecoderBase.java,v 1.4 2005-09-23 20:37:58 kohsuke Exp $
  */
 
 /*
@@ -105,6 +105,9 @@ public abstract class EncoderDecoderBase {
      * @param localName
      *            localName local name of the wrapper child property
      */
+    // TODO: do not invoke jaxbContext.getElementPropertyAccessor excessively like this.
+    // it's used to be called only once during a set up, and not meant to be
+    // invoked in a performance critical path like this. See its javadoc
     protected void setWrapperChildValue(RuntimeContext context, Object wrapperBean, Object value,
             String nsURI, String localName) {
         if (wrapperBean == null)
