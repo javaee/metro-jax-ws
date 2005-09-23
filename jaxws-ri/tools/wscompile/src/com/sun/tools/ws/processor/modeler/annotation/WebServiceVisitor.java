@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.21 2005-09-22 18:48:48 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.22 2005-09-23 02:46:27 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -240,9 +240,9 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         SOAPBinding soapBinding = d.getAnnotation(SOAPBinding.class);
         if (soapBinding != null) {
             pushedSOAPBinding = pushSOAPBinding(soapBinding, d, d);
-        }/* else {
-            pushSOAPBinding(new MySOAPBinding(), d);
-        }*/
+        } else if (d.equals(typeDecl)) {
+            pushedSOAPBinding = pushSOAPBinding(new MySOAPBinding(), d, d);
+        }
     }
 
     public static boolean sameStyle(SOAPBinding.Style style, SOAPStyle soapStyle) {
@@ -258,6 +258,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean pushSOAPBinding(SOAPBinding soapBinding, Declaration bindingDecl, 
             TypeDeclaration classDecl) {
         boolean changed = false;
+//        System.out.println("pushed binding: "+soapBinding.style());
         if (!sameStyle(soapBinding.style(), soapStyle)) {
             changed = true;
             if (pushedSOAPBinding)
@@ -284,8 +285,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                     new Object[] {classDecl.getQualifiedName()});
         }
         if (changed || soapBindingStack.empty()) {
+//            System.out.println("pushing");
             soapBindingStack.push(soapBinding);
+            pushedSOAPBinding = true;
         }
+//        System.out.println("changed: " +changed+" wrapped: "+wrapped );
         return changed;
     }
 
