@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.13 2005-09-23 22:45:37 kohlert Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.14 2005-09-24 04:51:22 kohlert Exp $
  */
 
 /*
@@ -79,22 +79,6 @@ public class SOAPRuntimeModel extends RuntimeModel {
                 }
                 addDecoderInfo(param.getName(), payload);
             } else {
-/*                if (param instanceof WrapperParameter) {
-                    WrapperParameter wp = (WrapperParameter) param;
-                    Class wrapperClass = (Class)wp.getTypeReference().type;
-                    RawAccessor ra;
-                    for (Parameter p : wp.getWrapperChildren()) {
-                        ra = null;
-                        try {
-                            ra = jaxbContext.getElementPropertyAccessor(wrapperClass, 
-                                    p.getName().getNamespaceURI(), p.getName().getLocalPart());                        
-                        } catch (Exception e) {
-                            // TODO throw an exception
-                            e.printStackTrace();
-                        }
-                        p.setRawAccessor(ra);
-                    }                        
-                }*/
                 JAXBBridgeInfo bi = new JAXBBridgeInfo(getBridge(param.getTypeReference()),
                     null);
                 addDecoderInfo(param.getName(), bi);

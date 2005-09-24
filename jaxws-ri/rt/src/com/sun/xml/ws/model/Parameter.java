@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.10 2005-09-23 22:45:37 kohlert Exp $
+ * $Id: Parameter.java,v 1.11 2005-09-24 04:51:22 kohlert Exp $
  */
 
 /*
@@ -179,14 +179,6 @@ public class Parameter {
         this.partName = partName;
     }
     
-    public RawAccessor getRawAccessor() {
-        return rawAccessor;
-    }
-    
-    public void setRawAccessor(RawAccessor rawAccessor) {
-        this.rawAccessor = rawAccessor;
-    }
-
     protected ParameterBinding binding;
     protected ParameterBinding outBinding;
     protected int index;
@@ -194,6 +186,4 @@ public class Parameter {
     protected TypeReference typeReference;
     protected QName name;
     protected String partName;
-    protected RawAccessor rawAccessor;
-
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.21 2005-09-23 22:45:36 kohlert Exp $
+ * $Id: EncoderDecoder.java,v 1.22 2005-09-24 04:51:21 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -77,15 +77,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 QName name = p.getName();
                 Object value = null;
                 if (binding.isDocLit()){
-/*                    if (p.getRawAccessor() != null) {
-                        try {
-                            p.getRawAccessor().get(((JAXBBridgeInfo)obj).getValue());
-                        } catch (Exception e) {
-                            throw new SerializationException(new LocalizableExceptionAdapter(e));
-                        }
-                    } else*/
-                        value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), 
-                                    name.getNamespaceURI(), name.getLocalPart());
+                    value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), 
+                                name.getNamespaceURI(), name.getLocalPart());
                 }else if (binding.isRpcLit()){
                     value = getWrapperChildValue(context, obj, name.getNamespaceURI(), name
                             .getLocalPart());
@@ -266,11 +259,8 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 else
                     value = p.getHolderValue(data[p.getIndex()]);
                 QName name = p.getName();
-//                if (p.getRawAccessor() != null)
-//                    p.getRawAccessor().set(obj, value);
-//                else
-                    setWrapperChildValue(context, obj, value,
-                        name.getNamespaceURI(), name.getLocalPart());
+                setWrapperChildValue(context, obj, value,
+                    name.getNamespaceURI(), name.getLocalPart());
             }
             return obj;
         } catch(Exception e){
