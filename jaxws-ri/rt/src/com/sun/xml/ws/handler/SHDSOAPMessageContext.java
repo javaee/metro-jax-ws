@@ -21,6 +21,7 @@ package com.sun.xml.ws.handler;
 import java.util.List;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.spi.runtime.Invoker;
 import java.lang.reflect.Method;
@@ -75,7 +76,7 @@ public class SHDSOAPMessageContext extends SOAPMessageContextImpl implements com
      * Encoder to marshall all JAXWS objects: RpcLitPayload, JAXBBridgeInfo etc
      */
     public InternalSoapEncoder getEncoder() {
-        return (InternalSoapEncoder)handlerCtxt.getMessageInfo().getEncoder();
+        return (InternalSoapEncoder)((SOAPEPTFactory)handlerCtxt.getMessageInfo().getEPTFactory()).getSOAPEncoder();
     }
     
     public String getBindingId() {

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.30 2005-09-23 22:02:34 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.31 2005-09-26 18:12:20 kwalsh Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -115,10 +115,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 context, shd);
             if (shd == null) {
                 implementor.invoke();
-            } else {
-                //set encoder
-                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
-                messageInfo.setEncoder((Encoder) eptf.getInternalEncoder());
+            } else {                
                 context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
                 context.setInvoker(implementor);
