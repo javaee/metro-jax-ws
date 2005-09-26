@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.14 2005-09-23 22:05:43 kohsuke Exp $
+ * $Id: WebServiceAP.java,v 1.15 2005-09-26 22:30:41 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -90,7 +90,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     protected AnnotationProcessorEnvironment apEnv;
     protected ProcessorEnvironment env;
 
-//    private String wsdlUri;
     private File sourceDir;
 
     // the model being build
@@ -142,8 +141,12 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             Map<String, String> apOptions = apEnv.getOptions();
             output = new ByteArrayOutputStream();
             String classDir = apOptions.get("-d");
+            if (classDir == null)
+                classDir = ".";
             if (apOptions.get("-s") != null)
                 sourceDir = new File(apOptions.get("-s"));
+            else
+                sourceDir = new File(classDir);
             String cp = apOptions.get("-classpath");
             String cpath = classDir +
                     File.pathSeparator +
@@ -155,18 +158,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             for (String key : apOptions.keySet()) {
                 if (key.equals("-verbose"))
                     setVerbose=true;
-/*                if (key.startsWith("-Averbose")) {
-                    if (key.equals("-Averbose")) {
-                        setVerbose = true;
-                        break;
-                    } else {
-                        String value = key.substring(key.indexOf('=')+1);
-                        if (value.equals("true")) {
-                            setVerbose = true;
-                            break;
-                        }
-                    }
-                }*/
             }
             if (setVerbose) {
                 env.setFlags(ProcessorEnvironment.F_VERBOSE);

@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.28 2005-09-23 22:05:43 kohsuke Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.29 2005-09-26 22:30:42 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -122,6 +122,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     protected  void doPostProcessWebService(WebService webService, TypeDeclaration d) {
         if (cm != null) {
             File sourceDir = builder.getSourceDir();
+            assert(sourceDir != null);
             ProcessorEnvironment env = builder.getProcessorEnvironment();          
             try {
                 CodeWriter cw = new FilerCodeWriter(sourceDir, env);
