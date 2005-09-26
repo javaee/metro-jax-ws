@@ -1,4 +1,8 @@
 /*
+ * $Id: HandlerChainCaller.java,v 1.15 2005-09-26 19:57:01 bbissett Exp $
+ */
+
+/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
@@ -32,6 +36,8 @@ import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -196,40 +202,42 @@ public class HandlerChainCaller {
 
             body.removeContents();
             SOAPFault fault = body.addFault();
+            String envelopeNamespace = envelope.getNamespaceURI();
 
-//            // try to handle any nulls gracefully
-//            if (exception instanceof SOAPFaultException) {
-//                SOAPFaultException sfe = (SOAPFaultException) exception;
-//                if (sfe.getFaultCode() != null) {
-//                    fault.setFaultCode(envelope.createName(
-//                        sfe.getFaultCode().getLocalPart(),
-//                        sfe.getFaultCode().getPrefix(),
-//                        sfe.getFaultCode().getNamespaceURI()));
-//                } else {
-//                    fault.setFaultCode(envelope.createName("Server",
-//                        "env", "http://schemas.xmlsoap.org/soap/envelope/"));
-//                }
-//                if (sfe.getFaultString() != null) {
-//                    fault.setFaultString(sfe.getFaultString());
-//                } else {
-//                    if (sfe.getMessage() != null) {
-//                        fault.setFaultString(sfe.getMessage());
-//                    } else {
-//                        fault.setFaultString(sfe.toString());
-//                    }
-//                }
-//                if (sfe.getFaultActor() != null) {
-//                    fault.setFaultActor(sfe.getFaultActor());
-//                } else {
-//                    fault.setFaultActor("");
-//                }
-//                if (sfe.getDetail() != null) {
-//                    fault.addChildElement(sfe.getDetail());
-//                }
-//            } else if (exception.getMessage() != null) {
-            if (exception.getMessage() != null) {
+            if (exception instanceof SOAPFaultException) {
+                SOAPFaultException sfe = (SOAPFaultException) exception;
+                SOAPFault userFault = sfe.getFault();
+                
+                QName faultCode = userFault.getFaultCodeAsQName();
+                if (faultCode == null) {
+                    faultCode = new QName(
+                        envelopeNamespace,
+                        "Server", "env");
+                }
+                fault.setFaultCode(faultCode);
+                
+                String faultString = userFault.getFaultString();
+                if (faultString == null) {
+                    if (sfe.getMessage() != null) {
+                        faultString = sfe.getMessage();
+                    } else {
+                        faultString = sfe.toString();
+                    }
+                }
+                fault.setFaultString(faultString);
+                
+                String faultActor = userFault.getFaultActor();
+                if (faultActor == null) {
+                    faultActor = "";
+                }
+                fault.setFaultActor(faultActor);
+                
+                if (userFault.getDetail() != null) {
+                    fault.addChildElement(userFault.getDetail());
+                }
+            } else {
                 fault.setFaultCode(envelope.createName("Server",
-                    "env", "http://schemas.xmlsoap.org/soap/envelope/"));
+                    "env", envelopeNamespace));
                 if (exception.getMessage() != null) {
                     fault.setFaultString(exception.getMessage());
                 } else {
