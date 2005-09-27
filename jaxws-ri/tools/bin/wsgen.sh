@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: wsgen.sh,v 1.2 2005/05/20 00:14:36 vivekp Exp $
+# $Id: wsimport.sh,v 1.2 2005/05/20 00:14:36 vivekp Exp $
 #
 
 #
@@ -24,17 +24,51 @@
 # [name of copyright owner]
 #
 
-if [ -z "$JAVA_HOME" ]; then
-    echo "ERROR: Set JAVA_HOME to the path where the J2SE (JDK) is installed (e.g., /usr/java/jdk1.3)"
-    exit 1
+#
+# infer JAXWS_HOME if not set
+#
+if [ -z "$JAXWS_HOME" ]
+then
+    # search the installation directory
+    
+    PRG=$0
+    progname=`basename $0`
+    saveddir=`pwd`
+    
+    cd `dirname $PRG`
+    
+    while [ -h "$PRG" ] ; do
+        ls=`ls -ld "$PRG"`
+        link=`expr "$ls" : '.*-> \(.*\)$'`
+        if expr "$link" : '.*/.*' > /dev/null; then
+            PRG="$link"
+        else
+            PRG="`dirname $PRG`/$link"
+        fi
+    done
+
+    JAXWS_HOME=`dirname "$PRG"`/..
+    
+    # make it fully qualified
+    cd "$saveddir"
+    JAXWS_HOME=`cd "$JAXWS_HOME" && pwd`
+    
+    cd $saveddir
 fi
 
-if [ -z "$JAXWS_HOME" ]; then
-    echo "ERROR: Set JAXWS_HOME to the root of a JAXWS-RI distribution (e.g., /usr/bin/jaxws-ri/build)"
-    exit 1
+[ `expr \`uname\` : 'CYGWIN'` -eq 6 ] &&
+{
+    JAXWS_HOME=`cygpath -w "$JAXWS_HOME"`
+}
+
+#
+# use or infer JAVA_HOME
+#
+if [ -n "$JAVA_HOME" ]
+then
+    JAVA="$JAVA_HOME/bin/java"
+else
+    JAVA=java
 fi
 
-
-CLASSPATH=.:$JAXWS_HOME/lib/jaxws-rt.jar:$JAXWS_HOME/lib/jaxws-tools.jar:$JAXWS_HOME/lib/jaxws-api.jar:$JAXWS_HOME/lib/activation.jar:$JAXWS_HOME/lib/saaj-api.jar:$JAXWS_HOME/lib/saaj-impl.jar:$JAXWS_HOME/lib/relaxngDatatype.jar:$JAXWS_HOME/lib/jaxb-xjc.jar:$JAXWS_HOME/lib/jsr173_api.jar:$JAXWS_HOME/lib/sjsxp.jar:$JAXWS_HOME/lib/jaxb-api.jar:$JAXWS_HOME/lib/jaxb-impl.jar:$JAXWS_HOME/lib/jaxb-libs.jar:$JAXWS_HOME/lib/jsr181-api.jar:$JAVA_HOME/lib/tools.jar
-
-$JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsGen "$@"
+exec $JAVA $WSIMPORT_OPTS -cp "$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.tools.ws.WsGen "$@"

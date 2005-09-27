@@ -1,7 +1,7 @@
 @echo off
 
 REM
-REM $Id: wsimport.bat,v 1.2 2005-09-10 19:49:26 kohsuke Exp $
+REM $Id: wsimport.bat,v 1.3 2005-09-27 19:38:59 kohsuke Exp $
 REM
 
 REM
@@ -24,31 +24,35 @@ REM own identifying information: Portions Copyright [yyyy]
 REM [name of copyright owner]
 REM
 
-if defined JAVA_HOME goto CONTA
-echo ERROR: Set JAVA_HOME to the path where the J2SE (JDK) is installed (e.g., D:\jdk1.3)
+
+
+
+rem
+rem Infer JAXWS_HOME if not set
+rem
+if not "%JAXWS_HOME%" == "" goto CHECKJAVAHOME
+
+rem Try to locate JAXWS_HOME
+set JAXWS_HOME=%~dp0
+set JAXWS_HOME=%JAXWS_HOME%\..
+if exist %JAXWS_HOME%\lib\jaxws-tools.jar goto CHECKJAVAHOME
+
+rem Unable to find it
+echo JAXWS_HOME must be set before running this script
 goto END
-:CONTA
 
-if defined JAXWS_HOME goto CONTB
-echo ERROR: Set JAXWS_HOME to the root of a JAXWS-RI distribution (e.g., D:\ws\jaxws-ri\build)
-goto END
-:CONTB
+:CHECKJAVAHOME
+if not "%JAVA_HOME%" == "" goto USE_JAVA_HOME
 
-rem Get command line arguments and save them
-set CMD_LINE_ARGS=
-:setArgs
-if ""%1""=="""" goto doneSetArgs
-set CMD_LINE_ARGS=%CMD_LINE_ARGS% %1
-shift
-goto setArgs
-:doneSetArgs
+set JAVA=java
+goto LAUNCH
 
-setlocal
+:USE_JAVA_HOME
+set JAVA="%JAVA_HOME%\bin\java"
+goto LAUNCH
 
-set CLASSPATH=.;%JAXWS_HOME%\lib\jaxws-rt.jar;%JAXWS_HOME%\lib\jaxws-tools.jar;%JAXWS_HOME%\lib\jaxws-api.jar;%JAXWS_HOME%\lib\activation.jar;%JAXWS_HOME%\lib\saaj-api.jar;%JAXWS_HOME%\lib\saaj-impl.jar;%JAXWS_HOME%\lib\relaxngDatatype.jar;%JAXWS_HOME%\lib\jaxb-xjc.jar;%JAXWS_HOME%\lib\jsr173_api.jar;%JAXWS_HOME%\lib\sjsxp.jar;%JAXWS_HOME%\lib\jaxb-api.jar;%JAXWS_HOME%\lib\jaxb-impl.jar;%JAXWS_HOME%\lib\jaxb-libs.jar;%JAXWS_HOME%\lib\jsr181-api.jar;%JAVA_HOME%\lib\tools.jar
-
-%JAVA_HOME%\bin\java -cp "%CLASSPATH%" com.sun.tools.ws.WsImport %CMD_LINE_ARGS%
-
-endlocal
+:LAUNCH
+%JAVA% %WSIMPORT_OPTS% -cp %JAXWS_HOME%\lib\jaxws-tools.jar com.sun.tools.ws.WsImport %*
 
 :END
+%COMSPEC% /C exit %ERRORLEVEL%

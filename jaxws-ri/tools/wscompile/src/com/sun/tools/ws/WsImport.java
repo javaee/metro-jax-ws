@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.2 2005-09-10 19:49:28 kohsuke Exp $
+ * $Id: WsImport.java,v 1.3 2005-09-27 19:39:01 kohsuke Exp $
  */
 
 /*
@@ -21,18 +21,14 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-
 package com.sun.tools.ws;
-
-import com.sun.tools.ws.wscompile.CompileTool;
 
 /**
  * @author Vivek Pandey
  */
 
 public class WsImport {
-    public static void main(String[] args) {
-        CompileTool tool = new CompileTool(System.out, "wsimport");
-        System.exit(tool.run(args) ? 0 : 1);
+    public static void main(String[] args) throws Throwable {
+        Invoker.main("wsimport",args);
     }
 }
