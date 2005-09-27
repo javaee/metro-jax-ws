@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.11 2005-09-10 19:48:08 kohsuke Exp $
+ * $Id: ServerConnectionImpl.java,v 1.12 2005-09-27 19:04:18 jitu Exp $
  */
 
 /*
@@ -98,19 +98,24 @@ public class ServerConnectionImpl extends WSConnectionImpl {
         if (out == null) {
             try {
                 closeInput();
-                
+                int len = 0;
                 if (responseHeaders != null) {
                     for(Map.Entry <String, List<String>> entry : responseHeaders.entrySet()) {
                         String name = entry.getKey();
                         List<String> values = entry.getValue();
-                        for(String value : values) {
-                            httpExchange.getResponseHeaders().add(name, value);
+                        if (name.equals("Content-Length")) {
+                            // No need to add this header
+                            len = Integer.valueOf(values.get(0));
+                        } else {
+                            for(String value : values) {
+                                httpExchange.getResponseHeaders().add(name, value);
+                            }
                         }
                     }
                 }
 
                 // write HTTP status code, and headers
-                httpExchange.sendResponseHeaders(getStatus(), 0);
+                httpExchange.sendResponseHeaders(getStatus(), len);
                 out = new NoCloseOutputStream(httpExchange.getResponseBody());
             } catch(IOException ioe) {
                 ioe.printStackTrace();
@@ -161,9 +166,12 @@ public class ServerConnectionImpl extends WSConnectionImpl {
                 }
                 closeOutput();
             }
-            httpExchange.close();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
+        } finally {
+            try {
+                httpExchange.close();
+            } catch(IOException ioe) {
+                ioe.printStackTrace();
+            }
         }
     }
     
