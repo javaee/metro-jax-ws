@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.15 2005-09-26 22:30:41 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.16 2005-09-27 17:28:48 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -30,14 +30,10 @@ import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.declaration.TypeParameterDeclaration;
-import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.util.SourcePosition;
-import com.sun.mirror.util.Types;
 import com.sun.tools.ws.processor.ProcessorNotificationListener;
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.generator.GeneratorUtil;
@@ -52,7 +48,6 @@ import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext.SEIContext;
 import com.sun.tools.ws.processor.util.ClientProcessorEnvironment;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.util.ToolBase;
 import com.sun.tools.xjc.api.JavaCompiler;
 import com.sun.tools.xjc.api.Reference;
@@ -65,12 +60,9 @@ import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -126,7 +118,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             sourceDir = new File(options.getProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY));
             String key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
             this.donotOverride =
-                Boolean.valueOf(options.getProperty(key)).booleanValue();
+                Boolean.valueOf(options.getProperty(key));
         }
     }
 
@@ -456,7 +448,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public String getResponseName(String operationName) {
-        return env.getNames().getResponseName(operationName);
+        return Names.getResponseName(operationName);
     }
 
 
