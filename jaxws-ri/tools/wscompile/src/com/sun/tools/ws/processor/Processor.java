@@ -1,5 +1,5 @@
 /*
- * $Id: Processor.java,v 1.6 2005-09-23 22:05:45 kohsuke Exp $
+ * $Id: Processor.java,v 1.7 2005-09-27 20:32:17 kohsuke Exp $
  */
 
 /*
@@ -24,17 +24,15 @@
 
 package com.sun.tools.ws.processor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.ModelInfo;
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.NullLocalizable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This abstract class contains methods for getting a Modeler and creating a model
@@ -47,26 +45,17 @@ import com.sun.xml.ws.util.localization.NullLocalizable;
 public class Processor {
 
     public Processor(Configuration configuration, Properties options, Model model) {
-        _configuration = configuration;
-        _options = options;
-        _actions = new ArrayList();
-
-        // find the value of the "print stack traces" property
-        _printStackTrace = Boolean.valueOf(_options.getProperty(
-            ProcessorOptions.PRINT_STACK_TRACE_PROPERTY)).booleanValue();
-        _env = (ProcessorEnvironment)_configuration.getEnvironment();
+        this(configuration,options);
         _model = model;
     }
 
     public Processor(Configuration configuration, Properties options) {
         _configuration = configuration;
         _options = options;
-        _actions = new ArrayList();
 
         // find the value of the "print stack traces" property
-        _printStackTrace = Boolean.valueOf(_options.getProperty(
-            ProcessorOptions.PRINT_STACK_TRACE_PROPERTY)).booleanValue();
-        _env = (ProcessorEnvironment)_configuration.getEnvironment();
+        _printStackTrace = Boolean.valueOf(_options.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
+        _env = _configuration.getEnvironment();
     }
 
     public void add(ProcessorAction action) {
@@ -86,7 +75,7 @@ public class Processor {
 
     public void runModeler() {
         try {
-            ModelInfo modelInfo = (ModelInfo)_configuration.getModelInfo();
+            ModelInfo modelInfo = _configuration.getModelInfo();
             if (modelInfo == null) {
                 throw new ProcessorException("processor.missing.model");
             }
@@ -98,24 +87,17 @@ public class Processor {
                 _env.printStackTrace(e);
             }
             _env.error(e);
-        } catch (Exception e) {
-            if (_printStackTrace) {
-                _env.printStackTrace(e);
-            }
-            _env.error(new NullLocalizable(e.getMessage()));
         }
     }
 
     public void runActions() {
         try {
             if (_model == null) {
-
                 // avoid reporting yet another error here
                 return;
             }
 
-            for (Iterator iter = _actions.iterator(); iter.hasNext();) {
-                ProcessorAction action = (ProcessorAction) iter.next();
+            for (ProcessorAction action : _actions) {
                 action.perform(_model, _configuration, _options);
             }
         } catch (JAXWSExceptionBase e) {
@@ -123,18 +105,13 @@ public class Processor {
                 _env.printStackTrace(e);
             }
             _env.error(e);
-        } catch (Exception e) {
-            if (_printStackTrace || _env.verbose()) {
-                _env.printStackTrace(e);
-            }
-            _env.error(new NullLocalizable(e.getMessage()));
         }
     }
 
-    private Properties _options;
-    private Configuration _configuration;
-    private List _actions;
+    private final Properties _options;
+    private final Configuration _configuration;
+    private final List<ProcessorAction> _actions = new ArrayList<ProcessorAction>();
     private Model _model;
-    private boolean _printStackTrace;
-    private ProcessorEnvironment _env;
+    private final boolean _printStackTrace;
+    private final ProcessorEnvironment _env;
 }
