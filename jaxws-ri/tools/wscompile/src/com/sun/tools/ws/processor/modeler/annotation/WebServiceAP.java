@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.16 2005-09-27 17:28:48 kohsuke Exp $
+ * $Id: WebServiceAP.java,v 1.17 2005-09-27 21:23:55 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -231,7 +231,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             try {
                 for (SEIContext seiContext : context.getSEIContexts()) {
                     if (!seiContext.getModelCompiled()) {
-
                         runProcessorActions(seiContext.getModel());
                         seiContext.setModelCompiled(true);
                     }
@@ -474,21 +473,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     public String getXMLName(String javaName) {
         return javaName;
     }
-
-    // these methods added so that the WebService modeler can pick the names
-    // it wants for the WSDL artifacts associated with ports and operations
-
-/*    public QName getWSDLPortName(String portName) {
-        return new QName(wsdlUri, getXMLName(portName + PORT));
-    }
-
-    public QName getWSDLBindingName(String portName) {
-        return new QName(wsdlUri, getXMLName(portName + BINDING));
-    }
-
-    public QName getWSDLPortTypeName(String portName) {
-        return new QName(wsdlUri, getXMLName(portName));
-    }*/
 }
 
 

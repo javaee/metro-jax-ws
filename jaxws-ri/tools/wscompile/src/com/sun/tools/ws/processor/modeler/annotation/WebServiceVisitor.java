@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.23 2005-09-26 19:29:34 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.24 2005-09-27 21:23:55 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -323,9 +323,9 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (webService == null)
             builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation",
                     new Object[] {intf.getQualifiedName()});
-                    if (isLegalSEI(intf))
-                        return true;
-                    return false;
+        if (isLegalSEI(intf))
+            return true;
+        return false;
     }
     
     protected boolean shouldProcessWebService(WebService webService, ClassDeclaration classDecl) {
@@ -470,11 +470,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             builder.log("webMethod == null");
             return false;
         }
-        if (webMethod != null && webMethod.exclude() ||
-                !isLegalMethod(method, typeDecl)) {
-            builder.log("not a legal method");
-            return false;
-        }
+//        if (webMethod != null && webMethod.exclude() ||
+//                !isLegalMethod(method, typeDecl)) {
+//            builder.log("not a legal method");
+//            return false;
+//        }
         boolean retval = (endpointReferencesInterface ||
                 method.getDeclaringType().equals(typeDecl) ||
                 (method.getDeclaringType().getAnnotation(WebService.class) != null));
@@ -527,9 +527,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 return false;
         } else {
             InterfaceDeclaration intfDecl = getEndpointInterfaceDecl(webService.endpointInterface(), classDecl);
-            if (!isLegalSEI(intfDecl))
-                return false;
-            // TODO make sure the implementation has methods that match the SEI.
             if (!classImplementsSEI(classDecl, intfDecl))
                 return false;
         }
@@ -723,7 +720,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             mode = webParam.mode();
         
         if (holderType != null) {
-            if (mode == null ||  mode.equals(WebParam.Mode.IN))
+            if (mode != null &&  mode.equals(WebParam.Mode.IN))
                 builder.onError(param.getPosition(), "webserviceap.holder.parameters.must.not.be.in.only",
                         new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});
         } else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
