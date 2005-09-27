@@ -244,7 +244,7 @@ public class HandlerAnnotationProcessor {
                     XMLStreamReaderUtil.nextContent(reader);
                 }
 
-                //handler.init(initParams);
+                handler.init(initParams);
                 handlerChain.add(handler);
 
                 // move past </handler>

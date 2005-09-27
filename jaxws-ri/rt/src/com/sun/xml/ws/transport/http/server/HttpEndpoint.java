@@ -236,6 +236,7 @@ public class HttpEndpoint {
         WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
         endpointInfo.injectContext();
+        endpointInfo.injectComplete();
         endpointInfo.beginService();
         Tie tie = new Tie();
         context.setHandler(new WSHttpHandler(tie, endpointInfo));
