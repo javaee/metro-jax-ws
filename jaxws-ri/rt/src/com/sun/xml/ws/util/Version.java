@@ -1,5 +1,5 @@
 /*
- * $Id: Version.java,v 1.12 2005-09-10 19:48:14 kohsuke Exp $
+ * $Id: Version.java,v 1.13 2005-09-27 21:24:43 kohlert Exp $
  */
 
 /*
@@ -47,5 +47,5 @@ public interface Version {
 	 */
         // TODO change this back to R11 for the FCS release.
 //	public static final String BUILD_NUMBER = "R11";
-	public static final String BUILD_NUMBER = "EA3_B7";
+	public static final String BUILD_NUMBER = "EA3_B8";
 }
