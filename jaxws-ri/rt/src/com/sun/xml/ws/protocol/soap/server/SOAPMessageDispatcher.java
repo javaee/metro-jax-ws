@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.31 2005-09-26 18:12:20 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.32 2005-09-27 17:04:45 bbissett Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -315,13 +315,17 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
-        RuntimeContext context = (RuntimeContext)
-            info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        Binding binding = context.getRuntimeEndpointInfo().getBinding();
-        HandlerChainCaller caller =
-            new HandlerChainCaller(binding.getHandlerChain());
-        if (binding instanceof SOAPBinding) {
-            caller.setRoles(((SOAPBinding) binding).getRoles());
+        HandlerChainCaller caller = (HandlerChainCaller) info.getMetaData(
+            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        if (caller == null) {
+            RuntimeContext context = (RuntimeContext) info.getMetaData(
+                BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+            Binding binding = context.getRuntimeEndpointInfo().getBinding();
+            caller = new HandlerChainCaller(binding.getHandlerChain());
+            if (binding instanceof SOAPBinding) {
+                caller.setRoles(((SOAPBinding) binding).getRoles());
+            }
+            info.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER, caller);
         }
         return caller;
     }
@@ -348,9 +352,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * call close on the handlers.
      */
     private void closeHandlers(MessageInfo info, SOAPHandlerContext context) {
-        HandlerChainCaller handlerCaller =
-            (HandlerChainCaller) info.getMetaData(
-                HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        HandlerChainCaller handlerCaller = getCallerFromMessageInfo(info);
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
             handlerCaller.forceCloseHandlers(context);
         }
@@ -415,6 +417,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 try {
                     SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
                     SOAPDecoder decoder = eptf.getSOAPDecoder();
+                    
+                    // add handler chain caller to message info
+                    getCallerFromMessageInfo(messageInfo);
                     peekOneWay = decoder.doMustUnderstandProcessing(soapMessage,
                             messageInfo, context, true);                
                     context.setMethod(messageInfo.getMethod());

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.46 2005-09-23 22:02:33 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.47 2005-09-27 17:04:44 bbissett Exp $
  */
 
 /*
@@ -398,6 +398,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
 
         try {
+            messageInfo.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER,
+                getHandlerChainCaller(messageInfo));
             decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
         } catch (SOAPException se) { // unusual saaj error
             throw new RuntimeException(se);

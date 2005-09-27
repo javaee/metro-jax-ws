@@ -309,14 +309,15 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
-        RuntimeContext context = (RuntimeContext)
-            info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        Binding binding = context.getRuntimeEndpointInfo().getBinding();
-        HandlerChainCaller caller =
-            new HandlerChainCaller(binding.getHandlerChain());
-        //if (binding instanceof SOAPBinding) {
-        //    caller.setRoles(((SOAPBinding) binding).getRoles());
-        //}
+        HandlerChainCaller caller = (HandlerChainCaller) info.getMetaData(
+            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        if (caller == null) {
+            RuntimeContext context = (RuntimeContext)
+                info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+            Binding binding = context.getRuntimeEndpointInfo().getBinding();
+            caller = new HandlerChainCaller(binding.getHandlerChain());
+            info.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER, caller);
+        }
         return caller;
     }
 
@@ -345,9 +346,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
      * call close on the handlers.
      */
     private void closeHandlers(MessageInfo info, XMLHandlerContext context) {
-        HandlerChainCaller handlerCaller =
-            (HandlerChainCaller) info.getMetaData(
-                HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        HandlerChainCaller handlerCaller = getCallerFromMessageInfo(info);
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
             handlerCaller.forceCloseHandlers(context);
         }

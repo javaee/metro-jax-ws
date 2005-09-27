@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerChainCaller.java,v 1.15 2005-09-26 19:57:01 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.16 2005-09-27 17:04:44 bbissett Exp $
  */
 
 /*
@@ -158,6 +158,10 @@ public class HandlerChainCaller {
                 logicalHandlers.add((LogicalHandler) handler);
             } else if (SOAPHandler.class.isAssignableFrom(handler.getClass())) {
                 soapHandlers.add((SOAPHandler) handler);
+                Set<QName> headers = ((SOAPHandler) handler).getHeaders();
+                if (headers != null) {
+                    understoodHeaders.addAll(headers);
+                }
             } else if (Handler.class.isAssignableFrom(handler.getClass())) {
                 throw new HandlerException(
                     "cannot.extend.handler.directly",
