@@ -1,5 +1,5 @@
 /*
- * $Id: NullLocalizable.java,v 1.4 2005-09-23 22:05:39 kohsuke Exp $
+ * $Id: NullLocalizable.java,v 1.5 2005-09-27 20:24:05 kohsuke Exp $
  */
 
 /*
@@ -33,6 +33,8 @@ public final class NullLocalizable implements Localizable {
     private final String msg;
 
     public NullLocalizable(String msg) {
+        if(msg==null)
+            throw new IllegalArgumentException();
         this.msg = msg;
     }
 
