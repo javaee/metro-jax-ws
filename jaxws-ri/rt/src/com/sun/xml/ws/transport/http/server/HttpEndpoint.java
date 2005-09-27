@@ -232,7 +232,7 @@ public class HttpEndpoint {
         endpointInfo.init();
         generateWSDLDocs();
         RuntimeEndpointInfo.publishWSDLDocs(endpointInfo);
-        System.out.println("Doc Metadata="+endpointInfo.getDocMetadata());
+        logger.fine("Doc Metadata="+endpointInfo.getDocMetadata());
         WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
         endpointInfo.injectContext();
