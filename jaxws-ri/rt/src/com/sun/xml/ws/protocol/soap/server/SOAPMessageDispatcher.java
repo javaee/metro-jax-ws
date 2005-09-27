@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.33 2005-09-27 18:03:49 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.34 2005-09-27 19:34:45 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -126,8 +126,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     shd.processResponse(context.getSHDSOAPMessageContext());
                 }
             }
-            makeSOAPMessage(messageInfo, context);
-            sendResponse(messageInfo, context);
+            if (!isOneway(messageInfo)) {
+                makeSOAPMessage(messageInfo, context);
+                sendResponse(messageInfo, context);
+            }
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             sendResponseError(messageInfo, e);
