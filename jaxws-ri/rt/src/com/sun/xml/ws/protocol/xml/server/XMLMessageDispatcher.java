@@ -309,14 +309,13 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
-        HandlerChainCaller caller = (HandlerChainCaller) info.getMetaData(
-            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        HandlerChainCaller caller = MessageInfoUtil.getHandlerChainCaller(info);
         if (caller == null) {
             RuntimeContext context = (RuntimeContext)
                 info.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
             Binding binding = context.getRuntimeEndpointInfo().getBinding();
             caller = new HandlerChainCaller(binding.getHandlerChain());
-            info.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER, caller);
+            MessageInfoUtil.setHandlerChainCaller(info, caller);
         }
         return caller;
     }

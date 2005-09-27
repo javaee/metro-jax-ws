@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.32 2005-09-27 17:04:45 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.33 2005-09-27 18:03:49 bbissett Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -315,8 +315,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
-        HandlerChainCaller caller = (HandlerChainCaller) info.getMetaData(
-            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        HandlerChainCaller caller = MessageInfoUtil.getHandlerChainCaller(info);
         if (caller == null) {
             RuntimeContext context = (RuntimeContext) info.getMetaData(
                 BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
@@ -325,7 +324,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (binding instanceof SOAPBinding) {
                 caller.setRoles(((SOAPBinding) binding).getRoles());
             }
-            info.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER, caller);
+            MessageInfoUtil.setHandlerChainCaller(info, caller);
         }
         return caller;
     }

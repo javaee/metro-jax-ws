@@ -22,6 +22,7 @@ package com.sun.xml.ws.util;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerContext;
 import javax.xml.ws.handler.MessageContext;
 
@@ -45,4 +46,16 @@ public class MessageInfoUtil {
         return (hdCtxt == null) ? null : hdCtxt.getMessageContext();
     }
 
+    public static HandlerChainCaller getHandlerChainCaller(
+        MessageInfo messageInfo) {
+        return (HandlerChainCaller) messageInfo.getMetaData(
+            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+    }
+    
+    public static void setHandlerChainCaller(MessageInfo messageInfo,
+        HandlerChainCaller caller) {
+        messageInfo.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER,
+            caller);
+    }
+    
 }

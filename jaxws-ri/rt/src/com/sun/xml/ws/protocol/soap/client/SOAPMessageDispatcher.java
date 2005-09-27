@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.47 2005-09-27 17:04:44 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.48 2005-09-27 18:03:49 bbissett Exp $
  */
 
 /*
@@ -53,6 +53,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.Base64Util;
+import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.util.FastInfosetUtil;
 
@@ -398,7 +399,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
 
         try {
-            messageInfo.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER,
+            MessageInfoUtil.setHandlerChainCaller(messageInfo, 
                 getHandlerChainCaller(messageInfo));
             decoder.doMustUnderstandProcessing(sm, messageInfo, handlerContext, false);
         } catch (SOAPException se) { // unusual saaj error

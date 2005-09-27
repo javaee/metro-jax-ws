@@ -478,8 +478,7 @@ public abstract class SOAPDecoder implements Decoder {
         // start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
         roles.addAll(getRequiredRoles());
-        HandlerChainCaller hcCaller = (HandlerChainCaller) mi.getMetaData(
-            HandlerChainCaller.HANDLER_CHAIN_CALLER);
+        HandlerChainCaller hcCaller = MessageInfoUtil.getHandlerChainCaller(mi);
         if (hcCaller != null) {
             roles.addAll(hcCaller.getRoleStrings());
         }
