@@ -24,8 +24,11 @@ final class Invoker {
     };
 
     static void main(String toolName, String[] args) throws Throwable {
+        ClassLoader oldcc = Thread.currentThread().getContextClassLoader();
         try {
             APTClassLoader cl = new APTClassLoader(Invoker.class.getClassLoader(),prefixes);
+            Thread.currentThread().setContextClassLoader(cl);
+
             Class compileTool = cl.loadClass("com.sun.tools.ws.wscompile.CompileTool");
             Constructor ctor = compileTool.getConstructor(OutputStream.class,String.class);
             Object tool = ctor.newInstance(System.out,toolName);
@@ -36,6 +39,8 @@ final class Invoker {
             System.err.println(e.getMessage());
         } catch (InvocationTargetException e) {
             throw e.getCause();
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldcc);
         }
 
         System.exit(1);
