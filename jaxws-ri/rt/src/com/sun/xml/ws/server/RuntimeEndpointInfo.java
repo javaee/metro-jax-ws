@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.62 2005-09-23 22:05:32 kohsuke Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.63 2005-09-27 20:43:55 jitu Exp $
  */
 
 /*
@@ -25,7 +25,6 @@
 package com.sun.xml.ws.server;
 
 import javax.annotation.Resource;
-import javax.annotation.InjectionComplete;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
@@ -60,8 +59,8 @@ import java.util.logging.Logger;
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.concurrent.Executor;
-import javax.xml.ws.BeginService;
-import javax.xml.ws.EndService;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Endpoint;
@@ -587,21 +586,6 @@ public class RuntimeEndpointInfo extends Endpoint
         }
     }
     
-    /*
-     * Calls the method with @InjectionComplete
-     */
-    public synchronized void injectComplete()
-    throws IllegalAccessException, InvocationTargetException {
-        if (injectCompleted) {
-            return;
-        }
-        try {
-            invokeOnceMethod(InjectionComplete.class);
-        } finally {
-            injectCompleted = true;
-        }
-    }
-    
     private void doFieldsInjection() {
         Class c = getImplementorClass();
         Field[] fields = c.getDeclaredFields();
@@ -705,7 +689,7 @@ public class RuntimeEndpointInfo extends Endpoint
             return;                 // Already called for this endpoint object
         }
         try {
-            invokeOnceMethod(BeginService.class);
+            invokeOnceMethod(PostConstruct.class);
         } finally {
             beginServiceDone = true;
         }
@@ -722,7 +706,7 @@ public class RuntimeEndpointInfo extends Endpoint
             return;                 // Already called for this endpoint object
         }
         try {
-            invokeOnceMethod(EndService.class);
+            invokeOnceMethod(PreDestroy.class);
             destroy();
         } finally {
             endServiceDone = true;
@@ -767,7 +751,7 @@ public class RuntimeEndpointInfo extends Endpoint
             if (handlers != null) {
                 for (Handler handler : handlers) {
                     try {
-                        handler.destroy();
+                        //handler.destroy();
                     } catch (RuntimeException re) {
                         logger.warning(
                             "exception ignored from handler.destroy(): " +

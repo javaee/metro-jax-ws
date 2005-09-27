@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.9 2005-09-19 03:59:33 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.10 2005-09-27 20:43:56 jitu Exp $
  *
  */
 
@@ -110,7 +110,6 @@ public class WSServletDelegate {
                     
                     try {
                         info.injectContext();
-                        info.injectComplete();
                         info.beginService();
                     } catch(Exception e) {
                         logger.log(Level.SEVERE, e.getMessage(), e);
