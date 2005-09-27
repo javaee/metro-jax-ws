@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.22 2005-09-24 04:51:21 kohlert Exp $
+ * $Id: EncoderDecoder.java,v 1.23 2005-09-27 17:22:09 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -24,34 +24,34 @@ package com.sun.xml.ws.encoding.soap;
 
 import com.sun.xml.ws.encoding.EncoderDecoderBase;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.model.Parameter;
+import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
-import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.ASCIIUtility;
-import com.sun.xml.bind.api.TypeReference;
 
+import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import javax.activation.DataHandler;
-import java.io.*;
-import java.util.Iterator;
+import java.awt.Image;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.lang.reflect.Type;
-import java.awt.*;
 
 /**
  * @author Vivek Pandey
