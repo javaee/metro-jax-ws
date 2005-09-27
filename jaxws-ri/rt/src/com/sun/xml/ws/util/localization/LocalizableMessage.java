@@ -1,5 +1,5 @@
 /*
- * $Id: LocalizableMessage.java,v 1.5 2005-09-23 22:13:01 kohsuke Exp $
+ * $Id: LocalizableMessage.java,v 1.6 2005-09-27 17:28:29 kohsuke Exp $
  */
 
 /*
@@ -36,6 +36,8 @@ public final class LocalizableMessage implements Localizable {
     public LocalizableMessage(String bundlename, String key, Object... args) {
         _bundlename = bundlename;
         _key = key;
+        if(args==null)
+            args = new Object[0];
         _args = args;
     }
 
