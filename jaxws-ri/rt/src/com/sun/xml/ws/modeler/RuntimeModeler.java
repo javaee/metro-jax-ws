@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.62 2005-09-22 18:48:47 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.63 2005-09-28 02:18:12 kohlert Exp $
  */
 
 /*
@@ -1193,13 +1193,15 @@ public class RuntimeModeler {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 new Object[] {implClass.getCanonicalName()});
         }
-        String name = null;
+        String name = implClass.getSimpleName()+PORT;
         if (webService.portName().length() > 0) {
             name = webService.portName();
+        } else if (webService.name().length() > 0) {
+            name = webService.name()+PORT;
         }
-        if (name == null) {
-            return null;
-        }
+//        if (name == null) {
+//            return null;
+//        }
         String packageName = null;
         if (implClass.getPackage() != null) {
             packageName = implClass.getPackage().getName();
