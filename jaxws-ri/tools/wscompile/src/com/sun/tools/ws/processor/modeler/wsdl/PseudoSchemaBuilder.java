@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.6 2005-09-20 00:57:13 vivekp Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.7 2005-09-28 20:26:29 vivekp Exp $
  */
 
 /*
@@ -153,10 +153,7 @@ public class PseudoSchemaBuilder {
         if(operation.getOutput() != null)
             outputMessage = operation.getOutput().resolveMessage(wsdlDocument);
         if(outputMessage != null){
-            List<MessagePart> additionalHeaderParts = getAdditionalResponseHeaderParts(bindingOperation, outputMessage);
             List<MessagePart> allParts = new ArrayList<MessagePart>(outputMessage.getParts());
-            if(additionalHeaderParts != null && additionalHeaderParts.size() > 0)
-                allParts.addAll(additionalHeaderParts);
             if(allParts.size() > 1)
                 build(getOperationName(portType, operationName, bindingOperation.getOutput()), allParts);
         }
@@ -250,48 +247,7 @@ public class PseudoSchemaBuilder {
         String namespaceURI = "";
         return new QName(namespaceURI, operationName+"Response");
     }
-
-    private List<MessagePart> getAdditionalResponseHeaderParts(BindingOperation bindingOperation, Message message){
-        List<MessagePart> headerParts = new ArrayList<MessagePart>();
-        List<MessagePart> parts = message.getParts();
-        Iterator<MessagePart> headers = getReponseHeaderParts(bindingOperation).iterator();
-        while(headers.hasNext()){
-            MessagePart part = headers.next();
-            if(!parts.contains(part)){
-                headerParts.add(part);
-            }
-        }
-        return headerParts;
-    }
-
-    private List<MessagePart> getReponseHeaderParts(BindingOperation bindingOperation) {
-        Extensible ext = bindingOperation.getOutput();
-        List<MessagePart> parts = new ArrayList<MessagePart>();
-        Iterator<SOAPHeader> headers =  wsdlModeler.getHeaderExtensions(ext).iterator();
-        while(headers.hasNext()){
-            SOAPHeader header = headers.next();
-            Message headerMessage = findMessage(header.getMessage());
-            MessagePart part = headerMessage.getPart(header.getPart());
-            if(part == null)
-                continue;
-            part.setBindingExtensibilityElementKind(MessagePart.SOAP_HEADER_BINDING);
-            parts.add(part);
-        }
-        return parts;
-    }
-
-    protected Message findMessage(QName messageName) {
-        Message message = null;
-        try {
-            message =
-                (Message)wsdlDocument.find(
-                    Kinds.MESSAGE,
-                    messageName);
-        } catch (NoSuchEntityException e) {
-        }
-        return message;
-    }
-
+   
     private void print( String msg ) {
         print( msg, new Object[0] );
     }
