@@ -1,5 +1,5 @@
 /**
- * $Id: JAXBTypeAndAnnotation.java,v 1.2 2005-09-10 19:49:42 kohsuke Exp $
+ * $Id: JAXBTypeAndAnnotation.java,v 1.3 2005-09-28 19:54:05 vivekp Exp $
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
@@ -44,6 +44,11 @@ public class JAXBTypeAndAnnotation {
         this.type = type;
     }
 
+    public JAXBTypeAndAnnotation(TypeAndAnnotation typeAnn, JType type) {
+        this.typeAnn = typeAnn;
+        this.type = type;
+    }
+
     public void annotate(JAnnotatable typeVar) {
         if(typeAnn != null)
             typeAnn.annotate(typeVar);
@@ -55,5 +60,17 @@ public class JAXBTypeAndAnnotation {
 
     public String getName(){
         return type.fullName();
+    }
+
+    public TypeAndAnnotation getTypeAnn() {
+        return typeAnn;
+    }
+
+    public void setTypeAnn(TypeAndAnnotation typeAnn) {
+        this.typeAnn = typeAnn;
+    }
+
+    public void setType(JType type) {
+        this.type = type;
     }
 }

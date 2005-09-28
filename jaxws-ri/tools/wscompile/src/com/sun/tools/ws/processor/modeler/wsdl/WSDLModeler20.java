@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.30 2005-09-23 22:05:44 kohsuke Exp $
+ * $Id: WSDLModeler20.java,v 1.31 2005-09-28 19:54:05 vivekp Exp $
  */
 
 /*
@@ -849,6 +849,28 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
                 response.addParameter(outParameter);
                 outParameter.setParameterOrderPosition(parameterOrderPosition);
+
+                //for different mime types that otherwise qualifies as INOUT, map the java type as DataHandler
+                if((inParameter!= null) && enableMimeContent()){
+                    TypeAndAnnotation inTa = inParameter.getType().getJavaType().getType().getTypeAnn();
+                    TypeAndAnnotation outTa = outParameter.getType().getJavaType().getType().getTypeAnn();
+                    if(inTa.equals(outTa)){
+                        String javaType = "javax.activation.DataHandler";
+                        inParameter.setTypeName(javaType);
+                        outParameter.setTypeName(javaType);                        
+                        S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
+                        JCodeModel cm = jaxbModel.generateCode(null,
+                                    new ConsoleErrorReporter(getEnvironment(), false));
+                        JType jt= cm.ref(javaType);
+
+                        JAXBTypeAndAnnotation jaxbTa = inParameter.getType().getJavaType().getType();
+                        jaxbTa.setType(jt);
+
+                        jaxbTa = outParameter.getType().getJavaType().getType();
+                        jaxbTa.setType(jt);
+                    }
+                }
+
                 if(inParameter == null){
                     definitiveParameterList.add(name);
                 }else if(isOperationDocumentLiteral(styleAndUse)){
@@ -2240,10 +2262,15 @@ public class WSDLModeler20 extends WSDLModelerBase {
            javaType = getJavaTypeForMimeType(mimeTypes.get(0));
         }
 
-        JCodeModel cm = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel().generateCode(null,
+        S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
+        JCodeModel cm = jaxbModel.generateCode(null,
                     new ConsoleErrorReporter(getEnvironment(), false));
         JType jt= cm.ref(javaType);;
         QName desc = part.getDescriptor();
+        TypeAndAnnotation typeAnno = jaxbModel.getJavaType(desc);
+        if(typeAnno == null){
+            fail("wsdlmodeler.jaxb.javatype.notfound", new Object[]{desc, part.getName()});
+        }
         if (part.getDescriptorKind() == SchemaKinds.XSD_TYPE) {
             desc = new QName("", part.getName());
         } else if (part.getDescriptorKind()== SchemaKinds.XSD_ELEMENT) {
@@ -2265,7 +2292,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
             }
         }
-        return new JAXBType(desc, new JavaSimpleType(new JAXBTypeAndAnnotation(jt)),
+        return new JAXBType(desc, new JavaSimpleType(new JAXBTypeAndAnnotation(typeAnno, jt)),
                 null, getJAXBModelBuilder().getJAXBModel());
     }
 
