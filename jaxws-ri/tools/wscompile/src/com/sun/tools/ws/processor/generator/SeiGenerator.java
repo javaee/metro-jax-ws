@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.31 2005-09-23 22:05:41 kohsuke Exp $
+ * $Id: SeiGenerator.java,v 1.32 2005-09-29 17:28:16 bbissett Exp $
  */
 
 /*
@@ -68,7 +68,8 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
     
-    private static final String HANDLER_CHAIN_NAME = "handlers";
+    // empty string per section 9.2.1.3
+    private static final String HANDLER_CHAIN_NAME = "";
     
     public SeiGenerator() {
     }
