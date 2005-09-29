@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.8 2005-09-23 22:05:43 kohsuke Exp $
+ * $Id: JAXBModelBuilder.java,v 1.9 2005-09-29 00:36:20 vivekp Exp $
  */
 
 /*
@@ -37,6 +37,7 @@ import org.xml.sax.SAXParseException;
 import com.sun.tools.xjc.api.ErrorListener;
 import com.sun.tools.xjc.api.SchemaCompiler;
 import com.sun.tools.xjc.api.XJC;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.ModelInfo;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
@@ -112,6 +113,14 @@ public class JAXBModelBuilder {
         JavaType javaType = new JavaSimpleType(mapping.getType());
         JAXBType type =  new JAXBType(qname, javaType, mapping, jaxbModel);
         return type;
+    }
+
+    public TypeAndAnnotation getElementTypeAndAnn(QName qname){
+        JAXBMapping mapping = jaxbModel.get(qname);
+        if (mapping == null){
+            fail("model.schema.elementNotFound", new Object[]{qname});
+        }
+        return mapping.getType().getTypeAnn();
     }
 
     protected void bind(){
