@@ -482,8 +482,10 @@
     </taskdef>
     
     <target name="generate-weekly-binary"
-        depends="dist.zip"
         description="generate java.net binary distribution">
+      <antcall target="dist.zip">
+        <param name="compile.debug" value="true"/>
+      </antcall>
       <tstamp/>
       <!-- generate the class -->
       <installerBuilder classFile="${build.home}/JAXWS_SI_${DSTAMP}.jar"
