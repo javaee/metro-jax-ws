@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.32 2005-09-29 00:36:20 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.33 2005-09-30 16:34:13 vivekp Exp $
  */
 
 /*
@@ -854,7 +854,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 if((inParameter!= null) && enableMimeContent()){
                     TypeAndAnnotation inTa = inParameter.getType().getJavaType().getType().getTypeAnn();
                     TypeAndAnnotation outTa = outParameter.getType().getJavaType().getType().getTypeAnn();
-                    if(inTa.equals(outTa)){
+                    if(inTa.equals(outTa) && !inParameter.getTypeName().equals(outParameter.getTypeName())){
                         String javaType = "javax.activation.DataHandler";
                         inParameter.setTypeName(javaType);
                         outParameter.setTypeName(javaType);                        
