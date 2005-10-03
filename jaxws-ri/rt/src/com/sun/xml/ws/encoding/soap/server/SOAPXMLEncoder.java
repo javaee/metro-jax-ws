@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.10 2005-09-23 22:05:27 kohsuke Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.11 2005-10-03 21:27:32 kohlert Exp $
  */
 
 /*
@@ -96,6 +96,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             
             writer.writeStartDocument();
             startEnvelope(writer);
+            writeEnvelopeNamespaces(writer, messageInfo);
             writeHeaders(writer, response, messageInfo);
             writeBody(writer, response, messageInfo);
             endEnvelope(writer);

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.30 2005-09-23 22:05:28 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.31 2005-10-03 21:27:31 kohlert Exp $
  */
 
 /*
@@ -418,6 +418,21 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
+    /*
+     * write the known namespace declaration to the envelope
+     */
+    protected void writeEnvelopeNamespaces(XMLStreamWriter writer, MessageInfo messageInfo)
+        throws XMLStreamException {
+        
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);  
+        rtCtxt.getModel().getJAXBContext();
+        int i=1;
+        for (String namespace : rtCtxt.getModel().getJAXBContext().getKnownNamespaceURIs()) {
+            if (namespace.length() > 0)
+                writer.writeNamespace("ns"+i++, namespace);
+        }         
+     }    
+    
     /*
      * writes start tag of Body: <env:Body>
      */
