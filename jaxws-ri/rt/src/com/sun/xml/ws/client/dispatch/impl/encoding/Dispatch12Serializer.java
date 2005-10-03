@@ -60,10 +60,10 @@ public class Dispatch12Serializer implements SerializerIF{
         if (context != null)
             return JAXBTypeSerializer.deserialize(reader, context);
         else
-            return deserializeSource(reader, context);
+            return deserializeSource(reader);
     }
 
-   private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
+   private Object deserializeSource(XMLStreamReader reader) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
