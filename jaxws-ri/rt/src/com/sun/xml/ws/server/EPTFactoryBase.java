@@ -27,12 +27,9 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-import com.sun.xml.ws.encoding.soap.ServerEncoderDecoder;
 
 /**
  * @author WS Development Team
@@ -42,7 +39,6 @@ public class EPTFactoryBase implements EPTFactory, SOAPEPTFactory {
     private Decoder decoder;
     private SOAPEncoder soapEncoder;
     private SOAPDecoder soapDecoder;
-    private LogicalEncoder logicalEncoder;
     private InternalEncoder internalEncoder;
     private TargetFinder targetFinder;
     private MessageDispatcher messageDispatcher;
@@ -56,13 +52,12 @@ public class EPTFactoryBase implements EPTFactory, SOAPEPTFactory {
     }
     
     public EPTFactoryBase(SOAPEncoder soapEncoder, SOAPDecoder soapDecoder,
-        LogicalEncoder logicalEncoder, InternalEncoder internalEncoder,
-        TargetFinder targetFinder, MessageDispatcher messageDispatcher) {
+                          InternalEncoder internalEncoder,
+                          TargetFinder targetFinder, MessageDispatcher messageDispatcher) {
         this.encoder = null;
         this.decoder = null;
         this.soapEncoder = soapEncoder;
         this.soapDecoder = soapDecoder;
-        this.logicalEncoder = logicalEncoder;
         this.internalEncoder = internalEncoder;
         this.targetFinder = targetFinder;
         this.messageDispatcher = messageDispatcher;
@@ -95,20 +90,6 @@ public class EPTFactoryBase implements EPTFactory, SOAPEPTFactory {
     }
 
     /*
-     * @see LogicalEPTFactory#getLogicalEncoder()
-     */
-    public LogicalEncoder getLogicalEncoder() {
-        return logicalEncoder;
-    }
-
-    /*
-     * @see LogicalEPTFactory#getLogicalDecoder()
-     */
-    public LogicalDecoder getLogicalDecoder() {
-        return null;
-    }
-
-    /* 
      * @see LogicalEPTFactory#getSoapEncoder()
      */
     public SOAPEncoder getSOAPEncoder() {

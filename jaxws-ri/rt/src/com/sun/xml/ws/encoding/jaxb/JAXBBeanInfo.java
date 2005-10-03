@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.3 2005-09-10 19:47:35 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.4 2005-10-03 23:48:45 kohsuke Exp $
  */
 
 /*
@@ -24,6 +24,8 @@
 package com.sun.xml.ws.encoding.jaxb;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Source;
 
 /*
  * BodyBlock may contain JAXBBeanInfo object. This object holds
@@ -32,13 +34,18 @@ import javax.xml.bind.JAXBContext;
  *
  * @author WS Development Team
  */
-public class JAXBBeanInfo {
-    private Object jaxbBean;
-    private JAXBContext jaxbContext;
+public final class JAXBBeanInfo {
+    private final Object jaxbBean;
+    private final JAXBContext jaxbContext;
 
     public JAXBBeanInfo(Object payload, JAXBContext jaxbContext) {
         this.jaxbBean = payload;
         this.jaxbContext = jaxbContext;
+    }
+
+    public static JAXBBeanInfo fromSource(Source source, JAXBContext context) {
+        Object obj = JAXBTypeSerializer.deserialize(source, context);
+        return new JAXBBeanInfo(obj, context);
     }
 
     public Object getBean() {
@@ -47,5 +54,12 @@ public class JAXBBeanInfo {
 
     public JAXBContext getJAXBContext() {
         return jaxbContext;
+    }
+
+    /**
+     * Creates a {@link DOMSource} from this JAXB bean.
+     */
+    public DOMSource toDOMSource() {
+        return JAXBTypeSerializer.serialize(jaxbBean,jaxbContext);
     }
 }

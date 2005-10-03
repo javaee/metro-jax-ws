@@ -18,24 +18,13 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.handler;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPHeader;
@@ -43,14 +32,17 @@ import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-
-import com.sun.pept.ept.MessageInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
-import java.lang.reflect.Method;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of SOAPMessageContext. This class is used at runtime
@@ -130,10 +122,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
                 Source source = new DOMSource(child);
-                MessageInfo messageInfo = handlerCtxt.getMessageInfo();
-                SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
-                LogicalEncoder encoder = eptf.getLogicalEncoder();
-                JAXBBeanInfo beanInfo = encoder.toJAXBBeanInfo(source, jaxbContext);
+                JAXBBeanInfo beanInfo = JAXBBeanInfo.fromSource(source, jaxbContext);
                 beanList.add(beanInfo.getBean());
             }
             return beanList.toArray();

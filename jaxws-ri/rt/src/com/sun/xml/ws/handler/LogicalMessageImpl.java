@@ -19,9 +19,19 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
+import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.w3c.dom.Node;
+
 import javax.xml.bind.JAXBContext;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.LogicalMessage;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
@@ -29,20 +39,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-
-import org.w3c.dom.Node;
-
-import com.sun.pept.ept.MessageInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import javax.xml.ws.LogicalMessage;
+import javax.xml.ws.WebServiceException;
 
 /**
  * Implementation of LogicalMessage. This class implements the methods
@@ -110,10 +108,7 @@ public class LogicalMessageImpl implements LogicalMessage {
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else if (obj instanceof JAXBBeanInfo) {
-                    MessageInfo messageInfo = ctxt.getMessageInfo();
-                    SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
-                    LogicalEncoder encoder = eptf.getLogicalEncoder();
-                    DOMSource domSource = encoder.toDOMSource((JAXBBeanInfo)obj);
+                    DOMSource domSource = ((JAXBBeanInfo)obj).toDOMSource();
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else if (obj instanceof RpcLitPayload) {
@@ -156,10 +151,7 @@ public class LogicalMessageImpl implements LogicalMessage {
      */
     public Object getPayload(JAXBContext jaxbContext) {
         DOMSource source = (DOMSource)getPayload();
-        MessageInfo messageInfo = ctxt.getMessageInfo();
-        SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
-        LogicalEncoder encoder = eptf.getLogicalEncoder();
-        JAXBBeanInfo beanInfo = encoder.toJAXBBeanInfo(source, jaxbContext);
+        JAXBBeanInfo beanInfo = JAXBBeanInfo.fromSource(source,jaxbContext);
         return beanInfo.getBean();
     }
 
@@ -169,12 +161,9 @@ public class LogicalMessageImpl implements LogicalMessage {
      * payload, it throws a JAXWSException.
      */
     public void setPayload(Object bean, JAXBContext jaxbContext) {
-        Source source = null;
+        Source source;
         try {
-            MessageInfo messageInfo = ctxt.getMessageInfo();
-            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
-            LogicalEncoder encoder = eptf.getLogicalEncoder();
-            source = encoder.toDOMSource(new JAXBBeanInfo(bean, jaxbContext));
+            source = new JAXBBeanInfo(bean, jaxbContext).toDOMSource();
         } catch(Exception e) {
             throw new WebServiceException(e);
         }

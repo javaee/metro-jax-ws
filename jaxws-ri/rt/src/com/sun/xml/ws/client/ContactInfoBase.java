@@ -28,13 +28,10 @@ import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.pept.transport.Connection;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.ClientEncoderDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-import com.sun.xml.ws.server.LogicalEncoderImpl;
 
 import javax.xml.ws.soap.SOAPBinding;
 
@@ -107,16 +104,6 @@ public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
      */
     public TargetFinder getTargetFinder(MessageInfo arg0) {
         // TODO Auto-generated method stub
-        return null;
-    }
-
-    public LogicalEncoder getLogicalEncoder() {
-        //TODO use only one instance of LogicalEncoderImpl
-        return new LogicalEncoderImpl();
-    }
-
-    public LogicalDecoder getLogicalDecoder() {
-        //TODO Auto-generated method stub
         return null;
     }
 

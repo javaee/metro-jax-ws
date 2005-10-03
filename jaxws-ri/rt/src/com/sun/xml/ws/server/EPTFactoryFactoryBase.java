@@ -24,7 +24,6 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.ServerEncoderDecoder;
@@ -65,7 +64,6 @@ public abstract class EPTFactoryFactoryBase {
 
     public static final ProviderMessageDispatcher providerMessageDispatcher =
         new ProviderMessageDispatcher();
-    public static final LogicalEncoder logicalEncoder = new LogicalEncoderImpl();
     public static final SOAPEncoder soap11Encoder = new SOAPXMLEncoder();
     public static final SOAPDecoder soap11Decoder = new SOAPXMLDecoder();
     public static final SOAPEncoder soap12Encoder = new SOAP12XMLEncoder();
@@ -87,30 +85,30 @@ public abstract class EPTFactoryFactoryBase {
 
     public static final EPTFactory providerSoap11 =
             new EPTFactoryBase(soap11Encoder, soap11Decoder,
-                logicalEncoder, providerSED, providerTargetFinder,
+                    providerSED, providerTargetFinder,
                 providerMessageDispatcher);
 
     public static final EPTFactory providerSoap12 =
             new EPTFactoryBase(soap12Encoder, soap12Decoder,
-                logicalEncoder, providerSED, providerTargetFinder,
+                    providerSED, providerTargetFinder,
                 providerMessageDispatcher);
 
     public static final EPTFactory soap11 =
             new EPTFactoryBase(
                 soap11Encoder, soap11Decoder,
-                logicalEncoder, internalSED, targetFinder,
+                    internalSED, targetFinder,
                 soap11MessageDispatcher);
 
     public static final EPTFactory soap12 =
             new EPTFactoryBase(
                 soap12Encoder, soap12Decoder,
-                logicalEncoder, internalSED, targetFinder,
+                    internalSED, targetFinder,
                 soap11MessageDispatcher);
     
     public static final EPTFactory providerXml =
         new XMLEPTFactoryImpl(
             xmlEncoder, xmlDecoder,
-            logicalEncoder, providerSED, providerTargetFinder,
+                providerSED, providerTargetFinder,
             providerXmlMD);
 
     public static boolean isEncodeFast(MessageContext context) {

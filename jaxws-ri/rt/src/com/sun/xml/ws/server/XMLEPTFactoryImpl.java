@@ -26,8 +26,6 @@ import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.protocol.Interceptors;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalDecoder;
-import com.sun.xml.ws.encoding.jaxb.LogicalEncoder;
 import com.sun.xml.ws.encoding.xml.XMLDecoder;
 import com.sun.xml.ws.encoding.xml.XMLEPTFactory;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
@@ -40,7 +38,6 @@ public class XMLEPTFactoryImpl implements XMLEPTFactory {
     private Decoder decoder;
     private XMLEncoder xmlEncoder;
     private XMLDecoder xmlDecoder;
-    private LogicalEncoder logicalEncoder;
     private InternalEncoder internalEncoder;
     private TargetFinder targetFinder;
     private MessageDispatcher messageDispatcher;
@@ -54,13 +51,12 @@ public class XMLEPTFactoryImpl implements XMLEPTFactory {
     }
     
     public XMLEPTFactoryImpl(XMLEncoder xmlEncoder, XMLDecoder xmlDecoder,
-        LogicalEncoder logicalEncoder, InternalEncoder internalEncoder,
-        TargetFinder targetFinder, MessageDispatcher messageDispatcher) {
+                             InternalEncoder internalEncoder,
+                             TargetFinder targetFinder, MessageDispatcher messageDispatcher) {
         this.xmlEncoder = xmlEncoder;
         this.xmlDecoder = xmlDecoder;
         this.encoder = null;
         this.decoder = null;
-        this.logicalEncoder = logicalEncoder;
         this.internalEncoder = internalEncoder;
         this.targetFinder = targetFinder;
         this.messageDispatcher = messageDispatcher;
@@ -93,20 +89,6 @@ public class XMLEPTFactoryImpl implements XMLEPTFactory {
     }
 
     /*
-     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getLogicalEncoder()
-     */
-    public LogicalEncoder getLogicalEncoder() {
-        return logicalEncoder;
-    }
-
-    /*
-     * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getLogicalDecoder()
-     */
-    public LogicalDecoder getLogicalDecoder() {
-        return null;
-    }
-
-    /* 
      * @see com.sun.xml.ws.encoding.jaxb.LogicalEPTFactory#getSoapEncoder()
      */
     public XMLEncoder getXMLEncoder() {

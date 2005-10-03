@@ -73,9 +73,7 @@ public class DispatchSerializer implements SerializerIF{
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
             Object bean = ((JAXBBeanInfo) obj).getBean();
-
             JAXBTypeSerializer.serialize(bean, writer, context);
-
         } else
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
         //should not happen
@@ -139,7 +137,7 @@ public class DispatchSerializer implements SerializerIF{
         return new StreamSource(istream);
     }
 
-    private void serializeSource(Object source, XMLStreamWriter writer) {
+    void serializeSource(Object source, XMLStreamWriter writer) {
         try {
             XMLStreamReader reader = SourceReaderFactory.createSourceReader((Source) source, true);
 

@@ -27,8 +27,6 @@ import com.sun.xml.ws.encoding.jaxb.*;
  * split into multiple factories.
  */
 public interface SOAPEPTFactory {
-	public LogicalEncoder getLogicalEncoder();
-
     public InternalEncoder getInternalEncoder();
     
 	/**
