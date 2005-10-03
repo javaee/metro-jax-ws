@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.33 2005-10-03 23:11:08 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.34 2005-10-03 23:33:26 kohsuke Exp $
  */
 
 /*
@@ -424,7 +424,6 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         throws XMLStreamException {
         
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);  
-        rtCtxt.getModel().getJAXBContext();
         int i=1;
         for (String namespace : rtCtxt.getModel().getJAXBContext().getKnownNamespaceURIs()) {
             if (namespace.length() > 0)
