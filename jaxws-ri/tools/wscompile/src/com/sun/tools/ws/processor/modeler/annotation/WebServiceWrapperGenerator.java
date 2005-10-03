@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.29 2005-09-26 22:30:42 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.30 2005-10-03 17:13:30 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -335,7 +335,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     private void collectMembers(MethodDeclaration method, String operationName, String namespace,
                                ArrayList<MemberInfo> requestMembers,
                                ArrayList<MemberInfo> responseMembers) {
-                                   
+                           
+        AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
         WebResult webResult = method.getAnnotation(WebResult.class);
         String responseElementName = RETURN;
         String responseNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
@@ -358,9 +359,12 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         TypeMirror holderType;
         int paramIndex = -1;
 
-        String retType = method.getReturnType() instanceof TypeDeclaration ? 
-                    ((ClassDeclaration)method.getReturnType()).getQualifiedName() :
-                    method.getReturnType().toString();                
+        TypeMirror typeMirror = apEnv.getTypeUtils().getErasure(method.getReturnType());
+//        System.out.println("retType: "+typeMirror);
+        String retType = typeMirror.toString();                
+//        String retType = typeMirror instanceof TypeDeclaration ? 
+//                    ((ClassDeclaration)typeMirror).getQualifiedName() :
+//                    method.getReturnType().toString();                
         if (!(method.getReturnType() instanceof VoidType) && !isResultHeader) {                    
             responseMembers.add(new MemberInfo(-1, retType, RETURN_VALUE, 
                 new QName(responseNamespace, responseElementName)));
@@ -371,7 +375,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             paramIndex++;
             holderType = builder.getHolderValueType(param.getType());
             webParam = param.getAnnotation(WebParam.class);
-            paramType = param.getType().toString();
+            typeMirror = apEnv.getTypeUtils().getErasure(param.getType());
+//            paramType = param.getType().toString();
+            paramType = typeMirror.toString();
+//            System.out.println("paramType: "+paramType);
+//            System.out.println("paramType: "+typeMirror);
             paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
             if (holderType != null) {
                 paramType = holderType.toString();
@@ -390,17 +398,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             MemberInfo memInfo = new MemberInfo(paramIndex, paramType, paramName, 
                 new QName(paramNamespace, paramName));
             if (holderType != null) {          
-/*                if (mode != null &&  mode.equals(WebParam.Mode.IN))
-                    builder.onError(param.getPosition(), "webserviceap.holder.parameters.must.not.be.in.only", 
-                                new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});
-                else */if (mode == null || mode.equals(WebParam.Mode.INOUT)) {   
+                if (mode == null || mode.equals(WebParam.Mode.INOUT)) {   
                     requestMembers.add(memInfo);
                 }
                 responseMembers.add(memInfo);
-            } /*else if (mode != null && !mode.equals(WebParam.Mode.IN)) {
-                builder.onError(param.getPosition(), "webserviceap.non.in.parameters.must.be.holder", 
-                                new Object[] {typeDecl.getQualifiedName(), method.toString(), paramIndex});                
-            } */else {
+            } else {
                 requestMembers.add(memInfo);
             }
         }
@@ -458,6 +460,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     private boolean generateExceptionBean(ClassDeclaration thrownDecl, String beanPackage) throws IOException {
         if (builder.isRemoteException(thrownDecl))
             return false;
+        AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
         String exceptionName = ClassNameInfo.getName(thrownDecl.getQualifiedName());
         if (processedExceptions.contains(exceptionName))
             return false;
@@ -489,9 +492,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
         ArrayList<MemberInfo> members = new ArrayList<MemberInfo>();
         MemberInfo member;
-        for (String key : propertyToTypeMap.keySet()) {
+        String typeString;
+        TypeMirror erasureType;
+        TreeSet<String> keys = new TreeSet<String>(propertyToTypeMap.keySet());
+        for (String key : keys) {
+//        for (String key : propertyToTypeMap.keySet()) {        
             TypeMirror type = propertyToTypeMap.get(key);
-            member = new MemberInfo(-10, type.toString(), key, null);
+            erasureType = apEnv.getTypeUtils().getErasure(type);
+            member = new MemberInfo(-10, erasureType.toString(), key, null);
             members.add(member);
         } 
         faultInfo.setMembers(members);

@@ -25,7 +25,7 @@ import com.sun.tools.ws.processor.modeler.annotation.*;
  *
  * @author  WS Development Team
  */
-public class MemberInfo {
+public class MemberInfo implements Comparable<MemberInfo> {
     int paramIndex;
     String paramType;
     String paramName;
@@ -53,5 +53,9 @@ public class MemberInfo {
 
     public QName getElementName() {
         return elementName;
+    }
+    
+    public int compareTo(MemberInfo member) {
+        return paramName.compareTo(member.paramName);
     }
 }
