@@ -237,4 +237,12 @@
  **/
 package com.sun.xml.ws.client;
 
+import com.sun.xml.bind.api.BridgeContext;
+
 import javax.xml.ws.Binding;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.w3c.dom.Node;

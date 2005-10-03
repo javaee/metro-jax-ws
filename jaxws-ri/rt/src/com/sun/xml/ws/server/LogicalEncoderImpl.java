@@ -34,14 +34,14 @@ public class LogicalEncoderImpl implements LogicalEncoder {
      * @see LogicalEncoder#toJAXBBean(Source, JAXBContext)
      */
     public JAXBBeanInfo toJAXBBeanInfo(Source source, JAXBContext context) {
-        Object obj = JAXBTypeSerializer.getInstance().deserialize(source, context);
+        Object obj = JAXBTypeSerializer.deserialize(source, context);
         return new JAXBBeanInfo(obj, context);
     }
 
     /*
      */
     public DOMSource toDOMSource(JAXBBeanInfo beanInfo) {
-        return JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+        return JAXBTypeSerializer.serialize(beanInfo.getBean(),
                 beanInfo.getJAXBContext());
     }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLEncoder.java,v 1.3 2005-09-10 19:47:46 kohsuke Exp $
+ * $Id: XMLEncoder.java,v 1.4 2005-10-03 23:11:08 kohsuke Exp $
  */
 
 /*
@@ -59,7 +59,7 @@ public class XMLEncoder implements Encoder {
     }
 
     protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, XMLStreamWriter writer) {
-        JAXBTypeSerializer.getInstance().serialize(
+        JAXBTypeSerializer.serialize(
                 beanInfo.getBean(), writer, beanInfo.getJAXBContext());
     }
 

@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.24 2005-10-03 23:01:16 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.25 2005-10-03 23:11:07 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -322,12 +322,12 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 if((obj != null) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(type)){
                     JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
                     if(Source.class.isAssignableFrom(obj.getClass())){
-                        JAXBTypeSerializer.getInstance().deserialize((Source)obj, bi, rtContext.getBridgeContext());
+                        JAXBTypeSerializer.deserialize((Source)obj, bi, rtContext.getBridgeContext());
                         return bi.getValue();
                     }else if(InputStream.class.isAssignableFrom(obj.getClass())){
 //                        ByteArrayInputStream bais = new ByteArrayInputStream((byte[])obj);
 //                        JAXBTypeSerializer.getInstance().deserialize(bais, bi, rtContext.getBridgeContext());
-                        JAXBTypeSerializer.getInstance().deserialize((InputStream)obj, bi, rtContext.getBridgeContext());
+                        JAXBTypeSerializer.deserialize((InputStream)obj, bi, rtContext.getBridgeContext());
                         return bi.getValue();
                     }
                 }
@@ -370,7 +370,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         if(!DataHandler.class.isAssignableFrom(obj.getClass()) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
             JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JAXBTypeSerializer.getInstance().serialize(bi, rtContext.getBridgeContext(), baos, null);
+            JAXBTypeSerializer.serialize(bi, rtContext.getBridgeContext(), baos, null);
             obj = baos.toByteArray();
         }
         AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);

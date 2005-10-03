@@ -546,7 +546,7 @@ public class XMLMessage {
         }
         
         public Object getPayload(JAXBContext ctxt) {
-            return JAXBTypeSerializer.getInstance().deserialize(getPayload(),
+            return JAXBTypeSerializer.deserialize(getPayload(),
                 ctxt);
         }
         
@@ -735,7 +735,7 @@ public class XMLMessage {
         public Object getPayload(JAXBContext ctxt) {
             // Get a copy of Source using getPayload() and use it to deserialize
             // to JAXB object
-            return JAXBTypeSerializer.getInstance().deserialize(getPayload(), 
+            return JAXBTypeSerializer.deserialize(getPayload(),
                 ctxt);
         }
         
@@ -751,12 +751,12 @@ public class XMLMessage {
                 
                 // If old source was FI, re-encode using FI
                 if (isFastInfoset) {
-                    JAXBTypeSerializer.getInstance().serializeDocument(jaxbObj, 
+                    JAXBTypeSerializer.serializeDocument(jaxbObj,
                         XMLStreamWriterFactory.createFIStreamWriter(baos),
                         ctxt);                    
                 }
                 else {
-                    JAXBTypeSerializer.getInstance().serialize(jaxbObj, baos, ctxt);
+                    JAXBTypeSerializer.serialize(jaxbObj, baos, ctxt);
                 }
                 
                 // Return XML or FI source
@@ -789,12 +789,12 @@ public class XMLMessage {
                 baos = new ByteArrayOutputStream();
                 
                 if (useFastInfoset) {
-                    JAXBTypeSerializer.getInstance().serializeDocument(beanInfo.getBean(),
+                    JAXBTypeSerializer.serializeDocument(beanInfo.getBean(),
                         XMLStreamWriterFactory.createFIStreamWriter(out), 
                         beanInfo.getJAXBContext());
                 }
                 else {
-                    JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+                    JAXBTypeSerializer.serialize(beanInfo.getBean(),
                         baos, beanInfo.getJAXBContext());
                 }
                 
@@ -806,7 +806,7 @@ public class XMLMessage {
         }
         
         public Source getSource() {
-            return JAXBTypeSerializer.getInstance().serialize(
+            return JAXBTypeSerializer.serialize(
                 object, jaxbContext);
         }
         
@@ -823,7 +823,7 @@ public class XMLMessage {
          * Usually called from logical handler
          */
         public void setPayload(Source source) {
-            object = JAXBTypeSerializer.getInstance().deserialize(
+            object = JAXBTypeSerializer.deserialize(
                 source, jaxbContext);
         }
         

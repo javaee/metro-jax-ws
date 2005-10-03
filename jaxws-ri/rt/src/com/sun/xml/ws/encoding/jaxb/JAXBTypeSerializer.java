@@ -44,14 +44,10 @@ import java.io.OutputStream;
 /**
  * @author Vivek Pandey
  */
-public class JAXBTypeSerializer {
-    private static final JAXBTypeSerializer serializer = new JAXBTypeSerializer();
+public final class JAXBTypeSerializer {
+    private JAXBTypeSerializer() {}    // no instanciation please
 
-    public static JAXBTypeSerializer getInstance() {
-        return serializer;
-    }    
-       
-    public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
+    public static void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
@@ -66,7 +62,7 @@ public class JAXBTypeSerializer {
     /* for FI, it will be a whole document, not fragment
      * called by setPayload and writeTo methods in XMLMessage class
      */
-    public void serializeDocument(Object obj, XMLStreamWriter writer, JAXBContext context) {
+    public static void serializeDocument(Object obj, XMLStreamWriter writer, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.marshal(obj, writer);
@@ -77,7 +73,7 @@ public class JAXBTypeSerializer {
         }
     }    
 
-    public void serialize(Object obj, OutputStream os, JAXBContext context) {
+    public static void serialize(Object obj, OutputStream os, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
@@ -92,7 +88,7 @@ public class JAXBTypeSerializer {
     /*
      * Marshalls arbitrary type object with the given tag name
      */
-    public DOMSource serialize(Object bean, JAXBContext context) {
+    public static DOMSource serialize(Object bean, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
@@ -107,7 +103,7 @@ public class JAXBTypeSerializer {
     /*
      * @see JAXBTypeSerializerIf#deserialize(XMLStreamReader,JAXBContext)
      */
-    public Object deserialize(XMLStreamReader reader, JAXBContext context) {
+    public static Object deserialize(XMLStreamReader reader, JAXBContext context) {
         Object obj = null;
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -131,7 +127,7 @@ public class JAXBTypeSerializer {
     /*
      * convert JAXB bean as a Source 
      *
-    public Object toSource(Object obj, JAXBContext context) {
+    public static Object toSource(Object obj, JAXBContext context) {
         try {
             // Use ctxt to marshall the object
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -150,7 +146,7 @@ public class JAXBTypeSerializer {
     /*
      * Convert Source object as a JAXB bean
      */
-    public Object deserialize(Source source, JAXBContext context) {
+    public static Object deserialize(Source source, JAXBContext context) {
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             return unmarshaller.unmarshal(source);
@@ -164,7 +160,7 @@ public class JAXBTypeSerializer {
      * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
      * current thread.
      */
-    public void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
+    public static void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
         XMLStreamWriter writer) {
         try {
             Bridge bridge = bridgeInfo.getBridge();
@@ -180,7 +176,7 @@ public class JAXBTypeSerializer {
      * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
      * current thread.
      */
-    public void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
+    public static void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
         OutputStream os, NamespaceContext nsContext) {
         try {
             Bridge bridge = bridgeInfo.getBridge();
@@ -194,7 +190,7 @@ public class JAXBTypeSerializer {
     /*
      * JAXB object is serialized to DOMSource
      */
-    public void serialize(JAXBBridgeInfo bridgeInfo,
+    public static void serialize(JAXBBridgeInfo bridgeInfo,
         BridgeContext bridgeContext, Node node) {
         try {
             Bridge bridge = bridgeInfo.getBridge();
@@ -210,7 +206,7 @@ public class JAXBTypeSerializer {
      * the BridgeContext is cached per thread, and JAXBBridgeInfo should contain
      * correct BridgeContext for the current thread.
      */
-    public void deserialize(XMLStreamReader reader, JAXBBridgeInfo bridgeInfo,
+    public static void deserialize(XMLStreamReader reader, JAXBBridgeInfo bridgeInfo,
         BridgeContext bridgeContext) 
     {
         try {
@@ -228,7 +224,7 @@ public class JAXBTypeSerializer {
         }
     }
 
-    public void deserialize(Source source, JAXBBridgeInfo bridgeInfo,
+    public static void deserialize(Source source, JAXBBridgeInfo bridgeInfo,
         BridgeContext bridgeContext)
     {
         try {
@@ -240,7 +236,7 @@ public class JAXBTypeSerializer {
         }
     }
 
-    public void deserialize(InputStream stream, JAXBBridgeInfo bridgeInfo,
+    public static void deserialize(InputStream stream, JAXBBridgeInfo bridgeInfo,
         BridgeContext bridgeContext)
     {
         try {
@@ -254,7 +250,7 @@ public class JAXBTypeSerializer {
     /*
      * JAXB bean in one context is converted to JAXB bean in another context
      *
-    public Object toNewJAXBBean(Object obj, JAXBContext ctxt, JAXBContext newCtxt) {
+    public static Object toNewJAXBBean(Object obj, JAXBContext ctxt, JAXBContext newCtxt) {
         try {
             // Use ctxt to marshall the object
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

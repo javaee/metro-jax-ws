@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12FaultInfo.java,v 1.5 2005-09-23 22:05:26 kohsuke Exp $
+ * $Id: SOAP12FaultInfo.java,v 1.6 2005-10-03 23:11:07 kohsuke Exp $
  */
 
 /*
@@ -223,7 +223,7 @@ public class SOAP12FaultInfo extends SOAPFaultInfo {
                     startDetailElement(writer);     // <soapenv:Detail>
                     RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
                     BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-                    JAXBTypeSerializer.getInstance().serialize((JAXBBridgeInfo) detail, bridgeContext, writer);
+                    JAXBTypeSerializer.serialize((JAXBBridgeInfo) detail, bridgeContext, writer);
                     writer.writeEndElement();  // </soapenv:Detail>
                 }
             }

@@ -312,12 +312,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             if (elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
                 XMLStreamReaderUtil.nextContent(reader);
                 faultName = reader.getName();
-                if (((SOAPRuntimeModel) rtCtxt.getModel()).isKnownFault(faultName, methodName)) {
+                if (rtCtxt.getModel().isKnownFault(faultName, methodName)) {
                     Object decoderInfo = rtCtxt.getDecoderInfo(faultName);
                     if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                         JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                         // JAXB leaves on </env:Header> or <nextHeaderElement>
-                        JAXBTypeSerializer.getInstance().deserialize(reader, bridgeInfo,
+                        JAXBTypeSerializer.deserialize(reader, bridgeInfo,
                             rtCtxt.getBridgeContext());
                         faultdetail = bridgeInfo;
                     }
@@ -337,7 +337,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     boolean isHeaderFault = false;
                     // could be a header fault or a protocol exception with no detail
                     for (HeaderBlock headerBlock : internalMessage.getHeaders()) {
-                        if (((SOAPRuntimeModel) rtCtxt.getModel()).isKnownFault(headerBlock.getName(), methodName)) {
+                        if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName)) {
                             isHeaderFault = true;
                             faultdetail = headerBlock.getValue();
                         }
@@ -354,7 +354,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             // a header fault (with no faultactor)
             if (internalMessage.getHeaders() != null) {
                 for (HeaderBlock headerBlock : internalMessage.getHeaders()) {
-                    if (((SOAPRuntimeModel) rtCtxt.getModel()).isKnownFault(headerBlock.getName(), methodName)) {
+                    if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName)) {
                         faultdetail = headerBlock.getValue();
                     }
                 }
@@ -377,7 +377,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     protected Detail decodeFaultDetail(XMLStreamReader reader) {
-        Detail detail = null;
+        Detail detail;
 
         try {
             SOAPFactory soapFactory = SOAPFactory.newInstance();

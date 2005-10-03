@@ -60,7 +60,6 @@ public class DispatchSerializer implements SerializerIF{
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
     private final static int MAX_BUFFER_SIZE = 50;
     //private DispatchSerializer serializer = new DispatchSerializer();
-    private JAXBTypeSerializer jaxbSerializer = new JAXBTypeSerializer();
 
    // public DispatchSerializer getInstance() {
         //return new DispatchSerializer();
@@ -75,7 +74,7 @@ public class DispatchSerializer implements SerializerIF{
         else if (obj instanceof JAXBBeanInfo) {
             Object bean = ((JAXBBeanInfo) obj).getBean();
 
-            jaxbSerializer.serialize(bean, writer, context);
+            JAXBTypeSerializer.serialize(bean, writer, context);
 
         } else
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
@@ -85,7 +84,7 @@ public class DispatchSerializer implements SerializerIF{
     public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         if (context != null)
 
-            return jaxbSerializer.deserialize(reader, context);
+            return JAXBTypeSerializer.deserialize(reader, context);
 
         else
             return deserializeSource(reader, context);

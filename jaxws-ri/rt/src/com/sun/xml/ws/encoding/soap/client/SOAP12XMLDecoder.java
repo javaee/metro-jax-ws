@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.10 2005-09-15 19:06:23 arungupta Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.11 2005-10-03 23:11:06 kohsuke Exp $
  */
 
 /*
@@ -242,12 +242,12 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     protected Object readFaultDetail (XMLStreamReader reader, MessageInfo mi){
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext (mi);
         QName faultName = reader.getName ();
-        if (((SOAPRuntimeModel) rtCtxt.getModel ()).isKnownFault (faultName, mi.getMethod ())) {
+        if (rtCtxt.getModel().isKnownFault (faultName, mi.getMethod ())) {
             Object decoderInfo = rtCtxt.getDecoderInfo (faultName);
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                JAXBTypeSerializer.getInstance ().deserialize (reader, bridgeInfo,
+                JAXBTypeSerializer.deserialize (reader, bridgeInfo,
                     rtCtxt.getBridgeContext ());
                 XMLStreamReaderUtil.verifyReaderState (reader, END_ELEMENT);
                 XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_DETAIL);
@@ -302,7 +302,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                JAXBTypeSerializer.getInstance ().deserialize (reader, bridgeInfo, bridgeContext);
+                JAXBTypeSerializer.deserialize (reader, bridgeInfo, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock (bridgeInfo);
                 msg.addHeader (headerBlock);
             }

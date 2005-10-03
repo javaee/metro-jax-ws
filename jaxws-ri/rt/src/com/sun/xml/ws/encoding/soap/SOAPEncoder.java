@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.32 2005-10-03 23:01:16 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.33 2005-10-03 23:11:08 kohsuke Exp $
  */
 
 /*
@@ -111,8 +111,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         Document doc = DOMUtil.createDom();
-        JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext,
-            doc);
+        JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext,doc);
         return new DOMSource(doc);
     }
 
@@ -193,11 +192,11 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 throw new WebServiceException(e);
             }
             
-            JAXBTypeSerializer.getInstance().serialize(
+            JAXBTypeSerializer.serialize(
                     beanInfo.getBean(), os, beanInfo.getJAXBContext());            
         }
         else {
-            JAXBTypeSerializer.getInstance().serialize(
+            JAXBTypeSerializer.serialize(
                     beanInfo.getBean(), writer, beanInfo.getJAXBContext());
         }
     }
@@ -205,7 +204,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
         OutputStream writer)
     {
-        JAXBTypeSerializer.getInstance().serialize(
+        JAXBTypeSerializer.serialize(
                 beanInfo.getBean(), writer, beanInfo.getJAXBContext());
     }
 
@@ -249,10 +248,10 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 throw new WebServiceException(e);
             }
             
-            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, os, writer.getNamespaceContext());
+            JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, os, writer.getNamespaceContext());
         }
         else {
-            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
+            JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, writer);
         }
     }
 
@@ -260,7 +259,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         MessageInfo messageInfo, OutputStream writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer,null);
+        JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, writer,null);
     }
 
 
@@ -303,7 +302,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     public static void serializeReader(XMLStreamReader reader, XMLStreamWriter writer) {
         try {
-            int state = XMLStreamConstants.START_DOCUMENT;
+            int state;
             do {
                 state = reader.next();
                 switch (state) {
@@ -537,7 +536,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             am.setHandlerContaxt(((RuntimeContext)rtc).getHandlerContext());
 
             HandlerContext hc = ((RuntimeContext)rtc).getHandlerContext();
-            Object mtomThreshold = null;
+            Object mtomThreshold;
             if(hc == null){
                 //to be removed when client guarantees handlerContext
                 mtomThreshold = mi.getMetaData(JAXWSProperties.MTOM_THRESHOLOD_VALUE);
