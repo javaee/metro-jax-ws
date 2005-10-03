@@ -20,7 +20,6 @@
 
 package com.sun.xml.ws.encoding.xml;
 
-import javax.xml.soap.MimeHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.InternetHeaders;
@@ -28,30 +27,31 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeBodyPart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.messaging.saaj.util.ByteOutputStream;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.protocol.xml.XMLMessageException;
+import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.FastInfosetReflection;
 import com.sun.xml.ws.util.FastInfosetUtil;
+import com.sun.xml.ws.util.xml.XmlUtil;
+
+import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.http.HTTPException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-import javax.activation.DataSource;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import com.sun.xml.ws.protocol.xml.XMLMessageException;
-import com.sun.xml.ws.spi.runtime.WSConnection;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.http.HTTPException;
 
 /**
  *
@@ -776,32 +776,20 @@ public class XMLMessage {
     public static class XMLJaxb {
         private Object object;
         private JAXBContext jaxbContext;
-        private ByteArrayOutputStream baos;
-        
+
         public XMLJaxb(Object object, JAXBContext jaxbContext) {
             this.object = object;
             this.jaxbContext = jaxbContext;
         }
         
         public void writeTo(OutputStream out, boolean useFastInfoset) {
-            try {
-                JAXBBeanInfo beanInfo = new JAXBBeanInfo(object, jaxbContext);
-                baos = new ByteArrayOutputStream();
-                
-                if (useFastInfoset) {
-                    JAXBTypeSerializer.serializeDocument(beanInfo.getBean(),
-                        XMLStreamWriterFactory.createFIStreamWriter(out), 
-                        beanInfo.getJAXBContext());
-                }
-                else {
-                    JAXBTypeSerializer.serialize(beanInfo.getBean(),
-                        baos, beanInfo.getJAXBContext());
-                }
-                
-                out.write(baos.toByteArray());
-            } 
-            catch(Exception e) {
-                throw new WebServiceException(e);
+            if (useFastInfoset) {
+                JAXBTypeSerializer.serializeDocument(object,
+                    XMLStreamWriterFactory.createFIStreamWriter(out),
+                    jaxbContext);
+            }
+            else {
+                JAXBTypeSerializer.serialize(object, out, jaxbContext);
             }
         }
         
