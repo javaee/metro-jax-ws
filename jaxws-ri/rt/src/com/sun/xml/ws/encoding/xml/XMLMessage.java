@@ -751,7 +751,7 @@ public class XMLMessage {
                 
                 // If old source was FI, re-encode using FI
                 if (isFastInfoset) {
-                    JAXBTypeSerializer.getInstance().serialize(jaxbObj, 
+                    JAXBTypeSerializer.getInstance().serializeDocument(jaxbObj, 
                         XMLStreamWriterFactory.createFIStreamWriter(baos),
                         ctxt);                    
                 }
@@ -789,7 +789,7 @@ public class XMLMessage {
                 baos = new ByteArrayOutputStream();
                 
                 if (useFastInfoset) {
-                    JAXBTypeSerializer.getInstance().serialize(beanInfo.getBean(),
+                    JAXBTypeSerializer.getInstance().serializeDocument(beanInfo.getBean(),
                         XMLStreamWriterFactory.createFIStreamWriter(out), 
                         beanInfo.getJAXBContext());
                 }
