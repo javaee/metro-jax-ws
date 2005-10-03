@@ -31,6 +31,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
+
 import com.sun.pept.ept.MessageInfo;
 
 import com.sun.xml.ws.encoding.soap.DeserializationException;
@@ -71,9 +73,11 @@ public class RpcLitPayloadSerializer {
                 // Flush output of StAX serializer
                 writer.flush();
 
+                NamespaceContext nsc = writer.getNamespaceContext();
+
                 // Let JAXB serialize each param to the output stream
-                for (JAXBBridgeInfo param : obj.getBridgeParameters()) {                
-                    JAXBTypeSerializer.getInstance().serialize(param, bridgeContext, os);
+                for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
+                    JAXBTypeSerializer.getInstance().serialize(param, bridgeContext, os, nsc);
                 }
             }
             else {
@@ -99,8 +103,7 @@ public class RpcLitPayloadSerializer {
         try {
             writer.write(startElm.getBytes());
             for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
-                JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,
-                     writer);
+                JAXBTypeSerializer.getInstance().serialize(param, bridgeContext,writer,null);
             }
             writer.write(endElm.getBytes());
         } catch (IOException e) {

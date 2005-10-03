@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.31 2005-10-03 21:27:31 kohlert Exp $
+ * $Id: SOAPEncoder.java,v 1.32 2005-10-03 23:01:16 kohsuke Exp $
  */
 
 /*
@@ -249,7 +249,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 throw new WebServiceException(e);
             }
             
-            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, os);            
+            JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, os, writer.getNamespaceContext());
         }
         else {
             JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
@@ -260,7 +260,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         MessageInfo messageInfo, OutputStream writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer);
+        JAXBTypeSerializer.getInstance().serialize(bridgeInfo, bridgeContext, writer,null);
     }
 
 

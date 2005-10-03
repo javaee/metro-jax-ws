@@ -20,33 +20,26 @@
 
 package com.sun.xml.ws.encoding.jaxb;
 
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.encoding.soap.DeserializationException;
+import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import org.w3c.dom.Node;
+
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamConstants;
-
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.encoding.soap.DeserializationException;
-import com.sun.xml.ws.encoding.soap.SerializationException;
-import com.sun.xml.ws.streaming.StAXReader;
-import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import org.w3c.dom.Node;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author Vivek Pandey
@@ -188,11 +181,11 @@ public class JAXBTypeSerializer {
      * current thread.
      */
     public void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
-        OutputStream os) {
+        OutputStream os, NamespaceContext nsContext) {
         try {
             Bridge bridge = bridgeInfo.getBridge();
             Object value = bridgeInfo.getValue();
-            bridge.marshal(bridgeContext, value, os);
+            bridge.marshal(bridgeContext, value, os, nsContext);
         } catch (JAXBException e) {
             throw new SerializationException(e);
         }
@@ -220,7 +213,6 @@ public class JAXBTypeSerializer {
     public void deserialize(XMLStreamReader reader, JAXBBridgeInfo bridgeInfo,
         BridgeContext bridgeContext) 
     {
-        Object obj = null;
         try {
             Bridge bridge = bridgeInfo.getBridge();
             Object value = bridge.unmarshal(bridgeContext, reader);

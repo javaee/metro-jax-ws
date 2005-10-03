@@ -35,6 +35,9 @@
     </wildcardResourcePatterns>
   </component>
   <component name="DataSourceManagerImpl" />
+  <component name="DependenciesAnalyzeManager">
+    <option name="myForwardDirection" value="false" />
+  </component>
   <component name="DependencyValidationManager" />
   <component name="EntryPointsManager">
     <entry_points />
@@ -51,7 +54,6 @@
     <option name="DEPRECATION" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
-    <option name="USE_GENERICS_COMPILER" value="false" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -185,7 +187,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt/rt.iml" filepath="$PROJECT_DIR$/rt/rt.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../test/test.iml" filepath="$PROJECT_DIR$/../../test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/wscompile/wscompile.iml" filepath="$PROJECT_DIR$/tools/wscompile/wscompile.iml" />
     </modules>
   </component>
@@ -202,5 +203,6 @@
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
   </component>
+  <UsedPathMacros />
 </project>
 

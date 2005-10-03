@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.23 2005-09-27 17:22:09 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.24 2005-10-03 23:01:16 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -370,7 +370,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         if(!DataHandler.class.isAssignableFrom(obj.getClass()) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
             JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JAXBTypeSerializer.getInstance().serialize(bi, rtContext.getBridgeContext(), baos);
+            JAXBTypeSerializer.getInstance().serialize(bi, rtContext.getBridgeContext(), baos, null);
             obj = baos.toByteArray();
         }
         AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);
