@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.4 2005-10-03 23:48:45 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.5 2005-10-03 23:49:46 kohsuke Exp $
  */
 
 /*
@@ -27,10 +27,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
 
-/*
- * BodyBlock may contain JAXBBeanInfo object. This object holds
- * a bean object and a JAXBContext. Runtime invokes JAXB API with the given
- * JAXBContext to marshall this bean.
+/**
+ * XML infoset represented as a JAXB object.
  *
  * @author WS Development Team
  */
