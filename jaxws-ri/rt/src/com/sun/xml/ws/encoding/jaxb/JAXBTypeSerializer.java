@@ -70,6 +70,20 @@ public class JAXBTypeSerializer {
         }
     }    
     
+    /* for FI, it will be a whole document, not fragment
+     * called by setPayload and writeTo methods in XMLMessage class
+     */
+    public void serializeDocument(Object obj, XMLStreamWriter writer, JAXBContext context) {
+        try {
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.marshal(obj, writer);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SerializationException(e);
+        }
+    }    
+
     public void serialize(Object obj, OutputStream os, JAXBContext context) {
         try {
             Marshaller marshaller = context.createMarshaller();
