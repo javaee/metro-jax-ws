@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.30 2005-10-03 17:13:30 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.31 2005-10-03 20:54:22 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -376,10 +376,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             holderType = builder.getHolderValueType(param.getType());
             webParam = param.getAnnotation(WebParam.class);
             typeMirror = apEnv.getTypeUtils().getErasure(param.getType());
-//            paramType = param.getType().toString();
             paramType = typeMirror.toString();
-//            System.out.println("paramType: "+paramType);
-//            System.out.println("paramType: "+typeMirror);
             paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
             if (holderType != null) {
                 paramType = holderType.toString();
@@ -430,16 +427,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {                   
                     JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
                     xmlElementAnn.param("name", elementName.getLocalPart());
-//                    if (elementName.getNamespaceURI().length() > 0)
                     xmlElementAnn.param("namespace", elementName.getNamespaceURI());
                 } else {
                     JAnnotationUse xmlValueAnnn = field.annotate(XmlValue.class);                    
                 }
             }
-//            if (memInfo.getParamIndex() >= -1) {
-//                JAnnotationUse parameterIndex = field.annotate(cm.ref(ParameterIndex.class));
-//                parameterIndex.param("value", memInfo.getParamIndex());
-//            }
         }
         for (MemberInfo memInfo : members) {
             writeMember(cls, memInfo.getParamIndex(), memInfo.getParamType(), 

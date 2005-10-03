@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.24 2005-09-27 21:23:55 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.25 2005-10-03 20:54:22 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -428,6 +428,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (processedMethod(method))
             return;
         WebMethod webMethod = method.getAnnotation(WebMethod.class);
+        if (webMethod != null && webMethod.exclude())
+            return;
         SOAPBinding soapBinding = method.getAnnotation(SOAPBinding.class);
         if (soapBinding == null && !method.getDeclaringType().equals(typeDecl)) {
             if (method.getDeclaringType() instanceof ClassDeclaration) {
