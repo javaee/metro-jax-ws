@@ -1,4 +1,8 @@
 /*
+ * $Id: HandlerAnnotationProcessor.java,v 1.14 2005-10-03 18:23:57 bbissett Exp $
+ */
+
+/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
@@ -21,17 +25,18 @@ package com.sun.xml.ws.util;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
+import javax.annotation.PostConstruct;
 
 import javax.jws.HandlerChain;
 import javax.jws.soap.SOAPMessageHandlers;
@@ -186,7 +191,6 @@ public class HandlerAnnotationProcessor {
             // process all <handler> elements
             while (reader.getName().equals(QNAME_HANDLER)) {
                 Handler handler = null;
-                Map<String, String> initParams = new HashMap<String, String>();
 
                 XMLStreamReaderUtil.nextContent(reader);
                 if (reader.getName().equals(QNAME_HANDLER_NAME)) {
@@ -201,36 +205,13 @@ public class HandlerAnnotationProcessor {
                 } catch (InstantiationException ie){
                     throw new RuntimeException(ie);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 XMLStreamReaderUtil.nextContent(reader);
 
-                // init params
+                // init params (ignored)
                 while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
-                    XMLStreamReaderUtil.nextContent(reader);
-
-                    // Skip <description> at either end in case users have
-                    // confused which schema we're using (don't want to fail
-                    // over this).
-                    if (reader.getLocalName().equals("description")) {
-                        skipTextElement(reader);
-                    }
-
-                    ensureProperName(reader, QNAME_HANDLER_PARAM_NAME);
-                    String paramName = XMLStreamReaderUtil.getElementText(reader);
-
-                    XMLStreamReaderUtil.nextContent(reader);
-                    ensureProperName(reader, QNAME_HANDLER_PARAM_VALUE);
-                    String paramValue = XMLStreamReaderUtil.getElementText(reader);
-                    initParams.put(paramName, paramValue);
-
-                    XMLStreamReaderUtil.nextContent(reader); // past param-value
-
-                    // skip <description> if present
-                    if (reader.getLocalName().equals("description")) {
-                        skipTextElement(reader);
-                    }
-                    XMLStreamReaderUtil.nextContent(reader); // past init-param
+                    skipInitParamElement(reader);
                 }
 
                 // headers (ignored)
@@ -244,14 +225,28 @@ public class HandlerAnnotationProcessor {
                     XMLStreamReaderUtil.nextContent(reader);
                 }
 
-                handler.init(initParams);
+                // call @PostConstruct method on handler if present
+                for (Method method : handler.getClass().getMethods()) {
+                    if (method.getAnnotation(PostConstruct.class) == null) {
+                        continue;
+                    }
+                    try {
+                        method.invoke(handler, new Object [0]);
+			break;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
                 handlerChain.add(handler);
 
                 // move past </handler>
+                ensureProperName(reader, QNAME_HANDLER);
                 XMLStreamReaderUtil.nextContent(reader);
             }
             
             // move past </handler-chain>
+            ensureProperName(reader, QNAME_HANDLER_CHAIN);
             XMLStreamReaderUtil.nextContent(reader);
         }
         
@@ -299,6 +294,15 @@ public class HandlerAnnotationProcessor {
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.nextElementContent(reader);
     }
+    
+    static void skipInitParamElement(XMLStreamReader reader) {
+        int state;
+        do {
+            state = XMLStreamReaderUtil.nextContent(reader);
+        } while (state != XMLStreamReader.END_ELEMENT ||
+            !reader.getName().equals(QNAME_HANDLER_PARAM));
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
 
     static void skipChain(XMLStreamReader reader) {
         while (XMLStreamReaderUtil.nextContent(reader) !=
@@ -311,7 +315,7 @@ public class HandlerAnnotationProcessor {
         QName expectedName) {
 
         if (!reader.getName().equals(expectedName)) {
-            failWithLocalName("runtime.parser.wrong.element", reader,
+            failWithLocalName("util.parser.wrong.element", reader,
                 expectedName.getLocalPart());
         }
     }

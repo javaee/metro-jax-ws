@@ -1,3 +1,6 @@
+/*
+ * $Id: HttpEndpoint.java,v 1.24 2005-10-03 18:23:55 bbissett Exp $
+ */
 
 /*
  * The contents of this file are subject to the terms
@@ -236,7 +239,6 @@ public class HttpEndpoint {
         WebServiceContext wsContext = new WebServiceContextImpl();
         endpointInfo.setWebServiceContext(wsContext);
         endpointInfo.injectContext();
-        endpointInfo.injectComplete();
         endpointInfo.beginService();
         Tie tie = new Tie();
         context.setHandler(new WSHttpHandler(tie, endpointInfo));
