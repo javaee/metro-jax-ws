@@ -23,6 +23,7 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
@@ -150,9 +151,7 @@ public class LogicalMessageImpl implements LogicalMessage {
      * the object isn't set again.
      */
     public Object getPayload(JAXBContext jaxbContext) {
-        DOMSource source = (DOMSource)getPayload();
-        JAXBBeanInfo beanInfo = JAXBBeanInfo.fromSource(source,jaxbContext);
-        return beanInfo.getBean();
+        return JAXBTypeSerializer.deserialize(getPayload(), jaxbContext);
     }
 
     /*
@@ -163,7 +162,7 @@ public class LogicalMessageImpl implements LogicalMessage {
     public void setPayload(Object bean, JAXBContext jaxbContext) {
         Source source;
         try {
-            source = new JAXBBeanInfo(bean, jaxbContext).toDOMSource();
+            source = JAXBTypeSerializer.serialize(bean,jaxbContext);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
