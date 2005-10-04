@@ -398,8 +398,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                         if (atts.isNamespaceDeclaration(i)) {
                             String value = atts.getValue(i);
                             String localName = atts.getName(i).getLocalPart();
-                            writer.setPrefix(localName, value);
-                            writer.writeNamespace(localName, value);
+                            if (writer.getPrefix(value) == null) {
+                                writer.setPrefix(localName, value);
+                                writer.writeNamespace(localName, value);
+                            }
                         } else {
                             writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
                                 atts.getValue(i));
