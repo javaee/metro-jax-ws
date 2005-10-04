@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.26 2005-10-04 00:44:02 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.27 2005-10-04 23:04:55 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -374,7 +374,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             obj = baos.toByteArray();
         }
         AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);
-        im.addAttachment(contentId, ab);
+        im.addAttachment(ab);
     }
 
     private boolean isXMLMimeType(String mimeType){

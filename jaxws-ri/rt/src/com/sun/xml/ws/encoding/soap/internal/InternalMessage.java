@@ -1,5 +1,5 @@
 /*
- * $Id: InternalMessage.java,v 1.5 2005-09-10 19:47:43 kohsuke Exp $
+ * $Id: InternalMessage.java,v 1.6 2005-10-04 23:04:55 kohsuke Exp $
  */
 
 
@@ -24,20 +24,25 @@
  */
 package com.sun.xml.ws.encoding.soap.internal;
 
-import java.util.*;
-
 import javax.xml.namespace.QName;
-import javax.activation.DataHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
+ * Represents a SOAP message with headers, a body, and attachments.
+ *
  * @author WS Development Team
  */
 public class InternalMessage {
     private List<HeaderBlock> headers;
     private Set<QName> headerSet;
     private BodyBlock body;
-    private Map<String, AttachmentBlock> attachments = new HashMap<String, AttachmentBlock>();
+    private final Map<String,AttachmentBlock> attachments = new HashMap<String, AttachmentBlock>();
 
     /**
      * @return the <code>BodyBlock</code> for this message
@@ -80,8 +85,8 @@ public class InternalMessage {
         this.body = body;
     }
 
-    public void addAttachment(String contentId, AttachmentBlock attachment){
-        attachments.put(contentId, attachment);
+    public void addAttachment(AttachmentBlock attachment){
+        attachments.put(attachment.getId(),attachment);
     }
 
     public AttachmentBlock getAttachment(String contentId){

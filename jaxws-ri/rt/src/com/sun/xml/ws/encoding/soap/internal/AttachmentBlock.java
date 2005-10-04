@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.6 2005-09-10 19:47:42 kohsuke Exp $
+ * $Id: AttachmentBlock.java,v 1.7 2005-10-04 23:04:55 kohsuke Exp $
  */
 
 /*
@@ -26,16 +26,19 @@ package com.sun.xml.ws.encoding.soap.internal;
 import javax.xml.soap.AttachmentPart;
 
 /**
+ * Attachment of {@link InternalMessage}.
+ *
  * @author WS Development Team
  */
-public class AttachmentBlock {
-    private String id;
+public final class AttachmentBlock {
+    private final String id;
     private Object value;
     private String type;
     private AttachmentPart ap;
 
     public AttachmentBlock(AttachmentPart ap){
         this.ap = ap;
+        this.id = ap.getContentId();
     }
 
     public AttachmentBlock(String id, Object value, String type) {
@@ -44,12 +47,11 @@ public class AttachmentBlock {
         this.type = type;
     }
 
+    /**
+     * Content ID of the attachment. Uniquely identifies an attachment.
+     */
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public Object getValue() {
