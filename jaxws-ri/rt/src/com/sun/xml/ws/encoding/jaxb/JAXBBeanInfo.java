@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.8 2005-10-04 01:19:36 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.9 2005-10-04 03:43:55 kohsuke Exp $
  */
 
 /*
@@ -30,6 +30,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamReader;
 import java.io.OutputStream;
 
 /**
@@ -48,6 +49,11 @@ public final class JAXBBeanInfo {
 
     public static JAXBBeanInfo fromSource(Source source, JAXBContext context) {
         Object obj = JAXBTypeSerializer.deserialize(source, context);
+        return new JAXBBeanInfo(obj, context);
+    }
+
+    public static JAXBBeanInfo fromStAX(XMLStreamReader reader, JAXBContext context) {
+        Object obj = JAXBTypeSerializer.deserialize(reader, context);
         return new JAXBBeanInfo(obj, context);
     }
 

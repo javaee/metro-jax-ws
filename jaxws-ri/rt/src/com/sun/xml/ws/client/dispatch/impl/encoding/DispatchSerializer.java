@@ -21,35 +21,26 @@
 package com.sun.xml.ws.client.dispatch.impl.encoding;
 
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SerializationException;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
+import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.logging.Logger;
-
-import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  *
@@ -62,8 +53,16 @@ public final class DispatchSerializer {
 
     private final QName bodyTagName;
 
+    /**
+     * For SOAP 1.0.
+     */
     public static final DispatchSerializer SOAP_1_0 = new DispatchSerializer(SOAPConstants.QNAME_SOAP_BODY);
+
+    /**
+     * For SOAP 1.2.
+     */
     public static final DispatchSerializer SOAP_1_2 = new DispatchSerializer(SOAP12Constants.QNAME_SOAP_BODY);
+
 
     private DispatchSerializer(QName soapBodyTagName) {
         bodyTagName = soapBodyTagName;
@@ -79,14 +78,8 @@ public final class DispatchSerializer {
         //should not happen
     }
 
-    public Object deserialize(XMLStreamReader reader, JAXBContext context) {
-        if (context != null)
-            return JAXBTypeSerializer.deserialize(reader, context);
-        else
-            return deserializeSource(reader);
-    }
-
-    private Object deserializeSource(XMLStreamReader reader) {
+    // TODO: is this method still in use?
+    public Source deserializeSource(XMLStreamReader reader) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 

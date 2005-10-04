@@ -37,7 +37,6 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
@@ -121,10 +120,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 } else {
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
                     //jaxb will leave reader on ending </body> element
-                    Object jaxbBean =
-                        getSerializerInstance().deserialize(reader,
-                            jaxbContext);
-                    JAXBBeanInfo jaxBean = new JAXBBeanInfo(jaxbBean, jaxbContext);
+                    JAXBBeanInfo jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
                     responseBody = new BodyBlock(jaxBean);
                 }
                 response.setBody(responseBody);
