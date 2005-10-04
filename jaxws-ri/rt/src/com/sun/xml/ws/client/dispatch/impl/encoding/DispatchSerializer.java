@@ -24,6 +24,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
@@ -51,21 +52,21 @@ import java.util.logging.Logger;
 import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
+ *
  * @author WS Development Team
  */
-
-public class DispatchSerializer implements SerializerIF{
+public final class DispatchSerializer {
 
     private static final Logger logger =
         Logger.getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch").toString());
-    private final static int MAX_BUFFER_SIZE = 50;
-    //private DispatchSerializer serializer = new DispatchSerializer();
 
-   // public DispatchSerializer getInstance() {
-        //return new DispatchSerializer();
-    //}
+    private final QName bodyTagName;
 
-    public DispatchSerializer() {
+    public static final DispatchSerializer SOAP_1_0 = new DispatchSerializer(SOAPConstants.QNAME_SOAP_BODY);
+    public static final DispatchSerializer SOAP_1_2 = new DispatchSerializer(SOAP12Constants.QNAME_SOAP_BODY);
+
+    private DispatchSerializer(QName soapBodyTagName) {
+        bodyTagName = soapBodyTagName;
     }
 
     public void serialize(Object obj, XMLStreamWriter writer, JAXBContext context) {
@@ -80,14 +81,12 @@ public class DispatchSerializer implements SerializerIF{
 
     public Object deserialize(XMLStreamReader reader, JAXBContext context) {
         if (context != null)
-
             return JAXBTypeSerializer.deserialize(reader, context);
-
         else
-            return deserializeSource(reader, context);
+            return deserializeSource(reader);
     }
 
-    private Object deserializeSource(XMLStreamReader reader, JAXBContext context) {
+    private Object deserializeSource(XMLStreamReader reader) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
@@ -122,7 +121,7 @@ public class DispatchSerializer implements SerializerIF{
                         writer.writeCharacters(reader.getText());
                 }
                 state = XMLStreamReaderUtil.next(reader);
-                if ((reader.getEventType() == END_ELEMENT) && (reader.getName().equals(SOAPConstants.QNAME_SOAP_BODY)))
+                if ((reader.getEventType() == END_ELEMENT) && (reader.getName().equals(bodyTagName)))
                     break;
             }
             writer.flush();
@@ -140,7 +139,7 @@ public class DispatchSerializer implements SerializerIF{
         try {
             XMLStreamReader reader = SourceReaderFactory.createSourceReader((Source) source, true);
 
-            int state = START_DOCUMENT;
+            int state;
             do {
                 state = XMLStreamReaderUtil.next(reader);
                 switch (state) {
@@ -179,33 +178,33 @@ public class DispatchSerializer implements SerializerIF{
     }
 
 
-    private void displayDOM(Node node, java.io.OutputStream ostream) {
-        try {
-            System.out.println("\n====\n");
-            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(node),
-                new javax.xml.transform.stream.StreamResult(ostream));
-            System.out.println("\n====\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void displayDOM(Node node, java.io.OutputStream ostream) {
+//        try {
+//            System.out.println("\n====\n");
+//            javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(node),
+//                new javax.xml.transform.stream.StreamResult(ostream));
+//            System.out.println("\n====\n");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    private String sourceToXMLString(Source result) {
-        String xmlResult = null;
-        try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            OutputStream out = new ByteArrayOutputStream();
-            StreamResult streamResult = new StreamResult();
-            streamResult.setOutputStream(out);
-            transformer.transform(result, streamResult);
-            xmlResult = streamResult.getOutputStream().toString();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
-        return xmlResult;
-    }
+//    private String sourceToXMLString(Source result) {
+//        String xmlResult = null;
+//        try {
+//            TransformerFactory factory = TransformerFactory.newInstance();
+//            Transformer transformer = factory.newTransformer();
+//            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+//            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+//            OutputStream out = new ByteArrayOutputStream();
+//            StreamResult streamResult = new StreamResult();
+//            streamResult.setOutputStream(out);
+//            transformer.transform(result, streamResult);
+//            xmlResult = streamResult.getOutputStream().toString();
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
+//        return xmlResult;
+//    }
 
 }

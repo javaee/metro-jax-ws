@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.12 2005-10-04 00:44:01 kohsuke Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.13 2005-10-04 03:40:29 kohsuke Exp $
  */
 
 /*
@@ -25,8 +25,6 @@ package com.sun.xml.ws.encoding.soap.client;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
-import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
-import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
@@ -47,6 +45,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
 
 import javax.xml.namespace.QName;
 import static javax.xml.stream.XMLStreamConstants.*;
@@ -70,8 +69,8 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     public SOAP12XMLDecoder () {
     }
 
-    protected SerializerIF getSerializerInstance (){
-        return Dispatch12Serializer.getInstance ();
+    protected DispatchSerializer getSerializerInstance (){
+        return DispatchSerializer.SOAP_1_2;
     }
 
     /*

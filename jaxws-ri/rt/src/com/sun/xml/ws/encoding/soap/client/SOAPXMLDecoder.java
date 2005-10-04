@@ -26,7 +26,6 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
-import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -93,8 +92,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     public SOAPXMLDecoder() {
     }
 
-    protected SerializerIF getSerializerInstance(){
-        return new DispatchSerializer();
+    protected DispatchSerializer getSerializerInstance(){
+        return DispatchSerializer.SOAP_1_0;
     }
 
     @Override
