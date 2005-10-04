@@ -20,6 +20,7 @@ final class Invoker {
         "com.sun.tools.apt.",
         "com.sun.tools.ws.",
         "com.sun.tools.javac.",
+        "com.sun.tools.javadoc.",
         "com.sun.mirror."
     };
 
