@@ -11,11 +11,11 @@
 <h1>JAX-WS 2.0 Early Access 2 - MTOM and swaRef<br>
 </h1>
 <hr>
-<p>Last Modified: 06/16/2005<br>
+<p>Last Modified: 09/11/2005<br>
 </p>
 <h2>Contents</h2>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1. <a href="#1._MTOM_and_XOP">MTOM
-and XOP</a><a href="#1.1_Introduction"></a><br>
+and XOP</a><br>
 &nbsp;&nbsp;&nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. <a
  href="#2_MTOM_in_JAXWS_2.0">MTOM in JAXWS 2.0</a><br>
@@ -28,8 +28,7 @@ to Java type mapping</a><br>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 2.2 <a
  href="#2.2_How_to_enable_MTOM_in_JAXWS_2.0">How to enable MTOM in
 JAXWS 2.0</a>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <a
- href="#1.2.2.2_From_server_endpoint"></a><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
 &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 2.3 <a href="#2.3_Attach_vs_In-line">Attach
 vs In-line</a><br>
@@ -38,8 +37,7 @@ vs In-line</a><br>
 Samples</a>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <br>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; 3. <a href="#3._swaRef">swaRef</a><a
- href="#2.1_Introduction"></a><br>
+&nbsp;&nbsp;&nbsp; 3. <a href="#3._swaRef">swaRef</a><br>
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
 &nbsp;&nbsp; &nbsp;&nbsp; 3.1 <a href="#3.1_swaRef_in_JAXWS_2.0">swaRef
 in
@@ -150,12 +148,15 @@ of the mtom sample:<br>
 <h3><a name="2.3_Attach_vs_In-line"></a>2.3 Attach vs In-line</h3>
 As defined by JAXB 2.0 specification xs:base64Binary and xs:hexBinary
 mapping to java is byte[]. JAXWS implementation has set a threshold of
-1KB of byte[] size. In the
-future there may be a way given to the developer to modify this
-threshold. <br>
+1KB of byte[] size.&nbsp; This threshold can be modified using
+implementation specific property <code>com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE</code>
+in the
+RequestContext on the client side and in the MessageContext on the
+server
+side.<br>
 <br>
-If the byte[] that is being sent is less than this threshold
-of 1KB then the binary data is base64 encoded by JAXB and in lined
+If the byte[] that is being sent is less than this threshold (default
+is 1KB) then the binary data is base64 encoded by JAXB and in lined
 inside the SOAP Body otherwise the
 binary data is sent as attachment mime part in Multipart/Related
 package and&nbsp; XML infoset for the binary data is XOP encoded
@@ -164,7 +165,73 @@ attachment. The XOP encoding and packaging is done as per described by
 the <a href="http://www.w3.org/TR/xop10/#xop_packages">XOP packaging
 rules</a>. The href is the the Content-ID of the attachment and is
 encoded as per CID URI scheme defined in <a
- href="http://www.faqs.org/rfcs/rfc2111.html">RFC 2111</a>.<br>
+ href="http://www.faqs.org/rfcs/rfc2111.html">RFC 2111</a>.
+xmime:contentType attribute may appear on the element that includes
+binary data to indicate preferred media type as annotated on the
+corresponding schema.<br>
+<h4><a name="2.4_MTOM_Samples"></a>2.3.1 How to specify MTOM data
+Threshold<br>
+</h4>
+<ul style="font-weight: bold;">
+  <li>Using property <code>com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE</code></li>
+</ul>
+<div style="margin-left: 40px;">On the client side this property should
+be set in the RequestContext with the threshold value. The threshold
+value should be in byte and ofcourse MUST be a postive number.<br>
+</div>
+<h3 style="font-weight: normal;">
+<code>//JAXWS will send any byte array
+in the message as attachemnt and the
+corresponding XML infoset will be <br>
+//XOP encoded (will contain reference to this attachment)<br>
+bindingProvider.getRequestContext().put(JAXWSProperties.MTOM_THRESHOLD_VALUE,
+<span style="color: rgb(255, 0, 0);">0</span>);</code></h3>
+<code><span style="font-weight: bold;">// JAXWS will send any byte
+array in the message thats equal to or
+larger than 3KB as attachemnt </span><br style="font-weight: bold;">
+<span style="font-weight: bold;">// and the
+corresponding XML infoset will be XOP encoded (will contain reference
+to this attachment)</span><br>
+bindingProvider.getRequestContext().put(JAXWSProperties.MTOM_THRESHOLD_VALUE,
+<span style="color: rgb(255, 0, 0);">3000</span>);</code><br>
+<br>
+On the server side, this property can be set either of the two ways:<br>
+<ul>
+  <li>Using property <code>com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE
+    </code>in the MessageContext<br>
+  </li>
+</ul>
+<div style="margin-left: 40px;"><code>@Resource <br>
+private WebServiceContext wsContext;<br>
+<br>
+...<br>
+wsContext.getMessageContext().put(com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE,
+3000</code>);<br>
+...<br>
+</div>
+<ul>
+  <li>Using deplyoment descriptor <span style="font-weight: bold;">mtom-threshold-value</span>
+on the jaxws-runtime:endpoint element.</li>
+</ul>
+<code>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+version='2.0'&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;endpoint<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name="Hello"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+implementation="xop.hello.server.HelloImpl"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+wsdl="WEB-INF/wsdl/hello.wsdl"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+service='{http://example.org/mtom}HelloService'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+port='{http://example.org/mtom}HelloPort'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url-pattern="/hello"
+<span style="font-weight: bold;">enable-mtom</span>="true" <span
+ style="color: rgb(204, 51, 204);">mtom-threshold-value="0"</span>/&gt;<br>
+&lt;/endpoints&gt;<br>
+</code>
 <h3><a name="2.4_MTOM_Samples"></a>2.4 MTOM Samples</h3>
 There are 2 samples:<br>
 <h4><a name="2.4.1_mtom"></a>2.4.1 mtom <br>
@@ -227,5 +294,6 @@ will be sent over the wire as :<br>
 There are 2 swaRef samples - mtom and mtom-soap1.2, same mtom samples
 have operation for swaRef, refer testSwaRef () method in <a
  href="../samples/mtom/src/mtom/client/MtomApp.java">MtomApp.java.</a><br>
+<br>
 </body>
 </html>
