@@ -119,6 +119,14 @@ public abstract class ContextMap extends HashMap<String,Object>
         }
     }
 
+    /**
+     * Copy constructor.
+     */
+    public ContextMap(ContextMap original) {
+        super(original);
+        this._owner = original._owner;
+    }
+
     //may not need this
     public ContextMap(BindingProvider owner) {
         this(null, owner);

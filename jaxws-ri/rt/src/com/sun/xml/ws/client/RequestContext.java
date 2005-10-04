@@ -19,8 +19,6 @@
  */
 package com.sun.xml.ws.client;
 
-import java.util.Iterator;
-
 import javax.xml.ws.BindingProvider;
 
 
@@ -34,16 +32,14 @@ public class RequestContext extends ContextMap {
         super(port, provider);
     }
 
+    /**
+     * Copy constructor.
+     */
+    private RequestContext(RequestContext original) {
+        super(original);
+    }
+
     public RequestContext copy() {
-        RequestContext _copy = new RequestContext(_owner);
-        Iterator i = getPropertyNames();
-
-        while (i.hasNext()) {
-            String name = (String) i.next();
-            Object value = this.get(name);
-            _copy.put(name, value);
-        }
-
-        return _copy;
+        return new RequestContext(this);
     }
 }

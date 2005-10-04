@@ -20,7 +20,6 @@
 package com.sun.xml.ws.client;
 
 import javax.xml.ws.BindingProvider;
-import java.util.Iterator;
 
 
 public class ResponseContext extends ContextMap {
@@ -28,16 +27,14 @@ public class ResponseContext extends ContextMap {
         super(provider);
     }
 
+    /**
+     * Copy constructor.
+     */
+    private ResponseContext(ResponseContext original) {
+        super(original);
+    }
+
     public ResponseContext copy() {
-        ResponseContext _copy = new ResponseContext(_owner);
-        Iterator i = getPropertyNames();
-
-        while (i.hasNext()) {
-            String name = (String) i.next();
-            Object value = get(name);
-            _copy.put(name, value);
-        }
-
-        return _copy;
+        return new ResponseContext(this);
     }
 }
