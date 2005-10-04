@@ -438,7 +438,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         } catch (SOAPException e) {
             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerException e) {
-            e.printStackTrace();
             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerFactoryConfigurationError e) {
              throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
