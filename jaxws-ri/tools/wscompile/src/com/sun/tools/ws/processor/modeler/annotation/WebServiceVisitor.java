@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.25 2005-10-03 20:54:22 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.26 2005-10-04 15:41:52 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -667,13 +667,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (!isDocLitWrapped() &&
                 soapStyle.equals(SOAPStyle.DOCUMENT)) {
             ParameterDeclaration outParam = getOutParameter(method);
-//            System.out.println("method: "+method.getSimpleName());
-//            System.out.println("outParam: "+outParam);
             int inParams = getModeParameterCount(method, WebParam.Mode.IN);
             int outParams = getModeParameterCount(method, WebParam.Mode.OUT);
-//            System.out.println("inParams: "+inParams);
-//            System.out.println("outParams: "+outParams);
-            // TODO check to see that a void returning Doc/Bare has only one out
             if (inParams != 1) {
                 builder.onError(method.getPosition(),
                         "webserviceap.doc.bare.and.no.one.in",
@@ -734,24 +729,23 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
     
     protected boolean isDocLitWrapped() {
-//        String str = null;
-//        if (str.length() > 0)
-//        System.out.println("wrapped3: "+wrapped);
-//        System.out.println("isDocLitWrapped: "+(soapStyle.equals(SOAPStyle.DOCUMENT) && wrapped));
         return soapStyle.equals(SOAPStyle.DOCUMENT) && wrapped;
     }
     
     protected boolean isValidOnewayMethod(MethodDeclaration method, TypeDeclaration typeDecl) {
+        boolean valid = true;
         if (!(method.getReturnType() instanceof VoidType)) {
             // this is an error, cannot be Oneway and have a return type
             builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
                     new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            valid = false;
         }
         ParameterDeclaration outParam = getOutParameter(method);
         if (outParam != null) {
             builder.onError(outParam.getPosition(),
                     "webserviceap.oneway.and.out",
                     new Object[] {typeDecl.getQualifiedName(), method.toString()});
+            valid = false;
         }
         if (!isDocLitWrapped() && soapStyle.equals(SOAPStyle.DOCUMENT)) {
             int inCnt = getModeParameterCount(method, WebParam.Mode.IN);
@@ -759,9 +753,19 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                 builder.onError(method.getPosition(),
                         "webserviceap.oneway.and.not.one.in",
                         new Object[] {typeDecl.getQualifiedName(), method.toString()});
+                valid = false;
             }
         }
-        return true;
+        ClassDeclaration exDecl;
+        for (ReferenceType thrownType : method.getThrownTypes()) {
+            exDecl = ((ClassType)thrownType).getDeclaration();
+            if (!builder.isRemoteException(exDecl)) {
+                builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.declare.exceptions", 
+                        new Object[] {typeDecl.getQualifiedName(), method.toString(), exDecl.getQualifiedName()});
+                valid = false;
+            }                
+        }
+        return valid;
     }
     
     protected int getModeParameterCount(MethodDeclaration method, WebParam.Mode mode) {
