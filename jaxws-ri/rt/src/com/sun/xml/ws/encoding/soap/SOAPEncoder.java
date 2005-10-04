@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.37 2005-10-04 00:44:03 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.38 2005-10-04 01:19:36 kohsuke Exp $
  */
 
 /*
@@ -192,8 +192,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 throw new WebServiceException(e);
             }
 
-            JAXBTypeSerializer.serialize(
-                    beanInfo.getBean(), os, beanInfo.getJAXBContext());
+            beanInfo.writeTo(os);
         }
         else {
             beanInfo.writeTo(writer);
@@ -201,8 +200,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
     private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo,OutputStream writer) {
-        JAXBTypeSerializer.serialize(
-                beanInfo.getBean(), writer, beanInfo.getJAXBContext());
+        beanInfo.writeTo(writer);
     }
 
     /*

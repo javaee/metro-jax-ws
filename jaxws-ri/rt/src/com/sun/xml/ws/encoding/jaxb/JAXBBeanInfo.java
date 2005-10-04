@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.7 2005-10-04 00:44:01 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.8 2005-10-04 01:19:36 kohsuke Exp $
  */
 
 /*
@@ -30,6 +30,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.OutputStream;
 
 /**
  * XML infoset represented as a JAXB object.
@@ -70,5 +71,9 @@ public final class JAXBBeanInfo {
      */
     public void writeTo(XMLStreamWriter w) {
         JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext);
+    }
+
+    public void writeTo(OutputStream os) {
+        JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext);
     }
 }
