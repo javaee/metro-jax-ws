@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.6 2005-10-04 00:26:48 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.7 2005-10-04 00:44:01 kohsuke Exp $
  */
 
 /*
@@ -23,7 +23,10 @@
  */
 package com.sun.xml.ws.encoding.jaxb;
 
+import com.sun.xml.ws.encoding.soap.SerializationException;
+
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamWriter;

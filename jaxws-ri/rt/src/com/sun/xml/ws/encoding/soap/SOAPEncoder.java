@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.36 2005-10-04 00:26:49 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.37 2005-10-04 00:44:03 kohsuke Exp $
  */
 
 /*
@@ -7,12 +7,12 @@
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * https://jwsdp.dev.java.net/CDDLv1.0.html
  * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL
  * HEADER in each file and include the License file at
  * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
@@ -111,7 +111,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         Document doc = DOMUtil.createDom();
-        JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext,doc);
+        bridgeInfo.serialize(bridgeContext,doc);
         return new DOMSource(doc);
     }
 
@@ -145,7 +145,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             DOMResult domResult = new DOMResult();
             transformer.transform(source, domResult);
             return new DOMSource(domResult.getNode());
-        } 
+        }
         catch (TransformerException te) {
             throw new WebServiceException(te);
         }
@@ -157,7 +157,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
     protected void writeRpcLitPayload(RpcLitPayload rpcLitPayload, MessageInfo messageInfo,
-        XMLStreamWriter writer) {        
+        XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, messageInfo, writer);
@@ -171,11 +171,11 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
     private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
-        XMLStreamWriter writer) 
+        XMLStreamWriter writer)
     {
         // Pass output stream directly to JAXB when available
         OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
-        
+
         if (os != null) {
             try {
                 /*
@@ -184,20 +184,19 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                  * an empty string (TODO: other StAX impls?).
                  */
                 writer.writeCharacters("");
-                
+
                 // Flush output of StAX serializer
                 writer.flush();
             }
             catch (XMLStreamException e) {
                 throw new WebServiceException(e);
             }
-            
+
             JAXBTypeSerializer.serialize(
-                    beanInfo.getBean(), os, beanInfo.getJAXBContext());            
+                    beanInfo.getBean(), os, beanInfo.getJAXBContext());
         }
         else {
-            JAXBTypeSerializer.serialize(
-                    beanInfo.getBean(), writer, beanInfo.getJAXBContext());
+            beanInfo.writeTo(writer);
         }
     }
 
@@ -227,7 +226,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         MessageInfo messageInfo, XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        
+
         // Pass output stream directly to JAXB when available
         OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
         if (os != null) {
@@ -238,18 +237,18 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                  * an empty string (TODO: other StAX impls?).
                  */
                 writer.writeCharacters("");
-                
+
                 // Flush output of StAX serializer
                 writer.flush();
             }
             catch (XMLStreamException e) {
                 throw new WebServiceException(e);
             }
-            
-            JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, os, writer.getNamespaceContext());
+
+            bridgeInfo.serialize(bridgeContext, os, writer.getNamespaceContext());
         }
         else {
-            JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, writer);
+            bridgeInfo.serialize(bridgeContext, writer);
         }
     }
 
@@ -257,7 +256,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         MessageInfo messageInfo, OutputStream writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        JAXBTypeSerializer.serialize(bridgeInfo, bridgeContext, writer,null);
+        bridgeInfo.serialize(bridgeContext,writer,null);
     }
 
 
@@ -304,9 +303,9 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             do {
                 state = reader.next();
                 switch (state) {
-                    case XMLStreamConstants.START_ELEMENT:                        
+                    case XMLStreamConstants.START_ELEMENT:
                         /*
-                         * TODO: Is this necessary, shouldn't zephyr return "" instead of 
+                         * TODO: Is this necessary, shouldn't zephyr return "" instead of
                          * null for getNamespaceURI() and getPrefix()?
                          */
                         String uri = reader.getNamespaceURI();
@@ -315,7 +314,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
                         if (prefix == null) {
                             if (uri == null) {
-                                writer.writeStartElement(localName);                                
+                                writer.writeStartElement(localName);
                             }
                             else {
                                 writer.writeStartElement(uri, localName);
@@ -329,7 +328,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                                     localName.equals("Detail")){
                                 prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
                             }
-                            
+
                             // [1] When writing an element with an unseen prefix,
                             // Zephyr calls setPrefix(prefix, uri). Is this OK?
                             writer.writeStartElement(prefix, localName, uri);
@@ -338,14 +337,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         // Write namespace declarations
                         int n = reader.getNamespaceCount();
                         for (int i = 0; i < n; i++) {
-                            String nsPrefix = reader.getNamespacePrefix(i);                             
+                            String nsPrefix = reader.getNamespacePrefix(i);
                             if (nsPrefix == null) nsPrefix = "";    // StAX returns null for default ns
                             String writerURI = writer.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            
+
                             // Zephyr: Why is this returning null?
                             // Compare nsPrefix with prefix because of [1] (above)
                             String readerURI = reader.getNamespaceURI(i);
-                            if (writerURI == null || nsPrefix.equals(prefix) || !writerURI.equals(readerURI)) {                                
+                            if (writerURI == null || nsPrefix.equals(prefix) || !writerURI.equals(readerURI)) {
                                 writer.setPrefix(nsPrefix, readerURI != null ? readerURI : "");
                                 writer.writeNamespace(nsPrefix, readerURI != null ? readerURI : "");
                             }
@@ -356,12 +355,12 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         for (int i = 0; i < n; i++) {
                             String attrPrefix = reader.getAttributePrefix(i);
                             String attrURI = reader.getAttributeNamespace(i);
-                            
-                            writer.writeAttribute(attrPrefix != null ? attrPrefix : "", 
+
+                            writer.writeAttribute(attrPrefix != null ? attrPrefix : "",
                                 attrURI != null ? attrURI : "",
-                                reader.getAttributeLocalName(i), 
-                                reader.getAttributeValue(i)); 
-                        }                        
+                                reader.getAttributeLocalName(i),
+                                reader.getAttributeValue(i));
+                        }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
                         writer.writeEndElement();
@@ -371,7 +370,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 }
             } while (state != XMLStreamConstants.END_DOCUMENT);
         }
-        catch (XMLStreamException e) {            
+        catch (XMLStreamException e) {
             throw new WebServiceException(e);
         }
     }
@@ -408,7 +407,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             writer.setPrefix(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                              SOAPNamespaceConstants.ENVELOPE);
             writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
-                                  SOAPNamespaceConstants.ENVELOPE);                
+                                  SOAPNamespaceConstants.ENVELOPE);
         }
         catch (XMLStreamException e) {
             throw new WebServiceException(e);
@@ -420,14 +419,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      */
     protected void writeEnvelopeNamespaces(XMLStreamWriter writer, MessageInfo messageInfo)
         throws XMLStreamException {
-        
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);  
+
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         if (rtCtxt != null && rtCtxt.getModel() != null) {
             int i=1;
             for (String namespace : rtCtxt.getModel().getJAXBContext().getKnownNamespaceURIs()) {
                 if (namespace.length() > 0)
                     writer.writeNamespace("ns"+i++, namespace);
-            }      
+            }
             writer.writeCharacters("");
         }
      }    

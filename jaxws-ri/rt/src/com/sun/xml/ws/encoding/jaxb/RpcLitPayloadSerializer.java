@@ -71,14 +71,13 @@ public class RpcLitPayloadSerializer {
 
                 // Let JAXB serialize each param to the output stream
                 for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
-                    JAXBTypeSerializer.serialize(param, bridgeContext, os, nsc);
+                    param.serialize(bridgeContext, os, nsc);
                 }
             }
             else {
                 // Otherwise, use a StAX writer
                 for (JAXBBridgeInfo param : obj.getBridgeParameters()) {                
-                    JAXBTypeSerializer.serialize(param, bridgeContext,
-                        writer);
+                    param.serialize(bridgeContext, writer);
                 }
             }
             
@@ -97,7 +96,7 @@ public class RpcLitPayloadSerializer {
         try {
             writer.write(startElm.getBytes());
             for (JAXBBridgeInfo param : obj.getBridgeParameters()) {
-                JAXBTypeSerializer.serialize(param, bridgeContext,writer,null);
+                param.serialize(bridgeContext,writer,null);
             }
             writer.write(endElm.getBytes());
         } catch (IOException e) {
@@ -121,8 +120,7 @@ public class RpcLitPayloadSerializer {
                 throw new DeserializationException("xsd.unexpectedElementName",
                         new Object[]{param.getName(), partName});
             }
-            JAXBTypeSerializer.deserialize(reader, param,
-                bridgeContext);
+            param.deserialize(reader, bridgeContext);
             
             // reader could be left on CHARS token rather than <partName>
             if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&

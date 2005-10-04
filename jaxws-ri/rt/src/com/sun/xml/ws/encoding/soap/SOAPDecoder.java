@@ -243,7 +243,7 @@ public abstract class SOAPDecoder implements Decoder {
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo)decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                JAXBTypeSerializer.deserialize(reader, bridgeInfo, bridgeContext);
+                bridgeInfo.deserialize(reader, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock(bridgeInfo);
                 msg.addHeader(headerBlock);
             }
@@ -282,7 +282,7 @@ public abstract class SOAPDecoder implements Decoder {
                 Object decoderInfo = rtCtxt.getDecoderInfo(name);
                 if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                     JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo)decoderInfo;
-                    JAXBTypeSerializer.deserialize(reader, bridgeInfo, bridgeContext);
+                    bridgeInfo.deserialize(reader, bridgeContext);
                     BodyBlock responseBody = new BodyBlock(bridgeInfo);
                     response.setBody(responseBody);
                 } else if (decoderInfo != null && decoderInfo instanceof RpcLitPayload) {

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.11 2005-10-03 23:11:06 kohsuke Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.12 2005-10-04 00:44:01 kohsuke Exp $
  */
 
 /*
@@ -23,34 +23,16 @@
  */
 package com.sun.xml.ws.encoding.soap.client;
 
-import static com.sun.pept.presentation.MessageStruct.UNCHECKED_EXCEPTION_RESPONSE;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.xml.stream.XMLStreamReader;
-
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
-import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.client.dispatch.impl.encoding.Dispatch12Serializer;
-import com.sun.xml.ws.client.dispatch.impl.encoding.SerializerIF;
 import com.sun.xml.ws.encoding.soap.message.FaultCode;
 import com.sun.xml.ws.encoding.soap.message.FaultCodeEnum;
 import com.sun.xml.ws.encoding.soap.message.FaultReason;
@@ -58,11 +40,23 @@ import com.sun.xml.ws.encoding.soap.message.FaultReasonText;
 import com.sun.xml.ws.encoding.soap.message.FaultSubcode;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.xml.XmlUtil;
 
-import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.namespace.QName;
-
+import static javax.xml.stream.XMLStreamConstants.*;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.soap.SOAPBinding;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author WS Development Team
@@ -247,8 +241,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                JAXBTypeSerializer.deserialize (reader, bridgeInfo,
-                    rtCtxt.getBridgeContext ());
+                bridgeInfo.deserialize (reader, rtCtxt.getBridgeContext());
                 XMLStreamReaderUtil.verifyReaderState (reader, END_ELEMENT);
                 XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_DETAIL);
                 return bridgeInfo;
@@ -302,7 +295,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                JAXBTypeSerializer.deserialize (reader, bridgeInfo, bridgeContext);
+                bridgeInfo.deserialize(reader,bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock (bridgeInfo);
                 msg.addHeader (headerBlock);
             }

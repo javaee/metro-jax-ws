@@ -57,8 +57,8 @@ public final class JAXBTypeSerializer {
         } catch (Exception e) {
             throw new SerializationException(e);
         }
-    }    
-    
+    }
+
     /* for FI, it will be a whole document, not fragment
      * called by setPayload and writeTo methods in XMLMessage class
      */
@@ -154,124 +154,4 @@ public final class JAXBTypeSerializer {
             throw new DeserializationException(e);
         }
     }
-
-    /*
-     * JAXB object is serialized. Note that the BridgeContext is cached per
-     * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
-     * current thread.
-     */
-    public static void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
-        XMLStreamWriter writer) {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridgeInfo.getValue();
-            bridge.marshal(bridgeContext, value, writer);
-        } catch (JAXBException e) {
-            throw new SerializationException(e);
-        }
-    }
-    
-    /*
-     * JAXB object is serialized. Note that the BridgeContext is cached per
-     * thread, and JAXBBridgeInfo should contain correct BridgeContext for the
-     * current thread.
-     */
-    public static void serialize(JAXBBridgeInfo bridgeInfo, BridgeContext bridgeContext,
-        OutputStream os, NamespaceContext nsContext) {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridgeInfo.getValue();
-            bridge.marshal(bridgeContext, value, os, nsContext);
-        } catch (JAXBException e) {
-            throw new SerializationException(e);
-        }
-    }
-    
-    /*
-     * JAXB object is serialized to DOMSource
-     */
-    public static void serialize(JAXBBridgeInfo bridgeInfo,
-        BridgeContext bridgeContext, Node node) {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridgeInfo.getValue();
-            bridge.marshal(bridgeContext, value, node);
-        } catch (JAXBException e) {
-            throw new SerializationException(e);
-        }
-    }
-    
-    /*
-     * JAXB object is deserialized and is set in JAXBBridgeInfo. Note that
-     * the BridgeContext is cached per thread, and JAXBBridgeInfo should contain
-     * correct BridgeContext for the current thread.
-     */
-    public static void deserialize(XMLStreamReader reader, JAXBBridgeInfo bridgeInfo,
-        BridgeContext bridgeContext) 
-    {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridge.unmarshal(bridgeContext, reader);
-            bridgeInfo.setValue(value);
-            
-            // reader could be left on CHARS token rather than </body>
-            if (reader.getEventType() == XMLStreamConstants.CHARACTERS &&
-                    reader.isWhiteSpace()) {
-                XMLStreamReaderUtil.nextContent(reader);
-            }
-        } catch (JAXBException e) {
-            throw new DeserializationException(e);
-        }
-    }
-
-    public static void deserialize(Source source, JAXBBridgeInfo bridgeInfo,
-        BridgeContext bridgeContext)
-    {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridge.unmarshal(bridgeContext, source);
-            bridgeInfo.setValue(value);
-        } catch (JAXBException e) {
-            throw new DeserializationException(e);
-        }
-    }
-
-    public static void deserialize(InputStream stream, JAXBBridgeInfo bridgeInfo,
-        BridgeContext bridgeContext)
-    {
-        try {
-            Bridge bridge = bridgeInfo.getBridge();
-            Object value = bridge.unmarshal(bridgeContext, stream);
-            bridgeInfo.setValue(value);
-        } catch (JAXBException e) {
-            throw new DeserializationException(e);
-        }
-    }
-    /*
-     * JAXB bean in one context is converted to JAXB bean in another context
-     *
-    public static Object toNewJAXBBean(Object obj, JAXBContext ctxt, JAXBContext newCtxt) {
-        try {
-            // Use ctxt to marshall the object
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            Marshaller marshaller = ctxt.createMarshaller();
-            marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            marshaller.marshal(obj, bos);
-            // Use newCtxt to unmarshall the object
-            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-            Unmarshaller unmarshaller = newCtxt.createUnmarshaller();
-            Object newObj = unmarshaller.unmarshal(bis);
-            bos.close();
-            bis.close();
-            return newObj;
-        } catch (JAXBException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
-        } catch (IOException e) {
-            throw new DeserializationException(new LocalizableExceptionAdapter(
-                    e));
-        }
-    }
-    */
-    
 }

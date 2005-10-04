@@ -317,8 +317,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                         JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                         // JAXB leaves on </env:Header> or <nextHeaderElement>
-                        JAXBTypeSerializer.deserialize(reader, bridgeInfo,
-                            rtCtxt.getBridgeContext());
+                        bridgeInfo.deserialize(reader,rtCtxt.getBridgeContext());
                         faultdetail = bridgeInfo;
                     }
 
