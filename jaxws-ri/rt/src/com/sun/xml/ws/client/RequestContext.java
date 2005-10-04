@@ -26,7 +26,7 @@ import javax.xml.ws.BindingProvider;
 
 public class RequestContext extends ContextMap {
 
-    public RequestContext(Object provider) {
+    public RequestContext(BindingProvider provider) {
         super(provider);
     }
 

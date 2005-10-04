@@ -462,6 +462,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         
         RequestContext requestContext = (RequestContext) messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         if (requestContext != null)
+            // TODO: does this really need to be copied?
             jc = (JAXBContext)requestContext.copy ().get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
         return jc;
     }

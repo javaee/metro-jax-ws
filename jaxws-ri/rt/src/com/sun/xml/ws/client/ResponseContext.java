@@ -19,11 +19,12 @@
  */
 package com.sun.xml.ws.client;
 
+import javax.xml.ws.BindingProvider;
 import java.util.Iterator;
 
 
 public class ResponseContext extends ContextMap {
-    public ResponseContext(Object provider) {
+    public ResponseContext(BindingProvider provider) {
         super(provider);
     }
 

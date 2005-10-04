@@ -19,7 +19,6 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.util.Version;
 
 import javax.xml.bind.JAXBContext;
@@ -29,26 +28,25 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
-public abstract class ContextMap extends HashMap<Object, Object>
+public abstract class ContextMap extends HashMap<String,Object>
     implements BindingProviderProperties {
 
-    protected static List _knownProperties;
+    /**
+     * Read-only list of known properties.
+     */
+    private static final Set<String> KNOWN_PROPERTIES;
 
-    protected HashMap _allowedValues;
-    protected HashMap _allowedClass;
+//    private static final HashMap<String,Object[]> _allowedValues = new HashMap<String,Object[]>();
+    private static final HashMap<String,Class> _allowedClass = new HashMap<String, Class>();
 
 
-    protected java.lang.String[] ALLOWED_ENCODING = {"", SOAPConstants.URI_ENCODING};
-    protected java.lang.String[] ALLOWED_OPERATION_STYLE = {"document", "rpc"};
-    protected java.lang.Boolean[] ALLOWED_SESSION_MAINTAINED =
-        {Boolean.TRUE, Boolean.FALSE};
-    protected java.lang.Boolean[] ALLOWED_SOAPACTION_USE =
-        {Boolean.TRUE, Boolean.FALSE};
+//    private static final String[] ALLOWED_ENCODING = {"", SOAPConstants.URI_ENCODING};
+//    private static final String[] ALLOWED_OPERATION_STYLE = {"document", "rpc"};
 
 
     protected BindingProvider _owner;
@@ -57,15 +55,8 @@ public abstract class ContextMap extends HashMap<Object, Object>
 
     public abstract ContextMap copy();
 
-    void init() {
-
-        _allowedValues = new HashMap<String, Object>();
-
-        _allowedValues.put(SESSION_MAINTAIN_PROPERTY, ALLOWED_SESSION_MAINTAINED);
-        _allowedValues.put(SOAPACTION_USE_PROPERTY, ALLOWED_SOAPACTION_USE);
-
+    static {
         //JAXWS 2.0 defined
-        _allowedClass = new HashMap<String, Class>();
         _allowedClass.put(USERNAME_PROPERTY, java.lang.String.class);
         _allowedClass.put(PASSWORD_PROPERTY, java.lang.String.class);
         _allowedClass.put(ENDPOINT_ADDRESS_PROPERTY, java.lang.String.class);
@@ -76,7 +67,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
         //now defined in jaxwscontext
         _allowedClass.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, JAXBContext.class);
 
-        List<java.lang.String> temp = new ArrayList<java.lang.String>();
+        Set<String> temp = new HashSet<String>();
         //JAXWS 2.0 defined
         temp.add(USERNAME_PROPERTY);
         temp.add(PASSWORD_PROPERTY);
@@ -103,7 +94,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
         temp.add(BindingProviderProperties.SET_ATTACHMENT_PROPERTY);
         temp.add(BindingProviderProperties.GET_ATTACHMENT_PROPERTY);
         //Tod:check with mark regarding property modification
-        //_knownProperties = Collections.unmodifiableSet(temp);
+        //KNOWN_PROPERTIES = Collections.unmodifiableSet(temp);
 
         temp.add(MessageContext.MESSAGE_ATTACHMENTS);
         temp.add(MessageContext.WSDL_DESCRIPTION);
@@ -115,12 +106,11 @@ public abstract class ContextMap extends HashMap<Object, Object>
         // Content negotiation property for FI -- "none", "pessimistic", "optimistic"
         temp.add(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
         temp.add(BindingProviderProperties.MTOM_THRESHOLOD_VALUE);
-        _knownProperties = new ArrayList(temp);
+        KNOWN_PROPERTIES = temp;
     }
 
     //used for dispatch
     public ContextMap(PortInfoBase info, BindingProvider provider) {
-        init();
         _owner = provider;
         if (info != null) {
             //put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
@@ -130,94 +120,77 @@ public abstract class ContextMap extends HashMap<Object, Object>
     }
 
     //may not need this
-    public ContextMap(Object owner) {
-        this(null, (BindingProvider) owner);
-
+    public ContextMap(BindingProvider owner) {
+        this(null, owner);
     }
 
     boolean doValidation() {
-        if (_owner != null) {
-            if (_owner instanceof BindingProvider)
-                return true;
-        }
-        return false;
+        return _owner != null;
     }
 
-    public Object put(Object name, Object value) {
+    public Object put(String name, Object value) {
         if (doValidation()) {
-            validateProperty((String) name, value, true);
-            return super.put((Object) name, value);
+            validateProperty(name, value, true);
+            return super.put(name, value);
         }
         return null;
     }
 
-    public Object get(Object name) {
+    public Object get(String name) {
         if (doValidation()) {
-            validateProperty((String) name, null, false);
+            validateProperty(name, null, false);
             return super.get(name);
         }
         return null;
     }
 
-    public Iterator getPropertyNames() {
+    public Iterator<String> getPropertyNames() {
         return keySet().iterator();
     }
 
 
-    public Object remove(Object name) {
+    public Object remove(String name) {
         if (doValidation()) {
-            validateProperty((java.lang.String) name, null, false);
+            validateProperty(name, null, false);
             return super.remove(name);
         }
         return null;
-    }
-
-    private boolean isKnownProperty(String name) {
-        boolean found = false;
-        Iterator iter = _knownProperties.iterator();
-        while (iter.hasNext()) {
-            String knownName = (String) iter.next();
-            if (knownName.equals(name)) {
-                found = true;
-                break;
-            }
-        }
-        return found;
     }
 
     private boolean isAllowedValue(String name, Object value) {
         if (value == null)
             return false;
 
-        Object[] values = (Object[]) _allowedValues.get(name);
-        if (values != null) {
-            boolean allowed = false;
-            for (Object o : values) {
-                if (STRING_CLASS.isInstance(o) && (STRING_CLASS.isInstance(value))) {
-                    if (((java.lang.String) o).equalsIgnoreCase((java.lang.String) value)) {
-                        allowed = true;
-                        break;
-                    }
-                } else if (BOOLEAN_CLASS.isInstance(o) && (BOOLEAN_CLASS.isInstance(value))) {
-                    if (Boolean.FALSE.equals(o) || Boolean.TRUE.equals(o)) {
-                        allowed = true;
-                        break;
-                    }
-                } else {
-                    //log this
-                }
-            }
-            return allowed;
-        }
+// no value check needed today
+//        Object[] values = _allowedValues.get(name);
+//        if (values != null) {
+//            boolean allowed = false;
+//            for (Object o : values) {
+//                if (STRING_CLASS.isInstance(o) && (STRING_CLASS.isInstance(value))) {
+//                    if (((java.lang.String) o).equalsIgnoreCase((java.lang.String) value)) {
+//                        allowed = true;
+//                        break;
+//                    }
+//                } else if (BOOLEAN_CLASS.isInstance(o) && (BOOLEAN_CLASS.isInstance(value))) {
+//                    if (Boolean.FALSE.equals(o) || Boolean.TRUE.equals(o)) {
+//                        allowed = true;
+//                        break;
+//                    }
+//                } else {
+//                    //log this
+//                }
+//            }
+//            return allowed;
+//        }
         return true;
     }
 
 
     private boolean isAllowedClass(String propName, Object value) {
 
-        Class allowedClass = (Class) _allowedClass.get(propName);
+        Class allowedClass = _allowedClass.get(propName);
         if (allowedClass != null) {
-            return (allowedClass.isInstance(value)) ? true : false;
+            return allowedClass.isInstance(value);
         }
         return true;
     }
@@ -232,7 +205,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
                 new IllegalArgumentException("Name of property is null.  This is an invalid property name. "));
 
 
-        if (!isKnownProperty(name)) {
+        if (!KNOWN_PROPERTIES.contains(name)) {
             //do validation check on not "javax.xml.ws."
             if (name.startsWith("javax.xml.ws"))
                 throw new WebServiceException(name + " is a User-defined property - can not start with javax.xml.ws. package",
@@ -263,7 +236,7 @@ public abstract class ContextMap extends HashMap<Object, Object>
     private static final Class BOOLEAN_CLASS = Boolean.class;
     private static final Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
     private static final Class DISPATCH_CLASS = Dispatch.class;
-    private static final Class PROXY_CLASS = Proxy.class;     
+    private static final Class PROXY_CLASS = Proxy.class;
     private final static Class JAXBCONTEXT_CLASS =
         JAXBContext.class;
     private static Class CLIENT_TRANSPORT_FACTORY_CLASS = ClientTransportFactory.class;
