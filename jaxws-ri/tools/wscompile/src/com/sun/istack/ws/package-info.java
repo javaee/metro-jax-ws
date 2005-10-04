@@ -11,4 +11,4 @@
  *
  * @ArchitectureDocument
 */
-package com.sun.tools.istack.ws;
+package com.sun.istack.ws;
