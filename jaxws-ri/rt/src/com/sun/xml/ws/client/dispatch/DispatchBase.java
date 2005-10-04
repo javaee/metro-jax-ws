@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.19 2005-09-10 19:47:28 kohsuke Exp $
+ * $Id: DispatchBase.java,v 1.20 2005-10-04 00:12:11 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -354,7 +354,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
             if (ex instanceof WebServiceException)
                 throw (WebServiceException) ex;
             else
-                new WebServiceException("Client side exception before invocation ", ex);
+                throw new WebServiceException("Client side exception before invocation ", ex);
 
         } finally {
             _lock.unlock();
