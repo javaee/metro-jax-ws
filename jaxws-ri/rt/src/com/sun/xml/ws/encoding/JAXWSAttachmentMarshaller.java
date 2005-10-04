@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.15 2005-09-21 22:20:49 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.16 2005-10-04 23:07:47 kohsuke Exp $
  */
 
 /*
@@ -26,22 +26,20 @@ package com.sun.xml.ws.encoding;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.spi.runtime.MtomCallback;
-import com.sun.pept.ept.MessageInfo;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentMarshaller;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.HashMap;
 
 /**
  * @author WS Development Team
@@ -74,10 +72,11 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
             return null;
         String cid = encodeCid(elementNamespace);
         if(cid != null){
-            attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, data.getContentType()));
-            addToMessageContext("<"+cid+">", data);
+            String cidBracket = '<' + cid + '>';
+            attachments.put(cidBracket, new AttachmentBlock(cidBracket, data, data.getContentType()));
+            addToMessageContext(cidBracket, data);
             if(mtomCallback != null)
-                mtomCallback.addedMtomAttachment("<"+cid+">", data, elementNamespace, elementName);
+                mtomCallback.addedMtomAttachment(cidBracket, data, elementNamespace, elementName);
             isXopped = true;
             cid = "cid:"+cid;
         }
@@ -121,11 +120,12 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
 
         String cid = encodeCid(elementNamespace);
         if(cid != null){
-            attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", new ByteArray(data, offset, len), "application/octet-stream"));
+            String cidBracket = '<' + cid + '>';
+            attachments.put(cidBracket, new AttachmentBlock(cidBracket, new ByteArray(data, offset, len), "application/octet-stream"));
             DataHandler dh = new DataHandler(new ByteArrayDataSource(new ByteArrayInputStream(data, offset, len), "application/octet-stream"));
-            addToMessageContext("<"+cid+">", dh);
+            addToMessageContext(cidBracket, dh);
             if(mtomCallback != null)
-                mtomCallback.addedMtomAttachment("<"+cid+">", dh, elementNamespace, elementLocalName);
+                mtomCallback.addedMtomAttachment(cidBracket, dh, elementNamespace, elementLocalName);
             isXopped = true;
             cid = "cid:"+cid;
         }
