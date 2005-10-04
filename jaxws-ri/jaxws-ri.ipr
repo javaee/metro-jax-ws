@@ -187,6 +187,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt/rt.iml" filepath="$PROJECT_DIR$/rt/rt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jaxws-test/test/test.iml" filepath="$PROJECT_DIR$/../jaxws-test/test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/wscompile/wscompile.iml" filepath="$PROJECT_DIR$/tools/wscompile/wscompile.iml" />
     </modules>
   </component>
@@ -198,7 +199,17 @@
     <option name="GENERATE_IIOP_STUBS" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
-  <component name="libraryTable" />
+  <component name="libraryTable">
+    <library name="test">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/../jaxws-test/test" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../jaxws-test/test/src" />
+      </SOURCES>
+    </library>
+  </component>
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
