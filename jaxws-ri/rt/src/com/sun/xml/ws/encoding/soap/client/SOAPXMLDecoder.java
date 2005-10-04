@@ -387,6 +387,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 if (reader.getEventType() == START_ELEMENT) {
                     QName name = reader.getName();
                     writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
+                    String uri = reader.getNamespaceURI(name.getPrefix());
+                    if (uri != null) {
+                        writer.setPrefix(name.getPrefix(), name.getNamespaceURI());
+                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                    }
                     Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                     writer.flush();
                     for (int i = 0; i < atts.getLength(); i++) {
@@ -431,6 +436,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         } catch (SOAPException e) {
             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerException e) {
+            e.printStackTrace();
             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerFactoryConfigurationError e) {
              throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
