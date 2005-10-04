@@ -110,7 +110,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             int state = XMLStreamReaderUtil.nextElementContent(reader);
             // if Body is not empty, then deserialize the Body
             if (state != END_ELEMENT) {
-                BodyBlock responseBody = null;
+                BodyBlock responseBody;
 
                 QName responseBodyName = reader.getName();   // Operation name
                 
@@ -119,9 +119,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     responseBody = new BodyBlock(soapFaultInfo);
                 } else {
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
-                    //jaxb will leave reader on ending </body> element
-                    JAXBBeanInfo jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
-                    responseBody = new BodyBlock(jaxBean);
+                    if(jaxbContext==null) {
+                        responseBody = new BodyBlock(getSerializerInstance().deserializeSource(reader));
+                    } else {
+                        //jaxb will leave reader on ending </body> element
+                        JAXBBeanInfo jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
+                        responseBody = new BodyBlock(jaxBean);
+                    }
                 }
                 response.setBody(responseBody);
             }

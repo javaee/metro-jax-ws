@@ -78,7 +78,7 @@ public final class DispatchSerializer {
         //should not happen
     }
 
-    // TODO: is this method still in use?
+    // TODO: this is very very inefficient.
     public Source deserializeSource(XMLStreamReader reader) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
