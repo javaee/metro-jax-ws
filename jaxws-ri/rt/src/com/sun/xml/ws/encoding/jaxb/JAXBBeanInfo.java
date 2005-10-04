@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBBeanInfo.java,v 1.5 2005-10-03 23:49:46 kohsuke Exp $
+ * $Id: JAXBBeanInfo.java,v 1.6 2005-10-04 00:26:48 kohsuke Exp $
  */
 
 /*
@@ -26,6 +26,7 @@ package com.sun.xml.ws.encoding.jaxb;
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
+import javax.xml.stream.XMLStreamWriter;
 
 /**
  * XML infoset represented as a JAXB object.
@@ -59,5 +60,12 @@ public final class JAXBBeanInfo {
      */
     public DOMSource toDOMSource() {
         return JAXBTypeSerializer.serialize(jaxbBean,jaxbContext);
+    }
+
+    /**
+     * Writes this bean to StAX.
+     */
+    public void writeTo(XMLStreamWriter w) {
+        JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext);
     }
 }

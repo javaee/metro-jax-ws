@@ -20,6 +20,7 @@
 package com.sun.xml.ws.handler;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 
@@ -122,8 +123,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
                 Source source = new DOMSource(child);
-                JAXBBeanInfo beanInfo = JAXBBeanInfo.fromSource(source, jaxbContext);
-                beanList.add(beanInfo.getBean());
+                beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
             }
             return beanList.toArray();
         } catch(Exception e) {

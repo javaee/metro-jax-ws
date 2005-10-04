@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.15 2005-10-03 21:27:32 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.16 2005-10-04 00:26:49 kohsuke Exp $
  */
 
 /*
@@ -199,8 +199,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     public InternalMessage createInternalMessage (MessageInfo messageInfo) {
         
         InternalMessage internalMessage = new InternalMessage ();
-        Method method = messageInfo.getMethod ();
-        
         Object response = messageInfo.getResponse ();
         
         BodyBlock bodyBlock = null;

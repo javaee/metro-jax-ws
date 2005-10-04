@@ -49,8 +49,7 @@ public class Dispatch12Serializer implements SerializerIF{
         if (obj instanceof Source)
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
-            Object bean = ((JAXBBeanInfo) obj).getBean();
-            JAXBTypeSerializer.serialize(bean, writer, context);
+            ((JAXBBeanInfo) obj).writeTo(writer);
         } else
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
         //should not happen

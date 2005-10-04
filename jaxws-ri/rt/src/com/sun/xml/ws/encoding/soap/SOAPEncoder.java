@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.35 2005-10-04 00:19:25 kohlert Exp $
+ * $Id: SOAPEncoder.java,v 1.36 2005-10-04 00:26:49 kohsuke Exp $
  */
 
 /*
@@ -170,7 +170,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, writer);
     }
 
-    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
+    private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
         XMLStreamWriter writer) 
     {
         // Pass output stream directly to JAXB when available
@@ -201,9 +201,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
-    protected void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
-        OutputStream writer)
-    {
+    private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo,OutputStream writer) {
         JAXBTypeSerializer.serialize(
                 beanInfo.getBean(), writer, beanInfo.getJAXBContext());
     }
@@ -628,7 +626,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         } else if (value instanceof SOAPFaultInfo) {
             writeFault((SOAPFaultInfo)value, mi, writer);
         } else if (value instanceof JAXBBeanInfo) {
-            writeJAXBBeanInfo((JAXBBeanInfo)value, mi, writer);
+            writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
         }else {
             throw new SerializationException("unknown.object", value.getClass().getName());
         }
