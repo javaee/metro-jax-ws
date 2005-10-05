@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.39 2005-10-04 18:31:08 kohlert Exp $
+ * $Id: SOAPEncoder.java,v 1.40 2005-10-05 22:05:13 kohsuke Exp $
  */
 
 /*
@@ -23,66 +23,59 @@
  */
 package com.sun.xml.ws.encoding.soap;
 
-import java.io.OutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
+import com.sun.pept.encoding.Encoder;
+import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
+import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
+import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
+import com.sun.xml.ws.spi.runtime.MtomCallback;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.ws.WebServiceException;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.activation.DataHandler;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.xml.bind.api.BridgeContext;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
-import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
-import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
-import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.encoding.ByteArray;
-import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.streaming.SourceReaderFactory;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.util.DOMUtil;
-import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
-import com.sun.xml.ws.spi.runtime.MtomCallback;
-import com.sun.xml.ws.developer.JAXWSProperties;
-import com.sun.xml.ws.handler.HandlerContext;
-
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author WS Development Team
@@ -556,31 +549,9 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * @param msg
      */
     protected void processAttachments(InternalMessage im, SOAPMessage msg) throws SOAPException {
-        Map<String, AttachmentBlock> attachments = im.getAttachments();
-        for(String id : attachments.keySet()){
-            AttachmentBlock block = attachments.get(id);
-            if(block == null)
-                continue;
-            if(block.getValue() == null)
-                continue;
-            Object value = block.getValue();
-            AttachmentPart ap = msg.createAttachmentPart();
-            if(value instanceof DataHandler){
-                ap.setDataHandler((DataHandler)value);
-            }else if(value instanceof byte[]){
-                byte[] data = (byte[])value;
-                ap.setRawContentBytes(data, 0, data.length, block.getType());
-            }else if(value instanceof ByteArray){
-                ByteArray data = (ByteArray) value;
-                ap.setRawContentBytes(data.bytes, data.offset, data.length, block.getType());
-            }else{
-                ap.setContent(value, block.getType());
-            }
-            ap.setContentId(id);
-            //it may be safe to say the encoding is binary meaning the bytes are not subjected any 
-            // specific encoding.
-            ap.setMimeHeader("Content-transfer-encoding", "binary");
-            msg.addAttachmentPart(ap);
+        for (Map.Entry<String,AttachmentBlock> e : im.getAttachments().entrySet()) {
+            AttachmentBlock block = e.getValue();
+            block.addTo(msg);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.9 2005-09-23 22:45:36 kohlert Exp $
+ * $Id: JAXWSAttachmentUnmarshaller.java,v 1.10 2005-10-05 22:05:13 kohsuke Exp $
  */
 
 /*
@@ -57,21 +57,10 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
      */
     public DataHandler getAttachmentAsDataHandler(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
-        //TODO localize exception message
-        if((ab == null) || ((ab != null) && (ab.getAttachmentPart() == null)))
+        if(ab == null)
+            //TODO localize exception message
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-        try {
-            AttachmentPart ap = ab.getAttachmentPart();
-            if(ap != null){
-                byte[] data = ASCIIUtility.getBytes(ap.getRawContent());
-                return new DataHandler(new com.sun.xml.ws.util.ByteArrayDataSource(data,  ap.getContentType()));
-            }
-        } catch (SOAPException e) {
-            throw new WebServiceException(e);
-        } catch (IOException e) {
-            throw new WebServiceException(e);
-        }
-        return null;
+        return ab.asDataHandler();
     }
 
     /**
@@ -81,15 +70,9 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
      */
     public byte[] getAttachmentAsByteArray(String cid) {
         AttachmentBlock ab = attachments.get(decodeCid(cid));
-        if((ab == null) || ((ab != null) && (ab.getAttachmentPart() == null)))
+        if(ab == null)
             throw new IllegalArgumentException("Attachment corresponding to "+cid+ " not found!");
-        try {
-            return ASCIIUtility.getBytes(ab.getAttachmentPart().getRawContent());
-        } catch (SOAPException e) {
-            throw new WebServiceException(e);
-        } catch (IOException e) {
-            throw new WebServiceException(e);
-        }
+        return ab.asByteArray();
     }
 
     /**

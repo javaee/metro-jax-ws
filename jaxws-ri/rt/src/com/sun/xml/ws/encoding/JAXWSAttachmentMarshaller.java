@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.16 2005-10-04 23:07:47 kohsuke Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.17 2005-10-05 22:05:13 kohsuke Exp $
  */
 
 /*
@@ -26,6 +26,7 @@ package com.sun.xml.ws.encoding;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.spi.runtime.MtomCallback;
+import com.sun.xml.ws.util.ByteArrayDataSource;
 
 import javax.activation.DataHandler;
 import javax.xml.bind.attachment.AttachmentMarshaller;
@@ -73,7 +74,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             String cidBracket = '<' + cid + '>';
-            attachments.put(cidBracket, new AttachmentBlock(cidBracket, data, data.getContentType()));
+            attachments.put(cidBracket, AttachmentBlock.fromDataHandler(cidBracket,data));
             addToMessageContext(cidBracket, data);
             if(mtomCallback != null)
                 mtomCallback.addedMtomAttachment(cidBracket, data, elementNamespace, elementName);
@@ -121,8 +122,8 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
         String cid = encodeCid(elementNamespace);
         if(cid != null){
             String cidBracket = '<' + cid + '>';
-            attachments.put(cidBracket, new AttachmentBlock(cidBracket, new ByteArray(data, offset, len), "application/octet-stream"));
-            DataHandler dh = new DataHandler(new ByteArrayDataSource(new ByteArrayInputStream(data, offset, len), "application/octet-stream"));
+            DataHandler dh = new DataHandler(new ByteArrayDataSource(data, offset, len, "application/octet-stream"));
+            attachments.put(cidBracket, AttachmentBlock.fromDataHandler(cidBracket,dh));
             addToMessageContext(cidBracket, dh);
             if(mtomCallback != null)
                 mtomCallback.addedMtomAttachment(cidBracket, dh, elementNamespace, elementLocalName);
@@ -139,7 +140,7 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     public String addSwaRefAttachment(DataHandler data) {
         String cid = encodeCid(null);
         if(cid != null){
-            attachments.put("<"+cid+">", new AttachmentBlock("<"+cid+">", data, data.getContentType()));
+            attachments.put("<"+cid+">", AttachmentBlock.fromDataHandler("<"+cid+">", data));
             isXopped = false;
             cid = "cid:"+cid;
         }

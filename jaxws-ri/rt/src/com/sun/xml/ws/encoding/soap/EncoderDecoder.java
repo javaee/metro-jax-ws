@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.27 2005-10-04 23:04:55 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.28 2005-10-05 22:05:13 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -24,7 +24,6 @@ package com.sun.xml.ws.encoding.soap;
 
 import com.sun.xml.ws.encoding.EncoderDecoderBase;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
@@ -35,14 +34,10 @@ import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
-import com.sun.xml.ws.util.ASCIIUtility;
 
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.SOAPException;
 import javax.xml.transform.Source;
-import javax.xml.ws.WebServiceException;
 import java.awt.Image;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -161,7 +156,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         if (binding.isRpcLit() && paramBinding.isBody()) {
             return createRpcLitPayload(context, (WrapperParameter) param, data, result);
         }
-        Object obj = createDocLitPayloadValue(context, param, data, result, binding);
+        Object obj = createDocLitPayloadValue(context, param, data, result);
         RuntimeModel model = context.getModel();
         return new JAXBBridgeInfo(model.getBridge(param.getTypeReference()), obj);
     }
@@ -189,14 +184,12 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @param context
      * @param data
      * @param result
-     * @return
      */
-    private Object createDocLitPayloadValue(RuntimeContext context, Parameter param, Object[] data,
-            Object result, SOAPBinding binding) {        
+    private Object createDocLitPayloadValue(RuntimeContext context, Parameter param, Object[] data, Object result) {
         if (param.isWrapperStyle()) {
             return createJAXBBeanPayload(context, (WrapperParameter) param, data, result);
         }
-        return getBarePayload(context, param, data, result);
+        return getBarePayload(param, data, result);
     }
 
     /**
@@ -218,7 +211,6 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
     /**
      * Returns either the value corresponding to the parameter or result.
      * 
-     * @param context
      * @param param
      * @param data
      * @param result
@@ -226,8 +218,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      *         the parameter index, takes care of Holder.value.
      * 
      */
-    private Object getBarePayload(RuntimeContext context, Parameter param, Object[] data,
-            Object result) {
+    private Object getBarePayload(Parameter param, Object[] data, Object result) {
         Object obj = null;
         if (param.isResponse()) {
             obj = result;
@@ -298,61 +289,33 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
 
     protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments, 
                                    Parameter param, ParameterBinding paramBinding){
-        Object obj = null;
-        RuntimeModel model = rtContext.getModel();
-        for(String id:attachments.keySet()){
-            String part = getMimePart(id);
-            if(part.equals(param.getPartName())){
-                AttachmentBlock ab = attachments.get(id);
-                if(ab == null)
-                    return null;
-                AttachmentPart ap = ab.getAttachmentPart();
-                String mimeType = paramBinding.getMimeType();
-                Class type = (Class)param.getTypeReference().type;
-                try {
-                    if (DataHandler.class.isAssignableFrom(type))
-                        return ap.getDataHandler();
-                    else if(isKnownAttachmentType(param.getTypeReference().type))
-                        obj =  ap.getContent();
-                    else
-                        obj = ap.getRawContent();
-                } catch (SOAPException e) {
-                    throw new SerializationException(e);
-                }
-                if((obj != null) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(type)){
-                    JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
-                    if(Source.class.isAssignableFrom(obj.getClass())){
-                        bi.deserialize((Source)obj, rtContext.getBridgeContext());
-                        return bi.getValue();
-                    }else if(InputStream.class.isAssignableFrom(obj.getClass())){
-//                        ByteArrayInputStream bais = new ByteArrayInputStream((byte[])obj);
-//                        JAXBTypeSerializer.getInstance().deserialize(bais, bi, rtContext.getBridgeContext());
-                        bi.deserialize((InputStream)obj, rtContext.getBridgeContext());
-                        return bi.getValue();
-                    }
-                }
-                if(obj instanceof InputStream){
-                    try {
-                        return ASCIIUtility.getBytes((InputStream)obj);
-                    } catch (IOException e) {
-                        throw new WebServiceException(e);
-                    }
-                }
-                return obj;
-            }
-        }
-        return null;
-    }
+        try {
+            for (Map.Entry<String,AttachmentBlock> entry : attachments.entrySet()) {
+                AttachmentBlock ab = entry.getValue();
+                String part = ab.getWSDLPartName();
+                if(part.equals(param.getPartName())){
+                    Class type = (Class)param.getTypeReference().type;
 
-    private boolean isKnownAttachmentType(Type type) {
-        if(type instanceof Class){
-            Class cls = (Class)type;
-            if(DataHandler.class.isAssignableFrom(cls) ||
-                    Source.class.isAssignableFrom(cls)||
-                    Image.class.isAssignableFrom(cls))
-                return true;            
+                    if(DataHandler.class.isAssignableFrom(type))
+                        return ab.asDataHandler();
+                    if(byte[].class==type)
+                        return ab.asByteArray();
+                    if(Source.class.isAssignableFrom(type))
+                        return ab.asSource();
+                    if(Image.class.isAssignableFrom(type))
+                        return ab.asImage();
+                    if(InputStream.class==type)
+                        return ab.asDataHandler().getInputStream();
+                    if(isXMLMimeType(paramBinding.getMimeType())) {
+                        JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
+                        ab.deserialize(rtContext.getBridgeContext(),bi);
+                    }
+                }
+            }
+            return null;
+        } catch (IOException e) {
+            throw new SerializationException(e);
         }
-        return false;
     }
 
     protected void addAttachmentPart(RuntimeContext rtContext, InternalMessage im, Object obj, Parameter mimeParam){
@@ -360,7 +323,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             return;
         RuntimeModel model = rtContext.getModel();
         String mimeType = mimeParam.getBinding().getMimeType();
-        String contentId = null;
+        String contentId;
         try {
             contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
         } catch (UnsupportedEncodingException e) {
@@ -373,7 +336,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             bi.serialize(rtContext.getBridgeContext(), baos, null);
             obj = baos.toByteArray();
         }
-        AttachmentBlock ab = new AttachmentBlock(contentId, obj, mimeType);
+        AttachmentBlock ab = AttachmentBlock.fromDataHandler(contentId,new DataHandler(obj,mimeType));
         im.addAttachment(ab);
     }
 
@@ -383,40 +346,4 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         return false;
     }
 
-    /**
-    * According to WSI AP 1.0
-    * 3.8 Value-space of Content-Id Header
-    *   Definition: content-id part encoding
-    *   The "content-id part encoding" consists of the concatenation of:
-     * The value of the name attribute of the wsdl:part element referenced by the mime:content, in which characters disallowed in content-id headers (non-ASCII characters as represented by code points above 0x7F) are escaped as follows:
-     *     o Each disallowed character is converted to UTF-8 as one or more bytes.
-     *     o Any bytes corresponding to a disallowed character are escaped with the URI escaping mechanism (that is, converted to %HH, where HH is the hexadecimal notation of the byte value).
-     *     o The original character is replaced by the resulting character sequence.
-     * The character '=' (0x3D).
-     * A globally unique value such as a UUID.
-     * The character '@' (0x40).
-     * A valid domain name under the authority of the entity constructing the message.
-     *
-     * So a wsdl:part fooPart will be encoded as:
-     *      <fooPart=somereallybignumberlikeauuid@example.com>
-     *
-     * @param cId
-     * @return
-     */
-    protected String getMimePart(String cId){
-        int index = cId.lastIndexOf('@', cId.length());
-        if(index == -1){
-            return null;
-        }
-        String localPart = cId.substring(0, index);
-        index = localPart.lastIndexOf('=', localPart.length());
-        if(index == -1){
-            return null;
-        }
-        try {
-            return java.net.URLDecoder.decode(localPart.substring(0, index), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new SerializationException(e);
-        }
-    }
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: ByteArrayDataSource.java,v 1.1 2005-09-23 23:14:05 kohlert Exp $
+ * $Id: ByteArrayDataSource.java,v 1.2 2005-10-05 22:05:14 kohsuke Exp $
  */
 
 /*
@@ -38,13 +38,18 @@ public final class ByteArrayDataSource implements DataSource {
 
     private final String contentType;
     private final byte[] buf;
+    private final int start;
     private final int len;
 
     public ByteArrayDataSource(byte[] buf, String contentType) {
-        this(buf,buf.length,contentType);
+        this(buf,0,buf.length,contentType);
     }
     public ByteArrayDataSource(byte[] buf, int length, String contentType) {
+        this(buf,0,length,contentType);
+    }
+    public ByteArrayDataSource(byte[] buf, int start, int length, String contentType) {
         this.buf = buf;
+        this.start = start;
         this.len = length;
         this.contentType = contentType;
     }
@@ -56,7 +61,7 @@ public final class ByteArrayDataSource implements DataSource {
     }
 
     public InputStream getInputStream() {
-        return new ByteArrayInputStream(buf,0,len);
+        return new ByteArrayInputStream(buf,start,len);
     }
 
     public String getName() {

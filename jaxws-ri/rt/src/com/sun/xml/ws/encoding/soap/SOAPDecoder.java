@@ -346,7 +346,7 @@ public abstract class SOAPDecoder implements Decoder {
 
         while(iter.hasNext()){
             AttachmentPart ap = (AttachmentPart) iter.next();
-            im.addAttachment(new AttachmentBlock(ap));
+            im.addAttachment(AttachmentBlock.fromSAAJ(ap));
         }
     }
 

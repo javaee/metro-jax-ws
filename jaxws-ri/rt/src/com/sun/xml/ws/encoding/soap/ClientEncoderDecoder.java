@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.21 2005-09-23 22:05:28 kohsuke Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.22 2005-10-05 22:05:12 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -97,15 +97,15 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             SOAP12FaultInfo sfi = (SOAP12FaultInfo)bodyValue;
             Object detail = sfi.getDetail();
             if(detail == null || detail instanceof javax.xml.soap.Detail) {
-                javax.xml.soap.Detail sfeDetail = null;
-                if(detail != null)
-                    sfeDetail = (javax.xml.soap.Detail)detail;
-                String reason = null;
-                List<FaultReasonText> frt = sfi.getReasons().getFaultReasonTexts();
-
-                //for now we pickup onkly the first Reason Text
-                if(frt != null && !frt.isEmpty())
-                    reason = frt.get(0).getValue();
+//                javax.xml.soap.Detail sfeDetail = null;
+//                if(detail != null)
+//                    sfeDetail = (javax.xml.soap.Detail)detail;
+//                String reason = null;
+//                List<FaultReasonText> frt = sfi.getReasons().getFaultReasonTexts();
+//
+//                //for now we pickup onkly the first Reason Text
+//                if(frt != null && !frt.isEmpty())
+//                    reason = frt.get(0).getValue();
 
                 SOAPFaultException sfe = new SOAPFaultException(sfi.getSOAPFault());
                 mi.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
@@ -128,16 +128,16 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         // process body/headers/attachments
         List<HeaderBlock> headers = im.getHeaders();
         Map<String, AttachmentBlock> attachments = im.getAttachments();
-        Iterator<Parameter> iter = jm.getResponseParameters().iterator();
         Object[] data = mi.getData();
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
 
+        // TODO: why is the binding determined by the instance?
         //what happens when client receives unsolicited headers?
         int bBlocks = (bodyValue != null)?1:0;
         int hBlocks = (im.getHeaders() != null)?im.getHeaders().size():0;
         int mBlocks = (im.getAttachments() != null)?im.getAttachments().size():0;
 
-        boolean isResponseAsynWrapper = ((bBlocks+hBlocks+mBlocks) > 1)?true:false;
+        boolean isResponseAsynWrapper = (bBlocks + hBlocks + mBlocks) > 1;
 
         //for rpclit there could be more than one parts but only one bodyblock
         // so we use different rule for rpclit
@@ -162,17 +162,15 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                     JAXBBridgeInfo value = (JAXBBridgeInfo)hb.getValue();
                     setAsyncResponseWrapperValue(rtContext, asyncWrapper, value.getValue(), value.getType().tagName);
                 }
-            }else if(im.getAttachments() != null){
-                attachments = im.getAttachments();
+            }else if(attachments != null){
                 for(String id : attachments.keySet()){
                     AttachmentBlock ab = attachments.get(id);
                     if(ab == null)
                         return;
-                    String part = getMimePart(id);
-                    Object val = ab.getValue();
-                    if((val == null)||(part == null))
-                        continue;
-                    setAsyncResponseWrapperValue(rtContext, asyncWrapper, val, new QName("", part));
+                    String part = ab.getWSDLPartName();
+
+                    // TODO: this isn't correct
+                    setAsyncResponseWrapperValue(rtContext, asyncWrapper, ab.asDataHandler(), new QName("", part));
                 }
             }
             mi.setResponse(asyncWrapper);
@@ -208,18 +206,20 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
             if(attachments != null){
                 for(String id:attachments.keySet()){
                     AttachmentBlock ab = attachments.get(id);
-                    if((ab == null))
-                        continue;
-                    mi.setResponse(ab.getValue());
+                    if(ab == null)      continue;
+
+                    // TODO: this isn't correct
+                    mi.setResponse(ab.asDataHandler());
                     return;
                 }
             }
 
+            // bBlocks+hBlocks+mBlocks==1, so we shall never get here
+            assert false;
         }
 
 
-        while (iter.hasNext()) {
-            Parameter param = iter.next();
+        for (Parameter param : jm.getResponseParameters()) {
             Object obj = null;
             ParameterBinding paramBinding = param.getOutBinding();
             if (paramBinding.isBody()) {
@@ -227,13 +227,13 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
                 obj = bodyValue;
             } else if (headers != null && paramBinding.isHeader()) {
                 HeaderBlock header = getHeaderBlock(param.getName(), headers);
-                obj = (header != null)?header.getValue():null;
-            } else if((attachments.size() > 0) && paramBinding.isAttachment()){
+                obj = (header != null) ? header.getValue() : null;
+            } else if (paramBinding.isAttachment()) {
                 obj = getAttachment(rtContext, attachments, param, paramBinding);
             }
             Object resp = fillData(rtContext, param, obj, data, soapBinding, paramBinding);
-            if(param.isResponse()){
-                    mi.setResponse(resp);
+            if (param.isResponse()) {
+                mi.setResponse(resp);
             }
         }
     }
@@ -280,7 +280,6 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
      * @param message
      * @param ce
      * @param detail
-     * @return
      */
     private Exception createUserDefinedException(String message, CheckedException ce, Object detail) {
         Class exceptionClass = ce.getExcpetionClass();
@@ -300,7 +299,6 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
 
     /**
      * @param f
-     * @return
      */
     private String getWriteMethod(Field f){
         return "set" + StringUtils.capitalize(f.getName());
@@ -309,7 +307,7 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
     /* (non-Javadoc)
      * @see com.sun.xml.ws.rt.encoding.EncoderDecoderBase#toInternalMessage(com.sun.pept.ept.MessageInfo)
      */
-    public Object toInternalMessage(MessageInfo mi) {
+    public InternalMessage toInternalMessage(MessageInfo mi) {
         RuntimeContext rtContext = (RuntimeContext) mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         RuntimeModel model = rtContext.getModel();
 

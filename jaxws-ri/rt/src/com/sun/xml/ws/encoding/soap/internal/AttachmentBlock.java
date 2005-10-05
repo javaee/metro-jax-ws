@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.7 2005-10-04 23:04:55 kohsuke Exp $
+ * $Id: AttachmentBlock.java,v 1.8 2005-10-05 22:05:12 kohsuke Exp $
  */
 
 /*
@@ -23,54 +23,327 @@
  */
 package com.sun.xml.ws.encoding.soap.internal;
 
+import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.util.ASCIIUtility;
+import com.sun.xml.ws.util.ByteArrayDataSource;
+
+import javax.activation.DataHandler;
 import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.awt.Image;
 
 /**
  * Attachment of {@link InternalMessage}.
  *
- * @author WS Development Team
+ * <p>
+ * The key idea behind this class is to hide the actual data representation.
+ * The producer of the object may choose the best format it wants, and then
+ * various accessor methods provide the rest of the stack to chose the format
+ * it wants.
+ *
+ * <p>
+ * When receiving from a network, this allows an {@link AttachmentBlock} object
+ * to be constructed without actually even parsing the attachment. When
+ * sending to a network, this allows the conversion to the byte image to happen
+ * lazily, and directly to the network.
+ *
+ * TODO:
+ *   when we support direct writing to the network, this class can provide
+ *   a {@code writeTo(OutputStream)} method to efficiently write the contents out.
+ * TODO:
+ *   in the performance critical path of mapping an attachment to a Java type,
+ *   most of the type the Java type to which it binds to is known in advance.
+ *   for this reason, it's better to prepare an 'accessor' object for each
+ *   kind of conversion. In that way we can avoid the computation of this
+ *   in the pritical path, which is redundant.
+ *
+ * @author Kohsuke Kawaguchi
  */
-public final class AttachmentBlock {
-    private final String id;
-    private Object value;
-    private String type;
-    private AttachmentPart ap;
+public abstract class AttachmentBlock {
 
-    public AttachmentBlock(AttachmentPart ap){
-        this.ap = ap;
-        this.id = ap.getContentId();
+    public static AttachmentBlock fromDataHandler(String cid,DataHandler dh) {
+        return new DataHandlerImpl(cid,dh);
     }
 
-    public AttachmentBlock(String id, Object value, String type) {
-        this.id = id;
-        this.value = value;
-        this.type = type;
+    public static AttachmentBlock fromSAAJ(AttachmentPart part) {
+        return new SAAJImpl(part);
     }
+
+    public static AttachmentBlock fromByteArray(String cid,byte[] data, int start, int len) {
+        return new ByteArrayImpl(cid,data,start,len);
+    }
+
+    /**
+     * No derived class outside this class.
+     */
+    private AttachmentBlock() {}
 
     /**
      * Content ID of the attachment. Uniquely identifies an attachment.
      */
-    public String getId() {
-        return id;
+    public abstract String getId();
+
+    /**
+     * Gets the WSDL part name of this attachment.
+     *
+     * <p>
+     * According to WSI AP 1.0
+     * <PRE>
+     * 3.8 Value-space of Content-Id Header
+     *   Definition: content-id part encoding
+     *   The "content-id part encoding" consists of the concatenation of:
+     * The value of the name attribute of the wsdl:part element referenced by the mime:content, in which characters disallowed in content-id headers (non-ASCII characters as represented by code points above 0x7F) are escaped as follows:
+     *     o Each disallowed character is converted to UTF-8 as one or more bytes.
+     *     o Any bytes corresponding to a disallowed character are escaped with the URI escaping mechanism (that is, converted to %HH, where HH is the hexadecimal notation of the byte value).
+     *     o The original character is replaced by the resulting character sequence.
+     * The character '=' (0x3D).
+     * A globally unique value such as a UUID.
+     * The character '@' (0x40).
+     * A valid domain name under the authority of the entity constructing the message.
+     * </PRE>
+     *
+     * So a wsdl:part fooPart will be encoded as:
+     *      <fooPart=somereallybignumberlikeauuid@example.com>
+     *
+     * @return null
+     *      if the parsing fails.
+     */
+    public final String getWSDLPartName(){
+        String cId = getId();
+
+        int index = cId.lastIndexOf('@', cId.length());
+        if(index == -1){
+            return null;
+        }
+        String localPart = cId.substring(0, index);
+        index = localPart.lastIndexOf('=', localPart.length());
+        if(index == -1){
+            return null;
+        }
+        try {
+            return java.net.URLDecoder.decode(localPart.substring(0, index), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new SerializationException(e);
+        }
     }
 
-    public Object getValue() {
-        return value;
+    /**
+     * Gets the MIME content-type of this attachment.
+     */
+    public abstract String getContentType();
+
+    /**
+     * Gets the attachment as an exact-length byte array.
+     */
+    public abstract byte[] asByteArray();
+
+    /**
+     * Gets the attachment as a {@link DataHandler}.
+     */
+    public abstract DataHandler asDataHandler();
+
+    /**
+     * Gets the attachment as a {@link Source}.
+     * Note that there's no guarantee that the attachment is actually an XML.
+     */
+    public Source asSource() {
+        return new StreamSource(asInputStream());
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public abstract InputStream asInputStream();
+
+    /**
+     * Deserializes this attachment by using JAXB into {@link JAXBBridgeInfo}.
+     *
+     * TODO: this abstraction is wrong.
+     */
+    public final void deserialize(BridgeContext bc, JAXBBridgeInfo bi) {
+        bi.deserialize(asInputStream(),bc);
     }
 
-    public AttachmentPart getAttachmentPart(){
-        return ap;
+    /**
+     * Adds this attachment as an {@link AttachmentPart} into the given {@link SOAPMessage}.
+     */
+    public abstract void addTo(SOAPMessage msg) throws SOAPException;
+
+    /**
+     * Deserializes this attachment into an {@link Image}.
+     *
+     * @return null if the decoding fails.
+     */
+    public final Image asImage() throws IOException {
+        // technically we should check the MIME type here, but
+        // normally images can be content-sniffed.
+        // so the MIME type check will only make us slower and draconian, both of which
+        // JAXB 2.0 isn't interested.
+        return ImageIO.read(asInputStream());
     }
 
-    public String getType() {
-        return type;
+
+    /**
+     * {@link AttachmentBlock} stored as SAAJ {@link AttachmentPart}.
+     */
+    private static final class SAAJImpl extends AttachmentBlock {
+        private final AttachmentPart ap;
+
+        public SAAJImpl(AttachmentPart part) {
+            this.ap = part;
+        }
+
+        public String getId() {
+            return ap.getContentId();
+        }
+
+        public String getContentType() {
+            return ap.getContentType();
+        }
+
+        public byte[] asByteArray() {
+            try {
+                return ap.getRawContentBytes();
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public DataHandler asDataHandler() {
+            try {
+                return ap.getDataHandler();
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public Source asSource() {
+            try {
+                return new StreamSource(ap.getRawContent());
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public InputStream asInputStream() {
+            try {
+                return ap.getRawContent();
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public void addTo(SOAPMessage msg) {
+            msg.addAttachmentPart(ap);
+        }
     }
 
-    public void setType(String type) {
-        this.type = type;
+    /**
+     * {@link AttachmentBlock} stored as a {@link DataHandler}.
+     */
+    private static final class DataHandlerImpl extends AttachmentBlock {
+        private final String cid;
+        private final DataHandler dh;
+
+        public DataHandlerImpl(String cid, DataHandler dh) {
+            this.cid = cid;
+            this.dh = dh;
+        }
+
+        public String getId() {
+            return cid;
+        }
+
+        public String getContentType() {
+            return dh.getContentType();
+        }
+
+        public byte[] asByteArray() {
+            try {
+                return ASCIIUtility.getBytes(dh.getInputStream());
+            } catch (IOException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public DataHandler asDataHandler() {
+            return dh;
+        }
+
+        public InputStream asInputStream() {
+            try {
+                return dh.getInputStream();
+            } catch (IOException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        public void addTo(SOAPMessage msg) {
+            AttachmentPart part = msg.createAttachmentPart(dh);
+            part.setContentId(getId());
+            msg.addAttachmentPart(part);
+        }
     }
+
+    private static final class ByteArrayImpl extends AttachmentBlock {
+        private final String cid;
+        private byte[] data;
+        private int start;
+        private int len;
+
+        public ByteArrayImpl(String cid, byte[] data, int start, int len) {
+            this.cid = cid;
+            this.data = data;
+            this.start = start;
+            this.len = len;
+        }
+
+        public String getId() {
+            return cid;
+        }
+
+        public String getContentType() {
+            return "application/octet-stream";
+        }
+
+        public byte[] asByteArray() {
+            if(start!=0 || len!=data.length) {
+                // if our buffer isn't exact, switch to the exact one
+                byte[] exact = new byte[len];
+                System.arraycopy(data,start,exact,0,len);
+                start = 0;
+                data = exact;
+            }
+            return data;
+        }
+
+        public DataHandler asDataHandler() {
+            return new DataHandler(new ByteArrayDataSource(data,start,len,getContentType()));
+        }
+
+        public InputStream asInputStream() {
+            return new ByteArrayInputStream(data,start,len);
+        }
+
+        public void addTo(SOAPMessage msg) throws SOAPException {
+            AttachmentPart part = msg.createAttachmentPart();
+            part.setRawContentBytes(data,start,len,getContentType());
+            part.setContentId(getId());
+            msg.addAttachmentPart(part);
+        }
+    }
+
+//    private static final class JAXB extends AttachmentBlock {
+//        private final String id;
+//        private Object value;
+//        private String type;
+//    }
 }
