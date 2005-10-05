@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.11 2005-09-24 04:51:22 kohlert Exp $
+ * $Id: Parameter.java,v 1.12 2005-10-05 22:21:57 kohsuke Exp $
  */
 
 /*
@@ -118,15 +118,15 @@ public class Parameter {
     }
 
     public boolean isIN() {
-        return mode.equals(Mode.IN);
+        return mode==Mode.IN;
     }
 
     public boolean isOUT() {
-        return mode.equals(Mode.OUT);
+        return mode==Mode.OUT;
     }
 
     public boolean isINOUT() {
-        return mode.equals(Mode.INOUT);
+        return mode==Mode.INOUT;
     }
 
     public boolean isResponse() {
