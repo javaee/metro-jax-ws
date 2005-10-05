@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerChainCaller.java,v 1.16 2005-09-27 17:04:44 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.17 2005-10-05 20:10:34 bbissett Exp $
  */
 
 /*
@@ -82,8 +82,6 @@ import java.util.logging.Logger;
 public class HandlerChainCaller {
 
     public static final String HANDLER_CHAIN_CALLER = "handler_chain_caller";
-    public static final String IGNORE_FAULT_PROPERTY =
-        "ignore msg fault, use exception";
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".handler");
@@ -256,17 +254,33 @@ public class HandlerChainCaller {
         }
     }
 
-    /**
-     * This method is used to set a property so that the runtime
-     * knows to ignore a fault in a message. It is used when there
-     * is a new exception thrown during handle fault processing.
+    /*
+     * The expectation of SOAPMessageDispatcher on the server
+     * side is that, if a ProtocolException is thrown from the
+     * handler chain, the message contents reflect the protocol
+     * exception. So if handleFault() throws a ProtocolException
+     * then insertFaultMessage() must be called again with the
+     * new exception.
+     *
+     * This method removes the existing fault and calls
+     * insertFaultMessage() to do the work.
      */
-    private void setIgnoreFaultProperty(ContextHolder holder) {
-       holder.getLMC().put(IGNORE_FAULT_PROPERTY, Boolean.TRUE);
-       holder.getLMC().setScope(IGNORE_FAULT_PROPERTY,
-           MessageContext.Scope.APPLICATION);
+    private void replaceExistingFault(ContextHolder holder,
+        ProtocolException exception) {
+        
+        SOAPMessageContext context = holder.getSMC();
+        if (context != null) {
+            try {
+                context.getMessage().getSOAPBody().removeContents();
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,
+                    "exception while replacing fault message in handler chain", e);
+                throw new RuntimeException(e);
+            }
+        }
+        insertFaultMessage(holder, exception);
     }
-
+    
     /**
      * Method used to call handlers with a HandlerContext that
      * may contain logical and protocol handlers.
@@ -425,9 +439,12 @@ public class HandlerChainCaller {
                     if (i>0) {
                         try {
                             callLogicalHandleFault(holder, i-1, 0);
+                        } catch (ProtocolException re1) {
+                            replaceExistingFault(holder,
+                                (ProtocolException) re1);
+                            re = re1;
                         } catch (RuntimeException re2) {
                             re = re2;
-                            setIgnoreFaultProperty(holder);
                         }
                     }
                 }
@@ -478,9 +495,11 @@ public class HandlerChainCaller {
                             callProtocolHandleFault(holder, 0,
                                 soapHandlers.size()-1);
                         }
+                    } catch (ProtocolException re1) {
+                        replaceExistingFault(holder, (ProtocolException) re1);
+                        re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;
-                        setIgnoreFaultProperty(holder);
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
@@ -541,9 +560,11 @@ public class HandlerChainCaller {
                             callLogicalHandleFault(holder,
                                 logicalHandlers.size()-1, 0);
                         }
+                    } catch (ProtocolException re1) {
+                        replaceExistingFault(holder, (ProtocolException) re1);
+                        re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;
-                        setIgnoreFaultProperty(holder);
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
@@ -587,9 +608,11 @@ public class HandlerChainCaller {
                             callProtocolHandleFault(holder, i+1,
                                 soapHandlers.size()-1);
                         }
+                    } catch (ProtocolException re1) {
+                        replaceExistingFault(holder, (ProtocolException) re1);
+                        re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;
-                        setIgnoreFaultProperty(holder);
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.48 2005-09-27 18:03:49 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.49 2005-10-05 20:10:35 bbissett Exp $
  */
 
 /*
@@ -140,8 +140,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (caller.hasHandlers()) {
                 handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                 updateMessageContext(messageInfo, handlerContext);
-
-                handlerResult = callHandlersOnRequest(handlerContext);
+                try {
+                    handlerResult = callHandlersOnRequest(handlerContext);
+                } catch (ProtocolException pe) {
+                    // message has already been replaced with fault
+                    handlerResult = false;
+                }
                 sm = handlerContext.getSOAPMessage();
                 if (sm == null) {
                     sm = encoder.toSOAPMessage(handlerContext.getInternalMessage(), messageInfo);
