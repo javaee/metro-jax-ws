@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: wsgen.template,v 1.2 2005-09-16 21:53:53 jitu Exp $
+# $Id: wsgen.template,v 1.3 2005-10-05 20:54:24 jitu Exp $
 #
 
 #
@@ -31,6 +31,6 @@ fi
 
 WEBSERVICES_LIB=%WEBSERVICES_LIB%
 
-CLASSPATH=.:$WEBSERVICES_LIB/lib/jaxws-rt.jar:$WEBSERVICES_LIB/lib/jaxws-tools.jar:$WEBSERVICES_LIB/lib/jaxws-api.jar:$WEBSERVICES_LIB/lib/activation.jar:$WEBSERVICES_LIB/lib/saaj-api.jar:$WEBSERVICES_LIB/lib/saaj-impl.jar:$WEBSERVICES_LIB/lib/relaxngDatatype.jar:$WEBSERVICES_LIB/lib/jaxb-xjc.jar:$WEBSERVICES_LIB/lib/jsr173_api.jar:$WEBSERVICES_LIB/lib/sjsxp.jar:$WEBSERVICES_LIB/lib/jaxb-api.jar:$WEBSERVICES_LIB/lib/jaxb-impl.jar:$WEBSERVICES_LIB/lib/jaxb-libs.jar:$WEBSERVICES_LIB/lib/jsr181-api.jar:$JAVA_HOME/lib/tools.jar
+CLASSPATH=$WEBSERVICES_LIB/jaxws-tools.jar:$JAVA_HOME/lib/tools.jar
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsGen "$@"
+exec $JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsGen "$@"

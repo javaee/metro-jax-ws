@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: wsimport.template,v 1.3 2005-09-27 00:54:32 jitu Exp $
+# $Id: wsimport.template,v 1.4 2005-10-05 20:54:23 jitu Exp $
 #
 
 #
@@ -31,6 +31,6 @@ fi
 
 WEBSERVICES_LIB=%WEBSERVICES_LIB%
 
-CLASSPATH=.:$WEBSERVICES_LIB/jaxws-rt.jar:$WEBSERVICES_LIB/jaxws-tools.jar:$WEBSERVICES_LIB/jaxws-api.jar:$WEBSERVICES_LIB/activation.jar:$WEBSERVICES_LIB/saaj-api.jar:$WEBSERVICES_LIB/saaj-impl.jar:$WEBSERVICES_LIB/relaxngDatatype.jar:$WEBSERVICES_LIB/jaxb-xjc.jar:$WEBSERVICES_LIB/jsr173_api.jar:$WEBSERVICES_LIB/sjsxp.jar:$WEBSERVICES_LIB/jaxb-api.jar:$WEBSERVICES_LIB/jaxb-impl.jar:$WEBSERVICES_LIB/jsr181-api.jar:$JAVA_HOME/lib/tools.jar
+CLASSPATH=$WEBSERVICES_LIB/jaxws-tools.jar:$JAVA_HOME/lib/tools.jar
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsImport "$@"
+exec $JAVA_HOME/bin/java -cp "$CLASSPATH" com.sun.tools.ws.WsImport "$@"
