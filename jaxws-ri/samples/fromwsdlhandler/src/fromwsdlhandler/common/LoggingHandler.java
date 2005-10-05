@@ -38,13 +38,6 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
     // change this to redirect output if desired
     private static PrintStream out = System.out;
     
-    // used to hold initilization data
-    private Map config;
-    
-    public void init (Map config) {
-        this.config = config;
-    }
-    
     public Set<QName> getHeaders () {
         return null;
     }
@@ -61,10 +54,6 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
     
     // nothing to clean up
     public void close (MessageContext messageContext) {
-    }
-    
-    // nothing to clean up
-    public void destroy () {
     }
     
     /*

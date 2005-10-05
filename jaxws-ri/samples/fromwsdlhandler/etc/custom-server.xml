@@ -33,13 +33,13 @@
         </jaxb:schemaBindings>
     </bindings>
     <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
-        <jws:handler-chain>
+        <jws:handler-chains>
             <jws:handler-chain>
                 <jws:handler>
                     <jws:handler-class>fromwsdlhandler.common.LoggingHandler</jws:handler-class>
                 </jws:handler>
             </jws:handler-chain>
-        </jws:handler-chain>
+        </jws:handler-chains>
     </bindings>
 </bindings>
 
