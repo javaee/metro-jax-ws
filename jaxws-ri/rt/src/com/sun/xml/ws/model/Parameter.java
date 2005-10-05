@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.12 2005-10-05 22:21:57 kohsuke Exp $
+ * $Id: Parameter.java,v 1.13 2005-10-05 22:23:20 kohsuke Exp $
  */
 
 /*
@@ -24,12 +24,11 @@
 
 package com.sun.xml.ws.model;
 
-import javax.xml.namespace.QName;
-import javax.xml.ws.Holder;
-
-import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.model.soap.SOAPBlock;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Holder;
 
 /**
  * runtime Parameter that abstracts the annotated java parameter
@@ -166,6 +165,7 @@ public class Parameter {
         if (obj instanceof Holder)
             ((Holder) obj).value = value;
         else
+            // TODO: this can't be correct
             obj = value;
     }
 
