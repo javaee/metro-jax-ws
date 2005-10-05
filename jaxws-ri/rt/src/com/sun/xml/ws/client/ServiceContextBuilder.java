@@ -258,20 +258,18 @@ public abstract class ServiceContextBuilder {
                 if (name != null)
                     SCAnnotations.serviceQName = new QName(tns, name);
                 SCAnnotations.wsdlLocation = wsc.wsdlLocation();
+                
+                final Class myClass = sc;
+                Method[] methods = (Method[])
+                    AccessController.doPrivileged(new PrivilegedAction(){
+                        public Object run() {
+                            return myClass.getDeclaredMethods();
+                        }
+                    });
 
-                Method[] methods = sc.getDeclaredMethods();
                 if (methods != null) {
                     ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
                     for (final Method method : methods) {
-/*
-                        AccessController.doPrivileged(new PrivilegedAction() {
-                            public Object run() {
-                                method.setAccessible(true);
-                                return null; // nothing to return
-                            }
-                        });
- */
-
                         WebEndpoint webEndpoint = getPrivMethodAnnotation(method, WebEndpoint.class);
                         if (webEndpoint != null) {
                             String endpointName = webEndpoint.name();
