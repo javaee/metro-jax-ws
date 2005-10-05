@@ -1,5 +1,5 @@
 /**
- * $Id: WSDLDocument.java,v 1.5 2005-09-10 19:48:22 kohsuke Exp $
+ * $Id: WSDLDocument.java,v 1.6 2005-10-05 22:56:59 kohsuke Exp $
  */
 
 /*
@@ -208,7 +208,7 @@ public class WSDLDocument {
             if(inMsg != null){
                 for(String name:inMsg){
                     ParameterBinding pb = bo.getInputBinding(name);
-                    if(pb.getBinding().isBody()){
+                    if(pb.isBody()){
                         bo.addPart(new Part(name, pb, bodyindex++), Mode.IN);
                     }
                 }
@@ -221,7 +221,7 @@ public class WSDLDocument {
             if(outMsg!= null){
                 for(String name:outMsg){
                     ParameterBinding pb = bo.getOutputBinding(name);
-                    if(pb.getBinding().isBody()){
+                    if(pb.isBody()){
                         bo.addPart(new Part(name, pb, bodyindex++), Mode.OUT);
                     }
                 }

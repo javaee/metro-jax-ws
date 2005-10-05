@@ -1,5 +1,5 @@
 /**
- * $Id: Parameter.java,v 1.13 2005-10-05 22:23:20 kohsuke Exp $
+ * $Id: Parameter.java,v 1.14 2005-10-05 22:56:58 kohsuke Exp $
  */
 
 /*
@@ -25,7 +25,6 @@
 package com.sun.xml.ws.model;
 
 import com.sun.xml.bind.api.TypeReference;
-import com.sun.xml.ws.model.soap.SOAPBlock;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
@@ -87,7 +86,7 @@ public class Parameter {
      */
     public ParameterBinding getBinding() {
         if(binding == null)
-            return new ParameterBinding(SOAPBlock.BODY);
+            return ParameterBinding.BODY;
         return binding;
     }
 

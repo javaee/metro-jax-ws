@@ -1,5 +1,5 @@
 /**
- * $Id: BindingOperation.java,v 1.6 2005-09-10 19:48:21 kohsuke Exp $
+ * $Id: BindingOperation.java,v 1.7 2005-10-05 22:56:59 kohsuke Exp $
  */
 
 /*
@@ -25,7 +25,6 @@ package com.sun.xml.ws.wsdl.parser;
 
 import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.Mode;
-import com.sun.xml.ws.model.soap.SOAPBlock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -107,9 +106,9 @@ public class BindingOperation {
         }
         ParameterBinding block = inputParts.get(part);
         if(block == null){
-            if(explicitInputSOAPBodyParts || (boolean)emptyInputBody)
-                return new ParameterBinding(SOAPBlock.UNBOUND);
-            return new ParameterBinding(SOAPBlock.BODY);
+            if(explicitInputSOAPBodyParts || emptyInputBody)
+                return ParameterBinding.UNBOUND;
+            return ParameterBinding.BODY;
         }
 
         return block;
@@ -124,9 +123,9 @@ public class BindingOperation {
         }
         ParameterBinding block = outputParts.get(part);
         if(block == null){
-            if(explicitOutputSOAPBodyParts || (boolean)emptyOutputBody)
-                return new ParameterBinding(SOAPBlock.UNBOUND);;
-            return new ParameterBinding(SOAPBlock.BODY);
+            if(explicitOutputSOAPBodyParts || emptyOutputBody)
+                return ParameterBinding.UNBOUND;
+            return ParameterBinding.BODY;
         }
 
         return block;

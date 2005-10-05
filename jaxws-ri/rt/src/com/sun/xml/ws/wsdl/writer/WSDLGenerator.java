@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.44 2005-09-23 22:45:38 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.45 2005-10-05 22:56:59 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -32,7 +32,6 @@ import com.sun.xml.txw2.output.StreamSerializer;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
-import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.model.soap.Use;
 import com.sun.xml.ws.wsdl.writer.document.*;

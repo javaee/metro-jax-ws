@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeWSDLParser.java,v 1.27 2005-09-20 20:56:15 vivekp Exp $
+ * $Id: RuntimeWSDLParser.java,v 1.28 2005-10-05 22:56:59 kohsuke Exp $
  */
 
 /*
@@ -24,7 +24,6 @@
 
 package com.sun.xml.ws.wsdl.parser;
 import com.sun.xml.ws.model.ParameterBinding;
-import com.sun.xml.ws.model.soap.SOAPBlock;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
@@ -343,10 +342,10 @@ public class RuntimeWSDLParser {
         if(partsString != null){
             List<String> partsList = XmlUtil.parseTokenList(partsString);
             if(partsList.isEmpty()){
-                parts.put(" ", new ParameterBinding(SOAPBlock.BODY));
+                parts.put(" ", ParameterBinding.BODY);
             }else{
                 for(String part:partsList){
-                    parts.put(part, new ParameterBinding(SOAPBlock.BODY));
+                    parts.put(part, ParameterBinding.BODY);
                 }
             }
             return true;
@@ -364,7 +363,7 @@ public class RuntimeWSDLParser {
         //lets not worry about message attribute for now, probably additional headers wont be there
         //String message = reader.getAttributeValue(null, "message");
         //QName msgName = ParserUtil.getQName(reader, message);
-        parts.put(part, new ParameterBinding(SOAPBlock.HEADER));
+        parts.put(part, ParameterBinding.HEADER);
         goToEnd(reader);
     }
 
@@ -401,8 +400,7 @@ public class RuntimeWSDLParser {
                     XMLStreamReaderUtil.skipElement(reader);
                     continue;
                 }
-                ParameterBinding sb = new ParameterBinding(SOAPBlock.MIME);
-                sb.setMimeType(type);
+                ParameterBinding sb = ParameterBinding.createAttachment(type);
                 parts.put(part, sb);
                 //mimeTypes.put(part, type);
                 XMLStreamReaderUtil.next(reader);
