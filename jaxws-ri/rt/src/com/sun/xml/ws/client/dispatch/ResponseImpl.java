@@ -66,7 +66,6 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
         _lock.lock();
         try {
             super.setException(ex);
-            //notify(_callbackQueue);
         } catch (Exception e) {
         } finally {
             _lock.unlock();
@@ -77,7 +76,6 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
         _lock.lock();
         try {
             super.set(result);
-            //notify(_callbackQueue);
         } catch (Exception e) {
         } finally {
             _lock.unlock();
@@ -94,7 +92,7 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
         if (!isDone())
             return null;
         else
-            return (Map<String, Object>) (_responseContext = new ResponseContext(null));
+            return (Map) (_responseContext = new ResponseContext(null));
     }
 
     public void setResponseContext(Map context) {

@@ -153,7 +153,7 @@ public class EndpointIFInvocationHandler
 
         messageStruct.setMethod(method);
         messageStruct.setData(parameters);
-        RequestContext requestContext = (RequestContext) ((BindingProvider) _proxy).getRequestContext();
+        RequestContext requestContext = (RequestContext)(java.util.Map)((BindingProvider) _proxy).getRequestContext();
         requestContext.put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, requestContext);
