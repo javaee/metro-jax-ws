@@ -28,7 +28,7 @@
 <project name="JAXWS-RI" default="main" basedir=".">
 
   <property name="Name" value="JAX-WS RI"/>
-  <property name="version" value="2.0-INTERNAL"/>
+  <property name="version" value="2.0"/>
       
   <property name="build.home" value="${basedir}/build"/>  
   <property name="lib.home" value="${basedir}/lib"/>
@@ -39,6 +39,17 @@
   <property name="dist.home" value="${basedir}/dist"/>
   <property name="dist20.home" value="${dist.home}/jaxws-ri"/> 
   
+  
+  <!-- this property is used by "wsgen/wsimport -version".
+             It should be set via the RE build
+             scripts via 'ant -Dbuild.id="b08"' otherwise the current date and time
+             will be used -->
+  <tstamp>
+      <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+  </tstamp>
+  <property name="build.id" value="${now}(${user.name})" />
+  <property name="build.version" value="${Name} ${version}-${build.id}" />
+  <echo message="The build id is: ${build.version}" /> 
 <!-- ************ Per user local properties ******************************* -->
 
   <property file="${user.home}/build.properties"/>   <!-- User local        -->
@@ -164,11 +175,6 @@
     </target>
 
 
-    <tstamp>
-       <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
-    </tstamp>
-    <property name="build.id" value="${now}(${user.name})" />
-    
   <target name="runtime-build" depends="runtime-compile">
     <!-- Copying the manifest -->
     <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
