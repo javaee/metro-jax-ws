@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.51 2005-10-06 18:56:18 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.52 2005-10-06 19:43:36 kwalsh Exp $
  */
 
 /*
@@ -70,18 +70,12 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
-import com.sun.xml.ws.util.Base64Util;
-import com.sun.xml.ws.util.FastInfosetUtil;
-import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.xml.ws.util.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.MimeHeader;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
+import javax.xml.soap.*;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.ProtocolException;
@@ -94,6 +88,11 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Proxy;
@@ -258,27 +257,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return sm;
     }
 
-    private InternalMessage preHandlerOutboundHook(SOAPMessage sm, InternalMessage im) {
-        if ((sm != null) && (im != null))
-            im = null;
-        return im;
-    }
-
-    private void postHandlerOutboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
-            InternalMessage im = handlerContext.getInternalMessage();
-            if (im != null){
-            Object value = im.getBody().getValue();
-            updateSOAPMessage(value, sm);
-            im = null;
-            } else
-                try {
-                    sm.saveChanges();
-                } catch (SOAPException e) {
-                    throw new WebServiceException(e);
-                }
-        }
-    }
 
     private boolean isOneway(MessageInfo messageInfo) {
         return messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP ? true : false;
@@ -492,40 +470,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    private void postHandlerInboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
-            InternalMessage im = handlerContext.getInternalMessage();
-            if (im != null){
-            Object value = im.getBody().getValue();
-            Node resultNode = null;
-            updateSOAPMessage(value, sm);
-            im = null;
-            } else
-                try {
-                    sm.saveChanges();
-                } catch (SOAPException e) {
-                    throw new WebServiceException(e);
-                }
-        }
-    }
-
-    private void updateSOAPMessage(Object value, SOAPMessage sm) {
-        Node resultNode;
-        try {
-            if (value instanceof Source) {
-                resultNode = domSourceToNode((Source) value);
-                SOAPEnvelope se = sm.getSOAPPart().getEnvelope();
-                SOAPBody sb = se.getBody();
-                sb.removeContents();
-                sb.addDocument((Document) resultNode);
-                sm.saveChanges();
-            }
-        } catch (SOAPException e) {
-            throw new WebServiceException(e);
-        } catch (Exception e) {
-            throw new WebServiceException(e);
-        }
-    }
 
     private SOAPHandlerContext getInboundHandlerContext(MessageInfo messageInfo, SOAPMessage sm) {
         SOAPHandlerContext handlerContext = (SOAPHandlerContext) messageInfo
@@ -641,6 +585,25 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         BindingImpl binding = (BindingImpl) getBinding(messageInfo);
         return binding.getHandlerChainCaller();
     }
+
+    private void updateSOAPMessage(Object value, SOAPMessage sm) {
+            Node resultNode;
+            try {
+                if (value instanceof Source) {
+                    resultNode = DOMUtil.domSourceToNode((Source) value);
+                    SOAPEnvelope se = sm.getSOAPPart().getEnvelope();
+                    SOAPBody sb = se.getBody();
+                    sb.removeContents();
+                    sb.addDocument((Document) resultNode);
+                    sm.saveChanges();
+                }
+            } catch (SOAPException e) {
+                throw new WebServiceException(e);
+            } catch (Exception e) {
+                throw new WebServiceException(e);
+            }
+        }
+
 
     protected void updateMessageContext(MessageInfo messageInfo, SOAPHandlerContext context) {
         SOAPMessageContext messageContext = context.getSOAPMessageContext();
@@ -799,6 +762,46 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
+     private InternalMessage preHandlerOutboundHook(SOAPMessage sm, InternalMessage im) {
+        if ((sm != null) && (im != null))
+            im = null;
+        return im;
+    }
+
+    private void postHandlerOutboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+            InternalMessage im = handlerContext.getInternalMessage();
+            if (im != null){
+            Object value = im.getBody().getValue();
+            updateSOAPMessage(value, sm);
+            im = null;
+            } else
+                try {
+                    sm.saveChanges();
+                } catch (SOAPException e) {
+                    throw new WebServiceException(e);
+                }
+        }
+    }
+
+    private void postHandlerInboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
+            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+                InternalMessage im = handlerContext.getInternalMessage();
+                if (im != null){
+                Object value = im.getBody().getValue();               
+                updateSOAPMessage(value, sm);
+                im = null;
+                } else
+                    try {
+                        sm.saveChanges();
+                    } catch (SOAPException e) {
+                        throw new WebServiceException(e);
+                    }
+            }
+        }
+
+
+
     private void closeAllHandlers(SOAPHandlerContext context) {
         HandlerChainCaller caller = getHandlerChainCaller(context.getMessageInfo());
         if (caller != null && caller.hasHandlers()) {
@@ -874,16 +877,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             s = "******************\n\n";
             out.write(s.getBytes());
         }
-    }
-
-    private Node domSourceToNode(Source source) throws Exception {
-        Transformer xFormer =
-            TransformerFactory.newInstance().newTransformer();
-        xFormer.setOutputProperty("omit-xml-declaration", "yes");
-        DOMResult dResult = new DOMResult();
-        xFormer.transform(source, dResult);
-        return dResult.getNode();
-      
     }
 
     class DaemonThreadFactory implements ThreadFactory {
