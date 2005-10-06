@@ -1,5 +1,5 @@
 /*
- * $Id: DOMUtil.java,v 1.2 2005-09-10 19:48:13 kohsuke Exp $
+ * $Id: DOMUtil.java,v 1.3 2005-10-06 19:44:31 kwalsh Exp $
  */
 
 /*
@@ -24,24 +24,30 @@
 
 package com.sun.xml.ws.util;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 
 /**
  * $author: JAXWS Development Team
  */
 public class DOMUtil {
-    
+
     private static DocumentBuilder db;
-    
+
     /**
      * Creates a new DOM document.
      */
     public static Document createDom() {
-        synchronized(DOMUtil.class) {
+        synchronized (DOMUtil.class) {
             if (db == null) {
                 try {
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -54,5 +60,15 @@ public class DOMUtil {
             return db.newDocument();
         }
     }
-    
+
+    public static Node domSourceToNode(Source source) throws Exception {
+        Transformer xFormer =
+            TransformerFactory.newInstance().newTransformer();
+        xFormer.setOutputProperty("omit-xml-declaration", "yes");
+        DOMResult dResult = new DOMResult();
+        xFormer.transform(source, dResult);
+        return dResult.getNode();
+
+    }
+
 }
