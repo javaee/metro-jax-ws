@@ -24,6 +24,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpsExchange;
 import com.sun.xml.ws.handler.MessageContextImpl;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
 import javax.xml.ws.handler.MessageContext;
@@ -100,21 +101,13 @@ public class WSHttpHandler implements HttpHandler {
             MessageContext msgCtxt = new MessageContextImpl();
             WebServiceContext wsContext = endpointInfo.getWebServiceContext();
             wsContext.setMessageContext(msgCtxt);
+            MessageContextUtil.setHttpRequestMethod(msgCtxt, msg.getRequestMethod());
+            MessageContextUtil.setHttpRequestHeaders(msgCtxt, con.getHeaders());
             tie.handle(con, endpointInfo);
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
             con.close();
-        }
-    }
-    
-    /*
-     * Consumes the entire input stream
-     */
-    private static void readFully(InputStream is) throws IOException {
-        byte[] buf = new byte[1024];
-        if (is != null) {
-            while (is.read(buf) != -1);
         }
     }
     
@@ -212,16 +205,6 @@ public class WSHttpHandler implements HttpHandler {
         if (is != null) {
             try {
                 is.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
-            }
-        }
-    }
-    
-    private static void closeOutputStream(OutputStream os) {
-        if (os != null) {
-            try {
-                os.close();
             } catch(IOException ioe) {
                 ioe.printStackTrace();
             }

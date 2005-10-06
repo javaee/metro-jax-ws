@@ -18,7 +18,11 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.handler;
-import com.sun.xml.ws.spi.runtime.MessageContext;
+
+import java.util.List;
+import java.util.Map;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.namespace.QName;
 
 
@@ -29,15 +33,28 @@ import javax.xml.namespace.QName;
  */
 public class MessageContextUtil {
     
-    public static Integer getHttpStatusCode(javax.xml.ws.handler.MessageContext ctxt) {
+    public static Integer getHttpStatusCode(MessageContext ctxt) {
         return (Integer)ctxt.get(MessageContext.HTTP_RESPONSE_CODE);
     }
     
-    public static void setHttpStatusCode(javax.xml.ws.handler.MessageContext ctxt, Integer code) {
+    public static void setHttpStatusCode(MessageContext ctxt, Integer code) {
         ctxt.put(MessageContext.HTTP_RESPONSE_CODE, code);
+        ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);
     }
     
-    public static void setWsdlOperation(javax.xml.ws.handler.MessageContext ctxt, QName name) {
+    public static void setHttpRequestMethod(MessageContext ctxt, String method) {
+        ctxt.put(MessageContext.HTTP_REQUEST_METHOD, method);
+        ctxt.setScope(MessageContext.HTTP_REQUEST_METHOD, Scope.APPLICATION);
+    }
+    
+    public static void setHttpRequestHeaders(MessageContext ctxt,
+            Map<String, List<String>> headers) {
+        ctxt.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
+        ctxt.setScope(MessageContext.HTTP_REQUEST_HEADERS, Scope.APPLICATION);
+    }
+    
+    public static void setWsdlOperation(MessageContext ctxt, QName name) {
         ctxt.put(MessageContext.WSDL_OPERATION, name);
+        ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);
     }
 }

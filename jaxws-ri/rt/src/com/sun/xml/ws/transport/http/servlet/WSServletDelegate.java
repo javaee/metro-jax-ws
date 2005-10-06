@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.12 2005-10-03 18:23:57 bbissett Exp $
+ * $Id: WSServletDelegate.java,v 1.13 2005-10-06 23:50:30 jitu Exp $
  *
  */
 
@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
+import com.sun.xml.ws.handler.MessageContextUtil;
 //import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
@@ -367,8 +368,12 @@ public class WSServletDelegate {
             msgCtxt.setScope(MessageContext.SERVLET_REQUEST, Scope.APPLICATION);
             msgCtxt.put(MessageContext.SERVLET_RESPONSE, response);
             msgCtxt.setScope(MessageContext.SERVLET_RESPONSE, Scope.APPLICATION);
+
+            MessageContextUtil.setHttpRequestMethod(msgCtxt, request.getMethod());
+
             WSConnection connection =
                 new ServletConnectionImpl(request, response);
+            MessageContextUtil.setHttpRequestHeaders(msgCtxt, connection.getHeaders());
             tie.handle(connection, targetEndpoint);
         } catch (JAXWSExceptionBase e) {
             logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
