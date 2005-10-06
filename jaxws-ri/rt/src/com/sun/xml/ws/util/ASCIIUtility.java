@@ -1,5 +1,5 @@
 /**
- * $Id: ASCIIUtility.java,v 1.4 2005-10-06 20:54:52 kohsuke Exp $
+ * $Id: ASCIIUtility.java,v 1.5 2005-10-06 21:24:24 kohsuke Exp $
  */
 
 /*
@@ -148,7 +148,7 @@ public class ASCIIUtility {
         return buf;
     }
 
-    public static byte[] copyStream(InputStream is, OutputStream out) throws IOException {
+    public static void copyStream(InputStream is, OutputStream out) throws IOException {
         int size = 1024;
         byte[] buf = new byte[size];
         int len;
