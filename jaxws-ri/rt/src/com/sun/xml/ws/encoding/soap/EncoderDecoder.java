@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.28 2005-10-05 22:05:13 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.29 2005-10-06 01:50:03 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -23,6 +23,7 @@
 package com.sun.xml.ws.encoding.soap;
 
 import com.sun.xml.ws.encoding.EncoderDecoderBase;
+import com.sun.xml.ws.encoding.ByteArrayDataSource;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
@@ -36,13 +37,12 @@ import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import java.awt.Image;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -309,6 +309,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                     if(isXMLMimeType(paramBinding.getMimeType())) {
                         JAXBBridgeInfo bi = (JAXBBridgeInfo)rtContext.getDecoderInfo(param.getName());
                         ab.deserialize(rtContext.getBridgeContext(),bi);
+                        return bi.getValue();
                     }
                 }
             }
@@ -336,7 +337,19 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             bi.serialize(rtContext.getBridgeContext(), baos, null);
             obj = baos.toByteArray();
         }
-        AttachmentBlock ab = AttachmentBlock.fromDataHandler(contentId,new DataHandler(obj,mimeType));
+
+        //create appropriate DataHandler - for byte array create a DataSource with appropriate mime type
+        DataHandler dh = null;
+        if(byte[].class.isAssignableFrom(obj.getClass())){
+            DataSource ds = new ByteArrayDataSource(new ByteArrayInputStream((byte[])obj), mimeType);
+            dh = new DataHandler(ds);
+        }else if(DataHandler.class.isAssignableFrom(obj.getClass())){
+            dh = (DataHandler)obj;
+        }else{
+            dh = new DataHandler(obj,mimeType);
+        }
+
+        AttachmentBlock ab = AttachmentBlock.fromDataHandler(contentId, dh);
         im.addAttachment(ab);
     }
 
