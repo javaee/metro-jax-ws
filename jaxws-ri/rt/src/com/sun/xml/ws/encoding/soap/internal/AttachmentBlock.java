@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.8 2005-10-05 22:05:12 kohsuke Exp $
+ * $Id: AttachmentBlock.java,v 1.9 2005-10-06 20:54:51 kohsuke Exp $
  */
 
 /*
@@ -24,24 +24,28 @@
 package com.sun.xml.ws.encoding.soap.internal;
 
 import com.sun.xml.bind.api.BridgeContext;
-import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.imageio.ImageIO;
 import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import javax.imageio.ImageIO;
+import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.awt.Image;
 
 /**
  * Attachment of {@link InternalMessage}.
@@ -58,9 +62,13 @@ import java.awt.Image;
  * sending to a network, this allows the conversion to the byte image to happen
  * lazily, and directly to the network.
  *
- * TODO:
- *   when we support direct writing to the network, this class can provide
- *   a {@code writeTo(OutputStream)} method to efficiently write the contents out.
+ * <p>
+ * Even though most of the data access methods have default implementation,
+ * Implementation classes of this class should override them
+ * so that they can run faster, whenever possible. In particular, the default
+ * implementation of {@link #asInputStream()} and {@link #writeTo(OutputStream)}
+ * has a circular dependency, so at least one must be overridden.
+ *
  * TODO:
  *   in the performance critical path of mapping an attachment to a Java type,
  *   most of the type the Java type to which it binds to is known in advance.
@@ -80,8 +88,16 @@ public abstract class AttachmentBlock {
         return new SAAJImpl(part);
     }
 
-    public static AttachmentBlock fromByteArray(String cid,byte[] data, int start, int len) {
-        return new ByteArrayImpl(cid,data,start,len);
+    public static AttachmentBlock fromByteArray(String cid,byte[] data, int start, int len, String mimeType ) {
+        return new ByteArrayImpl(cid,data,start,len,mimeType);
+    }
+
+    public static AttachmentBlock fromByteArray(String cid,byte[] data, String mimeType) {
+        return new ByteArrayImpl(cid,data,0,data.length,mimeType);
+    }
+
+    public static AttachmentBlock fromJAXB(String cid, JAXBBridgeInfo bridgeInfo, RuntimeContext rtContext, String mimeType) {
+        return new JAXBImpl(cid,bridgeInfo,rtContext,mimeType);
     }
 
     /**
@@ -146,7 +162,14 @@ public abstract class AttachmentBlock {
     /**
      * Gets the attachment as an exact-length byte array.
      */
-    public abstract byte[] asByteArray();
+    // not so fast but useful default implementation
+    public byte[] asByteArray() {
+        try {
+            return ASCIIUtility.getBytes(asInputStream());
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        }
+    }
 
     /**
      * Gets the attachment as a {@link DataHandler}.
@@ -161,7 +184,19 @@ public abstract class AttachmentBlock {
         return new StreamSource(asInputStream());
     }
 
-    public abstract InputStream asInputStream();
+    /**
+     * Obtains this attachment as an {@link InputStream}.
+     */
+    // not-so-efficient but useful default implementation.
+    public InputStream asInputStream() {
+        ByteOutputStream bos = new ByteOutputStream();
+        try {
+            writeTo(bos);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        }
+        return bos.newInputStream();
+    }
 
     /**
      * Deserializes this attachment by using JAXB into {@link JAXBBridgeInfo}.
@@ -175,7 +210,20 @@ public abstract class AttachmentBlock {
     /**
      * Adds this attachment as an {@link AttachmentPart} into the given {@link SOAPMessage}.
      */
-    public abstract void addTo(SOAPMessage msg) throws SOAPException;
+    // not so fast but useful default
+    public void addTo(SOAPMessage msg) throws SOAPException {
+        AttachmentPart part = msg.createAttachmentPart(asDataHandler());
+        part.setContentId(getId());
+        msg.addAttachmentPart(part);
+    }
+
+    /**
+     * Writes the contents of the attachment into the given stream.
+     */
+    // not so fast but useful default
+    public void writeTo(OutputStream os) throws IOException {
+        ASCIIUtility.copyStream(asInputStream(),os);
+    }
 
     /**
      * Deserializes this attachment into an {@link Image}.
@@ -266,14 +314,6 @@ public abstract class AttachmentBlock {
             return dh.getContentType();
         }
 
-        public byte[] asByteArray() {
-            try {
-                return ASCIIUtility.getBytes(dh.getInputStream());
-            } catch (IOException e) {
-                throw new WebServiceException(e);
-            }
-        }
-
         public DataHandler asDataHandler() {
             return dh;
         }
@@ -285,12 +325,6 @@ public abstract class AttachmentBlock {
                 throw new WebServiceException(e);
             }
         }
-
-        public void addTo(SOAPMessage msg) {
-            AttachmentPart part = msg.createAttachmentPart(dh);
-            part.setContentId(getId());
-            msg.addAttachmentPart(part);
-        }
     }
 
     private static final class ByteArrayImpl extends AttachmentBlock {
@@ -298,12 +332,14 @@ public abstract class AttachmentBlock {
         private byte[] data;
         private int start;
         private int len;
+        private final String mimeType;
 
-        public ByteArrayImpl(String cid, byte[] data, int start, int len) {
+        public ByteArrayImpl(String cid, byte[] data, int start, int len, String mimeType) {
             this.cid = cid;
             this.data = data;
             this.start = start;
             this.len = len;
+            this.mimeType = mimeType;
         }
 
         public String getId() {
@@ -311,7 +347,7 @@ public abstract class AttachmentBlock {
         }
 
         public String getContentType() {
-            return "application/octet-stream";
+            return mimeType;
         }
 
         public byte[] asByteArray() {
@@ -339,11 +375,57 @@ public abstract class AttachmentBlock {
             part.setContentId(getId());
             msg.addAttachmentPart(part);
         }
+
+        public void writeTo(OutputStream os) throws IOException {
+            os.write(data,start,len);
+        }
     }
 
-//    private static final class JAXB extends AttachmentBlock {
-//        private final String id;
-//        private Object value;
-//        private String type;
-//    }
+    /**
+     * {@link AttachmentPart} that stores the value as a JAXB object.
+     *
+     * TODO: if it's common for an attahchment to be written more than once,
+     * it's better to cache the marshalled result, as it is expensive operation.
+     */
+    private static final class JAXBImpl extends AttachmentBlock implements DataSource {
+        private final String id;
+        private final JAXBBridgeInfo bridgeInfo;
+        private final RuntimeContext rtContext;
+        private final String type;
+
+        public JAXBImpl(String id, JAXBBridgeInfo bridgeInfo, RuntimeContext rtContext, String type) {
+            this.id = id;
+            this.bridgeInfo = bridgeInfo;
+            this.rtContext = rtContext;
+            this.type = type;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getContentType() {
+            return type;
+        }
+
+        public DataHandler asDataHandler() {
+            return new DataHandler(this);
+        }
+
+        public InputStream getInputStream() {
+            return asInputStream();
+        }
+
+        public String getName() {
+            return null;
+        }
+
+        public OutputStream getOutputStream() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void writeTo(OutputStream os) {
+            bridgeInfo.serialize(rtContext.getBridgeContext(),os,null);
+        }
+    }
 }

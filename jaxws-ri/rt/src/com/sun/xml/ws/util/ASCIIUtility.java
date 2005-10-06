@@ -1,5 +1,5 @@
 /**
- * $Id: ASCIIUtility.java,v 1.3 2005-09-10 19:48:12 kohsuke Exp $
+ * $Id: ASCIIUtility.java,v 1.4 2005-10-06 20:54:52 kohsuke Exp $
  */
 
 /*
@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /**
  * Copied from mail.jar.
@@ -44,7 +45,7 @@ public class ASCIIUtility {
      * Based on java.lang.Integer.parseInt()
      */
     public static int parseInt(byte[] b, int start, int end, int radix)
-		throws NumberFormatException {
+        throws NumberFormatException {
         if (b == null)
             throw new NumberFormatException("null");
 
@@ -145,5 +146,14 @@ public class ASCIIUtility {
             buf = bos.toByteArray();
         }
         return buf;
+    }
+
+    public static byte[] copyStream(InputStream is, OutputStream out) throws IOException {
+        int size = 1024;
+        byte[] buf = new byte[size];
+        int len;
+
+        while ((len = is.read(buf, 0, size)) != -1)
+            out.write(buf, 0, len);
     }
 }

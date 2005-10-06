@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.29 2005-10-06 01:50:03 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.30 2005-10-06 20:54:52 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -47,6 +47,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.net.URLEncoder;
 
 /**
  * @author Vivek Pandey
@@ -65,14 +66,14 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return if the parameter is a return
      */
     protected Object fillData(RuntimeContext context, Parameter param, Object obj, Object[] data,
-            SOAPBinding binding, ParameterBinding paramBinding) {
+                              SOAPBinding binding, ParameterBinding paramBinding) {
         if (param.isWrapperStyle()) {
             Object resp = null;
             for (Parameter p : ((WrapperParameter) param).getWrapperChildren()) {
                 QName name = p.getName();
                 Object value = null;
                 if (binding.isDocLit()){
-                    value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(), 
+                    value = super.getWrapperChildValue(context, ((JAXBBridgeInfo)obj).getValue(),
                                 name.getNamespaceURI(), name.getLocalPart());
                 }else if (binding.isRpcLit()){
                     value = getWrapperChildValue(context, obj, name.getNamespaceURI(), name
@@ -144,7 +145,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return Payload - decided by the binding used
      */
     protected Object createPayload(RuntimeContext context, Parameter param, Object[] data,
-            Object result, SOAPBinding binding, ParameterBinding paramBinding) {
+                                   Object result, SOAPBinding binding, ParameterBinding paramBinding) {
         if(paramBinding.isAttachment()){
             Object obj = null;
             if(param.isResponse())
@@ -170,7 +171,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      */
     @Override
     protected Object getWrapperChildValue(RuntimeContext context, Object obj, String nsURI,
-            String localName) {
+                                          String localName) {
         RpcLitPayload payload = (RpcLitPayload) obj;
         JAXBBridgeInfo rpcParam = payload.getBridgeParameterByName(localName);
         if(rpcParam != null)
@@ -239,7 +240,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return non-null JAXB style bean.
      */
     private Object createJAXBBeanPayload(RuntimeContext context, WrapperParameter param,
-            Object[] data, Object result) {
+                                         Object[] data, Object result) {
         Class bean = (Class) param.getTypeReference().type;
         try {
             Object obj = bean.newInstance();
@@ -269,7 +270,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
      * @return non-null RpcLitPayload
      */
     private Object createRpcLitPayload(RuntimeContext context, WrapperParameter param,
-            Object[] data, Object result) {
+                                       Object[] data, Object result) {
         RpcLitPayload payload = new RpcLitPayload(param.getName());
 
         for  (Parameter p : param.getWrapperChildren()) {
@@ -287,7 +288,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         return payload;
     }
 
-    protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments, 
+    protected Object getAttachment(RuntimeContext rtContext, Map<String, AttachmentBlock> attachments,
                                    Parameter param, ParameterBinding paramBinding){
         try {
             for (Map.Entry<String,AttachmentBlock> entry : attachments.entrySet()) {
@@ -326,30 +327,33 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         String mimeType = mimeParam.getBinding().getMimeType();
         String contentId;
         try {
-            contentId = java.net.URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+"="+UUID.randomUUID()+"@jaxws.sun.com";
+            contentId = URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+ '=' +UUID.randomUUID()+"@jaxws.sun.com";
         } catch (UnsupportedEncodingException e) {
             throw new SerializationException(e);
         }
 
-        if(!DataHandler.class.isAssignableFrom(obj.getClass()) && isXMLMimeType(mimeType) && !Source.class.isAssignableFrom(obj.getClass())){
-            JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bi.serialize(rtContext.getBridgeContext(), baos, null);
-            obj = baos.toByteArray();
-        }
+        AttachmentBlock ab;
 
-        //create appropriate DataHandler - for byte array create a DataSource with appropriate mime type
-        DataHandler dh = null;
-        if(byte[].class.isAssignableFrom(obj.getClass())){
-            DataSource ds = new ByteArrayDataSource(new ByteArrayInputStream((byte[])obj), mimeType);
-            dh = new DataHandler(ds);
-        }else if(DataHandler.class.isAssignableFrom(obj.getClass())){
-            dh = (DataHandler)obj;
-        }else{
-            dh = new DataHandler(obj,mimeType);
-        }
+        if(obj instanceof DataHandler)
+            ab = AttachmentBlock.fromDataHandler(contentId,(DataHandler)obj);
+        else
+        if(obj instanceof Source)
+            // this is potentially broken, as there's no guarantee this will work.
+            // we should have our own AttachmentBlock implementation for this.
+            ab = AttachmentBlock.fromDataHandler(contentId, new DataHandler(obj,mimeType));
+        else
+        if(obj instanceof byte[])
+            ab = AttachmentBlock.fromByteArray(contentId,(byte[])obj,mimeType);
+        else
+        if(isXMLMimeType(mimeType))
+            ab = AttachmentBlock.fromJAXB(contentId,
+                    new JAXBBridgeInfo(model.getBridge(mimeParam.getTypeReference()), obj),
+                    rtContext, mimeType );
+        else
+            // this is also broken, as there's no guarantee that the object type and the MIME type
+            // matches. But most of the time it matches, so it mostly works.
+            ab = AttachmentBlock.fromDataHandler(contentId,new DataHandler(obj,mimeType));
 
-        AttachmentBlock ab = AttachmentBlock.fromDataHandler(contentId, dh);
         im.addAttachment(ab);
     }
 
