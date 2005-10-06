@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.9 2005-09-15 23:18:30 spericas Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.10 2005-10-06 16:09:46 kohlert Exp $
  */
 
 /*
@@ -29,8 +29,26 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.*;
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.AsyncHandlerService;
+import com.sun.xml.ws.client.ContextMap;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.client.RequestContext;
+import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.WSFuture;
+import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
+import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
+import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
+import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_FI_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.XML_FI_ACCEPT_VALUE;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
@@ -58,15 +76,27 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.ws.*;
+import javax.xml.ws.Binding;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Response;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Client-side XML-based message dispatcher {@link com.sun.pept.protocol.MessageDispatcher}

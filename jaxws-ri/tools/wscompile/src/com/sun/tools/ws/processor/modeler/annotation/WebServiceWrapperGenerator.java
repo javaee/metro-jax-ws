@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.31 2005-10-03 20:54:22 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.32 2005-10-06 16:09:47 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -22,14 +22,28 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.apt.*;
-import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.*;
-import com.sun.mirror.util.*;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.InterfaceDeclaration;
+import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.ParameterDeclaration;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.ReferenceType;
+import com.sun.mirror.type.TypeMirror;
+import com.sun.mirror.type.VoidType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 import com.sun.tools.ws.processor.generator.GeneratorBase;
 import com.sun.tools.ws.processor.modeler.ModelerException;
@@ -40,9 +54,13 @@ import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 
 import javax.xml.namespace.QName;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.AccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.ws.WebFault;
-//import javax.xml.ws.ParameterIndex;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 
@@ -67,9 +85,11 @@ import com.sun.codemodel.writer.ProgressCodeWriter;
 import com.sun.tools.ws.wscompile.FilerCodeWriter;
 
 
-import javax.jws.*;
-import javax.jws.soap.*;
-import com.sun.tools.ws.processor.modeler.annotation.*;
+import javax.jws.Oneway;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
 
 
 /**
@@ -87,23 +107,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
     }
- 
-/*    protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf) { 
-        
-        if (webService == null)
-            builder.onError(intf.getPosition(), "webserviceap.endpointinterface.has.no.webservice.annotation", 
-                    new Object[] {intf.getQualifiedName()});
-        if (isLegalSEI(intf))
-            return true;
-        return false;
-    }        
-
-    protected boolean shouldProcessWebService(WebService webService, ClassDeclaration classDecl) {   
-        if (webService == null)
-            return false;
-        return isLegalImplementation(classDecl); 
-    }   */
-    
+     
     protected void processWebService(WebService webService, TypeDeclaration d) {
         cm =  new JCodeModel();
         wrapperNames = new HashSet<String>();
@@ -136,15 +140,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }    
 
-/*    protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
-        if (webMethod != null && webMethod.exclude())
-            return false;
-//        return !hasWebMethods || webMethod != null;
-        return webMethod != null || endpointReferencesInterface ||
-                method.getDeclaringType().equals(typeDecl) || 
-                (method.getDeclaringType().getAnnotation(WebService.class) != null);
-    }*/
-    
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         builder.log("WrapperGen - method: "+method);
         builder.log("method.getDeclaringType(): "+method.getDeclaringType());
@@ -242,11 +237,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
             }    
-        } /*else if (!(method.getReturnType() instanceof VoidType)) {
-            // this is an error, cannot be Oneway and have a return type
-            builder.onError(method.getPosition(), "webserviceap.oneway.operation.cannot.have.return.type",
-                    new Object[] {typeDecl.getQualifiedName(), method.toString()});
-        }*/
+        }
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
         WrapperInfo reqWrapperInfo = new WrapperInfo(requestClassName);
@@ -308,13 +299,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         int i=0;
         for (FieldDeclaration field : fields) {
             XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-//            ParameterIndex paramIndex = field.getAnnotation(ParameterIndex.class);                            
             String fieldName = field.getSimpleName();
             String typeName = field.getType().toString();
             String elementName = xmlElement != null ? xmlElement.name() : fieldName;
             String namespace =  xmlElement != null ? xmlElement.namespace() : "";
             
-//            int index = paramIndex != null ? paramIndex.value() : i;
             String idxStr = fieldName.substring(3);
             int index = Integer.parseInt(idxStr);
             member = new MemberInfo(index, typeName, 
@@ -360,11 +349,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         int paramIndex = -1;
 
         TypeMirror typeMirror = apEnv.getTypeUtils().getErasure(method.getReturnType());
-//        System.out.println("retType: "+typeMirror);
         String retType = typeMirror.toString();                
-//        String retType = typeMirror instanceof TypeDeclaration ? 
-//                    ((ClassDeclaration)typeMirror).getQualifiedName() :
-//                    method.getReturnType().toString();                
         if (!(method.getReturnType() instanceof VoidType) && !isResultHeader) {                    
             responseMembers.add(new MemberInfo(-1, retType, RETURN_VALUE, 
                 new QName(responseNamespace, responseElementName)));
@@ -488,7 +473,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         TypeMirror erasureType;
         TreeSet<String> keys = new TreeSet<String>(propertyToTypeMap.keySet());
         for (String key : keys) {
-//        for (String key : propertyToTypeMap.keySet()) {        
             TypeMirror type = propertyToTypeMap.get(key);
             erasureType = apEnv.getTypeUtils().getErasure(type);
             member = new MemberInfo(-10, erasureType.toString(), key, null);

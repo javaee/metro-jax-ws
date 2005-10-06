@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.64 2005-10-05 22:56:58 kohsuke Exp $
+ * $Id: RuntimeModeler.java,v 1.65 2005-10-06 16:09:45 kohlert Exp $
  */
 
 /*
@@ -28,22 +28,41 @@ import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.xml.ws.model.*;
+import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.model.Mode;
+import com.sun.xml.ws.model.CheckedException;
+import com.sun.xml.ws.model.ExceptionType;
+import com.sun.xml.ws.model.Parameter;
+import com.sun.xml.ws.model.ParameterBinding;
+import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.model.soap.Style;
 import com.sun.xml.ws.wsdl.parser.BindingOperation;
 import com.sun.xml.ws.wsdl.parser.Part;
 
-import javax.jws.*;
+import javax.jws.HandlerChain;
+import javax.jws.Oneway;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
-import javax.xml.ws.*;
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.Holder;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.Response;
+import javax.xml.ws.ResponseWrapper;
+import javax.xml.ws.WebFault;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.Future;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.http.HTTPBinding;
@@ -297,7 +316,9 @@ public class RuntimeModeler {
         if (clazz.getPackage() != null)
             packageName = clazz.getPackage().getName();
         if (targetNamespace.length() == 0) {
-            targetNamespace = getNamespace(packageName, clazz.getName());
+            if (packageName == null) {
+            }
+            targetNamespace = getNamespace(packageName);
         }
         runtimeModel.setTargetNamespace(targetNamespace);
         QName portTypeName = new QName(targetNamespace, portTypeLocalName);
@@ -330,7 +351,6 @@ public class RuntimeModeler {
         }*/
 
         for (Method method : clazz.getMethods()) {
-//            System.out.println("method: "+method.getName());
             if (method.getDeclaringClass().equals(Object.class) ||
                 !isWebMethod(method, clazz)) {
                 continue;
@@ -340,21 +360,17 @@ public class RuntimeModeler {
     }
 
     protected boolean isWebMethod(Method method, Class clazz) {
-//        System.out.print("method: "+method.getName()+" ");
         if (clazz.isInterface()) {
-//            System.out.println("class: "+clazz.getName()+" is interface");
             return true;
         }
         Class declClass = method.getDeclaringClass();
         WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null &&
             webMethod.exclude() == false) {
-//            System.out.println("has WebMethod");
             return true;
         }
         if (getPrivClassAnnotation(declClass, WebService.class) != null &&
             !classUsesWebMethod.get(declClass)) {
-//            System.out.println("class: "+declClass.getName()+" does not use WebMethod");
             return true;
         }
         return false;
@@ -383,11 +399,10 @@ public class RuntimeModeler {
      * @param packageName the name of the package used to find a namespace
      * @return the namespace for the specified <code>packageName</code>
      */
-    public static String getNamespace(String packageName, String className) {
+    public static String getNamespace(String packageName) {
         if (packageName == null || packageName.length() == 0)
-            throw new RuntimeModelerException("runtime.modeler.no.package",
-                             new Object[] {className});
-
+            return null;
+        
         StringTokenizer tokenizer = new StringTokenizer(packageName, ".");
         String[] tokens;
         if (tokenizer.countTokens() == 0) {
@@ -405,7 +420,6 @@ public class RuntimeModeler {
                 dot = ".";
             namespace.append(dot+tokens[i]);
         }
-        //namespace.append("/jaxws");
         namespace.append('/');
         return namespace.toString();
     }
@@ -1164,7 +1178,7 @@ public class RuntimeModeler {
         if (webService.serviceName().length() > 0) {
             name = webService.serviceName();
         }
-        String targetNamespace = getNamespace(packageName, implClass.getName());
+        String targetNamespace = getNamespace(packageName); 
         if (webService.targetNamespace().length() > 0) {
             if (packageName == null) {
                 throw new RuntimeModelerException("runtime.modeler.no.package",
@@ -1195,16 +1209,13 @@ public class RuntimeModeler {
         } else if (webService.name().length() > 0) {
             name = webService.name()+PORT;
         }
-//        if (name == null) {
-//            return null;
-//        }
         String packageName = null;
         if (implClass.getPackage() != null) {
             packageName = implClass.getPackage().getName();
         }
-        String targetNamespace = getNamespace(packageName, implClass.getName());
+        String targetNamespace = getNamespace(packageName);
         if (webService.targetNamespace().length() > 0) {
-            if (packageName == null) {
+            if (packageName == null || packageName.length()==0) {
                 throw new RuntimeModelerException("runtime.modeler.no.package",
                     new Object[] {implClass.getName()});
             }
@@ -1251,7 +1262,7 @@ public class RuntimeModeler {
 
         String tns = webService.targetNamespace();
         if(tns.length() == 0)
-            tns = getNamespace(clazz.getPackage().getName(), clazz.getName());
+            tns = getNamespace(clazz.getPackage().getName());
 
         return new QName(tns, name);
     }

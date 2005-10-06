@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceVisitor.java,v 1.26 2005-10-04 15:41:52 kohlert Exp $
+ * $Id: WebServiceVisitor.java,v 1.27 2005-10-06 16:09:47 kohlert Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -23,9 +23,25 @@
 package com.sun.tools.ws.processor.modeler.annotation;
 
 
-import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.*;
-import com.sun.mirror.util.*;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
+import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.InterfaceDeclaration;
+import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.declaration.PackageDeclaration;
+import com.sun.mirror.declaration.ParameterDeclaration;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.ReferenceType;
+import com.sun.mirror.type.TypeMirror;
+import com.sun.mirror.type.VoidType;
+import com.sun.mirror.util.DeclarationVisitor;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.util.SourcePosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,9 +50,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
-import java.io.*;
 
-import javax.xml.namespace.QName;
 import com.sun.xml.ws.modeler.RuntimeModeler;
 import com.sun.tools.ws.processor.model.Parameter;
 import com.sun.tools.ws.processor.model.Port;
@@ -52,11 +66,17 @@ import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
-import javax.jws.*;
-import javax.jws.soap.*;
+import javax.jws.HandlerChain;
+import javax.jws.Oneway;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.ParameterStyle;
+import javax.xml.namespace.QName;
 
-import com.sun.tools.xjc.api.*;
+import com.sun.tools.xjc.api.Reference;
 import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 import com.sun.tools.ws.processor.modeler.annotation.ModelBuilder;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceConstants;
@@ -75,7 +95,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected SOAPStyle soapStyle = SOAPStyle.DOCUMENT;
     protected boolean wrapped = true;
     protected HandlerChain hChain;
-    protected SOAPMessageHandlers soapHandlers;
     protected Port port;
     protected String serviceImplName;
     protected String endpointInterfaceName;
@@ -138,8 +157,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             checkForInvalidImplAnnotation(d, SOAPBinding.class);
             if (webService.name().length() > 0)
                 annotationError(pos, ANNOTATION_ELEMENT_ERROR,"name");
-//            if (webService.targetNamespace().length() > 0)
-//                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "targetNamespace");
             if (webService.wsdlLocation().length() > 0)
                 annotationError(pos, ANNOTATION_ELEMENT_ERROR, "wsdlLocation");
             endpointReferencesInterface = true;
@@ -214,8 +231,14 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         String targetNamespace = null;
         if (webService != null)
             targetNamespace = webService.targetNamespace();
-        if (targetNamespace == null || targetNamespace.length() == 0)
-            targetNamespace = getNamespace(d.getPackage(), d.getQualifiedName());
+        if (targetNamespace == null || targetNamespace.length() == 0) {
+            String packageName = d.getPackage().toString();
+            if (packageName == null || packageName.length() == 0) {
+                builder.onError(d.getPosition(), "webserviceap.no.package.class.must.have.targetnamespace", 
+                        new Object[] {d.getQualifiedName()});
+            }
+            targetNamespace = getNamespace(d.getPackage());
+        }
         seiContext.setNamespaceURI(targetNamespace);
         if (serviceImplName == null)
             serviceImplName = seiContext.getSEIImplName();
@@ -258,7 +281,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean pushSOAPBinding(SOAPBinding soapBinding, Declaration bindingDecl,
             TypeDeclaration classDecl) {
         boolean changed = false;
-//        System.out.println("pushed binding: "+soapBinding.style());
         if (!sameStyle(soapBinding.style(), soapStyle)) {
             changed = true;
             if (pushedSOAPBinding)
@@ -285,11 +307,9 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                     new Object[] {classDecl.getQualifiedName()});
         }
         if (changed || soapBindingStack.empty()) {
-//            System.out.println("pushing");
             soapBindingStack.push(soapBinding);
             pushedSOAPBinding = true;
         }
-//        System.out.println("changed: " +changed+" wrapped: "+wrapped );
         return changed;
     }
     
@@ -311,8 +331,8 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return soapBinding;
     }
     
-    protected String getNamespace(PackageDeclaration packageDecl, String className) {
-        return RuntimeModeler.getNamespace(packageDecl.getQualifiedName(), className);
+    protected String getNamespace(PackageDeclaration packageDecl) { 
+        return RuntimeModeler.getNamespace(packageDecl.getQualifiedName());
     }
     
 //    abstract protected boolean shouldProcessWebService(WebService webService, InterfaceDeclaration intf);
@@ -464,7 +484,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         return false;
     }
     
-//    abstract protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod);
     
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
         builder.log("should process method: "+method.getSimpleName()+" hasWebMethods: "+ hasWebMethods+" ");
@@ -472,11 +491,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             builder.log("webMethod == null");
             return false;
         }
-//        if (webMethod != null && webMethod.exclude() ||
-//                !isLegalMethod(method, typeDecl)) {
-//            builder.log("not a legal method");
-//            return false;
-//        }
         boolean retval = (endpointReferencesInterface ||
                 method.getDeclaringType().equals(typeDecl) ||
                 (method.getDeclaringType().getAnnotation(WebService.class) != null));
@@ -577,18 +591,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         }
         return true;
     }
-    
-/*    protected boolean hasLegalSEI(ClassDeclaration classDecl) {
-        for (InterfaceType interfaceType : classDecl.getSuperinterfaces()) {
-            if (interfaceType.getDeclaration().getQualifiedName().equals(REMOTE_CLASSNAME)) {
-                if (isLegalSEI(interfaceType.getDeclaration()))
-                    return true;
-            } else if (isLegalSEI(interfaceType.getDeclaration())) {
-                return true;
-            }
-        }
-        return false;
-    }*/
     
     protected boolean isLegalSEI(InterfaceDeclaration intf) {
         for (FieldDeclaration field : intf.getFields()) {
