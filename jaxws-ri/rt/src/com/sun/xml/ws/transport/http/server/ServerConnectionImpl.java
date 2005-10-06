@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.12 2005-09-27 19:04:18 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.13 2005-10-06 02:25:03 jitu Exp $
  */
 
 /*
@@ -195,6 +195,42 @@ public class ServerConnectionImpl extends WSConnectionImpl {
         public InputStream getInputStream() {
             return is;
         }
+
+        @Override
+        public int read(byte b[]) throws IOException {
+            return is.read(b);
+        }
+
+        @Override
+        public int read(byte b[], int off, int len) throws IOException {
+            return is.read(b, off, len);
+        }
+
+        @Override
+        public long skip(long n) throws IOException {
+            return is.skip(n);
+        }
+
+        @Override
+        public int available() throws IOException {
+            return is.available();
+        }
+
+        @Override
+        public void mark(int readlimit) {
+            is.mark(readlimit);
+        }
+
+
+        @Override
+        public void reset() throws IOException {
+            is.reset();
+        }
+
+        @Override
+        public boolean markSupported() {
+            return is.markSupported();
+        }
     }
     
     private static class NoCloseOutputStream extends OutputStream {
@@ -212,6 +248,21 @@ public class ServerConnectionImpl extends WSConnectionImpl {
         @Override
         public void close() throws IOException {         
             // Intentionally left empty. use closeOutput() to close
+        }
+        
+        @Override
+        public void write(byte b[]) throws IOException {
+            out.write(b);
+        }
+        
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            out.write(b, off, len);
+        }
+        
+        @Override
+        public void flush() throws IOException {
+            out.flush();
         }
         
         public OutputStream getOutputStream() {
