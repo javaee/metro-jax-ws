@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.16 2005-09-23 22:05:34 kohsuke Exp $
+ * $Id: HttpClientTransport.java,v 1.17 2005-10-07 17:22:12 bbissett Exp $
  */
 
 /*
@@ -27,6 +27,7 @@ package com.sun.xml.ws.transport.http.client;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeader;
@@ -56,9 +57,9 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_STATUS_CODE;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
 import static com.sun.xml.ws.client.BindingProviderProperties.HOSTNAME_VERIFICATION_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.REDIRECT_REQUEST_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
-
 
 /**
  * @author WS Development Team
@@ -102,10 +103,11 @@ public class HttpClientTransport extends WSConnectionImpl {
     public OutputStream getOutput() {
         try {
             httpConnection = createHttpConnection(endpoint, context);
+            cookieJar = sendCookieAsNeeded();
+            
             // how to incorporate redirect processing: message dispatcher does not seem to tbe right place
             outputStream = httpConnection.getOutputStream();
             
-            cookieJar = sendCookieAsNeeded();
             connectForResponse();
         
         } catch (Exception ex) {
@@ -337,20 +339,20 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     protected CookieJar sendCookieAsNeeded() {
-        String header = (String)context.get(SESSION_MAINTAIN_PROPERTY);
-        if (header == null)
+        Boolean shouldMaintainSessionProperty =
+            (Boolean) context.get(SESSION_MAINTAIN_PROPERTY);
+        if (shouldMaintainSessionProperty == null) {
             return null;
-        
-        Boolean shouldMaintainSessionProperty = new Boolean(header);
-        boolean shouldMaintainSession =
-                (shouldMaintainSessionProperty == null
-                ? false
-                : shouldMaintainSessionProperty.booleanValue());
-        if (shouldMaintainSession) {
-            CookieJar cookieJar =
-                    (CookieJar) context.get(HTTP_COOKIE_JAR);
+        }
+        if (shouldMaintainSessionProperty.booleanValue()) {
+            CookieJar cookieJar = (CookieJar) context.get(HTTP_COOKIE_JAR);
             if (cookieJar == null) {
                 cookieJar = new CookieJar();
+                
+                // need to store in binding's context so it is not lost
+                BindingProvider bp =
+                    (BindingProvider) context.get(JAXWS_CLIENT_HANDLE_PROPERTY);
+                bp.getRequestContext().put(HTTP_COOKIE_JAR, cookieJar);
             }
             cookieJar.applyRelevantCookies(httpConnection);
             return cookieJar;
@@ -362,11 +364,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     protected void saveCookieAsNeeded(CookieJar cookieJar) {
         if (cookieJar != null) {
             cookieJar.recordAnyCookies(httpConnection);
-            context.put(HTTP_COOKIE_JAR,
-                    cookieJar);
         }
-        
-        // TODO: where and how this cookieJar is used ?
     }
 
     protected HttpURLConnection createHttpConnection(String endpoint,

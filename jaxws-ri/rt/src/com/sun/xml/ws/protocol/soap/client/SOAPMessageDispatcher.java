@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.52 2005-10-06 19:43:36 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.53 2005-10-07 17:22:11 bbissett Exp $
  */
 
 /*
@@ -287,13 +287,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // consume PEPT-specific properties
                 if (propName.equals(ClientTransportFactory.class.getName())) {
                     messageContext.put(CLIENT_TRANSPORT_FACTORY, (ClientTransportFactory) properties.get(propName));
-                } else if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY)) {
-                    Object maintainSession = properties.get(BindingProvider.SESSION_MAINTAIN_PROPERTY);
-                    if (maintainSession != null && maintainSession.equals(Boolean.TRUE)) {
-                        Object cookieJar = properties.get(HTTP_COOKIE_JAR);
-                        if (cookieJar != null)
-                            messageContext.put(HTTP_COOKIE_JAR, cookieJar);
-                    }
                 } else if (propName.equals(USERNAME_PROPERTY)) {
                     String credentials = (String) properties.get(USERNAME_PROPERTY);
                     if (credentials != null) {
