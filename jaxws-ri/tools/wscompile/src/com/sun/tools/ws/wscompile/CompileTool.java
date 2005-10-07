@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.27 2005-09-10 19:49:54 kohsuke Exp $
+ * $Id: CompileTool.java,v 1.28 2005-10-07 18:04:16 kohsuke Exp $
  */
 
 /*
@@ -23,9 +23,15 @@
  */
 package com.sun.tools.ws.wscompile;
 
-import com.sun.mirror.apt.*;
-import com.sun.mirror.declaration.*;
-import com.sun.tools.ws.processor.*;
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.AnnotationProcessorFactory;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
+import com.sun.tools.ws.processor.Processor;
+import com.sun.tools.ws.processor.ProcessorAction;
+import com.sun.tools.ws.processor.ProcessorConstants;
+import com.sun.tools.ws.processor.ProcessorNotificationListener;
+import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.ClassModelInfo;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
@@ -42,7 +48,7 @@ import com.sun.tools.ws.processor.util.ProcessorEnvironmentBase;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
-import com.sun.xml.ws.util.Version;
+import com.sun.tools.ws.ToolVersion;
 import com.sun.xml.ws.util.VersionUtil;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
@@ -57,7 +63,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  *    This is the real implementation class for both WsGen and WsImport. 
@@ -136,7 +151,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     return false;
                 }
             } else if (args[i].equals("-version")) {
-                report(getVersion());
+                report(ToolVersion.ID);
                 doNothing = true;
                 args[i] = null;
                 return true;
@@ -353,17 +368,17 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             }
         }
 
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] != null) {
-                if (args[i].startsWith("-")) {
-                    onError(getMessage("wscompile.invalidOption", args[i]));
+        for (String arg : args) {
+            if (arg != null) {
+                if (arg.startsWith("-")) {
+                    onError(getMessage("wscompile.invalidOption", arg));
                     usage();
                     return false;
                 }
 
                 // the input source could be a local file or a URL,get the
                 // abolutized URL string
-                String fileName = args[i];
+                String fileName = arg;
                 if (program.equals(WSGEN)) {
                     if (!isClass(fileName)) {
                         onError(getMessage("wsgen.class.not.found", fileName));
@@ -426,11 +441,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         return (transport.equalsIgnoreCase(HTTP));
     }
     
-    public Localizable getVersion() {
-        return getMessage("wscompile.version", Version.PRODUCT_NAME, Version.VERSION_NUMBER,
-                Version.BUILD_NUMBER);
-    }
-
     protected void run() throws Exception {
         if (doNothing) {
             return;
@@ -438,7 +448,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         try {
             beforeHook();
             environment = createEnvironment();
-            configuration = (Configuration) createConfiguration();
+            configuration = createConfiguration();
             setEnvironmentValues(environment);
             if (configuration.getModelInfo() instanceof ClassModelInfo) {
                 buildModel(((ClassModelInfo) configuration.getModelInfo()).getClassName());
@@ -475,7 +485,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected void initialize() {
         super.initialize();
         properties = new Properties();
-        actions = new HashMap();
+        actions = new HashMap<String,ProcessorAction>();
         actions.put(ActionConstants.ACTION_SERVICE_GENERATOR,
                 new com.sun.tools.ws.processor.generator.ServiceGenerator());
         actions.put(ActionConstants.ACTION_REMOTE_INTERFACE_GENERATOR,
@@ -515,7 +525,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             String tmpPath = destDir.getAbsolutePath()+File.pathSeparator+classpath;
             ClassLoader classLoader = new URLClassLoader(ProcessorEnvironmentBase.pathToURLs(tmpPath), 
                     this.getClass().getClassLoader());
-            Class endpointClass = null;
+            Class<?> endpointClass = null;
 
             try {
                 endpointClass = classLoader.loadClass(endpoint);
@@ -525,7 +535,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             }
             String bindingID = getBindingID(protocol);
             if (bindingID == null) {
-                BindingType bindingType = (BindingType)endpointClass.getAnnotation(BindingType.class);
+                BindingType bindingType = endpointClass.getAnnotation(BindingType.class);
                 if (bindingType != null && 
                     bindingType.value().length()>0)
                     bindingID = bindingType.value();
@@ -613,7 +623,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     }
 
     protected void compileGeneratedClasses() {
-        List sourceFiles = new ArrayList();
+        List<String> sourceFiles = new ArrayList<String>();
 
         for (Iterator iter = environment.getGeneratedFiles(); iter.hasNext();) {
             GeneratedFileInfo fileInfo = (GeneratedFileInfo) iter.next();
@@ -626,8 +636,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         if (sourceFiles.size() > 0) {
             String classDir = destDir.getAbsolutePath();
             String classpathString = createClasspathString();
-            String[] args = new String[4 + (compilerDebug == true ? 1 : 0)
-                    + (compilerOptimize == true ? 1 : 0) + sourceFiles.size()];
+            String[] args = new String[4 + (compilerDebug ? 1 : 0)
+                    + (compilerOptimize ? 1 : 0) + sourceFiles.size()];
             args[0] = "-d";
             args[1] = classDir;
             args[2] = "-classpath";
@@ -640,7 +650,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 args[baseIndex++] = "-O";
             }
             for (int i = 0; i < sourceFiles.size(); ++i) {
-                args[baseIndex + i] = (String) sourceFiles.get(i);
+                args[baseIndex + i] = sourceFiles.get(i);
             }
 
             // ByteArrayOutputStream javacOutput = new ByteArrayOutputStream();
@@ -653,7 +663,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     }
 
     protected ProcessorAction getAction(String name) {
-        return (ProcessorAction) actions.get(name);
+        return actions.get(name);
     }
 
     protected String createClasspathString() {
@@ -693,10 +703,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         }
     }
 
-    public String getVersionString() {
-        return localizer.localize(getVersion());
-    }
-
     protected Configuration createConfiguration() throws Exception {
         if (environment == null)
             environment = createEnvironment();
@@ -715,7 +721,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             nonclassDestDir = destDir;
         }
 
-        properties.setProperty(ProcessorConstants.JAXWS_VERSION, getVersionString());
+        properties.setProperty(ProcessorConstants.JAXWS_VERSION, ToolVersion.ID);
         properties.setProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY, sourceDir
                 .getAbsolutePath());
         properties.setProperty(ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY, destDir
@@ -828,7 +834,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected Configuration configuration;
     protected ProcessorNotificationListener listener;
     protected Processor processor;
-    protected Map actions;
+    protected Map<String,ProcessorAction> actions;
     protected List<String> inputFiles = new ArrayList<String>();
     protected File sourceDir;
     protected File destDir;

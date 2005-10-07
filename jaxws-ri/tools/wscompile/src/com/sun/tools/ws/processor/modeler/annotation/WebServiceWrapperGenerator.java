@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceWrapperGenerator.java,v 1.32 2005-10-06 16:09:47 kohlert Exp $
+ * $Id: WebServiceWrapperGenerator.java,v 1.33 2005-10-07 18:04:15 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -22,6 +22,22 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
+import static com.sun.codemodel.ClassType.CLASS;
+import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.JAnnotationArrayMember;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JCommentPart;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JDocComment;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
+import com.sun.codemodel.writer.ProgressCodeWriter;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
@@ -30,11 +46,33 @@ import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.ParameterDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.ReferenceType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
+import com.sun.tools.ws.processor.generator.GeneratorBase;
+import com.sun.tools.ws.processor.modeler.ModelerException;
+import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.util.ClassNameInfo;
+import com.sun.tools.ws.wscompile.FilerCodeWriter;
+import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
+import com.sun.tools.ws.ToolVersion;
+import com.sun.xml.ws.util.StringUtils;
 
+import javax.jws.Oneway;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.xml.bind.annotation.AccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.namespace.QName;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.ResponseWrapper;
+import javax.xml.ws.WebFault;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,56 +83,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-import com.sun.tools.ws.processor.generator.GeneratorBase;
-import com.sun.tools.ws.processor.modeler.ModelerException;
-import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.util.Version;
-import com.sun.tools.ws.util.ClassNameInfo;
-import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-
-import javax.xml.namespace.QName;
-import javax.xml.bind.annotation.AccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.ws.WebFault;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.ResponseWrapper;
-
-import static com.sun.codemodel.ClassType.CLASS;
-import com.sun.codemodel.CodeWriter; 
-import com.sun.codemodel.JAnnotationArrayMember;
-import com.sun.codemodel.JAnnotatable;
-import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JCommentPart;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JDocComment;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JType;
-import com.sun.codemodel.JVar;
-import com.sun.codemodel.writer.ProgressCodeWriter;
-import com.sun.tools.ws.wscompile.FilerCodeWriter;
-
-
-import javax.jws.Oneway;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
-
-
 /**
  * This class generates the request/response and Exception Beans
- * used by the JAX-WS runtime.  
+ * used by the JAX-WS runtime.
  *
  * @author  WS Development Team
  */
@@ -102,18 +93,18 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     protected Set<String> wrapperNames;
     protected Set<String> processedExceptions;
     protected JCodeModel cm;
-    
+
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
     }
-     
+
     protected void processWebService(WebService webService, TypeDeclaration d) {
         cm =  new JCodeModel();
         wrapperNames = new HashSet<String>();
         processedExceptions = new HashSet<String>();
     }
-    
+
     protected void postProcessWebService(WebService webService, InterfaceDeclaration d) {
         super.postProcessWebService(webService, d);
         doPostProcessWebService(webService, d);
@@ -122,23 +113,23 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         super.postProcessWebService(webService, d);
         doPostProcessWebService(webService, d);
     }
-    
+
     protected  void doPostProcessWebService(WebService webService, TypeDeclaration d) {
         if (cm != null) {
             File sourceDir = builder.getSourceDir();
             assert(sourceDir != null);
-            ProcessorEnvironment env = builder.getProcessorEnvironment();          
+            ProcessorEnvironment env = builder.getProcessorEnvironment();
             try {
                 CodeWriter cw = new FilerCodeWriter(sourceDir, env);
 
                 if(env.verbose())
                     cw = new ProgressCodeWriter(cw, System.out);
-                cm.build(cw);            
+                cm.build(cw);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }    
+    }
 
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         builder.log("WrapperGen - method: "+method);
@@ -146,18 +137,18 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         boolean generatedWrapper = false;
         if (wrapped && soapStyle.equals(SOAPStyle.DOCUMENT)) {
             generatedWrapper = generateWrappers(method, webMethod);
-        } 
+        }
         generatedWrapper = generateExceptionBeans(method) || generatedWrapper;
         if (generatedWrapper) {
             // Theres not going to be a second round
             builder.setWrapperGenerated(generatedWrapper);
         }
     }
-    
+
     private boolean generateExceptionBeans(MethodDeclaration method) {
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName.length() == 0)
-            beanPackage = JAXWS_PACKAGE_PD;        
+            beanPackage = JAXWS_PACKAGE_PD;
         boolean beanGenerated = false;
         try {
             for (ReferenceType thrownType : method.getThrownTypes()) {
@@ -166,29 +157,29 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                     builder.onError("webserviceap.could.not.find.typedecl",
                          new Object[] {thrownType.toString(), context.getRound()});
                 boolean tmp = generateExceptionBean(typeDecl, beanPackage);
-                beanGenerated = beanGenerated || tmp;                    
-            }       
+                beanGenerated = beanGenerated || tmp;
+            }
         } catch (Exception e) {
             throw new ModelerException("modeler.nestedGeneratorError",e);
-        }                 
+        }
         return beanGenerated;
     }
-    
+
     private boolean duplicateName(String name) {
         for (String str : wrapperNames) {
             if (str.equalsIgnoreCase(name))
 		return true;
         }
-        wrapperNames.add(name);        
+        wrapperNames.add(name);
 	return false;
     }
-    
+
     private boolean generateWrappers(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
         if (packageName.length() == 0)
             beanPackage = JAXWS_PACKAGE_PD;
-        String methodName = method.getSimpleName();                
+        String methodName = method.getSimpleName();
         String operationName = builder.getOperationName(methodName);
         operationName = webMethod != null && webMethod.operationName().length() > 0 ?
                         webMethod.operationName() : operationName;
@@ -200,7 +191,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         String requestClassName = beanPackage + StringUtils.capitalize(method.getSimpleName());
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         if (reqWrapper != null) {
-            if (reqWrapper.className().length() > 0) 
+            if (reqWrapper.className().length() > 0)
                 requestClassName = reqWrapper.className();
             if (reqWrapper.localName().length() > 0)
                 reqName = reqWrapper.localName();
@@ -210,13 +201,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         builder.log("requestWrapper: "+requestClassName);
         if (duplicateName(requestClassName)) {
             builder.onError("webserviceap.method.request.wrapper.bean.name.not.unique",
-                             new Object[] {typeDecl.getQualifiedName(), method.toString()});                                            
+                             new Object[] {typeDecl.getQualifiedName(), method.toString()});
         }
         boolean canOverwriteRequest = builder.canOverWriteClass(requestClassName);
         if (!canOverwriteRequest) {
             builder.log("Class " + requestClassName + " exists. Not overwriting.");
-        }   
-        String responseClassName = null;       
+        }
+        String responseClassName = null;
         boolean canOverwriteResponse = canOverwriteRequest;
         if (!isOneway) {
             responseClassName = beanPackage+StringUtils.capitalize(method.getSimpleName())+RESPONSE;
@@ -227,16 +218,16 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (resWrapper.localName().length() > 0)
                     resName = resWrapper.localName();
                 if (resWrapper.targetNamespace().length() > 0)
-                    resNamespace = resWrapper.targetNamespace();                
-            }           
+                    resNamespace = resWrapper.targetNamespace();
+            }
             if (duplicateName(responseClassName)) {
                 builder.onError("webserviceap.method.respone.wrapper.bean.name.not.unique",
-                                 new Object[] {typeDecl.getQualifiedName(), method.toString()});                                            
+                                 new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
-            canOverwriteResponse = builder.canOverWriteClass(requestClassName);            
+            canOverwriteResponse = builder.canOverWriteClass(requestClassName);
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
-            }    
+            }
         }
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
@@ -245,47 +236,44 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         WrapperInfo resWrapperInfo = null;
         if (!isOneway) {
             resWrapperInfo = new WrapperInfo(responseClassName);
-            resWrapperInfo.setMembers(resMembers); 
+            resWrapperInfo.setMembers(resMembers);
         }
         seiContext.setReqWrapperOperation(method, reqWrapperInfo);
         if (!isOneway)
             seiContext.setResWrapperOperation(method, resWrapperInfo);
         try {
-            if (!canOverwriteRequest && !canOverwriteResponse) {                
+            if (!canOverwriteRequest && !canOverwriteResponse) {
                 getWrapperMembers(reqWrapperInfo);
                 getWrapperMembers(resWrapperInfo);
                 return false;
             }
- 
+
             JDefinedClass reqCls = null;
             if (canOverwriteRequest) {
                 reqCls = getCMClass(requestClassName, CLASS);
             }
 
             JDefinedClass resCls = null;
-            if (!isOneway && canOverwriteResponse) {                
+            if (!isOneway && canOverwriteResponse) {
                 resCls = getCMClass(responseClassName, CLASS);
             }
-
-            // package declaration
-            String version = builder.getVersionString();
 
             // XMLElement Declarations
             writeXmlElementDeclaration(reqCls, reqName,reqNamespace);
             writeXmlElementDeclaration(resCls, resName, resNamespace);
-                        
-            collectMembers(method, operationName, typeNamespace, reqMembers, resMembers);            
+
+            collectMembers(method, operationName, typeNamespace, reqMembers, resMembers);
 
             // XmlType
             writeXmlTypeDeclaration(reqCls, reqName, reqNamespace, reqMembers);
             writeXmlTypeDeclaration(resCls, resName, resNamespace, resMembers);
-                 
+
             // class members
             writeMembers(reqCls, reqMembers);
-            writeMembers(resCls, resMembers);            
+            writeMembers(resCls, resMembers);
         } catch (Exception e) {
             throw new ModelerException("modeler.nestedGeneratorError",e);
-        }      
+        }
         return true;
     }
 
@@ -303,11 +291,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             String typeName = field.getType().toString();
             String elementName = xmlElement != null ? xmlElement.name() : fieldName;
             String namespace =  xmlElement != null ? xmlElement.namespace() : "";
-            
+
             String idxStr = fieldName.substring(3);
             int index = Integer.parseInt(idxStr);
-            member = new MemberInfo(index, typeName, 
-                                    field.getSimpleName(), 
+            member = new MemberInfo(index, typeName,
+                                    field.getSimpleName(),
                                     new QName(namespace, elementName));
             int j=0;
             while (j<members.size() && members.get(j++).getParamIndex() < index) {
@@ -491,8 +479,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
  
         //write class comment - JAXWS warning
         JDocComment comment = cls.javadoc();
-        for (String doc : GeneratorBase.getJAXWSClassComment(
-                builder.getVersionString(), Version.VERSION_NUMBER)) {
+        for (String doc : GeneratorBase.getJAXWSClassComment(builder.getSourceVersion())) {
             comment.add(doc);
         }
         

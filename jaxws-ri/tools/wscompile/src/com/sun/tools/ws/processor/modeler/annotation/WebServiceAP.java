@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.17 2005-09-27 21:23:55 kohlert Exp $
+ * $Id: WebServiceAP.java,v 1.18 2005-10-07 18:04:15 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -52,7 +52,6 @@ import com.sun.tools.ws.util.ToolBase;
 import com.sun.tools.xjc.api.JavaCompiler;
 import com.sun.tools.xjc.api.Reference;
 import com.sun.tools.xjc.api.XJC;
-import com.sun.xml.ws.util.Version;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessage;
 
@@ -272,17 +271,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         return "com.sun.tools.ws.resources.webserviceap";
     }
 
-    public Localizable getVersion() {
-        return getMessage("webserviceap.version",
-            Version.PRODUCT_NAME,
-            Version.VERSION_NUMBER,
-            Version.BUILD_NUMBER);
-    }
-
-    public String getVersionString() {
-        return localizer.localize(getVersion());
-    }
-
     public void createModel(TypeDeclaration d, QName modelName, String targetNamespace,
         String modelerClassName){
 
@@ -320,6 +308,10 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
 
     public TypeDeclaration getTypeDeclaration(String typeName) {
         return apEnv.getTypeDeclaration(typeName);
+    }
+
+    public String getSourceVersion() {
+        return "2.0";   // TODO
     }
 
     private void buildModel() {
@@ -413,9 +405,8 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             }
         }
         InterfaceDeclaration superIntf = null;
-        Iterator<InterfaceType> interfaces = d1.getSuperinterfaces().iterator();
-        while (interfaces.hasNext()) {
-            superIntf = interfaces.next().getDeclaration();
+        for (InterfaceType interfaceType : d1.getSuperinterfaces()) {
+            superIntf = interfaceType.getDeclaration();
             if (superIntf.equals(d2))
                 return true;
         }

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSClassFactory.java,v 1.2 2005-09-10 19:49:50 kohsuke Exp $
+ * $Id: JAXWSClassFactory.java,v 1.3 2005-10-07 18:04:16 kohsuke Exp $
  */
 
 /*
@@ -81,8 +81,7 @@ public class JAXWSClassFactory {
         Properties options) {
         WSDLModelerBase wsdlModeler = null;
         if (classVersion.equals(VersionUtil.JAXWS_VERSION_20))
-            wsdlModeler =
-                (WSDLModelerBase) new WSDLModeler20(modelInfo, options);
+            wsdlModeler = new WSDLModeler20(modelInfo, options);
         else {
             // TODO: throw exception
         }

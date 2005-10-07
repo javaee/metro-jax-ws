@@ -188,6 +188,7 @@
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt/rt.iml" filepath="$PROJECT_DIR$/rt/rt.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxws-test/test/test.iml" filepath="$PROJECT_DIR$/../jaxws-test/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jaxws-test/testutil/testutil.iml" filepath="$PROJECT_DIR$/../jaxws-test/testutil/testutil.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/wscompile/wscompile.iml" filepath="$PROJECT_DIR$/tools/wscompile/wscompile.iml" />
     </modules>
   </component>

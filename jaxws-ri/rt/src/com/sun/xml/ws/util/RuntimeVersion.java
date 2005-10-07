@@ -1,5 +1,5 @@
 /*
- * $Id: Version.java,v 1.15 2005-10-06 19:05:03 kohlert Exp $
+ * $Id: RuntimeVersion.java,v 1.1 2005-10-07 18:04:13 kohsuke Exp $
  */
 
 /*
@@ -24,28 +24,23 @@
 
 package com.sun.xml.ws.util;
 
+import java.io.IOException;
+
 /**
- * This interface holds version information for the whole JAX-WS RI.
+ * Obtains the version number of the JAX-WS runtime.
  *
- * @author WS Development Team
+ * @author Kohsuke Kawaguchi
  */
+public abstract class RuntimeVersion {
+    private RuntimeVersion() {}    // no instanciation please
 
-public interface Version {
+    public static final String ID = initID();
 
-	/**
-	 * JAX-WS RI product name
-	 */
-	public static final String PRODUCT_NAME = "JAX-WS Standard Implementation";
-
-	/**
-	 * JAX-WS RI version number
-	 */
-	public static final String VERSION_NUMBER = "2.0";
-
-	/**
-	 * JAX-WS RI build number
-	 */
-        // TODO change this back to R11 for the FCS release.
-//	public static final String BUILD_NUMBER = "R11";
-	public static final String BUILD_NUMBER = "EA3_B10";
+    private static String initID() {
+        try {
+            return new String(ASCIIUtility.getBytes(RuntimeVersion.class.getResourceAsStream("version.properties")),"UTF-8");
+        } catch (IOException e) {
+            return "unknown";
+        }
+    }
 }

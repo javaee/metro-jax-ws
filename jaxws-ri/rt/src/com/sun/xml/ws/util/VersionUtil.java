@@ -1,5 +1,5 @@
 /*
- * $Id: VersionUtil.java,v 1.5 2005-09-10 19:48:14 kohsuke Exp $
+ * $Id: VersionUtil.java,v 1.6 2005-10-07 18:04:14 kohsuke Exp $
  */
 
 /*
@@ -32,42 +32,7 @@ import java.util.StringTokenizer;
  * @author JAX-WS Development Team
  */
 
-public final class VersionUtil implements Version {
-
-    /**
-     * Get JAX-WS full version, like: "JAX-WS Reference Implementation 1.1 EA-R16"
-     *
-     * Method getJAXWSCompleteVersion.
-     * @return String
-     */
-    public static String getJAXWSCompleteVersion() {
-        return PRODUCT_NAME + VERSION_NUMBER + BUILD_NUMBER;
-    }
-
-    /**
-     * Method getJAXWSVersion.
-     * @return String
-     */
-    public static String getJAXWSVersion() {
-        return VERSION_NUMBER;
-    }
-
-    /**
-     * Method getJAXWSBuildNumber.
-     * @return String
-     */
-    public static String getJAXWSBuildNumber() {
-        return BUILD_NUMBER;
-    }
-
-    /**
-     * Method getJAXWSProductName.
-     * @return String
-     */
-    public static String getJAXWSProductName() {
-        return PRODUCT_NAME;
-    }
-
+public final class VersionUtil {
 
     public static boolean isVersion20(String version) {
         return JAXWS_VERSION_20.equals(version);

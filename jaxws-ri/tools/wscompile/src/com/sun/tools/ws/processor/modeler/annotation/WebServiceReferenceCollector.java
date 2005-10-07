@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceReferenceCollector.java,v 1.17 2005-09-23 22:05:43 kohsuke Exp $
+ * $Id: WebServiceReferenceCollector.java,v 1.18 2005-10-07 18:04:15 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -25,31 +25,10 @@ package com.sun.tools.ws.processor.modeler.annotation;
 import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;
 import com.sun.mirror.type.*;
-import com.sun.mirror.util.*;
 
 import com.sun.tools.xjc.api.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import com.sun.tools.ws.processor.generator.GeneratorConstants;
-import com.sun.tools.ws.processor.modeler.ModelerException;
-import com.sun.tools.ws.processor.util.GeneratedFileInfo;
-import com.sun.tools.ws.processor.util.IndentingWriter;
-import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.util.Version;
-import com.sun.tools.ws.util.ClassNameInfo;
-import javax.jws.soap.SOAPBinding.Style;
-
-import javax.xml.namespace.QName;
-
-import javax.xml.ws.WebFault;
 import javax.jws.*;
-import javax.jws.soap.*;
-import com.sun.tools.ws.processor.modeler.annotation.*;
 
 /**
  *
@@ -60,11 +39,11 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
     public WebServiceReferenceCollector(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
     }
- 
-    
+
+
     protected void processWebService(WebService webService, TypeDeclaration d) {
     }
-    
+
     protected void processMethod(MethodDeclaration method, WebMethod webMethod) {
         boolean isOneway = method.getAnnotation(Oneway.class) != null;
         boolean generatedWrapper = false;
@@ -77,7 +56,7 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
             seiContext.addReference(typeDecl, apEnv);
             if (!isOneway) {
                 typeDecl = builder.getTypeDeclaration(seiContext.getResOperationWrapper(method).getWrapperName());
-                seiContext.addReference(typeDecl, apEnv);                
+                seiContext.addReference(typeDecl, apEnv);
             }
         }
         collectExceptionBeans(method);
@@ -85,16 +64,16 @@ public class WebServiceReferenceCollector extends WebServiceVisitor {
 
     private void collectTypes(MethodDeclaration method, WebMethod webMethod, boolean isDocLitWrapped) {
         addSchemaElements(method, isDocLitWrapped);
-    }        
-    
-  
+    }
+
+
     private void collectExceptionBeans(MethodDeclaration method) {
         AnnotationProcessorEnvironment apEnv = builder.getAPEnv();
         for (ReferenceType thrownType : method.getThrownTypes()) {
             FaultInfo faultInfo = seiContext.getExceptionBeanName(thrownType.toString());
             if (faultInfo != null) {
                 if (!faultInfo.isWSDLException()) {
-                    seiContext.addReference(builder.getTypeDeclaration(faultInfo.getBeanName()), apEnv);            
+                    seiContext.addReference(builder.getTypeDeclaration(faultInfo.getBeanName()), apEnv);
                 } else {
                     TypeMirror bean = faultInfo.beanTypeMoniker.create(apEnv);
                     Reference ref = seiContext.addReference(((DeclaredType)bean).getDeclaration(), apEnv);

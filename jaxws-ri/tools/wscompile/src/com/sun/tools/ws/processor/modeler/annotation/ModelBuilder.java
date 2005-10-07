@@ -56,7 +56,7 @@ public interface ModelBuilder {
     public boolean canOverWriteClass(String className);
     public void setWrapperGenerated(boolean wrapperGenerated);
     public TypeDeclaration getTypeDeclaration(String typeName);
-    public String getVersionString();
+    public String getSourceVersion();
     public ProcessorEnvironment getProcessorEnvironment();
     public File getSourceDir();
     public String getXMLName(String javaName);

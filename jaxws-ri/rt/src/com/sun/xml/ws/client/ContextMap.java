@@ -19,15 +19,11 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.xml.ws.util.Version;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.ws.BindingProvider;
 import static javax.xml.ws.BindingProvider.*;
-import javax.xml.ws.Dispatch;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,7 +47,6 @@ public abstract class ContextMap extends HashMap<String,Object>
 
     protected BindingProvider _owner;
     protected PortInfoBase portInfo;
-    protected Version version;
 
     public abstract ContextMap copy();
 
@@ -203,10 +198,6 @@ public abstract class ContextMap extends HashMap<String,Object>
         return true;
     }
 
-    private boolean isDynamic(String name) {
-        return true;
-    }
-
     private void validateProperty(String name, Object value, boolean isSetter) {
         if (name == null)
             throw new WebServiceException(name + " is a User-defined property - property name can not be null. ",
@@ -240,14 +231,14 @@ public abstract class ContextMap extends HashMap<String,Object>
 
     }
 
-    private static final Class STRING_CLASS = String.class;
-    private static final Class BOOLEAN_CLASS = Boolean.class;
-    private static final Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
-    private static final Class DISPATCH_CLASS = Dispatch.class;
-    private static final Class PROXY_CLASS = Proxy.class;
-    private final static Class JAXBCONTEXT_CLASS =
-        JAXBContext.class;
-    private static Class CLIENT_TRANSPORT_FACTORY_CLASS = ClientTransportFactory.class;
+//    private static final Class STRING_CLASS = String.class;
+//    private static final Class BOOLEAN_CLASS = Boolean.class;
+//    private static final Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
+//    private static final Class DISPATCH_CLASS = Dispatch.class;
+//    private static final Class PROXY_CLASS = Proxy.class;
+//    private final static Class JAXBCONTEXT_CLASS =
+//        JAXBContext.class;
+//    private static Class CLIENT_TRANSPORT_FACTORY_CLASS = ClientTransportFactory.class;
 
     public static enum StyleAndUse {
         RPC_LITERAL,
