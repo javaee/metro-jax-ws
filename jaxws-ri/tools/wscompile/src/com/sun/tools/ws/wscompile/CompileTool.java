@@ -1,5 +1,5 @@
 /**
- * $Id: CompileTool.java,v 1.28 2005-10-07 18:04:16 kohsuke Exp $
+ * $Id: CompileTool.java,v 1.29 2005-10-07 18:20:40 kohsuke Exp $
  */
 
 /*
@@ -151,7 +151,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     return false;
                 }
             } else if (args[i].equals("-version")) {
-                report(ToolVersion.ID);
+                report(ToolVersion.VERSION.BUILD_VERSION);
                 doNothing = true;
                 args[i] = null;
                 return true;
@@ -721,7 +721,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             nonclassDestDir = destDir;
         }
 
-        properties.setProperty(ProcessorConstants.JAXWS_VERSION, ToolVersion.ID);
         properties.setProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY, sourceDir
                 .getAbsolutePath());
         properties.setProperty(ProcessorOptions.DESTINATION_DIRECTORY_PROPERTY, destDir

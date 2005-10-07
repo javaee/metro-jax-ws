@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorConstants.java,v 1.3 2005-09-10 19:49:31 kohsuke Exp $
+ * $Id: ProcessorConstants.java,v 1.4 2005-10-07 18:20:40 kohsuke Exp $
  */
 
 /*
@@ -32,5 +32,4 @@ package com.sun.tools.ws.processor;
 public class ProcessorConstants {
     public final static String SOAP_VERSION_1_1 = "SOAP 1.1";
     public final static String SOAP_VERSION_1_2 = "SOAP 1.2";
-    public final static String JAXWS_VERSION   = "JAXWS Version";
 }

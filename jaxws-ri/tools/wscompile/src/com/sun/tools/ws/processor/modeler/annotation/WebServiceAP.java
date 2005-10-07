@@ -1,5 +1,5 @@
 /*
- * $Id: WebServiceAP.java,v 1.18 2005-10-07 18:04:15 kohsuke Exp $
+ * $Id: WebServiceAP.java,v 1.19 2005-10-07 18:20:40 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -49,6 +49,7 @@ import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext.
 import com.sun.tools.ws.processor.util.ClientProcessorEnvironment;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.ToolBase;
+import com.sun.tools.ws.ToolVersion;
 import com.sun.tools.xjc.api.JavaCompiler;
 import com.sun.tools.xjc.api.Reference;
 import com.sun.tools.xjc.api.XJC;
@@ -311,7 +312,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public String getSourceVersion() {
-        return "2.0";   // TODO
+        return ToolVersion.VERSION.MAJOR_VERSION;
     }
 
     private void buildModel() {

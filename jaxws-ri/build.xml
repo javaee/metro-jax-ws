@@ -122,6 +122,18 @@
     </javadoc>
   </target>
 
+  <macrodef name="versionProp"
+    description="generates a version property file">
+    <attribute name="file" />
+    <sequential>
+      <echo file="@{file}"
+>build-id=${build.id}
+build-version=${build.version}
+major-version=${version}
+</echo>
+    </sequential>
+  </macrodef>
+
     <target name="architecture-document" depends="prepare"
             description="generate architecture documents (which is just a glorified javadoc)">
 <!--      <ant dir="tools/taglets" target="compile" />  -->
@@ -186,9 +198,7 @@
       </fileset>
     </copy>
 
-    <!-- put the version number -->
-    <echo file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties"
-      message="${build.id}" />
+    <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
 
     <manifest mode="update" file="${basedir}/rt/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
@@ -211,6 +221,8 @@
         <include name="**/*.properties" />
       </fileset>
     </copy>
+
+    <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
 
     <manifest mode="update" file="${basedir}/rt/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
@@ -256,9 +268,7 @@
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
 
-    <!-- put the version number -->
-    <echo file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties"
-      message="${build.id}" />
+    <versionProp file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties" />
 
     <jar jarfile="${build.home}/lib/jaxws-tools.jar"
         manifest="${basedir}/tools/wscompile/build/manifest">

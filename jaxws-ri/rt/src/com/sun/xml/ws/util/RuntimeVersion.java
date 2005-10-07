@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeVersion.java,v 1.1 2005-10-07 18:04:13 kohsuke Exp $
+ * $Id: RuntimeVersion.java,v 1.2 2005-10-07 18:20:38 kohsuke Exp $
  */
 
 /*
@@ -24,8 +24,6 @@
 
 package com.sun.xml.ws.util;
 
-import java.io.IOException;
-
 /**
  * Obtains the version number of the JAX-WS runtime.
  *
@@ -34,13 +32,5 @@ import java.io.IOException;
 public abstract class RuntimeVersion {
     private RuntimeVersion() {}    // no instanciation please
 
-    public static final String ID = initID();
-
-    private static String initID() {
-        try {
-            return new String(ASCIIUtility.getBytes(RuntimeVersion.class.getResourceAsStream("version.properties")),"UTF-8");
-        } catch (IOException e) {
-            return "unknown";
-        }
-    }
+    public static final Version VERSION = Version.create(RuntimeVersion.class.getResourceAsStream("version.properties"));
 }

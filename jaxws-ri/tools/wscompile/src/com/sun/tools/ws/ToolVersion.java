@@ -1,8 +1,6 @@
 package com.sun.tools.ws;
 
-import com.sun.xml.ws.util.ASCIIUtility;
-
-import java.io.IOException;
+import com.sun.xml.ws.util.Version;
 
 /**
  * Obtains the version number of the JAX-WS tools.
@@ -11,13 +9,5 @@ import java.io.IOException;
 public abstract class ToolVersion {
     private ToolVersion() {}    // no instanciation please
 
-    public static final String ID = initID();
-
-    private static String initID() {
-        try {
-            return new String(ASCIIUtility.getBytes(ToolVersion.class.getResourceAsStream("version.properties")),"UTF-8");
-        } catch (IOException e) {
-            return "unknown";
-        }
-    }
+    public static final Version VERSION = Version.create(ToolVersion.class.getResourceAsStream("version.properties"));
 }
