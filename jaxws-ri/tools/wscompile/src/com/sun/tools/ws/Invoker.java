@@ -9,11 +9,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * List of packages that need to be loaded in {@link APTClassLoader}.
+ * Invokes JAX-WS tools in a special class loader that can pick up APT classes,
+ * even if it's not available in the tool launcher classpath.
  *
  * @author Kohsuke Kawaguchi
  */
 final class Invoker {
+    /**
+     * List of packages that need to be loaded in {@link APTClassLoader}.
+     */
     private static final String[] prefixes = {
         "com.sun.tools.jxc.",
         "com.sun.tools.xjc.",
