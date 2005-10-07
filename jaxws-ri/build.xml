@@ -45,7 +45,7 @@
              scripts via 'ant -Dbuild.id="b08"' otherwise the current date and time
              will be used -->
   <tstamp>
-      <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+      <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
   </tstamp>
   <property name="build.id" value="${now}(${user.name})" />
   <property name="build.version" value="${Name} ${version}-${build.id}" />
@@ -186,6 +186,10 @@
       </fileset>
     </copy>
 
+    <!-- put the version number -->
+    <echo file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties"
+      message="${build.id}" />
+
     <manifest mode="update" file="${basedir}/rt/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
@@ -248,11 +252,14 @@
 
     <!-- Copying the manifest -->
     <copy file="${basedir}/tools/etc/manifest" todir="${basedir}/tools/wscompile/build"/>
-
     <manifest mode="update" file="${basedir}/tools/wscompile/build/manifest">
       <attribute name="Build-Id" value="${build.id}" />
     </manifest>
-        
+
+    <!-- put the version number -->
+    <echo file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties"
+      message="${build.id}" />
+
     <jar jarfile="${build.home}/lib/jaxws-tools.jar"
         manifest="${basedir}/tools/wscompile/build/manifest">
       <fileset dir="${basedir}/tools/wscompile/build/classes"/>
