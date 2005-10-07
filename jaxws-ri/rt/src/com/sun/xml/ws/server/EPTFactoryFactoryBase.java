@@ -110,46 +110,6 @@ public abstract class EPTFactoryFactoryBase {
             xmlEncoder, xmlDecoder,
                 providerSED, providerTargetFinder,
             providerXmlMD);
-
-    public static boolean isEncodeFast(MessageContext context) {
-        boolean fast = false;
-/*
-        SOAPMessage message = ((SOAPMessageContext)context).getMessage();
-        MimeHeaders headers = message.getMimeHeaders();
-        String[] values = headers.getHeader("Accept");
-        if (values != null) {
-            for(int i=0; i < values.length; i++) {
-//System.out.println("****** Accept="+values[i]);
-                if (values[i].indexOf("application/fastsoap") != -1) {
-                    fast = true;
-                    break;
-                }
-            }
-        }
-*/
-        return fast;
-    }
-
-    public static boolean isDecodeFast(MessageContext context) {
-        boolean fast = false;
-/*
-        SOAPMessage message = ((SOAPMessageContext)context).getMessage();
-        MimeHeaders headers = message.getMimeHeaders();
-        String[] values = headers.getHeader("Content-Type");
-        if (values != null) {
-            for(int i=0; i < values.length; i++) {
-//System.out.println("****** Content-Type="+values[i]);
-                if (values[i].indexOf("application/fastsoap") != -1) {
-                    fast = true;
-                    break;
-                }
-            }
-        }
-*/
-        return fast;
-    }
-    
-
     
     /**
      * Choose correct EPTFactory. MessageInfo contains all the needed
