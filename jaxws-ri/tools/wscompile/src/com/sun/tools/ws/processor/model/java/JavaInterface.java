@@ -1,5 +1,5 @@
 /*
- * $Id: JavaInterface.java,v 1.3 2005-09-10 19:49:39 kohsuke Exp $
+ * $Id: JavaInterface.java,v 1.4 2005-10-07 23:24:26 kohlert Exp $
  */
 
 /*
@@ -27,6 +27,8 @@ package com.sun.tools.ws.processor.model.java;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import com.sun.tools.ws.util.ClassNameInfo;
 
 import com.sun.tools.ws.processor.model.ModelException;
 
@@ -137,6 +139,10 @@ public class JavaInterface {
     /* serialization */
     public void setInterfacesList(List l) {
         interfaces = l;
+    }
+    
+    public String getSimpleName() {
+        return ClassNameInfo.getName(name);
     }
 
     /* NOTE - all these fields (except "interfaces") were final, but had to

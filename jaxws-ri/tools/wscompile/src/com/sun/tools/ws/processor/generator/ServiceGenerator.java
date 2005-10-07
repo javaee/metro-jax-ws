@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.6 2005-10-07 21:41:11 kohlert Exp $
+ * $Id: ServiceGenerator.java,v 1.7 2005-10-07 23:24:25 kohlert Exp $
  */
 
 /*
@@ -129,14 +129,14 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
 
             cls._extends(javax.xml.ws.Service.class);
             
-            JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC, URL.class, "url");
+            JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, URL.class, "WSDL_LOCATION");
             JClass qNameCls = cm.ref(QName.class);
-//              JExpression jExp = new JExpression(qNameCls.staticInvoke("QName"));
-            JInvocation inv;// = cm.ref(QName.class).staticInvoke("QName");
+            JInvocation inv;
             inv = JExpr._new(qNameCls);
             inv.arg("namespace");
             inv.arg("localpart");
-            JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, "serviceName", createQName(service.getName()));
+            String serviceFieldName = intf.getSimpleName().toUpperCase();
+            JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
 
             JFieldVar portField;
             String fieldName;
@@ -147,23 +147,21 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 inv = JExpr._new(qNameCls);
                 inv.arg("namespace");
                 inv.arg("localpart");
-                fieldName = StringUtils.decapitalize(port.getName().getLocalPart())+"Name";
+                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();
                 portField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, fieldName, createQName(port.getName()));
             }
             
             
-//            field.assign(inv);
             JBlock staticBlock = cls.init();
-            JTryBlock tryBlock = staticBlock._try();
-//            System.out.println("wsdlLocation: "+wsdlLocation);
             URL url = new URL(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation)));
-            tryBlock.body().assign(urlField, createURL(url));
-//            tryBlock.directStatement("new URL("+"location"+");");
+            JVar urlVar = staticBlock.decl(cm.ref(URL.class),"url", JExpr._null());
+            JTryBlock tryBlock = staticBlock._try();
+            tryBlock.body().assign(urlVar, createURL(url)); 
             JCatchBlock catchBlock = tryBlock._catch(cm.ref(MalformedURLException.class));
             catchBlock.param("e");
             catchBlock.body().directStatement("e.printStackTrace();");
+            staticBlock.assign(urlField, urlVar);
           
-//            cls._ref(staticBody.JStaticBlock().body(body));
             //write class comment - JAXWS warning
             JDocComment comment = cls.javadoc();
             for (String doc : getJAXWSClassComment()) {
@@ -176,7 +174,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             constructor.body().directStatement("super(wsdlLocation, serviceName);");
             
             constructor = cls.constructor(JMod.PUBLIC);
-            constructor.body().directStatement("super(url, serviceName);");
+            constructor.body().directStatement("super(WSDL_LOCATION, "+serviceFieldName+");");
             
             //@WebService
             JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
@@ -196,7 +194,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JBlock body = m.body();
                 StringBuffer statement = new StringBuffer("return (");
                 statement.append(retType.name());
-                fieldName = StringUtils.decapitalize(port.getName().getLocalPart())+"Name";                
+                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();                
                 statement.append(")super.getPort("+fieldName+", ");
                 statement.append(retType.name());
                 statement.append(".class);");
