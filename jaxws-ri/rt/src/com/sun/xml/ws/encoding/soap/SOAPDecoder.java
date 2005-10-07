@@ -491,10 +491,12 @@ public abstract class SOAPDecoder implements Decoder {
 
         // keep set=null if there are no understood headers
         Set<QName> understoodHeaders = null;
-        SOAPRuntimeModel model = (SOAPRuntimeModel)rtCtxt.getModel();
-        if (model != null && model.getKnownHeaders() != null) {
-            understoodHeaders =
-                new HashSet<QName>(((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders());
+        if (rtCtxt != null) {
+            SOAPRuntimeModel model = (SOAPRuntimeModel) rtCtxt.getModel();
+            if (model != null && model.getKnownHeaders() != null) {
+                understoodHeaders =
+                    new HashSet<QName>(((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders());
+            }
         }
         if (understoodHeaders == null) {
             if (hcCaller != null) {
