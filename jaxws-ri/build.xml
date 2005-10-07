@@ -134,6 +134,18 @@ major-version=${version}
     </sequential>
   </macrodef>
 
+  <macrodef name="updateManifestWithVersion"
+          description="updates a jar manifest file with the version information">
+    <attribute name="file" />
+    <sequential>
+      <manifest mode="update" file="@{file}">
+        <attribute name="Build-Id" value="${build.id}" />
+        <attribute name="Build-Version" value="${build.version}" />
+        <attribute name="Major-Version" value="${version}" />
+      </manifest>
+    </sequential>
+  </macrodef>
+
     <target name="architecture-document" depends="prepare"
             description="generate architecture documents (which is just a glorified javadoc)">
 <!--      <ant dir="tools/taglets" target="compile" />  -->
@@ -188,9 +200,6 @@ major-version=${version}
 
 
   <target name="runtime-build" depends="runtime-compile">
-    <!-- Copying the manifest -->
-    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
-
     <!-- Copy resource files etc -->
     <copy todir="${basedir}/rt/build/classes">
       <fileset dir="${basedir}/rt/src">
@@ -200,10 +209,10 @@ major-version=${version}
 
     <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
 
-    <manifest mode="update" file="${basedir}/rt/build/manifest">
-      <attribute name="Build-Id" value="${build.id}" />
-    </manifest>
-    
+    <!-- Copying the manifest -->
+    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
+    <updateManifestWithVersion file="${basedir}/rt/build/manifest" />
+
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
@@ -212,9 +221,6 @@ major-version=${version}
 
 
   <target name="runtime-build-mustang" depends="runtime-compile-mustang">
-    <!-- Copying the manifest -->
-    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
-
     <!-- Copy resource files etc -->
     <copy todir="${basedir}/rt/build/classes">
       <fileset dir="${basedir}/rt/src">
@@ -224,10 +230,10 @@ major-version=${version}
 
     <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
 
-    <manifest mode="update" file="${basedir}/rt/build/manifest">
-      <attribute name="Build-Id" value="${build.id}" />
-    </manifest>
-    
+    <!-- Copying the manifest -->
+    <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
+    <updateManifestWithVersion file="${basedir}/rt/build/manifest" />
+
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
@@ -264,9 +270,7 @@ major-version=${version}
 
     <!-- Copying the manifest -->
     <copy file="${basedir}/tools/etc/manifest" todir="${basedir}/tools/wscompile/build"/>
-    <manifest mode="update" file="${basedir}/tools/wscompile/build/manifest">
-      <attribute name="Build-Id" value="${build.id}" />
-    </manifest>
+    <updateManifestWithVersion file="${basedir}/tools/wscompile/build/manifest" />
 
     <versionProp file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties" />
 
