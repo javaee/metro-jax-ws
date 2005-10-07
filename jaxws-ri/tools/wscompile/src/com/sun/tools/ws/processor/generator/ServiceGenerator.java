@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.5 2005-09-23 22:05:41 kohsuke Exp $
+ * $Id: ServiceGenerator.java,v 1.6 2005-10-07 21:41:11 kohlert Exp $
  */
 
 /*
@@ -136,7 +136,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             inv = JExpr._new(qNameCls);
             inv.arg("namespace");
             inv.arg("localpart");
-            JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC, QName.class, "serviceName", createQName(service.getName()));
+            JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, "serviceName", createQName(service.getName()));
 
             JFieldVar portField;
             String fieldName;
@@ -148,7 +148,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 inv.arg("namespace");
                 inv.arg("localpart");
                 fieldName = StringUtils.decapitalize(port.getName().getLocalPart())+"Name";
-                portField = cls.field(JMod.PRIVATE|JMod.STATIC, QName.class, fieldName, createQName(port.getName()));
+                portField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, fieldName, createQName(port.getName()));
             }
             
             
