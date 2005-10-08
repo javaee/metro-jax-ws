@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPatcher.java,v 1.12 2005-09-23 22:05:32 kohsuke Exp $
+ * $Id: WSDLPatcher.java,v 1.13 2005-10-08 01:07:25 jitu Exp $
  *
  */
 
@@ -24,10 +24,6 @@
  */
 
 package com.sun.xml.ws.server;
-
-import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
-import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,12 +40,10 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.XMLEvent;
-
 public class WSDLPatcher {
     
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
@@ -167,14 +161,6 @@ public class WSDLPatcher {
             }
         }
     }
-  
-    /*
-     * Returns true for relative imports
-     *
-    private boolean isPatchable(String value) {
-        return !value.startsWith("/") && value.indexOf(':') == -1;
-    }
-     */
 
     /*
      * return patchedlocation  null if we don't how to patch this location 
@@ -213,7 +199,7 @@ public class WSDLPatcher {
                         //logger.warning("Couldn't fix the relative location:"+relPath);
                         return startElement;        // Not patching
                     }
-                    logger.info("Fixing the relative location:"+relPath
+                    logger.fine("Fixing the relative location:"+relPath
                             +" with absolute location:"+absPath);
                     Attribute newAttr = eventFactory.createAttribute(
                         location, absPath);
@@ -277,7 +263,7 @@ public class WSDLPatcher {
                 if (value == null) {
                     return startElement;        // Not patching  
                 }
-                logger.info("Fixing service:"+service+ " port:"+port
+                logger.fine("Fixing service:"+service+ " port:"+port
                         + " address with "+value);
                 Attribute newAttr = eventFactory.createAttribute(
                         WSDL_LOCATION_QNAME, value);
@@ -294,25 +280,6 @@ public class WSDLPatcher {
                 startElement.getNamespaces(), 
                 startElement.getNamespaceContext());
         return event;
-    }
-    
-    /*
-     * Utility method to find if the document is WSDL or Schema
-     */
-    public static DOC_TYPE getDocType(InputStream in) throws XMLStreamException {
-        XMLStreamReader reader = XMLStreamReaderFactory.createXMLStreamReader(in, true);
-        try {
-            XMLStreamReaderUtil.nextElementContent(reader);
-            if (reader.getName().equals(WSDLConstants.QNAME_DEFINITIONS)) {
-                return DOC_TYPE.WSDL;
-            } else if (reader.getName().equals(QNAME_SCHEMA)) {
-                return DOC_TYPE.SCHEMA;
-            } else {
-                return DOC_TYPE.OTHER;
-            }
-        } finally {
-            reader.close();
-        }
     }
     
     /*
