@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.19 2005-10-10 18:06:03 kohsuke Exp $
+ * $Id: HttpClientTransport.java,v 1.20 2005-10-10 18:11:13 kohsuke Exp $
  */
 
 /*
@@ -24,7 +24,6 @@
 
 package com.sun.xml.ws.transport.http.client;
 
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.transport.WSConnectionImpl;
@@ -122,14 +121,10 @@ public class HttpClientTransport extends WSConnectionImpl {
                     && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 try {
                     throw new ClientTransportException("http.status.code",
-                            new Object[]{
-                                new Integer(statusCode),
-                                httpConnection.getResponseMessage()});
+                        statusCode, httpConnection.getResponseMessage());
                 } catch (IOException ex) {
                     throw new ClientTransportException("http.status.code",
-                            new Object[]{
-                                new Integer(statusCode),
-                                ex});
+                        statusCode, ex);
                 }
             }
             throw new ClientTransportException("http.client.failed",
@@ -163,12 +158,12 @@ public class HttpClientTransport extends WSConnectionImpl {
                 try {
                     throw new ClientTransportException ("http.status.code",
                         new Object[]{
-                        new Integer (statusCode),
+                            statusCode,
                             httpConnection.getResponseMessage ()});
                 } catch (IOException ex) {
                     throw new ClientTransportException ("http.status.code",
                         new Object[]{
-                        new Integer (statusCode),
+                            statusCode,
                             ex});
                 }
             }
@@ -198,14 +193,13 @@ public class HttpClientTransport extends WSConnectionImpl {
 
     protected InputStream readResponse()
             throws IOException {
-        ByteInputStream in;
         InputStream contentIn =
                 (isFailure
                 ? httpConnection.getErrorStream()
                 : httpConnection.getInputStream());
 
         ByteArrayBuffer bab = new ByteArrayBuffer();
-        if(contentIn!=null) {
+        if(contentIn!=null) { // is this really possible?
             bab.write(contentIn);
             bab.close();
         }
@@ -288,14 +282,14 @@ public class HttpClientTransport extends WSConnectionImpl {
                 if (!redirect || (redirectCount <= 0)) {
                     throw new ClientTransportException("http.status.code",
                             new Object[]{
-                                new Integer(statusCode),
+                                statusCode,
                                 getStatusMessage(httpConnection)});
                 }
             } else if (
                     statusCode < 200 || (statusCode >= 303 && statusCode < 500)) {
                 throw new ClientTransportException("http.status.code",
                         new Object[]{
-                            new Integer(statusCode),
+                            statusCode,
                             getStatusMessage(httpConnection)});
             } else if (statusCode >= 500) {
                 isFailure = true;
