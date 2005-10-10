@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.7 2005-10-07 23:24:25 kohlert Exp $
+ * $Id: ServiceGenerator.java,v 1.8 2005-10-10 15:37:13 kohlert Exp $
  */
 
 /*
@@ -41,6 +41,7 @@ import com.sun.codemodel.*;
 import com.sun.codemodel.writer.ProgressCodeWriter;
 import java.util.Properties;
 
+import com.sun.tools.xjc.api.XJC;
 import com.sun.tools.ws.processor.ProcessorAction;
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
@@ -135,7 +136,8 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             inv = JExpr._new(qNameCls);
             inv.arg("namespace");
             inv.arg("localpart");
-            String serviceFieldName = intf.getSimpleName().toUpperCase();
+//            String serviceFieldName = intf.getSimpleName().toUpperCase();
+            String serviceFieldName = XJC.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
             JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
 
             JFieldVar portField;
@@ -147,7 +149,8 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 inv = JExpr._new(qNameCls);
                 inv.arg("namespace");
                 inv.arg("localpart");
-                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();
+//                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();
+                fieldName = XJC.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
                 portField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, fieldName, createQName(port.getName()));
             }
             
@@ -194,7 +197,8 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JBlock body = m.body();
                 StringBuffer statement = new StringBuffer("return (");
                 statement.append(retType.name());
-                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();                
+//                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();                
+                fieldName = XJC.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
                 statement.append(")super.getPort("+fieldName+", ");
                 statement.append(retType.name());
                 statement.append(".class);");
