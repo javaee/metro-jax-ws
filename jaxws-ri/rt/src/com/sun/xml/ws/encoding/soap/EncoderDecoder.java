@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.30 2005-10-06 20:54:52 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.31 2005-10-10 16:28:05 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -23,7 +23,6 @@
 package com.sun.xml.ws.encoding.soap;
 
 import com.sun.xml.ws.encoding.EncoderDecoderBase;
-import com.sun.xml.ws.encoding.ByteArrayDataSource;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
@@ -37,17 +36,17 @@ import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import java.awt.Image;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.net.URLEncoder;
 
 /**
  * @author Vivek Pandey
