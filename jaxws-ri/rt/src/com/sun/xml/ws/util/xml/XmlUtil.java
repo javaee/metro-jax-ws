@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.9 2005-09-23 22:05:39 kohsuke Exp $
+ * $Id: XmlUtil.java,v 1.10 2005-10-10 18:04:18 kohsuke Exp $
  */
 
 /*
@@ -24,7 +24,6 @@
 
 package com.sun.xml.ws.util.xml;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +47,8 @@ import org.w3c.dom.Text;
 
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+
 import java.net.URL;
 import java.util.Enumeration;
 import javax.xml.ws.WebServiceException;
@@ -165,27 +166,11 @@ public class XmlUtil {
 
     public static InputStream getUTF8Stream(String s) {
         try {
-            ByteArrayOutputStream bas = new ByteArrayOutputStream();
-            Writer w = new OutputStreamWriter(bas, "utf-8");
+            ByteArrayBuffer bab = new ByteArrayBuffer();
+            Writer w = new OutputStreamWriter(bab, "utf-8");
             w.write(s);
             w.close();
-            byte[] ba = bas.toByteArray();
-            ByteArrayInputStream bis = new ByteArrayInputStream(ba);
-            return bis;
-        } catch (IOException e) {
-            throw new RuntimeException("should not happen");
-        }
-    }
-
-    public static ByteInputStream getUTF8ByteInputStream(String s) {
-        try {
-            ByteArrayOutputStream bas = new ByteArrayOutputStream();
-            Writer w = new OutputStreamWriter(bas, "utf-8");
-            w.write(s);
-            w.close();
-            byte[] ba = bas.toByteArray();
-            ByteInputStream bis = new ByteInputStream(ba, ba.length);
-            return bis;
+            return bab.newInputStream();
         } catch (IOException e) {
             throw new RuntimeException("should not happen");
         }

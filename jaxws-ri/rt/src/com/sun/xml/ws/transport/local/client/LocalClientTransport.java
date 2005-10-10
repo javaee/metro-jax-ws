@@ -1,5 +1,5 @@
 /*
- * $Id: LocalClientTransport.java,v 1.11 2005-09-23 22:05:36 kohsuke Exp $
+ * $Id: LocalClientTransport.java,v 1.12 2005-10-10 18:04:16 kohsuke Exp $
  */
 
 /*
@@ -34,6 +34,8 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +70,7 @@ public class LocalClientTransport extends WSConnectionImpl {
     @Override
     public OutputStream getOutput() {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            lm.setOutput(baos);
+            lm.setOutput(new ByteArrayBuffer());
             return lm.getOutput();
         }
         catch (Exception ex) {
@@ -140,9 +141,8 @@ public class LocalClientTransport extends WSConnectionImpl {
     @Override
     public InputStream getInput() {
         try {
-            ByteArrayInputStream bis = new ByteArrayInputStream(lm.getOutput().toByteArray());
-            return bis;
-        } 
+            return lm.getOutput().newInputStream();
+        }
         catch (Exception ex) {
             throw new ClientTransportException("local.client.failed",ex);
         }

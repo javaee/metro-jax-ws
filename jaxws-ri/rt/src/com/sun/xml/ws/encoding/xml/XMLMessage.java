@@ -31,6 +31,7 @@ import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.protocol.xml.XMLMessageException;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.FastInfosetReflection;
 import com.sun.xml.ws.util.FastInfosetUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -46,7 +47,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -636,25 +636,24 @@ public final class XMLMessage {
                 }
 
                 // Copy source to result respecting desired encoding
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayBuffer bab = new ByteArrayBuffer();
                 Transformer transformer = XmlUtil.newTransformer();
                 transformer.transform(source, isFastInfoset ?
-                    FastInfosetReflection.FastInfosetResult_new(baos)
-                    : new StreamResult(baos));
-                baos.close();
+                    FastInfosetReflection.FastInfosetResult_new(bab)
+                    : new StreamResult(bab));
+                bab.close();
 
                 // Set internal source
-                byte[] buf = baos.toByteArray();
-                ByteInputStream bis = new ByteInputStream(buf, buf.length);
+                InputStream bis = bab.newInputStream();
                 source = isFastInfoset ?
                     FastInfosetReflection.FastInfosetSource_new(bis)
                     : new StreamSource(bis);
 
                 // Return fresh source back to handler
-                ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                bis = bab.newInputStream();
                 return isFastInfoset ?
-                    FastInfosetReflection.FastInfosetSource_new(bais)
-                    : new StreamSource(bais);
+                    FastInfosetReflection.FastInfosetSource_new(bis)
+                    : new StreamSource(bis);
             }
             catch (Exception e) {
                 throw new WebServiceException(e);
@@ -686,22 +685,19 @@ public final class XMLMessage {
          */
         public void setPayload(Object jaxbObj, JAXBContext ctxt) {
             try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayBuffer bab = new ByteArrayBuffer();
 
                 // If old source was FI, re-encode using FI
                 if (isFastInfoset) {
                     JAXBTypeSerializer.serializeDocument(jaxbObj,
-                        XMLStreamWriterFactory.createFIStreamWriter(baos),
+                        XMLStreamWriterFactory.createFIStreamWriter(bab),
                         ctxt);
-                }
-                else {
-                    JAXBTypeSerializer.serialize(jaxbObj, baos, ctxt);
+                } else {
+                    JAXBTypeSerializer.serialize(jaxbObj, bab, ctxt);
                 }
 
                 // Return XML or FI source
-                baos.close();
-                byte[] buf = baos.toByteArray();
-                ByteInputStream bis = new ByteInputStream(buf, buf.length);
+                InputStream bis = bab.newInputStream();
                 source = isFastInfoset ?
                     FastInfosetReflection.FastInfosetSource_new(bis)
                     : new StreamSource(bis);

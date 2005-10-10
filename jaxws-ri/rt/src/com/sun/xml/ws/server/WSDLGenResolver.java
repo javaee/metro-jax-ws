@@ -21,13 +21,14 @@
 package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.wsdl.parser.Service;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import com.sun.xml.ws.wsdl.writer.WSDLOutputResolver;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
-import com.sun.xml.ws.wsdl.writer.*;
+import javax.xml.ws.Holder;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import javax.xml.ws.Holder;
 
 /**
  * @author WS Development Team
@@ -98,7 +98,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
      */
     
     public Result getSchemaOutput(String namespaceUri, String suggestedFileName) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ByteArrayBuffer bout = new ByteArrayBuffer();
         
         StreamDocInfo docInfo = new StreamDocInfo(suggestedFileName, bout);
         docInfo.setQueryString("xsd="+suggestedFileName);
@@ -115,7 +115,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
      * return null if concrete WSDL need not be generated
      */
     public Result getWSDLOutput(String filename) {        
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ByteArrayBuffer bout = new ByteArrayBuffer();
         StreamDocInfo docInfo = new StreamDocInfo(filename, bout);
         docInfo.setDocType(DOC_TYPE.WSDL);
         docInfo.setQueryString("wsdl");
@@ -138,7 +138,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
             filename.value = abstractWsdl.getUrl().toString();
             return null;                // Don't generate abstract WSDL
         }
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ByteArrayBuffer bout = new ByteArrayBuffer();
         StreamDocInfo abstractWsdl = new StreamDocInfo(filename.value, bout);
         abstractWsdl.setDocType(DOC_TYPE.WSDL);
         //abstractWsdl.setQueryString("wsdl="+filename.value);
@@ -165,7 +165,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
             filename.value = schemas.get(0);
             return null;            // Don't generate schema
         }
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ByteArrayBuffer bout = new ByteArrayBuffer();
         StreamDocInfo docInfo = new StreamDocInfo(filename.value, bout);
         docInfo.setDocType(DOC_TYPE.SCHEMA);
         //docInfo.setQueryString("xsd="+filename.value);
@@ -177,23 +177,19 @@ public class WSDLGenResolver implements WSDLOutputResolver {
     }
     
     public class StreamDocInfo implements DocInfo {
-        private ByteArrayOutputStream bout;
+        private ByteArrayBuffer bout;
         private String resource;
         private String queryString;
 		private DOC_TYPE docType;
         
-        public StreamDocInfo(String resource, ByteArrayOutputStream bout) {
+        public StreamDocInfo(String resource, ByteArrayBuffer bout) {
             this.resource = resource;
             this.bout = bout;
         }
 
         public InputStream getDoc() {
-            try {
-                bout.close();
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
-            return new ByteArrayInputStream(bout.toByteArray());
+            bout.close();
+            return bout.newInputStream();
         }
 
         public String getPath() {

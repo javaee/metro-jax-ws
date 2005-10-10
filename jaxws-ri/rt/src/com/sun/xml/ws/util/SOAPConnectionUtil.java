@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.15 2005-09-17 01:11:16 jitu Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.16 2005-10-10 18:04:20 kohsuke Exp $
  */
 
 /*
@@ -114,15 +114,14 @@ public class SOAPConnectionUtil {
     public static void sendResponseError(WSConnection con, String bindingId) {
         try {
             SOAPMessage message = SOAPUtil.createMessage(bindingId);
-            ByteArrayOutputStream bufferedStream = new ByteArrayOutputStream();
+            ByteArrayBuffer bufferedStream = new ByteArrayBuffer();
             Writer writer = new OutputStreamWriter(bufferedStream, "UTF-8");
             if(bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
                 writer.write(DEFAULT_SERVER_ERROR_SOAP12_ENVELOPE);
             else
                 writer.write(DEFAULT_SERVER_ERROR_ENVELOPE);
             writer.close();
-            byte[] data = bufferedStream.toByteArray();
-            message.getSOAPPart().setContent(new StreamSource(new ByteInputStream(data, data.length)));
+            message.getSOAPPart().setContent(new StreamSource(bufferedStream.newInputStream()));
             setStatus(con, WSConnection.INTERNAL_ERR);
             send(con, message);
         } catch (Exception e) {

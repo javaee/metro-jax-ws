@@ -1,5 +1,5 @@
 /*
- * $Id: HttpEndpoint.java,v 1.24 2005-10-03 18:23:55 bbissett Exp $
+ * $Id: HttpEndpoint.java,v 1.25 2005-10-10 18:04:15 kohsuke Exp $
  */
 
 /*
@@ -24,36 +24,29 @@
 
 package com.sun.xml.ws.transport.http.server;
 
+import com.sun.net.httpserver.HttpContext;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.Tie;
-import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
-import com.sun.xml.ws.util.localization.Localizer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import com.sun.net.httpserver.HttpContext;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
+import org.xml.sax.EntityResolver;
 
-import javax.xml.ws.Endpoint;
-import java.util.List;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
-
-import org.xml.sax.EntityResolver;
+import javax.xml.ws.Endpoint;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 /**
  *
@@ -109,19 +102,16 @@ public class HttpEndpoint {
             Map<String, DocInfo> newMetadata = new HashMap<String, DocInfo>();
             Transformer transformer = XmlUtil.newTransformer();
             for(Source source: metadata) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayBuffer baos = new ByteArrayBuffer();
                 try {
                     transformer.transform(source, new StreamResult(baos));
                     baos.close();
-                } catch(IOException ioe) {
-                    throw new ServerRtException("server.rt.err",ioe);
                 } catch (TransformerException te) {
                     throw new ServerRtException("server.rt.err",te);
                 }
                 String systemId = source.getSystemId();
                 URL url = new URL(systemId);
-                byte[] buf = baos.toByteArray();
-                EndpointDocInfo docInfo = new EndpointDocInfo(url, buf);
+                EndpointDocInfo docInfo = new EndpointDocInfo(url, baos);
                 newMetadata.put(systemId, docInfo);
             }
             endpointInfo.setMetadata(newMetadata);

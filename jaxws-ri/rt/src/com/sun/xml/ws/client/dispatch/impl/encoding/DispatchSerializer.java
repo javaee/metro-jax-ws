@@ -28,6 +28,7 @@ import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
@@ -80,7 +81,7 @@ public final class DispatchSerializer {
 
     // TODO: this is very very inefficient.
     public Source deserializeSource(XMLStreamReader reader) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayBuffer baos = new ByteArrayBuffer();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
 
         try {
@@ -123,9 +124,7 @@ public final class DispatchSerializer {
             ex.printStackTrace();
         }
 
-        ByteArrayInputStream istream =
-            new ByteArrayInputStream(baos.toByteArray());
-        return new StreamSource(istream);
+        return new StreamSource(baos.newInputStream());
     }
 
     void serializeSource(Object source, XMLStreamWriter writer) {

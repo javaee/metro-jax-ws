@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.11 2005-10-03 21:27:32 kohlert Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.12 2005-10-10 18:04:11 kohsuke Exp $
  */
 
 /*
@@ -23,38 +23,36 @@
  */
 package com.sun.xml.ws.encoding.soap.server;
 
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
-
 import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.DOMStreamReader;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
 import javax.xml.XMLConstants;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
-import java.io.ByteArrayOutputStream;
-import com.sun.xml.ws.server.*;
-
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
-import com.sun.xml.ws.handler.MessageContextUtil;
-import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.util.MessageInfoUtil;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.SOAPBinding;
 
 /**
  * @author WS Development Team
@@ -76,10 +74,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         
         try {
             setAttachmentsMap(messageInfo, response);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayBuffer bab = new ByteArrayBuffer();
             
             if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
-                writer = XMLStreamWriterFactory.createFIStreamWriter(baos);                
+                writer = XMLStreamWriterFactory.createFIStreamWriter(bab);
                 
                 // Turn XOP off for FI
                 marshaller = getAttachmentMarshaller(messageInfo);
@@ -90,8 +88,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             }
             else {
                 // Store output stream to use in JAXB bridge (not with FI)
-                messageInfo.setMetaData(JAXB_OUTPUTSTREAM, baos);
-                writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+                messageInfo.setMetaData(JAXB_OUTPUTSTREAM, bab);
+                writer = XMLStreamWriterFactory.createXMLStreamWriter(bab);
             }
             
             writer.writeStartDocument();
@@ -102,12 +100,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             endEnvelope(writer);
             writer.writeEndDocument();
             writer.close();
-            
-            byte[] buf = baos.toByteArray();
-            ByteInputStream bis = new ByteInputStream(buf, 0, buf.length);
+
             MimeHeaders mh = new MimeHeaders();
             mh.addHeader("Content-Type", getContentType(messageInfo, marshaller));
-            SOAPMessage msg = SOAPUtil.createMessage(mh, bis, getBindingId());
+            SOAPMessage msg = SOAPUtil.createMessage(mh, bab.newInputStream(), getBindingId());
             processAttachments(response, msg);
             
             // Restore default XOP processing before returning

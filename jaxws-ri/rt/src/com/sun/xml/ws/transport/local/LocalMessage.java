@@ -1,5 +1,5 @@
 /*
- * $Id: LocalMessage.java,v 1.2 2005-09-10 19:48:10 kohsuke Exp $
+ * $Id: LocalMessage.java,v 1.3 2005-10-10 18:04:17 kohsuke Exp $
  */
 
 /*
@@ -24,6 +24,8 @@
 
 package com.sun.xml.ws.transport.local;
 
+import com.sun.xml.ws.util.ByteArrayBuffer;
+
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
@@ -32,17 +34,17 @@ import java.util.Map;
  * @author WS Development Team
  */
 public class LocalMessage {
-    ByteArrayOutputStream baos;
+    ByteArrayBuffer baos;
     Map<String, List<String>> headers;
     
     public LocalMessage () {
     }
     
-    public ByteArrayOutputStream getOutput() {
+    public ByteArrayBuffer getOutput() {
         return baos;
     }
     
-    public void setOutput(ByteArrayOutputStream baos) {
+    public void setOutput(ByteArrayBuffer baos) {
         this.baos = baos;
     }
     

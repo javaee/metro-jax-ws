@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointDocInfo.java,v 1.4 2005-09-10 19:48:07 kohsuke Exp $
+ * $Id: EndpointDocInfo.java,v 1.5 2005-10-10 18:04:15 kohsuke Exp $
  *
  */
 
@@ -27,6 +27,8 @@ package com.sun.xml.ws.transport.http.server;
 import com.sun.xml.ws.server.DocContext;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.wsdl.parser.Service;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -34,19 +36,19 @@ import java.net.URL;
 public class EndpointDocInfo implements DocInfo {
     private URL resourceUrl;
     private String queryString;
-    private byte[] buf;
+    private ByteArrayBuffer buf;
     private DOC_TYPE docType;
     private String tns;
     private Service service;
     private boolean portType;
 
-    public EndpointDocInfo(URL resourceUrl, byte[] buf) {
+    public EndpointDocInfo(URL resourceUrl, ByteArrayBuffer buf) {
         this.resourceUrl = resourceUrl;
         this.buf = buf;
     }
     
     public InputStream getDoc() {
-        return new ByteArrayInputStream(buf);
+        return buf.newInputStream();
     }
     
     public String getPath() {

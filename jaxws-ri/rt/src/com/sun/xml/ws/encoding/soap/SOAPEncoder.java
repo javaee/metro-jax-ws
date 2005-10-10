@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.40 2005-10-05 22:05:13 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.41 2005-10-10 18:04:12 kohsuke Exp $
  */
 
 /*
@@ -47,6 +47,7 @@ import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.spi.runtime.MtomCallback;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -69,9 +70,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -110,12 +108,11 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     public DOMSource toDOMSource(RpcLitPayload rpcLitPayload, MessageInfo messageInfo) {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayBuffer baos = new ByteArrayBuffer();
             XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             writeRpcLitPayload(rpcLitPayload, messageInfo, writer);
-            byte[] buf = baos.toByteArray();
             Transformer transformer = XmlUtil.newTransformer();
-            StreamSource source = new StreamSource(new ByteArrayInputStream(buf));
+            StreamSource source = new StreamSource(baos.newInputStream());
             DOMResult domResult = new DOMResult();
             transformer.transform(source, domResult);
             return new DOMSource(domResult.getNode());
@@ -126,15 +123,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     public DOMSource toDOMSource(SOAPFaultInfo faultInfo, MessageInfo messageInfo) {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ByteArrayBuffer baos = new ByteArrayBuffer();
             XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
             writeFault(faultInfo, messageInfo, writer);
             writer.writeEndDocument();
             writer.close();
             baos.close();
-            byte[] buf = baos.toByteArray();
             Transformer transformer = XmlUtil.newTransformer();
-            StreamSource source = new StreamSource(new ByteArrayInputStream(buf));
+            StreamSource source = new StreamSource(baos.newInputStream());
             DOMResult domResult = new DOMResult();
             transformer.transform(source, domResult);
             return new DOMSource(domResult.getNode());
@@ -144,8 +140,6 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
         catch (XMLStreamException xe) {
             throw new WebServiceException(xe);
-        } catch (IOException ioe) {
-            throw new WebServiceException(ioe);
         }
     }
 

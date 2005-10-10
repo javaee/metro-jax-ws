@@ -1,5 +1,5 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.7 2005-09-10 19:48:12 kohsuke Exp $
+ * $Id: LocalConnectionImpl.java,v 1.8 2005-10-10 18:04:17 kohsuke Exp $
  */
 
 /*
@@ -23,12 +23,12 @@
  */
 
 package com.sun.xml.ws.transport.local.server;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.xml.ws.transport.local.LocalMessage;
-import java.io.ByteArrayInputStream;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -62,14 +62,13 @@ public class LocalConnectionImpl extends WSConnectionImpl {
     }
     
     public InputStream getInput () {
-        ByteArrayInputStream bis = new ByteArrayInputStream (lm.getOutput ().toByteArray ());        
-        return bis;
+        return lm.getOutput().newInputStream();
     }
     
     public OutputStream getOutput () {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream ();   
-        lm.setOutput (baos);        
-        return baos;
+        ByteArrayBuffer bab = new ByteArrayBuffer();
+        lm.setOutput(bab);
+        return bab;
     }
 }
 

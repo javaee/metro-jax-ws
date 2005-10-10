@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.17 2005-10-07 17:22:12 bbissett Exp $
+ * $Id: HttpClientTransport.java,v 1.18 2005-10-10 18:04:14 kohsuke Exp $
  */
 
 /*
@@ -7,12 +7,12 @@
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * https://jwsdp.dev.java.net/CDDLv1.0.html
  * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL
  * HEADER in each file and include the License file at
  * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
@@ -24,17 +24,21 @@
 
 package com.sun.xml.ws.transport.http.client;
 
+import com.sun.xml.messaging.saaj.util.ByteInputStream;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.transport.WSConnectionImpl;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPConstants;
-
-import java.io.ByteArrayOutputStream;
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,21 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.transport.WSConnectionImpl;
-
-import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
-import static javax.xml.ws.BindingProvider.SOAPACTION_URI_PROPERTY;
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_STATUS_CODE;
-import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
-import static com.sun.xml.ws.client.BindingProviderProperties.HOSTNAME_VERIFICATION_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.REDIRECT_REQUEST_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
 
 /**
  * @author WS Development Team
@@ -79,12 +68,12 @@ public class HttpClientTransport extends WSConnectionImpl {
     public HttpClientTransport(OutputStream logStream, Map<String, Object> context) {
         this.context = context;
         _logStream = logStream;
-        
+
         String bindingId = (String)context.get(BINDING_ID_PROPERTY);
         try {
             if (bindingId == null)
                 bindingId = SOAPBinding.SOAP11HTTP_BINDING;
-            
+
             if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING))
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             else
@@ -95,7 +84,7 @@ public class HttpClientTransport extends WSConnectionImpl {
             throw new ClientTransportException("http.client.cannotCreateMessageFactory");
         }
     }
-    
+
     /**
      * Prepare the stream for HTTP request
      */
@@ -103,27 +92,26 @@ public class HttpClientTransport extends WSConnectionImpl {
     public OutputStream getOutput() {
         try {
             httpConnection = createHttpConnection(endpoint, context);
-            cookieJar = sendCookieAsNeeded();
-            
             // how to incorporate redirect processing: message dispatcher does not seem to tbe right place
             outputStream = httpConnection.getOutputStream();
-            
+
+            cookieJar = sendCookieAsNeeded();
             connectForResponse();
-        
+
         } catch (Exception ex) {
             throw new ClientTransportException("http.client.failed",ex);
         }
-        
+
         return outputStream;
     }
-    
+
     /**
      * Get the response from HTTP connection and prepare the input stream for response
      */
     @Override
     public InputStream getInput() {
         // response processing
-        
+
         ByteInputStream in;
         try {
             in = readResponse();
@@ -147,26 +135,25 @@ public class HttpClientTransport extends WSConnectionImpl {
                     e.getMessage());
         }
         httpConnection = null;
-        
+
         return in;
     }
-    
+
     @Override
     public OutputStream getDebug() {
         return _logStream;
     }
-    
+
     @Override
     public Map<String, List<String>> getHeaders () {
-        ByteInputStream in;
         try {
             isFailure = checkResponseCode ();
-            
+
             Map<String, List<String>> headers = collectResponseMimeHeaders ();
-            
+
             saveCookieAsNeeded (cookieJar);
             setHeaders (headers);
-            
+
             return headers;
         } catch (IOException e) {
             if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
@@ -187,9 +174,9 @@ public class HttpClientTransport extends WSConnectionImpl {
             throw new ClientTransportException ("http.client.failed",
                 e.getMessage ());
         }
-        
+
     }
-    
+
 //    public void invoke(String endpoint, SOAPMessageContext context)
 //            throws ClientTransportException {
 
@@ -242,7 +229,7 @@ public class HttpClientTransport extends WSConnectionImpl {
                 // ignore headers that are illegal in MIME
             }
         }
-        
+
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
         for (Iterator iter = mimeHeaders.getAllHeaders(); iter.hasNext();) {
             MimeHeader header = (MimeHeader)iter.next();
@@ -271,7 +258,7 @@ public class HttpClientTransport extends WSConnectionImpl {
 
             statusCode = httpConnection.getResponseCode();
             setStatus (statusCode);
-            
+
             if ((httpConnection.getResponseCode()
                     == HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 isFailure = true;
@@ -339,20 +326,16 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     protected CookieJar sendCookieAsNeeded() {
-        Boolean shouldMaintainSessionProperty =
-            (Boolean) context.get(SESSION_MAINTAIN_PROPERTY);
-        if (shouldMaintainSessionProperty == null) {
+        String header = (String)context.get(SESSION_MAINTAIN_PROPERTY);
+        if (header == null)
             return null;
-        }
-        if (shouldMaintainSessionProperty.booleanValue()) {
-            CookieJar cookieJar = (CookieJar) context.get(HTTP_COOKIE_JAR);
+
+        boolean shouldMaintainSession = Boolean.parseBoolean(header);
+        if (shouldMaintainSession) {
+            CookieJar cookieJar =
+                    (CookieJar) context.get(HTTP_COOKIE_JAR);
             if (cookieJar == null) {
                 cookieJar = new CookieJar();
-                
-                // need to store in binding's context so it is not lost
-                BindingProvider bp =
-                    (BindingProvider) context.get(JAXWS_CLIENT_HANDLE_PROPERTY);
-                bp.getRequestContext().put(HTTP_COOKIE_JAR, cookieJar);
             }
             cookieJar.applyRelevantCookies(httpConnection);
             return cookieJar;
@@ -364,7 +347,11 @@ public class HttpClientTransport extends WSConnectionImpl {
     protected void saveCookieAsNeeded(CookieJar cookieJar) {
         if (cookieJar != null) {
             cookieJar.recordAnyCookies(httpConnection);
+            context.put(HTTP_COOKIE_JAR,
+                    cookieJar);
         }
+
+        // TODO: where and how this cookieJar is used ?
     }
 
     protected HttpURLConnection createHttpConnection(String endpoint,
@@ -408,12 +395,12 @@ public class HttpClientTransport extends WSConnectionImpl {
         // the soap message is always sent as a Http POST
         // HTTP Get is disallowed by BP 1.0
         httpConnection.setRequestMethod("POST");
-        
+
         // set the properties on HttpURLConnection
         for (Map.Entry entry : super.getHeaders().entrySet()) {
             httpConnection.addRequestProperty ((String)entry.getKey(), ((List<String>)entry.getValue()).get(0));
         }
-        
+
         return httpConnection;
     }
 
@@ -440,19 +427,6 @@ public class HttpClientTransport extends WSConnectionImpl {
             redirectCount = START_REDIRECT_COUNT;
             LAST_ENDPOINT = currentEndpoint;
         }
-    }
-
-    private byte[] readFully(InputStream istream) throws IOException {
-        if (istream == null)
-            return new byte[0];
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num = 0;
-        while ((num = istream.read(buf)) != -1) {
-            bout.write(buf, 0, num);
-        }
-        byte[] ret = bout.toByteArray();
-        return ret;
     }
 
     // overide default SSL HttpClientVerifier to always return true
