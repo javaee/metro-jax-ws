@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.18 2005-10-10 18:04:14 kohsuke Exp $
+ * $Id: HttpClientTransport.java,v 1.19 2005-10-10 18:06:03 kohsuke Exp $
  */
 
 /*
@@ -28,6 +28,7 @@ import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.transport.WSConnectionImpl;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -112,7 +113,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     public InputStream getInput() {
         // response processing
 
-        ByteInputStream in;
+        InputStream in;
         try {
             in = readResponse();
         } catch (IOException e) {
@@ -195,7 +196,7 @@ public class HttpClientTransport extends WSConnectionImpl {
 //            }
 //    }
 
-    protected ByteInputStream readResponse()
+    protected InputStream readResponse()
             throws IOException {
         ByteInputStream in;
         InputStream contentIn =
@@ -203,16 +204,18 @@ public class HttpClientTransport extends WSConnectionImpl {
                 ? httpConnection.getErrorStream()
                 : httpConnection.getInputStream());
 
-        byte[] bytes = readFully(contentIn);
+        ByteArrayBuffer bab = new ByteArrayBuffer();
+        if(contentIn!=null) {
+            bab.write(contentIn);
+            bab.close();
+        }
+
         int length =
                 httpConnection.getContentLength() == -1
-                ? bytes.length
+                ? bab.size()
                 : httpConnection.getContentLength();
-        in = new ByteInputStream(bytes, length);
 
-        contentIn.close();
-
-        return in;
+        return bab.newInputStream(0,length);
     }
 
     protected Map<String, List<String>> collectResponseMimeHeaders() {
