@@ -42,6 +42,9 @@ import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
+import com.sun.xml.messaging.saaj.soap.MessageImpl;
+
+import static com.sun.xml.ws.developer.JAXWSProperties.*;
 
 public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
 
@@ -106,12 +109,14 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
      */
     @Override
     protected void setResponseInContext(MessageInfo messageInfo,
-            SOAPHandlerContext context) {
+            SOAPHandlerContext context) 
+    {
         Object obj = messageInfo.getResponse();
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
         Class providerClass = endpointInfo.getImplementorClass();
+        
         if (messageInfo.getResponseType() == MessageInfo.NORMAL_RESPONSE &&
                 getServiceMode(providerClass) == Service.Mode.MESSAGE) {
             SOAPMessage soapMessage = null;
@@ -128,9 +133,16 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
                     throw new ServerRtException("soapencoder.err", new Object[]{e});
                 }
             }
+            
+            // Ensure message is encoded according to conneg
+            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+                ((MessageImpl) soapMessage).setIsFastInfoset(true);
+            }
+            
             context.setSOAPMessage(soapMessage);
             context.setInternalMessage(null);
-        } else {
+        } 
+        else {
             // set Source or any Exception in InternalMessage's BodyBlock
             SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
             InternalEncoder ine = eptf.getInternalEncoder();
