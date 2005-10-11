@@ -43,6 +43,7 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
 import com.sun.xml.messaging.saaj.soap.MessageImpl;
+import com.sun.xml.ws.util.FastInfosetUtil;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.*;
 
@@ -135,9 +136,7 @@ public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
             }
             
             // Ensure message is encoded according to conneg
-            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
-                ((MessageImpl) soapMessage).setIsFastInfoset(true);
-            }
+            FastInfosetUtil.ensureCorrectEncoding(messageInfo, soapMessage);
             
             context.setSOAPMessage(soapMessage);
             context.setInternalMessage(null);

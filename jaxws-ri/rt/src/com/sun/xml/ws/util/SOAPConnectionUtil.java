@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.16 2005-10-10 18:04:20 kohsuke Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.17 2005-10-11 18:26:27 spericas Exp $
  */
 
 /*
@@ -43,6 +43,8 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
+    
 /**
  * @author WS Development Team
  */
@@ -105,9 +107,20 @@ public class SOAPConnectionUtil {
         send(con, soapMessage);
     }
 
-    public static void sendResponseOneway(WSConnection con) {
+    public static void sendResponseOneway(MessageInfo messageInfo) {        
+        WSConnection con = (WSConnection)messageInfo.getConnection();
         setStatus(con, WSConnection.ONEWAY);
         con.getOutput();
+      
+        // Ensure conneg is completed even if no data is sent back
+        if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+            Map<String, List<String>> headers = con.getHeaders();
+            List<String> contentTypeList = headers.get("Content-Type");            
+            // Use FI MIME type based on Accept header
+            contentTypeList.set(0, 
+                FastInfosetUtil.getFastInfosetFromAccept(headers.get("Accept")));
+        }
+        
         con.closeOutput();
     }
 

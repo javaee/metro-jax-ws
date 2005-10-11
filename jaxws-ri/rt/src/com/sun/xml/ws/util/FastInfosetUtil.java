@@ -22,6 +22,7 @@ package com.sun.xml.ws.util;
 
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.List;
 import java.util.StringTokenizer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
@@ -41,8 +42,7 @@ public class FastInfosetUtil {
             if (isFastInfosetAccepted(accept)) {
                 return true;
             }
-        }
-        
+        }        
         return false;
     }
 
@@ -53,9 +53,24 @@ public class FastInfosetUtil {
             if (token.equalsIgnoreCase("application/fastinfoset")) {
                 return true;
             }
-        }
-        
+        }        
         return false;
+    }
+    
+    public static String getFastInfosetFromAccept(List<String> accepts) {
+        for (String accept : accepts) {
+            StringTokenizer st = new StringTokenizer(accept, ",");
+            while (st.hasMoreTokens()) {
+                final String token = st.nextToken().trim();
+                if (token.equalsIgnoreCase("application/fastinfoset")) {
+                    return "application/fastinfoset";
+                }
+                if (token.equalsIgnoreCase("application/soap+fastinfoset")) {
+                    return "application/soap+fastinfoset";
+                }
+            }       
+        }
+        return null;        
     }
     
     public static void transcodeXMLStringToFI(String xml, OutputStream out) {
@@ -70,18 +85,11 @@ public class FastInfosetUtil {
     }
     
     public static void ensureCorrectEncoding(MessageInfo messageInfo, 
-        SOAPMessage message) throws SOAPException
+        SOAPMessage message) 
     {
-        MessageImpl messageImpl = (MessageImpl) message;
         String conneg = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
-        
-        // Determine if XML <-> FI transcoding is necessary
-        if (conneg != "pessimistic") {
-            messageImpl.setIsFastInfoset(conneg == "optimistic");   // forces re-encoding
-        }
-        else {
-            // TODO: In pessimistic mode, we don't know if this is the
-            // first message or not, so no guarantees in this case
+        if (conneg == "optimistic") {
+            ((MessageImpl) message).setIsFastInfoset(true);
         }
     }
 

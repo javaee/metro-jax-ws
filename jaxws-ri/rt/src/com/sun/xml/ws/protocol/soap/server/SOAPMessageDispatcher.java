@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.34 2005-09-27 19:34:45 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.35 2005-10-11 18:26:25 spericas Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -95,7 +95,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 return;
             }
 
-            // Content negotiation logic (TODO: remove dep with SAAJ RI)
+            // Content negotiation logic
             try {
                 // If FI is accepted by client, set property to optimistic
                 if (((com.sun.xml.messaging.saaj.soap.MessageImpl) soapMessage).acceptFastInfoset()) {
@@ -270,8 +270,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
     
     protected void sendResponseOneway(MessageInfo messageInfo) {
-        WSConnection con = (WSConnection)messageInfo.getConnection();
-        SOAPConnectionUtil.sendResponseOneway(con);
+        SOAPConnectionUtil.sendResponseOneway(messageInfo);
     }
 
     private void sendResponseError(MessageInfo messageInfo, Exception e) {
