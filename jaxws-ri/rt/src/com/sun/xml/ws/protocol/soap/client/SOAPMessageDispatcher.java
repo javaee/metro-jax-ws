@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.53 2005-10-07 17:22:11 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.54 2005-10-11 18:19:46 spericas Exp $
  */
 
 /*
@@ -394,7 +394,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         // If XML request
         if (contentNegotiationType == "pessimistic") {
             try {
-                // If FI response (TODO: remove dep with SAAJ RI)
                 if (((com.sun.xml.messaging.saaj.soap.MessageImpl) sm).isFastInfoset()) {
                     Map requestContext = (Map) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
                     // Further requests will be send using FI
