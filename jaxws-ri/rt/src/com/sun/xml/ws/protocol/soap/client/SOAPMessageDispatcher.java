@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.55 2005-10-12 13:29:24 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.56 2005-10-12 14:06:09 bbissett Exp $
  */
 
 /*
@@ -43,7 +43,9 @@ import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERT
 import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
 import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
@@ -578,7 +580,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         ContextMap context = (ContextMap) ((MessageInfoBase) messageInfo)
             .getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         BindingProvider provider = (BindingProvider) context
-            .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
+            .get(JAXWS_CLIENT_HANDLE_PROPERTY);
         return provider.getBinding();
     }
 
@@ -619,7 +621,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
 
         BindingProvider provider = (BindingProvider) context.getMessageContext()
-            .get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);
+            .get(JAXWS_CLIENT_HANDLE_PROPERTY);
 
         //context.setBindingId(.);
         if (provider != null) {
@@ -649,23 +651,22 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-    protected void updateResponseContext(MessageInfo messageInfo, SOAPHandlerContext context) {
+    protected void updateResponseContext(MessageInfo messageInfo,
+        SOAPHandlerContext context) {
 
-        ResponseContext responseContext = new ResponseContext(null);
-        javax.xml.ws.handler.soap.SOAPMessageContext messageContext = (javax.xml.ws.handler.soap.SOAPMessageContext) context
-            .getSOAPMessageContext();
-        Iterator i = messageContext.keySet().iterator();
-        while (i.hasNext()) {
-            String name = (String) i.next();
-            MessageContext.Scope scope = messageContext.getScope(name);
-            if (MessageContext.Scope.APPLICATION == scope) {
-                Object value = messageContext.get(name);
-                responseContext.put(name, value);
-            }
-        }
-
-        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY,
-            responseContext.copy());
+         SOAPMessageContext messageContext = context.getSOAPMessageContext();
+         BindingProvider provider = (BindingProvider)
+             messageContext.get(JAXWS_CLIENT_HANDLE_PROPERTY);
+         ResponseContext responseContext = new ResponseContext(provider);
+         for (String name : messageContext.keySet()) {
+             MessageContext.Scope scope = messageContext.getScope(name);
+             if (MessageContext.Scope.APPLICATION == scope) {
+                 Object value = messageContext.get(name);
+                 responseContext.put(name, value);
+             }
+         }
+         messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
+             responseContext.copy());
     }
 
     /**

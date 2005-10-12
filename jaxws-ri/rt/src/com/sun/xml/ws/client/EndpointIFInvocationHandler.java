@@ -19,7 +19,7 @@
  */
 package com.sun.xml.ws.client;
 
-
+import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.model.JavaMethod;
@@ -176,6 +176,7 @@ public class EndpointIFInvocationHandler
         }
 
         _delegate.send(messageStruct);
+        updateResponseContext((MessageInfo) messageStruct);
         switch (messageStruct.getResponseType()) {
             case MessageStruct.NORMAL_RESPONSE:
                 break;
