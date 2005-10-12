@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.54 2005-10-11 18:19:46 spericas Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.55 2005-10-12 13:29:24 kwalsh Exp $
  */
 
 /*
@@ -179,7 +179,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerResult = false;
                 }
                 sm = handlerContext.getSOAPMessage();
-                postHandlerOutboundHook(messageInfo, handlerContext,sm);
+                postHandlerOutboundHook(messageInfo, handlerContext, sm);
                 if (sm == null) {
                     sm = encoder.toSOAPMessage(handlerContext.getInternalMessage(), messageInfo);
                 }
@@ -279,6 +279,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP)
             messageContext.put(ONE_WAY_OPERATION, "true");
 
+        String soapAction = null;
+        boolean useSoapAction = false;
+
         // process the properties
         if (properties != null) {
             for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
@@ -302,6 +305,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         }
                         soapMessage.getMimeHeaders().addHeader("Authorization", "Basic " + credentials);
                     }
+                } else if (propName.equals(BindingProvider.SOAPACTION_USE_PROPERTY)) {
+                    useSoapAction = ((Boolean)
+                        properties.get(BindingProvider.SOAPACTION_USE_PROPERTY)).booleanValue();
+                    if (useSoapAction)
+                        soapAction = (String)
+                            properties.get(BindingProvider.SOAPACTION_URI_PROPERTY);
                 } else {
                     messageContext.put(propName, properties.get(propName));
                 }
@@ -327,7 +336,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (runtimeContext != null) {
             JavaMethod javaMethod = runtimeContext.getModel().getJavaMethod(messageInfo.getMethod());
             if (javaMethod != null) {
-                String soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
+                soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
                 header.clear();
                 if (soapAction == null) {
                     soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
@@ -579,22 +588,22 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void updateSOAPMessage(Object value, SOAPMessage sm) {
-            Node resultNode;
-            try {
-                if (value instanceof Source) {
-                    resultNode = DOMUtil.domSourceToNode((Source) value);
-                    SOAPEnvelope se = sm.getSOAPPart().getEnvelope();
-                    SOAPBody sb = se.getBody();
-                    sb.removeContents();
-                    sb.addDocument((Document) resultNode);
-                    sm.saveChanges();
-                }
-            } catch (SOAPException e) {
-                throw new WebServiceException(e);
-            } catch (Exception e) {
-                throw new WebServiceException(e);
+        Node resultNode;
+        try {
+            if (value instanceof Source) {
+                resultNode = DOMUtil.domSourceToNode((Source) value);
+                SOAPEnvelope se = sm.getSOAPPart().getEnvelope();
+                SOAPBody sb = se.getBody();
+                sb.removeContents();
+                sb.addDocument((Document) resultNode);
+                sm.saveChanges();
             }
+        } catch (SOAPException e) {
+            throw new WebServiceException(e);
+        } catch (Exception e) {
+            throw new WebServiceException(e);
         }
+    }
 
 
     protected void updateMessageContext(MessageInfo messageInfo, SOAPHandlerContext context) {
@@ -754,7 +763,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
 
-     private InternalMessage preHandlerOutboundHook(SOAPMessage sm, InternalMessage im) {
+    private InternalMessage preHandlerOutboundHook(SOAPMessage sm, InternalMessage im) {
         if ((sm != null) && (im != null))
             im = null;
         return im;
@@ -763,10 +772,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void postHandlerOutboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
             InternalMessage im = handlerContext.getInternalMessage();
-            if (im != null){
-            Object value = im.getBody().getValue();
-            updateSOAPMessage(value, sm);
-            im = null;
+            if (im != null) {
+                Object value = im.getBody().getValue();
+                updateSOAPMessage(value, sm);
+                im = null;
             } else
                 try {
                     sm.saveChanges();
@@ -777,21 +786,20 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void postHandlerInboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
-                InternalMessage im = handlerContext.getInternalMessage();
-                if (im != null){
-                Object value = im.getBody().getValue();               
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+            InternalMessage im = handlerContext.getInternalMessage();
+            if (im != null) {
+                Object value = im.getBody().getValue();
                 updateSOAPMessage(value, sm);
                 im = null;
-                } else
-                    try {
-                        sm.saveChanges();
-                    } catch (SOAPException e) {
-                        throw new WebServiceException(e);
-                    }
-            }
+            } else
+                try {
+                    sm.saveChanges();
+                } catch (SOAPException e) {
+                    throw new WebServiceException(e);
+                }
         }
-
+    }
 
 
     private void closeAllHandlers(SOAPHandlerContext context) {
