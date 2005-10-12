@@ -1,5 +1,5 @@
 /*
- * $Id: Parameter.java,v 1.2 2005-09-10 19:50:01 kohsuke Exp $
+ * $Id: Parameter.java,v 1.3 2005-10-12 23:33:20 vivekp Exp $
  */
 
 /*
@@ -35,17 +35,26 @@ public class Parameter {
     private String part;
     private QName element;
     private String name;
+    private String messageName;
 
     /**
      * @param part
      * @param element
      * @param name
      */
-    public Parameter(String part, QName element, String name) {
-        super();
+    public Parameter(String msgName, String part, QName element, String name) {
         this.part = part;
         this.element = element;
         this.name = name;
+        this.messageName = msgName;
+    }
+
+    public String getMessageName() {
+        return messageName;
+    }
+
+    public void setMessageName(String messageName) {
+        this.messageName = messageName;
     }
 
     /**

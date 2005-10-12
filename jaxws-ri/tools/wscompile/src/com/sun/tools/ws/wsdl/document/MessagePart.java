@@ -1,5 +1,5 @@
 /*
- * $Id: MessagePart.java,v 1.4 2005-09-20 02:37:02 vivekp Exp $
+ * $Id: MessagePart.java,v 1.5 2005-10-12 23:33:21 vivekp Exp $
  */
 
 /*
@@ -30,6 +30,7 @@ import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
 import com.sun.tools.ws.wsdl.framework.Kind;
 import com.sun.tools.ws.wsdl.framework.QNameAction;
+import com.sun.xml.ws.model.Mode;
 
 /**
  * Entity corresponding to a WSDL message part.
@@ -109,8 +110,46 @@ public class MessagePart extends Entity {
         }
     }
 
+    public void setMode(Mode mode){
+        this.mode = mode;
+    }
+
+    public Mode getMode(){
+        return mode;
+    }
+
+    public boolean isINOUT(){
+        if(mode!=null)
+            return (mode == Mode.INOUT);
+        return false;
+    }
+
+    public boolean isIN(){
+        if(mode!=null)
+            return (mode == Mode.IN);
+        return false;
+    }
+
+    public boolean isOUT(){
+        if(mode!=null)
+            return (mode == Mode.OUT);
+        return false;
+    }
+
+    public void setReturn(){
+        isRet=true;
+    }
+
+    public boolean isReturn(){
+        return isRet;
+    }
+
+
+    private boolean isRet;
     private String _name;
     private QName _descriptor;
     private Kind _descriptorKind;
     private int _bindingKind;
+
+    private Mode mode;
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.32 2005-09-29 17:28:16 bbissett Exp $
+ * $Id: SeiGenerator.java,v 1.33 2005-10-12 23:33:19 vivekp Exp $
  */
 
 /*
@@ -211,7 +211,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             }
 
             for (Parameter parameter : operation.getResponse().getParametersList()) {
-                if (parameter.getParameterOrderPosition() == -1) {
+                if (parameter.getParameterIndex() == -1) {
                     if(operation.isWrapped()||!isDocStyle){
                         if(parameter.getBlock().getLocation() == Block.HEADER){
                             resultName = parameter.getBlock().getName().getLocalPart(); 
@@ -372,7 +372,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             paramAnno.param("header", true);
         }
 
-        if (param.getLinkedParameter() != null){
+        if (param.isINOUT()){
             paramAnno.param("mode", javax.jws.WebParam.Mode.INOUT);
         }else if ((res != null) && (isMessageParam(param, res) || isHeaderParam(param, res) || isAttachmentParam(param, res) ||
                 isUnboundParam(param,res))){

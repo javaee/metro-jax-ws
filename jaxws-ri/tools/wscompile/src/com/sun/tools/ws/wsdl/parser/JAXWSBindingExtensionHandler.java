@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.8 2005-09-10 19:50:11 kohsuke Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.9 2005-10-12 23:33:21 vivekp Exp $
  */
 
 /*
@@ -273,27 +273,17 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
      * @param e
      */
     private void parseParameter(ParserContext context, JAXWSBinding jaxwsBinding, Element e) {
-
         String part = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.PART_ATTR);
         Element msgPartElm = evaluateXPathNode(e.getOwnerDocument(), part, new NamespaceContextImpl(e));
-        MessagePart msgPart = new MessagePart();
+        Node msgElm = msgPartElm.getParentNode();
+        //MessagePart msgPart = new MessagePart();
 
         String partName = XmlUtil.getAttributeOrNull(msgPartElm, "name");
-        if(partName == null)
+        String msgName = XmlUtil.getAttributeOrNull((Element)msgElm, "name");
+        if((partName == null) || (msgName == null))
             return;
-        msgPart.setName(partName);
 
         String val = XmlUtil.getAttributeOrNull(msgPartElm, "element");
-        if(val != null){
-            msgPart.setDescriptor(context.translateQualifiedName(val));
-            msgPart.setDescriptorKind(SchemaKinds.XSD_ELEMENT);
-        }else{
-            val = XmlUtil.getAttributeOrNull(msgPartElm, "type");
-            if(val == null)
-                    return;
-            msgPart.setDescriptor(context.translateQualifiedName(val));
-            msgPart.setDescriptorKind(SchemaKinds.XSD_TYPE);
-        }
 
         String element = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.ELEMENT_ATTR);
         String name = XmlUtil.getAttributeOrNull(e, JAXWSBindingsConstants.NAME_ATTR);
@@ -304,7 +294,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
             elementName = (uri == null)?null:new QName(uri, XmlUtil.getLocalPart(element));
         }
 
-        jaxwsBinding.addParameter(new Parameter(msgPart.getName(), elementName, name));
+        jaxwsBinding.addParameter(new Parameter(msgName, partName, elementName, name));
     }
 
     private Element evaluateXPathNode(Node target, String expression, NamespaceContext namespaceContext) {

@@ -1,5 +1,5 @@
 /*
- * $Id: Parameter.java,v 1.3 2005-09-10 19:49:38 kohsuke Exp $
+ * $Id: Parameter.java,v 1.4 2005-10-12 23:33:20 vivekp Exp $
  */
 
 /*
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.tools.ws.processor.model.java.JavaParameter;
+import com.sun.xml.ws.model.Mode;
 
 /**
  *
@@ -109,13 +110,18 @@ public class Parameter extends ModelObject {
     private boolean embedded;
     private String typeName;
     private String customName;
+    private Mode mode;
 
-    public int getParameterOrderPosition() {
+    public int getParameterIndex() {
         return parameterOrderPosition;
     }
 
-    public void setParameterOrderPosition(int parameterOrderPosition) {
+    public void setParameterIndex(int parameterOrderPosition) {
         this.parameterOrderPosition = parameterOrderPosition;
+    }
+
+    public boolean isReturn(){
+        return (parameterOrderPosition == -1);
     }
 
     // 0 is the first parameter, -1 is the return type
@@ -149,5 +155,23 @@ public class Parameter extends ModelObject {
     public void setAnnotations(List<String> annotations) {
         this.annotations = annotations;
     }
+
+    public void setMode(Mode mode){
+        this.mode = mode;
+    }
+
+    public boolean isIN(){
+        return (mode == Mode.IN);
+    }
+
+    public boolean isOUT(){
+        return (mode == Mode.OUT);
+    }
+
+    public boolean isINOUT(){
+        return (mode == Mode.INOUT);
+    }
+
+
 
 }

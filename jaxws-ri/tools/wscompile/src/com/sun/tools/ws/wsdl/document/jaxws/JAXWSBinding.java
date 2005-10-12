@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBinding.java,v 1.5 2005-09-10 19:50:00 kohsuke Exp $
+ * $Id: JAXWSBinding.java,v 1.6 2005-10-12 23:33:20 vivekp Exp $
  */
 
 /*
@@ -271,11 +271,11 @@ public class JAXWSBinding extends Extension implements Extensible {
         parameters.add(parameter);
     }
 
-    public String getParameterName(String wsdlPartName, QName element, boolean wrapperStyle){
-        if(wsdlPartName == null || element == null || parameters == null)
+    public String getParameterName(String msgName, String wsdlPartName, QName element, boolean wrapperStyle){
+        if(msgName == null || wsdlPartName == null || element == null || parameters == null)
             return null;
         for(Parameter param : parameters){
-            if(param.getPart().equals(wsdlPartName)){
+            if(param.getMessageName().equals(msgName) && param.getPart().equals(wsdlPartName)){
                 if(wrapperStyle && (param.getElement() != null)){
                     if(param.getElement().equals(element))
                         return param.getName();
