@@ -71,9 +71,10 @@ public final class ByteArrayBuffer extends OutputStream {
         while(true) {
             int cap = buf.length-count;     // the remaining buffer space
             int sz = in.read(buf,count,cap);
+            if(sz<0)    return;     // hit EOS
             count += sz;
 
-            if(sz<0)    return;     // hit EOS
+            
             if(cap==sz)
                 ensureCapacity(buf.length*2);   // buffer filled up.
         }
