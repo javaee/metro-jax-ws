@@ -56,33 +56,33 @@ public abstract class ServiceContextBuilder {
     public static ServiceContext build(URL wsdlLocation, Class service, EntityResolver er) throws WebServiceException {
 
         ServiceContext serviceContext = new ServiceContext(er);
-        SCAnnotations serviceCAnnotations;
-        if ((service != null)) {
+        SCAnnotations serviceCAnnotations = null;
 
+        if (service != javax.xml.ws.Service.class) {
             serviceCAnnotations = getSCAnnotations(service);
-            if ((serviceCAnnotations == null) && (service != javax.xml.ws.Service.class))
+            if (serviceCAnnotations == null)
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
-            else
-                serviceContext.setSCAnnotations(serviceCAnnotations);
+            serviceContext.setSCAnnotations(serviceCAnnotations);
+        }
 
-            if ((wsdlLocation == null) && (serviceCAnnotations != null)) {
-                try {
-                    wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(serviceCAnnotations.wsdlLocation));
-                } catch (MalformedURLException e) {
-                    throw new WebServiceException(e);
-                }
-            }
+        String temp = !(wsdlLocation == null) ? wsdlLocation.toString() : serviceCAnnotations.wsdlLocation;
 
-            if (wsdlLocation != null)
-                serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
+        try {
+            wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(temp));
+        } catch (MalformedURLException e) {
+            throw new WebServiceException(e);
+        }
 
-            if (serviceCAnnotations != null) {
-                serviceContext.setServiceClass(service);
-                for (Class clazz : serviceCAnnotations.classes) {
-                    processAnnotations(serviceContext, clazz);
-                }
+        if (wsdlLocation != null)
+            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
+
+        if (serviceCAnnotations != null) {
+            serviceContext.setServiceClass(service);
+            for (Class clazz : serviceCAnnotations.classes) {
+                processAnnotations(serviceContext, clazz);
             }
         }
+
         return serviceContext;
     }
 
@@ -200,7 +200,7 @@ public abstract class ServiceContextBuilder {
         return serviceContext.getHandlerResolver();
     }
 
-    private ArrayList<Class> getSEI(final Class sc) {
+    private ArrayList<Class<?>> getSEI(final Class sc) {
 
         if (sc == null) {
             throw new WebServiceException();
@@ -212,14 +212,14 @@ public abstract class ServiceContextBuilder {
                 sc.getName());
         }
 
-        final ArrayList<Class> classes = new ArrayList();
+        final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
         AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
                 Method[] methods = sc.getDeclaredMethods();
                 for (final Method method : methods) {
                     method.setAccessible(true);
-                    Class seiClazz = method.getReturnType();
-                    if ((seiClazz != null) && (!seiClazz.equals("void"))) 
+                    Class<?> seiClazz = method.getReturnType();
+                    if ((seiClazz != null) && (!seiClazz.equals("void")))
                         classes.add(seiClazz);
 
                 }
@@ -258,10 +258,10 @@ public abstract class ServiceContextBuilder {
                 if (name != null)
                     SCAnnotations.serviceQName = new QName(tns, name);
                 SCAnnotations.wsdlLocation = wsc.wsdlLocation();
-                
+
                 final Class myClass = sc;
                 Method[] methods = (Method[])
-                    AccessController.doPrivileged(new PrivilegedAction(){
+                    AccessController.doPrivileged(new PrivilegedAction() {
                         public Object run() {
                             return myClass.getDeclaredMethods();
                         }
@@ -288,12 +288,12 @@ public abstract class ServiceContextBuilder {
         }
         return SCAnnotations;
     }
-    
-    private static <T> T getPrivMethodAnnotation(final Method method, final Class T) {
-        return (T)AccessController.doPrivileged(new PrivilegedAction() {
-           public Object run() {
-               return method.getAnnotation(T);
-           } 
+
+    private static <T> T getPrivMethodAnnotation(final Method method, final Class<WebEndpoint> T) {
+        return (T) AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                return method.getAnnotation(T);
+            }
         });
     }
 }

@@ -38,6 +38,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.rmi.Remote;
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -69,7 +70,6 @@ import java.util.concurrent.ThreadFactory;
  * registering it with the service.
  *
  * @author WS Development Team
- *
  * @see java.util.concurrent.Executor
  * @since JAX-WS 2.0
  */
@@ -109,16 +109,20 @@ public class WSServiceDelegate extends ServiceDelegate {
         //this.ports = new HashSet();
         seiProxies = new HashSet();
 
-        if (wsdlDocumentLocation != null){
+        if (wsdlDocumentLocation != null) {
             serviceContext = ServiceContextBuilder.build(
                 wsdlDocumentLocation, serviceClass, XmlUtil.createDefaultCatalogResolver());
+
         } else {
             serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
             serviceContext.setServiceName(serviceName);
         }
-         if (serviceContext.getHandlerResolver() != null) {
+        if (serviceContext.getHandlerResolver() != null) {
             handlerResolver = serviceContext.getHandlerResolver();
         }
+        if (ports == null)
+            populatePorts();
+
     }
 
     private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
@@ -157,7 +161,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     public void setHandlerResolver(HandlerResolver resolver) {
         handlerResolver = resolver;
     }
-    
+
     public Object getPort(QName portName, Class portInterface)
         throws WebServiceException {
         Object seiProxy = createEndpointIFBaseProxy(portName, portInterface);
@@ -195,7 +199,6 @@ public class WSServiceDelegate extends ServiceDelegate {
 
     public QName getServiceName() {
         return serviceContext.getServiceName();
-
     }
 
     public Iterator getPorts() throws WebServiceException {
@@ -224,7 +227,7 @@ public class WSServiceDelegate extends ServiceDelegate {
             ports = new HashSet<QName>();
 
         WSDLContext wscontext = serviceContext.getWsdlContext();
-        
+
         if (serviceContext.getServiceName() == null) {
             if (wscontext != null) {
                 serviceContext.setServiceName(wscontext.getFirstServiceName());
@@ -233,11 +236,23 @@ public class WSServiceDelegate extends ServiceDelegate {
         Set knownPorts = null;
 
         if (wscontext != null) {
+            QName serviceName = serviceContext.getServiceName();
             knownPorts =
-                wscontext.getPortsAsSet(serviceContext.getServiceName());
+                wscontext.getPortsAsSet(serviceName);
             if (knownPorts != null) {
                 QName[] portz = (QName[]) knownPorts.toArray(new QName[knownPorts.size()]);
                 addPorts(portz);
+                for (QName port : portz) {
+                    String endpoint =
+                        wscontext.getEndpoint(serviceName, port);
+                    URI bid = null;
+                    try {
+                        bid = new URI(wscontext.getWsdlBinding(serviceName, port).getBindingId());
+                    } catch (URISyntaxException e) {
+                        new WebServiceException("Error getting bindingId. ", e);
+                    }
+                    dispatchPorts.put(port, new PortInfoBase(endpoint, port, bid));
+                }
             }
         }
     }
@@ -255,7 +270,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     private Object createEndpointIFBaseProxy(QName portName, Class portInterface) throws WebServiceException {
 
         processServiceContext(portName, portInterface);
-        if (portName == null){
+        if (portName == null) {
             portName = serviceContext.getEndpointIFContext(portInterface.getName()).getPortName();
         }
         if (!serviceContext.getWsdlContext().contains(getServiceName(), portName)) {
@@ -271,13 +286,13 @@ public class WSServiceDelegate extends ServiceDelegate {
         return ports;
     }
 
-
 /*
-     * Set the binding on the binding provider. Called by the service
-     * class when creating the binding provider.
-     */
+* Set the binding on the binding provider. Called by the service
+* class when creating the binding provider.
+*/
+
     protected void setBindingOnProvider(InternalBindingProvider provider,
-        QName portName, URI bindingId) {
+                                        QName portName, URI bindingId) {
 
         // get handler chain
         List<Handler> handlerChain = null;
@@ -302,7 +317,6 @@ public class WSServiceDelegate extends ServiceDelegate {
             provider._setBinding(new HTTPBindingImpl(handlerChain));
         }
     }
-
 
 
     private Dispatch createDispatchClazz(QName port, Class clazz, Service.Mode mode) throws WebServiceException {
