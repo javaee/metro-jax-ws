@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.13 2005-10-06 23:50:30 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.14 2005-10-12 21:47:44 jitu Exp $
  *
  */
 
@@ -48,7 +48,6 @@ import javax.xml.soap.MimeHeaders;
 
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.handler.MessageContextUtil;
-//import com.sun.xml.ws.encoding.soap.message.SOAPMessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.WSDLPublisher;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -356,6 +355,10 @@ public class WSServletDelegate {
                                 "servlet.trace.gotRequestForEndpoint",
                                 targetEndpoint.getName())));
                 }
+            } else {
+                Localizer localizer = getLocalizerFor(request);
+                writeNotFoundErrorPage(localizer, response, "Invalid request");
+                return;
             }
             WebServiceContext wsCtxt = targetEndpoint.getWebServiceContext();
             MessageContext msgCtxt = new MessageContextImpl();
