@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.35 2005-10-13 20:43:29 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.36 2005-10-13 22:56:06 vivekp Exp $
  */
 
 /*
@@ -715,9 +715,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         //binding is invalid in the wsdl, ignore the operation.
         if(!setMessagePartsBinding(styleAndUse))
             return null;
-
-        List<Parameter> inParameters = null;
-        List<Parameter> outParameters = null;
 
         List<Parameter> params = null;
         boolean unwrappable = isUnwrappable();
@@ -2598,13 +2595,16 @@ public class WSDLModeler20 extends WSDLModelerBase {
         Message outputMessage = getOutputMessage();
         List<MessagePart> outputParts = null;
         List<MessagePart> inputParts = inputMessage.getParts();
+        //reset the mode and ret flag, as MEssagePArts aer shared across ports
         for(MessagePart part:inputParts){
             part.setMode(Mode.IN);
+            part.setReturn(false);
         }
         if(isRequestResponse()){
             outputParts = outputMessage.getParts();
             for(MessagePart part:outputParts){
                 part.setMode(Mode.OUT);
+                part.setReturn(false);
             }
         }
 
@@ -2688,7 +2688,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     }
                     if(outputUnlistedParts.size() == 1){
                         MessagePart resultPart = outputUnlistedParts.get(0);
-                        resultPart.setReturn();
+                        resultPart.setReturn(true);
                         params.add(resultPart);
                         outputUnlistedParts.clear();
                     }
@@ -2733,7 +2733,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             //append the out parts to the parameterList
             for(MessagePart part : outParts){
                 if(outParts.size() == 1)
-                    part.setReturn();
+                    part.setReturn(true);
                 params.add(part);
             }
         }

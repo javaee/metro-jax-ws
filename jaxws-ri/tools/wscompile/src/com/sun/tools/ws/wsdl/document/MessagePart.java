@@ -1,5 +1,5 @@
 /*
- * $Id: MessagePart.java,v 1.5 2005-10-12 23:33:21 vivekp Exp $
+ * $Id: MessagePart.java,v 1.6 2005-10-13 22:56:07 vivekp Exp $
  */
 
 /*
@@ -136,8 +136,8 @@ public class MessagePart extends Entity {
         return false;
     }
 
-    public void setReturn(){
-        isRet=true;
+    public void setReturn(boolean ret){
+        isRet=ret;
     }
 
     public boolean isReturn(){
