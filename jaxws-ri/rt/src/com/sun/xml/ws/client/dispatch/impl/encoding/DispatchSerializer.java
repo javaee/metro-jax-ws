@@ -90,7 +90,7 @@ public final class DispatchSerializer {
                     case START_ELEMENT:
                         QName name = reader.getName();
                         //bug fix for 6333609
-                        writer.writeStartElement(name.getLocalPart());
+                        writer.writeStartElement(name.getPrefix() + ":" + name.getLocalPart());
                         writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         //comment out for bug fix 6333609
                         //writer.writeStartElement(name.getPrefix(),name.getLocalPart(), name.getNamespaceURI());
