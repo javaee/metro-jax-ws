@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.35 2005-10-11 18:26:25 spericas Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.36 2005-10-13 15:01:29 spericas Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -43,6 +43,8 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import com.sun.xml.ws.util.FastInfosetUtil;
+
 import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -457,6 +459,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     SOAPEncoder encoder = eptf.getSOAPEncoder();
                     soapMessage = encoder.toSOAPMessage(internalMessage, messageInfo);
                 }
+                
+                // Ensure message is encoded according to conneg                
+                FastInfosetUtil.ensureCorrectEncoding(messageInfo, soapMessage);
+                
                 //sendResponse(messageInfo, soapMessage);
                 context.setSOAPMessage(soapMessage);
                 context.setInternalMessage(null);
