@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.34 2005-10-12 23:33:20 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.35 2005-10-13 20:43:29 vivekp Exp $
  */
 
 /*
@@ -804,7 +804,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
     private boolean validateParameterName(List<Parameter> params) {
         Message msg = getInputMessage();
         for(Parameter param : params){
-            if(!param.isIN())
+            if(param.isOUT())
                 continue;
             if(param.getCustomName() != null){
                 if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
@@ -843,7 +843,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
         if(isRequestResponse){
             msg = getOutputMessage();
             for(Parameter param : params){
-                if(!param.isOUT())
+                if(param.isIN())
+                    continue;
                 if(param.getCustomName() != null){
                     if(getEnvironment().getNames().isJavaReservedWord(param.getCustomName())){
                         if(extensions)
