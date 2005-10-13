@@ -44,7 +44,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.logging.Logger;
 
 /**
- *
  * @author WS Development Team
  */
 public final class DispatchSerializer {
@@ -73,7 +72,7 @@ public final class DispatchSerializer {
         if (obj instanceof Source)
             serializeSource(obj, writer);
         else if (obj instanceof JAXBBeanInfo) {
-            ((JAXBBeanInfo)obj).writeTo(writer);
+            ((JAXBBeanInfo) obj).writeTo(writer);
         } else
             throw new WebServiceException("Unable to serialize object type " + obj.getClass().getName());
         //should not happen
@@ -90,10 +89,12 @@ public final class DispatchSerializer {
                 switch (state) {
                     case START_ELEMENT:
                         QName name = reader.getName();
-                        writer.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
-                        //fix bug 6285034- namespace getting written 2x- it is now just handled below
-                        //with attributes
-                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //bug fix for 6333609
+                        writer.writeStartElement(name.getLocalPart());
+                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //comment out for bug fix 6333609
+                        //writer.writeStartElement(name.getPrefix(),name.getLocalPart(), name.getNamespaceURI());
+
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
                         for (int i = 0; i < atts.getLength(); i++) {
@@ -168,7 +169,6 @@ public final class DispatchSerializer {
             throw new SerializationException(e);
         }
     }
-
 
 //    private void displayDOM(Node node, java.io.OutputStream ostream) {
 //        try {
