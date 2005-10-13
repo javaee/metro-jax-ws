@@ -21,11 +21,15 @@ package com.sun.xml.ws.server.provider;
 
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.util.MessageInfoUtil;
 import javax.xml.transform.Source;
+import javax.xml.ws.soap.SOAPBinding;
 
 public class ProviderSED implements InternalEncoder {
 
@@ -56,8 +60,17 @@ public class ProviderSED implements InternalEncoder {
                 // Fallthrough
 
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE :
-                SOAPRuntimeModel.createFaultInBody(messageInfo.getResponse(),
-                        null, null, internalMessage);
+                RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
+                BindingImpl bindingImpl = 
+                    (BindingImpl)rtContext.getRuntimeEndpointInfo().getBinding();
+                String bindingId = bindingImpl.getBindingId();
+                if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+                    SOAPRuntimeModel.createFaultInBody(messageInfo.getResponse(),
+                            null, null, internalMessage);
+                } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                    SOAPRuntimeModel.createSOAP12FaultInBody(messageInfo.getResponse(),
+                            null, null, null, internalMessage);
+                }
                 break;
         }
         return internalMessage;
