@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.7 2005-09-10 19:49:29 kohsuke Exp $
+ * $Id: Apt.java,v 1.8 2005-10-13 23:57:02 kohsuke Exp $
  */
 
 /*
@@ -23,16 +23,6 @@
  */
 package com.sun.tools.ws.ant;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -44,6 +34,16 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * apt task for use with the JAXWS project.
@@ -419,7 +419,7 @@ public class Apt extends Task {
                     com.sun.tools.apt.Main aptTool = new com.sun.tools.apt.Main();
                     status = aptTool.process(writer, cmd.getArguments());
                     writer.flush();
-                    if (verbose || !baos.toString().equals(""))
+                    if (verbose || baos.size()!=0)
                         log(baos.toString());
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
