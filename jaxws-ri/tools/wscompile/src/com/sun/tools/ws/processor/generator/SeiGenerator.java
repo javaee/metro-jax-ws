@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.34 2005-10-14 21:58:23 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.35 2005-10-14 23:49:32 vivekp Exp $
  */
 
 /*
@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Properties;
+import java.util.Iterator;
 
 public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private WSDLModelInfo wsdlModelInfo;
@@ -474,6 +475,12 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     }
 
     public void visit(Service service) throws Exception {
+        String jd = model.getJavaDoc();
+        if(jd != null){
+            JPackage pkg = cm._package(wsdlModelInfo.getJavaPackageName());
+            pkg.javadoc().add(jd);                
+        }
+
         for(Port p:service.getPorts()){
             visitPort(service, p);
         }
