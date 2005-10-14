@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConnectionUtil.java,v 1.17 2005-10-11 18:26:27 spericas Exp $
+ * $Id: SOAPConnectionUtil.java,v 1.18 2005-10-14 20:22:06 spericas Exp $
  */
 
 /*
@@ -111,14 +111,29 @@ public class SOAPConnectionUtil {
         WSConnection con = (WSConnection)messageInfo.getConnection();
         setStatus(con, WSConnection.ONEWAY);
         con.getOutput();
-      
+
         // Ensure conneg is completed even if no data is sent back
-        if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+        if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {            
+            List<String> acceptList = null;        
+            List<String> contentTypeList = null;
             Map<String, List<String>> headers = con.getHeaders();
-            List<String> contentTypeList = headers.get("Content-Type");            
+            
+            // Go through the entries because a gets are case sensitive 
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase("content-type")) {
+                    contentTypeList = entry.getValue();
+                }
+                else if (entry.getKey().equalsIgnoreCase("accept")) {
+                    acceptList = entry.getValue();
+                }
+            }
+            
+            // If content-type is FI, FI must be listed in the accept header
+            assert contentTypeList != null && acceptList != null;
+            
             // Use FI MIME type based on Accept header
-            contentTypeList.set(0, 
-                FastInfosetUtil.getFastInfosetFromAccept(headers.get("Accept")));
+            contentTypeList.set(0,                 
+                FastInfosetUtil.getFastInfosetFromAccept(acceptList));
         }
         
         con.closeOutput();
