@@ -1,5 +1,5 @@
 /*
- * $Id: JavaInterface.java,v 1.4 2005-10-07 23:24:26 kohlert Exp $
+ * $Id: JavaInterface.java,v 1.5 2005-10-14 21:57:44 vivekp Exp $
  */
 
 /*
@@ -148,6 +148,16 @@ public class JavaInterface {
     /* NOTE - all these fields (except "interfaces") were final, but had to
      * remove this modifier to enable serialization
      */
+    private String javadoc;
+
+    public String getJavaDoc() {
+        return javadoc;
+    }
+
+    public void setJavaDoc(String javadoc) {
+        this.javadoc = javadoc;
+    }
+
     private String name;
     private String realName;
     private String impl;

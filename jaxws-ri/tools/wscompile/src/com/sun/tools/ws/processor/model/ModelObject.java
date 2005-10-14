@@ -1,5 +1,5 @@
 /*
- * $Id: ModelObject.java,v 1.3 2005-09-10 19:49:37 kohsuke Exp $
+ * $Id: ModelObject.java,v 1.4 2005-10-14 21:57:45 vivekp Exp $
  */
 
 /*
@@ -81,5 +81,14 @@ public abstract class ModelObject {
         _properties = m;
     }
 
+    public String getJavaDoc() {
+        return javaDoc;
+    }
+
+    public void setJavaDoc(String javaDoc) {
+        this.javaDoc = javaDoc;
+    }
+
+    private String javaDoc;
     private Map _properties;
 }
