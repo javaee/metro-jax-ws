@@ -29,45 +29,30 @@ import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
-import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.simpletype.EncoderUtils;
 import com.sun.xml.ws.encoding.soap.DeserializationException;
+import com.sun.xml.ws.encoding.soap.SOAPConstants;
+import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.SourceReaderFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Method;
-import java.util.Properties;
-
-import static javax.xml.stream.XMLStreamConstants.*;
-import javax.xml.ws.soap.SOAPBinding;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.SOAPDecoder;
-import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.SourceReaderFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.util.SOAPConnectionUtil;
-import com.sun.xml.ws.util.SOAPUtil;
-
 import javax.xml.soap.Detail;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
@@ -76,12 +61,23 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
+import static javax.xml.stream.XMLStreamConstants.*;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.lang.reflect.Method;
+import java.util.Properties;
 
 /**
  * @author WS Development Team
@@ -381,9 +377,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             SOAPFactory soapFactory = SOAPFactory.newInstance();
             detail = soapFactory.createDetail();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // TODO: this is still so wrong!
+            ByteArrayBuffer bab = new ByteArrayBuffer();
 
-            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
+            XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(bab);
 
             writer.writeStartElement(getFaultDetailTag().getLocalPart());
             while (!((reader.getEventType() == END_ELEMENT) &&
@@ -427,7 +424,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             Properties oprops = new Properties();
             oprops.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
             trans.setOutputProperties(oprops);
-            trans.transform(new StreamSource(new ByteArrayInputStream(baos.toString().getBytes())), dom);
+            trans.transform(new StreamSource(bab.newInputStream()), dom);
 
             MessageFactory messageFactory = MessageFactory.newInstance();
             SOAPMessage soapMessage = messageFactory.createMessage();
