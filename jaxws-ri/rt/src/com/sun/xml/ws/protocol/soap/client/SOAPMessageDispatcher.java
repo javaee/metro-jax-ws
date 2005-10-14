@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.56 2005-10-12 14:06:09 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.57 2005-10-14 18:27:59 bbissett Exp $
  */
 
 /*
@@ -43,6 +43,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERT
 import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
@@ -559,6 +560,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 return messageInfo.getResponse();
             }
         });
+        messageInfo.setMetaData(JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT, r);
         return r;
     }
 
@@ -665,8 +667,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                  responseContext.put(name, value);
              }
          }
-         messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
-             responseContext.copy());
+         ResponseImpl asyncResponse = (ResponseImpl) messageInfo.getMetaData(
+             JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT);
+         if (asyncResponse != null) {
+             asyncResponse.setResponseContext(responseContext.copy());
+         } else {
+             messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
+                 responseContext.copy());
+         }
     }
 
     /**
@@ -678,20 +686,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             return true;
         }
         return false;
-    }
-
-    private void setResponse(MessageInfo messageInfo, ResponseImpl res) {
-        Object result = messageInfo.getResponse();
-        ResponseContext context = (ResponseContext) messageInfo
-            .getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
-        if (context != null)
-            res.setResponseContext(context);
-        // need to set responseContext on Response
-        // asyncHandler does the exception processing
-        if (result instanceof Exception)
-            res.setException((Exception) result);
-        else
-            res.set(result);
     }
 
     private void preSendHook(MessageInfo messageInfo) {

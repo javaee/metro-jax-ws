@@ -56,6 +56,8 @@ public interface BindingProviderProperties extends JAXWSProperties{
         "com.sun.xml.ws.context.response";
     public static final String JAXWS_CLIENT_ASYNC_HANDLER =
         "com.sun.xml.ws.client.dispatch.asynchandler";
+    public static final String JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT =
+        "com.sun.xml.ws.client.dispatch.async.response.context";
     public static final String JAXWS_CLIENT_HANDLE_PROPERTY =
         "com.sun.xml.ws.client.handle";
     public static final String JAXB_CONTEXT_PROPERTY =

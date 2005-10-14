@@ -89,10 +89,11 @@ public class ResponseImpl<T> extends FutureTask<T> implements Response<T> {
      *         response is not yet available.
      */
     public Map<String, Object> getContext() {
-        if (!isDone())
+        if (!isDone()) {
             return null;
-        else
-            return (Map) (_responseContext = new ResponseContext(null));
+        } else {
+            return (_responseContext);
+        }
     }
 
     public void setResponseContext(Map context) {

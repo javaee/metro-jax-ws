@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.13 2005-09-10 19:47:24 kohsuke Exp $
+ * $Id: EndpointIFBase.java,v 1.14 2005-10-14 18:27:59 bbissett Exp $
  */
 
 /*
@@ -80,7 +80,9 @@ public class EndpointIFBase implements com.sun.pept.presentation.Stub,
     public void updateResponseContext(MessageInfo messageInfo) {
         ResponseContext responseContext = (ResponseContext)
             messageInfo.getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
-        setResponseContext(responseContext);
+        if (responseContext != null) { // null in async case
+            setResponseContext(responseContext);
+        }
     }
 
     /**

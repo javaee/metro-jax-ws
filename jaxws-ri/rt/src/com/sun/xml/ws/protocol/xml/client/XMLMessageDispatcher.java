@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.10 2005-10-06 16:09:46 kohlert Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.11 2005-10-14 18:28:00 bbissett Exp $
  */
 
 /*
@@ -42,7 +42,10 @@ import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERT
 import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
 import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
@@ -371,24 +374,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             updateResponseContext(messageInfo, handlerContext);
         }
 
-//        InternalMessage im = handlerContext.getInternalMessage();
-//        if (im == null) {
-//            im = decoder.toInternalMessage(sm, messageInfo);
-//        } else {
-//            im = decoder.toInternalMessage(sm, im, messageInfo);
-//        }
-//        decoder.toMessageInfo(im, messageInfo);
-
-        // if likely not required, since send would have faulted already
-//        if (messageInfo.getMetaData (DispatchContext.DISPATCH_MESSAGE_CLASS) instanceof Source) {
-//            throw new WebServiceException ();
-//        }
-
-//        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
-//            Service.Mode.MESSAGE) {           
-//            messageInfo.setResponse(sm);
-//            postReceiveAndDecodeHook(messageInfo);
-//        }
         DispatchContext dispatchContext = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
 
         switch ((DispatchContext.MessageClass) dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS)) {
@@ -493,6 +478,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 return messageInfo.getResponse();
             }
         });
+        messageInfo.setMetaData(JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT, r);
         return r;
     }
 
@@ -542,22 +528,27 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateResponseContext(MessageInfo messageInfo,
-                                         XMLHandlerContext context) {
+        XMLHandlerContext context) {
 
-        ResponseContext responseContext = new ResponseContext(null);
         MessageContext messageContext = context.getMessageContext();
-        Iterator i = messageContext.keySet().iterator();
-        while (i.hasNext()) {
-            String name = (String) i.next();
+        BindingProvider provider = (BindingProvider)
+            messageContext.get(JAXWS_CLIENT_HANDLE_PROPERTY);
+        ResponseContext responseContext = new ResponseContext(provider);
+        for (String name : messageContext.keySet()) {
             MessageContext.Scope scope = messageContext.getScope(name);
             if (MessageContext.Scope.APPLICATION == scope) {
                 Object value = messageContext.get(name);
                 responseContext.put(name, value);
             }
         }
-
-        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY,
-            responseContext.copy());
+        ResponseImpl asyncResponse = (ResponseImpl) messageInfo.getMetaData(
+            JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT);
+        if (asyncResponse != null) {
+            asyncResponse.setResponseContext(responseContext.copy());
+        } else {
+            messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
+                responseContext.copy());
+        }
     }
 
     /**
@@ -569,20 +560,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             return true;
         }
         return false;
-    }
-
-    private void setResponse(MessageInfo messageInfo, ResponseImpl res) {
-        Object result = messageInfo.getResponse();
-        ResponseContext context = (ResponseContext) messageInfo
-            .getMetaData(BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY);
-        if (context != null)
-            res.setResponseContext(context);
-        // need to set responseContext on Response
-        // asyncHandler does the exception processing
-        if (result instanceof Exception)
-            res.setException((Exception) result);
-        else
-            res.set(result);
     }
 
     private void preSendHook(MessageInfo messageInfo) {
