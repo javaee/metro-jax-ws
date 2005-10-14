@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBTypeGenerator.java,v 1.8 2005-09-10 19:49:36 kohsuke Exp $
+ * $Id: JAXBTypeGenerator.java,v 1.9 2005-10-14 21:58:22 vivekp Exp $
  */
 
 /*
@@ -163,23 +163,7 @@ public class JAXBTypeGenerator extends GeneratorBase {
         if(env.verbose())
             cw = new ProgressCodeWriter(cw, System.out); // TODO this should not be System.out, should be
                                                          // something from ProcessorEnvironment
-        /*
-        //Fast ASN.1 JAXB extension
-        Class jaxbASNAddOn = null;
-        try{
-            jaxbASNAddOn = Class.forName("com.sun.tools.xjc.asn.JAXBASN1AddOn");
-        }catch(ClassNotFoundException e){
-            log("Can't generate ASN.1 artifacts! com.sun.tools.xjc.asn.JAXBASN1AddOn is not found!");
-        }
-        if(jaxbASNAddOn != null) {
-            log("Can't generate ASN.1 artifacts!");
-            //log("Generating both ASN.1 and XML artifacts.");
-            //cm = model.generateCode(new Augmenter[]{(Augmenter) jaxbASNAddOn.newInstance()}, new JAXBErrorListener());
-            cm = model.generateCode(null, new JAXBErrorListener());
-        }else{
-            cm = model.generateCode(null, new JAXBErrorListener());
-        }
-         */
+        //TODO:set package level javadoc in JPackage        
         cm = model.generateCode(null, new ConsoleErrorReporter(env, printStackTrace));
         cm.build(cw);
         doneGeneration = true;

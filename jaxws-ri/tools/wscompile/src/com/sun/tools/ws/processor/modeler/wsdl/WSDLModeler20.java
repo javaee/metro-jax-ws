@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.37 2005-10-14 01:06:24 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.38 2005-10-14 21:59:10 vivekp Exp $
  */
 
 /*
@@ -42,19 +42,10 @@ import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.generator.GeneratorConstants;
 import com.sun.tools.ws.processor.generator.SimpleToBoxedUtil;
-import com.sun.tools.ws.processor.model.AsyncOperation;
-import com.sun.tools.ws.processor.model.AsyncOperationType;
-import com.sun.tools.ws.processor.model.Block;
+import com.sun.tools.ws.processor.model.*;
 import com.sun.tools.ws.processor.model.Fault;
-import com.sun.tools.ws.processor.model.HeaderFault;
-import com.sun.tools.ws.processor.model.Model;
-import com.sun.tools.ws.processor.model.ModelException;
-import com.sun.tools.ws.processor.model.ModelProperties;
 import com.sun.tools.ws.processor.model.Operation;
-import com.sun.tools.ws.processor.model.Parameter;
 import com.sun.tools.ws.processor.model.Port;
-import com.sun.tools.ws.processor.model.Request;
-import com.sun.tools.ws.processor.model.Response;
 import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaException;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
@@ -71,16 +62,8 @@ import com.sun.tools.ws.processor.util.ClassNameCollector;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.util.JAXWSUtils;
-import com.sun.tools.ws.wsdl.document.Binding;
-import com.sun.tools.ws.wsdl.document.BindingFault;
-import com.sun.tools.ws.wsdl.document.BindingOperation;
-import com.sun.tools.ws.wsdl.document.Kinds;
+import com.sun.tools.ws.wsdl.document.*;
 import com.sun.tools.ws.wsdl.document.Message;
-import com.sun.tools.ws.wsdl.document.MessagePart;
-import com.sun.tools.ws.wsdl.document.OperationStyle;
-import com.sun.tools.ws.wsdl.document.PortType;
-import com.sun.tools.ws.wsdl.document.WSDLConstants;
-import com.sun.tools.ws.wsdl.document.WSDLDocument;
 import com.sun.tools.ws.wsdl.document.mime.MIMEContent;
 import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
@@ -279,7 +262,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 new JavaInterface(serviceInterface, serviceInterface + "Impl"));
 
         setDocumentationIfPresent(service, wsdlService.getDocumentation());
-
         boolean hasPorts = false;
         for (Iterator iter = wsdlService.ports(); iter.hasNext();) {
             boolean processed =
@@ -534,6 +516,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
                     return false;
                 }
                 createJavaInterfaceForPort(port, isProvider);
+                PortType pt = binding.resolvePortType(document);
+                String jd = (pt.getDocumentation() != null)?pt.getDocumentation().getContent():null;
+                port.getJavaInterface().setJavaDoc(jd);
                 _bindingNameToPortMap.put(bindingName, port);
             }
 
@@ -1014,6 +999,10 @@ public class WSDLModeler20 extends WSDLModelerBase {
         else if(asyncType.equals(AsyncOperationType.POLLING))
             operation.setUniqueName(info.operation.getUniqueName()+"_async_polling");
 
+        setDocumentationIfPresent(
+            operation,
+            info.portTypeOperation.getDocumentation());
+
         operation.setAsyncType(asyncType);
         operation.setSOAPAction(info.operation.getSOAPAction());
         boolean unwrappable = info.operation.isWrapped();
@@ -1301,6 +1290,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             // wsdl:fault message name is used to create the java exception name later on
             String faultName = getFaultClassName(portTypeFault);
             Fault fault = new Fault(faultName);
+            setDocumentationIfPresent(fault, portTypeFault.getDocumentation());
 
             //get the soapbind:fault from wsdl:fault in the binding
             SOAPFault soapFault = (SOAPFault)getExtensionOfType(bindingFault, SOAPFault.class);
@@ -2295,7 +2285,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
 
         JavaInterface intf = new JavaInterface(interfaceName);
-
         for (Operation operation : port.getOperations()) {
             createJavaMethodForOperation(
                 port,
@@ -2455,7 +2444,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         String candidateName = getJavaNameForOperation(operation);
         JavaMethod method = new JavaMethod(candidateName);
         Request request = operation.getRequest();
-
         Parameter returnParam = (Parameter)operation.getProperty(WSDL_RESULT_PARAMETER);
         if(returnParam != null){
             JavaType parameterType = returnParam.getType().getJavaType();
@@ -2876,6 +2864,14 @@ public class WSDLModeler20 extends WSDLModelerBase {
         Boolean wrapperStyle = (jaxwsBinding != null)?jaxwsBinding.isEnableWrapperStyle():null;
         if(wrapperStyle != null){
             port.setWrapped(wrapperStyle);
+        }
+    }
+
+    protected static void setDocumentationIfPresent(
+        ModelObject obj,
+        Documentation documentation) {
+        if (documentation != null && documentation.getContent() != null) {
+            obj.setJavaDoc(documentation.getContent());
         }
     }
 

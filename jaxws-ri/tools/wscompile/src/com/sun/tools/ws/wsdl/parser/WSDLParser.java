@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser.java,v 1.5 2005-09-23 22:05:48 kohsuke Exp $
+ * $Id: WSDLParser.java,v 1.6 2005-10-14 21:59:11 vivekp Exp $
  */
 
 /*
@@ -439,7 +439,8 @@ public class WSDLParser {
                         e.getLocalName());
                 }
                 gotDocumentation = true;
-                definitions.setDocumentation(getDocumentationFor(e2));
+                if(definitions.getDocumentation() == null)
+                    definitions.setDocumentation(getDocumentationFor(e2));
             } else if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_TYPES)) {
                 if (gotTypes) {
                     Util.fail(
@@ -584,7 +585,8 @@ public class WSDLParser {
                         e.getLocalName());
                 }
                 gotDocumentation = true;
-                portType.setDocumentation(getDocumentationFor(e2));
+                if(portType.getDocumentation() == null)
+                    portType.setDocumentation(getDocumentationFor(e2));
             } else if (
                 XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_OPERATION)) {
                 Operation op = parsePortTypeOperation(context, e2);
@@ -640,7 +642,8 @@ public class WSDLParser {
                         e.getLocalName());
                 }
                 gotDocumentation = true;
-                operation.setDocumentation(getDocumentationFor(e2));
+                if(operation.getDocumentation() == null)
+                    operation.setDocumentation(getDocumentationFor(e2));
             } else if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_INPUT)) {
                 if (gotInput) {
                     Util.fail(
@@ -773,7 +776,8 @@ public class WSDLParser {
                                 e.getLocalName());
                         }
                         gotDocumentation2 = true;
-                        fault.setDocumentation(getDocumentationFor(e3));
+                        if(fault.getDocumentation() == null)
+                            fault.setDocumentation(getDocumentationFor(e3));
                     } else {
                         // possible extensibility element -- must live outside the WSDL namespace
                         checkNotWsdlElement(e3);
@@ -1032,7 +1036,8 @@ public class WSDLParser {
                                 e.getLocalName());
                         }
                         gotDocumentation2 = true;
-                        fault.setDocumentation(getDocumentationFor(e3));
+                        if(fault.getDocumentation() == null)
+                            fault.setDocumentation(getDocumentationFor(e3));
                     } else {
                         // possible extensibility element -- must live outside the WSDL namespace
                         checkNotWsdlElement(e3);
@@ -1133,7 +1138,8 @@ public class WSDLParser {
                         e.getLocalName());
                 }
                 gotDocumentation = true;
-                service.setDocumentation(getDocumentationFor(e2));
+                if(service.getDocumentation() == null)
+                    service.setDocumentation(getDocumentationFor(e2));
             } else if (XmlUtil.matchesTagNS(e2, WSDLConstants.QNAME_PORT)) {
                 Port port = parsePort(context, definitions, e2);
                 service.add(port);
@@ -1180,7 +1186,8 @@ public class WSDLParser {
                         e.getLocalName());
                 }
                 gotDocumentation = true;
-                port.setDocumentation(getDocumentationFor(e2));
+                if(port.getDocumentation() == null)
+                    port.setDocumentation(getDocumentationFor(e2));
             } else {
                 // possible extensibility element -- must live outside the WSDL namespace
                 checkNotWsdlElement(e2);

@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.9 2005-10-14 01:06:22 vivekp Exp $
+ * $Id: ServiceGenerator.java,v 1.10 2005-10-14 21:58:23 vivekp Exp $
  */
 
 /*
@@ -169,10 +169,16 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
           
             //write class comment - JAXWS warning
             JDocComment comment = cls.javadoc();
+
+            if(service.getJavaDoc() != null){
+                comment.add(service.getJavaDoc());
+                comment.add("\n\n");
+            }
+
             for (String doc : getJAXWSClassComment()) {
                 comment.add(doc);
             }
-            
+
             JMethod constructor = cls.constructor(JMod.PUBLIC);
             constructor.param(URL.class, "wsdlLocation");
             constructor.param(QName.class, "serviceName");
@@ -194,6 +200,8 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JType retType = getClass(port.getJavaInterface().getName(), ClassType.INTERFACE);
                 m = cls.method(JMod.PUBLIC, retType, port.getPortGetter());
                 methodDoc = m.javadoc();
+                if(port.getJavaDoc() != null)
+                    methodDoc.add(port.getJavaDoc());
                 JCommentPart ret = methodDoc.addReturn();
                 ret.add("returns "+retType.name());
                 JBlock body = m.body();

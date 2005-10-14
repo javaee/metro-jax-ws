@@ -1,5 +1,5 @@
 /*
- * $Id: CustomExceptionGenerator.java,v 1.6 2005-09-23 22:05:41 kohsuke Exp $
+ * $Id: CustomExceptionGenerator.java,v 1.7 2005-10-14 21:58:22 vivekp Exp $
  */
 
 /*
@@ -102,9 +102,15 @@ public class CustomExceptionGenerator extends GeneratorBase {
 
         JDefinedClass cls = cm._class(className, ClassType.CLASS);
         JDocComment comment = cls.javadoc();
-        for(String doc:getJAXWSClassComment()){
+        if(fault.getJavaDoc() != null){
+            comment.add(fault.getJavaDoc());
+            comment.add("\n\n");
+        }
+
+        for (String doc : getJAXWSClassComment()) {
             comment.add(doc);
         }
+        
         cls._extends(java.lang.Exception.class);
 
         //@WebFault

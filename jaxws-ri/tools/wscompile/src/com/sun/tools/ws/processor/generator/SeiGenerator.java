@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.33 2005-10-12 23:33:19 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.34 2005-10-14 21:58:23 vivekp Exp $
  */
 
 /*
@@ -40,6 +40,7 @@ import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.IndentingWriter;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
+import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import org.w3c.dom.Element;
@@ -104,7 +105,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private void write(Service service, Port port) throws Exception{
         JavaInterface intf = port.getJavaInterface();
         String className = env.getNames().customJavaTypeClassName(intf);
-        
+
         if (donotOverride && GeneratorUtil.classExists(env, className)) {
             log("Class " + className + " exists. Not overriding.");
             return;
@@ -122,9 +123,17 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
 
         //write class comment - JAXWS warning
         JDocComment comment = cls.javadoc();
-        for(String doc:getJAXWSClassComment()){
-            comment.add(doc);
+
+        String ptDoc = intf.getJavaDoc();
+        if(ptDoc != null){
+            comment.add(ptDoc);
+            comment.add("\n\n");
         }
+
+        for(String doc:getJAXWSClassComment()){
+                comment.add(doc);
+        }
+
 
         //@WebService
         JAnnotationUse webServiceAnn = cls.annotate(cm.ref(WebService.class));
@@ -142,6 +151,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             //@WebMethod
             JMethod m = null;
             JDocComment methodDoc = null;
+            String methodJavaDoc = operation.getJavaDoc();
             if(method.getReturnType().getName().equals("void")){
                 m = cls.method(JMod.PUBLIC, void.class, method.getName());
                 methodDoc = m.javadoc();
@@ -153,6 +163,9 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
                 JCommentPart ret = methodDoc.addReturn();
                 ret.add("returns "+retType.getName());
             }
+            if(methodJavaDoc != null)
+                methodDoc.add(methodJavaDoc);
+
             writeWebMethod(operation, m);
             JClass holder = cm.ref(Holder.class);
             for (JavaParameter parameter: method.getParametersList()) {

@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSBindingExtensionHandler.java,v 1.9 2005-10-12 23:33:21 vivekp Exp $
+ * $Id: JAXWSBindingExtensionHandler.java,v 1.10 2005-10-14 21:59:10 vivekp Exp $
  */
 
 /*
@@ -37,9 +37,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.sun.tools.ws.wsdl.document.BindingOperation;
-import com.sun.tools.ws.wsdl.document.MessagePart;
-import com.sun.tools.ws.wsdl.document.Operation;
+import com.sun.tools.ws.wsdl.document.*;
 import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
@@ -110,6 +108,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
 
             if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PACKAGE)){
                 parsePackage(context, jaxwsBinding, e2);
+                if((jaxwsBinding.getJaxwsPackage() != null) && (jaxwsBinding.getJaxwsPackage().getJavaDoc() != null)){
+                    ((Definitions)parent).setDocumentation(new Documentation(jaxwsBinding.getJaxwsPackage().getJavaDoc()));
+                }
             }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE)){
                 parseWrapperStyle(context, jaxwsBinding, e2);
             }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING)){
@@ -390,6 +391,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                     parseAsynMapping(context, jaxwsBinding, e2);
                 }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
                     parseClass(context, jaxwsBinding, e2);
+                    if((jaxwsBinding.getClassName() != null) && (jaxwsBinding.getClassName().getJavaDoc() != null)){
+                        ((PortType)parent).setDocumentation(new Documentation(jaxwsBinding.getClassName().getJavaDoc()));
+                    }
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -504,6 +508,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                 parseAsynMapping(context, jaxwsBinding, e2);
             }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.METHOD)){
                 parseMethod(context, jaxwsBinding, e2);
+                if((jaxwsBinding.getMethodName() != null) && (jaxwsBinding.getMethodName().getJavaDoc() != null)){
+                    parent.setDocumentation(new Documentation(jaxwsBinding.getMethodName().getJavaDoc()));
+                }
             }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.PARAMETER)){
                 parseParameter(context, jaxwsBinding, e2);
             }else{
@@ -595,6 +602,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                     break;
                 if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
                     parseClass(context, jaxwsBinding, e2);
+                    if((jaxwsBinding.getClassName() != null) && (jaxwsBinding.getClassName().getJavaDoc() != null)){
+                        ((Fault)parent).setDocumentation(new Documentation(jaxwsBinding.getClassName().getJavaDoc()));
+                    }
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -633,6 +643,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                     break;
                 if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.CLASS)){
                     parseClass(context, jaxwsBinding, e2);
+                    if((jaxwsBinding.getClassName() != null) && (jaxwsBinding.getClassName().getJavaDoc() != null)){
+                        ((Service)parent).setDocumentation(new Documentation(jaxwsBinding.getClassName().getJavaDoc()));
+                    }
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -674,6 +687,9 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
                     parseProvider(context, jaxwsBinding, e2);
                 }else if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.METHOD)){
                     parseMethod(context, jaxwsBinding, e2);
+                    if((jaxwsBinding.getMethodName() != null) && (jaxwsBinding.getMethodName().getJavaDoc() != null)){
+                        ((Port)parent).setDocumentation(new Documentation(jaxwsBinding.getMethodName().getJavaDoc()));
+                    }
                 }else{
                     Util.fail(
                         "parsing.invalidExtensionElement",
@@ -711,7 +727,7 @@ public class JAXWSBindingExtensionHandler extends ExtensionHandlerBase {
             if (e2 == null)
                 break;
             if(XmlUtil.matchesTagNS(e2, JAXWSBindingsConstants.JAVADOC)){
-                return e2.getNodeValue();
+                return XmlUtil.getTextForNode(e2);
             }
         }
         return null;
