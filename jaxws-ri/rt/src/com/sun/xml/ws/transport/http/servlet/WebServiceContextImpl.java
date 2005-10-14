@@ -43,7 +43,7 @@ public class WebServiceContextImpl implements WebServiceContext  {
         MessageContext ctxt = (MessageContext)msgContext.get();
         if (ctxt != null) {
             HttpServletRequest req = (HttpServletRequest)ctxt.get(
-                "javax.xml.ws.servlet.request");
+                    MessageContext.SERVLET_REQUEST);
             if (req != null) {
                 return req.getUserPrincipal();
             }
@@ -56,7 +56,7 @@ public class WebServiceContextImpl implements WebServiceContext  {
         MessageContext ctxt = (MessageContext)msgContext.get();
         if (ctxt != null) {
             HttpServletRequest req = (HttpServletRequest)ctxt.get(
-                "javax.xml.ws.servlet.request");
+                    MessageContext.SERVLET_REQUEST);
             if (req != null) {
                 return req.isUserInRole(role);
             }
