@@ -22,14 +22,16 @@ package com.sun.xml.ws.streaming;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collections;
 
 import org.w3c.dom.*;
 import static org.w3c.dom.Node.*;
 import javax.xml.namespace.QName;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
-import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  *
@@ -39,8 +41,8 @@ import static javax.xml.stream.XMLStreamConstants.*;
  *
  * @author Santiago.PericasGeertsen@sun.com
  */
-public class DOMStreamReader implements XMLStreamReader {
-    
+public class DOMStreamReader implements XMLStreamReader, NamespaceContext {
+
     /**
      * Current DOM node being traversed.
      */
@@ -50,34 +52,34 @@ public class DOMStreamReader implements XMLStreamReader {
      * Starting node of the subtree being traversed.
      */
     Node _start;
-    
+
     /**
      * Named mapping for attributes and NS decls for the current node.
      */
     NamedNodeMap _namedNodeMap;
-    
+
     /**
      * List of attributes extracted from <code>_namedNodeMap</code>.
      */
     List<Attr> _currentAttributes = new ArrayList<Attr>();
-    
+
     /**
      * List of namespace declarations extracted from <code>_namedNodeMap</code>
      */
     List<Attr> _currentNamespaces = new ArrayList<Attr>();
-    
+
     /**
      * Flag indicating if <code>_namedNodeMap</code> is already split into
      * <code>_currentAttributes</code> and <code>_currentNamespaces</code>
      */
     boolean _needAttributesSplit;
-    
+
     /**
      * State of this reader. Any of the valid states defined in StAX'
      * XMLStreamConstants class.
      */
     int _state;
-    
+
     /**
      * Dummy Location instance returned in <code>getLocation</code>.
      */
@@ -96,34 +98,34 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         public String getSystemId() {
             return null;
-        }        
+        }
     };
-    
+
     public DOMStreamReader() {
     }
-    
+
     public DOMStreamReader(Node node) {
         setCurrentNode(node);
     }
-    
+
     public void setCurrentNode(Node node) {
         _start = _current = node;
-        _state = START_DOCUMENT;        
+        _state = START_DOCUMENT;
         // verifyDOMIntegrity(node);
         // displayDOM(node, System.out);
     }
-    
+
     public void close() throws javax.xml.stream.XMLStreamException {
     }
-    
-    
+
+
     private void splitAttributes() {
         if (!_needAttributesSplit) return;
-        
+
         // Clear attribute and namespace lists
         _currentAttributes.clear();
         _currentNamespaces.clear();
-        
+
         _namedNodeMap = _current.getAttributes();
         if (_namedNodeMap != null) {
             final int n = _namedNodeMap.getLength();
@@ -135,12 +137,12 @@ public class DOMStreamReader implements XMLStreamReader {
                 }
                 else {
                     _currentAttributes.add(attr);
-                }            
+                }
             }
         }
         _needAttributesSplit = false;
     }
-    
+
     public int getAttributeCount() {
         if (_state == START_ELEMENT) {
             splitAttributes();
@@ -148,14 +150,14 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeCount() called in illegal state");
     }
-    
+
     /**
      * Return an attribute's local name. Handle the case of DOM level 1 nodes.
      */
     public String getAttributeLocalName(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            
+
             String localName = _currentAttributes.get(index).getLocalName();
             return (localName != null) ? localName :
                 QName.valueOf(_currentAttributes.get(index).getNodeName()).getLocalPart();
@@ -169,13 +171,13 @@ public class DOMStreamReader implements XMLStreamReader {
     public QName getAttributeName(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
-            
+
             Node attr = _currentAttributes.get(index);
             String localName = attr.getLocalName();
             if (localName != null) {
                 String prefix = attr.getPrefix();
-                String uri = attr.getNamespaceURI();            
-                return new QName(uri != null ? uri : "", localName, 
+                String uri = attr.getNamespaceURI();
+                return new QName(uri != null ? uri : "", localName,
                     prefix != null ? prefix : "");
             }
             else {
@@ -184,7 +186,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeName() called in illegal state");
     }
-    
+
     public String getAttributeNamespace(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
@@ -193,7 +195,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeNamespace() called in illegal state");
     }
-    
+
     public String getAttributePrefix(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
@@ -202,14 +204,14 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributePrefix() called in illegal state");
     }
-    
+
     public String getAttributeType(int index) {
         if (_state == START_ELEMENT) {
             return "CDATA";
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeType() called in illegal state");
     }
-    
+
     public String getAttributeValue(int index) {
         if (_state == START_ELEMENT) {
             splitAttributes();
@@ -217,7 +219,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeValue() called in illegal state");
     }
-    
+
     public String getAttributeValue(String namespaceURI, String localName) {
         if (_state == START_ELEMENT) {
             splitAttributes();
@@ -229,52 +231,52 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeValue() called in illegal state");
     }
-    
+
     public String getCharacterEncodingScheme() {
         return null;
     }
-    
+
     public String getElementText() throws javax.xml.stream.XMLStreamException {
         throw new RuntimeException("DOMStreamReader: getElementText() not implemented");
     }
-    
+
     public String getEncoding() {
         return null;
     }
-    
+
     public int getEventType() {
         return _state;
     }
-    
+
     /**
      * Return an element's local name. Handle the case of DOM level 1 nodes.
      */
     public String getLocalName() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             String localName = _current.getLocalName();
-            return localName != null ? localName : 
+            return localName != null ? localName :
                 QName.valueOf(_current.getNodeName()).getLocalPart();
-        } 
+        }
         else if (_state == ENTITY_REFERENCE) {
             return _current.getNodeName();
         }
         throw new IllegalStateException("DOMStreamReader: getAttributeValue() called in illegal state");
     }
-    
+
     public javax.xml.stream.Location getLocation() {
         return dummyLocation;
     }
-    
+
     /**
      * Return an element's qname. Handle the case of DOM level 1 nodes.
      */
     public javax.xml.namespace.QName getName() {
-        if (_state == START_ELEMENT || _state == END_ELEMENT) {            
+        if (_state == START_ELEMENT || _state == END_ELEMENT) {
             String localName = _current.getLocalName();
             if (localName != null) {
                 String prefix = _current.getPrefix();
-                String uri = _current.getNamespaceURI();            
-                return new QName(uri != null ? uri : "", localName, 
+                String uri = _current.getNamespaceURI();
+                return new QName(uri != null ? uri : "", localName,
                     prefix != null ? prefix : "");
             }
             else {
@@ -283,11 +285,11 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getName() called in illegal state");
     }
-    
-    public javax.xml.namespace.NamespaceContext getNamespaceContext() {
-        throw new RuntimeException("DOMStreamReader: getNamespaceContext() not implemented");
+
+    public NamespaceContext getNamespaceContext() {
+        return this;
     }
-    
+
     public int getNamespaceCount() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             splitAttributes();
@@ -295,11 +297,11 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getNamespaceCount() called in illegal state");
     }
-    
+
     public String getNamespacePrefix(int index) {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             splitAttributes();
-            
+
             Attr attr = _currentNamespaces.get(index);
             String result = attr.getLocalName();
             if (result == null) {
@@ -309,7 +311,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getNamespacePrefix() called in illegal state");
     }
-    
+
     public String getNamespaceURI() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             String uri = _current.getNamespaceURI();
@@ -317,7 +319,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         return null;
     }
-    
+
     public String getNamespaceURI(int index) {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             splitAttributes();
@@ -325,7 +327,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getNamespaceURI(int) called in illegal state");
     }
-    
+
     /**
      * This method is not particularly fast, but shouldn't be called very 
      * often. If we start to use it more, we should keep track of the 
@@ -338,49 +340,100 @@ public class DOMStreamReader implements XMLStreamReader {
         else if (prefix.equals("xml")) {
             return "http://www.w3.org/XML/1998/namespace";
         }
-        else if (prefix.equals("xmlns")) {    
+        else if (prefix.equals("xmlns")) {
             return "http://www.w3.org/2000/xmlns/";
         }
         else {
             int type;
-            
+
             // Find nearest element node
             Node node = _current;
-            while ((type = node.getNodeType()) != DOCUMENT_NODE 
+            while ((type = node.getNodeType()) != DOCUMENT_NODE
                     && type != ELEMENT_NODE) {
                 node = node.getParentNode();
             }
 
             boolean isDefault = (prefix.length() == 0);
-            
+
             while (node.getNodeType() != DOCUMENT_NODE) {
                 // Is ns declaration on this element?
                 NamedNodeMap namedNodeMap = node.getAttributes();
                 Attr attr = isDefault ? (Attr) namedNodeMap.getNamedItem("xmlns") :
                                         (Attr) namedNodeMap.getNamedItem("xmlns:" + prefix);
                 if (attr != null) {
-                    return attr.getValue();                    
+                    return attr.getValue();
                 }
                 node = node.getParentNode();
-            }            
+            }
             return null;
         }
     }
-    
+
+    public String getPrefix(String nsUri) {
+        if (nsUri == null) {
+            throw new IllegalArgumentException("DOMStreamReader: getPrefix(String) call with a null namespace URI");
+        }
+        else if (nsUri.equals("http://www.w3.org/XML/1998/namespace")) {
+            return "xml";
+        }
+        else if (nsUri.equals("http://www.w3.org/2000/xmlns/")) {
+            return "xmlns";
+        }
+        else {
+            int type;
+
+            // Find nearest element node
+            Node node = _current;
+            while ((type = node.getNodeType()) != DOCUMENT_NODE
+                    && type != ELEMENT_NODE) {
+                node = node.getParentNode();
+            }
+
+            while (node.getNodeType() != DOCUMENT_NODE) {
+                // Is ns declaration on this element?
+                NamedNodeMap namedNodeMap = node.getAttributes();
+                for( int i=namedNodeMap.getLength()-1; i>=0; i-- ) {
+                    Attr attr = (Attr)namedNodeMap.item(i);
+
+                    String attrName = attr.getNodeName();
+                    if (attrName.startsWith("xmlns:") || attrName.equals("xmlns")) {     // NS decl?
+                        if(attr.getValue().equals(nsUri)) {
+                            if(attrName.equals("xmlns"))
+                                return "";
+                            String localName = attr.getLocalName();
+                            return (localName != null) ? localName :
+                                QName.valueOf(attrName).getLocalPart();
+                        }
+                    }
+                }
+                node = node.getParentNode();
+            }
+            return null;
+        }
+    }
+
+    public Iterator getPrefixes(String nsUri) {
+        // This is an incorrect implementation,
+        // but AFAIK it's not used in the JAX-WS runtime
+        String prefix = getPrefix(nsUri);
+        if(prefix==null)    return Collections.emptyList().iterator();
+        else                return Collections.singletonList(prefix).iterator();
+    }
+
     public String getPIData() {
         if (_state == PROCESSING_INSTRUCTION) {
             return ((ProcessingInstruction) _current).getData();
         }
         return null;
     }
-    
+
     public String getPITarget() {
         if (_state == PROCESSING_INSTRUCTION) {
             return ((ProcessingInstruction) _current).getTarget();
         }
         return null;
     }
-    
+
     public String getPrefix() {
         if (_state == START_ELEMENT || _state == END_ELEMENT) {
             String prefix = _current.getPrefix();
@@ -388,11 +441,11 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         return null;
     }
-    
+
     public Object getProperty(String str) throws IllegalArgumentException {
         return null;
     }
-    
+
     public String getText() {
         if (_state == CHARACTERS || _state == CDATA || _state == COMMENT ||
                 _state == ENTITY_REFERENCE) {
@@ -400,19 +453,19 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getTextLength() called in illegal state");
     }
-    
+
     public char[] getTextCharacters() {
         return getText().toCharArray();
     }
-    
+
     public int getTextCharacters(int sourceStart, char[] target, int targetStart,
-            int targetLength) throws javax.xml.stream.XMLStreamException 
+                                 int targetLength) throws javax.xml.stream.XMLStreamException
     {
         char[] text = getTextCharacters();
         System.arraycopy(text, sourceStart, target, targetStart, targetLength);
         return Math.min(targetLength, text.length - sourceStart);
     }
-    
+
     public int getTextLength() {
         if (_state == CHARACTERS || _state == CDATA || _state == COMMENT ||
                 _state == ENTITY_REFERENCE) {
@@ -420,7 +473,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getTextLength() called in illegal state");
     }
-    
+
     public int getTextStart() {
         if (_state == CHARACTERS || _state == CDATA || _state == COMMENT ||
                 _state == ENTITY_REFERENCE) {
@@ -428,19 +481,19 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         throw new IllegalStateException("DOMStreamReader: getTextStart() called in illegal state");
     }
-    
+
     public String getVersion() {
         return null;
     }
-    
+
     public boolean hasName() {
         return (_state == START_ELEMENT || _state == END_ELEMENT);
     }
-    
+
     public boolean hasNext() throws javax.xml.stream.XMLStreamException {
         return (_state != END_DOCUMENT);
     }
-    
+
     public boolean hasText() {
         if (_state == CHARACTERS || _state == CDATA || _state == COMMENT ||
                 _state == ENTITY_REFERENCE) {
@@ -448,27 +501,27 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         return false;
     }
-    
+
     public boolean isAttributeSpecified(int param) {
         return false;
     }
-    
+
     public boolean isCharacters() {
         return (_state == CHARACTERS);
     }
-    
+
     public boolean isEndElement() {
         return (_state == END_ELEMENT);
     }
-    
+
     public boolean isStandalone() {
         return true;
     }
-    
+
     public boolean isStartElement() {
         return (_state == START_ELEMENT);
     }
-    
+
     public boolean isWhiteSpace() {
         final int nodeType = _current.getNodeType();
         if (nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE) {
@@ -476,7 +529,7 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         return false;
     }
-    
+
     private static int mapNodeTypeToState(int nodetype) {
         switch (nodetype) {
             case CDATA_SECTION_NODE:
@@ -499,13 +552,13 @@ public class DOMStreamReader implements XMLStreamReader {
                 throw new RuntimeException("DOMStreamReader: Unexpected node type");
         }
     }
-    
+
     public int next() throws javax.xml.stream.XMLStreamException {
         Node child;
-        
+
         // Indicate that attributes still need processing
         _needAttributesSplit = true;
-        
+
         switch (_state) {
             case END_DOCUMENT:
                 throw new IllegalStateException("DOMStreamReader: Calling next() at END_DOCUMENT");
@@ -514,11 +567,11 @@ public class DOMStreamReader implements XMLStreamReader {
                 if (_current.getNodeType() == ELEMENT_NODE) {
                     return (_state = START_ELEMENT);
                 }
-                
+
                 child = _current.getFirstChild();
                 if (child == null) {
                     return (_state = END_DOCUMENT);
-                } 
+                }
                 else {
                     _current = child;
                     return (_state = mapNodeTypeToState(_current.getNodeType()));
@@ -529,11 +582,11 @@ public class DOMStreamReader implements XMLStreamReader {
                  * is very expensive, so we should think about changing SAAJ instead!
                  */
                 _current.normalize();
-                              
+
                 child = _current.getFirstChild();
                 if (child == null) {
                     return (_state = END_ELEMENT);
-                } 
+                }
                 else {
                     _current = child;
                     return (_state = mapNodeTypeToState(_current.getNodeType()));
@@ -548,15 +601,15 @@ public class DOMStreamReader implements XMLStreamReader {
                 if (_current == _start) {
                     return (_state = END_DOCUMENT);
                 }
-                
+
                 Node sibling = _current.getNextSibling();
                 if (sibling == null) {
                     _current = _current.getParentNode();
                     // getParentNode() returns null for fragments
-                    _state = (_current == null || _current.getNodeType() == DOCUMENT_NODE) ? 
+                    _state = (_current == null || _current.getNodeType() == DOCUMENT_NODE) ?
                              END_DOCUMENT : END_ELEMENT;
                     return _state;
-                } 
+                }
                 else {
                     _current = sibling;
                     return (_state = mapNodeTypeToState(_current.getNodeType()));
@@ -568,14 +621,14 @@ public class DOMStreamReader implements XMLStreamReader {
                 throw new RuntimeException("DOMStreamReader: Unexpected internal state");
         }
     }
-    
+
     public int nextTag() throws javax.xml.stream.XMLStreamException {
         int eventType = next();
         while (eventType == CHARACTERS && isWhiteSpace()
                || eventType == CDATA && isWhiteSpace()
                || eventType == SPACE
                || eventType == PROCESSING_INSTRUCTION
-               || eventType == COMMENT) 
+               || eventType == COMMENT)
         {
             eventType = next();
         }
@@ -584,9 +637,9 @@ public class DOMStreamReader implements XMLStreamReader {
         }
         return eventType;
     }
-    
-    public void require(int type, String namespaceURI, String localName) 
-        throws javax.xml.stream.XMLStreamException 
+
+    public void require(int type, String namespaceURI, String localName)
+        throws javax.xml.stream.XMLStreamException
     {
         if (type != _state) {
             throw new XMLStreamException("DOMStreamReader: Required event type not found");
@@ -595,21 +648,23 @@ public class DOMStreamReader implements XMLStreamReader {
             throw new XMLStreamException("DOMStreamReader: Required namespaceURI not found");
         }
         if (localName != null && !localName.equals(getLocalName())) {
-            throw new XMLStreamException("DOMStreamReader: Required localName not found");    
+            throw new XMLStreamException("DOMStreamReader: Required localName not found");
         }
     }
-    
+
     public boolean standaloneSet() {
         return true;
-    }    
-    
+    }
+
+
+
     // -- Debugging ------------------------------------------------------
-    
+
     private static void displayDOM(Node node, java.io.OutputStream ostream) {
         try {
             System.out.println("\n====\n");
             javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(
-                new javax.xml.transform.dom.DOMSource(node), 
+                new javax.xml.transform.dom.DOMSource(node),
                 new javax.xml.transform.stream.StreamResult(ostream));
             System.out.println("\n====\n");
         }
@@ -617,12 +672,12 @@ public class DOMStreamReader implements XMLStreamReader {
             e.printStackTrace();
         }
     }
-    
+
     private static void verifyDOMIntegrity(Node node) {
         switch (node.getNodeType()) {
             case ELEMENT_NODE:
             case ATTRIBUTE_NODE:
-                
+
                 // DOM level 1?
                 if (node.getLocalName() == null) {
                     System.out.println("WARNING: DOM level 1 node found");
@@ -631,9 +686,9 @@ public class DOMStreamReader implements XMLStreamReader {
                     System.out.println(" -> node.getLocalName() = " + node.getLocalName());
                     System.out.println(" -> node.getPrefix() = " + node.getPrefix());
                 }
-                
+
                 if (node.getNodeType() == ATTRIBUTE_NODE) return;
-                
+
                 NamedNodeMap attrs = ((Element) node).getAttributes();
                 for (int i = 0; i < attrs.getLength(); i++) {
                     verifyDOMIntegrity(attrs.item(i));
@@ -643,16 +698,16 @@ public class DOMStreamReader implements XMLStreamReader {
                 for (int i = 0; i < children.getLength(); i++) {
                     verifyDOMIntegrity(children.item(i));
                 }
-        }        
+        }
     }
-    
+
     static public void main(String[] args) throws Exception {
         String sample = "<?xml version='1.0' encoding='UTF-8'?><env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/'><env:Body><env:Fault><faultcode>env:Server</faultcode><faultstring>Internal server error</faultstring></env:Fault></env:Body></env:Envelope>";
         javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
         Document dd = db.parse(new java.io.ByteArrayInputStream(sample.getBytes("UTF-8")));
-        
+
         DOMStreamReader dsr = new DOMStreamReader(dd);
         while (dsr.hasNext()) {
             System.out.println("dsr.next() = " + dsr.next());
