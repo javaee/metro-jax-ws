@@ -1,5 +1,5 @@
 /*
- * $Id: Operation.java,v 1.6 2005-09-10 19:49:38 kohsuke Exp $
+ * $Id: Operation.java,v 1.7 2005-10-14 01:06:23 vivekp Exp $
  */
 
 /*
@@ -24,16 +24,15 @@
 
 package com.sun.tools.ws.processor.model;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.processor.model.java.JavaMethod;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
-import com.sun.tools.xjc.api.XJC;
+import com.sun.xml.bind.api.JAXBRIContext;
+
+import javax.xml.namespace.QName;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -223,7 +222,7 @@ public class Operation extends ModelObject {
             return customizedName;
         }
 
-        return XJC.mangleNameToVariableName(_name.getLocalPart());
+        return JAXBRIContext.mangleNameToVariableName(_name.getLocalPart());
     }
 
     private String customizedName;

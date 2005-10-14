@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.8 2005-10-10 15:37:13 kohlert Exp $
+ * $Id: ServiceGenerator.java,v 1.9 2005-10-14 01:06:22 vivekp Exp $
  */
 
 /*
@@ -53,6 +53,8 @@ import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.tools.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.bind.api.JAXBRIContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -137,7 +139,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             inv.arg("namespace");
             inv.arg("localpart");
 //            String serviceFieldName = intf.getSimpleName().toUpperCase();
-            String serviceFieldName = XJC.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
+            String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
             JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
 
             JFieldVar portField;
@@ -150,7 +152,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 inv.arg("namespace");
                 inv.arg("localpart");
 //                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();
-                fieldName = XJC.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
+                fieldName = JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
                 portField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, fieldName, createQName(port.getName()));
             }
             
@@ -198,7 +200,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 StringBuffer statement = new StringBuffer("return (");
                 statement.append(retType.name());
 //                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();                
-                fieldName = XJC.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
+                fieldName = JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
                 statement.append(")super.getPort("+fieldName+", ");
                 statement.append(retType.name());
                 statement.append(".class);");

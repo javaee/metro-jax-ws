@@ -1,5 +1,5 @@
 /*
- * $Id: Names.java,v 1.7 2005-09-20 19:25:46 vivekp Exp $
+ * $Id: Names.java,v 1.8 2005-10-14 01:06:22 vivekp Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.xml.ws.streaming.PrefixFactory;
 import com.sun.xml.ws.streaming.PrefixFactoryImpl;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.bind.api.JAXBRIContext;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -190,14 +191,14 @@ public class Names implements GeneratorConstants{
      * @see Names#validJavaClassName(String)
      */
     public String validJavaClassName(String name) {
-        return com.sun.tools.xjc.api.XJC.mangleNameToClassName(name);
+        return JAXBRIContext.mangleNameToClassName(name);
     }
 
     /* (non-Javadoc)
      * @see Names#validJavaMemberName(String)
      */
     public String validJavaMemberName(String name) {
-        return com.sun.tools.xjc.api.XJC.mangleNameToVariableName(name);    
+        return JAXBRIContext.mangleNameToVariableName(name);    
     }
 
     public String validInternalJavaIdentifier(String name) {

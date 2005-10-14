@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.36 2005-10-13 22:56:06 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.37 2005-10-14 01:06:24 vivekp Exp $
  */
 
 /*
@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBContext;
 
 import org.xml.sax.InputSource;
 
@@ -100,6 +101,7 @@ import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.xjc.api.XJC;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.model.Mode;
+import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JType;
@@ -2364,14 +2366,14 @@ public class WSDLModeler20 extends WSDLModelerBase {
         if (portTypeName != null) {
             // got portType information from WSDL, use it to name the interface
             interfaceName =
-                makePackageQualified(XJC.mangleNameToClassName(portTypeName.getLocalPart()),
+                makePackageQualified(JAXBRIContext.mangleNameToClassName(portTypeName.getLocalPart()),
                                         portTypeName,
                                         false);
         } else {
             // somehow we only got the port name, so we use that
             interfaceName =
                 makePackageQualified(
-                    XJC.mangleNameToClassName(port.getName().getLocalPart()),
+                    JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()),
                     port.getName(),
                     false);
         }
@@ -2416,7 +2418,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             JavaType parameterType = parameter.getType().getJavaType();
             JavaParameter javaParameter =
                 new JavaParameter(
-                    XJC.mangleNameToVariableName(parameter.getName()),
+                    JAXBRIContext.mangleNameToVariableName(parameter.getName()),
                     parameterType,
                     parameter,
                     parameter.getLinkedParameter() != null);
@@ -2468,7 +2470,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             String name = (param.getCustomName() != null)?param.getCustomName():param.getName();
             JavaParameter javaParameter =
                 new JavaParameter(
-                    XJC.mangleNameToVariableName(name),
+                    JAXBRIContext.mangleNameToVariableName(name),
                     parameterType,
                     param,
                     param.isINOUT()||param.isOUT());
@@ -2481,7 +2483,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
         operation.setJavaMethod(method);
         intf.addMethod(method);
 
-        String opName = com.sun.tools.xjc.api.XJC.mangleNameToVariableName(operation.getName().getLocalPart());
+        String opName = JAXBRIContext.mangleNameToVariableName(operation.getName().getLocalPart());
         for (Iterator iter = operation.getFaults();
             iter != null && iter.hasNext();
             ) {
