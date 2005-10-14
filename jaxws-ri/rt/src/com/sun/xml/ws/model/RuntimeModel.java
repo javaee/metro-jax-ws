@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.26 2005-10-06 01:51:12 vivekp Exp $
+ * $Id: RuntimeModel.java,v 1.27 2005-10-14 02:23:59 arungupta Exp $
  */
 
 /*
@@ -23,6 +23,7 @@
  */
 package com.sun.xml.ws.model;
 
+import com.sun.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.bind.api.JAXBRIContext;
@@ -64,6 +65,7 @@ public abstract class RuntimeModel {
         if (jaxbContext != null)
             return;
         populateMaps();
+        populateAsyncExceptions();
         createJAXBContext();
         createDecoderInfo();
     }
@@ -76,6 +78,29 @@ public abstract class RuntimeModel {
             put(jm.getMethod(), jm);
             for (Parameter p : jm.getRequestParameters()) {
                 put(p.getName(), jm);
+            }
+        }
+    }
+    
+    protected void populateAsyncExceptions() {
+        for (JavaMethod jm : getJavaMethods()) {
+            int mep = jm.getMEP();
+            if (mep == MessageInfo.ASYNC_CALLBACK_MEP || mep == MessageInfo.ASYNC_POLL_MEP) {
+                String opName = jm.getOperationName();
+                Method m = jm.getMethod();
+                Class[] params = m.getParameterTypes();
+                if (mep == MessageInfo.ASYNC_CALLBACK_MEP) {
+                    params = new Class[params.length-1];
+                    System.arraycopy(m.getParameterTypes(), 0, params, 0, m.getParameterTypes().length-1);
+                }
+                try {
+                    Method om = m.getDeclaringClass().getMethod(opName, params);
+                    JavaMethod jm2 = getJavaMethod(om);
+                    for (CheckedException ce : jm2.getCheckedExceptions()) {
+                        jm.addException(ce);
+                    }
+                } catch (NoSuchMethodException ex) {
+                }
             }
         }
     }
