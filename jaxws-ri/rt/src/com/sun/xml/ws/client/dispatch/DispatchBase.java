@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.20 2005-10-04 00:12:11 kohsuke Exp $
+ * $Id: DispatchBase.java,v 1.21 2005-10-14 00:19:49 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -388,8 +388,6 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         MessageStruct messageStruct = _delegate.getMessageStruct();
 
         if (msg != null) {
-            Class objClass = msg.getClass();
-            //Object data = null;
             MessageFactory factory = null;
             if ((msg instanceof Source) && _mode == Service.Mode.MESSAGE) {
                 try {
