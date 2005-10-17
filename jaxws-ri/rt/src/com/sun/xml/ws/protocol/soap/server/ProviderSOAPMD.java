@@ -17,8 +17,9 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package com.sun.xml.ws.server.provider;
+package com.sun.xml.ws.protocol.soap.server;
 
+import com.sun.xml.ws.server.provider.*;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
@@ -37,7 +38,6 @@ import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
-import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
@@ -46,8 +46,7 @@ import com.sun.xml.messaging.saaj.soap.MessageImpl;
 import com.sun.xml.ws.util.FastInfosetUtil;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.*;
-
-public class ProviderMessageDispatcher extends SOAPMessageDispatcher {
+public class ProviderSOAPMD extends SOAPMessageDispatcher {
 
     /*
      * Fill the parameters, method in MessageInfo for Provider interface.

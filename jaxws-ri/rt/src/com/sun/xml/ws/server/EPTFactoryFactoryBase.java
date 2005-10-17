@@ -27,14 +27,14 @@ import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.ServerEncoderDecoder;
-import com.sun.xml.ws.server.provider.ProviderMessageDispatcher;
+import com.sun.xml.ws.protocol.soap.server.ProviderSOAPMD;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import javax.xml.ws.Provider;
 import javax.xml.ws.soap.SOAPBinding;
 
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.server.provider.ProviderPeptTie;
-import com.sun.xml.ws.server.provider.ProviderSED;
+import com.sun.xml.ws.encoding.soap.server.ProviderSED;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher;
 import com.sun.xml.ws.encoding.soap.server.SOAP12XMLDecoder;
@@ -62,8 +62,8 @@ import javax.xml.ws.http.HTTPBinding;
  */
 public abstract class EPTFactoryFactoryBase {
 
-    public static final ProviderMessageDispatcher providerMessageDispatcher =
-        new ProviderMessageDispatcher();
+    public static final ProviderSOAPMD providerMessageDispatcher =
+        new ProviderSOAPMD();
     public static final SOAPEncoder soap11Encoder = new SOAPXMLEncoder();
     public static final SOAPDecoder soap11Decoder = new SOAPXMLDecoder();
     public static final SOAPEncoder soap12Encoder = new SOAP12XMLEncoder();
