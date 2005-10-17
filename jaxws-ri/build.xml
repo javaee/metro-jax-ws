@@ -50,11 +50,13 @@
   <property name="build.id" value="${now}(${user.name})" />
   <property name="build.version" value="${Name} ${version}-${build.id}" />
   <echo message="The build id is: ${build.version}" /> 
-<!-- ************ Per user local properties ******************************* -->
 
   <property file="${user.home}/build.properties"/>   <!-- User local        -->
   <property file="build.properties"/>                <!-- Component local   -->
   <property file="../build.properties"/>             <!-- Commons local     -->  
+
+  <property file="project.properties"/>
+
 
   <path id="runtime.compile.classpath">
     <fileset dir="${lib.home}">
@@ -288,8 +290,7 @@ major-version=${version}
   </target>
 
   <!-- for now, this gets everything built -->
-  <target name="image">
-    <antcall target="tools-build"/>
+  <target name="image" depends="tools-build">
     <copy todir="${build.home}">
         <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt" />
     </copy>
@@ -297,12 +298,6 @@ major-version=${version}
 
   <target name="main" depends="image"/>
   
-  <target name="main-debug">
-    <antcall target="tools-build">
-      <param name="compile.debug" value="true"/>
-    </antcall>
-  </target>
-
   <!-- ********** Targets added for running/debugging in NetBeans ********** -->
   
   <!-- set to same dir as in test/config/build.properties -->

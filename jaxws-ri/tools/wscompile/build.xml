@@ -21,23 +21,12 @@
 -->
 
 
-<project name="JAXWS-RI Runtime"  default="compile"  basedir=".">
+<project name="JAXWS-RI tools"  default="compile"  basedir=".">
 
-    <!-- default is false. use "main-debug" target in top level file
-         for debugging information -->
-    <property name="compile.debug" value="false"/>
-
-    <!-- Should Java compilations set the 'deprecation' compiler option? -->
-    <property name="compile.deprecation" value="false"/>
-
-    <!-- Should Java compilations set the 'optimize' compiler option? -->
-    <property name="compile.optimize" value="true"/>
-  
   <property name="build.dir" value="${basedir}/build"/>
-  
+  <property file="../../project.properties"/>
+
   <target name="prepare">
-    <mkdir dir="${build.dir}/classes"/>
-    <mkdir dir="${build.dir}/classes/META-INF/"/>
     <mkdir dir="${build.dir}/classes/META-INF/services"/>
   </target>
 
