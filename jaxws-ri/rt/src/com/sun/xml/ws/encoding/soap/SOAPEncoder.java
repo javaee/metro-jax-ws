@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.42 2005-10-17 21:11:00 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.43 2005-10-17 21:53:13 kohsuke Exp $
  */
 
 /*
@@ -264,15 +264,11 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             }
             if (value instanceof Source) {
                 Source source = (Source)value;
-                Transformer transformer = XmlUtil.newTransformer();
-                DOMResult domResult = new DOMResult();
-                transformer.transform(source, domResult);
                 SOAPBody body = soapMessage.getSOAPBody();
                 body.removeContents();
-                Document doc = (Document)domResult.getNode();
-                Node elem = body.getOwnerDocument().importNode(
-                        doc.getDocumentElement(), true);
-                body.appendChild(elem);
+
+                Transformer transformer = XmlUtil.newTransformer();
+                transformer.transform(source,new DOMResult(body));
             } else {
                 throw new UnsupportedOperationException("Unknown object in BodyBlock:"+value.getClass());
             }

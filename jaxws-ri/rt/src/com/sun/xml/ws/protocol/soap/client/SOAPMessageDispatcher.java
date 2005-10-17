@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.57 2005-10-14 18:27:59 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.58 2005-10-17 21:48:20 kohsuke Exp $
  */
 
 /*
@@ -74,6 +74,7 @@ import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.*;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -595,11 +596,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         Node resultNode;
         try {
             if (value instanceof Source) {
-                resultNode = DOMUtil.domSourceToNode((Source) value);
-                SOAPEnvelope se = sm.getSOAPPart().getEnvelope();
-                SOAPBody sb = se.getBody();
+                SOAPBody sb = sm.getSOAPPart().getEnvelope().getBody();
                 sb.removeContents();
-                sb.addDocument((Document) resultNode);
+                XmlUtil.newTransformer().transform((Source)value,new DOMResult(sb));
                 sm.saveChanges();
             }
         } catch (SOAPException e) {
