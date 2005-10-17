@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.58 2005-10-17 21:48:20 kohsuke Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.59 2005-10-17 21:50:09 kohsuke Exp $
  */
 
 /*
@@ -28,34 +28,19 @@ import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.AsyncHandlerService;
-import com.sun.xml.ws.client.ContextMap;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.client.ClientTransportFactory;
+import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.EndpointIFContext;
 import com.sun.xml.ws.client.EndpointIFInvocationHandler;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.ResponseContext;
 import com.sun.xml.ws.client.WSFuture;
-import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
-import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.HTTP_COOKIE_JAR;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
-import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_FI_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_FI_ACCEPT_VALUE;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder;
@@ -73,42 +58,45 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
-import com.sun.xml.ws.util.*;
+import com.sun.xml.ws.util.Base64Util;
+import com.sun.xml.ws.util.FastInfosetUtil;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.soap.*;
+import javax.xml.namespace.QName;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
+import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
+import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.Response;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
-import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Proxy;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -593,7 +581,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void updateSOAPMessage(Object value, SOAPMessage sm) {
-        Node resultNode;
         try {
             if (value instanceof Source) {
                 SOAPBody sb = sm.getSOAPPart().getEnvelope().getBody();
@@ -603,7 +590,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         } catch (SOAPException e) {
             throw new WebServiceException(e);
-        } catch (Exception e) {
+        } catch (TransformerException e) {
             throw new WebServiceException(e);
         }
     }
