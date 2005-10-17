@@ -119,7 +119,7 @@
 	<zipfileset
             dir="${basedir}/etc"
             includes="*.wsdl, *.xsd"
-            prefix="/WEB-INF/wsdl"/>
+            prefix="WEB-INF/wsdl"/>
 	<classes dir="${build.classes.home}"/>
     </war>
 </target>
