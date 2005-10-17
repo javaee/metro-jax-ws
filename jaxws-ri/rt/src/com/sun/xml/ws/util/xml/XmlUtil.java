@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.10 2005-10-10 18:04:18 kohsuke Exp $
+ * $Id: XmlUtil.java,v 1.11 2005-10-17 21:07:41 kohsuke Exp $
  */
 
 /*
@@ -24,7 +24,6 @@
 
 package com.sun.xml.ws.util.xml;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -45,7 +44,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 
@@ -176,20 +174,14 @@ public class XmlUtil {
         }
     }
 
-    static TransformerFactory transformerFactory = null;
+    static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
     public static Transformer newTransformer() {
-        Transformer t = null;
-
-        if (transformerFactory == null)
-            transformerFactory = TransformerFactory.newInstance();
-
         try {
-            t = transformerFactory.newTransformer();
+            return transformerFactory.newTransformer();
         } catch (TransformerConfigurationException tex) {
             throw new IllegalStateException("Unable to create a JAXP transformer");
         }
-        return t;
     }
     
     /*
