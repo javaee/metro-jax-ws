@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.13 2005-10-04 03:40:29 kohsuke Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.14 2005-10-17 20:32:07 kohsuke Exp $
  */
 
 /*
@@ -79,8 +79,6 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      */
     @Override
     protected SOAPFaultInfo decodeFault (XMLStreamReader reader, InternalMessage internalMessage, MessageInfo messageInfo) {
-        RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext (messageInfo);
-
         XMLStreamReaderUtil.verifyReaderState (reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_SOAP_FAULT);
 
@@ -126,10 +124,8 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
 
         if(name.equals (SOAP12Constants.QNAME_FAULT_DETAIL)){
             //TODO: process encodingStyle attribute information item
-            
             XMLStreamReaderUtil.nextElementContent (reader);
             detail = readFaultDetail (reader, messageInfo);
-
             XMLStreamReaderUtil.nextElementContent (reader);
         }
 
@@ -222,33 +218,13 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         XMLStreamReaderUtil.verifyReaderState (reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_REASON_TEXT);
         XMLStreamReaderUtil.nextElementContent (reader);
-        Locale loc = Locale.getDefault();
-        if(lang != null)
-            loc = new Locale(lang);
+        Locale loc = new Locale(lang);
 
         texts.add (new FaultReasonText (text, loc));
         
         //call again to see if there are more soapenv:Text elements
         readFaultReasonTexts (reader, texts);
     }
-
-    protected Object readFaultDetail (XMLStreamReader reader, MessageInfo mi){
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext (mi);
-        QName faultName = reader.getName ();
-        if (rtCtxt.getModel().isKnownFault (faultName, mi.getMethod ())) {
-            Object decoderInfo = rtCtxt.getDecoderInfo (faultName);
-            if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
-                JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
-                // JAXB leaves on </env:Header> or <nextHeaderElement>
-                bridgeInfo.deserialize (reader, rtCtxt.getBridgeContext());
-                XMLStreamReaderUtil.verifyReaderState (reader, END_ELEMENT);
-                XMLStreamReaderUtil.verifyTag (reader, SOAP12Constants.QNAME_FAULT_DETAIL);
-                return bridgeInfo;
-            }
-        }
-
-        return decodeFaultDetail(reader);
-    }         
 
     /* (non-Javadoc)
      * @see com.sun.xml.ws.rt.encoding.soap.SOAPDecoder#decodeHeader(com.sun.xml.ws.streaming.XMLStreamReader, com.sun.pept.ept.MessageInfo, com.sun.xml.ws.soap.internal.InternalMessage)
