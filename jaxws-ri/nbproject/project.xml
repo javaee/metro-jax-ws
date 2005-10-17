@@ -42,14 +42,14 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>main-debug</target>
+                    <target>main</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>main-debug</target>
+                    <target>main</target>
                 </action>
                 <action name="compile.single">
                     <target>tools-compile</target>
