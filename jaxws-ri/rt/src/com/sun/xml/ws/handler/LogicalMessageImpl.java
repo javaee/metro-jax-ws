@@ -127,7 +127,7 @@ public class LogicalMessageImpl implements LogicalMessage {
                     bodyBlock.setSource(domSource);
                     return domSource;
                 } else {
-                    System.out.println("***** unknown type in BodyBlock *****"+obj.getClass());
+                    throw new WebServiceException("Unknown type "+obj.getClass()+" in BodyBlock");
                 }
             }
         } catch(TransformerException te) {
@@ -135,7 +135,6 @@ public class LogicalMessageImpl implements LogicalMessage {
         } catch(SOAPException se) {
             throw new WebServiceException(se);
         }
-        return null;
     }
 
     /*
