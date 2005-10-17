@@ -20,13 +20,17 @@
 
 package com.sun.xml.ws.streaming;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
+
 import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.stream.XMLStreamReader;
@@ -116,13 +120,11 @@ public class SourceReaderFactory {
             }
             else if (source instanceof SAXSource) {
                 // TODO: need SAX to StAX adapter here -- Use transformer for now
-                javax.xml.transform.Transformer tx = 
-                    javax.xml.transform.TransformerFactory.newInstance().newTransformer();
-                javax.xml.transform.dom.DOMResult domResult = 
-                    new javax.xml.transform.dom.DOMResult();
+                Transformer tx =  XmlUtil.newTransformer();
+                DOMResult domResult = new DOMResult();
                 tx.transform(source, domResult);
                 return createSourceReader(
-                    new javax.xml.transform.dom.DOMSource(domResult.getNode()),
+                    new DOMSource(domResult.getNode()),
                     rejectDTDs);
             }
             else {

@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.41 2005-10-10 18:04:12 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.42 2005-10-17 21:11:00 kohsuke Exp $
  */
 
 /*
@@ -373,7 +373,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
     protected void serializeSource(Source source, OutputStream writer) {
         try {
-            Transformer t = TransformerFactory.newInstance().newTransformer();
+            Transformer t = XmlUtil.newTransformer();
             t.transform(source, new StreamResult(writer));
         }
         catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLParser20.java,v 1.6 2005-09-23 22:05:49 kohsuke Exp $
+ * $Id: WSDLParser20.java,v 1.7 2005-10-17 21:11:36 kohsuke Exp $
  */
 
 /*
@@ -240,7 +240,7 @@ public class WSDLParser20 extends WSDLParser {
     public void dump( OutputStream out ) throws IOException {
         try {
             // create identity transformer
-            Transformer it = TransformerFactory.newInstance().newTransformer();
+            Transformer it = XmlUtil.newTransformer();
 
             for( Iterator itr=wsdlDocuments.entrySet().iterator(); itr.hasNext(); ) {
                 Map.Entry e = (Map.Entry)itr.next();

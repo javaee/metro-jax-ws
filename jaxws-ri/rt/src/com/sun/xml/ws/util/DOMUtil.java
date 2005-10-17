@@ -1,5 +1,5 @@
 /*
- * $Id: DOMUtil.java,v 1.3 2005-10-06 19:44:31 kwalsh Exp $
+ * $Id: DOMUtil.java,v 1.4 2005-10-17 21:11:01 kohsuke Exp $
  */
 
 /*
@@ -36,6 +36,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 
+import com.sun.xml.ws.util.xml.XmlUtil;
+
 /**
  * $author: JAXWS Development Team
  */
@@ -62,8 +64,7 @@ public class DOMUtil {
     }
 
     public static Node domSourceToNode(Source source) throws Exception {
-        Transformer xFormer =
-            TransformerFactory.newInstance().newTransformer();
+        Transformer xFormer = XmlUtil.newTransformer();
         xFormer.setOutputProperty("omit-xml-declaration", "yes");
         DOMResult dResult = new DOMResult();
         xFormer.transform(source, dResult);

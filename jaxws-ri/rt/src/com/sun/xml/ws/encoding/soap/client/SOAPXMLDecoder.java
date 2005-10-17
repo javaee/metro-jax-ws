@@ -375,7 +375,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     protected Detail decodeFaultDetail(XMLStreamReader reader) {
         try {
             // parse the current element that the reader is pointing to
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
+            Transformer trans = XmlUtil.newTransformer();
 
             MessageFactory messageFactory = MessageFactory.newInstance();
             SOAPMessage soapMessage = messageFactory.createMessage();

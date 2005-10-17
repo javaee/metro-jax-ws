@@ -1,5 +1,5 @@
 /**
- * $Id: SeiGenerator.java,v 1.35 2005-10-14 23:49:32 vivekp Exp $
+ * $Id: SeiGenerator.java,v 1.36 2005-10-17 21:11:35 kohsuke Exp $
  */
 
 /*
@@ -43,6 +43,7 @@ import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -517,7 +518,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             IndentingWriter p =
                 new IndentingWriter(
                     new OutputStreamWriter(new FileOutputStream(hcFile)));
-            Transformer it = TransformerFactory.newInstance().newTransformer();
+            Transformer it = XmlUtil.newTransformer();
 
             it.setOutputProperty(OutputKeys.METHOD, "xml");
             it.setOutputProperty(OutputKeys.INDENT, "yes");
