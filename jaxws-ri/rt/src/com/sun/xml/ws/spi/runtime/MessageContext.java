@@ -52,4 +52,10 @@ public interface MessageContext extends javax.xml.ws.handler.MessageContext {
      * @return Invoker
      */
     public Invoker getInvoker();
+
+    /**
+     * Returns if MTOM is anbled
+     * @return true if MTOM is enabled otherwise returns false;
+     */
+    public boolean isMtomEnabled();
 }

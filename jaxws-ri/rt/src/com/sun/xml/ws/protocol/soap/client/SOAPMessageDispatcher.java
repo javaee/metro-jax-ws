@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.60 2005-10-18 18:32:55 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.61 2005-10-18 20:39:46 vivekp Exp $
  */
 
 /*
@@ -184,14 +184,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     boolean isXopped = false;
                     //there are handlers so disable Xop encoding if enabled, so that they dont
                     // see xop:Include reference
-                    if((am != null) && am.isXopped()){
-                        isXopped = am.isXopped();
-                        am.setXopped(false);
+                    if((am != null) && am.isXOPPackage()){
+                        isXopped = am.isXOPPackage();
+                        am.setXOPPackage(false);
                     }
                     handlerResult = callHandlersOnRequest(handlerContext);
                     // now put back the old value
                     if((am != null)){
-                        am.setXopped(isXopped);
+                        am.setXOPPackage(isXopped);
                     }
                 } catch (ProtocolException pe) {
                     // message has already been replaced with fault

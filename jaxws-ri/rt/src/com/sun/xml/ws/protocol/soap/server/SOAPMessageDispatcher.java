@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.38 2005-10-18 18:33:04 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.39 2005-10-18 20:39:47 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -259,14 +259,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     // see xop:Include reference
                     JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
                     boolean isXopped = false;
-                    if((am != null) && am.isXopped()){
-                        isXopped = am.isXopped();
-                        am.setXopped(false);
+                    if((am != null) && am.isXOPPackage()){
+                        isXopped = am.isXOPPackage();
+                        am.setXOPPackage(false);
                     }
                     callHandlersOnResponse(handlerCaller, context);
                     // now put back the old value
                     if((am != null)){
-                        am.setXopped(isXopped);
+                        am.setXOPPackage(isXopped);
                     }
                 }
             }

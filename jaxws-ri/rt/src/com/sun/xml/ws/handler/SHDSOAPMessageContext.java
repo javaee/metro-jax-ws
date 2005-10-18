@@ -22,8 +22,11 @@ import java.util.List;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;
 import com.sun.xml.ws.spi.runtime.Invoker;
+import com.sun.xml.ws.util.MessageInfoUtil;
+
 import java.lang.reflect.Method;
 
 /**
@@ -93,6 +96,16 @@ public class SHDSOAPMessageContext extends SOAPMessageContextImpl implements com
     
     public Invoker getInvoker() {
         return handlerCtxt.getInvoker();
+    }
+
+    /**
+     * Returns if MTOM is anbled
+     *
+     * @return true if MTOM is enabled otherwise returns false;
+     */
+    public boolean isMtomEnabled() {
+        JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(handlerCtxt.getMessageInfo());
+        return (am != null)?am.isXOPPackage():false;
     }
 
 }

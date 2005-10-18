@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.18 2005-10-18 18:32:57 vivekp Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.19 2005-10-18 20:39:45 vivekp Exp $
  */
 
 /*
@@ -205,14 +205,6 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
      */
     public boolean isXopped() {
         return isXopped;
-    }
-
-    /**
-     * This method will be sued to enable/disable xop encoding by JAXB
-     * @param xopped
-     */
-    public void setXopped(boolean xopped){
-        this.isXopped = xopped;
     }
 
     public void setMtomThresholdValue(Integer mtomThresholdValue) {
