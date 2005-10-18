@@ -147,20 +147,24 @@ public class Internalizer {
                 return; // abort processing this <JAXWS:bindings>
             }
         }
-        
+
+        boolean hasNode = true;
         if(isJAXWSBindings(bindings) && bindings.getAttributeNode("node")!=null ) {
             target = evaluateXPathNode(target, bindings.getAttribute("node"), new NamespaceContextImpl(bindings));
-        }else if(isJAXWSBindings(bindings) && (bindings.getAttributeNode("node")==null) && isGlobalBinding(bindings)) {
-            target = getWSDLDefintionNode(target);
+        }else if(isJAXWSBindings(bindings) && (bindings.getAttributeNode("node")==null) && !isTopLevelBinding(bindings)) {
+            hasNode = false;
         }else if(isGlobalBinding(bindings) && !isWSDLDefinition(target) && isTopLevelBinding(bindings.getParentNode())){
             target = getWSDLDefintionNode(target);
         }
+
         //if target is null it means the xpath evaluation has some problem,
         // just return
         if(target == null)
             return;
+
         // update the result map
-        result.put( bindings, target );
+        if(hasNode)
+            result.put( bindings, target );
 
         // look for child <JAXWS:bindings> and process them recursively
         Element[] children = getChildElements( bindings, JAXWSBindingsConstants.NS_JAXWS_BINDINGS);
@@ -195,6 +199,8 @@ public class Internalizer {
     }
 
     private boolean isTopLevelBinding(Node node){
+        if(node instanceof Document)
+            node = ((Document)node).getDocumentElement();
         return ((node != null) && (((Element)node).getAttributeNode("wsdlLocation") != null));
     }
 
