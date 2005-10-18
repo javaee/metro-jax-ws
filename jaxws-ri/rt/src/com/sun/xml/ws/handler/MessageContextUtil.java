@@ -43,7 +43,7 @@ public class MessageContextUtil {
     
     public static void setHttpStatusCode(MessageContext ctxt, Integer code) {
         ctxt.put(MessageContext.HTTP_RESPONSE_CODE, code);
-        ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);
+        ctxt.setScope(MessageContext.HTTP_RESPONSE_CODE, Scope.APPLICATION);
     }
     
     public static void setHttpRequestMethod(MessageContext ctxt, String method) {
@@ -55,6 +55,12 @@ public class MessageContextUtil {
             Map<String, List<String>> headers) {
         ctxt.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
         ctxt.setScope(MessageContext.HTTP_REQUEST_HEADERS, Scope.APPLICATION);
+    }
+    
+    public static void setHttpResponseHeaders(MessageContext ctxt,
+            Map<String, List<String>> headers) {
+        ctxt.put(MessageContext.HTTP_RESPONSE_HEADERS, headers);
+        ctxt.setScope(MessageContext.HTTP_RESPONSE_HEADERS, Scope.APPLICATION);
     }
     
     public static void setWsdlOperation(MessageContext ctxt, QName name) {

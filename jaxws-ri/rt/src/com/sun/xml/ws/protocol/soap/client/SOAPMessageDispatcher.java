@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.62 2005-10-18 21:05:29 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.63 2005-10-18 22:00:28 jitu Exp $
  */
 
 /*
@@ -99,6 +99,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.xml.ws.handler.MessageContextUtil;
 
 import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
 import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
@@ -442,6 +444,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             throw new RuntimeException(ex);
         }
         SOAPHandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
+        WSConnection con = (WSConnection)messageInfo.getConnection();
+        MessageContextUtil.setHttpStatusCode(handlerContext.getMessageContext(),
+                con.getStatus());
+        MessageContextUtil.setHttpResponseHeaders(handlerContext.getMessageContext(),
+                con.getHeaders());
 
         //set the handlerContext to RuntimeContext
         RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
@@ -678,7 +685,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     protected void updateResponseContext(MessageInfo messageInfo,
         SOAPHandlerContext context) {
-
          SOAPMessageContext messageContext = context.getSOAPMessageContext();
          RequestContext rc = (RequestContext)messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
          BindingProvider provider = (BindingProvider)rc.get(JAXWS_CLIENT_HANDLE_PROPERTY);

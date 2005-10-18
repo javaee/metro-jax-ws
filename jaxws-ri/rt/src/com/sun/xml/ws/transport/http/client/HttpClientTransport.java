@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.21 2005-10-11 13:33:57 bbissett Exp $
+ * $Id: HttpClientTransport.java,v 1.22 2005-10-18 22:00:28 jitu Exp $
  */
 
 /*
@@ -61,6 +61,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     private static final int START_REDIRECT_COUNT = 3;
     private static int redirectCount = START_REDIRECT_COUNT;
     int statusCode;
+    private Map<String, List<String>> respHeaders = null;
 
     public HttpClientTransport() {
         this(null, new HashMap<String, Object>());
@@ -143,15 +144,18 @@ public class HttpClientTransport extends WSConnectionImpl {
 
     @Override
     public Map<String, List<String>> getHeaders () {
+        if (respHeaders != null) {
+            return respHeaders;
+        }
         try {
             isFailure = checkResponseCode ();
 
-            Map<String, List<String>> headers = collectResponseMimeHeaders ();
+            respHeaders = collectResponseMimeHeaders ();
 
             saveCookieAsNeeded (cookieJar);
-            setHeaders (headers);
+            setHeaders (respHeaders);
 
-            return headers;
+            return respHeaders;
         } catch (IOException e) {
             if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
                 || (isFailure
