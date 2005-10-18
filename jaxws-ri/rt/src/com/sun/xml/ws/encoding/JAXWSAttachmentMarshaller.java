@@ -1,5 +1,5 @@
 /**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.17 2005-10-05 22:05:13 kohsuke Exp $
+ * $Id: JAXWSAttachmentMarshaller.java,v 1.18 2005-10-18 18:32:57 vivekp Exp $
  */
 
 /*
@@ -25,6 +25,7 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.spi.runtime.MtomCallback;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 
@@ -140,7 +141,9 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     public String addSwaRefAttachment(DataHandler data) {
         String cid = encodeCid(null);
         if(cid != null){
-            attachments.put("<"+cid+">", AttachmentBlock.fromDataHandler("<"+cid+">", data));
+            String cidBracket = '<' + cid + '>';
+            attachments.put(cidBracket, AttachmentBlock.fromDataHandler("<"+cid+">", data));
+            addToMessageContext(cidBracket, data);
             isXopped = false;
             cid = "cid:"+cid;
         }
@@ -150,15 +153,10 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     private void addToMessageContext(String cid, DataHandler dh){
         if(hc == null)
             return;
-        Map<String, DataHandler> attMap=null;
-        Object obj = hc.getMessageContext().get(MessageContext.MESSAGE_ATTACHMENTS);
-        if(obj == null){
-            attMap = new HashMap<String, DataHandler>();
-            hc.getMessageContext().put(MessageContext.MESSAGE_ATTACHMENTS, attMap);
-        }else{
-            attMap = (Map<String, DataHandler>)obj;
-        }
-        attMap.put(cid, dh);
+        MessageContext ctxt = hc.getMessageContext();
+        if(ctxt == null)
+            return;
+        MessageContextUtil.addMessageAttachment(ctxt, cid, dh);
     }
 
     /**
@@ -207,6 +205,14 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
      */
     public boolean isXopped() {
         return isXopped;
+    }
+
+    /**
+     * This method will be sued to enable/disable xop encoding by JAXB
+     * @param xopped
+     */
+    public void setXopped(boolean xopped){
+        this.isXopped = xopped;
     }
 
     public void setMtomThresholdValue(Integer mtomThresholdValue) {

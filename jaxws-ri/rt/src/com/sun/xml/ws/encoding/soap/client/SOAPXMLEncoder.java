@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.17 2005-10-10 18:04:10 kohsuke Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.18 2005-10-18 18:33:00 vivekp Exp $
  */
 
 /*
@@ -41,6 +41,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.SOAPUtil;
+import com.sun.xml.ws.util.MessageInfoUtil;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
@@ -134,7 +135,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                 writer = XMLStreamWriterFactory.createFIStreamWriter(bab);
 
                 // Turn XOP off for FI
-                marshaller = getAttachmentMarshaller(messageInfo);
+                marshaller = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
                 if (marshaller != null) {
                     xopEnabled = marshaller.isXOPPackage();     // last value
                     marshaller.setXOPPackage(false);
@@ -207,17 +208,6 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return internalMessage;
     }
 
-    protected JAXWSAttachmentMarshaller getAttachmentMarshaller(MessageInfo messageInfo) {
-        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if (rtc != null) {
-            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
-            if (bc != null) {
-                return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
-            }
-        }
-        return null;
-    }
-
     protected String getContentType(MessageInfo messageInfo,
                                     JAXWSAttachmentMarshaller marshaller)
     {
@@ -225,7 +215,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
 
         if (marshaller == null) {
-            marshaller = getAttachmentMarshaller(messageInfo);
+            marshaller = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
         }
 
         if (marshaller != null && marshaller.isXopped()) {

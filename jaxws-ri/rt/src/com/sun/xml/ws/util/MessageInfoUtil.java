@@ -24,6 +24,9 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.bind.api.BridgeContext;
+
 import javax.xml.ws.handler.MessageContext;
 
 /**
@@ -42,6 +45,8 @@ public class MessageInfoUtil {
     
     public static MessageContext getMessageContext(MessageInfo messageInfo) {
         RuntimeContext rtCtxt = getRuntimeContext(messageInfo);
+        if(rtCtxt == null)
+            return null;
         HandlerContext hdCtxt = rtCtxt.getHandlerContext();
         return (hdCtxt == null) ? null : hdCtxt.getMessageContext();
     }
@@ -57,5 +62,16 @@ public class MessageInfoUtil {
         messageInfo.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER,
             caller);
     }
-    
+
+    public static JAXWSAttachmentMarshaller  getAttachmentMarshaller(MessageInfo messageInfo) {
+        Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
+            }
+        }
+        return null;
+    }
+
 }

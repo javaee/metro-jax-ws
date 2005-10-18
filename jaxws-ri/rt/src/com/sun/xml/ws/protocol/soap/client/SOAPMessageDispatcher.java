@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.59 2005-10-17 21:50:09 kohsuke Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.60 2005-10-18 18:32:55 vivekp Exp $
  */
 
 /*
@@ -30,7 +30,6 @@ import com.sun.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.AsyncHandlerService;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.client.ContextMap;
@@ -41,6 +40,7 @@ import com.sun.xml.ws.client.ResponseContext;
 import com.sun.xml.ws.client.WSFuture;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder;
@@ -76,8 +76,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
-import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.Response;
 import javax.xml.ws.Service;
@@ -101,6 +99,23 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
+import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
+import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
+import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
+import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
+import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_FI_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
+import static com.sun.xml.ws.client.BindingProviderProperties.XML_FI_ACCEPT_VALUE;
 
 
 /**
@@ -165,7 +180,19 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                 updateMessageContext(messageInfo, handlerContext);
                 try {
+                    JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
+                    boolean isXopped = false;
+                    //there are handlers so disable Xop encoding if enabled, so that they dont
+                    // see xop:Include reference
+                    if((am != null) && am.isXopped()){
+                        isXopped = am.isXopped();
+                        am.setXopped(false);
+                    }
                     handlerResult = callHandlersOnRequest(handlerContext);
+                    // now put back the old value
+                    if((am != null)){
+                        am.setXopped(isXopped);
+                    }
                 } catch (ProtocolException pe) {
                     // message has already been replaced with fault
                     handlerResult = false;
@@ -413,6 +440,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         SOAPHandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
 
+        //set the handlerContext to RuntimeContext
+        RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
+        if(rtContext != null)
+            rtContext.setHandlerContext(handlerContext);
+
         SystemHandlerDelegate systemHandlerDelegate =
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
                 getSystemHandlerDelegate();
@@ -443,7 +475,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (caller.hasHandlers()) {
             callHandlersOnResponse(handlerContext);
             postHandlerInboundHook(messageInfo, handlerContext, sm);
-            updateResponseContext(messageInfo, handlerContext);
         }
 
         SOAPXMLEncoder encoder = (SOAPXMLEncoder) contactInfo.getEncoder(messageInfo);
@@ -457,6 +488,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             im = decoder.toInternalMessage(sm, im, messageInfo);
         }
         decoder.toMessageInfo(im, messageInfo);
+        updateResponseContext(messageInfo, handlerContext);
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
             messageInfo.setResponse(sm);
             postReceiveAndDecodeHook(messageInfo);
@@ -630,6 +662,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 QName operationName = model.getQNameForJM(javaMethod);
                 messageContext.put(MessageContext.WSDL_OPERATION, operationName);
             }
+            //set handlerContext
+            rtContext.setHandlerContext(context);
         }
 
         //now get value for ContentNegotiation
@@ -643,8 +677,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         SOAPHandlerContext context) {
 
          SOAPMessageContext messageContext = context.getSOAPMessageContext();
-         BindingProvider provider = (BindingProvider)
-             messageContext.get(JAXWS_CLIENT_HANDLE_PROPERTY);
+         RequestContext rc = (RequestContext)messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
+         BindingProvider provider = (BindingProvider)rc.get(JAXWS_CLIENT_HANDLE_PROPERTY);
          ResponseContext responseContext = new ResponseContext(provider);
          for (String name : messageContext.keySet()) {
              MessageContext.Scope scope = messageContext.getScope(name);

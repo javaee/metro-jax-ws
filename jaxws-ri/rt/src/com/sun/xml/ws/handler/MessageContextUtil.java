@@ -19,11 +19,15 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.namespace.QName;
+import javax.activation.DataHandler;
 
 
 /**
@@ -56,5 +60,29 @@ public class MessageContextUtil {
     public static void setWsdlOperation(MessageContext ctxt, QName name) {
         ctxt.put(MessageContext.WSDL_OPERATION, name);
         ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);
+    }
+
+    public static Map<String, DataHandler> getMessageAttachments(MessageContext ctxt) {
+        Object att = ctxt.get(MessageContext.MESSAGE_ATTACHMENTS);
+        if(att == null){
+            Map<String, DataHandler> attMap = new HashMap<String, DataHandler>();
+            ctxt.put(MessageContext.MESSAGE_ATTACHMENTS, attMap);
+            ctxt.setScope(MessageContext.MESSAGE_ATTACHMENTS, Scope.APPLICATION);
+            return attMap;
+        }
+        return (Map<String, DataHandler>)att;
+    }
+
+    public static void setMessageAttachments(MessageContext ctxt, Map<String, AttachmentBlock> attachments){
+        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
+        for(String cid:attachments.keySet()){
+            AttachmentBlock ab = attachments.get(cid);
+            attachMap.put(cid, ab.asDataHandler());
+        }
+    }
+
+    public static void addMessageAttachment(MessageContext ctxt, String cid, DataHandler dh){
+        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);        
+        attachMap.put(cid, dh);
     }
 }

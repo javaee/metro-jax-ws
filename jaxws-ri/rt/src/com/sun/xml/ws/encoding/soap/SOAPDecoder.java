@@ -19,8 +19,6 @@
  */
 
 package com.sun.xml.ws.encoding.soap;
-import javax.xml.stream.XMLStreamReader;
-
 import com.sun.pept.encoding.Decoder;
 import com.sun.pept.ept.MessageInfo;
 import com.sun.pept.presentation.MessageStruct;
@@ -28,43 +26,50 @@ import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
-import com.sun.xml.messaging.saaj.soap.AttachmentPartImpl;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
-import com.sun.xml.ws.encoding.jaxb.*;
+import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.XMLReaderException;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
-import static javax.xml.stream.XMLStreamReader.*;
-
 import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.*;
+import javax.xml.soap.SOAPPart;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
-import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.stream.StreamSource;
-import java.lang.reflect.Method;
+
+import static javax.xml.stream.XMLStreamReader.*;
 
 /**
  * @author WS Development Team
@@ -347,6 +352,12 @@ public abstract class SOAPDecoder implements Decoder {
         while(iter.hasNext()){
             AttachmentPart ap = (AttachmentPart) iter.next();
             im.addAttachment(AttachmentBlock.fromSAAJ(ap));
+        }
+
+        //set MESSAGE_ATTACHMENTS property
+        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(mi);
+        if (msgCtxt != null) {
+            MessageContextUtil.setMessageAttachments(msgCtxt, im.getAttachments());
         }
     }
 

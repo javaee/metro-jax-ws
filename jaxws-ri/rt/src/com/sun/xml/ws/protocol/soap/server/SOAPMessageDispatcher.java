@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.37 2005-10-18 01:53:11 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.38 2005-10-18 18:33:04 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -26,45 +26,48 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
+import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
+import com.sun.xml.ws.server.AppMsgContextImpl;
+import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.spi.runtime.Invoker;
+import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
-import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.FastInfosetUtil;
+import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPConnectionUtil;
 
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
-import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.soap.SOAPMessage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.sun.xml.ws.server.*;
-import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
-import com.sun.xml.ws.spi.runtime.Invoker;
-import com.sun.xml.ws.util.SOAPConnectionUtil;
-import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.server.AppMsgContextImpl;
-
-import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
-import com.sun.xml.ws.handler.MessageContextUtil;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import javax.xml.namespace.QName;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
     
@@ -252,7 +255,19 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                     callHandleFault(handlerCaller, context);
                 } else {
+                    //there are handlers so disable Xop encoding if enabled, so that they dont
+                    // see xop:Include reference
+                    JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
+                    boolean isXopped = false;
+                    if((am != null) && am.isXopped()){
+                        isXopped = am.isXopped();
+                        am.setXopped(false);
+                    }
                     callHandlersOnResponse(handlerCaller, context);
+                    // now put back the old value
+                    if((am != null)){
+                        am.setXopped(isXopped);
+                    }
                 }
             }
         } catch(Exception e) {

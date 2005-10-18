@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.10 2005-09-23 22:05:26 kohsuke Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.11 2005-10-18 18:32:59 vivekp Exp $
  */
 
 /*
@@ -41,6 +41,7 @@ import com.sun.pept.ept.MessageInfo;
 
 import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.util.MessageInfoUtil;
 
 import java.util.logging.Logger;
 import java.util.List;
@@ -110,7 +111,7 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
 
         if (marshaller == null) {
-            marshaller = getAttachmentMarshaller(messageInfo);
+            marshaller = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
         }
         
         if (marshaller != null && marshaller.isXopped()) {
