@@ -1,5 +1,5 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.8 2005-09-19 03:59:34 jitu Exp $
+ * $Id: WSRtObjectFactoryImpl.java,v 1.9 2005-10-18 22:16:55 jitu Exp $
  */
 
 /*
@@ -35,8 +35,11 @@ import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.servlet.ServletConnectionImpl;
+import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.net.URL;
+import java.util.List;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.http.HTTPBinding;
@@ -113,5 +116,11 @@ public class WSRtObjectFactoryImpl
     @Override
     public EntityResolver createEntityResolver(URL catalogUrl) {
         return XmlUtil.createEntityResolver(catalogUrl);
+    }
+
+    public List<com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo> getRuntimeEndpointInfos(
+            ServletContext ctxt) {
+        return (List<com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo>)ctxt.getAttribute(
+                WSServlet.JAXWS_RI_RUNTIME_INFO);
     }
 }

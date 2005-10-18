@@ -28,6 +28,16 @@ import org.xml.sax.EntityResolver;
  * object, proxy for endpoint object etc.) about the endpoint.
  */
 public interface RuntimeEndpointInfo {
+    
+    /**
+     * @return name of the endpoint
+     */
+    public String getName();
+    
+    /**
+     * sets the name of the endpoint
+     */
+    public void setName(String name);
         
     /**
      * Builds runtime model from implementor object.

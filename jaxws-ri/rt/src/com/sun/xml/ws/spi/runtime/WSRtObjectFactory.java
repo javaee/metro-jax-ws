@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.sun.xml.ws.util.WSRtObjectFactoryImpl;
 import java.net.URL;
+import java.util.List;
+import javax.servlet.ServletContext;
 import org.xml.sax.EntityResolver;
 import javax.xml.ws.handler.MessageContext;
 
@@ -59,7 +61,12 @@ public abstract class WSRtObjectFactory {
      */
     public abstract WSConnection createWSConnection(
             HttpServletRequest req, HttpServletResponse res);
-
+    
+    /**
+     * @return List of endpoints
+     */
+    public abstract List<RuntimeEndpointInfo> getRuntimeEndpointInfos(
+            ServletContext ctxt);
 
     /**
      * @param type The type of ClientTransportFactory
@@ -68,7 +75,6 @@ public abstract class WSRtObjectFactory {
     public abstract ClientTransportFactory createClientTransportFactory(
         int type,
         OutputStream logStream);
-
     
     /**
      * creates a Tie object, entry point to JAXWS runtime.
