@@ -97,9 +97,9 @@
   </binding>
 
   <service name="AddNumbersService">
-    <!-- wsdl:queue customization -->
+    <!-- wsdl:service customization -->
     <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
-        <!-- change the generated queue class -->
+        <!-- change the generated service class -->
         <jaxws:class name="MathUtilService"/>        
     </jaxws:bindings>
 

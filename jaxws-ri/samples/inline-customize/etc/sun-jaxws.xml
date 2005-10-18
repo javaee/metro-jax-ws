@@ -26,7 +26,7 @@
         interface="inline_customize.server.AddNumbersPortType"
         implementation='inline_customize.server.AddNumbersImpl'
         wsdl="WEB-INF/wsdl/AddNumbers.wsdl"
-        queue="{http://duke.org}AddNumbersService"
+        service="{http://duke.org}AddNumbersService"
         port="{http://duke.org}AddNumbersPort"
         url-pattern='/addnumbers'/>
 </endpoints>

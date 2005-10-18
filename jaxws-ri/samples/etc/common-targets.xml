@@ -167,7 +167,7 @@
 </target>
 
 <target name="help">
-    <echo message="server:       Builds and deploy the queue endpoint WAR"/>
+    <echo message="server:       Builds and deploy the service endpoint WAR"/>
     <echo message="client:       Builds the client"/>
     <echo message="run:          Runs the client"/>
 </target>
