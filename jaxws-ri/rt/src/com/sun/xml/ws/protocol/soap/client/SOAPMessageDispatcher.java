@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.61 2005-10-18 20:39:46 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.62 2005-10-18 21:05:29 bbissett Exp $
  */
 
 /*
@@ -268,10 +268,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             } else if (isOneway(messageInfo) && handlerResult) {
                 checkReturnStatus(messageInfo);
             }
-
+        } catch (WebServiceException wse) {
+            setResponseType(wse, messageInfo);
+            messageInfo.setResponse(wse);
         } catch (Throwable e) {
-            setResponseType(e, messageInfo);
-            messageInfo.setResponse(e);
+            WebServiceException wse = new WebServiceException(e);
+            setResponseType(wse, messageInfo);
+            messageInfo.setResponse(wse);
         }
         return sm;
     }
