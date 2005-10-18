@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.36 2005-10-13 15:01:29 spericas Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.37 2005-10-18 01:53:11 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -26,7 +26,6 @@ import com.sun.pept.presentation.MessageStruct;
 import com.sun.pept.presentation.TargetFinder;
 import com.sun.pept.presentation.Tie;
 import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.pept.encoding.Encoder;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
@@ -41,8 +40,6 @@ import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
-import com.sun.xml.ws.util.localization.Localizer;
 import com.sun.xml.ws.util.FastInfosetUtil;
 
 import javax.xml.ws.Binding;
@@ -65,15 +62,23 @@ import com.sun.xml.ws.server.AppMsgContextImpl;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 import com.sun.xml.ws.handler.MessageContextUtil;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
 
 public class SOAPMessageDispatcher implements MessageDispatcher {
+    
+    private static final String[] contentTypes = {
+            "text/xml", "application/soap+xml", "application/xop+xml",
+            "application/fastinfoset", "application/soap+fastinfoset" };
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.soapmd");
+    /*
     private Localizer localizer = new Localizer();
     private LocalizableMessageFactory messageFactory =
         new LocalizableMessageFactory("com.sun.xml.ws.resources.soapmd");
+     */
 
     private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
@@ -89,6 +94,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     // TODO: need to work the exception logic
     public void receive(MessageInfo messageInfo) {
         try {
+            try {
+                checkContentType(messageInfo);
+            } catch(ServerRtException e) {
+                SOAPConnectionUtil.sendKnownError(messageInfo,
+                        WSConnection.UNSUPPORTED_MEDIA);
+                return;
+            }
+            
             SOAPMessage soapMessage = null;
             try {
                 soapMessage = getSOAPMessage(messageInfo);
@@ -182,6 +195,24 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
         return SOAPConnectionUtil.getSOAPMessage(con, messageInfo, null);
+    }
+    
+    /*
+     * Checks against know Content-Type headers
+     */
+    private void checkContentType(MessageInfo mi) {
+        WSConnection con = (WSConnection)mi.getConnection();
+        Map<String, List<String>> headers = con.getHeaders();
+        List<String> cts = headers.get("Content-Type");
+        if (cts != null && cts.size() > 0) {
+            String ct = cts.get(0);
+            for(String contentType : contentTypes) {
+                if (ct.indexOf(contentType) != -1) {
+                    return;
+                }
+            }
+        }
+        throw new ServerRtException("Incorrect Content-Type="+cts);
     }
     
     /*
@@ -282,9 +313,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         String bindingId = ((SOAPBindingImpl)binding).getBindingId();
         SOAPConnectionUtil.sendResponseError(con, bindingId);
     }
-
-
-
+    
     /*
      * Calls inbound handlers. It also calls outbound handlers incase flow is
      * reversed. If the handler throws a ProtocolException, SOAP message is

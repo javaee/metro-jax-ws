@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.9 2005-09-10 19:48:09 kohsuke Exp $
+ * $Id: ServletConnectionImpl.java,v 1.10 2005-10-18 01:53:12 jitu Exp $
  */
 
 /*
@@ -23,23 +23,20 @@
  */
 
 package com.sun.xml.ws.transport.http.servlet;
+import com.sun.xml.ws.transport.Headers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.sun.pept.ept.EPTFactory;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * <code>com.sun.xml.ws.spi.runtime.WSConnection</code> used by 
@@ -65,7 +62,7 @@ public class ServletConnectionImpl extends WSConnectionImpl {
     @Override
     public Map<String,List<String>> getHeaders() {
         if (requestHeaders == null) {
-            requestHeaders = new HashMap<String, List<String>>();
+            requestHeaders = new Headers();
             Enumeration enums = request.getHeaderNames();
             while (enums.hasMoreElements()) {
                 String headerName = (String) enums.nextElement();
