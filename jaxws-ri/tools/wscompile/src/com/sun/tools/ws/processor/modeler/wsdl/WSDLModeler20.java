@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.38 2005-10-14 21:59:10 vivekp Exp $
+ * $Id: WSDLModeler20.java,v 1.39 2005-10-19 01:00:18 vivekp Exp $
  */
 
 /*
@@ -97,6 +97,11 @@ import com.sun.codemodel.JType;
  */
 public class WSDLModeler20 extends WSDLModelerBase {
 
+    //map of wsdl:operation QName to <soapenv:Body> child, as per BP it must be unique in a port
+    private final Map<QName, QName> uniqueBodyBlocks = new HashMap<QName, QName>();
+
+    private final QName VOID_BODYBLOCK = new QName("");
+
     /**
      * @param modelInfo
      * @param options
@@ -135,12 +140,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
             extensions = Boolean.valueOf(_options.getProperty(ProcessorOptions.EXTENSION));
             
             useWSIBasicProfile = !extensions;
-//                Boolean
-//                    .valueOf(
-//                        _options.getProperty(
-//                            ProcessorOptions.USE_WSI_BASIC_PROFILE))
-//                    .booleanValue();
-
             document =
                 parser.parse(inputSource, useWSIBasicProfile);
             document.validateLocally();
@@ -285,6 +284,10 @@ public class WSDLModeler20 extends WSDLModelerBase {
     protected boolean processPort(com.sun.tools.ws.wsdl.document.Port wsdlPort,
             Service service, WSDLDocument document) {
         try {
+
+            //clear the  unique block map
+            uniqueBodyBlocks.clear();
+
             QName portQName = getQNameOf(wsdlPort);
             Port port = new Port(portQName);
 
@@ -546,7 +549,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
     }
 
-
     /* (non-Javadoc)
      * @see WSDLModelerBase#processSOAPOperation()
      */
@@ -759,6 +761,24 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
         if (isRequestResponse) {
             info.operation.setResponse(response);
+        }
+
+        Iterator<Block> bb = request.getBodyBlocks();
+        QName body = VOID_BODYBLOCK;
+        QName opName = null;
+
+        if(bb.hasNext()){
+            body = bb.next().getName();
+            opName = uniqueBodyBlocks.get(body);
+        }else{
+            //there is no body block
+            body = VOID_BODYBLOCK;
+            opName = uniqueBodyBlocks.get(VOID_BODYBLOCK);
+        }
+        if(opName != null){
+            fail("wsdlmodeler.nonUnique.body", new Object[]{info.port.getName(), info.operation.getName(), opName, body});                
+        }else{
+            uniqueBodyBlocks.put(body, info.operation.getName());
         }
 
         // faults with duplicate names
