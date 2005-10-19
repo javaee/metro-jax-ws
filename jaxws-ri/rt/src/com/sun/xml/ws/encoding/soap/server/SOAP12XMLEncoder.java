@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.10 2005-09-23 22:05:27 kohsuke Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.11 2005-10-19 02:15:35 jitu Exp $
  */
 
 /*
@@ -98,7 +98,9 @@ public class SOAP12XMLEncoder extends SOAPXMLEncoder {
             return;
         // Set a status code for Fault
         MessageContext ctxt = MessageInfoUtil.getMessageContext(messageInfo);
-        MessageContextUtil.setHttpStatusCode(ctxt, WSConnection.INTERNAL_ERR);
+        if (MessageContextUtil.getHttpStatusCode(ctxt) == null) {
+            MessageContextUtil.setHttpStatusCode(ctxt, WSConnection.INTERNAL_ERR);
+        }
         
         ((SOAP12FaultInfo)faultInfo).write(writer, messageInfo);
     }

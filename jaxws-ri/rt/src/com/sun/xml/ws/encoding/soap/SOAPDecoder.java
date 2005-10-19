@@ -44,6 +44,7 @@ import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLReaderException;
+import com.sun.xml.ws.streaming.XMLStreamReaderException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
@@ -70,7 +71,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.xml.stream.XMLStreamReader.*;
-
 /**
  * @author WS Development Team
  */
@@ -397,46 +397,50 @@ public abstract class SOAPDecoder implements Decoder {
     public boolean doMustUnderstandProcessing(SOAPMessage soapMessage,
             MessageInfo mi, HandlerContext handlerContext, boolean getMEP)
     throws SOAPException, IOException {
+        try {
+            boolean oneway = false;
+            Source source = soapMessage.getSOAPPart().getContent();
+            ByteInputStream bis = null;
 
-        boolean oneway = false;
-        Source source = soapMessage.getSOAPPart().getContent();
-        ByteInputStream bis = null;
-        
-        if (source instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) source;
-            InputStream is = streamSource.getInputStream();
-            if (is != null && is instanceof ByteInputStream) {
-                bis = ((ByteInputStream)is);
-            } else {
-                System.out.println("****** NOT ByteInputStream **** "+is);
+            if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+                InputStream is = streamSource.getInputStream();
+                if (is != null && is instanceof ByteInputStream) {
+                    bis = ((ByteInputStream)is);
+                } else {
+                    System.out.println("****** NOT ByteInputStream **** "+is);
+                }
             }
-        }
-        else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
-            try {
-                bis = (ByteInputStream) FastInfosetSource_getInputStream.invoke(source);
+            else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
+                try {
+                    bis = (ByteInputStream) FastInfosetSource_getInputStream.invoke(source);
+                }
+                catch (Exception e) {
+                    throw new XMLReaderException("fastinfoset.noImplementation");                                    
+                }                
+            } 
+            else {
+                System.out.println("****** NOT StreamSource **** ");
             }
-            catch (Exception e) {
-                throw new XMLReaderException("fastinfoset.noImplementation");                                    
-            }                
-        } 
-        else {
-            System.out.println("****** NOT StreamSource **** ");
-        }
 
-        XMLStreamReader reader =
-                SourceReaderFactory.createSourceReader(source, true);
-        XMLStreamReaderUtil.nextElementContent(reader);
-        checkMustUnderstandHeaders(reader,  mi, handlerContext);
+            XMLStreamReader reader =
+                    SourceReaderFactory.createSourceReader(source, true);
+            XMLStreamReaderUtil.nextElementContent(reader);
+            checkMustUnderstandHeaders(reader,  mi, handlerContext);
 
-        if (getMEP) {
-            oneway = isOneway(reader, mi);
+            if (getMEP) {
+                oneway = isOneway(reader, mi);
+            }
+            XMLStreamReaderUtil.close(reader);
+            if (bis != null) {
+                bis.close();            // resets stream; SAAJ has whole stream
+            }
+
+            return oneway;
+        } catch(XMLStreamReaderException xe) {
+            raiseBadXMLFault(handlerContext);
+            throw xe;
         }
-        XMLStreamReaderUtil.close(reader);
-        if (bis != null) {
-            bis.close();            // resets stream; SAAJ has whole stream
-        }
-        
-        return oneway;
     }
 
     /*
@@ -588,6 +592,9 @@ public abstract class SOAPDecoder implements Decoder {
      */
     private void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
+    }
+    
+    protected void raiseBadXMLFault(HandlerContext ctxt) {
     }
 
     private final static String DUPLICATE_HEADER =
