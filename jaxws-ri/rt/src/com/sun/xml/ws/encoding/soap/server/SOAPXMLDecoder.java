@@ -142,11 +142,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Bad request");
     }
 
-    /*
-     * @throws ServerRtException using this any known error is thrown
-     */
-    private void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
+    @Override
+    protected void raiseFault(QName faultCode, String faultString) {
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString,
+                faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
     }
 
     public Set<String> getRequiredRoles() {

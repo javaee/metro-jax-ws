@@ -150,4 +150,10 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         throw new SOAPFaultException(sf);
     }
     
+    @Override
+    protected void raiseFault(QName faultCode, String faultString) {
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString,
+                faultCode, null, null, SOAPBinding.SOAP12HTTP_BINDING));
+    }
+    
 }

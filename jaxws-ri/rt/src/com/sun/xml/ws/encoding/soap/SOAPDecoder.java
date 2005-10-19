@@ -476,6 +476,13 @@ public abstract class SOAPDecoder implements Decoder {
 
         // Decode envelope
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        QName got = reader.getName();
+        QName exp = getEnvelopeTag();
+        if (got.getLocalPart().equals(exp.getLocalPart())) {
+            if (!got.getNamespaceURI().equals(exp.getNamespaceURI())) {
+                raiseFault(SOAPConstants.FAULT_CODE_VERSION_MISMATCH, "Invalid SOAP envelope version");
+            }
+        }
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
         XMLStreamReaderUtil.nextElementContent(reader);
 
@@ -587,16 +594,13 @@ public abstract class SOAPDecoder implements Decoder {
         return (charset!=null)?charset:"UTF-8";
     }
 
-    /*
-     * @throws ServerRtException using this any known error is thrown
-     */
-    private void raiseFault(QName faultCode, String faultString) {
+    protected void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
     }
     
     protected void raiseBadXMLFault(HandlerContext ctxt) {
     }
-
+    
     private final static String DUPLICATE_HEADER =
         "Duplicate Header in the message:";
 
