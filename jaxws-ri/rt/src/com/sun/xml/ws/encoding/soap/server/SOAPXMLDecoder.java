@@ -38,6 +38,7 @@ import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
@@ -133,6 +134,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         MessageInfo messageInfo) {
         raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Server cannot handle fault message");
         return null;
+    }
+    
+    @Override
+    protected void raiseBadXMLFault(HandlerContext ctxt) {
+        MessageContextUtil.setHttpStatusCode(ctxt.getMessageContext(), 400);
+        raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Bad request");
     }
 
     /*
