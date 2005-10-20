@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.12 2005-10-20 01:59:58 jitu Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.13 2005-10-20 18:58:56 jitu Exp $
  */
 
 /*
@@ -25,6 +25,7 @@ package com.sun.xml.ws.protocol.xml.client;
 
 import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
@@ -309,7 +310,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //            //local transport
             connection = clientTransportFactory.create(context);
 //        }
-        messageInfo.setConnection(connection);
+        messageInfo.setConnection((Connection)connection);
     }
 
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {

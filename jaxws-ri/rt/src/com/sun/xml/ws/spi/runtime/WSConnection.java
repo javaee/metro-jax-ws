@@ -43,7 +43,7 @@ import java.util.Map;
  * 
  */
 
-public interface WSConnection extends Connection {
+public interface WSConnection {
     
     public static final int OK=200;
     public static final int ONEWAY=202;

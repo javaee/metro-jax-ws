@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.7 2005-10-20 02:00:28 jitu Exp $
+ * $Id: WSConnectionImpl.java,v 1.8 2005-10-20 18:58:58 jitu Exp $
  */
 
 /*
@@ -25,7 +25,6 @@
 package com.sun.xml.ws.transport;
 
 import com.sun.xml.ws.pept.ept.EPTFactory;
-import com.sun.xml.ws.spi.runtime.WSConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +35,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.pept.transport.Connection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 /**
  * Abstract class for WSConnection. All client-side and server-side
@@ -43,7 +44,7 @@ import com.sun.xml.ws.client.ClientTransportException;
  *
  * @author WS Development Team
  */
-public abstract class WSConnectionImpl implements WSConnection {
+public abstract class WSConnectionImpl implements WSConnection, Connection {
     Map<String, List<String>> headers = null;
     public OutputStream debugStream = null;
     public OutputStream outputStream = null;
