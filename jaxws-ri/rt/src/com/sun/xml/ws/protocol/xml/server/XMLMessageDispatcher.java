@@ -18,11 +18,11 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.protocol.xml.server;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.presentation.TargetFinder;
-import com.sun.pept.presentation.Tie;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.TargetFinder;
+import com.sun.xml.ws.pept.presentation.Tie;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.xml.XMLDecoder;

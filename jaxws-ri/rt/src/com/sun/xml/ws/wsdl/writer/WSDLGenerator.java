@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.46 2005-10-06 16:09:46 kohlert Exp $
+ * $Id: WSDLGenerator.java,v 1.47 2005-10-20 02:00:33 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -23,7 +23,7 @@
 package com.sun.xml.ws.wsdl.writer;
 
 
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;

@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 
 import javax.xml.namespace.QName;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.handler.HandlerContext;

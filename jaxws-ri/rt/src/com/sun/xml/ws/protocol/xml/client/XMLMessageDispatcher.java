@@ -1,5 +1,5 @@
 /**
- * $Id: XMLMessageDispatcher.java,v 1.11 2005-10-14 18:28:00 bbissett Exp $
+ * $Id: XMLMessageDispatcher.java,v 1.12 2005-10-20 01:59:58 jitu Exp $
  */
 
 /*
@@ -23,10 +23,10 @@
  */
 package com.sun.xml.ws.protocol.xml.client;
 
-import com.sun.pept.ept.EPTFactory;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.BindingProviderProperties;

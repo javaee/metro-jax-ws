@@ -1,5 +1,5 @@
 /*
- * $Id: XMLEncoder.java,v 1.5 2005-10-04 00:26:49 kohsuke Exp $
+ * $Id: XMLEncoder.java,v 1.6 2005-10-20 01:59:03 jitu Exp $
  */
 
 /*
@@ -25,8 +25,8 @@ package com.sun.xml.ws.encoding.xml;
 import java.nio.ByteBuffer;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.encoding.Encoder;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;

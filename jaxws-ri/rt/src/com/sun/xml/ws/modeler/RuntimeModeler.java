@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.65 2005-10-06 16:09:45 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.66 2005-10-20 01:59:13 jitu Exp $
  */
 
 /*
@@ -23,7 +23,7 @@
  */
 package com.sun.xml.ws.modeler;
 
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;

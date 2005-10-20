@@ -1,5 +1,5 @@
 /*
- * $Id: ServerConnectionImpl.java,v 1.13 2005-10-06 02:25:03 jitu Exp $
+ * $Id: ServerConnectionImpl.java,v 1.14 2005-10-20 02:00:29 jitu Exp $
  */
 
 /*
@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-import com.sun.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.net.httpserver.HttpExchange;
 

@@ -1,5 +1,5 @@
 /**
- * $Id: JavaMethod.java,v 1.7 2005-09-10 19:47:49 kohsuke Exp $
+ * $Id: JavaMethod.java,v 1.8 2005-10-20 01:59:09 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.model.soap.SOAPBinding;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 
 /**
  * Build this runtime model using java SEI and annotations

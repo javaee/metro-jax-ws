@@ -24,8 +24,8 @@ import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.transform.Source;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.XMLHandlerContext;
 import com.sun.xml.ws.server.RuntimeContext;

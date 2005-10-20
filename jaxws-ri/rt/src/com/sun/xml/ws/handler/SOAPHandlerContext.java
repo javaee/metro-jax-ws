@@ -22,7 +22,7 @@ package com.sun.xml.ws.handler;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.soap.SOAPMessage;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.spi.runtime.Invoker;
 import javax.xml.ws.handler.soap.SOAPMessageContext;

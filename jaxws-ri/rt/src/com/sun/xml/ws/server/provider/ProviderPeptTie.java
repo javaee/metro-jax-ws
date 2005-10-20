@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 import javax.xml.ws.Provider;
 import javax.xml.ws.WebServiceException;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.xml.ws.server.PeptTie;

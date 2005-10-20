@@ -17,17 +17,39 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package com.sun.xml.ws.encoding.xml;
+/** Java interface "Acceptor.java" generated from Poseidon for UML.
+ *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
+ *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
+ */
+package com.sun.xml.ws.pept.ept;
 
-import com.sun.xml.ws.pept.ept.EPTFactory;
-import com.sun.xml.ws.encoding.internal.InternalEncoder;
+import java.util.*;
 
 /**
- * Change the name of this class to JaxwsEPTFactory or something else. OR
- * split into multiple factories.
+ * <p>
+ * 
+ * @author Dr. Harold Carr
+ * </p>
  */
-public interface XMLEPTFactory extends EPTFactory {
-    public InternalEncoder getInternalEncoder();
-    public XMLEncoder getXMLEncoder();
-    public XMLDecoder getXMLDecoder();
-}
+public interface Acceptor extends EPTFactory {
+
+  ///////////////////////////////////////
+  // operations
+
+/**
+ * <p>
+ * Does ...
+ * </p><p>
+ * 
+ * </p>
+ */
+    public void accept();
+
+} // end Acceptor
+
+
+
+
+
+
+

@@ -27,8 +27,8 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.handler.SOAPHandlerContext;

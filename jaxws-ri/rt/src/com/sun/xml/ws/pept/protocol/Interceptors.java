@@ -1,3 +1,6 @@
+/**
+ * $Id: Interceptors.java,v 1.1 2005-10-20 01:59:52 jitu Exp $
+ */
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -17,17 +20,43 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package com.sun.xml.ws.encoding.xml;
+/** Java interface "Interceptors.java" generated from Poseidon for UML.
+ *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
+ *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
+ */
+package com.sun.xml.ws.pept.protocol;
 
-import com.sun.xml.ws.pept.ept.EPTFactory;
-import com.sun.xml.ws.encoding.internal.InternalEncoder;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import java.util.*;
 
 /**
- * Change the name of this class to JaxwsEPTFactory or something else. OR
- * split into multiple factories.
+ * <p>
+ * 
+ * @author Dr. Harold Carr
+ * </p>
  */
-public interface XMLEPTFactory extends EPTFactory {
-    public InternalEncoder getInternalEncoder();
-    public XMLEncoder getXMLEncoder();
-    public XMLDecoder getXMLDecoder();
-}
+public interface Interceptors {
+
+  ///////////////////////////////////////
+  // operations
+
+/**
+ * <p>
+ * Does ...
+ * </p><p>
+ * 
+ * </p><p>
+ * 
+ * @param messageInfo ...
+ * </p>
+ */
+    public void interceptMessage(MessageInfo messageInfo);
+
+} // end Interceptors
+
+
+
+
+
+
+

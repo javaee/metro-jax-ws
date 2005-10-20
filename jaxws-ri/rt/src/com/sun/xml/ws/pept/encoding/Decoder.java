@@ -17,28 +17,54 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-//
-// Created       : 2004 Apr 09 (Fri) 06:16:58 by Harold Carr.
-// Last Modified : 2004 May 03 (Mon) 17:28:38 by Harold Carr.
-//
-// @(#)FakeTargetFinder.java    1.2 04/05/03
-//
-
-package com.sun.xml.ws.server;
+/** Java interface "Decoder.java" generated from Poseidon for UML.
+ *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
+ *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
+ */
+package com.sun.xml.ws.pept.encoding;
 
 import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.ws.pept.presentation.TargetFinder;
-import com.sun.xml.ws.pept.presentation.Tie;
+import java.util.*;
 
-public class TargetFinderImpl implements TargetFinder {
+/**
+ * <p>
+ * 
+ * @author Dr. Harold Carr
+ * </p>
+ */
+public interface Decoder {
 
-    private Tie tie;
+  ///////////////////////////////////////
+  // operations
 
-    public TargetFinderImpl(Tie tie) {
-        this.tie = tie;
-    }
+/**
+ * <p>
+ * Does ...
+ * </p><p>
+ * 
+ * </p><p>
+ * 
+ * @param messageInfo ...
+ * </p>
+ */
+    public void decode(MessageInfo messageInfo);
+/**
+ * <p>
+ * Does ...
+ * </p><p>
+ * 
+ * </p><p>
+ * 
+ * @param messageInfo ...
+ * </p>
+ */
+    public void receiveAndDecode(MessageInfo messageInfo);
 
-    public Tie findTarget(MessageInfo messageInfo) {
-        return tie;
-    }
-}
+} // end Decoder
+
+
+
+
+
+
+

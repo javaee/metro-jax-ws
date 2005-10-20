@@ -19,10 +19,10 @@
  */
 package com.sun.xml.ws.server;
 
-import com.sun.pept.ept.EPTFactory;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.TargetFinder;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.TargetFinder;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;

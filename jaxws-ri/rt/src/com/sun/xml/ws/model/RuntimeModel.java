@@ -1,5 +1,5 @@
 /**
- * $Id: RuntimeModel.java,v 1.27 2005-10-14 02:23:59 arungupta Exp $
+ * $Id: RuntimeModel.java,v 1.28 2005-10-20 01:59:11 jitu Exp $
  */
 
 /*
@@ -23,7 +23,7 @@
  */
 package com.sun.xml.ws.model;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.bind.api.JAXBRIContext;

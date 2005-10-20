@@ -22,9 +22,9 @@ package com.sun.xml.ws.server;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.presentation.Tie;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.Tie;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;

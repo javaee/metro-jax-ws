@@ -21,8 +21,8 @@
 package com.sun.xml.ws.encoding.xml;
 import javax.xml.stream.XMLStreamReader;
 
-import com.sun.pept.encoding.Decoder;
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.encoding.Decoder;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.jaxb.*;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;

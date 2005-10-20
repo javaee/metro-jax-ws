@@ -1,5 +1,5 @@
 /*
- * $Id: WSConnectionImpl.java,v 1.6 2005-09-23 22:05:36 kohsuke Exp $
+ * $Id: WSConnectionImpl.java,v 1.7 2005-10-20 02:00:28 jitu Exp $
  */
 
 /*
@@ -24,7 +24,7 @@
 
 package com.sun.xml.ws.transport;
 
-import com.sun.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import java.io.IOException;
 import java.io.InputStream;

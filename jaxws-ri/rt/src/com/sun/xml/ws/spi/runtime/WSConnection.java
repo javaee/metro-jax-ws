@@ -19,7 +19,7 @@
  */
 package com.sun.xml.ws.spi.runtime;
 
-import com.sun.pept.transport.Connection;
+import com.sun.xml.ws.pept.transport.Connection;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;

@@ -29,7 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPException;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.messaging.saaj.soap.MessageImpl;
 import com.sun.xml.ws.util.xml.XmlUtil;
 

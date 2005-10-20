@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.39 2005-10-18 20:39:47 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.40 2005-10-20 01:59:57 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -21,11 +21,11 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.protocol.soap.server;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.presentation.TargetFinder;
-import com.sun.pept.presentation.Tie;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.TargetFinder;
+import com.sun.xml.ws.pept.presentation.Tie;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.client.BindingProviderProperties;

@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.63 2005-10-18 22:00:28 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.64 2005-10-20 01:59:55 jitu Exp $
  */
 
 /*
@@ -23,10 +23,10 @@
  */
 package com.sun.xml.ws.protocol.soap.client;
 
-import com.sun.pept.ept.EPTFactory;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.AsyncHandlerService;
 import com.sun.xml.ws.client.BindingProviderProperties;

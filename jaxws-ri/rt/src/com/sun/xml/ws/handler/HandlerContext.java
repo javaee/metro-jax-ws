@@ -20,7 +20,7 @@
 package com.sun.xml.ws.handler;
 import javax.xml.ws.handler.MessageContext;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.spi.runtime.InternalSoapEncoder;

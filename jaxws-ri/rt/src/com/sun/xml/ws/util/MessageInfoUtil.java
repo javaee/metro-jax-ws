@@ -19,7 +19,7 @@
  */
 package com.sun.xml.ws.util;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.handler.HandlerChainCaller;
