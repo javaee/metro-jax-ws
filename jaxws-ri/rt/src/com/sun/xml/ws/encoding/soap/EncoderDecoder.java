@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.31 2005-10-10 16:28:05 kohsuke Exp $
+ * $Id: EncoderDecoder.java,v 1.32 2005-10-20 15:54:31 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -34,10 +34,13 @@ import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.handler.MessageContextUtil;
 
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.ws.handler.MessageContext;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -352,6 +355,15 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             // this is also broken, as there's no guarantee that the object type and the MIME type
             // matches. But most of the time it matches, so it mostly works.
             ab = AttachmentBlock.fromDataHandler(contentId,new DataHandler(obj,mimeType));
+
+        //populate the attachment map in the message context
+        HandlerContext hc = rtContext.getHandlerContext();
+        if(hc != null){
+            MessageContext mc = hc.getMessageContext();
+            if(mc != null){
+                MessageContextUtil.addMessageAttachment(mc, contentId, ab.asDataHandler());    
+            }
+        }
 
         im.addAttachment(ab);
     }
