@@ -44,6 +44,8 @@ import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.server.*;
+import com.sun.xml.ws.streaming.XMLStreamReaderException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.handler.MessageContext;
 
 
@@ -76,6 +78,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             decodeEnvelope(reader, request, false, messageInfo);
             return request;
         } catch(Exception e) {
+            if (isBadXML(e)) {
+                RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+                HandlerContext handlerCtxt = rtCtxt.getHandlerContext();
+                raiseBadXMLFault(handlerCtxt);
+            }
             throw new ServerRtException("soapdecoder.err", new Object[]{e});
         } finally {
             if (reader != null) {
@@ -83,6 +90,17 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             }
         }
     }
+    
+    protected boolean isBadXML(Exception e) {
+        while (e != null) {
+            if (e instanceof XMLStreamException) {
+                return true;
+            }
+            e = (e.getCause() instanceof Exception) ? (Exception)e.getCause() : null;
+        }
+        return false;
+    }
+
 
     /*
      * Headers from SOAPMesssage are mapped to HeaderBlocks in InternalMessage
@@ -105,6 +123,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             decodeEnvelope(reader, request, true, messageInfo);
             convertBodyBlock(request, messageInfo);
         } catch(Exception e) {
+            if (isBadXML(e)) {
+                RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+                HandlerContext handlerCtxt = rtCtxt.getHandlerContext();
+                raiseBadXMLFault(handlerCtxt);
+            }
             throw new ServerRtException("soapdecoder.err", new Object[]{e});
         } finally {
             if (reader != null) {
