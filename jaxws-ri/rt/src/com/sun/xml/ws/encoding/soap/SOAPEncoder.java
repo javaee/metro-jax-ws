@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.44 2005-10-20 01:58:34 jitu Exp $
+ * $Id: SOAPEncoder.java,v 1.45 2005-10-20 16:25:19 kwalsh Exp $
  */
 
 /*
@@ -102,7 +102,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         Document doc = DOMUtil.createDom();
-        bridgeInfo.serialize(bridgeContext,doc);
+        bridgeInfo.serialize(bridgeContext, doc);
         return new DOMSource(doc);
     }
 
@@ -116,7 +116,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             DOMResult domResult = new DOMResult();
             transformer.transform(source, domResult);
             return new DOMSource(domResult.getNode());
-        } catch(TransformerException te) {
+        } catch (TransformerException te) {
             throw new WebServiceException(te);
         }
     }
@@ -144,22 +144,21 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
     protected void writeRpcLitPayload(RpcLitPayload rpcLitPayload, MessageInfo messageInfo,
-        XMLStreamWriter writer) {
+                                      XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, messageInfo, writer);
     }
 
     protected void writeRpcLitPayload(RpcLitPayload rpcLitPayload, MessageInfo messageInfo,
-        OutputStream writer) {
+                                      OutputStream writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         RpcLitPayloadSerializer.serialize(rpcLitPayload, bridgeContext, writer);
     }
 
     private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, MessageInfo messageInfo,
-        XMLStreamWriter writer)
-    {
+                                   XMLStreamWriter writer) {
         // Pass output stream directly to JAXB when available
         OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
 
@@ -180,13 +179,12 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             }
 
             beanInfo.writeTo(os);
-        }
-        else {
+        } else {
             beanInfo.writeTo(writer);
         }
     }
 
-    private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo,OutputStream writer) {
+    private void writeJAXBBeanInfo(JAXBBeanInfo beanInfo, OutputStream writer) {
         beanInfo.writeTo(writer);
     }
 
@@ -208,7 +206,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      */
 
     protected void writeJAXBBridgeInfo(JAXBBridgeInfo bridgeInfo,
-        MessageInfo messageInfo, XMLStreamWriter writer) {
+                                       MessageInfo messageInfo, XMLStreamWriter writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
 
@@ -231,17 +229,16 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             }
 
             bridgeInfo.serialize(bridgeContext, os, writer.getNamespaceContext());
-        }
-        else {
+        } else {
             bridgeInfo.serialize(bridgeContext, writer);
         }
     }
 
     protected void writeJAXBBridgeInfo(JAXBBridgeInfo bridgeInfo,
-        MessageInfo messageInfo, OutputStream writer) {
+                                       MessageInfo messageInfo, OutputStream writer) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        bridgeInfo.serialize(bridgeContext,writer,null);
+        bridgeInfo.serialize(bridgeContext, writer, null);
     }
 
 
@@ -253,7 +250,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * Replace the body in SOAPMessage with the BodyBlock of InternalMessage
      */
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
-            SOAPMessage soapMessage) {
+                                     SOAPMessage soapMessage) {
         try {
             BodyBlock bodyBlock = internalMessage.getBody();
             if (bodyBlock == null)
@@ -263,17 +260,17 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 return soapMessage;
             }
             if (value instanceof Source) {
-                Source source = (Source)value;
+                Source source = (Source) value;
                 SOAPBody body = soapMessage.getSOAPBody();
                 body.removeContents();
 
                 Transformer transformer = XmlUtil.newTransformer();
-                transformer.transform(source,new DOMResult(body));
+                transformer.transform(source, new DOMResult(body));
             } else {
-                throw new UnsupportedOperationException("Unknown object in BodyBlock:"+value.getClass());
+                throw new UnsupportedOperationException("Unknown object in BodyBlock:" + value.getClass());
             }
             return soapMessage;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new ServerRtException("soapencoder.err", new Object[]{e});
         }
     }
@@ -296,17 +293,15 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         if (prefix == null) {
                             if (uri == null) {
                                 writer.writeStartElement(localName);
-                            }
-                            else {
+                            } else {
                                 writer.writeStartElement(uri, localName);
                             }
-                        }
-                        else {
+                        } else {
                             assert uri != null;
 
                             //Workaround for soapenv:Detail, Zephyr doesnt write the unknown prefix
-                            if(uri.equals(SOAP12Constants.QNAME_FAULT_DETAIL.getNamespaceURI()) &&
-                                    localName.equals("Detail")){
+                            if (uri.equals(SOAP12Constants.QNAME_FAULT_DETAIL.getNamespaceURI()) &&
+                                localName.equals("Detail")) {
                                 prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
                             }
 
@@ -319,8 +314,11 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         int n = reader.getNamespaceCount();
                         for (int i = 0; i < n; i++) {
                             String nsPrefix = reader.getNamespacePrefix(i);
-                            if (nsPrefix == null) nsPrefix = "";    // StAX returns null for default ns
-                            String writerURI = writer.getNamespaceContext().getNamespaceURI(nsPrefix);
+                            if (nsPrefix == null) nsPrefix = "";
+                            // StAX returns null for default ns
+                            String writerURI = null;
+                            if (writer.getNamespaceContext() != null)
+                                writerURI = writer.getNamespaceContext().getNamespaceURI(nsPrefix);
 
                             // Zephyr: Why is this returning null?
                             // Compare nsPrefix with prefix because of [1] (above)
@@ -386,9 +384,9 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_ENVELOPE, SOAPNamespaceConstants.ENVELOPE);
             writer.setPrefix(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
-                             SOAPNamespaceConstants.ENVELOPE);
+                SOAPNamespaceConstants.ENVELOPE);
             writer.writeNamespace(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
-                                  SOAPNamespaceConstants.ENVELOPE);
+                SOAPNamespaceConstants.ENVELOPE);
         }
         catch (XMLStreamException e) {
             throw new WebServiceException(e);
@@ -403,22 +401,22 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         if (rtCtxt != null && rtCtxt.getModel() != null) {
-            int i=1;
+            int i = 1;
             String prefix;
             for (String namespace : rtCtxt.getModel().getJAXBContext().getKnownNamespaceURIs()) {
-                if (namespace.length() > 0) {                  
-                    prefix = "ns"+i++;
+                if (namespace.length() > 0) {
+                    prefix = "ns" + i++;
                     writer.setPrefix(prefix, namespace);
                     writer.writeNamespace(prefix, namespace);
                 }
             }
             writer.writeCharacters("");
         }
-     }    
-    
+    }
+
     /*
-     * writes start tag of Body: <env:Body>
-     */
+    * writes start tag of Body: <env:Body>
+    */
     protected void startBody(XMLStreamWriter writer) {
         try {
             //write SOAP Body
@@ -434,8 +432,8 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * writes start tag of Header: <env:Header>
      */
     protected void startHeader(XMLStreamWriter writer) {
-        try {      
-            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE, 
+        try {
+            writer.writeStartElement(SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE,
                 SOAPNamespaceConstants.TAG_HEADER, SOAPNamespaceConstants.ENVELOPE); // <env:Header>
         }
         catch (XMLStreamException e) {
@@ -447,20 +445,19 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * writes multiple header elements in <env:Header> ... </env:Header>
      */
     protected void writeHeaders(XMLStreamWriter writer, InternalMessage response,
-        MessageInfo messageInfo) 
-    {
+                                MessageInfo messageInfo) {
         try {
             List<HeaderBlock> headerBlocks = response.getHeaders();
             if (headerBlocks == null || headerBlocks.isEmpty()) {
                 return;
             }
             startHeader(writer); // <env:Header>
-            for (HeaderBlock headerBlock: headerBlocks) {
+            for (HeaderBlock headerBlock : headerBlocks) {
                 Object value = headerBlock.getValue();
                 if (value instanceof JAXBBridgeInfo) {
-                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                    writeJAXBBridgeInfo((JAXBBridgeInfo) value, messageInfo, writer);
                 } else {
-                    System.out.println("Unknown object in BodyBlock:"+value.getClass());
+                    System.out.println("Unknown object in BodyBlock:" + value.getClass());
                 }
             }
             writer.writeEndElement();                                // </env:Header>
@@ -474,8 +471,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * writes <env:Body> ... </env:Body>
      */
     protected void writeBody(XMLStreamWriter writer, InternalMessage response,
-        MessageInfo messageInfo) 
-    {
+                             MessageInfo messageInfo) {
         try {
             startBody(writer);
             BodyBlock bodyBlock = response.getBody();
@@ -483,17 +479,17 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             if (bodyBlock != null) {
                 Object value = bodyBlock.getValue();
                 if (value instanceof JAXBBridgeInfo) {
-                    writeJAXBBridgeInfo((JAXBBridgeInfo)value, messageInfo, writer);
+                    writeJAXBBridgeInfo((JAXBBridgeInfo) value, messageInfo, writer);
                 } else if (value instanceof RpcLitPayload) {
-                    writeRpcLitPayload((RpcLitPayload)value, messageInfo, writer);
+                    writeRpcLitPayload((RpcLitPayload) value, messageInfo, writer);
                 } else if (value instanceof Source) {
-                    serializeSource((Source)value, writer);
+                    serializeSource((Source) value, writer);
                 } else if (value instanceof SOAPFaultInfo) {
-                    writeFault((SOAPFaultInfo)value, messageInfo, writer);
+                    writeFault((SOAPFaultInfo) value, messageInfo, writer);
                 } else if (value instanceof JAXBBeanInfo) {
-                    writeJAXBBeanInfo((JAXBBeanInfo)value, messageInfo, writer);
-                }else {
-                    System.out.println("Unknown object in BodyBlock:"+value.getClass());
+                    writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
+                } else {
+                    System.out.println("Unknown object in BodyBlock:" + value.getClass());
                 }
             }
             writer.writeEndElement();                // </env:body>
@@ -509,37 +505,38 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * @param mi
      * @param im
      */
-    protected void setAttachmentsMap(MessageInfo mi, InternalMessage im){
+    protected void setAttachmentsMap(MessageInfo mi, InternalMessage im) {
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if(rtc != null){
-            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
-            if(bc == null)
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc == null)
                 return;
-            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
             am.setAttachments(im.getAttachments());
-            am.setHandlerContaxt(((RuntimeContext)rtc).getHandlerContext());
+            am.setHandlerContaxt(((RuntimeContext) rtc).getHandlerContext());
 
-            HandlerContext hc = ((RuntimeContext)rtc).getHandlerContext();
+            HandlerContext hc = ((RuntimeContext) rtc).getHandlerContext();
             Object mtomThreshold;
-            if(hc == null){
+            if (hc == null) {
                 //to be removed when client guarantees handlerContext
                 mtomThreshold = mi.getMetaData(JAXWSProperties.MTOM_THRESHOLOD_VALUE);
-            }else{
+            } else {
                 mtomThreshold = hc.getMessageContext().get(JAXWSProperties.MTOM_THRESHOLOD_VALUE);
             }
-            if(mtomThreshold != null)
-                am.setMtomThresholdValue((Integer)mtomThreshold);
+            if (mtomThreshold != null)
+                am.setMtomThresholdValue((Integer) mtomThreshold);
         }
     }
 
 
     /**
      * Add all the attachments in the InternalMessage to the SOAPMessage
+     *
      * @param im
      * @param msg
      */
     protected void processAttachments(InternalMessage im, SOAPMessage msg) throws SOAPException {
-        for (Map.Entry<String,AttachmentBlock> e : im.getAttachments().entrySet()) {
+        for (Map.Entry<String, AttachmentBlock> e : im.getAttachments().entrySet()) {
             AttachmentBlock block = e.getValue();
             block.addTo(msg);
         }
@@ -567,55 +564,56 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
     }
 
 
-    public void write(Object value, Object obj, OutputStream writer, MtomCallback mtomCallback){
-        if(!(obj instanceof MessageInfo))
+    public void write(Object value, Object obj, OutputStream writer, MtomCallback mtomCallback) {
+        if (!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
-        MessageInfo mi = (MessageInfo)obj;
+        MessageInfo mi = (MessageInfo) obj;
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if(rtc != null){
-            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
-            if(bc == null)
-                return;
-            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
-            am.setMtomCallback(mtomCallback);
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
+                am.setMtomCallback(mtomCallback);
+            }
         }
         if (value instanceof JAXBBridgeInfo) {
-            writeJAXBBridgeInfo((JAXBBridgeInfo)value, mi, writer);
+            writeJAXBBridgeInfo((JAXBBridgeInfo) value, mi, writer);
         } else if (value instanceof RpcLitPayload) {
-            writeRpcLitPayload((RpcLitPayload)value, mi, writer);
+            writeRpcLitPayload((RpcLitPayload) value, mi, writer);
         } else if (value instanceof Source) {
-            serializeSource((Source)value, writer);
+            serializeSource((Source) value, writer);
         } else if (value instanceof SOAPFaultInfo) {
-            writeFault((SOAPFaultInfo)value, mi, writer);
+            writeFault((SOAPFaultInfo) value, mi, writer);
         } else if (value instanceof JAXBBeanInfo) {
-            writeJAXBBeanInfo((JAXBBeanInfo)value, writer);
-        }else {
+            writeJAXBBeanInfo((JAXBBeanInfo) value, writer);
+        } else {
             throw new SerializationException("unknown.object", value.getClass().getName());
         }
     }
-    public void write(Object value, Object obj, XMLStreamWriter writer, MtomCallback mtomCallback){
-        if(!(obj instanceof MessageInfo))
+
+    public void write(Object value, Object obj, XMLStreamWriter writer, MtomCallback mtomCallback) {
+        if (!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
-        MessageInfo mi = (MessageInfo)obj;
+        MessageInfo mi = (MessageInfo) obj;
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if(rtc != null){
-            BridgeContext bc = ((RuntimeContext)rtc).getBridgeContext();
-            if(bc == null)
-                return;
-            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)((RuntimeContext)rtc).getBridgeContext().getAttachmentMarshaller();
-            am.setMtomCallback(mtomCallback);
+        if (rtc != null) {
+            BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
+                am.setMtomCallback(mtomCallback);
+            }
         }
         if (value instanceof JAXBBridgeInfo) {
-            writeJAXBBridgeInfo((JAXBBridgeInfo)value, mi, writer);
+            writeJAXBBridgeInfo((JAXBBridgeInfo) value, mi, writer);
         } else if (value instanceof RpcLitPayload) {
-            writeRpcLitPayload((RpcLitPayload)value, mi, writer);
+            writeRpcLitPayload((RpcLitPayload) value, mi, writer);
         } else if (value instanceof Source) {
-            serializeSource((Source)value, writer);
+            serializeSource((Source) value, writer);
         } else if (value instanceof SOAPFaultInfo) {
-            writeFault((SOAPFaultInfo)value, mi, writer);
+            writeFault((SOAPFaultInfo) value, mi, writer);
         } else if (value instanceof JAXBBeanInfo) {
-            writeJAXBBeanInfo((JAXBBeanInfo)value, mi, writer);
-        }else {
+            writeJAXBBeanInfo((JAXBBeanInfo) value, mi, writer);
+        } else {
             throw new SerializationException("unknown.object", value.getClass().getName());
         }
     }
