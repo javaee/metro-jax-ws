@@ -1,5 +1,5 @@
 /*
- * $Id: DispatchDelegate.java,v 1.9 2005-09-10 19:47:30 kohsuke Exp $
+ * $Id: DispatchDelegate.java,v 1.10 2005-10-20 01:58:28 jitu Exp $
  */
 
 /*
@@ -23,12 +23,12 @@
  */
 package com.sun.xml.ws.client.dispatch.impl;
 
-import com.sun.pept.ept.ContactInfo;
-import com.sun.pept.ept.ContactInfoList;
-import com.sun.pept.ept.ContactInfoListIterator;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
-import com.sun.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.ept.ContactInfo;
+import com.sun.xml.ws.pept.ept.ContactInfoList;
+import com.sun.xml.ws.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.client.*;
 

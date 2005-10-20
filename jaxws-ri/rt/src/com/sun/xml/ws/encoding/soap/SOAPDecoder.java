@@ -19,9 +19,9 @@
  */
 
 package com.sun.xml.ws.encoding.soap;
-import com.sun.pept.encoding.Decoder;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.encoding.Decoder;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;

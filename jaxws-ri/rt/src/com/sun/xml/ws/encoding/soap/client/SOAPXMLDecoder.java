@@ -20,8 +20,8 @@
 
 package com.sun.xml.ws.encoding.soap.client;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.dispatch.DispatchContext;

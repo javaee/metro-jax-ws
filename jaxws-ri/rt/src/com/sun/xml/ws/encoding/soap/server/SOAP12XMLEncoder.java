@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.11 2005-10-19 02:15:35 jitu Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.12 2005-10-20 01:58:42 jitu Exp $
  */
 
 /*
@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.soap.SOAPBinding;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.message.SOAP12FaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;

@@ -1,5 +1,5 @@
 /*
- * $Id: DelegateBase.java,v 1.9 2005-09-10 19:47:42 kohsuke Exp $
+ * $Id: DelegateBase.java,v 1.10 2005-10-20 01:58:39 jitu Exp $
  */
 
 /*
@@ -23,15 +23,15 @@
  */
 package com.sun.xml.ws.encoding.soap.internal;
 
-import com.sun.pept.Delegate;
-import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.pept.encoding.Decoder;
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.ContactInfo;
-import com.sun.pept.ept.ContactInfoList;
-import com.sun.pept.ept.ContactInfoListIterator;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.Delegate;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.encoding.Decoder;
+import com.sun.xml.ws.pept.encoding.Encoder;
+import com.sun.xml.ws.pept.ept.ContactInfo;
+import com.sun.xml.ws.pept.ept.ContactInfoList;
+import com.sun.xml.ws.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.binding.BindingImpl;

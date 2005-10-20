@@ -18,7 +18,7 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.encoding.internal;
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 
 /**
  * Payload is converted from one form to the other

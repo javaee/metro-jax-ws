@@ -31,7 +31,7 @@ import javax.xml.ws.soap.SOAPFaultException;
 
 import static javax.xml.stream.XMLStreamReader.*;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.streaming.XMLReader;

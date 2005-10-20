@@ -1,5 +1,5 @@
 /**
- * $Id: ClientEncoderDecoder.java,v 1.22 2005-10-05 22:05:12 kohsuke Exp $
+ * $Id: ClientEncoderDecoder.java,v 1.23 2005-10-20 01:58:33 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -22,8 +22,8 @@
  */
 package com.sun.xml.ws.encoding.soap;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;

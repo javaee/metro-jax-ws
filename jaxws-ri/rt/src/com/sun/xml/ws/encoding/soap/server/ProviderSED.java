@@ -19,8 +19,8 @@
  */
 package com.sun.xml.ws.encoding.soap.server;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;

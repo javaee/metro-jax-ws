@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLEncoder.java,v 1.11 2005-10-18 18:32:59 vivekp Exp $
+ * $Id: SOAP12XMLEncoder.java,v 1.12 2005-10-20 01:58:36 jitu Exp $
  */
 
 /*
@@ -37,7 +37,7 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.bind.api.BridgeContext;
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 
 import com.sun.xml.ws.client.SenderException;
 import com.sun.xml.ws.client.BindingProviderProperties;

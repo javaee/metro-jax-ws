@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 
-import com.sun.pept.ept.ContactInfoList;
-import com.sun.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.pept.ept.ContactInfoList;
+import com.sun.xml.ws.pept.ept.ContactInfoListIterator;
 import com.sun.xml.ws.client.ContactInfoBase;
 import com.sun.xml.ws.client.ContactInfoListIteratorBase;
 import com.sun.xml.ws.client.dispatch.impl.protocol.MessageDispatcherHelper;

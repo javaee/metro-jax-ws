@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.21 2005-10-14 00:19:49 kohsuke Exp $
+ * $Id: DispatchBase.java,v 1.22 2005-10-20 01:58:26 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -31,8 +31,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
-import com.sun.pept.Delegate;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.Delegate;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.*;

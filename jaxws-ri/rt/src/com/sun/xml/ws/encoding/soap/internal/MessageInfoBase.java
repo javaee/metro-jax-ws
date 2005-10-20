@@ -1,5 +1,5 @@
 /*
- * $Id: MessageInfoBase.java,v 1.5 2005-09-10 19:47:43 kohsuke Exp $
+ * $Id: MessageInfoBase.java,v 1.6 2005-10-20 01:58:39 jitu Exp $
  */
 
 /*
@@ -27,12 +27,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.pept.encoding.Decoder;
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.EPTFactory;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.pept.transport.Connection;
+import com.sun.xml.ws.pept.encoding.Decoder;
+import com.sun.xml.ws.pept.encoding.Encoder;
+import com.sun.xml.ws.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.transport.Connection;
 
 /**
  * @author WS Development Team

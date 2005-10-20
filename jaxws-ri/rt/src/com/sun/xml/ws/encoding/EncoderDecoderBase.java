@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoderBase.java,v 1.5 2005-09-23 22:05:30 kohsuke Exp $
+ * $Id: EncoderDecoderBase.java,v 1.6 2005-10-20 01:58:30 jitu Exp $
  */
 
 /*
@@ -23,7 +23,7 @@
  */
 package com.sun.xml.ws.encoding;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.AccessorException;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.RawAccessor;

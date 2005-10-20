@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.18 2005-10-18 18:33:00 vivekp Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.19 2005-10-20 01:58:38 jitu Exp $
  */
 
 /*
@@ -23,7 +23,7 @@
  */
 package com.sun.xml.ws.encoding.soap.client;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;

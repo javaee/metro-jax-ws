@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.43 2005-10-17 21:53:13 kohsuke Exp $
+ * $Id: SOAPEncoder.java,v 1.44 2005-10-20 01:58:34 jitu Exp $
  */
 
 /*
@@ -23,8 +23,8 @@
  */
 package com.sun.xml.ws.encoding.soap;
 
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.encoding.Encoder;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;

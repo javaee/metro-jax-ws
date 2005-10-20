@@ -20,7 +20,7 @@
 
 package com.sun.xml.ws.encoding.jaxb;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 import com.sun.xml.ws.encoding.soap.DeserializationException;

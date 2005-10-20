@@ -33,7 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamConstants;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;

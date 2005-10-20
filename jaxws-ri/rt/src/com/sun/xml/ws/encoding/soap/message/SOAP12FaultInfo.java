@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12FaultInfo.java,v 1.7 2005-10-04 00:44:02 kohsuke Exp $
+ * $Id: SOAP12FaultInfo.java,v 1.8 2005-10-20 01:58:40 jitu Exp $
  */
 
 /*
@@ -24,7 +24,7 @@
 
 package com.sun.xml.ws.encoding.soap.message;
 
-import com.sun.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBTypeSerializer;
