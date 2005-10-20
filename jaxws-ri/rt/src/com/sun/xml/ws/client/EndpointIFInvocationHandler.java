@@ -19,8 +19,8 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.server.RuntimeContext;

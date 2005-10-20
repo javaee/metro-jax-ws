@@ -19,14 +19,14 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.pept.encoding.Decoder;
-import com.sun.pept.encoding.Encoder;
-import com.sun.pept.ept.ContactInfo;
-import com.sun.pept.ept.MessageInfo;
-import com.sun.pept.presentation.TargetFinder;
-import com.sun.pept.protocol.Interceptors;
-import com.sun.pept.protocol.MessageDispatcher;
-import com.sun.pept.transport.Connection;
+import com.sun.xml.ws.pept.encoding.Decoder;
+import com.sun.xml.ws.pept.encoding.Encoder;
+import com.sun.xml.ws.pept.ept.ContactInfo;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.TargetFinder;
+import com.sun.xml.ws.pept.protocol.Interceptors;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
+import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.ClientEncoderDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;

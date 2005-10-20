@@ -1,5 +1,5 @@
 /*
- * $Id: ContactInfoListIteratorBase.java,v 1.4 2005-09-10 19:47:23 kohsuke Exp $
+ * $Id: ContactInfoListIteratorBase.java,v 1.5 2005-10-20 01:57:11 jitu Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -22,8 +22,8 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.pept.ept.ContactInfo;
-import com.sun.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.pept.ept.ContactInfo;
+import com.sun.xml.ws.pept.ept.ContactInfoListIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

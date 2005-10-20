@@ -19,8 +19,8 @@
  */
 package com.sun.xml.ws.client;
 
-import com.sun.pept.ept.ContactInfoList;
-import com.sun.pept.ept.ContactInfoListIterator;
+import com.sun.xml.ws.pept.ept.ContactInfoList;
+import com.sun.xml.ws.pept.ept.ContactInfoListIterator;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLDecoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAPXMLDecoder;

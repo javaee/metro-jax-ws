@@ -20,7 +20,7 @@
 
 package com.sun.xml.ws.client;
 
-import com.sun.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 import java.util.Map;
