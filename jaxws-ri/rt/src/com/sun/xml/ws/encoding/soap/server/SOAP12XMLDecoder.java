@@ -151,9 +151,25 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
     
     @Override
-    protected void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString,
-                faultCode, null, null, SOAPBinding.SOAP12HTTP_BINDING));
+    public String getBindingId() {
+        return SOAPBinding.SOAP12HTTP_BINDING;
+    }
+    
+    @Override
+    protected QName getSenderFaultCode() {
+        return SOAP12Constants.FAULT_CODE_CLIENT;
+        
+    }
+    
+    @Override
+    protected QName getReceiverFaultCode() {
+        return SOAP12Constants.FAULT_CODE_SERVER;
+        
+    }
+    
+    @Override
+    protected QName getVersionMismatchFaultCode() {
+        return SOAP12Constants.FAULT_CODE_VERSION_MISMATCH;
     }
     
 }

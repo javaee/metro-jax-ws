@@ -242,7 +242,7 @@ public abstract class SOAPDecoder implements Decoder {
             if (msg.isHeaderPresent(name)) {
                 // More than one instance of header whose QName is mapped to a
                 // method parameter. Generates a runtime error.
-                raiseFault(SOAPConstants.FAULT_CODE_CLIENT, DUPLICATE_HEADER+headerName);
+                raiseFault(getSenderFaultCode(), DUPLICATE_HEADER+headerName);
             }
             Object decoderInfo = rtCtxt.getDecoderInfo(name);
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
@@ -480,7 +480,7 @@ public abstract class SOAPDecoder implements Decoder {
         QName exp = getEnvelopeTag();
         if (got.getLocalPart().equals(exp.getLocalPart())) {
             if (!got.getNamespaceURI().equals(exp.getNamespaceURI())) {
-                raiseFault(SOAPConstants.FAULT_CODE_VERSION_MISMATCH, "Invalid SOAP envelope version");
+                raiseFault(getVersionMismatchFaultCode(), "Invalid SOAP envelope version");
             }
         }
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
@@ -595,11 +595,19 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
+        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, getBindingId()));
     }
     
     protected void raiseBadXMLFault(HandlerContext ctxt) {
     }
+    
+    protected abstract QName getSenderFaultCode();
+    
+    protected abstract QName getReceiverFaultCode();
+
+    protected abstract QName getVersionMismatchFaultCode();
+    
+    public abstract String getBindingId();
     
     private final static String DUPLICATE_HEADER =
         "Duplicate Header in the message:";

@@ -225,10 +225,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return SOAPConstants.NS_WSDL_SOAP;
     }
 
-    public String getBindingId() {
-        return SOAPBinding.SOAP11HTTP_BINDING;
-    }
-
     @Override
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
                                         MessageInfo messageInfo) {
@@ -397,13 +393,6 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         }
     }
 
-    /*
-     * Throws RuntimeException
-     */
-    protected void raiseFault(QName faultCode, String faultString) {
-        throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, SOAPBinding.SOAP11HTTP_BINDING));
-    }
-
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         JAXBContext jc = null;
 
@@ -423,5 +412,26 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         }
         return getBindingId();
     }
+    
+    @Override
+    public String getBindingId() {
+        return SOAPBinding.SOAP11HTTP_BINDING;
+    }
+    
+    @Override
+    protected QName getSenderFaultCode() {
+        return SOAPConstants.FAULT_CODE_SERVER;
+    }
+    
+    @Override
+    protected QName getReceiverFaultCode() {
+        return SOAPConstants.FAULT_CODE_CLIENT;
+    }
+    
+    @Override
+    protected QName getVersionMismatchFaultCode() {
+        return SOAPConstants.FAULT_CODE_VERSION_MISMATCH;
+    }
+    
 }
 

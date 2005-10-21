@@ -1,5 +1,5 @@
 /**
- * $Id: SOAP12XMLDecoder.java,v 1.15 2005-10-20 01:58:36 jitu Exp $
+ * $Id: SOAP12XMLDecoder.java,v 1.16 2005-10-21 04:59:11 jitu Exp $
  */
 
 /*
@@ -264,7 +264,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
             if (msg.isHeaderPresent (name)) {
                 // More than one instance of header whose QName is mapped to a
                 // method parameter. Generates a runtime error.
-                raiseFault (SOAP12Constants.FAULT_CODE_CLIENT, "Duplicate Header" + headerName);
+                raiseFault (getSenderFaultCode(), "Duplicate Header" + headerName);
             }
             Object decoderInfo = rtCtxt.getDecoderInfo (name);
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
@@ -331,4 +331,19 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
         return SOAPBinding.SOAP12HTTP_BINDING;
     }
 
+    @Override
+    protected QName getSenderFaultCode() {
+        return SOAP12Constants.FAULT_CODE_SERVER;
+    }
+    
+    @Override
+    protected QName getReceiverFaultCode() {
+        return SOAP12Constants.FAULT_CODE_CLIENT;
+    }
+    
+    @Override
+    protected QName getVersionMismatchFaultCode() {
+        return SOAP12Constants.FAULT_CODE_VERSION_MISMATCH;
+    }
+    
 }

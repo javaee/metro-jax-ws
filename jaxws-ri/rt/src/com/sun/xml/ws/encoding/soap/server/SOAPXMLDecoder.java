@@ -148,21 +148,21 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         Method method = rtCtxt.getDispatchMethod(name, messageInfo);
         if (method == null) {
-            raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Cannot find the dispatch method");
+            raiseFault(getSenderFaultCode(), "Cannot find the dispatch method");
         }
         messageInfo.setMethod(method);
     }
     
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
         MessageInfo messageInfo) {
-        raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Server cannot handle fault message");
+        raiseFault(getSenderFaultCode(), "Server cannot handle fault message");
         return null;
     }
     
     @Override
     protected void raiseBadXMLFault(HandlerContext ctxt) {
         MessageContextUtil.setHttpStatusCode(ctxt.getMessageContext(), 400);
-        raiseFault(SOAPConstants.FAULT_CODE_CLIENT, "Bad request");
+        raiseFault(getSenderFaultCode(), "Bad request");
     }
 
     @Override
@@ -173,6 +173,26 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
     public Set<String> getRequiredRoles() {
         return requiredRoles;
+    }
+    
+    @Override
+    public String getBindingId() {
+        return SOAPBinding.SOAP11HTTP_BINDING;
+    }
+    
+    @Override
+    protected QName getSenderFaultCode() {
+        return SOAPConstants.FAULT_CODE_CLIENT;
+    }
+    
+    @Override
+    protected QName getReceiverFaultCode() {
+        return SOAPConstants.FAULT_CODE_SERVER;
+    }
+    
+    @Override
+    protected QName getVersionMismatchFaultCode() {
+        return SOAPConstants.FAULT_CODE_VERSION_MISMATCH;
     }
     
 }

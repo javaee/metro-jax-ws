@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPConstants.java,v 1.4 2005-09-10 19:47:39 kohsuke Exp $
+ * $Id: SOAPConstants.java,v 1.5 2005-10-21 04:59:10 jitu Exp $
  */
 
 /*
@@ -52,7 +52,7 @@ public class SOAPConstants {
     public final static QName QNAME_SOAP_FAULT_ACTOR             = new QName("", "faultactor");
     public final static QName QNAME_SOAP_FAULT_DETAIL             = new QName("", "detail");
     public final static QName FAULT_CODE_CLIENT            = new QName(URI_ENVELOPE, "Client");
-    public final static QName FAULT_CODE_SERVER            = new QName(URI_ENVELOPE, "Receiver");
+    public final static QName FAULT_CODE_SERVER            = new QName(URI_ENVELOPE, "Server");
     public final static QName FAULT_CODE_MUST_UNDERSTAND   = new QName(URI_ENVELOPE, "MustUnderstand");
 
     public final static QName FAULT_CODE_VERSION_MISMATCH  = new QName(URI_ENVELOPE, "VersionMismatch");
