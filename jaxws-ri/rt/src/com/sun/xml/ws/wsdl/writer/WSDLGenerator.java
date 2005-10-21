@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLGenerator.java,v 1.47 2005-10-20 02:00:33 jitu Exp $
+ * $Id: WSDLGenerator.java,v 1.48 2005-10-21 19:01:44 kohsuke Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -25,9 +25,11 @@ package com.sun.xml.ws.wsdl.writer;
 
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.bind.api.JAXBRIContext;
+import static com.sun.xml.bind.v2.schemagen.Util.*;
 import com.sun.xml.txw2.TXW;
 import com.sun.xml.txw2.TypedXmlWriter;
-import com.sun.xml.txw2.output.StreamSerializer;
+import com.sun.xml.txw2.output.ResultFactory;
+import com.sun.xml.txw2.output.XmlSerializer;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
 import com.sun.xml.ws.model.CheckedException;
 import com.sun.xml.ws.model.JavaMethod;
@@ -60,12 +62,9 @@ import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
-
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -73,8 +72,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import static com.sun.xml.bind.v2.schemagen.Util.*;
 
 
 /**
@@ -125,20 +122,20 @@ public class WSDLGenerator {
     }
 
     public void doGeneration() {
-        OutputStream serviceOutputStream = null;
-        OutputStream portStream = null;
-        String fileName = model.getJAXBContext().mangleNameToClassName(model.getServiceQName().getLocalPart());
+        XmlSerializer serviceWriter;
+        XmlSerializer portWriter = null;
+        String fileName = JAXBRIContext.mangleNameToClassName(model.getServiceQName().getLocalPart());
 //        System.out.println("concrete name: "+ fileName);
         Result result = wsdlResolver.getWSDLOutput(fileName+DOT_WSDL);
         if (result == null)
             return;
         wsdlLocation = result.getSystemId();
-        serviceOutputStream = getOutputStream(result);
+        serviceWriter = ResultFactory.createSerializer(result);
         if (model.getServiceQName().getNamespaceURI().equals(model.getTargetNamespace())) { 
-            portStream = serviceOutputStream;
+            portWriter = serviceWriter;
             schemaPrefix = fileName+"_";
         } else {
-            String wsdlName = model.getJAXBContext().mangleNameToClassName(model.getPortTypeName().getLocalPart());
+            String wsdlName = JAXBRIContext.mangleNameToClassName(model.getPortTypeName().getLocalPart());
             if (wsdlName.equals(fileName))
                 wsdlName += "PortType";
 //            System.out.println("abstract name: "+ wsdlName);
@@ -152,9 +149,9 @@ public class WSDLGenerator {
             if (result != null) {
                 portWSDLID = result.getSystemId();
                 if (portWSDLID.equals(wsdlLocation)) {
-                    portStream = serviceOutputStream;            
+                    portWriter = serviceWriter;
                 } else {
-                    portStream = getOutputStream(result);
+                    portWriter = ResultFactory.createSerializer(result);
                 }
             } else {
                 portWSDLID = absWSDLName.value;
@@ -163,28 +160,16 @@ public class WSDLGenerator {
             int idx = schemaPrefix.lastIndexOf('.');
             if (idx > 0)
                 schemaPrefix = schemaPrefix.substring(0, idx);
-            schemaPrefix = model.getJAXBContext().mangleNameToClassName(schemaPrefix)+"_";
+            schemaPrefix = JAXBRIContext.mangleNameToClassName(schemaPrefix)+"_";
 //            System.out.println("portWSDLID: "+ portWSDLID);
 //            schemaPrefix = model.getJAXBContext().mangleNameToClassName(portWSDLID)+"_";
 //            System.out.println("schemaPrefix: "+ schemaPrefix);
         }    
-        generateDocument(serviceOutputStream, portStream);
+        generateDocument(serviceWriter, portWriter);
     }
     
-
-    private OutputStream getOutputStream(Result result) {
-        OutputStream stream = null;
-        if (result instanceof StreamResult) {
-            stream = ((StreamResult)result).getOutputStream();
-        } else {
-            // TODO throw an exception
-            throw new WebServiceException("unsupported result");
-        }
-        return stream;
-    }
-    
-    private void generateDocument(OutputStream serviceStream, OutputStream portStream) {
-        serviceDefinitions = TXW.create(Definitions.class, new StreamSerializer(serviceStream));
+    private void generateDocument(XmlSerializer serviceStream, XmlSerializer portStream) {
+        serviceDefinitions = TXW.create(Definitions.class, serviceStream);
         serviceDefinitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
         serviceDefinitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
         serviceDefinitions.targetNamespace(model.getServiceQName().getNamespaceURI());
@@ -196,7 +181,7 @@ public class WSDLGenerator {
         serviceDefinitions.name(model.getServiceQName().getLocalPart());
         if (serviceStream != portStream && portStream != null) {
             // generate an abstract and concrete wsdl
-            portDefinitions = TXW.create(Definitions.class, new StreamSerializer(portStream));
+            portDefinitions = TXW.create(Definitions.class, portStream);
             portDefinitions._namespace(WSDL_NAMESPACE, "");//WSDL_PREFIX);
             portDefinitions._namespace(XSD_NAMESPACE, XSD_PREFIX);
             if (model.getTargetNamespace() != null) {
@@ -378,7 +363,7 @@ public class WSDLGenerator {
     }
 
     protected void generateRpcParameterOrder(Operation operation, JavaMethod method) {
-        String partName = "";
+        String partName;
         StringBuffer paramOrder = new StringBuffer();
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
@@ -399,7 +384,7 @@ public class WSDLGenerator {
 
 
     protected void generateDocumentParameterOrder(Operation operation, JavaMethod method) {
-        String partName = "";
+        String partName;
         StringBuffer paramOrder = new StringBuffer();
         Set<String> partNames = new HashSet<String>();
         List<Parameter> sortedParams = sortMethodParameters(method);
@@ -844,9 +829,9 @@ public class WSDLGenerator {
             StringBuffer relUri = new StringBuffer();
             relUri.append(relPath);
             if (theUri.getQuery() != null)
-                relUri.append('?' + theUri.getQuery());
+                relUri.append('?').append(theUri.getQuery());
             if (theUri.getFragment() != null)
-                relUri.append('#' + theUri.getFragment());
+                relUri.append('#').append(theUri.getFragment());
 
             return relUri.toString();
         } catch (URISyntaxException e) {
