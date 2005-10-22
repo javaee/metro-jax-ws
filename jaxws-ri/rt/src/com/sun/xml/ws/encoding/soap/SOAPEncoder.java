@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.45 2005-10-20 16:25:19 kwalsh Exp $
+ * $Id: SOAPEncoder.java,v 1.46 2005-10-22 01:58:59 vivekp Exp $
  */
 
 /*
@@ -505,7 +505,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
      * @param mi
      * @param im
      */
-    protected void setAttachmentsMap(MessageInfo mi, InternalMessage im) {
+    public void setAttachmentsMap(MessageInfo mi, InternalMessage im) {
         Object rtc = mi.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if (rtc != null) {
             BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();

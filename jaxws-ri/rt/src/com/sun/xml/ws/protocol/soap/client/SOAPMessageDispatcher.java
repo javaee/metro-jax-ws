@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.65 2005-10-20 18:58:56 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.66 2005-10-22 01:59:02 vivekp Exp $
  */
 
 /*
@@ -181,6 +181,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (caller.hasHandlers()) {
                 im = preHandlerOutboundHook(sm, im);
                 handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
+                encoder.setAttachmentsMap(messageInfo, im);
                 updateMessageContext(messageInfo, handlerContext);
                 try {
                     JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
@@ -226,6 +227,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                     updateMessageContext(messageInfo, handlerContext);
                 }
+
+                encoder.setAttachmentsMap(messageInfo, im);
                 //already used im, we can set that to null
                 if ((sm != null) && (im != null))
                     handlerContext.setInternalMessage(null);

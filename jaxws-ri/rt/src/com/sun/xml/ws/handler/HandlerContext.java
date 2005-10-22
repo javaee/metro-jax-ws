@@ -113,10 +113,10 @@ public class HandlerContext {
     }
 
     /*
-    * Returns InternalMessage's BodyBlock value
+    * Returns InternalMessage's BodyBlock value. It can be null for empty body.
     */
     public Object getBody() {
-        return (internalMessage == null) ? null : internalMessage.getBody().getValue();
+        return (internalMessage == null) ? null : ((internalMessage.getBody() == null)?null:internalMessage.getBody().getValue());
     }
 
     /*
