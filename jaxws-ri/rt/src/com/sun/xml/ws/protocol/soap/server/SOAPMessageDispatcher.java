@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.40 2005-10-20 01:59:57 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.41 2005-10-23 17:09:40 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -169,6 +169,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 SOAPDecoder decoder = eptf.getSOAPDecoder();
                 internalMessage = decoder.toInternalMessage(soapMessage, internalMessage, messageInfo);
             }
+            //setup JAXWSAttachmentMarshaller for outgoing attachments
+            SOAPEPTFactory eptf = (SOAPEPTFactory)messageInfo.getEPTFactory();
+            SOAPEncoder encoder = eptf.getSOAPEncoder();
+            encoder.setAttachmentsMap(messageInfo, internalMessage);
+
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
