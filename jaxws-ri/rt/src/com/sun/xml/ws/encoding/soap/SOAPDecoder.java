@@ -594,7 +594,7 @@ public abstract class SOAPDecoder implements Decoder {
         return (charset!=null)?charset:"UTF-8";
     }
 
-    protected void raiseFault(QName faultCode, String faultString) {
+    protected final void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, getBindingId()));
     }
     
