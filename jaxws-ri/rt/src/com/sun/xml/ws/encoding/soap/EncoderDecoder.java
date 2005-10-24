@@ -1,5 +1,5 @@
 /**
- * $Id: EncoderDecoder.java,v 1.32 2005-10-20 15:54:31 vivekp Exp $
+ * $Id: EncoderDecoder.java,v 1.33 2005-10-24 23:21:36 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -296,7 +296,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             for (Map.Entry<String,AttachmentBlock> entry : attachments.entrySet()) {
                 AttachmentBlock ab = entry.getValue();
                 String part = ab.getWSDLPartName();
-                if(part.equals(param.getPartName())){
+                if(part.equals(param.getPartName()) || part.equals("<"+param.getPartName())){
                     Class type = (Class)param.getTypeReference().type;
 
                     if(DataHandler.class.isAssignableFrom(type))
@@ -330,6 +330,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         String contentId;
         try {
             contentId = URLEncoder.encode(mimeParam.getPartName(), "UTF-8")+ '=' +UUID.randomUUID()+"@jaxws.sun.com";
+            contentId="<"+contentId+">";
         } catch (UnsupportedEncodingException e) {
             throw new SerializationException(e);
         }
@@ -361,7 +362,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         if(hc != null){
             MessageContext mc = hc.getMessageContext();
             if(mc != null){
-                MessageContextUtil.addMessageAttachment(mc, contentId, ab.asDataHandler());    
+                MessageContextUtil.addMessageAttachment(mc, ab.getId(), ab.asDataHandler());
             }
         }
 
