@@ -19,6 +19,7 @@
  */
 
 package com.sun.xml.ws.encoding.soap;
+
 import com.sun.xml.ws.pept.encoding.Decoder;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
@@ -48,6 +49,7 @@ import com.sun.xml.ws.streaming.XMLStreamReaderException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
+import com.sun.xml.ws.client.dispatch.DispatchContext;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
@@ -61,6 +63,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -71,6 +74,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.xml.stream.XMLStreamReader.*;
+
 /**
  * @author WS Development Team
  */
@@ -86,13 +90,13 @@ public abstract class SOAPDecoder implements Decoder {
      * FI <code>FastInfosetSource.getInputStream()</code> method via reflection.
      */
     protected static Method FastInfosetSource_getInputStream;
-    
+
     static {
         // Use reflection to avoid static dependency with FI jar
         try {
             Class clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
             FastInfosetSource_getInputStream = clazz.getMethod("getInputStream");
-        } 
+        }
         catch (Exception e) {
             // Falls through
         }
@@ -114,12 +118,13 @@ public abstract class SOAPDecoder implements Decoder {
 
     /**
      * parses and binds headers, body from SOAPMessage.
+     *
      * @param soapMessage
      * @return the <code>InternalMessage</code> for the <code>soapMessage</code>
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
-                    MessageInfo messageInfo) {
-            return null;
+                                             MessageInfo messageInfo) {
+        return null;
     }
 
     /**
@@ -132,13 +137,14 @@ public abstract class SOAPDecoder implements Decoder {
 
     /**
      * Parses and binds headers from SOAPMessage.
+     *
      * @param soapMessage
      * @param internalMessage
      * @param messageInfo
      * @return the InternalMessage representation of the SOAPMessage
      */
     public InternalMessage toInternalMessage(SOAPMessage soapMessage,
-            InternalMessage internalMessage, MessageInfo messageInfo) {
+                                             InternalMessage internalMessage, MessageInfo messageInfo) {
         return null;
     }
 
@@ -146,33 +152,34 @@ public abstract class SOAPDecoder implements Decoder {
         return null;
     }
 
-    public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) { }
+    public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
+    }
 
-    protected QName getEnvelopeTag(){
+    protected QName getEnvelopeTag() {
         return SOAPConstants.QNAME_SOAP_ENVELOPE;
     }
 
-    protected QName getBodyTag(){
+    protected QName getBodyTag() {
         return SOAPConstants.QNAME_SOAP_BODY;
     }
 
-    protected QName getHeaderTag(){
+    protected QName getHeaderTag() {
         return SOAPConstants.QNAME_SOAP_HEADER;
     }
 
-    protected QName getMUAttrQName(){
+    protected QName getMUAttrQName() {
         return SOAPConstants.QNAME_MUSTUNDERSTAND;
     }
 
-    protected QName getRoleAttrQName(){
+    protected QName getRoleAttrQName() {
         return SOAPConstants.QNAME_ROLE;
     }
 
-    protected QName getFaultTag(){
+    protected QName getFaultTag() {
         return SOAPConstants.QNAME_SOAP_FAULT;
     }
 
-    protected QName getFaultDetailTag(){
+    protected QName getFaultDetailTag() {
         return SOAPConstants.QNAME_SOAP_FAULT_DETAIL;
     }
 
@@ -184,21 +191,45 @@ public abstract class SOAPDecoder implements Decoder {
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
+    protected void skipHeader(XMLStreamReader reader) {
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
+            return;
+        }
+        XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        XMLStreamReaderUtil.skipElement(reader);    // Moves to </Header>
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+
+    protected boolean skipHeader(MessageInfo messageInfo) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
+            Service.Mode.PAYLOAD) {
+            return true;
+        }
+        return false;
+    }
+
     /*
-     * skipBody is true, the body is skipped during parsing.
-     */
+    * skipBody is true, the body is skipped during parsing.
+    */
     protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
-            boolean skipBody, MessageInfo messageInfo)
-    {
+                                  boolean skipBody, MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
         XMLStreamReaderUtil.nextElementContent(reader);
-        decodeHeader(reader, messageInfo, request);
+        if (skipHeader(messageInfo))
+            skipHeader(reader);
+        else
+            decodeHeader(reader, messageInfo, request);
+
+
         if (skipBody) {
             skipBody(reader);
         } else {
             decodeBody(reader, request, messageInfo);
         }
+
+
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
         XMLStreamReaderUtil.nextElementContent(reader);
@@ -206,8 +237,7 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected void decodeHeader(XMLStreamReader reader, MessageInfo messageInfo,
-        InternalMessage request)
-    {
+                                InternalMessage request) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
             return;
@@ -226,28 +256,28 @@ public abstract class SOAPDecoder implements Decoder {
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
-    /*
-     * If JAXB can deserialize a header, deserialize it.
-     * Otherwise, just ignore the header
-     */
+/*
+* If JAXB can deserialize a header, deserialize it.
+* Otherwise, just ignore the header
+*/
+
     protected void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
-        InternalMessage msg)
-    {
+                                       InternalMessage msg) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
-        Set<QName> knownHeaders = ((SOAPRuntimeModel)rtCtxt.getModel()).getKnownHeaders();
+        Set<QName> knownHeaders = ((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders();
         QName name = reader.getName();
         if (knownHeaders != null && knownHeaders.contains(name)) {
             QName headerName = reader.getName();
             if (msg.isHeaderPresent(name)) {
                 // More than one instance of header whose QName is mapped to a
                 // method parameter. Generates a runtime error.
-                raiseFault(getSenderFaultCode(), DUPLICATE_HEADER+headerName);
+                raiseFault(getSenderFaultCode(), DUPLICATE_HEADER + headerName);
             }
             Object decoderInfo = rtCtxt.getDecoderInfo(name);
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
-                JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo)decoderInfo;
-                // JAXB leaves on </env:Header> or <nextHeaderElement>
+                JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
+// JAXB leaves on </env:Header> or <nextHeaderElement>
                 bridgeInfo.deserialize(reader, bridgeContext);
                 HeaderBlock headerBlock = new HeaderBlock(bridgeInfo);
                 msg.addHeader(headerBlock);
@@ -259,8 +289,7 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected void decodeBody(XMLStreamReader reader, InternalMessage response,
-            MessageInfo messageInfo)
-    {
+                              MessageInfo messageInfo) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
         int state = XMLStreamReaderUtil.nextElementContent(reader);
@@ -271,27 +300,26 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected void decodeBodyContent(XMLStreamReader reader, InternalMessage response,
-            MessageInfo messageInfo)
-    {
+                                     MessageInfo messageInfo) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         decodeDispatchMethod(reader, response, messageInfo);
         if (reader.getEventType() == START_ELEMENT) {
             QName name = reader.getName(); // Operation name
-            if(name.getNamespaceURI().equals(getEnvelopeTag().getNamespaceURI()) &&
-                    name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)){
+            if (name.getNamespaceURI().equals(getEnvelopeTag().getNamespaceURI()) &&
+                name.getLocalPart().equals(SOAPNamespaceConstants.TAG_FAULT)) {
                 SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
                 BodyBlock responseBody = new BodyBlock(soapFaultInfo);
                 response.setBody(responseBody);
-            }else {
+            } else {
                 Object decoderInfo = rtCtxt.getDecoderInfo(name);
                 if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
-                    JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo)decoderInfo;
+                    JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                     bridgeInfo.deserialize(reader, bridgeContext);
                     BodyBlock responseBody = new BodyBlock(bridgeInfo);
                     response.setBody(responseBody);
                 } else if (decoderInfo != null && decoderInfo instanceof RpcLitPayload) {
-                    RpcLitPayload rpcLitPayload = (RpcLitPayload)decoderInfo;
+                    RpcLitPayload rpcLitPayload = (RpcLitPayload) decoderInfo;
                     RpcLitPayloadSerializer.deserialize(reader, rpcLitPayload, bridgeContext);
                     BodyBlock responseBody = new BodyBlock(rpcLitPayload);
                     response.setBody(responseBody);
@@ -304,37 +332,36 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected SOAPFaultInfo decodeFault(XMLStreamReader reader, InternalMessage internalMessage,
-        MessageInfo messageInfo) {
+                                        MessageInfo messageInfo) {
         return null;
     }
 
+/*
+*
+*/
 
-    /*
-    *
-    */
-   protected void convertBodyBlock(InternalMessage request, MessageInfo messageInfo) {
-       BodyBlock bodyBlock = request.getBody();
-       if (bodyBlock != null) {
-           Object value = bodyBlock.getValue();
-           if (value instanceof JAXBBeanInfo) {
-               System.out.println("******* NOT HANDLED JAXBBeanInfo ***********");
-           } else if (value instanceof JAXBBridgeInfo || value instanceof RpcLitPayload) {
-               // Nothing to do
-           } else if (value instanceof SOAPFaultInfo) {
-               System.out.println("******* NOT HANDLED SOAPFaultInfo **********");
-           } else if (value instanceof Source) {
-               Source source = (Source)value;
-               XMLStreamReader reader = SourceReaderFactory.createSourceReader(source, true);
-               XMLStreamReaderUtil.nextElementContent(reader);
-               decodeBodyContent(reader, request, messageInfo);
-           } else {
-               System.out.println("****** Unknown type in BodyBlock ***** "+value.getClass());
-           }
-       }
-   }
+    protected void convertBodyBlock(InternalMessage request, MessageInfo messageInfo) {
+        BodyBlock bodyBlock = request.getBody();
+        if (bodyBlock != null) {
+            Object value = bodyBlock.getValue();
+            if (value instanceof JAXBBeanInfo) {
+                System.out.println("******* NOT HANDLED JAXBBeanInfo ***********");
+            } else if (value instanceof JAXBBridgeInfo || value instanceof RpcLitPayload) {
+                // Nothing to do
+            } else if (value instanceof SOAPFaultInfo) {
+                System.out.println("******* NOT HANDLED SOAPFaultInfo **********");
+            } else if (value instanceof Source) {
+                Source source = (Source) value;
+                XMLStreamReader reader = SourceReaderFactory.createSourceReader(source, true);
+                XMLStreamReaderUtil.nextElementContent(reader);
+                decodeBodyContent(reader, request, messageInfo);
+            } else {
+                System.out.println("****** Unknown type in BodyBlock ***** " + value.getClass());
+            }
+        }
+    }
 
     /**
-     *
      * @param mi
      * @param im
      * @param message
@@ -343,13 +370,13 @@ public abstract class SOAPDecoder implements Decoder {
      */
     protected void processAttachments(MessageInfo mi, InternalMessage im, SOAPMessage message) throws SOAPException, ParseException, IOException {
         Iterator iter = message.getAttachments();
-        if(iter.hasNext()){
+        if (iter.hasNext()) {
             JAXWSAttachmentUnmarshaller au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
             au.setXOPPackage(isXOPPackage(message));
             au.setAttachments(im.getAttachments());
         }
 
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             AttachmentPart ap = (AttachmentPart) iter.next();
             im.addAttachment(AttachmentBlock.fromSAAJ(ap));
         }
@@ -363,6 +390,7 @@ public abstract class SOAPDecoder implements Decoder {
 
     /**
      * From the SOAP message header find out if its a XOP package.
+     *
      * @param sm
      * @return
      * @throws ParseException
@@ -372,9 +400,9 @@ public abstract class SOAPDecoder implements Decoder {
         ContentType contentType = new ContentType(ct);
         String primary = contentType.getPrimaryType();
         String sub = contentType.getSubType();
-        if(primary.equalsIgnoreCase("application") && sub.equalsIgnoreCase("xop+xml")){
+        if (primary.equalsIgnoreCase("application") && sub.equalsIgnoreCase("xop+xml")) {
             String type = contentType.getParameter("type");
-            if(type.toLowerCase().startsWith("text/xml") || type.toLowerCase().startsWith("application/soap+xml"))
+            if (type.toLowerCase().startsWith("text/xml") || type.toLowerCase().startsWith("application/soap+xml"))
                 return true;
         }
         return false;
@@ -388,15 +416,16 @@ public abstract class SOAPDecoder implements Decoder {
             return values[0];
     }
 
-    /*
-     * It does mustUnderstand processing, and does best guess of MEP
-     *
-     * Avoids SAAJ call that create DOM.
-     *
-     */
+/*
+* It does mustUnderstand processing, and does best guess of MEP
+*
+* Avoids SAAJ call that create DOM.
+*
+*/
+
     public boolean doMustUnderstandProcessing(SOAPMessage soapMessage,
-            MessageInfo mi, HandlerContext handlerContext, boolean getMEP)
-    throws SOAPException, IOException {
+                                              MessageInfo mi, HandlerContext handlerContext, boolean getMEP)
+        throws SOAPException, IOException {
         try {
             boolean oneway = false;
             Source source = soapMessage.getSOAPPart().getContent();
@@ -406,27 +435,25 @@ public abstract class SOAPDecoder implements Decoder {
                 StreamSource streamSource = (StreamSource) source;
                 InputStream is = streamSource.getInputStream();
                 if (is != null && is instanceof ByteInputStream) {
-                    bis = ((ByteInputStream)is);
+                    bis = ((ByteInputStream) is);
                 } else {
-                    System.out.println("****** NOT ByteInputStream **** "+is);
+                    System.out.println("****** NOT ByteInputStream **** " + is);
                 }
-            }
-            else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
+            } else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
                 try {
                     bis = (ByteInputStream) FastInfosetSource_getInputStream.invoke(source);
                 }
                 catch (Exception e) {
-                    throw new XMLReaderException("fastinfoset.noImplementation");                                    
-                }                
-            } 
-            else {
+                    throw new XMLReaderException("fastinfoset.noImplementation");
+                }
+            } else {
                 System.out.println("****** NOT StreamSource **** ");
             }
 
             XMLStreamReader reader =
-                    SourceReaderFactory.createSourceReader(source, true);
+                SourceReaderFactory.createSourceReader(source, true);
             XMLStreamReaderUtil.nextElementContent(reader);
-            checkMustUnderstandHeaders(reader,  mi, handlerContext);
+            checkMustUnderstandHeaders(reader, mi, handlerContext);
 
             if (getMEP) {
                 oneway = isOneway(reader, mi);
@@ -437,19 +464,20 @@ public abstract class SOAPDecoder implements Decoder {
             }
 
             return oneway;
-        } catch(XMLStreamReaderException xe) {
+        } catch (XMLStreamReaderException xe) {
             raiseBadXMLFault(handlerContext);
             throw xe;
         }
     }
 
-    /*
-     * returns Oneway or not. reader is on <Body>
-     *
-     * Peek into the body and make a best guess as to whether the request
-     * is one-way or not. Assume request-response if it cannot be determined.
-     *
-     */
+/*
+* returns Oneway or not. reader is on <Body>
+*
+* Peek into the body and make a best guess as to whether the request
+* is one-way or not. Assume request-response if it cannot be determined.
+*
+*/
+
     private boolean isOneway(XMLStreamReader reader, MessageInfo mi) {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getBodyTag());    // <Body>
@@ -463,16 +491,17 @@ public abstract class SOAPDecoder implements Decoder {
         return (mi.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
 
-    /*
-     * Does MU processing. reader is on <Envelope>, at the end of this method
-     * leaves it on <Body>. Once the roles and understood headers are
-     * known, this calls a separate method to check the message headers
-     * since a different behavior is expected with different bindings.
-     *
-     * Also assume handler chain caller is null unless one is found.
-     */
+/*
+* Does MU processing. reader is on <Envelope>, at the end of this method
+* leaves it on <Body>. Once the roles and understood headers are
+* known, this calls a separate method to check the message headers
+* since a different behavior is expected with different bindings.
+*
+* Also assume handler chain caller is null unless one is found.
+*/
+
     private void checkMustUnderstandHeaders(XMLStreamReader reader, MessageInfo mi,
-            HandlerContext context) {
+                                            HandlerContext context) {
 
         // Decode envelope
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
@@ -496,7 +525,7 @@ public abstract class SOAPDecoder implements Decoder {
 
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
 
-        // start with just the endpoint roles
+// start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
         roles.addAll(getRequiredRoles());
         HandlerChainCaller hcCaller = MessageInfoUtil.getHandlerChainCaller(mi);
@@ -542,18 +571,19 @@ public abstract class SOAPDecoder implements Decoder {
         }
 
         checkHeadersAgainstKnown(reader, roles, understoodHeaders);
-        
+
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
-    /*
-     * This method is overridden for other bindings
-     */
+/*
+* This method is overridden for other bindings
+*/
+
     protected void checkHeadersAgainstKnown(XMLStreamReader reader,
-        Set<String> roles, Set<QName> understoodHeaders) {
-        
+                                            Set<String> roles, Set<QName> understoodHeaders) {
+
         while (true) {
             if (reader.getEventType() == START_ELEMENT) {
                 // check MU header for each role
@@ -572,7 +602,7 @@ public abstract class SOAPDecoder implements Decoder {
                         if (understoodHeaders == null ||
                             !understoodHeaders.contains(qName)) {
                             logger.finest("Element not understood=" + qName);
-                            
+
                             SOAPFault sf = SOAPUtil.createSOAPFault(
                                 MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
                                 SOAPConstants.FAULT_CODE_MUST_UNDERSTAND,
@@ -590,25 +620,25 @@ public abstract class SOAPDecoder implements Decoder {
     }
 
     protected String getSOAPMessageCharsetEncoding(SOAPMessage sm) throws SOAPException {
-        String charset = (String)sm.getProperty(SOAPMessage.CHARACTER_SET_ENCODING);
-        return (charset!=null)?charset:"UTF-8";
+        String charset = (String) sm.getProperty(SOAPMessage.CHARACTER_SET_ENCODING);
+        return (charset != null) ? charset : "UTF-8";
     }
 
     protected final void raiseFault(QName faultCode, String faultString) {
         throw new SOAPFaultException(SOAPUtil.createSOAPFault(faultString, faultCode, null, null, getBindingId()));
     }
-    
+
     protected void raiseBadXMLFault(HandlerContext ctxt) {
     }
-    
+
     protected abstract QName getSenderFaultCode();
-    
+
     protected abstract QName getReceiverFaultCode();
 
     protected abstract QName getVersionMismatchFaultCode();
-    
+
     public abstract String getBindingId();
-    
+
     private final static String DUPLICATE_HEADER =
         "Duplicate Header in the message:";
 

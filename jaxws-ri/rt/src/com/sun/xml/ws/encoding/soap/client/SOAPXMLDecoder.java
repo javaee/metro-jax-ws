@@ -123,6 +123,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     }
 
     @Override
+    //Todo:kw 102505
     public void toMessageInfo(InternalMessage internalMessage, MessageInfo messageInfo) {
 
         RuntimeContext rtContext =
@@ -133,6 +134,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             encoder.toMessageInfo(internalMessage, messageInfo);
 
         } else {
+            if (internalMessage.getBody() != null){
             if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo) {
                 messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
                 messageInfo.setResponse(internalMessage.getBody().getValue());
@@ -147,6 +149,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 else
                     messageInfo.setResponse(internalMessage.getBody().getValue());
             }
+            } else
+             messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
         }
     }
 
