@@ -117,7 +117,7 @@ public class WSHttpHandler implements HttpHandler {
     public void get(HttpExchange msg) {
         WSConnection con = new ServerConnectionImpl(msg);
         try {
-            InputStream is = con.getInput();
+            con.getInput();
             String queryString = msg.getRequestURI().getQuery();
             logger.fine("Query String for request ="+queryString);
 

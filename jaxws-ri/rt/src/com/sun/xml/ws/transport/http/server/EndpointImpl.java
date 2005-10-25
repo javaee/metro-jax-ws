@@ -120,7 +120,7 @@ public class EndpointImpl extends Endpoint {
         
         // See if HttpServer implementation is available
         try {
-            Class clazz = Class.forName("com.sun.net.httpserver.HttpServer");
+            Class.forName("com.sun.net.httpserver.HttpServer");
         } catch(Exception e) {
             throw new UnsupportedOperationException("NOT SUPPORTED");
         }
