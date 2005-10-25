@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointDocInfo.java,v 1.5 2005-10-10 18:04:15 kohsuke Exp $
+ * $Id: EndpointDocInfo.java,v 1.6 2005-10-25 23:11:14 jitu Exp $
  *
  */
 
@@ -24,7 +24,6 @@
  */
 package com.sun.xml.ws.transport.http.server;
 
-import com.sun.xml.ws.server.DocContext;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.wsdl.parser.Service;
 import com.sun.xml.ws.util.ByteArrayBuffer;
@@ -61,10 +60,6 @@ public class EndpointDocInfo implements DocInfo {
     
     public void setQueryString(String queryString) {
         this.queryString = queryString;
-    }
-    
-    public DocContext getDocContext() {
-        return null;
     }
     
     public void setDocType(DOC_TYPE docType) {

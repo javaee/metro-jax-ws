@@ -176,7 +176,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         return result;
     }
     
-    public class StreamDocInfo implements DocInfo {
+    private static class StreamDocInfo implements DocInfo {
         private ByteArrayBuffer bout;
         private String resource;
         private String queryString;
@@ -207,10 +207,6 @@ public class WSDLGenResolver implements WSDLOutputResolver {
 
         public String getQueryString() {
             return queryString;
-        }
-        
-        public DocContext getDocContext() {
-            return new GenDocContext();
         }
 
         public void setQueryString(String queryString) {
@@ -248,17 +244,6 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         public boolean hasPortType() {
             return false;
         }
-
     }
-    
-    public static class GenDocContext implements DocContext {
-    
-        public String getAbsolutePath(String abs, String rel) {
-            int index = abs.lastIndexOf("/");       
-            return abs.substring(0, index+1)+rel;
-        }
-    
-    }
-
 
 }
