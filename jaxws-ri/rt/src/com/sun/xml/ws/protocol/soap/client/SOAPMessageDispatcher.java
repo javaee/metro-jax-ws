@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.66 2005-10-22 01:59:02 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.67 2005-10-25 21:55:32 vivekp Exp $
  */
 
 /*
@@ -102,6 +102,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.messaging.saaj.soap.MessageImpl;
 
 import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
 import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
@@ -366,10 +367,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (javaMethod != null) {
                 soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
                 header.clear();
-                if (soapAction == null) {
-                    soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
-                } else {
-                    soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
+                if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                    if((soapAction != null) && (soapAction.length() > 0)){
+                        ((MessageImpl)soapMessage).setAction(soapAction);
+                    }
+                }else{
+                    if (soapAction == null) {
+                        soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
+                    } else {
+                        soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
+                    }
                 }
             }
         }
