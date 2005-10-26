@@ -1,5 +1,5 @@
 /*
- * $Id: ServletDocInfo.java,v 1.7 2005-10-25 23:11:13 jitu Exp $
+ * $Id: ServletDocInfo.java,v 1.8 2005-10-26 02:20:35 jitu Exp $
  *
  */
 
@@ -77,7 +77,7 @@ public class ServletDocInfo implements DocInfo {
     }
 
     public void setTargetNamespace(String ns) {
-        this.tns = tns;
+        this.tns = ns;
     }
     
     public String getTargetNamespace() {
