@@ -1,5 +1,5 @@
 /*
- * $Id: AttachmentBlock.java,v 1.9 2005-10-06 20:54:51 kohsuke Exp $
+ * $Id: AttachmentBlock.java,v 1.10 2005-10-26 23:41:40 vivekp Exp $
  */
 
 /*
@@ -214,6 +214,9 @@ public abstract class AttachmentBlock {
     public void addTo(SOAPMessage msg) throws SOAPException {
         AttachmentPart part = msg.createAttachmentPart(asDataHandler());
         part.setContentId(getId());
+        //it may be safe to say the encoding is binary meaning the bytes are not subjected any
+        //specific encoding.
+        part.setMimeHeader("Content-transfer-encoding", "binary");
         msg.addAttachmentPart(part);
     }
 
