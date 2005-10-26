@@ -1,5 +1,5 @@
 /*
- * $Id: WSServletDelegate.java,v 1.14 2005-10-12 21:47:44 jitu Exp $
+ * $Id: WSServletDelegate.java,v 1.15 2005-10-26 02:19:30 jitu Exp $
  *
  */
 
@@ -78,7 +78,6 @@ public class WSServletDelegate {
         messageFactory =
             new LocalizableMessageFactory("com.sun.xml.ws.resources.wsservlet");
 
-        this.servletConfig = servletConfig;
         this.servletContext = servletConfig.getServletContext();
 
         if (logger.isLoggable(Level.INFO)) {
@@ -577,7 +576,6 @@ public class WSServletDelegate {
         return SOAPConstants.FAULT_CODE_SERVER;
     }
 
-    private ServletConfig servletConfig;
     private ServletContext servletContext;
     private List<RuntimeEndpointInfo> jaxwsInfo;
     private Localizer defaultLocalizer;
