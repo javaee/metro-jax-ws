@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.67 2005-10-26 19:52:32 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.68 2005-10-26 20:02:05 kohlert Exp $
  */
 
 /*
@@ -319,9 +319,7 @@ public class RuntimeModeler {
             targetNamespace = getNamespace(packageName);
         }
         runtimeModel.setTargetNamespace(targetNamespace);
-        System.out.println("class: "+clazz.getName());
         QName portTypeName = new QName(targetNamespace, portTypeLocalName);
-        System.out.println("portTypeName: "+portTypeName);
         runtimeModel.setPortTypeName(portTypeName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
 
