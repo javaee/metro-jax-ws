@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.66 2005-10-20 01:59:13 jitu Exp $
+ * $Id: RuntimeModeler.java,v 1.67 2005-10-26 19:52:32 kohlert Exp $
  */
 
 /*
@@ -316,12 +316,12 @@ public class RuntimeModeler {
         if (clazz.getPackage() != null)
             packageName = clazz.getPackage().getName();
         if (targetNamespace.length() == 0) {
-            if (packageName == null) {
-            }
             targetNamespace = getNamespace(packageName);
         }
         runtimeModel.setTargetNamespace(targetNamespace);
+        System.out.println("class: "+clazz.getName());
         QName portTypeName = new QName(targetNamespace, portTypeLocalName);
+        System.out.println("portTypeName: "+portTypeName);
         runtimeModel.setPortTypeName(portTypeName);
         runtimeModel.setWSDLLocation(webService.wsdlLocation());
 
@@ -1180,12 +1180,12 @@ public class RuntimeModeler {
         }
         String targetNamespace = getNamespace(packageName); 
         if (webService.targetNamespace().length() > 0) {
-            if (packageName == null) {
-                throw new RuntimeModelerException("runtime.modeler.no.package",
-                                 new Object[] {implClass.getName()});
-            }
             targetNamespace = webService.targetNamespace();
+        } else if (targetNamespace == null) {
+            throw new RuntimeModelerException("runtime.modeler.no.package",
+                             new Object[] {implClass.getName()});
         }
+
 
 
         return new QName(targetNamespace, name);
@@ -1215,12 +1215,12 @@ public class RuntimeModeler {
         }
         String targetNamespace = getNamespace(packageName);
         if (webService.targetNamespace().length() > 0) {
-            if (packageName == null || packageName.length()==0) {
-                throw new RuntimeModelerException("runtime.modeler.no.package",
-                    new Object[] {implClass.getName()});
-            }
             targetNamespace = webService.targetNamespace();
+        } else if (targetNamespace == null) {
+            throw new RuntimeModelerException("runtime.modeler.no.package",
+                new Object[] {implClass.getName()});
         }
+
         return new QName(targetNamespace, name);
     }
 
@@ -1261,9 +1261,12 @@ public class RuntimeModeler {
         }
 
         String tns = webService.targetNamespace();
-        if(tns.length() == 0)
+        if (tns.length() == 0)
             tns = getNamespace(clazz.getPackage().getName());
-
+        if (tns == null) {
+            throw new RuntimeModelerException("runtime.modeler.no.package",
+                new Object[] {clazz.getName()});
+        }
         return new QName(tns, name);
     }
 
