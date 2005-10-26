@@ -58,7 +58,6 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
         Object[] data = new Object[1];
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-        Provider provider = (Provider)endpointInfo.getImplementor();
         Class providerClass = endpointInfo.getImplementorClass();
         boolean isSource = isSource(providerClass);
         boolean isSoapMessage = isSoapMessage(providerClass);
@@ -114,7 +113,6 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
         Object obj = messageInfo.getResponse();
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-        Provider provider = (Provider)endpointInfo.getImplementor();
         Class providerClass = endpointInfo.getImplementorClass();
         
         if (messageInfo.getResponseType() == MessageInfo.NORMAL_RESPONSE &&
