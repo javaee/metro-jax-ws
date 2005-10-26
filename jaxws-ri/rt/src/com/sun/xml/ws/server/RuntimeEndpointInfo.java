@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.65 2005-10-03 18:23:55 bbissett Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.66 2005-10-26 01:55:39 jitu Exp $
  */
 
 /*
@@ -80,7 +80,6 @@ public class RuntimeEndpointInfo extends Endpoint
     implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
     
     private String name;
-    private Exception exception;
     private QName portName;
     private QName serviceName;
     private String wsdlFileName;
@@ -97,7 +96,6 @@ public class RuntimeEndpointInfo extends Endpoint
     private boolean beginServiceDone;
     private boolean endServiceDone;
     private boolean injectedContext;
-    private boolean injectCompleted;
     private boolean publishingDone;
     private URL wsdlUrl;
     private EntityResolver wsdlResolver;
@@ -109,11 +107,6 @@ public class RuntimeEndpointInfo extends Endpoint
     private static final Localizer localizer = new Localizer();
     private static final LocalizableMessageFactory messageFactory =
         new LocalizableMessageFactory("com.sun.xml.ws.resources.server");
-
-
-    public void setException(Exception e) {
-        exception = e;
-    }
 
     public String getName() {
         return name;
@@ -812,9 +805,9 @@ public class RuntimeEndpointInfo extends Endpoint
     public static void publishWSDLDocs(RuntimeEndpointInfo endpointInfo) {
         // Set queryString for the documents
         Map<String, DocInfo> docs = endpointInfo.getDocMetadata();
-		if (docs == null) {
-			return;
-		}
+        if (docs == null) {
+            return;
+        }
         Set<Entry<String, DocInfo>> entries = docs.entrySet();
         List<String> wsdlSystemIds = new ArrayList<String>();
         List<String> schemaSystemIds = new ArrayList<String>();
