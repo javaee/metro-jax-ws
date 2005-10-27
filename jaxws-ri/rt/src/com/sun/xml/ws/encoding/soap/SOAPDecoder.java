@@ -64,6 +64,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -343,20 +344,16 @@ public abstract class SOAPDecoder implements Decoder {
     protected void convertBodyBlock(InternalMessage request, MessageInfo messageInfo) {
         BodyBlock bodyBlock = request.getBody();
         if (bodyBlock != null) {
-            Object value = bodyBlock.getValue();
-            if (value instanceof JAXBBeanInfo) {
-                System.out.println("******* NOT HANDLED JAXBBeanInfo ***********");
-            } else if (value instanceof JAXBBridgeInfo || value instanceof RpcLitPayload) {
+            Object value = bodyBlock.getValue();  
+            if (value instanceof JAXBBridgeInfo || value instanceof RpcLitPayload) {
                 // Nothing to do
-            } else if (value instanceof SOAPFaultInfo) {
-                System.out.println("******* NOT HANDLED SOAPFaultInfo **********");
             } else if (value instanceof Source) {
                 Source source = (Source) value;
                 XMLStreamReader reader = SourceReaderFactory.createSourceReader(source, true);
                 XMLStreamReaderUtil.nextElementContent(reader);
                 decodeBodyContent(reader, request, messageInfo);
             } else {
-                System.out.println("****** Unknown type in BodyBlock ***** " + value.getClass());
+                throw new WebServiceException("Shouldn't happen. Unknown type in BodyBlock =" + value.getClass());
             }
         }
     }
@@ -437,7 +434,7 @@ public abstract class SOAPDecoder implements Decoder {
                 if (is != null && is instanceof ByteInputStream) {
                     bis = ((ByteInputStream) is);
                 } else {
-                    System.out.println("****** NOT ByteInputStream **** " + is);
+                    logger.fine("SAAJ StreamSource doesn't have ByteInputStream " + is);
                 }
             } else if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource")) {
                 try {
@@ -447,7 +444,7 @@ public abstract class SOAPDecoder implements Decoder {
                     throw new XMLReaderException("fastinfoset.noImplementation");
                 }
             } else {
-                System.out.println("****** NOT StreamSource **** ");
+                logger.fine("Inefficient Use - SOAPMessage is already parsed");
             }
 
             XMLStreamReader reader =
