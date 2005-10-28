@@ -18,11 +18,11 @@
 </head>
 
 <body lang="en-US" dir="ltr">
-  <h1>JAX-WS 2.0 Early Access 2<br>
+  <h1>JAX-WS 2.0 Beta<br>
   Dispatch&lt;T&gt;</h1>
   <hr>
 
-  <p>Last Modified: 07/20/05</p>
+  <p>Last Modified: 10/28/05</p>
 
   <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.ws.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
@@ -76,7 +76,7 @@ Dispatch dispatch = service.createDispatch(QName portName, JAXBContext jaxbconte
 
   <h3>Set the <code>JAXRPCContext</code> for the request.</h3>
 
-  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.ws.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the <code>JAXRPCContext</code> request and response context. Standard <code>BindingProvider</code> properties are defined by the JAXRPC 2.0 Early Draft specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
+  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.ws.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the <code>JAXRPCContext</code> request and response context. Standard <code>BindingProvider</code> properties are defined by the JAXRPC 2.0 specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
 
   <h3>Prepare the message request.</h3>
 
