@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPXMLEncoder.java,v 1.19 2005-10-20 01:58:38 jitu Exp $
+ * $Id: SOAPXMLEncoder.java,v 1.20 2005-10-31 16:59:04 kwalsh Exp $
  */
 
 /*
@@ -35,10 +35,13 @@ import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.encoding.soap.SOAPConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
@@ -49,9 +52,12 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamReader;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.transform.Source;
 import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
@@ -82,6 +88,20 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             return true;
         }
         return false;
+    }
+
+    protected QName getHeaderTag() {
+        return SOAPConstants.QNAME_SOAP_HEADER;
+    }
+
+     protected void skipHeader(XMLStreamReader writer) {
+        //XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        //if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
+          //  return;
+        //}
+        //XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
+        //XMLStreamReaderUtil.skipElement(reader);    // Moves to </Header>
+        //XMLStreamReaderUtil.nextElementContent(reader);
     }
 
     @Override
@@ -151,7 +171,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             writer.writeStartDocument();
             startEnvelope(writer);
             writeEnvelopeNamespaces(writer, messageInfo);
-            writeHeaders(writer, internalMessage, messageInfo);
+            if (!skipHeader(messageInfo))
+                writeHeaders(writer, internalMessage, messageInfo);
             writeBody(writer, internalMessage, messageInfo);
             endEnvelope(writer);
             writer.writeEndDocument();

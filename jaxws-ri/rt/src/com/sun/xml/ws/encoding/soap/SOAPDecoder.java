@@ -58,6 +58,7 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.handler.MessageContext;
@@ -198,8 +199,23 @@ public abstract class SOAPDecoder implements Decoder {
             return;
         }
         XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
-        XMLStreamReaderUtil.skipElement(reader);    // Moves to </Header>
-        XMLStreamReaderUtil.nextElementContent(reader);
+
+
+      XMLStreamReaderUtil.skipElement(reader);    // Moves to </Header>
+        try {
+            reader.next();
+            //while (reader.getEventType() != START_ELEMENT)
+            //    reader.next();
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        }
+        //XMLStreamReaderUtil.nextElementContent(reader);
+       // try {
+       //reader.next();
+       // } catch (Exception ex){
+        //    ex.printStackTrace();
+        //}
+      // System.out.println("Skip header " + reader.getLocalName() );
     }
 
     protected boolean skipHeader(MessageInfo messageInfo) {
@@ -265,6 +281,11 @@ public abstract class SOAPDecoder implements Decoder {
     protected void decodeHeaderElement(XMLStreamReader reader, MessageInfo messageInfo,
                                        InternalMessage msg) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+        if (rtCtxt == null){
+           XMLStreamReaderUtil.skipElement(reader);           // Moves to END state
+           XMLStreamReaderUtil.nextElementContent(reader);
+           return;
+        }
         BridgeContext bridgeContext = rtCtxt.getBridgeContext();
         Set<QName> knownHeaders = ((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders();
         QName name = reader.getName();

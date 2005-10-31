@@ -91,7 +91,8 @@ public final class DispatchSerializer {
                         QName name = reader.getName();
                         //bug fix for 6333609
                         writer.writeStartElement(name.getPrefix() + ":" + name.getLocalPart());
-                        writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
+                        writer.writeNamespace(name.getPrefix(),reader.getNamespaceContext().getNamespaceURI(name.getPrefix()));
                         //comment out for bug fix 6333609
                         //writer.writeStartElement(name.getPrefix(),name.getLocalPart(), name.getNamespaceURI());
 
@@ -111,9 +112,11 @@ public final class DispatchSerializer {
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
+                        writer.flush();
                         break;
                     case CHARACTERS:
                         writer.writeCharacters(reader.getText());
+                        writer.flush();
                 }
                 state = XMLStreamReaderUtil.next(reader);
                 if ((reader.getEventType() == END_ELEMENT) && (reader.getName().equals(bodyTagName)))
@@ -121,6 +124,7 @@ public final class DispatchSerializer {
             }
             writer.flush();
             writer.close();
+            reader.close();
         } catch (XMLStreamException ex) {
             ex.printStackTrace();
         }
