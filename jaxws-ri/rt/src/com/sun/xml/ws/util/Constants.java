@@ -1,5 +1,5 @@
 /*
- * $Id: Constants.java,v 1.3 2005-09-10 19:48:12 kohsuke Exp $
+ * $Id: Constants.java,v 1.4 2005-10-31 19:05:08 jitu Exp $
  */
 
 /*
@@ -35,5 +35,5 @@ public class Constants {
      * WS SI Logging Domain
      */
     public static final String LoggingDomain =
-        "javax.enterprise.resource.webservices.rpc";
+        "javax.enterprise.resource.webservices.jaxws";
 }
