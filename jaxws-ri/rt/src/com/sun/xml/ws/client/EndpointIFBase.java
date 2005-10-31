@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.15 2005-10-20 01:57:12 jitu Exp $
+ * $Id: EndpointIFBase.java,v 1.16 2005-10-31 20:34:05 kohsuke Exp $
  */
 
 /*
@@ -40,8 +40,8 @@ import java.util.Map;
 public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
     com.sun.xml.ws.spi.runtime.StubBase, BindingProvider, InternalBindingProvider {
 
-    protected Map _requestContext;
-    protected Map _responseContext;
+    protected Map<String, Object> _requestContext;
+    protected Map<String, Object> _responseContext;
 
     protected URI _bindingId = null;
     protected Delegate _delegate = null;
@@ -50,7 +50,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
     private ClientTransportFactory _transportFactory;
 
     void setResponseContext(ResponseContext context) {
-        _responseContext = (ContextMap) context;
+        _responseContext = context;
     }
 
     public void _setDelegate(Delegate delegate) {
@@ -117,7 +117,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
     }
 
     public Binding getBinding() {
-        return (Binding) binding;
+        return binding;
     }
 
     public void _setBinding(BindingImpl binding) {
@@ -126,7 +126,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
 
 
     public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
-        _setTransportFactory((com.sun.xml.ws.spi.runtime.ClientTransportFactory) f);
+        _setTransportFactory((ClientTransportFactory) f);
     }
 
     /**
