@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLPublisher.java,v 1.10 2005-09-10 19:47:58 kohsuke Exp $
+ * $Id: WSDLPublisher.java,v 1.11 2005-11-01 23:16:30 jitu Exp $
  */
 
 /*
@@ -49,7 +49,6 @@ public class WSDLPublisher {
 
     public WSDLPublisher(ServletContext context,
             List<RuntimeEndpointInfo> endpoints) {
-        this.servletContext = context;
         this.endpoints = endpoints;
         localizer = new Localizer();
         messageFactory =
@@ -63,7 +62,7 @@ public class WSDLPublisher {
         HttpServletResponse response)
         throws IOException, ServletException {
 
-        Iterator urlPatterns = fixedUrlPatternEndpoints.keySet().iterator();
+        Iterator urlPatterns = fixedUrlPatternEndpoints.entrySet().iterator();
         String urlPattern = null;
 
         // need to find correct url pattern in map to create baseAddress
@@ -72,8 +71,9 @@ public class WSDLPublisher {
          * are >2 url patterns for the same endpoint.)
          */
         while (urlPatterns.hasNext()) { // could be empty
-            String testPattern = (String) urlPatterns.next();
-            if (targetEndpoint == fixedUrlPatternEndpoints.get(testPattern)) {
+            Map.Entry entry = (Map.Entry) urlPatterns.next();
+            String testPattern = (String)entry.getKey();
+            if (targetEndpoint == (RuntimeEndpointInfo)entry.getValue()) {
                 urlPattern = testPattern;
                 break;
             }
@@ -90,14 +90,15 @@ public class WSDLPublisher {
             fixedUrlPatternEndpoints.put(urlPattern, targetEndpoint);
         }
 
-
-        String actualAddress =
-            request.getScheme()
-                + "://"
-                + request.getServerName()
-                + ":"
-                + request.getServerPort()
-                + request.getRequestURI();
+        StringBuffer addrBuf = new StringBuffer();
+        addrBuf.append(request.getScheme());
+        addrBuf.append("://");
+        addrBuf.append(request.getServerName());
+        addrBuf.append(":");
+        addrBuf.append(request.getServerPort());
+        addrBuf.append(request.getRequestURI());
+        
+        String actualAddress = addrBuf.toString();
         String baseAddress =
             actualAddress.substring(0, actualAddress.lastIndexOf(urlPattern));
 
@@ -146,7 +147,6 @@ public class WSDLPublisher {
         out.println("</html>");
     }
 
-    private ServletContext servletContext;
     private List<RuntimeEndpointInfo> endpoints;
     private Localizer localizer;
     private LocalizableMessageFactory messageFactory;
