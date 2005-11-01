@@ -32,6 +32,7 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import java.io.IOException;
@@ -142,25 +143,30 @@ public class WSHttpHandler implements HttpHandler {
             
             InputStream docStream = null;
             try {
-                Map<String,List<String>> headers = new HashMap<String, List<String>>();
-                List<String> ctHeader = new ArrayList<String>();
-                ctHeader.add(XML_CONTENT_TYPE);
-                headers.put(CONTENT_TYPE_HEADER, ctHeader);
-                con.setHeaders(headers);
+                Map<String, List<String>> reqHeaders = con.getHeaders();
+                List<String> hostHeader = reqHeaders.get("Host");
+                
+                Headers respHeaders = new Headers();
+                respHeaders.add(CONTENT_TYPE_HEADER, XML_CONTENT_TYPE);
+                con.setHeaders(respHeaders);
                 con.setStatus(HttpURLConnection.HTTP_OK);
                 OutputStream os = con.getOutput();
 
                 List<RuntimeEndpointInfo> endpoints = new ArrayList<RuntimeEndpointInfo>();
                 endpoints.add(endpointInfo);
                
-                String scheme = (msg instanceof HttpsExchange) ? "https" : "http" ;
-                String address =
-                    scheme
-                        + "://"
-                        + msg.getLocalAddress().getHostName()
-                        + ":"
-                        + msg.getLocalAddress().getPort()
-                        + msg.getRequestURI().getPath();
+                StringBuffer strBuf = new StringBuffer();
+                strBuf.append((msg instanceof HttpsExchange) ? "https" : "http");
+                strBuf.append("://");
+                if (hostHeader != null) {
+                    strBuf.append(hostHeader.get(0));   // Uses Host header
+                } else {
+                    strBuf.append(msg.getLocalAddress().getHostName());
+                    strBuf.append(":");
+                    strBuf.append(msg.getLocalAddress().getPort());
+                }
+                strBuf.append(msg.getRequestURI().getPath());
+                String address = strBuf.toString();
                 logger.fine("Address ="+address);
                 WSDLPatcher patcher = new WSDLPatcher(docInfo, address,
                         endpointInfo, endpoints);
