@@ -26,43 +26,46 @@
 
   <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.ws.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
-  <p>Four Message Exchange Protocols(MEP) are supported: request-response, one way, asynchronous polling, and callback. Each of these invocation MEPs are required with JAXB data bound <code>java.lang.Object</code>, <code>javax.xml.transform.Source</code>, and <code>javax.xml.soap.SOAPMessage</code> object requests.</p>
+  <p>Four Message Exchange Protocols(MEP) are supported: request-response, one way, asynchronous polling, and callback. Each of these invocation MEPs are required with JAXB data bound <code>java.lang.Object</code>, <code>javax.xml.transform.Source</code>,  <code>javax.xml.soap.SOAPMessage</code> and <code>javax.activation.DataSource</code> object requests.</p>
 
-  <p>The <code>javax.xml.ws.Service</code> interface acts as a factory for the creation of <code>Dispatch</code> instances. In addition, a <code>Dispatch</code> instance is created in either <code>Service.Mode.PAYLOAD</code> or <code>Service.Mode.MESSAGE</code> modes. A <code>javax.xml.soap.SOAPMessage</code> request can only be used with a Dispatch instance of <code>Service.Mode.MESSAGE</code>.</p>
+  <p>The <code>javax.xml.ws.Service</code> acts as a factory for the creation of <code>Dispatch&lt;T&gt;</code> instances. In addition, a <code>Dispatch&lt;T&gt;</code> instance is created in either <code>Service.Mode.PAYLOAD</code> or <code>Service.Mode.MESSAGE</code> modes. A <code>javax.xml.soap.SOAPMessage</code> request can only be used with a <code>Dispatch&lt;T&gt;</code> instance of <code>Service.Mode.MESSAGE</code> and using the SOAP Binding. A <code>javax.activation.DataSource</code> request can only be used with a <code>Dispatch&lt;T&gt;</code> instance of <code>Service.Mode.MESSAGE</code> and using the XML/HTTP Binding.</p>
 
-  <p>Note that the <code>Dispatch&lt;T&gt;</code> instance simply acts as a conduit for the request. No validation of the message is required to be performed by the implementation, though some may catch errors during request processing. Additionally, <code>Dispatch&lt;T&gt;</code> has no knowledge of the web service and the WSDL definition. It is up to the client program to supply well-formed XML requests.</p>
+  <p>Note that the <code>Dispatch&lt;T&gt;</code> instance simply acts as a conduit for the request. No validation of the message is required to be performed by the implementation, though some may catch errors during request processing. It is up to the client program to supply well-formed XML requests.</p>
+  <h3>Programming Model</h3>
+  <h3>Create a dynamic <code>Service</code>.</h3>
 
-  <h2>Programming model</h2>
+  <p>The <code>javax.xml.ws.Service</code> acts as a factory for the creation of a dynamic <code>Service</code>. When created for use with <code>Dispatch&lt;T&gt;</code> APIs the <code>Service</code> created can be either a <code>Service</code> that has knowledge of the binding information of a known <code>Service</code> or no knowledge of any specific <code>Service</code>.</p> 
+  <p>That is, when the <code>Service</code> is created with a WSDL file the port(s) binding ID, QName, and endpoint address are known to the <code>Service</code>.</p>
 
-  <h3>Create a <code>Service</code> instance.</h3>
-
-  <p>The <code>javax.xml.ws.ServiceFactory</code> acts as a factory for the creation of <code>Service</code> instances. When created for use with <code>Dispatch</code> APIs the <code>Service</code> created is a non-configured <code>Service</code>. That is, the <code>Service</code> has no knowledge of the web service WSDL file other than what the client developer supplies.</p>
-
-  <p>The easiest way to create a <code>Service</code> is show here:</p>
+  <p>The methods to create a dynamic <code>Service</code> are shown here:</p>
   <pre>
-Service serviceFactory = ServiceFactory.newInstance();
-Service service = serviceFactory.createService(serviceQName);
+Service service = Service.createService(QName serviceQName);
+Service service = Service.createService(URL wsdlLocation, QName serviceQName);
 </pre>
 
-  <p>Other methods in <code>ServiceFactory</code> may be used to create a <code>Service</code>. However, they are not supported in this EA release of JAXRPC 2.0. In these cases, the created service would still be devoid of the WSDL knowledge of the web service types, messages, and operations.</p>
+  <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service has an <code>addPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch&lt;T&gt;</code> instances.</p>
+  <p>If the <code>Service</code> has been created with WSDL binding information the the port need not be added as the <code>Dispatch&lt;T&gt;</code> instance will be created specific for the binding information provided in the supplied WSDL file.</p>
 
-  <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service instance has a <code>createPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch</code> instances.</p>
+  <p>Developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint address parameters of this method. The JAX-WS 2.0 beta implementation supports three <code>Binding</code> URI's, that of the SOAP 1.1, the SOAP 1.2 and XML/HTTP Binding. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents. For the XML/HTTP binding please see chapter 11 of the JAX-WS 2.0 PFD Specification.</p>
 
-  <p>Those developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint parameters of this method. Currently, the JAXRPC 2.0 EA2 implementation supports two <code>Binding</code> URI's, that of the SOAP 1.1 and SOAP 1.2 Bindings. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents.</p>
-
-  <p>The creation of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
+  <p>The addition of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
   <pre>
-service.createPort(QName portName, URI new URI(SOAPBinding.SOAP11HTTP_BINDING),String endpointAddress);
+service.addPort(QName portName, URI new URI(SOAPBinding.SOAP11HTTP_BINDING),String endpointAddress);
 </pre>
 
-<p>SOAP 1.2 support has been implemented for <code>Dispatch</code>. This requires only one change in the programming model. The creation of the SOAP 1.2 port using the <code>Service</code> API is shown here:</p>
+<p>SOAP 1.2 support has been implemented for <code>Dispatch</code>. This requires only one change in the programming model. The addition of the SOAP 1.2 port using the <code>Service</code> API is shown here:</p>
   <pre>
-service.createPort(QName portName, URI new URI(SOAPBinding.SOAP12HTTP_BINDING),String endpointAddress);
+service.addPort(QName portName, URI new URI(SOAPBinding.SOAP12HTTP_BINDING),String endpointAddress);
 </pre>
 
-  <h3>Create a <code>Dispatch</code> instance.</h3>
+<p>XML/HTTP binding support has been implemented for <code>Dispatch</code>. The creation of the XML/HTTP port using the <code>Service</code> API is shown here:</p>
+  <pre>
+service.addPort(QName portName, URI new URI(HTTPBinding.HTTP_BINDING),String endpointAddress);
+</pre>
 
-  <p>The <code>Dispatch</code> object can be created using either of these two <code>Service</code> methods:</p>
+  <h3>Create a <code>Dispatch&lt;T&gt;</code> instance.</h3>
+
+  <p>The <code>Dispatch&lt;T&gt;</code> object can be created using either of these two <code>Service</code> methods:</p>
   <pre>
 Dispatch dispatch = service.createDispatch(QName portName, Class clazz, Service.Mode mode);
 Dispatch dispatch = service.createDispatch(QName portName, JAXBContext jaxbcontext, Service.Mode mode);
@@ -74,13 +77,13 @@ Dispatch dispatch = service.createDispatch(QName portName, JAXBContext jaxbconte
 
   <p>It is important to note that once the <code>Dispatch&lt;T&gt;</code> instance is created it is static. That is, its <code>Service.Mode</code> or request type can not be changed. The instance can be reused given the caveat that if it is a JAXB-specific <code>Dispatch&lt;T&gt;</code> it must be reused with objects known to the same <code>JAXBContext</code>.</p>
 
-  <h3>Set the <code>JAXRPCContext</code> for the request.</h3>
+  <h3>Set the context <code>Map&lt;String, Object&gt;</code> for the request.</h3>
 
-  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.ws.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the <code>JAXRPCContext</code> request and response context. Standard <code>BindingProvider</code> properties are defined by the JAXRPC 2.0 specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
+  <p style="margin-top: 0.17in; page-break-after: avoid">The <code>Dispatch&lt;T&gt;</code> interface extends the <code>javax.xml.ws.BindingProvider</code> interface. The <code>BindingProvider</code> interface defines accessor methods for the request and response context maps. Standard <code>BindingProvider</code> properties are defined by the JAX-WS 2.0 specification and the client program may set and get these properties. The application may also define application-specific properties, but the specification discourages this for portability reasons.</p>
 
   <h3>Prepare the message request.</h3>
 
-  <p>This is the client developer's responsibility. For examples of how to prepare specific request types refer to the <code>Dispatch</code> sample applications.</p>
+  <p>This is the client developer's responsibility. For examples of how to prepare specific request types refer to the <code>Dispatch&lt;T&gt;</code> sample applications.</p>
 
   <h3>Invoke the web service request.</h3>
 
@@ -100,12 +103,12 @@ Future&lt;?&gt; response = dispatch.invokeAsync(T, AsyncHandler);
 
   <p>The <code>Future&lt;T&gt;</code> interface also has a <code>cancel</code> method that will attempt to cancel the request invocation if the request is being invoked.</p>
 
-  <p>Faults returned from the service or exceptions thrown during the invocation are returned when the Resp<code>onse&lt;T&gt;</code> <code>get</code> method is called. Because the execution doesn't occur in the main thread, the exception or fault returned is wrapped in an <code>java.util.concurrent.ExecutionException</code>. To obtain the actual cause use the <code>getCause</code> method of <code>ExecutionException</code>.</p>
+  <p>Faults returned from the service or exceptions thrown during the invocation are returned when the <code>Response&lt;T&gt;</code> <code>get</code> method is called. Because the execution doesn't occur in the main thread, the exception or fault returned is wrapped in an <code>java.util.concurrent.ExecutionException</code>. To obtain the actual cause use the <code>getCause</code> method of <code>ExecutionException</code>.</p>
 
   <p>For more information on the <code>java.util.concurrent.Future&lt;?&gt;</code> interface see the J2SE 5.0 documentation.</p>
   <pre>
 public interface Response&lt;T&gt;extends java.util.concurrent.Future&lt;T&gt;{
-        JAXRPCContext getContext();
+       Map&lt;String, Object&gt; getContext();
 }
 </pre>
 
@@ -118,7 +121,7 @@ class ResponseHandler implements javax.xml.ws.AsyncHandler{
 
   <p>This form of the asynchronous invocation method returns a <code>Future&lt;?&gt;</code> object with wildcard type. As in the asynchronous poll invocation, the <code>Future&lt;T&gt;</code> object can be polled to see if the response is ready. However, calling the <code>get</code> method will not return the response of the invocation, but an object of indeterminate type.</p>
 
-  <p>Examples of synchronous and asynchronous invocations are shown in the <code>Dispatch</code> samples. For convenience an example of <code>Response</code> usage is display here:</p>
+  <p>Examples of synchronous and asynchronous invocations are shown in the <code>Dispatch&lt;T&gt;</code> samples. For convenience an example of <code>Response&lt;T&gt;</code> usage is display here:</p>
   <pre>
 Response&lt;Source&gt; response = dispatch.invokeAsync(Source);
 while (!response.isDone()){
