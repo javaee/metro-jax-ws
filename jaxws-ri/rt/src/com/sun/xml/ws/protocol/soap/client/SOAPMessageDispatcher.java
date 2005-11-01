@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.67 2005-10-25 21:55:32 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.68 2005-11-01 18:50:10 kwalsh Exp $
  */
 
 /*
@@ -106,6 +106,7 @@ import com.sun.xml.messaging.saaj.soap.MessageImpl;
 
 import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
 import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
+
 import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
 import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
@@ -189,13 +190,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     boolean isXopped = false;
                     //there are handlers so disable Xop encoding if enabled, so that they dont
                     // see xop:Include reference
-                    if((am != null) && am.isXOPPackage()){
+                    if ((am != null) && am.isXOPPackage()) {
                         isXopped = am.isXOPPackage();
                         am.setXOPPackage(false);
                     }
                     handlerResult = callHandlersOnRequest(handlerContext);
                     // now put back the old value
-                    if((am != null)){
+                    if ((am != null)) {
                         am.setXOPPackage(isXopped);
                     }
                 } catch (ProtocolException pe) {
@@ -368,16 +369,24 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
                 header.clear();
                 if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-                    if((soapAction != null) && (soapAction.length() > 0)){
-                        ((MessageImpl)soapMessage).setAction(soapAction);
+                    if ((soapAction != null) && (soapAction.length() > 0)) {
+                        ((MessageImpl) soapMessage).setAction(soapAction);
                     }
-                }else{
+                } else {
                     if (soapAction == null) {
                         soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
                     } else {
                         soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
                     }
                 }
+            }
+        } else if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null) {
+            //bug fix 6344358
+            header.clear();
+            if (soapAction == null) {
+                soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
+            } else {
+                soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
             }
         }
 
@@ -392,7 +401,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.put(CLIENT_TRANSPORT_FACTORY, clientTransportFactory);
         }
         connection = clientTransportFactory.create(context);
-        messageInfo.setConnection((Connection)connection);
+        messageInfo.setConnection((Connection) connection);
     }
 
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {
@@ -455,15 +464,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             throw new RuntimeException(ex);
         }
         SOAPHandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
-        WSConnection con = (WSConnection)messageInfo.getConnection();
+        WSConnection con = (WSConnection) messageInfo.getConnection();
         MessageContextUtil.setHttpStatusCode(handlerContext.getMessageContext(),
-                con.getStatus());
+            con.getStatus());
         MessageContextUtil.setHttpResponseHeaders(handlerContext.getMessageContext(),
-                con.getHeaders());
+            con.getHeaders());
 
         //set the handlerContext to RuntimeContext
         RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
-        if(rtContext != null)
+        if (rtContext != null)
             rtContext.setHandlerContext(handlerContext);
 
         SystemHandlerDelegate systemHandlerDelegate =
@@ -638,7 +647,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (value instanceof Source) {
                 SOAPBody sb = sm.getSOAPPart().getEnvelope().getBody();
                 sb.removeContents();
-                XmlUtil.newTransformer().transform((Source)value,new DOMResult(sb));
+                XmlUtil.newTransformer().transform((Source) value, new DOMResult(sb));
                 sm.saveChanges();
             }
         } catch (SOAPException e) {
@@ -695,26 +704,26 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateResponseContext(MessageInfo messageInfo,
-        SOAPHandlerContext context) {
-         SOAPMessageContext messageContext = context.getSOAPMessageContext();
-         RequestContext rc = (RequestContext)messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
-         BindingProvider provider = (BindingProvider)rc.get(JAXWS_CLIENT_HANDLE_PROPERTY);
-         ResponseContext responseContext = new ResponseContext(provider);
-         for (String name : messageContext.keySet()) {
-             MessageContext.Scope scope = messageContext.getScope(name);
-             if (MessageContext.Scope.APPLICATION == scope) {
-                 Object value = messageContext.get(name);
-                 responseContext.put(name, value);
-             }
-         }
-         ResponseImpl asyncResponse = (ResponseImpl) messageInfo.getMetaData(
-             JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT);
-         if (asyncResponse != null) {
-             asyncResponse.setResponseContext(responseContext.copy());
-         } else {
-             messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
-                 responseContext.copy());
-         }
+                                         SOAPHandlerContext context) {
+        SOAPMessageContext messageContext = context.getSOAPMessageContext();
+        RequestContext rc = (RequestContext) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
+        BindingProvider provider = (BindingProvider) rc.get(JAXWS_CLIENT_HANDLE_PROPERTY);
+        ResponseContext responseContext = new ResponseContext(provider);
+        for (String name : messageContext.keySet()) {
+            MessageContext.Scope scope = messageContext.getScope(name);
+            if (MessageContext.Scope.APPLICATION == scope) {
+                Object value = messageContext.get(name);
+                responseContext.put(name, value);
+            }
+        }
+        ResponseImpl asyncResponse = (ResponseImpl) messageInfo.getMetaData(
+            JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT);
+        if (asyncResponse != null) {
+            asyncResponse.setResponseContext(responseContext.copy());
+        } else {
+            messageInfo.setMetaData(JAXWS_RESPONSE_CONTEXT_PROPERTY,
+                responseContext.copy());
+        }
     }
 
     /**
