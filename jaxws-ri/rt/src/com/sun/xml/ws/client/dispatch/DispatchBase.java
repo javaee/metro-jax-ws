@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.22 2005-10-20 01:58:26 jitu Exp $
+ * $Id: DispatchBase.java,v 1.23 2005-11-02 18:04:35 kwalsh Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -363,8 +363,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     private Object sendOneWay(MessageStruct messageStruct) {
-        Object response = null;
-        _delegate.send(messageStruct);
+
+       _delegate.send(messageStruct);
+        Object response = messageStruct.getResponse();
         //will exceptions be returned from the server-
         //if not then can take this out and just send
         switch (messageStruct.getResponseType()) {
