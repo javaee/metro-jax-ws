@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPRuntimeModel.java,v 1.14 2005-09-24 04:51:22 kohlert Exp $
+ * $Id: SOAPRuntimeModel.java,v 1.15 2005-11-02 21:23:14 bbissett Exp $
  */
 
 /*
@@ -34,7 +34,9 @@ import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.*;
 import com.sun.xml.ws.model.*;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.util.MessageInfoUtil;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -271,6 +273,17 @@ public class SOAPRuntimeModel extends RuntimeModel {
             bodyBlock.setValue(faultInfo);
         }
         return im;
+    }
+    
+    // currently adds not understood header blocks if there are any
+    public static void addHeaders(InternalMessage message, MessageInfo mi) {
+        Set<HeaderBlock> notUnderstoodHeaders =
+            MessageInfoUtil.getNotUnderstoodHeaders(mi);
+        if (notUnderstoodHeaders != null) {
+            for (HeaderBlock block : notUnderstoodHeaders) {
+                message.addHeader(block);
+            }
+        }
     }
 
     private static SOAP12FaultInfo createSOAP12FaultInfo(Throwable e, String role, String node, Object detail) {

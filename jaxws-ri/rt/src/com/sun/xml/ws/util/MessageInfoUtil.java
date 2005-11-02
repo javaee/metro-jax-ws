@@ -19,12 +19,16 @@
  */
 package com.sun.xml.ws.util;
 
+import java.util.Set;
+
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
+import com.sun.xml.ws.encoding.soap.SOAPDecoder;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.ws.handler.MessageContext;
@@ -74,4 +78,16 @@ public class MessageInfoUtil {
         return null;
     }
 
+    public static void setNotUnderstoodHeaders(MessageInfo messageInfo,
+        Set<HeaderBlock> headers) {
+        
+        messageInfo.setMetaData(SOAPDecoder.NOT_UNDERSTOOD_HEADERS, headers);
+    }
+    
+    public static Set<HeaderBlock> getNotUnderstoodHeaders(
+        MessageInfo messageInfo) {
+        
+        return (Set<HeaderBlock>) messageInfo.getMetaData(
+            SOAPDecoder.NOT_UNDERSTOOD_HEADERS);
+    }
 }

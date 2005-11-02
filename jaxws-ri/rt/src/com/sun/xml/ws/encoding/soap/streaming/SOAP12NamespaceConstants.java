@@ -1,5 +1,5 @@
 /*
- * $Id: SOAP12NamespaceConstants.java,v 1.5 2005-09-10 19:47:45 kohsuke Exp $
+ * $Id: SOAP12NamespaceConstants.java,v 1.6 2005-11-02 21:23:13 bbissett Exp $
  */
 
 /*
@@ -54,9 +54,11 @@ public class SOAP12NamespaceConstants {
     public static final String TAG_HEADER = "Header";
     public static final String TAG_BODY = "Body";
     public static final String TAG_RESULT = "result";
+    public static final String TAG_NOT_UNDERSTOOD = "NotUnderstood";
 
     public static final String ATTR_ACTOR = "role";
     public static final String ATTR_MUST_UNDERSTAND = "mustUnderstand";
     public static final String ATTR_MISUNDERSTOOD = "missUnderstood";
     public static final String ATTR_ENCODING_STYLE = "encodingStyle";   
+    public static final String ATTR_NOT_UNDERSTOOD_QNAME = "qname";
 }

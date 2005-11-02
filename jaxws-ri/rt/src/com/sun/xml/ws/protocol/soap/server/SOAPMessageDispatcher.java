@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.41 2005-10-23 17:09:40 vivekp Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.42 2005-11-02 21:23:14 bbissett Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -487,6 +487,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
                         internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
                             e, null, null, null, null);
+                        SOAPRuntimeModel.addHeaders(internalMessage,
+                            messageInfo);
                     }
                     context.setInternalMessage(internalMessage);
                     context.setSOAPMessage(null);

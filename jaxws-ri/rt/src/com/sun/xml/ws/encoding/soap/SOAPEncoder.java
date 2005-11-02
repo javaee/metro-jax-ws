@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPEncoder.java,v 1.46 2005-10-22 01:58:59 vivekp Exp $
+ * $Id: SOAPEncoder.java,v 1.47 2005-11-02 21:23:12 bbissett Exp $
  */
 
 /*
@@ -37,6 +37,7 @@ import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.SOAP12NotUnderstoodHeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
@@ -454,10 +455,20 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             startHeader(writer); // <env:Header>
             for (HeaderBlock headerBlock : headerBlocks) {
                 Object value = headerBlock.getValue();
-                if (value instanceof JAXBBridgeInfo) {
-                    writeJAXBBridgeInfo((JAXBBridgeInfo) value, messageInfo, writer);
+                if (value != null) {
+                    if (value instanceof JAXBBridgeInfo) {
+                        writeJAXBBridgeInfo((JAXBBridgeInfo) value,
+                            messageInfo, writer);
+                    } else {
+                        throw new SerializationException("unknown.object",
+                            value.getClass().getName());
+                    }
                 } else {
-                    System.out.println("Unknown object in BodyBlock:" + value.getClass());
+                    // currently only in soap 1.2
+                    if (headerBlock instanceof SOAP12NotUnderstoodHeaderBlock) {
+                        ((SOAP12NotUnderstoodHeaderBlock) headerBlock).write(
+                            writer);
+                    }
                 }
             }
             writer.writeEndElement();                                // </env:Header>
@@ -489,7 +500,8 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 } else if (value instanceof JAXBBeanInfo) {
                     writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
                 } else {
-                    System.out.println("Unknown object in BodyBlock:" + value.getClass());
+                    throw new SerializationException("unknown.object",
+                        value.getClass().getName());
                 }
             }
             writer.writeEndElement();                // </env:body>

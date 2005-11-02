@@ -125,14 +125,14 @@ public class HandlerContext {
     public List getHeaders() {
         List<HeaderBlock> headerBlocks =
             (internalMessage == null) ? null : internalMessage.getHeaders();
-        if (headerBlocks!= null) {
-             List<Object> headers = new ArrayList();
-             for (HeaderBlock headerBlock : headerBlocks  ){
-
-                if (  headerBlock.getValue() != null)
+        if (headerBlocks != null) {
+             List headers = new ArrayList();
+             for (HeaderBlock headerBlock : headerBlocks) {
+                if (headerBlock.getValue() != null) {
                     headers.add(headerBlock.getValue());                             
-             return headers;
+                }
              }
+             return headers;
         }
         return null;
     }

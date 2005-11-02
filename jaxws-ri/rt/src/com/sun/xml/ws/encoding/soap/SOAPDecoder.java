@@ -82,12 +82,15 @@ import static javax.xml.stream.XMLStreamReader.*;
  */
 public abstract class SOAPDecoder implements Decoder {
 
+    public final static String NOT_UNDERSTOOD_HEADERS =
+        "not-understood soap headers";
+
     protected static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".soap.decoder");
 
     protected final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
-
+    
     /**
      * FI <code>FastInfosetSource.getInputStream()</code> method via reflection.
      */
@@ -509,17 +512,16 @@ public abstract class SOAPDecoder implements Decoder {
         return (mi.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
 
-/*
-* Does MU processing. reader is on <Envelope>, at the end of this method
-* leaves it on <Body>. Once the roles and understood headers are
-* known, this calls a separate method to check the message headers
-* since a different behavior is expected with different bindings.
-*
-* Also assume handler chain caller is null unless one is found.
-*/
-
-    private void checkMustUnderstandHeaders(XMLStreamReader reader, MessageInfo mi,
-                                            HandlerContext context) {
+    /*
+     * Does MU processing. reader is on <Envelope>, at the end of this method
+     * leaves it on <Body>. Once the roles and understood headers are
+     * known, this calls a separate method to check the message headers
+     * since a different behavior is expected with different bindings.
+     *
+     * Also assume handler chain caller is null unless one is found.
+     */
+    private void checkMustUnderstandHeaders(XMLStreamReader reader,
+        MessageInfo mi, HandlerContext context) {
 
         // Decode envelope
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
@@ -527,7 +529,8 @@ public abstract class SOAPDecoder implements Decoder {
         QName exp = getEnvelopeTag();
         if (got.getLocalPart().equals(exp.getLocalPart())) {
             if (!got.getNamespaceURI().equals(exp.getNamespaceURI())) {
-                raiseFault(getVersionMismatchFaultCode(), "Invalid SOAP envelope version");
+                raiseFault(getVersionMismatchFaultCode(),
+                    "Invalid SOAP envelope version");
             }
         }
         XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
@@ -543,7 +546,7 @@ public abstract class SOAPDecoder implements Decoder {
 
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
 
-// start with just the endpoint roles
+        // start with just the endpoint roles
         Set<String> roles = new HashSet<String>();
         roles.addAll(getRequiredRoles());
         HandlerChainCaller hcCaller = MessageInfoUtil.getHandlerChainCaller(mi);
@@ -563,8 +566,8 @@ public abstract class SOAPDecoder implements Decoder {
         if (rtCtxt != null) {
             SOAPRuntimeModel model = (SOAPRuntimeModel) rtCtxt.getModel();
             if (model != null && model.getKnownHeaders() != null) {
-                understoodHeaders =
-                    new HashSet<QName>(((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders());
+                understoodHeaders = new HashSet<QName>(
+                    ((SOAPRuntimeModel) rtCtxt.getModel()).getKnownHeaders());
             }
         }
         if (understoodHeaders == null) {
@@ -588,19 +591,18 @@ public abstract class SOAPDecoder implements Decoder {
             }
         }
 
-        checkHeadersAgainstKnown(reader, roles, understoodHeaders);
+        checkHeadersAgainstKnown(reader, roles, understoodHeaders, mi);
 
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
         XMLStreamReaderUtil.nextElementContent(reader);
     }
 
-/*
-* This method is overridden for other bindings
-*/
-
+    /*
+     * This method is overridden for other bindings
+     */
     protected void checkHeadersAgainstKnown(XMLStreamReader reader,
-                                            Set<String> roles, Set<QName> understoodHeaders) {
+        Set<String> roles, Set<QName> understoodHeaders, MessageInfo mi) {
 
         while (true) {
             if (reader.getEventType() == START_ELEMENT) {

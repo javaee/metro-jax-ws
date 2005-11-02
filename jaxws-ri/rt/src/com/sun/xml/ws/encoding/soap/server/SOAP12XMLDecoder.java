@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFault;
 import javax.xml.stream.XMLStreamReader;
+import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
+import com.sun.xml.ws.encoding.soap.internal.SOAP12NotUnderstoodHeaderBlock;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -37,6 +39,7 @@ import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.server.*;
+import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
 
 /**
@@ -105,7 +108,7 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
      */
     @Override
     protected void checkHeadersAgainstKnown(XMLStreamReader reader,
-        Set<String> roles, Set<QName> understoodHeaders) {
+        Set<String> roles, Set<QName> understoodHeaders, MessageInfo mi) {
         
         Set<QName> notUnderstoodHeaders = new HashSet<QName>();
         
@@ -147,6 +150,11 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
             MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
             SOAP12Constants.FAULT_CODE_MUST_UNDERSTAND,
             null, null, SOAPBinding.SOAP12HTTP_BINDING);
+        Set<HeaderBlock> nuHeaderBlocks = new HashSet<HeaderBlock>();
+        for (QName headerName : notUnderstoodHeaders) {
+            nuHeaderBlocks.add(new SOAP12NotUnderstoodHeaderBlock(headerName));
+        }
+        MessageInfoUtil.setNotUnderstoodHeaders(mi, nuHeaderBlocks);
         throw new SOAPFaultException(sf);
     }
     
@@ -173,3 +181,4 @@ public class SOAP12XMLDecoder extends SOAPXMLDecoder {
     }
     
 }
+    
