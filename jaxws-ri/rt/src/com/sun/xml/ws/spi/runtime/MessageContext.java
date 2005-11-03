@@ -22,11 +22,12 @@ package com.sun.xml.ws.spi.runtime;
 import java.lang.reflect.Method;
 
 /**
+ * Enhanced API' MessageContext with some extra properties
  */
 public interface MessageContext extends javax.xml.ws.handler.MessageContext {
     /**
      * Returns binding id defined in API
-     * bindingId is one of these values:
+     * @return bindingId is one of these values:
      * javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
      * javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING,
      * javax.xml.ws.http.HTTPBinding.HTTP_BINDING

@@ -21,11 +21,13 @@ package com.sun.xml.ws.spi.runtime;
 
 import javax.xml.ws.handler.MessageContext;
 
+/**
+ * Enhanced API WebServiceContext that contains a method to set MessageContext
+ */
 public interface WebServiceContext extends javax.xml.ws.WebServiceContext {
     
     /**
-     *
-     *
+     * Sets SPI's MessageContext
      */
     public void setMessageContext(MessageContext ctxt);
     

@@ -47,7 +47,7 @@ public abstract class WSToolsObjectFactory {
      * Invokes wsimport on the wsdl URL argument, and generates the necessary
      * portable artifacts like SEI, Service, Bean classes etc.
      *
-     * return true if there is no error, otherwise false
+     * @return true if there is no error, otherwise false
      */
     public abstract boolean wsimport(OutputStream logStream, String[] args);
     
@@ -55,7 +55,7 @@ public abstract class WSToolsObjectFactory {
      * Invokes wsgen on the endpoint implementation, and generates the necessary
      * artifacts like wrapper, exception bean classes etc.
      *
-     * return true if there is no error, otherwise false
+     * @return true if there is no error, otherwise false
      */
     public abstract boolean wsgen(OutputStream logStream, String[] args);
 

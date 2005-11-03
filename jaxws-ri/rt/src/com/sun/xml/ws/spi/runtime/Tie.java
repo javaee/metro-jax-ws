@@ -19,6 +19,9 @@
  */
 package com.sun.xml.ws.spi.runtime;
 
+/**
+ * Entry point to JAXWS server side runtime
+ */
 public interface Tie {
     
     /**

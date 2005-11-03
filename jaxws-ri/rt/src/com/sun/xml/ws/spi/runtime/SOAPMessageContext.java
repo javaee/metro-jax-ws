@@ -20,6 +20,10 @@
 package com.sun.xml.ws.spi.runtime;
 import java.util.List;
 
+/**
+ * This enhances API's SOAPMessageContext and provides internal representation
+ * of SOAPMessage so that it can be encoded optimally
+ */
 public interface SOAPMessageContext
     extends javax.xml.ws.handler.soap.SOAPMessageContext, MessageContext {
     

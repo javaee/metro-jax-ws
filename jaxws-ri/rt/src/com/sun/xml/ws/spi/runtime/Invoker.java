@@ -23,10 +23,22 @@ import java.lang.reflect.Method;
 import javax.xml.namespace.QName;
 
 /**
+ * Complete invocation of webservice can be done using this object. So this
+ * object can be wrapped in other blocks to provide certain context(for e.g.
+ * can be wrapped in doAsPrivileged())
  *
  * @author WS Development Team
  */
 public interface Invoker {
+    /**
+     * Invokes request handler chain, endpoint, response handler chain
+     */
     public void invoke() throws Exception;
+    
+    /**
+     * It gives java methods for a give operation name
+     *
+     * @return corresponding java method for operation name, otherwise null
+     */
     public Method getMethod(QName name);
 }

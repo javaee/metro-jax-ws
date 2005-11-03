@@ -98,7 +98,7 @@
      <pathelement path="${basedir}/tools/wscompile/src"/>
   </path>
   <target name="javadocs-spi" depends="image">
-    <javadoc packagenames="com.sun.xml.ws.spi.*, com.sun.tools.ws.spi.*"
+    <javadoc packagenames="com.sun.xml.ws.spi.runtime.*, com.sun.tools.ws.spi.*"
          sourcepathref="spi-path"
          destdir="${build.home}/javadocs/spi"
          author="false"

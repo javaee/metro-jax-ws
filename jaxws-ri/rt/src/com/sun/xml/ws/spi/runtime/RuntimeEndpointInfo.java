@@ -30,6 +30,7 @@ import org.xml.sax.EntityResolver;
 public interface RuntimeEndpointInfo {
     
     /**
+     * Returns the name of the endpoint
      * @return name of the endpoint
      */
     public String getName();
@@ -45,7 +46,7 @@ public interface RuntimeEndpointInfo {
     public void init();
     
     /**
-     * Calls destory() on handlers
+     * Destroys any state in this object
      */
     public void destroy();
     
@@ -64,16 +65,22 @@ public interface RuntimeEndpointInfo {
     public void setImplementorClass(Class implementorClass);
     
     /**
+     * Returns actual Endpoint Object where method invocation is done
+     *
      * @return Object Gets the endpoint implementation object or a proxy
      */
     public Object getImplementor();
     
     /**
+     * Returns the set implementorClass
+     *
      * @return implementor's class that has the annotations
      */
     public Class getImplementorClass();
 
     /**
+     * Returns the binding for this endpoint
+     *
      * @return Binding Returns the binding for this endpoint.
      */
     public Binding getBinding();
@@ -85,6 +92,8 @@ public interface RuntimeEndpointInfo {
     public void setBinding(Binding binding);
     
     /**
+     * Returns the WebServiceContext of this endpoint
+     *
      * @return WebServiceContext Returns the WebServiceContext of this endpoint.
      */
     public WebServiceContext getWebServiceContext();
@@ -101,13 +110,13 @@ public interface RuntimeEndpointInfo {
      */
     public void setWsdlInfo(URL wsdlUrl, EntityResolver resolver);
     
-    /*
+    /**
      * Set service name from DD. If it is null, @WebService, @WebServiceProvider
      * annotations are used to get service name
      */
     public void setServiceName(QName name);
     
-    /*
+    /**
      * Set port name from DD. If it is null, @WebService, @WebServiceProvider
      * annotations are used to get port name
      */

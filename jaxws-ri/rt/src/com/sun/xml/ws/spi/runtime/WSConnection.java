@@ -52,29 +52,53 @@ public interface WSConnection {
     public static final int INTERNAL_ERR=500;
     
     /**
-     * returns request headers
+     * returns transport headers
+     * @return transport headers
      */
     public Map<String,List<String>> getHeaders();
     
     /**
-     * sets response headers
+     * sets transport headers
      */
     public void setHeaders(Map<String,List<String>> headers);
     
+    /**
+     * sets the transport status code like <code>OK</code>
+     */
     public void setStatus(int status);
     
+    /**
+     * @return return the status code
+     */
     public int getStatus();
     
+    /**
+     * Transport's underlying input stream
+     * @return Transport's underlying input stream
+     */
     public InputStream getInput();
     
+    /**
+     * Closes transport's input stream
+     */
     public void closeInput();
     
+    /**
+     * Transport's underlying output stream
+     * @return Transport's underlying output stream
+     */
     public OutputStream getOutput();
     
+    /**
+     * Closes transport's output stream
+     */
     public void closeOutput();
     
     public OutputStream getDebug();
     
+    /**
+     * Closes transport connection
+     */
     public void close();
     
 }
