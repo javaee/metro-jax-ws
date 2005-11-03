@@ -1,5 +1,5 @@
 /**
- * $Id: WsGen.java,v 1.10 2005-09-10 19:49:29 kohsuke Exp $
+ * $Id: WsGen.java,v 1.11 2005-11-03 22:32:32 kohlert Exp $
  */
 
 /*
@@ -107,16 +107,16 @@ public class WsGen extends MatchingTask {
     }
 
     /*************************  -d option *************************/
-    private File baseDir = null;
+    private File destDir = null;
 
     /** Gets the base directory to output generated class. **/
-    public File getBase() {
-        return this.baseDir;
+    public File getDestdir() {
+        return this.destDir;
     }
 
     /** Sets the base directory to output generated class. **/
-    public void setBase(File base) {
-        this.baseDir = base;
+    public void setDestdir(File base) {
+        this.destDir = base;
     }
 
     /********************  -jvmargs option **********************/
@@ -171,17 +171,17 @@ public class WsGen extends MatchingTask {
         this.fork = fork;
     }
 
-    /*************************  -nd option *************************/
-    private File nonClassDir = null;
+    /*************************  -r option *************************/
+    private File resourceDestDir = null;
 
     /** Gets the directory for non-class generated files. **/
-    public File getNonClassDir() {
-        return this.nonClassDir;
+    public File getResourcedestdir() {
+        return this.resourceDestDir;
     }
 
     /** Sets the directory for non-class generated files. **/
-    public void setNonClassDir(File nonClassDir) {
-        this.nonClassDir = nonClassDir;
+    public void setResourcedestdir(File resourceDir) {
+        this.resourceDestDir = resourceDir;
     }
 
     /*************************  -O option *************************/
@@ -198,17 +198,17 @@ public class WsGen extends MatchingTask {
     }
 
     /*************************  -s option *************************/
-    private File sourceBase;
+    private File sourceDestDir;
 
     /** Sets the directory to place generated source java files. **/
-    public void setSourceBase(File sourceBase) {
+    public void setSourcedestdir(File sourceBase) {
         keep = true;
-        this.sourceBase = sourceBase;
+        this.sourceDestDir = sourceBase;
     }
 
     /** Gets the directory to place generated source java files. **/
-    public File getSourceBase() {
-        return sourceBase;
+    public File getSourcedestdir() {
+        return sourceDestDir;
     }
 
     /*************************  -verbose option *************************/
@@ -222,19 +222,6 @@ public class WsGen extends MatchingTask {
     /** Sets the "verbose" flag. **/
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
-    }
-
-    /*************************  -version option *************************/
-    protected boolean version = false;
-
-    /** Gets the "version" flag. **/
-    public boolean getVersion() {
-        return version;
-    }
-
-    /** Sets the "version" flag. **/
-    public void setVersion(boolean version) {
-        this.version = version;
     }
 
      /*************************  -g option *************************/
@@ -254,12 +241,12 @@ public class WsGen extends MatchingTask {
      private boolean genWsdl = false;
 
      /** Gets the genWsdl flag. **/
-     public boolean getgenWsdl() {
+     public boolean getGenwsdl() {
          return genWsdl;
      }
 
      /** Sets the genWsdl flag. **/
-     public void setgenWsdl(boolean genWsdl) {
+     public void setGenwsdl(boolean genWsdl) {
          this.genWsdl = genWsdl;
      }
      
@@ -280,12 +267,12 @@ public class WsGen extends MatchingTask {
      private String serviceName = null;
 
      /** Gets the serviceName. **/
-     public String getServiceName() {
+     public String getServicename() {
          return serviceName;
      }
 
      /** Sets the serviceName. **/
-     public void setServiceName(String name) {
+     public void setServicename(String name) {
          this.serviceName = name;
      }        
      
@@ -293,12 +280,12 @@ public class WsGen extends MatchingTask {
      private String portName = null;
 
      /** Gets the portName. **/
-     public String getPortName() {
+     public String getPortname() {
          return portName;
      }
 
      /** Sets the serviceName. **/
-     public void setPortName(String name) {
+     public void setPortname(String name) {
          this.portName = name;
      }       
      
@@ -341,15 +328,15 @@ public class WsGen extends MatchingTask {
         return includeJavaRuntime;
     }
 
-    private String endpointImplementationClass;
+    private String sei;
     /**
-     * @return Returns the endpointImplementationClass.
+     * @return Returns the sei.
      */
-    public String getEndpointImplementationClass() {
-        return endpointImplementationClass;
+    public String getSei() {
+        return sei;
     }
-    public void setEndpointImplementationClass(String endpointImplementationClass) {
-        this.endpointImplementationClass = endpointImplementationClass;
+    public void setSei(String endpointImplementationClass) {
+        this.sei = endpointImplementationClass;
     }
 
     private Commandline setupWscompileCommand() {
@@ -383,9 +370,9 @@ public class WsGen extends MatchingTask {
         Commandline cmd = new Commandline();
 
         // d option
-        if (null != getBase() && !getBase().getName().equals("")) {
+        if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
-            cmd.createArgument().setFile(getBase());
+            cmd.createArgument().setFile(getDestdir());
         }
 
         // g option
@@ -403,7 +390,7 @@ public class WsGen extends MatchingTask {
             cmd.createArgument().setValue("-keep");
         }
 
-        if (getgenWsdl()) {
+        if (getGenwsdl()) {
             String tmp = "-wsdl";
             if (protocol.length() > 0)
                 tmp += ":"+protocol;
@@ -421,10 +408,10 @@ public class WsGen extends MatchingTask {
         }
         
         
-        // nd option
-        if (null != getNonClassDir() && !getNonClassDir().getName().equals("")) {
-            cmd.createArgument().setValue("-nd");
-            cmd.createArgument().setFile(getNonClassDir());
+        // r option
+        if (null != getResourcedestdir() && !getResourcedestdir().getName().equals("")) {
+            cmd.createArgument().setValue("-r");
+            cmd.createArgument().setFile(getResourcedestdir());
         }
 
         // optimize option
@@ -433,9 +420,9 @@ public class WsGen extends MatchingTask {
         }
 
         // s option
-        if (null != getSourceBase() && !getSourceBase().getName().equals("")) {
+        if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
             cmd.createArgument().setValue("-s");
-            cmd.createArgument().setFile(getSourceBase());
+            cmd.createArgument().setFile(getSourcedestdir());
         }
 
         // verbose option
@@ -443,13 +430,9 @@ public class WsGen extends MatchingTask {
             cmd.createArgument().setValue("-verbose");
         }
 
-        // version option
-        if (getVersion()) {
-            cmd.createArgument().setValue("-version");
-        }
 
-        if (getEndpointImplementationClass() != null) {
-            cmd.createArgument().setValue(getEndpointImplementationClass());
+        if (getSei() != null) {
+            cmd.createArgument().setValue(getSei());
         }
 
         return cmd;

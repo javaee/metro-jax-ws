@@ -1,5 +1,5 @@
 /*
- * $Id: ModelerUtils.java,v 1.8 2005-09-10 19:49:44 kohsuke Exp $
+ * $Id: ModelerUtils.java,v 1.9 2005-11-03 22:32:35 kohlert Exp $
  */
 
 /*
@@ -51,13 +51,6 @@ import com.sun.tools.ws.wsdl.document.MessagePart;
  *
  */
 public class ModelerUtils {
-
-    /**
-     *
-     */
-    public ModelerUtils() {
-        super();
-    }
 
     /**
      * This method should be called incase of wrapper style operations. This is

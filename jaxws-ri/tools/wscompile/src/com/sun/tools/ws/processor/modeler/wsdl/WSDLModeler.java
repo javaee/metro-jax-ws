@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler20.java,v 1.39 2005-10-19 01:00:18 vivekp Exp $
+ * $Id: WSDLModeler.java,v 1.2 2005-11-03 22:32:37 kohlert Exp $
  */
 
 /*
@@ -23,6 +23,87 @@
  */
 package com.sun.tools.ws.processor.modeler.wsdl;
 
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JType;
+import com.sun.tools.ws.processor.ProcessorOptions;
+import com.sun.tools.ws.processor.config.WSDLModelInfo;
+import com.sun.tools.ws.processor.generator.GeneratorConstants;
+import com.sun.tools.ws.processor.model.AsyncOperation;
+import com.sun.tools.ws.processor.model.AsyncOperationType;
+import com.sun.tools.ws.processor.model.Block;
+import com.sun.tools.ws.processor.model.Fault;
+import com.sun.tools.ws.processor.model.Model;
+import com.sun.tools.ws.processor.model.ModelException;
+import com.sun.tools.ws.processor.model.ModelObject;
+import com.sun.tools.ws.processor.model.ModelProperties;
+import com.sun.tools.ws.processor.model.Operation;
+import com.sun.tools.ws.processor.model.Parameter;
+import com.sun.tools.ws.processor.model.Port;
+import com.sun.tools.ws.processor.model.Request;
+import com.sun.tools.ws.processor.model.Response;
+import com.sun.tools.ws.processor.model.Service;
+import com.sun.tools.ws.processor.model.java.JavaException;
+import com.sun.tools.ws.processor.model.java.JavaInterface;
+import com.sun.tools.ws.processor.model.java.JavaMethod;
+import com.sun.tools.ws.processor.model.java.JavaParameter;
+import com.sun.tools.ws.processor.model.java.JavaSimpleType;
+import com.sun.tools.ws.processor.model.java.JavaStructureMember;
+import com.sun.tools.ws.processor.model.java.JavaType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBElementMember;
+import com.sun.tools.ws.processor.model.jaxb.JAXBProperty;
+import com.sun.tools.ws.processor.model.jaxb.JAXBStructuredType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
+import com.sun.tools.ws.processor.model.jaxb.RpcLitMember;
+import com.sun.tools.ws.processor.model.jaxb.RpcLitStructure;
+import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
+import com.sun.tools.ws.processor.modeler.ModelerException;
+import com.sun.tools.ws.processor.modeler.ModelerUtils;
+import com.sun.tools.ws.processor.util.ClassNameCollector;
+import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.wsdl.document.Binding;
+import com.sun.tools.ws.wsdl.document.BindingFault;
+import com.sun.tools.ws.wsdl.document.BindingOperation;
+import com.sun.tools.ws.wsdl.document.Documentation;
+import com.sun.tools.ws.wsdl.document.Kinds;
+import com.sun.tools.ws.wsdl.document.Message;
+import com.sun.tools.ws.wsdl.document.MessagePart;
+import com.sun.tools.ws.wsdl.document.OperationStyle;
+import com.sun.tools.ws.wsdl.document.PortType;
+import com.sun.tools.ws.wsdl.document.WSDLConstants;
+import com.sun.tools.ws.wsdl.document.WSDLDocument;
+import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
+import com.sun.tools.ws.wsdl.document.mime.MIMEContent;
+import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
+import com.sun.tools.ws.wsdl.document.soap.SOAP12Binding;
+import com.sun.tools.ws.wsdl.document.soap.SOAP12Constants;
+import com.sun.tools.ws.wsdl.document.soap.SOAPAddress;
+import com.sun.tools.ws.wsdl.document.soap.SOAPBinding;
+import com.sun.tools.ws.wsdl.document.soap.SOAPBody;
+import com.sun.tools.ws.wsdl.document.soap.SOAPConstants;
+import com.sun.tools.ws.wsdl.document.soap.SOAPFault;
+import com.sun.tools.ws.wsdl.document.soap.SOAPHeader;
+import com.sun.tools.ws.wsdl.document.soap.SOAPOperation;
+import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
+import com.sun.tools.ws.wsdl.document.soap.SOAPUse;
+import com.sun.tools.ws.wsdl.framework.Entity;
+import com.sun.tools.ws.wsdl.framework.Extensible;
+import com.sun.tools.ws.wsdl.framework.NoSuchEntityException;
+import com.sun.tools.ws.wsdl.framework.ParseException;
+import com.sun.tools.ws.wsdl.framework.ParserListener;
+import com.sun.tools.ws.wsdl.framework.ValidationException;
+import com.sun.tools.ws.wsdl.parser.SOAPEntityReferenceValidator;
+import com.sun.tools.ws.wsdl.parser.WSDLParser;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
+import com.sun.tools.xjc.api.XJC;
+import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.model.Mode;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.xml.sax.InputSource;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,93 +114,36 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.xml.namespace.QName;
-import javax.xml.bind.JAXBContext;
-
-import org.xml.sax.InputSource;
-
-import com.sun.tools.ws.processor.ProcessorOptions;
-import com.sun.tools.ws.processor.config.WSDLModelInfo;
-import com.sun.tools.ws.processor.generator.GeneratorConstants;
-import com.sun.tools.ws.processor.generator.SimpleToBoxedUtil;
-import com.sun.tools.ws.processor.model.*;
-import com.sun.tools.ws.processor.model.Fault;
-import com.sun.tools.ws.processor.model.Operation;
-import com.sun.tools.ws.processor.model.Port;
-import com.sun.tools.ws.processor.model.Service;
-import com.sun.tools.ws.processor.model.java.JavaException;
-import com.sun.tools.ws.processor.model.java.JavaInterface;
-import com.sun.tools.ws.processor.model.java.JavaMethod;
-import com.sun.tools.ws.processor.model.java.JavaParameter;
-import com.sun.tools.ws.processor.model.java.JavaSimpleType;
-import com.sun.tools.ws.processor.model.java.JavaStructureMember;
-import com.sun.tools.ws.processor.model.java.JavaType;
-import com.sun.tools.ws.processor.model.jaxb.*;
-import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
-import com.sun.tools.ws.processor.modeler.ModelerException;
-import com.sun.tools.ws.processor.modeler.ModelerUtils;
-import com.sun.tools.ws.processor.util.ClassNameCollector;
-import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.ClassNameInfo;
-import com.sun.tools.ws.util.JAXWSUtils;
-import com.sun.tools.ws.wsdl.document.*;
-import com.sun.tools.ws.wsdl.document.Message;
-import com.sun.tools.ws.wsdl.document.mime.MIMEContent;
-import com.sun.tools.ws.wsdl.document.jaxws.CustomName;
-import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBinding;
-import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
-import com.sun.tools.ws.wsdl.document.soap.*;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
-import com.sun.tools.ws.wsdl.framework.NoSuchEntityException;
-import com.sun.tools.ws.wsdl.framework.ParseException;
-import com.sun.tools.ws.wsdl.framework.ParserListener;
-import com.sun.tools.ws.wsdl.framework.ValidationException;
-import com.sun.tools.ws.wsdl.parser.SOAPEntityReferenceValidator;
-import com.sun.tools.ws.wsdl.parser.WSDLParser;
-import com.sun.tools.ws.wsdl.parser.WSDLParser20;
-import com.sun.tools.xjc.api.S2JJAXBModel;
-import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.tools.xjc.api.XJC;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.model.Mode;
-import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JClass;
-import com.sun.codemodel.JType;
-
 
 /**
  * The WSDLModeler processes a WSDL to create a Model.
  *
  * @author WS Development Team
  */
-public class WSDLModeler20 extends WSDLModelerBase {
+public class WSDLModeler extends WSDLModelerBase {
 
     //map of wsdl:operation QName to <soapenv:Body> child, as per BP it must be unique in a port
     private final Map<QName, QName> uniqueBodyBlocks = new HashMap<QName, QName>();
-
     private final QName VOID_BODYBLOCK = new QName("");
+    private ClassNameCollector classNameCollector;
+    private boolean extensions = false;
+    protected enum StyleAndUse  {RPC_LITERAL, DOC_LITERAL};
+    private ModelerUtils modelerUtils;
+    private JAXBModelBuilder jaxbModelBuilder;
 
     /**
      * @param modelInfo
      * @param options
      */
-    public WSDLModeler20(WSDLModelInfo modelInfo, Properties options) {
+    public WSDLModeler(WSDLModelInfo modelInfo, Properties options) {
         super(modelInfo, options);
-        _modelerUtils = new ModelerUtils();
         classNameCollector = new ClassNameCollector();
     }
 
-    private ClassNameCollector classNameCollector;
-    private boolean extensions = false;
     public Model buildModel() {
         try {
 
-            parser = createWSDLParser();
-            String wsdlLoc = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(_modelInfo.getLocation()));
-            InputSource inputSource = new InputSource(wsdlLoc);
+            parser = new WSDLParser(_modelInfo);
             parser.addParserListener(new ParserListener() {
                 public void ignoringExtension(QName name, QName parent) {
                     if (parent.equals(WSDLConstants.QNAME_TYPES)) {
@@ -141,7 +165,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             
             useWSIBasicProfile = !extensions;
             document =
-                parser.parse(inputSource, useWSIBasicProfile);
+                parser.parse();
             document.validateLocally();
 
             boolean validateWSDL =
@@ -290,13 +314,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
             QName portQName = getQNameOf(wsdlPort);
             Port port = new Port(portQName);
-
-            setCurrentPort(port);
-            String metaPortName = getJavaNameOfPort(portQName);
-            if (metaPortName != null)
-                port.setProperty(
-                    ModelProperties.PROPERTY_JAVA_PORT_NAME,
-                    metaPortName);
 
             setDocumentationIfPresent(port, wsdlPort.getDocumentation());
 
@@ -505,7 +522,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                                 headers);
 
                         Operation operation = processSOAPOperation();
-                        postProcessSOAPOperation(operation);
                         if (operation != null) {
                             port.addOperation(operation);
                             hasOperations = true;
@@ -531,14 +547,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
             port.setServerHandlerChainInfo(
                 _modelInfo.getServerHandlerChainInfo());
 
-            setProperties(port, isProvider);
-
             service.addPort(port);
             applyPortMethodCustomization(port, wsdlPort);
             applyWrapperStyleCustomization(port, binding.resolvePortType(document));
-
-            // bug fix: 4923650
-            setCurrentPort(null);
 
             return true;
 
@@ -620,13 +631,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         return processLiteralSOAPOperation(StyleAndUse.DOC_LITERAL);
     }
 
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#createWSDLParser()
-     */
-    protected WSDLParser createWSDLParser() {
-        return new WSDLParser20(_modelInfo);
-    }
-
     protected Operation processLiteralSOAPOperation(StyleAndUse styleAndUse){
         //returns false if the operation name is not acceptable
         if(!applyOperationNameCustomization())
@@ -637,23 +641,11 @@ public class WSDLModeler20 extends WSDLModelerBase {
         Response response = new Response();
         info.operation.setUse(SOAPUse.LITERAL);
         SOAPBody soapRequestBody = getSOAPRequestBody();
-        if(soapRequestBody != null && isRequestMimeMultipart()) {
-            request.setProperty(
-                    MESSAGE_HAS_MIME_MULTIPART_RELATED_BINDING,
-            "true");
-        }
-
         if((StyleAndUse.DOC_LITERAL == styleAndUse) && (soapRequestBody.getNamespace() != null)){
             warn("wsdlmodeler.warning.r2716", new Object[]{"soapbind:body", info.bindingOperation.getName()});
         }
 
         Message inputMessage = getInputMessage();
-        setJavaOperationNameProperty(inputMessage);
-
-        // code added for 109
-        if (inputMessage != null)
-            request.setProperty(ModelProperties.PROPERTY_WSDL_MESSAGE_NAME, getQNameOf(inputMessage));
-
 
         SOAPBody soapResponseBody = null;
         Message outputMessage = null;
@@ -663,12 +655,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 warn("wsdlmodeler.warning.r2716", new Object[]{"soapbind:body", info.bindingOperation.getName()});
             }
             outputMessage = getOutputMessage();
-            if (outputMessage != null)
-                response.setProperty(ModelProperties.PROPERTY_WSDL_MESSAGE_NAME, getQNameOf(outputMessage));
-
-            if(soapResponseBody != null && isResponseMimeMultipart())
-                response.setProperty(MESSAGE_HAS_MIME_MULTIPART_RELATED_BINDING, "true");
-
         }
 
         //ignore operation if there are more than one root part
@@ -897,32 +883,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
     /**
      * @return
      */
-//    private boolean enableAdditionalHeaderMapping() {
-//        //first we look at binding operation
-//        JAXWSBinding jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
-//        Boolean additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-//        if(additionalHeader != null)
-//            return additionalHeader;
-//
-//        //then in wsdl:binding
-//        Binding binding = info.port.resolveBinding(info.document);
-//        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(binding, JAXWSBinding.class);
-//        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-//        if(additionalHeader != null)
-//            return additionalHeader;
-//
-//        //at last look in wsdl:definitions
-//        jaxrpcCustomization = (JAXWSBinding)getExtensionOfType(info.document.getDefinitions(), JAXWSBinding.class);
-//        additionalHeader = (jaxrpcCustomization != null)?jaxrpcCustomization.isEnableAdditionalHeaderMapping():null;
-//        if(additionalHeader != null)
-//            return additionalHeader;
-//        return false;
-//
-//    }
-
-    /**
-     * @return
-     */
     private boolean enableMimeContent() {
         //first we look at binding operation
         JAXWSBinding jaxwsCustomization = (JAXWSBinding)getExtensionOfType(info.bindingOperation, JAXWSBinding.class);
@@ -960,8 +920,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 return false;
             }
 
-            //Name(new QName(info.operation.getName().getNamespaceURI(), operationName));
-//            info.operation.setUniqueName(operationName);
             info.operation.setCustomizedName(operationName);
         }
 
@@ -1030,12 +988,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         SOAPBody soapRequestBody = getSOAPRequestBody();
 
         Message inputMessage = getInputMessage();
-        setJavaOperationNameProperty(inputMessage);
-
-        // code added for 109
-        if (inputMessage != null)
-            request.setProperty(ModelProperties.PROPERTY_WSDL_MESSAGE_NAME, getQNameOf(inputMessage));
-
 
         SOAPBody soapResponseBody = null;
         Message outputMessage = null;
@@ -1045,14 +997,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
 
         // Process parameterOrder and get the parameterList
-        String resultParameterName = null;
         java.util.List<String> parameterList = getAsynParameterOrder();
 
         List<Parameter> inParameters = null;
-        List<Parameter> outParameters = null;
-        //boolean unwrappable = isUnwrappable();
-
-
         if(isOperationDocumentLiteral(styleAndUse)){
             inParameters = getRequestParameters(request, parameterList);
             // outParameters = getResponseParameters(response);
@@ -1111,9 +1058,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         List<MessagePart> outputParts = outputMessage.getParts();
 
         // handle headers
-//        boolean enableAdditionalHeader = enableAdditionalHeaderMapping();
-
-//        int numOfOutMsgParts = outputParts.size() + ((enableAdditionalHeader)?getHeaderParts(false).size():0);
         int numOfOutMsgParts = outputParts.size();
 
         if(isRequestResponse){
@@ -1136,7 +1080,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                 }
             }else{
                 //create response bean
-                //String nspace = document.getDefinitions().getTargetNamespaceURI()+"?"+info.port.resolveBinding(document).resolvePortType(document).getName()+"?" + info.portTypeOperation.getName();
                 String nspace = "";
                 QName responseBeanName = new QName(nspace,getAsyncOperationName(info.operation) +"Response");
                 JAXBType responseBeanType = getJAXBType(responseBeanName);
@@ -1175,19 +1118,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         if (isRequestResponse) {
             operation.setResponse(response);
         }
-
-        // faults with duplicate names
-        Set duplicateNames = getDuplicateFaultNames();
-
-//        if (enableAdditionalHeader) {
-//            handleLiteralSOAPHeaders(
-//                    request,
-//                    response,
-//                    getHeaderPartsNotFromMessage(getInputMessage(), true).iterator(),
-//                    duplicateNames,
-//                    definitiveParameterList,
-//                    true);
-//        }
 
         //  add callback handlerb Parameter to request
         if(operation.getAsyncType().equals(AsyncOperationType.CALLBACK)){
@@ -1245,8 +1175,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
             }
             Message headerMessage = getHeaderMessage(part, ext);
 
-            //J2EE for 109
-            headerBlock.setProperty(ModelProperties.PROPERTY_WSDL_MESSAGE_NAME, getQNameOf(headerMessage));
             if(processRequest){
                 request.addHeaderBlock(headerBlock);
             }else{
@@ -1751,8 +1679,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                             S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
                             JCodeModel cm = jaxbModel.generateCode(null,
                                         new ConsoleErrorReporter(getEnvironment(), false));
-                            JType jt= cm.ref(javaType);
-
+                            JType jt= null;
+                            jt = cm.ref(javaType);
                             JAXBTypeAndAnnotation jaxbTa = jaxbType.getJavaType().getType();
                             jaxbTa.setType(jt);
                         }
@@ -1880,8 +1808,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
                         String javaType = "javax.activation.DataHandler";
                         JCodeModel cm = jaxbModel.generateCode(null,
                                     new ConsoleErrorReporter(getEnvironment(), false));
-                        JType jt= cm.ref(javaType);
-
+                        JType jt= null;
+                        jt = cm.ref(javaType);
                         JAXBTypeAndAnnotation jaxbTa = type.getJavaType().getType();
                         jaxbTa.setType(jt);
                     }
@@ -2004,7 +1932,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
      * @return
      */
     private JAXBType getJAXBType(QName name) {
-        return _jaxbModelBuilder.getJAXBType(name);
+        return jaxbModelBuilder.getJAXBType(name);
     }
 
     protected boolean isConflictingPortClassName(String name) {
@@ -2224,7 +2152,8 @@ public class WSDLModeler20 extends WSDLModelerBase {
         S2JJAXBModel jaxbModel = getJAXBModelBuilder().getJAXBModel().getS2JJAXBModel();
         JCodeModel cm = jaxbModel.generateCode(null,
                     new ConsoleErrorReporter(getEnvironment(), false));
-        JType jt= cm.ref(javaType);;
+        JType jt= null;
+        jt = cm.ref(javaType);
         QName desc = part.getDescriptor();
         TypeAndAnnotation typeAnno = null;
 
@@ -2259,10 +2188,16 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     protected void buildJAXBModel(WSDLDocument wsdlDocument, WSDLModelInfo modelInfo, ClassNameCollector classNameCollector) {
-        //set the java package where wsdl artifacts will be generated
-        String jaxwsPackage = getJavaPackage();
-        getWSDLModelInfo().setJavaPackageName(jaxwsPackage);
         JAXBModelBuilder jaxbModelBuilder = new JAXBModelBuilder(getWSDLModelInfo(), _options, classNameCollector, parser.getSchemaElements());
+        //set the java package where wsdl artifacts will be generated
+        //if user provided package name  using -p switch (or package property on wsimport ant task)
+        //ignore the package customization in the wsdl and schema bidnings
+        if(getWSDLModelInfo().getJavaPackageName() != null){
+            jaxbModelBuilder.getJAXBSchemaCompiler().forcePackageName(getWSDLModelInfo().getJavaPackageName());
+        }else{
+            String jaxwsPackage = getJavaPackage();
+            getWSDLModelInfo().setJavaPackageName(jaxwsPackage);
+        }
 
         //create pseudo schema for async operations(if any) response bean
         List<InputSource> schemas = PseudoSchemaBuilder.build(this, _modelInfo);
@@ -2270,7 +2205,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             jaxbModelBuilder.getJAXBSchemaCompiler().parseSchema(schema);
         }
         jaxbModelBuilder.bind();
-        _jaxbModelBuilder = jaxbModelBuilder;
+        this.jaxbModelBuilder = jaxbModelBuilder;
     }
 
     protected String getJavaPackage(){
@@ -2321,12 +2256,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         port.setJavaInterface(intf);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#getServiceInterfaceName(QName, Service)
-     */
-    @Override
     protected String getServiceInterfaceName(QName serviceQName, com.sun.tools.ws.wsdl.document.Service wsdlService) {
         String serviceName = wsdlService.getName();
         JAXWSBinding jaxwsCust = (JAXWSBinding)getExtensionOfType(wsdlService, JAXWSBinding.class);
@@ -2349,9 +2278,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         return serviceInterface;
     }
 
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#getJavaNameOfSEI(Port)
-     */
     protected String getJavaNameOfSEI(Port port) {
         QName portTypeName =
             (QName)port.getProperty(
@@ -2367,9 +2293,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
                         false);
             }
         }
-
-        QName bindingName =
-            (QName)port.getProperty(ModelProperties.PROPERTY_WSDL_BINDING_NAME);
 
         String interfaceName = null;
         if (portTypeName != null) {
@@ -2496,7 +2419,7 @@ public class WSDLModeler20 extends WSDLModelerBase {
             iter != null && iter.hasNext();
             ) {
             Fault fault = (Fault)iter.next();
-            createJavaException(fault, port, opName);
+            createJavaExceptionFromLiteralType(fault, port, opName);
         }
         JavaException javaException;
         Fault fault;
@@ -2510,19 +2433,13 @@ public class WSDLModeler20 extends WSDLModelerBase {
 
     protected boolean createJavaExceptionFromLiteralType(Fault fault, com.sun.tools.ws.processor.model.Port port, String operationName) {
         ProcessorEnvironment _env = getProcessorEnvironment();
-        WSDLExceptionInfo exInfo = getExceptionInfo(fault);
-        String exceptionName = null;
 
         JAXBType faultType = (JAXBType)fault.getBlock().getType();
 
-        if (exInfo != null) {
-            exceptionName = exInfo.exceptionType;
-        } else {
-            exceptionName =
-                makePackageQualified(
-                    _env.getNames().validJavaClassName(fault.getName()),
-                    port.getName());
-        }
+        String exceptionName =
+            makePackageQualified(
+                _env.getNames().validJavaClassName(fault.getName()),
+                port.getName());
 
         // use fault namespace attribute
         JAXBStructuredType jaxbStruct = new JAXBStructuredType(new QName(
@@ -2749,35 +2666,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
         return params;
     }
-    
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#setProperties(Port, boolean)
-     */
-    protected void setProperties(Port port, boolean isProvider) {
-        if(!isProvider){
-            super.setProperties(port, isProvider);
-            return;
-        }
-        String tieClassName = getClassName(port, GeneratorConstants.TIE_SUFFIX);
-        port.setProperty(
-            ModelProperties.PROPERTY_TIE_CLASS_NAME,
-            tieClassName);
-
-        String ptieClassName = getClassName(port, GeneratorConstants.PEPT_TIE_SUFFIX);
-        port.setProperty(
-            ModelProperties.PROPERTY_PTIE_CLASS_NAME,
-            ptieClassName);
-
-        String sedClassName = getClassName(port, GeneratorConstants.SERVER_ENCODER_DECODER_SUFFIX);
-        port.setProperty(
-            ModelProperties.PROPERTY_SED_CLASS_NAME,
-            sedClassName);
-
-        String eptffClassName = getClassName(port, GeneratorConstants.EPTFF_SUFFIX);
-        port.setProperty(
-            ModelProperties.PROPERTY_EPTFF_CLASS_NAME,
-            eptffClassName);
-    }
 
     /**
      *
@@ -2833,16 +2721,9 @@ public class WSDLModeler20 extends WSDLModelerBase {
     }
 
     protected JAXBModelBuilder getJAXBModelBuilder() {
-        return _jaxbModelBuilder;
+        return jaxbModelBuilder;
     }
 
-    protected enum StyleAndUse  {RPC_LITERAL, DOC_LITERAL};
-    private ModelerUtils _modelerUtils;
-    private JAXBModelBuilder _jaxbModelBuilder;
-
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#validWSDLBindingStyle(Binding)
-     */
     protected boolean validateWSDLBindingStyle(Binding binding) {
         boolean mixedStyle = false;
         SOAPBinding soapBinding =
@@ -2895,10 +2776,6 @@ public class WSDLModeler20 extends WSDLModelerBase {
         }
     }
 
-    /* (non-Javadoc)
-     * @see WSDLModelerBase#getJavaNameForOperation(Operation)
-     */
-    @Override
     protected String getJavaNameForOperation(Operation operation) {
         String name = operation.getJavaMethodName();
         if(getEnvironment().getNames().isJavaReservedWord(name)){

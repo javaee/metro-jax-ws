@@ -1,7 +1,3 @@
-/**
- * $Id: CompileTool.java,v 1.29 2005-10-07 18:20:40 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -45,11 +41,13 @@ import com.sun.tools.ws.processor.util.ClientProcessorEnvironment;
 import com.sun.tools.ws.processor.util.GeneratedFileInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.tools.ws.processor.util.ProcessorEnvironmentBase;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.tools.ws.util.JavaCompilerHelper;
 import com.sun.tools.ws.util.ToolBase;
+import com.sun.tools.ws.util.ForkEntityResolver;
 import com.sun.tools.ws.ToolVersion;
 import com.sun.xml.ws.util.VersionUtil;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 
@@ -74,6 +72,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.xml.sax.EntityResolver;
+
 /**
  *    This is the real implementation class for both WsGen and WsImport. 
  *
@@ -91,7 +91,7 @@ import java.util.Set;
  *    {@link com.sun.tools.ws.processor.Processor  Processor} to help with the 
  *    processing.  First the {@link com.sun.tools.ws.processor.Processor#runModeler() 
  *    Processor.runModeler()} method is called to create an instance of the 
- *    {@link com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler20 WSDLModeler} to 
+ *    {@link com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler WSDLModeler} to
  *    process the WSDL being imported, which intern processes the WSDL and creates 
  *    a {@link com.sun.tools.ws.processor.model.Model Model} that is returned to the 
  *    Processor.  The CompileTool then registers a number of 
@@ -173,7 +173,37 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     usage();
                     return false;
                 }
-            } else if (args[i].equals(SERVICENAME_OPTION)) {
+            } else if(args[i].equals("-p")){
+                if(program.equals(WSGEN)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
+                if ((i + 1) < args.length) {
+                    args[i]=null;
+                    defaultPackage = args[++i];
+                    args[i]=null;
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
+                }
+            }else if(args[i].equals("-catalog")){
+                if(program.equals(WSGEN)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }
+                if ((i + 1) < args.length) {
+                    args[i]=null;
+                    catalog = args[++i];
+                    args[i]=null;
+                } else {
+                    onError(getMessage("wscompile.missingOptionArgument", args[i]));
+                    usage();
+                    return false;
+                }
+            }else if (args[i].equals(SERVICENAME_OPTION)) {
                 if(program.equals(WSIMPORT)) {
                     onError(getMessage("wscompile.invalidOption", args[i]));
                     usage();
@@ -243,7 +273,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     usage();
                     return false;
                 }
-            } else if (args[i].equals("-nd")) {
+            } else if (args[i].equals("-r")) {
                 if (program.equals(WSIMPORT)) {
                     onError(getMessage("wscompile.invalidOption", args[i]));
                     usage();
@@ -251,7 +281,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 }
                 if ((i + 1) < args.length) {
                     if (nonclassDestDir != null) {
-                        onError(getMessage("wscompile.duplicateOption", "-nd"));
+                        onError(getMessage("wscompile.duplicateOption", "-r"));
                         usage();
                         return false;
                     }
@@ -264,7 +294,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                         return false;
                     }
                 } else {
-                    onError(getMessage("wscompile.missingOptionArgument", "-nd"));
+                onError(getMessage("wscompile.missingOptionArgument", "-r"));
                     usage();
                     return false;
                 }
@@ -283,6 +313,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                         usage();
                         return false;
                     }
+                    keepGenerated = true;
                 } else {
                     onError(getMessage("wscompile.missingOptionArgument", "-s"));
                     usage();
@@ -447,6 +478,13 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         }
         try {
             beforeHook();
+            if(entityResolver == null){
+                if(catalog != null && catalog.length() > 0)
+                    entityResolver = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(catalog));
+            }else if(catalog != null && catalog.length() > 0){
+                EntityResolver er = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(catalog));
+                entityResolver =  new ForkEntityResolver(er, entityResolver);
+            }
             environment = createEnvironment();
             configuration = createConfiguration();
             setEnvironmentValues(environment);
@@ -454,6 +492,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 buildModel(((ClassModelInfo) configuration.getModelInfo()).getClassName());
             } else {
                 processor = new Processor(configuration, properties);
+                configuration.getModelInfo().setEntityResolver(entityResolver);
+                configuration.getModelInfo().setJavaPackageName(defaultPackage);
                 processor.runModeler();
                 withModelHook();
                 registerProcessorActions(processor);
@@ -707,7 +747,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         if (environment == null)
             environment = createEnvironment();
         Reader reader = new Reader(environment, properties);
-        return reader.parse(inputFiles);
+        return reader.parse(entityResolver, inputFiles);
     }
 
     protected void beforeHook() {
@@ -735,6 +775,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         properties.setProperty(ProcessorOptions.JAXWS_SOURCE_VERSION, getSourceVersion());
         if(wsdlLocation != null)
             properties.setProperty(ProcessorOptions.WSDL_LOCATION, wsdlLocation);
+        if(defaultPackage != null)
+            properties.setProperty(ProcessorOptions.DEFAULT_PACKAGE, defaultPackage);
     }
 
     protected String getGenericErrorMessage() {
@@ -801,6 +843,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         report(getMessage(program+".usage.examples"));
     }
 
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
     /*
      * Processor doesn't examine any options.
      */
@@ -860,8 +906,11 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected static final String VALID_TRANSPORTS = "http";
     protected String  targetVersion = null;
     protected String wsdlLocation;
+    protected String defaultPackage;
+    protected String catalog;
     protected QName serviceName;
     protected QName portName;
     protected static final String PORTNAME_OPTION = "-portname";
     protected static final String SERVICENAME_OPTION = "-servicename";
+    protected EntityResolver entityResolver;
 }

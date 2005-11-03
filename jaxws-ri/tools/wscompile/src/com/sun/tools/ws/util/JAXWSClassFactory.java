@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSClassFactory.java,v 1.3 2005-10-07 18:04:16 kohsuke Exp $
+ * $Id: JAXWSClassFactory.java,v 1.4 2005-11-03 22:32:40 kohlert Exp $
  */
 
 /*
@@ -28,7 +28,7 @@ import java.util.Properties;
 
 import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.generator.Names;
-import com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler20;
+import com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler;
 import com.sun.tools.ws.processor.modeler.wsdl.WSDLModelerBase;
 import com.sun.tools.ws.wsdl.framework.AbstractDocument;
 import com.sun.xml.ws.util.VersionUtil;
@@ -81,7 +81,7 @@ public class JAXWSClassFactory {
         Properties options) {
         WSDLModelerBase wsdlModeler = null;
         if (classVersion.equals(VersionUtil.JAXWS_VERSION_20))
-            wsdlModeler = new WSDLModeler20(modelInfo, options);
+            wsdlModeler = new WSDLModeler(modelInfo, options);
         else {
             // TODO: throw exception
         }

@@ -1,5 +1,5 @@
 /*
- * $Id: ClassNameCollector.java,v 1.5 2005-09-20 00:53:41 vivekp Exp $
+ * $Id: ClassNameCollector.java,v 1.6 2005-11-03 22:32:38 kohlert Exp $
  */
 
 /*
@@ -116,11 +116,6 @@ public class ClassNameCollector extends ExtendedModelVisitor
         // bindings can share the same port
 
         addSEIClassName(port.getJavaInterface().getName());
-        registerClassName(
-            (String) port.getProperty(
-                ModelProperties.PROPERTY_STUB_CLASS_NAME));
-        registerClassName(
-            (String) port.getProperty(ModelProperties.PROPERTY_TIE_CLASS_NAME));
     }
 
     private void addSEIClassName(String s) {

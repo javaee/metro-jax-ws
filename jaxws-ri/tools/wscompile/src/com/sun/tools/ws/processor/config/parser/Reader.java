@@ -1,5 +1,5 @@
 /*
- * $Id: Reader.java,v 1.8 2005-09-10 19:49:35 kohsuke Exp $
+ * $Id: Reader.java,v 1.9 2005-11-03 22:32:33 kohlert Exp $
  */
 
 /*
@@ -30,12 +30,14 @@ import java.util.Properties;
 
 import com.sun.tools.ws.processor.config.Configuration;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.WSDLConstants;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 
 import javax.xml.stream.XMLStreamReader;
+
+import org.xml.sax.EntityResolver;
 
 /**
  * @author Vivek Pandey
@@ -52,7 +54,7 @@ public class Reader {
         this._options = options;
     }
 
-    public Configuration parse(List<String> inputSources)
+    public Configuration parse(EntityResolver entityResolver, List<String> inputSources)
             throws Exception {
         //reset the input type flags before parsing
         isClassFile = false;
@@ -64,7 +66,7 @@ public class Reader {
         if(isClassFile){
             parser = new ClassModelParser(_env, _options);
         } else {
-            parser = new CustomizationParser(_env, _options);
+            parser = new CustomizationParser(entityResolver, _env, _options);
         } 
         return parser.parse(inputSources);
     }

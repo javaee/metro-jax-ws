@@ -95,7 +95,7 @@
  *    Web Service description such as a WSDL
  *    file.
  *
- *    <dt>{@link com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler20 WSDLModeler}
+ *    <dt>{@link com.sun.tools.ws.processor.modeler.wsdl.WSDLModeler WSDLModeler}
  *    <dd>The WSDLModeler processes a WSDL to create a Model.
  *
  *    <dt>{@link com.sun.tools.ws.processor.modeler.annotation.WebServiceAP WebServiceAP}

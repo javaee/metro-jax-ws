@@ -1,5 +1,5 @@
 /*
- * $Id: ServiceGenerator.java,v 1.10 2005-10-14 21:58:23 vivekp Exp $
+ * $Id: ServiceGenerator.java,v 1.11 2005-11-03 22:32:35 kohlert Exp $
  */
 
 /*
@@ -51,7 +51,7 @@ import com.sun.tools.ws.processor.model.Service;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.wscompile.WSCodeWriter;
 import com.sun.xml.ws.encoding.soap.SOAPVersion;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.StringUtils;
 import com.sun.xml.bind.api.JAXBRIContext;
 

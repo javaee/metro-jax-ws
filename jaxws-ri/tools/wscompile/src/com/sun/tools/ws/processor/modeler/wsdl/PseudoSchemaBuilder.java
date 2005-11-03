@@ -1,5 +1,5 @@
 /*
- * $Id: PseudoSchemaBuilder.java,v 1.7 2005-09-28 20:26:29 vivekp Exp $
+ * $Id: PseudoSchemaBuilder.java,v 1.8 2005-11-03 22:32:36 kohlert Exp $
  */
 
 /*
@@ -62,11 +62,11 @@ public class PseudoSchemaBuilder {
     private final StringWriter buf = new StringWriter();
     private final WSDLDocument wsdlDocument;
     private final ModelInfo modelInfo;
-    private WSDLModeler20 wsdlModeler;
+    private WSDLModeler wsdlModeler;
     private final List<InputSource> schemas = new ArrayList<InputSource>();
     private final HashMap<QName, Port> bindingNameToPortMap = new HashMap<QName, Port>();
 
-    public static List<InputSource> build(WSDLModeler20 wsdlModeler, ModelInfo modelInfo) {
+    public static List<InputSource> build(WSDLModeler wsdlModeler, ModelInfo modelInfo) {
         PseudoSchemaBuilder b = new PseudoSchemaBuilder(wsdlModeler.document, modelInfo);
         b.wsdlModeler = wsdlModeler;
         JAXBModelBuilder analyzer = wsdlModeler.getJAXBModelBuilder();

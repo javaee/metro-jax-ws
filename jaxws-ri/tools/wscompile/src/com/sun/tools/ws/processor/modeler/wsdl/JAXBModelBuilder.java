@@ -1,5 +1,5 @@
 /*
- * $Id: JAXBModelBuilder.java,v 1.9 2005-09-29 00:36:20 vivekp Exp $
+ * $Id: JAXBModelBuilder.java,v 1.10 2005-11-03 22:32:36 kohlert Exp $
  */
 
 /*
@@ -50,7 +50,7 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBType;
 import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 
 /**
@@ -83,6 +83,7 @@ public class JAXBModelBuilder {
             schemaCompiler = XJC.createSchemaCompiler();
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
             schemaCompiler.setErrorListener(new ConsoleErrorReporter(_env, printstacktrace));
+            schemaCompiler.setEntityResolver(_modelInfo.getEntityResolver());
             int schemaElementCount = 1;
             String wsdlLocation =((WSDLModelInfo)_modelInfo).getLocation();
             wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
@@ -125,8 +126,6 @@ public class JAXBModelBuilder {
 
     protected void bind(){
         com.sun.tools.xjc.api.JAXBModel rawJaxbModel = schemaCompiler.bind();
-        if(rawJaxbModel == null)
-            fail("model.schema.jaxbModelIsNULL", null);
         jaxbModel = new JAXBModel(rawJaxbModel);
         jaxbModel.setGeneratedClassNames(_classNameAllocator.getJaxbGeneratedClasses());
     }

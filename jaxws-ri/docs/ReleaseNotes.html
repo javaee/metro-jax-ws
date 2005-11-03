@@ -11,12 +11,12 @@
 <h1>JAX-WS 2.0 Beta<br>
 Release Notes</h1>
 <hr>
-<p>Last Modified: 10/28/05</p>
+<p>Last Modified: 11/3/05</p>
 <h2>Online Documentation</h2>
 <p>The documentation for JAX-WS 2.0 as well as the sample applications
 will
-be periodically updated in the JAX-RPC project on Java.net.</p>
-<p>Please go to <a href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a>
+be periodically updated in the JAX-WS project on Java.net.</p>
+<p>Please go to <a href="http://jax-ws.dev.java.net/">http://jax-ws.dev.java.net</a>
 for the
 latest documentation and samples.</p>
 <h2>Required Software</h2>
@@ -68,7 +68,7 @@ Web Services
   </li>
 </ul>
 <h2>Installation Instructions</h2>
-<p>Once the JAX-WS 2.0 EA bundle is extracted, it needs to be installed
+<p>Once the JAX-WS 2.0 Beta bundle is extracted, it needs to be installed
 on the
 Application Server. Make sure <code>AS_HOME</code> is set to the installation
 directory of the Application Server. You need to invoke <code>ANT_HOME/bin/ant install</code>
@@ -80,17 +80,12 @@ if you intend to build and deploy a Web service on the Application
 Server.</p>
 <p>If you intend to only invoke an already existing Web service, then
 alternatively you can use the <code>wsimport</code> and <code>wsgen</code>
-scripts in the <code>bin</code> directory of the JAX-WS 2.0 EA bundle.</p>
+scripts in the <code>bin</code> directory of the JAX-WS 2.0 Beta bundle.</p>
 <h2>Current Limitations</h2>
 <ul>
-  <li>
-    <p>Web Services Security is not supported in this release.</p>
-  </li>
 </ul>
 <h2>Known Bugs/Issues</h2>
 <ul>
-  <li>Checked exception is not wrapped correctly in ExecutionException
-for async clients in for proxy port.</li>
   <li>
 Although JAX-WS customizations are portable accross implementations, the names of 
 WSDL and schema files generated are not specified.  Therefore each vendor may and
@@ -108,13 +103,13 @@ the new file names.
 <h2>For More Information</h2>
 <p>For white papers and the latest JAX-WS technology and documentation,
 go
-to <a href="http://jax-rpc.dev.java.net/">http://jax-rpc.dev.java.net</a>.</p>
+to <a href="http://jax-ws.dev.java.net/">http://jax-ws.dev.java.net</a>.</p>
 <p>Please use the <a
  href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
 2.0
-and JAXRPC 2.0</a> forum for feedback.</p>
+and JAXWS 2.0</a> forum for feedback.</p>
 <h2>NOTE: JSR181-api.jar</h2>
-Any EA version of JAX-WS may include a jsr181-api.jar file that is based 
+Any EA/Beta version of JAX-WS may include a jsr181-api.jar file that is based 
 upon anticipated changes to the 181 specification to align with JAX-WS.  
 These anticipated changes maybe incorrect, may change and are not officially 
 part of 181.

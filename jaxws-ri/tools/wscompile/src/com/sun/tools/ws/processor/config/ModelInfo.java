@@ -1,5 +1,5 @@
 /*
- * $Id: ModelInfo.java,v 1.5 2005-09-10 19:49:33 kohsuke Exp $
+ * $Id: ModelInfo.java,v 1.6 2005-11-03 22:32:32 kohlert Exp $
  */
 
 /*
@@ -28,6 +28,8 @@ import java.util.Properties;
 
 import com.sun.tools.ws.processor.model.Model;
 import com.sun.tools.ws.processor.modeler.Modeler;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.xml.sax.EntityResolver;
 
 /**
  * This class contiains information used by {@link com.sun.tools.ws.processor.modeler.Modeler
@@ -87,6 +89,14 @@ public abstract class ModelInfo {
         return getModeler(options).buildModel();
     }
 
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
+
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
     protected abstract Modeler getModeler(Properties options);
 
     private Configuration _parent;
@@ -94,4 +104,5 @@ public abstract class ModelInfo {
     private String _javaPackageName;
     private HandlerChainInfo _clientHandlerChainInfo;
     private HandlerChainInfo _serverHandlerChainInfo;
+    private EntityResolver entityResolver;
 }

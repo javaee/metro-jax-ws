@@ -1,5 +1,5 @@
 /*
- * $Id: ProcessorOptions.java,v 1.8 2005-09-10 19:49:31 kohsuke Exp $
+ * $Id: ProcessorOptions.java,v 1.9 2005-11-03 22:32:32 kohlert Exp $
  */
 
 /*
@@ -52,4 +52,5 @@ public class ProcessorOptions {
     public final static String PROTOCOL = "protocol";
     public final static String TRANSPORT = "transport";
     public final static String WSDL_LOCATION = "wsdllocation";
+    public final static String DEFAULT_PACKAGE = "defaultpackage";
 }

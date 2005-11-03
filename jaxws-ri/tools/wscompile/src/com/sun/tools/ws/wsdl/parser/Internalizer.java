@@ -39,8 +39,8 @@ import org.w3c.dom.NodeList;
 
 import com.sun.tools.xjc.util.DOMUtils;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.tools.ws.util.JAXWSUtils;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;

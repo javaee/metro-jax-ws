@@ -1,5 +1,5 @@
 /**
- * $Id: Apt.java,v 1.8 2005-10-13 23:57:02 kohsuke Exp $
+ * $Id: Apt.java,v 1.9 2005-11-03 22:32:31 kohlert Exp $
  */
 
 /*
@@ -80,14 +80,14 @@ public class Apt extends Task {
     }
     
     /** -d option: directory to output processor and javac generated class files */
-    private File baseDir = null;
-    public File getBase() { return this.baseDir; }
-    public void setBase(File base) { this.baseDir = base; }
+    private File destDir = null;
+    public File getDestdir() { return this.destDir; }
+    public void setDestdir(File base) { this.destDir = base; }
     
     /** -s option: directory to place processor generated source files */
-    private File sourceBase;
-    public void setSourceBase(File sourceBase) { this.sourceBase = sourceBase; }
-    public File getSourceBase() { return sourceBase; }
+    private File sourceDestDir;
+    public void setSourcedestdir(File sourceBase) { this.sourceDestDir = sourceBase; }
+    public File getSourcedestdir() { return sourceDestDir; }
     
     
     /** -A option */
@@ -112,8 +112,8 @@ public class Apt extends Task {
 	
     /** -nocompile option */
     private boolean noCompile = false;
-    public boolean isNoCompile() { return noCompile; }
-    public void setNoCompile(boolean noCompile) { this.noCompile = noCompile; }
+    public boolean isNocompile() { return noCompile; }
+    public void setNocompile(boolean noCompile) { this.noCompile = noCompile; }
 
     /******************** -print option **********************/
     private boolean print = false;
@@ -122,8 +122,8 @@ public class Apt extends Task {
 
     /******************** -factorypath option **********************/
     private File factoryPath = null;
-    public File getFactoryPath() { return factoryPath; }
-    public void setFactoryPath(File factoryPath) { this.factoryPath = factoryPath; }
+    public File getFactorypath() { return factoryPath; }
+    public void setFactorypath(File factoryPath) { this.factoryPath = factoryPath; }
 
     /******************** -factory option **********************/
     private String factory = null;
@@ -132,28 +132,28 @@ public class Apt extends Task {
 	
 	/******************** -XListAnnotationTypes option **********************/
     private boolean xListAnnotationTypes = false;
-    public boolean isXListAnnotationTypes() { return xListAnnotationTypes; }
-    public void setXListAnnotationTypes(boolean xListAnnotationTypes) { this.xListAnnotationTypes = xListAnnotationTypes; }
+    public boolean isXlistannotationtypes() { return xListAnnotationTypes; }
+    public void setXlistannotationtypes(boolean xListAnnotationTypes) { this.xListAnnotationTypes = xListAnnotationTypes; }
 
 	/******************** -XListDeclarations option **********************/
     private boolean xListDeclarations = false;
-    public boolean isXListDeclarations() { return xListDeclarations; }
-    public void setXListDeclarations(boolean xListDeclarations) { this.xListDeclarations = xListDeclarations; }
+    public boolean isXlistdeclarations() { return xListDeclarations; }
+    public void setXlistdeclarations(boolean xListDeclarations) { this.xListDeclarations = xListDeclarations; }
 
 	/******************** -XPrintAptRounds option **********************/
     private boolean xPrintAptRounds = false;
-    public boolean isXPrintAptRounds() { return xPrintAptRounds; }
-    public void setXPrintAptRounds(boolean xPrintAptRounds) { this.xPrintAptRounds = xPrintAptRounds; }
+    public boolean isXprintaptrounds() { return xPrintAptRounds; }
+    public void setXprintaptrounds(boolean xPrintAptRounds) { this.xPrintAptRounds = xPrintAptRounds; }
 
     /******************** -XPrintFactoryInfo option **********************/
     private boolean xPrintFactoryInfo = false;
-    public boolean isXPrintFactoryInfo() { return xPrintFactoryInfo; }
-    public void setXPrintFactoryInfo(boolean xPrintFactoryInfo) { this.xPrintFactoryInfo = xPrintFactoryInfo; }
+    public boolean isXprintfactoryinfo() { return xPrintFactoryInfo; }
+    public void setXprintfactoryinfo(boolean xPrintFactoryInfo) { this.xPrintFactoryInfo = xPrintFactoryInfo; }
 
 	/******************** -XclassesAsDecls option **********************/
     private boolean xClassesAsDecls = false;
-    public boolean isXClassesAsDecls() { return xClassesAsDecls; }
-    public void setXClassesAsDecls(boolean xClassesAsDecls) { this.xClassesAsDecls = xClassesAsDecls; }
+    public boolean isXclassesasdecls() { return xClassesAsDecls; }
+    public void setXclassesasdecls(boolean xClassesAsDecls) { this.xClassesAsDecls = xClassesAsDecls; }
 	
     /** Inherited from javac */
 
@@ -164,8 +164,8 @@ public class Apt extends Task {
 	
     /** debug level */
     protected String debugLevel = null;
-    public String getDebugLevel() { return debugLevel; }
-    public void setDebugLevel(String debugLevel) { this.debugLevel = debugLevel; }
+    public String getDebuglevel() { return debugLevel; }
+    public void setDebuglevel(String debugLevel) { this.debugLevel = debugLevel; }
 	
     /** -nowarn option: generate no warnings */
     protected boolean nowarn = false;
@@ -179,8 +179,8 @@ public class Apt extends Task {
 
     /** -bootclasspath option: override location of bootstrap class files */
     protected Path bootclassPath = null;
-    public Path getBootclassPath() { return bootclassPath; }
-    public void setBootclassPath(Path bootclassPath) { this.bootclassPath = bootclassPath; }
+    public Path getBootclasspath() { return bootclassPath; }
+    public void setBootclasspath(Path bootclassPath) { this.bootclassPath = bootclassPath; }
 
     /** -extdirs option: override location of installed extensions */
     protected String extdirs = null;
@@ -199,8 +199,8 @@ public class Apt extends Task {
 	
     /** -sourcepath option: Specify where to find input source files */
     protected Path sourcePath = null;
-    public Path getSourcePath() { return sourcePath; }
-    public void setSourcePath(Path sourcePath) { this.sourcePath = sourcePath; }
+    public Path getSourcepath() { return sourcePath; }
+    public void setSourcepath(Path sourcePath) { this.sourcePath = sourcePath; }
 
     /** -encoding option: character encoding used by the source files */
     protected String encoding = null;
@@ -260,27 +260,27 @@ public class Apt extends Task {
     private Commandline setupAptArgs() {
         Commandline cmd = new Commandline();
         
-        if (null != getBase() && !getBase().getName().equals("")) {
+        if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
-            cmd.createArgument().setFile(getBase());
+            cmd.createArgument().setFile(getDestdir());
         }
         
-        if (null != getSourceBase() && !getSourceBase().getName().equals("")) {
+        if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
             cmd.createArgument().setValue("-s");
-            cmd.createArgument().setFile(getSourceBase());
+            cmd.createArgument().setFile(getSourcedestdir());
         }
 		
-        if (getSourcePath() == null)
+        if (getSourcepath() == null)
             throw new BuildException("\"sourcePath\" attribute must be set.");
         
-        if (getSourcePath() != null && !getSourcePath().toString().equals("")) {
+        if (getSourcepath() != null && !getSourcepath().toString().equals("")) {
             cmd.createArgument().setValue("-sourcepath");
-            cmd.createArgument().setValue(getSourcePath().toString());
+            cmd.createArgument().setValue(getSourcepath().toString());
         }
         
-        if (getBootclassPath() != null && !getBootclassPath().toString().equals("")) {
+        if (getBootclasspath() != null && !getBootclasspath().toString().equals("")) {
             cmd.createArgument().setValue("-bootclasspath");
-            cmd.createArgument().setValue(getBootclassPath().toString());
+            cmd.createArgument().setValue(getBootclasspath().toString());
         }
         
         if (getExtdirs() != null && !getExtdirs().equals("")) {
@@ -296,8 +296,8 @@ public class Apt extends Task {
         if (isDebug()) {
             String debugOption = "";
             debugOption = "-g";
-            if (getDebugLevel() != null && !getDebugLevel().equals(""))
-                debugOption += ":" + getDebugLevel();
+            if (getDebuglevel() != null && !getDebuglevel().equals(""))
+                debugOption += ":" + getDebuglevel();
             cmd.createArgument().setValue(debugOption);
         } else
             cmd.createArgument().setValue("-g:none");
@@ -327,7 +327,7 @@ public class Apt extends Task {
             cmd.createArgument().setValue("-nowarn");
         }
 
-        if(isNoCompile()){
+        if(isNocompile()){
             cmd.createArgument().setValue("-nocompile");
         }
 		
@@ -339,9 +339,9 @@ public class Apt extends Task {
             cmd.createArgument().setValue("-print");
         }
 
-        if(getFactoryPath() != null){
+        if(getFactorypath() != null){
             cmd.createArgument().setValue("-factorypath");
-            cmd.createArgument().setValue(getFactoryPath().toString());
+            cmd.createArgument().setValue(getFactorypath().toString());
         }
 		
         if(getFactory() != null){
@@ -349,23 +349,23 @@ public class Apt extends Task {
             cmd.createArgument().setValue(getFactory());
         }
 		
-        if (isXListAnnotationTypes()) {
+        if (isXlistannotationtypes()) {
             cmd.createArgument().setValue("-XListAnnotationTypes");
         }
         
-        if (isXListDeclarations()) {
+        if (isXlistdeclarations()) {
             cmd.createArgument().setValue("-XListDeclarations");
         }
         
-        if (isXPrintAptRounds()) {
+        if (isXprintaptrounds()) {
             cmd.createArgument().setValue("-XPrintAptRounds");
         }
         
-        if (isXPrintFactoryInfo()) {
+        if (isXprintfactoryinfo()) {
             cmd.createArgument().setValue("-XPrintFactoryInfo");
         }
 		
-        if (isXPrintFactoryInfo()) {
+        if (isXprintfactoryinfo()) {
             cmd.createArgument().setValue("-XclassesAsDecls");
         }
 		

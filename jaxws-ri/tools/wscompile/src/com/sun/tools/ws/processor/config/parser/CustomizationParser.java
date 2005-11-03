@@ -1,5 +1,5 @@
 /*
- * $Id: CustomizationParser.java,v 1.9 2005-09-10 19:49:33 kohsuke Exp $
+ * $Id: CustomizationParser.java,v 1.10 2005-11-03 22:32:33 kohlert Exp $
  */
 
 /*
@@ -32,6 +32,7 @@ import java.util.Set;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.EntityResolver;
 
 import com.sun.tools.ws.processor.ProcessorOptions;
 import com.sun.tools.ws.processor.config.Configuration;
@@ -39,7 +40,7 @@ import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.tools.ws.util.JAXWSUtils;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 
 import javax.xml.stream.XMLStreamReader;
@@ -51,12 +52,13 @@ import javax.xml.stream.XMLStreamReader;
 public class CustomizationParser extends InputParser {
 
     /**
+     * @param entityResolver
      * @param env
      * @param options
      */
-    public CustomizationParser(ProcessorEnvironment env, Properties options) {
+    public CustomizationParser(EntityResolver entityResolver, ProcessorEnvironment env, Properties options) {
         super(env, options);
-//        getModelInfoParsers().put(JAXWSBindingsConstants.JAXWS_BINDINGS, new JAXWSBindingInfoParser(env));
+        this.entityResolver = entityResolver;
     }
 
 
@@ -81,16 +83,16 @@ public class CustomizationParser extends InputParser {
         }
 
 
-        for(String jaxwsBinding : jaxwsBindings){
-            Element root = modelInfoParser.parse(new InputSource(jaxwsBinding));
+        for(InputSource jaxwsBinding : jaxwsBindings){
+            Element root = modelInfoParser.parse(jaxwsBinding);
             if(root != null){
                 wsdlModelInfo.addJAXWSBindings(root);
             }
         }
 
-        //get the jaxb bindingd file and add it to the modelInfo
-        for(String jaxbBinding : jaxbBindings){
-            wsdlModelInfo.addJAXBBIndings(new InputSource(jaxbBinding));
+        //copy jaxb binding sources in modelInfo
+        for(InputSource jaxbBinding : jaxbBindings){
+            wsdlModelInfo.addJAXBBIndings(jaxbBinding);
         }
 
         addHandlerChainInfo();
@@ -100,14 +102,20 @@ public class CustomizationParser extends InputParser {
 
     private void addBinding(String bindingLocation) throws Exception{
         JAXWSUtils.checkAbsoluteness(bindingLocation);
-        URL url = new URL(bindingLocation);
+        InputSource is = null;
+        if(entityResolver != null){
+            is = entityResolver.resolveEntity(null, bindingLocation);
+        }
+        if(is == null)
+            is = new InputSource(bindingLocation);
+
         XMLStreamReader reader =
-                XMLStreamReaderFactory.createXMLStreamReader(url.openStream(), true);
+                XMLStreamReaderFactory.createFreshXMLStreamReader(is, true);
         XMLStreamReaderUtil.nextElementContent(reader);
         if(reader.getName().equals(JAXWSBindingsConstants.JAXWS_BINDINGS)){
-            jaxwsBindings.add(bindingLocation);
+            jaxwsBindings.add(is);
         }else if(reader.getName().equals(JAXWSBindingsConstants.JAXB_BINDINGS)){
-            jaxbBindings.add(bindingLocation);
+            jaxbBindings.add(is);
         }else{
             warn("configuration.notBindingFile");
         }
@@ -129,7 +137,8 @@ public class CustomizationParser extends InputParser {
 
     private WSDLModelInfo wsdlModelInfo;
     private JAXWSBindingInfoParser modelInfoParser;
-    private Set<String> jaxwsBindings = new HashSet<String>();
-    private Set<String> jaxbBindings = new HashSet<String>();
+    private Set<InputSource> jaxwsBindings = new HashSet<InputSource>();
+    private Set<InputSource> jaxbBindings = new HashSet<InputSource>();
+    private EntityResolver entityResolver;
 
 }

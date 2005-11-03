@@ -1,5 +1,5 @@
 /*
- * $Id: JAXWSUtils.java,v 1.3 2005-09-10 19:48:13 kohsuke Exp $
+ * $Id: JAXWSUtils.java,v 1.4 2005-11-03 22:32:28 kohlert Exp $
  */
 
 /*
@@ -60,6 +60,13 @@ public final class JAXWSUtils {
         }
     }
 
+    public static URL getFileOrURL(String fileOrURL) throws IOException {
+        try {
+            return new URL(fileOrURL);
+        } catch (MalformedURLException e) {
+            return new File(fileOrURL).toURL();
+        }
+    }
     private static String escapeSpace( String url ) {
         // URLEncoder didn't work.
         StringBuffer buf = new StringBuffer();

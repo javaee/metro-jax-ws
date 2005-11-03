@@ -29,6 +29,9 @@
 <property name="build.war.home" value="${build.home}/war"/>
 <property name="domain" value="domain1"/>
 
+<property name="keep" value="true"/>
+
+
 <path id="jaxws.classpath">
     <pathelement location="${java.home}/../lib/tools.jar"/>
     <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
@@ -58,14 +61,14 @@
         fork="true"
         debug="${debug}"
     	verbose="${verbose}"
-    	base="${build.classes.home}"
-    	sourceBase="${build.classes.home}"
-    	sourcePath="${basedir}/src">
+    	destdir="${build.classes.home}"
+    	sourcedestdir="${build.classes.home}"
+    	sourcepath="${basedir}/src">
         <classpath>
         <path refid="jaxws.classpath"/>
             <pathelement location="${basedir}/src"/>
         </classpath>
-        <option key="nd" value="${build.home}"/>
+        <option key="r" value="${build.home}"/>
         <option key="verbose" value="${verbose}"/>
         <source dir="${basedir}/src">
             <include name="**/server/*.java"/>
@@ -100,8 +103,8 @@
         verbose="${verbose}"
         keep="${keep}"
         extension="${extension}"
-        base="${build.classes.home}"
-        wsdlFile="${server.wsdl}">
+        destdir="${build.classes.home}"
+        wsdl="${server.wsdl}">
         <binding dir="${basedir}/etc" includes="${server.binding}"/>
     </wsimport>
     <javac
@@ -136,8 +139,8 @@
         verbose="${verbose}"
         keep="${keep}"
         extension="${extension}"
-        base="${build.classes.home}"
-        wsdlFile="${client.wsdl}">
+        destdir="${build.classes.home}"
+        wsdl="${client.wsdl}">
         <binding dir="${basedir}/etc" includes="${client.binding}"/>
     </wsimport>
 </target>

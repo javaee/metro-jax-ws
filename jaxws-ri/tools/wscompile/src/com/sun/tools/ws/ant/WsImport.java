@@ -1,5 +1,5 @@
 /**
- * $Id: WsImport.java,v 1.10 2005-09-10 19:49:30 kohsuke Exp $
+ * $Id: WsImport.java,v 1.11 2005-11-03 22:32:32 kohlert Exp $
  */
 
 /*
@@ -43,9 +43,11 @@ import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.XMLCatalog;
 
 import com.sun.tools.ws.wscompile.CompileTool;
 import org.apache.tools.ant.AntClassLoader;
+import org.xml.sax.EntityResolver;
 
 /**
  * wscompile task for use with the JAXWS project.
@@ -54,68 +56,47 @@ import org.apache.tools.ant.AntClassLoader;
 public class WsImport extends MatchingTask {
 
     /*************************  -d option *************************/
-    private File baseDir = null;
+    private File destDir = null;
 
     /** Gets the base directory to output generated class. **/
-    public File getBase() {
-        return this.baseDir;
+    public File getDestdir() {
+        return this.destDir;
     }
 
     /** Sets the base directory to output generated class. **/
-    public void setBase(File base) {
-        this.baseDir = base;
+    public void setDestdir(File base) {
+        this.destDir = base;
     }
 
     /** wsdllocation - set @WebService.wsdlLocation and @WebServiceClient.wsdlLocation values */
 
     private String wsdlLocation;
 
-    public String getWsdlLocation() {
+    public String getWsdllocation() {
         return wsdlLocation;
     }
 
-    public void setWsdlLocation(String wsdlLocation) {
+    public void setWsdllocation(String wsdlLocation) {
         this.wsdlLocation = wsdlLocation;
     }
 
-    /********************  -httpproxy option **********************/
-    private String HTTPProxyURL = null;
-    private URL proxyURL = null;
-
-    /** Gets the String "httpproxy" flag. **/
-    public String getHTTPProxy() {
-        return HTTPProxyURL;
-    }
-
-    /** Sets the String "httpproxy" flag.
-     * This value can either specify the http protocol or not.
-     **/
-    public void setHTTPProxy(String HTTPProxy) {
-        if (HTTPProxy != null && !HTTPProxy.equals("")) {
-            if (HTTPProxy.startsWith("http://")) {
-                this.HTTPProxyURL = HTTPProxy;
-            } else {
-                this.HTTPProxyURL = "http://" + HTTPProxy;
-            }
-
-            try {
-                URL proxyServer = new URL(this.HTTPProxyURL);
-                setProxyServer(proxyServer);
-            } catch (MalformedURLException e) {
-                throw new Error("Invalid HTTP URL specified: " +
-                    this.HTTPProxyURL);
-            }
+    public void addConfiguredXMLCatalog(XMLCatalog entityResolver) {
+        if(this.xmlCatalog==null){
+            this.xmlCatalog = new XMLCatalog();
+            xmlCatalog.setProject(getProject());
         }
+        this.xmlCatalog.addConfiguredXMLCatalog(entityResolver);
     }
 
-    /** Gets the URL for "httpproxy" flag. **/
-    public URL getProxyServer() {
-        return proxyURL;
+    private XMLCatalog xmlCatalog;
+
+    private String pkg;
+    public void setPackage(String pkg){
+        this.pkg = pkg;
     }
 
-    /** Sets the URL for "httpproxy" flag. **/
-    public void setProxyServer(URL proxyURL) {
-        this.proxyURL = proxyURL;
+    public String getPackage(){
+        return pkg;
     }
 
     /********************  -jvmargs option **********************/
@@ -170,19 +151,6 @@ public class WsImport extends MatchingTask {
         this.fork = fork;
     }
 
-    /*************************  -nd option *************************/
-    private File nonClassDir = null;
-
-    /** Gets the directory for non-class generated files. **/
-    public File getNonClassDir() {
-        return this.nonClassDir;
-    }
-
-    /** Sets the directory for non-class generated files. **/
-    public void setNonClassDir(File nonClassDir) {
-        this.nonClassDir = nonClassDir;
-    }
-
     /*************************  -O option *************************/
     private boolean optimize = false;
 
@@ -197,17 +165,17 @@ public class WsImport extends MatchingTask {
     }
 
     /*************************  -s option *************************/
-    private File sourceBase;
+    private File sourcedestdir;
 
     /** Sets the directory to place generated source java files. **/
-    public void setSourceBase(File sourceBase) {
+    public void setSourcedestdir(File sourceBase) {
         keep = true;
-        this.sourceBase = sourceBase;
+        this.sourcedestdir = sourceBase;
     }
 
     /** Gets the directory to place generated source java files. **/
-    public File getSourceBase() {
-        return sourceBase;
+    public File getSourcedestdir() {
+        return sourcedestdir;
     }
 
     /*************************  -verbose option *************************/
@@ -221,19 +189,6 @@ public class WsImport extends MatchingTask {
     /** Sets the "verbose" flag. **/
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
-    }
-
-    /*************************  -version option *************************/
-    protected boolean version = false;
-
-    /** Gets the "version" flag. **/
-    public boolean getVersion() {
-        return version;
-    }
-
-    /** Sets the "version" flag. **/
-    public void setVersion(boolean version) {
-        this.version = version;
     }
 
      /*************************  -g option *************************/
@@ -302,18 +257,32 @@ public class WsImport extends MatchingTask {
         this.binding = binding;
     }
 
-    private String wsdlFile;
     /**
-     * @return Returns the wsdlFile.
+     * Adds a new catalog file.
      */
-    public String getWsdlFile() {
-        return wsdlFile;
+    public void setCatalog( File catalog ) {
+        this.catalog = catalog;
+    }
+
+    public File getCatalog(){
+        return catalog;
+    }
+
+    private File catalog;
+
+
+    private String wsdl;
+    /**
+     * @return Returns the wsdl.
+     */
+    public String getWsdl() {
+        return wsdl;
     }
     /**
-     * @param wsdlFile The wsdlFile to set.
+     * @param wsdl The wsdl to set.
      */
-    public void setWsdlFile(String wsdlFile) {
-        this.wsdlFile = wsdlFile;
+    public void setWsdl(String wsdl) {
+        this.wsdl = wsdl;
     }
 
     public void addConfiguredBinding( FileSet fs ) {
@@ -353,9 +322,9 @@ public class WsImport extends MatchingTask {
         Commandline cmd = new Commandline();
 
         // d option
-        if (null != getBase() && !getBase().getName().equals("")) {
+        if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
-            cmd.createArgument().setFile(getBase());
+            cmd.createArgument().setFile(getDestdir());
         }
 
         // extension flag
@@ -368,28 +337,9 @@ public class WsImport extends MatchingTask {
             cmd.createArgument().setValue("-g");
         }
 
-        // httpproxy option
-        if (getProxyServer() != null) {
-            String host = getProxyServer().getHost();
-            if (host != null && !host.equals("")) {
-                String proxyVal = "-httpproxy:" + host;
-                if (getProxyServer().getPort() != -1) {
-                    proxyVal += ":" + getProxyServer().getPort();
-                }
-
-                cmd.createArgument().setValue(proxyVal);
-            }
-        }
-
         // keep option
         if (getKeep()) {
             cmd.createArgument().setValue("-keep");
-        }
-
-        // nd option
-        if (null != getNonClassDir() && !getNonClassDir().getName().equals("")) {
-            cmd.createArgument().setValue("-nd");
-            cmd.createArgument().setFile(getNonClassDir());
         }
 
         // optimize option
@@ -398,9 +348,15 @@ public class WsImport extends MatchingTask {
         }
 
         // s option
-        if (null != getSourceBase() && !getSourceBase().getName().equals("")) {
+        if (null != getSourcedestdir() && !getSourcedestdir().getName().equals("")) {
             cmd.createArgument().setValue("-s");
-            cmd.createArgument().setFile(getSourceBase());
+            cmd.createArgument().setFile(getSourcedestdir());
+        }
+
+        //catalog
+        if((getCatalog() != null) && (getCatalog().getName().length() > 0)){
+            cmd.createArgument().setValue("-catalog");
+            cmd.createArgument().setFile(getCatalog());
         }
 
         // verbose option
@@ -408,14 +364,15 @@ public class WsImport extends MatchingTask {
             cmd.createArgument().setValue("-verbose");
         }
 
-        // version option
-        if (getVersion()) {
-            cmd.createArgument().setValue("-version");
+        //wsdl
+        if(getWsdl() != null){
+            cmd.createArgument().setValue(getWsdl());
         }
 
-        //wsdlFile
-        if(getWsdlFile() != null){
-            cmd.createArgument().setValue(getWsdlFile());
+        //package
+        if((getPackage() != null) && (getPackage().length() > 0)){
+            cmd.createArgument().setValue("-p");
+            cmd.createArgument().setValue(getPackage());
         }
 
         if(getBinding() != null){
@@ -464,6 +421,9 @@ public class WsImport extends MatchingTask {
                 String sysPath = System.getProperty("java.class.path");
                 try {
                     CompileTool compTool = new CompileTool(logstr, "wsimport");
+                    if(xmlCatalog != null){
+                        compTool.setEntityResolver(xmlCatalog);
+                    }
                     if (loader instanceof AntClassLoader) {
                         System.setProperty("java.class.path", ((AntClassLoader)loader).getClasspath());
                     }

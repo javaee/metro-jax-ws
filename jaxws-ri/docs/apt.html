@@ -8,9 +8,9 @@
   <meta name="CHANGED" content="20050401;8213207">
 </head>
 <body dir="ltr" lang="en-US">
-<h1><a class="mozTocH1" name="mozTocId872588"></a>JAX-WS 2.0 Beta - APT</h1>
+<h1><a class="mozTocH1" name="mozTocId872588"></a>JAX-WS 2.0 Beta<br>APT</h1>
 <hr>
-<p>Last Modified: 10/28/05</p>
+<p>Last Modified: 11/3/05</p>
 <br>
 <p></p>
 <h1><a class="mozTocH1" name="mozTocId642262"></a><code>apt<br>
@@ -268,28 +268,27 @@ documentation <a
 2.0 EA. The attributes and elements supported by the Ant task are
 listed below:</p>
 <pre>&lt;apt<br>    
-  fork="true|false"<br>    
   verbose="true|false"<br>    
   classpath="classpath"<br>    
-  base="directory for generated class files"<br>    
-  sourceBase="directory for generated source files"<br>    
-  noCompile="true|false"<br>    
+  destdir="directory for generated class files"<br>    
+  sourcedestdir="directory for generated source files"<br>    
+  nocompile="true|false"<br>    
   print="true|false"<br>    
-  factoryPath="&lt;path&gt;"<br>    
+  factorypath="&lt;path&gt;"<br>    
   factory="name of AnnotationProcessorFactory to use"<br>    
-  xListAnnotationTypes="true|false"<br>    
-  xListDeclarations="true|false"<br>    
-  xPrintAptRounds="true|false"<br>    
-  xPrintFactoryInfo="true|false"<br>    
-  xClassesAsDecls="true|false"<br>    
+  xlistannotationtypes="true|false"<br>    
+  xlistdeclarations="true|false"<br>    
+  xprintaptrounds="true|false"<br>    
+  xprintfactoryinfo="true|false"<br>    
+  xclassesasdecls="true|false"<br>    
   debug="true|false"<br>    
-  debugLevel="lines|vars|source"<br>    
+  debuglevel="lines|vars|source"<br>    
   nowarn="true|false"<br>    
   deprecation="true|false"<br>    
   bootclasspath="&lt;path&gt;"<br>    
   extdirs="&lt;path&gt;"<br>    
   endorseddirs="&lt;path&gt;"<br>    
-  sourcePath="&lt;path&gt;"<br>    
+  sourcepath="&lt;path&gt;"<br>    
   encoding="specify character encoding used by source files"<br>    
   target="generate class files for specific virtual machine version"&gt;<br>    
   &lt;option key="keyname" value="keyvalue"/&gt;
@@ -309,7 +308,7 @@ listed below:</p>
       <p>Command line</p>
       </td>
     </tr>
-    <tr valign="top">
+<!--    <tr valign="top">
       <td width="15%">
       <p><code>fork</code></p>
       </td>
@@ -320,7 +319,7 @@ machine</p>
       <td width="15%">
       <p>n/a</p>
       </td>
-    </tr>
+    </tr>-->
     <tr>
       <td width="20%">
       <p><code>verbose</code></p>
@@ -346,7 +345,7 @@ processor factories</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>base</code></p>
+      <p><code>destdir</code></p>
       </td>
       <td width="60%">
       <p>Specify where to place processor and <code>javac</code>
@@ -358,7 +357,7 @@ generated class files</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>sourceBase</code></p>
+      <p><code>sourcedestdir</code></p>
       </td>
       <td width="60%">
       <p>Specify where to place processor generated source files</p>
@@ -369,7 +368,7 @@ generated class files</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>noCompile</code></p>
+      <p><code>nocompile</code></p>
       </td>
       <td width="60%">
       <p>Do not compile source files to class files</p>
@@ -391,7 +390,7 @@ generated class files</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>factoryPath</code></p>
+      <p><code>factorypath</code></p>
       </td>
       <td width="60%">
       <p>Specify where to find annotation processor factories</p>
@@ -414,59 +413,59 @@ bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>xListAnnotationTypes</code></p>
+      <p><code>xlistannotationtypes</code></p>
       </td>
       <td width="60%">
       <p>List the found annotation types</p>
       </td>
       <td width="20%">
-      <p><code>-XListAnnotationTypes</code></p>
+      <p><code>-xlistannotationtypes</code></p>
       </td>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>xListDeclarations</code></p>
+      <p><code>xlistdeclarations</code></p>
       </td>
       <td width="60%">
       <p>List specified and included declarations</p>
       </td>
       <td width="20%">
-      <p><code>-XListDeclarations</code></p>
+      <p><code>-xlistdeclarations</code></p>
       </td>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>xPrintAptRounds</code></p>
+      <p><code>xprintaptrounds</code></p>
       </td>
       <td width="60%">
       <p>Print information about initial and recursive <code>apt</code>
 rounds</p>
       </td>
       <td width="20%">
-      <p><code>-XPrintAptRounds</code></p>
+      <p><code>-xprintaptrounds</code></p>
       </td>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>xPrintFactoryInfo</code></p>
+      <p><code>xprintfactoryinfo</code></p>
       </td>
       <td width="60%">
       <p>Print information about which annotations a factory is asked
 to process</p>
       </td>
       <td width="20%">
-      <p><code>-XPrintFactoryInfo</code></p>
+      <p><code>-xprintfactoryinfo</code></p>
       </td>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>xClassesAsDecls</code></p>
+      <p><code>xclassesasdecls</code></p>
       </td>
       <td width="60%">
       <p>Treat both class and source files as declarations to process</p>
       </td>
       <td width="20%">
-      <p><code>-XclassesAsDecls</code></p>
+      <p><code>-xclassesasdecls</code></p>
       </td>
     </tr>
     <tr>
@@ -482,7 +481,7 @@ to process</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>debugLevel</code></p>
+      <p><code>debuglevel</code></p>
       </td>
       <td width="60%">
       <p>Debug level: lines, vars, sources</p>
@@ -548,7 +547,7 @@ to process</p>
     </tr>
     <tr>
       <td width="20%">
-      <p><code>sourcePath</code></p>
+      <p><code>sourcepath</code></p>
       </td>
       <td width="60%">
       <p>Specify where to find input source files</p>
@@ -607,7 +606,15 @@ element needs to be added to the project as given below:</p>
 defined elsewhere in the build environment, and contains the list of
 classes required by the JAX-WS tools.</p>
 <h3>Examples</h3>
-<pre>&lt;apt<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxws.classpath"/&gt;<br>    &lt;source dir="${basedir}/src" includes="*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<pre>
+&lt;apt    
+    destdir="${build.classes.home}"
+    sourcedestdir="${build.classes.home}"
+    sourcepath="${basedir}/src"&gt;
+    &lt;classpath refid="jaxws.classpath"/&gt;
+    &lt;source dir="${basedir}/src" includes="*.java"/&gt;
+    &lt;/source&gt;
+&lt;/apt&gt;<br></pre>
 <p>The above example processes the Java source files in the <code>${basedir}/src</code>
 directory and generates the source and class files in <code>${build.classes.home}</code>.
 <code>${basedir}/src</code> is directory used to search for source
@@ -615,12 +622,24 @@ files for multiple <code>apt</code> rounds. The classpath is a
 reference to a <a href="http://ant.apache.org/manual/using.html#path">path-like
 structure</a> <code>jaxws.classpath</code>, defined elsewhere in the
 build environment.</p>
-<pre>&lt;apt<br>    fork="true"<br>    debug="true"<br>    verbose="true"<br>    base="${build.classes.home}"<br>    sourceBase="${build.classes.home}"<br>    sourcePath="${basedir}/src"&gt;<br>    &lt;classpath refid="jaxws.classpath"/&gt;<br>    &lt;option key="nd" value="${build.home}"/&gt;<br>    &lt;option key="verbose" value="${verbose}"/&gt;<br>    &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>    &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<pre>
+&lt;apt
+    debug="true"
+    verbose="true"
+    destdir="${build.classes.home}"
+    sourcedestdir="${build.classes.home}"
+    sourcepath="${basedir}/src"&gt;
+    &lt;classpath refid="jaxws.classpath"/&gt;
+    &lt;option key="r" value="${build.home}"/&gt;
+    &lt;source dir="${basedir}/src"&gt;
+      &lt;include name="**/server/*.java"/&gt;
+    &lt;/source&gt;
+&lt;/apt&gt;<br></pre>
 <p>The above example processes the Java source files in <code>${basedir}/src/**/server</code>,
 generates the source and class files in <code>${build.classes.home}</code>,
 compiles with debug information on, prints a message about what the
-compiler is doing, and passes the <code>-Dnd=${build.home}</code> and <code>-Dverbose=${verbose}</code>
-options to the annotation processor(s). <code>${basedir}/src</code> is
+compiler is doing, and passes the <code>-Dr=${build.home}</code> 
+option to the annotation processor(s). <code>${basedir}/src</code> is
 the directory used to search for source files for multiple <code>apt</code>
 rounds. The classpath is a reference to a <a
  href="http://ant.apache.org/manual/using.html#path">path-like structure</a>
