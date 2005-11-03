@@ -40,7 +40,7 @@ public class ContentNegotiation {
                 throw new SenderException("sender.request.illegalValueForContentNegotiation", value);
             }
         } else {
-            initFromSystemProperties(messageStruct);
+            initFromSystemProperties(context, messageStruct);
         }
     }
 
@@ -48,7 +48,7 @@ public class ContentNegotiation {
      * Initializes content negotiation property in <code>MessageStruct</code>
      * based on system property of the same name.
      */
-    static public void initFromSystemProperties(MessageStruct messageStruct)
+    static public void initFromSystemProperties(Map context, MessageStruct messageStruct)
         throws SenderException {
         String value = System.getProperty(CONTENT_NEGOTIATION_PROPERTY);
 
@@ -57,6 +57,7 @@ public class ContentNegotiation {
                 CONTENT_NEGOTIATION_PROPERTY, "none");      // FI is off by default
         } else if (value.equals("none") || value.equals("pessimistic") || value.equals("optimistic")) {
             messageStruct.setMetaData(CONTENT_NEGOTIATION_PROPERTY, value.intern());
+            context.put(CONTENT_NEGOTIATION_PROPERTY, value.intern());
         } else {
             throw new SenderException("sender.request.illegalValueForContentNegotiation", value);
         }
