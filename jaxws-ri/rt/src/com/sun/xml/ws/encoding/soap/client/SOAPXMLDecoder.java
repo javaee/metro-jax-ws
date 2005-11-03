@@ -295,7 +295,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             // faultdetail
             if (elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
                 XMLStreamReaderUtil.nextContent(reader);
+                if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) == null)
                 faultdetail = readFaultDetail(reader,messageInfo);
+                else {
+                    XMLStreamReaderUtil.skipElement(reader);
+                    XMLStreamReaderUtil.next(reader);
+                }
                 // move from </detail> to </Fault>.
                 XMLStreamReaderUtil.nextContent(reader);
             } else {
@@ -347,9 +352,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
      *
      * Upon entry the cursor must be at the start tag of the first child element of &lt;detail>.
      * Upon a successful completion, the cursor is left at &lt;/detail>.
-     */
+     */     
     protected final Object readFaultDetail(XMLStreamReader reader, MessageInfo mi){
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext (mi);
+
         QName faultName = reader.getName ();
         if (rtCtxt.getModel().isKnownFault (faultName, mi.getMethod ())) {
             Object decoderInfo = rtCtxt.getDecoderInfo (faultName);
