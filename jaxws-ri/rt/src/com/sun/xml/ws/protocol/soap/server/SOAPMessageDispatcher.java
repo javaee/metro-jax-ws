@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.42 2005-11-02 21:23:14 bbissett Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.43 2005-11-03 19:08:56 joehw Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -234,6 +234,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
         if (wsContext != null) {
             AppMsgContextImpl appCtxt = new AppMsgContextImpl(hc.getMessageContext());
+            appCtxt.put(CONTENT_NEGOTIATION_PROPERTY, messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY));
             wsContext.setMessageContext(appCtxt);
         }
     }
