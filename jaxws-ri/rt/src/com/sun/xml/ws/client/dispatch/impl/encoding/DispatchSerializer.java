@@ -92,7 +92,9 @@ public final class DispatchSerializer {
                         //bug fix for 6333609
                         writer.writeStartElement(name.getPrefix() + ":" + name.getLocalPart());
                         //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
-                        writer.writeNamespace(name.getPrefix(),reader.getNamespaceContext().getNamespaceURI(name.getPrefix()));
+                        if ((name.getPrefix() != null) && (reader.getNamespaceContext().getNamespaceURI(name.getPrefix()) != null))
+                            writer.writeNamespace(name.getPrefix(),reader.getNamespaceContext().getNamespaceURI(name.getPrefix()));
+                        else writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
                         //comment out for bug fix 6333609
                         //writer.writeStartElement(name.getPrefix(),name.getLocalPart(), name.getNamespaceURI());
 
