@@ -60,12 +60,82 @@
             </ide-actions>
             <export>
                 <type>jar</type>
+                <location>build/lib/activation.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/FastInfoset.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/http.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxb-api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxb-impl.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxb-xjc.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jaxws-api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
                 <location>build/lib/jaxws-rt.jar</location>
                 <build-target>main</build-target>
             </export>
             <export>
                 <type>jar</type>
                 <location>build/lib/jaxws-tools.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jsr173_api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jsr181-api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/jsr250-api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/resolver.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/saaj-api.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/saaj-impl.jar</location>
+                <build-target>main</build-target>
+            </export>
+            <export>
+                <type>jar</type>
+                <location>build/lib/sjsxp.jar</location>
                 <build-target>main</build-target>
             </export>
             <view>
@@ -115,8 +185,22 @@
                 <package-root>rt/src</package-root>
                 <package-root>tools/wscompile/src</package-root>
                 <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-libs.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/junit.jar:lib/relaxngDatatype.jar:lib/saaj-api.jar:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/http.jar:lib/jsr250-api.jar</classpath>
+                <built-to>build/lib/activation.jar</built-to>
+                <built-to>build/lib/FastInfoset.jar</built-to>
+                <built-to>build/lib/http.jar</built-to>
+                <built-to>build/lib/jaxb-api.jar</built-to>
+                <built-to>build/lib/jaxb-impl.jar</built-to>
+                <built-to>build/lib/jaxb-xjc.jar</built-to>
+                <built-to>build/lib/jaxws-api.jar</built-to>
                 <built-to>build/lib/jaxws-rt.jar</built-to>
                 <built-to>build/lib/jaxws-tools.jar</built-to>
+                <built-to>build/lib/jsr173_api.jar</built-to>
+                <built-to>build/lib/jsr181-api.jar</built-to>
+                <built-to>build/lib/jsr250-api.jar</built-to>
+                <built-to>build/lib/resolver.jar</built-to>
+                <built-to>build/lib/saaj-api.jar</built-to>
+                <built-to>build/lib/saaj-impl.jar</built-to>
+                <built-to>build/lib/sjsxp.jar</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
