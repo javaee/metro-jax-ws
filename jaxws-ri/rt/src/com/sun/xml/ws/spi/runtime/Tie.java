@@ -28,7 +28,7 @@ public interface Tie {
      * Reads a Web Service request for RuntimeEndpointInfo from WSConnection
      * and sends a response. Set <code>WebServiceContext</code> with a filled-in
      * </code>MessageContext</code> on <code>RuntimeEndpointInfo</code> before
-     * calling his.
+     * calling this.
      */
     public void handle(WSConnection con, RuntimeEndpointInfo endpoint)
     throws Exception;
