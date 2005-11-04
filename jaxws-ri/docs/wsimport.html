@@ -8,21 +8,23 @@
   <meta name="CHANGED" content="20050401;8213207">
 </head>
 <body dir="ltr" lang="en-US">
-<h1>JAX-WS 2.0 Beta <br>wsimport<br>
+<h1>JAX-WS 2.0 Beta <br>
+wsimport<br>
 </h1>
 <hr>
-<p>Last Modified: 11/3/05</p>
+<p>Last Modified: 11/4/05</p>
 <h2><a name="wsimporttool" id="wsimporttool"></a>wsimport<br>
 </h2>
 <p>The <code>wsimport</code>
-tool&nbsp;generates&nbsp;JAX-WS&nbsp;portable&nbsp;artifacts,&nbsp;such&nbsp;as:
+tool
+generates&nbsp;JAX-WS&nbsp;portable&nbsp;artifacts,&nbsp;such&nbsp;as:
 <br>
 </p>
 <ul>
-  <li>Service&nbsp;Endpoint&nbsp;Interface(SEI) </li>
+  <li>Service&nbsp;Endpoint&nbsp;Interface (SEI) </li>
   <li>Service </li>
-  <li>Exception&nbsp;class&nbsp;mapped&nbsp;from&nbsp;wsdl:fault and
-soap:headerfault (if any) </li>
+  <li>Exception&nbsp;class&nbsp;mapped&nbsp;from&nbsp;wsdl:fault (if
+any) </li>
   <li>Async&nbsp;Reponse&nbsp;Bean&nbsp;derived&nbsp;from&nbsp;response&nbsp;wsdl:message&nbsp;(if&nbsp;any)
   </li>
   <li>JAXB&nbsp;generated&nbsp;value&nbsp;types&nbsp;(mapped&nbsp;java&nbsp;classes&nbsp;from&nbsp;schema&nbsp;types)
@@ -30,6 +32,11 @@ soap:headerfault (if any) </li>
 </ul>
 <p>These artifacts can be packaged in a WAR file with the WSDL and
 schema documents along with the endpoint implementation to be deployed.<br>
+</p>
+<p>wsimport tool can be launched using the command line script
+wsimport.sh (Unix) or wsimport.bat(windows). There is also and <a
+ href="#Ant_task">ant task</a> to import and compile the wsdl, see the
+details below.<br>
 </p>
 <h3>Command-line<br>
 </h3>
@@ -64,6 +71,15 @@ schema documents along with the endpoint implementation to be deployed.<br>
       <p>Specify external JAX-WS or JAXB binding files (Each <code>&lt;file&gt;</code>
 must have its own <code>-b</code>)</p>
       </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">-catalog<br>
+      </td>
+      <td style="vertical-align: top;">Specify catalog file to resolve
+external entity references, it supports TR9401, XCatalog, and OASIS XML
+Catalog format. Please read the <a href="catalog.html">XML Entity and
+URI Resolvers</a> document or see <span style="font-weight: bold;">wsimport_catalog</span>
+sample. </td>
     </tr>
     <tr>
       <td>
@@ -102,6 +118,13 @@ implementations </p>
       </td>
     </tr>
     <tr>
+      <td style="vertical-align: top;"><code>-p</code></td>
+      <td style="vertical-align: top;">Specifying a target package via
+this command-line option, overrides any wsdl and schema binding
+customization for package name and the default package name algorithm
+defined in the specification</td>
+    </tr>
+    <tr>
       <td>
       <p align="left"><code>-s &lt;directory&gt;</code></p>
       </td>
@@ -126,10 +149,11 @@ implementations </p>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><code>-wsdllocation &lt;location&gt;</code><br>
+      <td style="vertical-align: top;"><code>-wsdllocation
+&lt;location&gt;</code><br>
       </td>
-      <td style="vertical-align: top;"><code>@WebService.wsdlLocation</code> and
-<code>@WebServiceClient.wsdlLocation</code> value<br>
+      <td style="vertical-align: top;"><code>@WebService.wsdlLocation</code>
+and <code>@WebServiceClient.wsdlLocation</code> value<br>
       </td>
     </tr>
   </tbody>
@@ -140,13 +164,13 @@ names, bean names, etc. More information on JAX-WS and JAXB binding
 files can be found in the <a href="customizations.html">customization
 documentation</a>.<br>
 </p>
-<h3>Ant task<br>
+<h3><a name="Ant_task"></a>Ant task<br>
 </h3>
 <p>An Ant task for the <code>wsimport</code> tool is provided along
 with the tool. The attributes
-and elements supported by the Ant task are listed below:</p>
-<pre>  <br>   &lt;wsimport      <br>      fork= "true|false"      <br>      jvmargs="..."      <br>      wsdlFile="..."      <br>      base="directory for generated class files"<br>      HTTPProxy="proxy host and port"      <br>      sourceBase="directory for generated source files"<br>      keep="true|false"<br>      extension="true|false"<br>      verbose="true|false"<br>      version="true|false"<br>      wsdlLocation="..."<br>      &lt;binding dir="..." includes="..." /&gt;<br>  &lt;/wsimport&gt;<br><br><br>
-</pre>
+and elements supported by the Ant task are listed below: <br>
+</p>
+<pre>   &lt;wsimport           <br>      wsdl="..."      <br>      destdir="directory for generated class files"<br>      sourcedestdir="directory for generated source files"<br>      keep="true|false"<br>      extension="true|false"<br>      verbose="true|false"<br>      version="true|false"<br>      wsdlLocation="..."<br>      catalog="catalog file"<br>      package="package name"<br>      &lt;binding dir="..." includes="..." /&gt;<br>  &lt;/wsimport&gt;<br><br><br><br></pre>
 <table border="0" cellpadding="2" cellspacing="2" width="90%">
   <tbody>
     <tr valign="top">
@@ -162,30 +186,7 @@ and elements supported by the Ant task are listed below:</p>
     </tr>
     <tr valign="top">
       <td width="15%">
-      <p><code>fork</code></p>
-      </td>
-      <td width="70%">
-      <p>Forks the <code>wsimport</code> process into another virtual
-machine</p>
-      </td>
-      <td width="15%">
-      <p>n/a</p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-      <p><code>jvmargs</code></p>
-      </td>
-      <td>
-      <p>Arguments to pass to the forked virtual machine</p>
-      </td>
-      <td>
-      <p>n/a</p>
-      </td>
-    </tr>
-    <tr valign="top">
-      <td width="15%">
-      <p><code>wsdlFile</code></p>
+      <p><code>wsdl</code></p>
       </td>
       <td width="70%">
       <p>WSDL file</p>
@@ -196,7 +197,7 @@ machine</p>
     </tr>
     <tr valign="top">
       <td width="15%">
-      <p><code>base</code></p>
+      <p><code>destdir</code></p>
       </td>
       <td width="70%">
       <p>Specify where to place output generated classes</p>
@@ -207,21 +208,12 @@ machine</p>
     </tr>
     <tr valign="top">
       <td width="15%">
-      <p><code>HTTPProxy</code></p>
+      <pre>sourcedestdir</pre>
       </td>
       <td width="70%">
-      <p>Specify an HTTP proxy server (port defaults to 8080)</p>
-      </td>
-      <td width="15%">
-      <p><code>-httpproxy</code></p>
-      </td>
-    </tr>
-    <tr valign="top">
-      <td width="15%">
-      <p><code>sourceBase</code></p>
-      </td>
-      <td width="70%">
-      <p>Specify where to place generated source files</p>
+      <p>Specify where to place generated source files, keep is turned
+on with this option<br>
+      </p>
       </td>
       <td width="15%">
       <p><code>-s</code></p>
@@ -232,7 +224,8 @@ machine</p>
       <p><code>keep</code></p>
       </td>
       <td width="70%">
-      <p>Keep generated files</p>
+      <p>Keep generated files, tunred on with sourcedestdir option<br>
+      </p>
       </td>
       <td width="15%">
       <p><code>-keep</code></p>
@@ -276,14 +269,33 @@ not portable or may not interoperate with other implementations<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;"><code>wsdlLocation</code><br>
+      <td style="vertical-align: top;"><code>wsdllocation</code><br>
       </td>
       <td style="vertical-align: top;">The wsdl URI passed thru this
-option will be used to set the value of <code>@WebService.wsdlLocation</code> and
-<code>@WebServiceClient.wsdlLocation</code> annotation elements on the generated SEI
+option will be used to set the value of <code>@WebService.wsdlLocation</code>
+and <code>@WebServiceClient.wsdlLocation</code> annotation elements
+on the generated SEI
 and Service interface<br>
       </td>
       <td style="vertical-align: top;"><code>-wsdllocation</code><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code>catalog</code><br>
+      </td>
+      <td style="vertical-align: top;">Specify catalog file to resolve
+external entity references, it supports TR9401, XCatalog, and OASIS XML
+Catalog format. Additionally, ant xmlcatalog type can be used to
+resolve entities, see wsimport_catalog sample.<br>
+      </td>
+      <td style="vertical-align: top;"><catalog><code>-catalog</code></catalog><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><code>package</code><br>
+      </td>
+      <td style="vertical-align: top;">Specifies the target package</td>
+      <td style="vertical-align: top;"><code>-p</code><br>
       </td>
     </tr>
   </tbody>
@@ -298,20 +310,40 @@ added to the project as given below:</p>
 <p>where <code>jaxws.classpath</code> is a reference to a <a
  href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
 defined elsewhere in the build environment, and contains the list of
-classes required by the JAX-WS tools..</p>
+classes required by the JAX-WS tools.</p>
 <h3>Examples</h3>
-<pre>  &lt;wsimport<br>      base="${build.classes.home}"<br>      debug="true"<br>      wsdlFile="AddNumbers.wsdl"<br>      binding="custom.xml"/&gt;<br><br><br></pre>
+<pre>  &lt;wsimport<br>      <code>destdir</code>="${build.classes.home}"<br>      debug="true"<br>      wsdl="AddNumbers.wsdl"<br>      binding="custom.xml"/&gt;<br><br><br></pre>
 <p>The above example generates client-side artifacts for <code>AddNumbers.wsdl</code>,
 stores <code>.class</code> files in the <code>${build.classes.home}</code>
 directory using the <code>custom.xml</code> customization file. The
 classpath used is <code>xyz.jar</code> and compiles with debug
 information on.</p>
-<pre>  &lt;wsimport<br>      keep="true"<br>      sourceBase="${source.dir}"<br>      base="${build.classes.home}"<br>      wsdlFile="AddNumbers.wsdl"&gt;<br>      &lt;binding dir="${basedir}/etc" includes="custom.xml"/&gt;<br>  &lt;/wsimport&gt;<br><br><br></pre>
+<pre>  &lt;wsimport<br>      keep="true"<br>      sourcedestdir="${source.dir}"<br>      <code>destdir</code>="${build.classes.home}"<br>      wsdl="AddNumbers.wsdl"&gt;<br>      &lt;binding dir="${basedir}/etc" includes="custom.xml"/&gt;<br>  &lt;/wsimport&gt;<br><br><br></pre>
 <p>The above example generates portable artifacts for <code>AddNumbers.wsdl</code>,
 stores <code>.java</code> files in the <code>${source.dir}</code>
 directory, stores <code>.class</code> files in the <code>${build.classes.home}</code>
 directory. <br>
 </p>
+<h3>Summary of Changed and Removed wsimport ant attributes</h3>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">base</span>
+replaced by <span style="font-weight: bold;">destdir</span><br>
+<span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;"><br>
+</span>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">sourceBase</span>
+is replaced by <span style="font-weight: bold;">sourcedestdir</span><br>
+<span style="font-weight: bold;"></span></div>
+<span style="font-weight: bold;"><span style="font-weight: bold;"><br>
+</span></span>
+<div style="margin-left: 40px;"><span style="font-weight: bold;"><span
+ style="font-weight: bold;">wsdlFile </span></span>is replaced by <span
+ style="font-weight: bold;">wsdl<br>
+<br>
+httpProxy </span>is removed. Use ant's setproxy task instead for proxy
+configuration.<br>
+<br>
+<span style="font-weight: bold;">version </span>is removed<br>
+<span style="font-weight: bold;"></span></div>
 <hr>
 <p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
