@@ -1,0 +1,9 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
+    prefer="system">
+
+    <system systemId="http://foo.org/hello?wsdl"
+          uri="HelloService.wsdl"/>
+          <!--system systemId="http://helloservice.org/types/HelloTypes.xsd"
+          uri="HelloTypes.xsd"/-->
+
+</catalog>

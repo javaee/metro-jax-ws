@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="HelloService" targetNamespace="http://helloservice.org/wsdl" xmlns:tns="http://helloservice.org/wsdl" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://helloservice.org/types">
+  <types>
+    <xsd:schema>
+        <xsd:import namespace="http://helloservice.org/types"
+                    schemaLocation="http://helloservice.org/types/HelloTypes.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="Hello_hello">
+    <part name="parameters" element="ns2:HelloRequest"/></message>
+  <message name="Hello_helloResponse">
+    <part name="result" element="ns2:HelloResponse"/></message>
+  <portType name="Hello">
+    <operation name="hello">
+      <input message="tns:Hello_hello"/>
+      <output message="tns:Hello_helloResponse"/></operation>
+  </portType>
+  <binding name="HelloBinding" type="tns:Hello">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="hello">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/></input>
+      <output>
+        <soap:body use="literal"/></output></operation>
+  </binding>
+  <service name="HelloService">
+    <port name="HelloPort" binding="tns:HelloBinding">
+      <soap:address location="http://helloservice.org/Hello"/></port></service></definitions>
