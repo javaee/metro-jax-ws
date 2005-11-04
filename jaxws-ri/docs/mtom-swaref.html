@@ -129,7 +129,7 @@ MTOM can be enabled on an endpoint by specifying enable-mtom attribute
 to true on an endpoint element in <a
  href="jaxws-war.html#The_sun-jaxws.xml_File">sun-jaxws.xml </a>deployment
 descriptor.<br>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>    &lt;endpoint<br>        name="Mtom"<br>        implementation="mtom.server.HelloImpl"<br>        wsdl="/WEB-INF/wsdl/hello.wsdl"<br>         service='{http://example.org/mtom}HelloService'<br>         port='{http://example.org/mtom}HelloPort'<br>         url-pattern="/hello" <br>	 <span
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>    &lt;endpoint<br>        name="Mtom"<br>        implementation="mtom.server.HelloImpl"<br>        wsdl="WEB-INF/wsdl/hello.wsdl"<br>         service='{http://example.org/mtom}HelloService'<br>         port='{http://example.org/mtom}HelloPort'<br>         url-pattern="/hello" <br>	 <span
  style="color: rgb(153, 0, 0);">enable-mtom="true"</span>/&gt;<br>&lt;/endpoints&gt;<br></pre>
 <br>
 JAXWS 2.0 spcification has defined API to enable and to check if the

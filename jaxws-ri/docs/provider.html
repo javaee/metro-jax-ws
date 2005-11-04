@@ -59,7 +59,7 @@ requires all the attributes: name, implementation, wsdl, service, port,
 url-pattern. For SOAP1.2 binding, one needs to specify binding attribute.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br><br><br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br><br><br></pre>
 <h2><code></code>Provider and Handlers<br>
 </h2>
 <span style="font-family: monospace;"></span>Handlers can be configured
@@ -67,7 +67,7 @@ with Provider endpoints in sun-jaxws.xml descriptor. For more
 information, see <a href="jaxws-war.html">handler config</a>.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='/WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;handler-chain&gt;<br>      &lt;handler-chain-name&gt;my handler&lt;/handler-chain-name&gt;<br>      &lt;handler&gt;<br>        &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>        &lt;handler-class&gt;provider.server.MyHandler&lt;/handler-class&gt;<br>      &lt;/handler&gt;<br>    &lt;/handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;handler-chain&gt;<br>      &lt;handler-chain-name&gt;my handler&lt;/handler-chain-name&gt;<br>      &lt;handler&gt;<br>        &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>        &lt;handler-class&gt;provider.server.MyHandler&lt;/handler-class&gt;<br>      &lt;/handler&gt;<br>    &lt;/handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
 <pre><br></pre>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun

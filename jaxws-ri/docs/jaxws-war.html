@@ -61,7 +61,7 @@ the schema instance of <a href="sun-jaxws.xsd">sun-jaxws.xsd</a>.<br>
           <td style="vertical-align: top;">Y<br>
           </td>
           <td style="vertical-align: top;">Primary wsdl file location
-in the WAR file. For e.g. /WEB-INF/wsdl/HelloService.wsdl. If this
+in the WAR file. For e.g. WEB-INF/wsdl/HelloService.wsdl. If this
 isn't specified, JAX-WS will create and publish a new WSDL. When the
 service is developed from Java, it is recommended to omit this
 attribute.<br>
@@ -152,7 +152,7 @@ com.sun.xml.ws.transport.http.servlet.JAXRPCServlet is servlet<br>
 <p>Remember these requirements when building a WAR:</p>
 <ul>
   <li>WSDL and auxiliary WSDL, Schema files should be packaged under
-/WEB-INF/wsdl dir. It is recommended that they need not be packaged
+WEB-INF/wsdl dir. It is recommended that they need not be packaged
 when the service is started from Java<br>
   </li>
   <li>WebService implementation class should contain @WebService
