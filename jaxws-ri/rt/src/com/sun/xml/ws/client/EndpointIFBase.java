@@ -1,5 +1,5 @@
 /*
- * $Id: EndpointIFBase.java,v 1.16 2005-10-31 20:34:05 kohsuke Exp $
+ * $Id: EndpointIFBase.java,v 1.17 2005-11-04 23:55:10 kwalsh Exp $
  */
 
 /*
@@ -71,7 +71,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
         return _transportFactory;
     }
 
-    public void _setTransportFactory(ClientTransportFactory f) {
+    protected void setTransportFactory(ClientTransportFactory f) {
         getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
         _transportFactory = f;
     }
@@ -126,7 +126,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
 
 
     public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
-        _setTransportFactory((ClientTransportFactory) f);
+        setTransportFactory((ClientTransportFactory) f);
     }
 
     /**

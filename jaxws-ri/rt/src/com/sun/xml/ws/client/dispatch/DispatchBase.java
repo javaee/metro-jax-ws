@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.23 2005-11-02 18:04:35 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.24 2005-11-04 23:55:35 kwalsh Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -294,9 +294,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
             return _transportFactory;
         }
 
-        public void _setTransportFactory(ClientTransportFactory f) {
+        public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
             getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
-            _transportFactory = f;
+            _transportFactory = (ClientTransportFactory)f;
         }
 
     private Object sendAndReceive(MessageStruct messageStruct) {
