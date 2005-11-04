@@ -1,4 +1,4 @@
-/**
+<!--
  The contents of this file are subject to the terms
  of the Common Development and Distribution License
  (the "License").  You may not use this file except
@@ -16,24 +16,19 @@
  fields enclosed by brackets "[]" replaced with your
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
-**/
-package wsimport_catalog;
+-->
 
-public class WsimportCatalogTester{
-    public static void main (String[] args) {
-        testCatalog();
-    }
+<property environment="env"/>
+<property name="as.home" value="${env.AS_HOME}"/>
 
-    /**
-     * Just check if the class is loaded, meaning both -p worked and catalog resolver worked too
-     */
-    public static void testCatalog(){
-        try {
-            Class cls = Class.forName("wsimport_catalog.Hello");
-            System.out.println("wsimport_catalog sample: Succeessfuly resolved wsdl and schema and generated artifacts!");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("wsimport_catalog sample failed!");
-        }
-    }
-}
+<property name="build.home" value="${basedir}/build"/>
+<property name="build.war.home" value="${build.home}/war"/>
+<property name="domain" value="domain1"/>
+
+<target name="deploy">
+    <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+        todir="${as.home}/domains/${domain}/autodeploy"/>
+</target>
+
+
+

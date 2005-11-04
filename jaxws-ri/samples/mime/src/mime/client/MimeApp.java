@@ -1,5 +1,5 @@
 /**
- * $Id: MimeApp.java,v 1.3 2005-09-12 08:14:19 arungupta Exp $
+ * $Id: MimeApp.java,v 1.4 2005-11-04 21:09:02 kohlert Exp $
  */
 
 /*
@@ -22,8 +22,6 @@
  * [name of copyright owner]
  */
 package mime.client;
-
-import utils.AttachmentHelper;
 
 import javax.xml.ws.Holder;
 import javax.xml.transform.stream.StreamSource;

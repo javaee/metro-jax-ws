@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  The contents of this file are subject to the terms
  of the Common Development and Distribution License
@@ -20,26 +18,17 @@
  [name of copyright owner]
 -->
 
-<!DOCTYPE project [
-<!ENTITY commonTargets SYSTEM "../etc/common-targets.xml">
-]>
+<property environment="env"/>
+<property name="as.home" value="${env.AS_HOME}"/>
 
-<project basedir="." default="gen-utils" name="Sample-Utils">
+<property name="build.home" value="${basedir}/build"/>
+<property name="build.war.home" value="${build.home}/war"/>
+<property name="domain" value="domain1"/>
 
-    &commonTargets;
+<target name="deploy">
+    <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+        todir="${as.home}/domains/${domain}/autodeploy"/>
+</target>
 
-    <target name="gen-utils" depends="setup">
-        <javac srcdir="src"
-            source="1.5"
-            debug="true"
-            destdir="${build.classes.home}"
-            includes="**/**">
-            <classpath refid="jaxws.classpath"/>
-        </javac>
 
-        <jar destfile="${basedir}/../lib/jaxwsSampleUtils.jar"
-            basedir="${build.classes.home}"
-            includes="utils/**"
-            update="true"/>
-    </target>
-</project>
+

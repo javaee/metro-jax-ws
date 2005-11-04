@@ -18,7 +18,7 @@
  * [name of copyright owner]
  */
 
-package utils;
+package mime.client;
 
 import com.sun.xml.ws.util.ASCIIUtility;
 

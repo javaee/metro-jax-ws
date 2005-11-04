@@ -72,7 +72,6 @@ public class AddNumbersClient {
 
             soapBindingURI = new URI(SOAPBinding.SOAP11HTTP_BINDING);
             service = new AddNumbersService();
-            service.addPort(portQName, soapBindingURI, endpointAddress);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

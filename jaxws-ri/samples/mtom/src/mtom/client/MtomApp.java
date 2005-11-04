@@ -19,8 +19,6 @@
  */
 package mtom.client;
 
-import utils.AttachmentHelper;
-
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.ws.soap.SOAPBinding;

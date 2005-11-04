@@ -21,14 +21,108 @@
 -->
 
 <!DOCTYPE project [
-<!ENTITY commonTargets SYSTEM "../etc/common-targets.xml">
+<!ENTITY deployTargets SYSTEM "etc/deploy-targets.xml">
 ]>
 
 <project basedir="." default="help" name="fromwsdl-soap12">
 
-    &commonTargets;
+    &deployTargets; 
+
+    <property environment="env"/>
+    <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
 
     <property file="etc/build.properties" />
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="build.classes.home" value="${build.home}/classes"/>
+    <property name="build.war.home" value="${build.home}/war"/>
+
+    <path id="jaxws.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+        <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
+        <fileset dir="${lib.home}" includes="*.jar"/>
+    </path>
+
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+        <classpath refid="jaxws.classpath"/>
+    </taskdef>
+
+    <target name="setup">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${build.classes.home}"/>
+        <mkdir dir="${build.war.home}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.home}" includeEmptyDirs="true" />
+    </target>
+
+    <target name="build-server-wsdl" depends="setup">
+        <wsimport
+            debug="${debug}"
+            verbose="${verbose}"
+            keep="${keep}"
+            extension="${extension}"
+            destdir="${build.classes.home}"
+            wsdl="${server.wsdl}">
+            <binding dir="${basedir}/etc" includes="${server.binding}"/>
+        </wsimport>
+        <javac
+            fork="true"
+            srcdir="${basedir}/src"
+            destdir="${build.classes.home}"
+            includes="**/server/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+    </target>
+
+    <target name="create-war">
+        <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
+    	      <webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
+    	      <zipfileset
+                dir="${basedir}/etc"
+                includes="*.wsdl, *.xsd"
+                prefix="WEB-INF/wsdl"/>
+    	      <classes dir="${build.classes.home}"/>
+        </war>
+    </target>
+
+    <target name="generate-client" depends="setup">
+        <wsimport
+            debug="${debug}"
+            verbose="${verbose}"
+            keep="${keep}"
+            extension="${extension}"
+            destdir="${build.classes.home}"
+            wsdl="${client.wsdl}">
+            <binding dir="${basedir}/etc" includes="${client.binding}"/>
+        </wsimport>
+    </target>
+
+    <target name="client" depends="generate-client">
+        <javac
+            fork="true"
+            srcdir="${basedir}/src"
+            destdir="${build.classes.home}"
+            includes="**/client/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run">
+        <java fork="true" classname="${client}">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="help">
+        <echo message="server:       Builds and deploy the service endpoint WAR"/>
+        <echo message="client:       Builds the client"/>
+        <echo message="run:          Runs the client"/>
+    </target>
 
     <target name="server" depends="setup">
 
