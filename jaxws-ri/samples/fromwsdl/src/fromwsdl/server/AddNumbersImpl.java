@@ -20,7 +20,7 @@
 package fromwsdl.server;
 
 @javax.jws.WebService (endpointInterface="fromwsdl.server.AddNumbersPortType")
-public class AddNumbersImpl implements AddNumbersPortType {
+public class AddNumbersImpl{
     
     /**
      * @param number1
