@@ -25,10 +25,8 @@
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     wsdlLocation="http://localhost:8080/jaxws-inline-customize/addnumbers?wsdl"
-    xmlns="http://java.sun.com/xml/ns/jaxws">    
-    <bindings node="wsdl:definitions">
-        <package name="inline_customize.client"/>
-    </bindings>
+    xmlns="http://java.sun.com/xml/ns/jaxws">
+    <package name="inline_customize.client"/>
     <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.org']">
         <jaxb:schemaBindings>
             <jaxb:package name="inline_customize.client"/>
