@@ -24,14 +24,12 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxws-external-customize/addnumbers?wsdl"
-    xmlns="http://java.sun.com/xml/ns/jaxws">    
-    <bindings node="wsdl:definitions">
-        <package name="external_customize.client"/>
-        <!-- default settings -->
-        <enableWrapperStyle>true</enableWrapperStyle>
-        <enableAsyncMapping>false</enableAsyncMapping>
-    </bindings>
-    
+    xmlns="http://java.sun.com/xml/ns/jaxws">
+    <package name="external_customize.client"/>
+    <!-- default settings -->
+    <enableWrapperStyle>true</enableWrapperStyle>
+    <enableAsyncMapping>false</enableAsyncMapping>
+
     <!-- wsdl:portType customization -->
     <bindings node="wsdl:definitions/wsdl:portType[@name='AddNumbersImpl']">
         <!-- change the generated SEI class -->
