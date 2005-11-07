@@ -36,13 +36,8 @@ import java.util.ArrayList;
  * List of {@link com.sun.pept.ept.ContactInfo}s
  */
 public class ContactInfoListImpl implements ContactInfoList {
-
-    /**
-     * Iterator over the list of {@link com.sun.pept.ept.ContactInfo}s
-     * @see com.sun.pept.ept.ContactInfoList#iterator()
-     */
-    public ContactInfoListIterator iterator() {
-        ArrayList arrayList = new ArrayList();
+    private static final ArrayList arrayList = new ArrayList();
+    static {
         arrayList.add(new ContactInfoBase(null,
             new SOAPMessageDispatcher(),
             new SOAPXMLEncoder(),
@@ -51,6 +46,13 @@ public class ContactInfoListImpl implements ContactInfoList {
             new SOAPMessageDispatcher(),
             new SOAP12XMLEncoder(),
             new SOAP12XMLDecoder(), SOAPBinding.SOAP12HTTP_BINDING));
+    }
+
+    /**
+     * Iterator over the list of {@link com.sun.pept.ept.ContactInfo}s
+     * @see com.sun.pept.ept.ContactInfoList#iterator()
+     */
+    public ContactInfoListIterator iterator() {
         return new ContactInfoListIteratorBase(arrayList);
     }
 
