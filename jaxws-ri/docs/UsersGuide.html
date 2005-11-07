@@ -18,7 +18,7 @@
 <h1><a class="mozTocH1" name="mozTocId143593"></a>JAX-WS 2.0 Beta<br>
 User's Guide</h1>
 <hr>
-<p>Last modified: 11/3/2005</p>
+<p>Last modified: 11/7/2005</p>
 <h2><a class="mozTocH2" name="mozTocId114381"></a>Contents</h2>
 <ol id="mozToc">
 <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId143593">JAX-WS
@@ -409,7 +409,7 @@ available through the Java reflection APIs. If the source for the
 endpoint implementation class is not available, the portable artifacts
 can be generated using <tt>wscompile</tt>. Here is a sample <code>apt</code>
 Ant task from the samples:</p>
-<pre style="margin-left: 0.5in;">&lt;apt<br>   debug="${debug}"<br>   verbose="${verbose}"<br>   base="${build.classes.home}"<br>   sourceBase="${build.classes.home}"<br>   sourcePath="${basedir}/src"&gt;<br>   &lt;classpath refid="jax-ws.classpath"/&gt;<br>   &lt;option key="nd" value="${build.home}"/&gt;<br>   &lt;option key="verbose" value="${verbose}"/&gt;<br>   &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>   &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
+<pre style="margin-left: 0.5in;">&lt;apt<br>   debug="${debug}"<br>   verbose="${verbose}"<br>   destdir="${build.classes.home}"<br>   sourcedestdir="${build.classes.home}"<br>   sourcepath="${basedir}/src"&gt;<br>   &lt;classpath refid="jax-ws.classpath"/&gt;<br>   &lt;option key="r" value="${build.home}"/&gt;<br>   &lt;source dir="${basedir}/src"&gt;<br>      &lt;include name="**/server/*.java"/&gt;<br>   &lt;/source&gt;<br>&lt;/apt&gt;<br></pre>
 <p>More information about the <code>apt</code> Ant task can be found <a
  href="apt.html">here</a>. If this task is run on the
 fromjava sample, the output would include:</p>
@@ -477,7 +477,7 @@ Service Endpoint Interface</h4>
 a service endpoint interface and value classes mapped from imported XML
 schemas.</p>
 <p>Below is a sample <code>wsimport</code> Ant target:</p>
-<pre style="margin-left: 40px;">&lt;wsimport<br>  fork="true"<br>  debug="${debug}"<br>  verbose="${verbose}"<br>  keep="${keep}"<br>  import="true"<br>  base="${build.classes.home}"<br>  wsdlFile="${server.wsdl}"&gt;<br> &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
+<pre style="margin-left: 40px;">&lt;wsimport<br>   debug="${debug}"<br>   verbose="${verbose}"<br>   keep="${keep}"<br>   destdir="${build.classes.home}"<br>   wsdl="${server.wsdl}"&gt;<br>   &lt;binding dir="${basedir}/etc" includes="${server.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
 <p>Its commandline equivalent is:</p>
 <pre>wsimport.sh etc/AddNumbers.wsdl -b custom-server.xml<br></pre>
 <p>Lets look at the excerpt of <code><a
@@ -558,7 +558,7 @@ Artifacts</h4>
 <p>The <code>wsimport</code> tool is used <code></code>to generate
 the service endpoint interface and the service interface classes. Below
 is the sample <code>wsimport</code> Ant target:</p>
-<pre> &lt;wsimport<br> fork="true"<br> debug="${debug}"<br> verbose="${verbose}"<br> keep="${keep}"<br> client="true"<br> base="${build.classes.home}"<br> wsdlFile="${client.wsdl}"&gt;<br>  &lt;classpath&gt;<br>   &lt;path refid="jax-ws.classpath"/&gt;<br>   &lt;pathelement location="${build.classes.home}"/&gt;<br>  &lt;/classpath&gt;<br>  &lt;binding dir="${basedir}/etc" includes="${client.binding}"/&gt;<br> &lt;/wscompile&gt;<br></pre>
+<pre> &lt;wsimport<br>    debug="${debug}"<br>    verbose="${verbose}"<br>    keep="${keep}"<br>    destdir="${build.classes.home}"<br>    wsdl="${client.wsdl}"&gt;<br>    &lt;classpath&gt;<br>      &lt;path refid="jax-ws.classpath"/&gt;<br>      &lt;pathelement location="${build.classes.home}"/&gt;<br>    &lt;/classpath&gt;<br>    &lt;binding dir="${basedir}/etc" includes="${client.binding}"/&gt;<br>&lt;/wsimport&gt;<br></pre>
 <p>The command line equivalent of this Ant target is:</p>
 <pre>wsimport.sh -classpath client_classpath -d dest_dir -s src_dir -b custom-client.xml http://localhost:8080/jax-ws-fromwsdl/addnumbers?WSDL<br></pre>
 <p>For more details see the <code>wsimport</code> <a
@@ -585,8 +585,8 @@ Processing Tool (apt)</a> &#8211;
 http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html.</p>
 <p>Please use the <a
  href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
-2.0 and JAXRPC 2.0</a> forum for feedback.</p>
-<p>The JAX-WS and JAX-RPC project on Java.net is: <a href="">http://jax-rpc.dev.java.net</a>.</p>
+2.0 and JAX-WS 2.0</a> forum for feedback.</p>
+<p>The JAX-WS project on Java.net is: <a href="http://jax-ws.dev.java.net">http://jax-ws.dev.java.net</a>.</p>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>

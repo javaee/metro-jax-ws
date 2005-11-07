@@ -8,10 +8,10 @@
   <meta name="CHANGED" content="20050403;17063046">
 </head>
 <body dir="ltr" lang="en-US">
-<h1>JAX-WS 2.0 Beta - SOAP 1.2<br>
+<h1>JAX-WS 2.0 Beta <br> SOAP 1.2<br>
 </h1>
 <hr>
-<p>Last Modified: 11/3/2005<br>
+<p>Last Modified: 11/7/2005<br>
 
 </p>
 <h2>Introduction</h2>
@@ -46,22 +46,6 @@ runtime looks into the WSDL to determine the binding being used and
 configures itself accordingly.&nbsp; <a href="wsimport.html">wsimport </a>command
 line tool or wsimport ant task can be used to import the WSDL and to
 generated the client side artifacts.<br>
-<h2><a name="Limitations_"></a>Limitations </h2>
-<ol>
-  <li>No SOAP 1.2 Header processing such as soap12env:MustUnderstand
-processing and related soap12env:MustUnderstand fault. Also SOAP12
-Header role attribute processing.</li>
-  <li>SOAP12 Fault</li>
-  <ol>
-    <li>As of now JAXWS throws SOAP 1.2 specific fault but the
-ProtocolException instance representing SOAP 1.2 Fault is jaxws
-implementation specific - <span style="font-weight: bold;">com.sun.xml.ws.encoding.soap.message.SOAP12FaultException</span>.
-The JAXWS 2.0 specification is defining SOAPFaultException that can be
-used for both SOAP 1.1 and SOAP 1.2 faults. As soon as we migrate to
-the latest JAXWS 2.0 API the implementation specific SOAP 1.2 fault
-exception class will be replaced by the one defined by API.</li>
-  </ol>
-</ol>
 <h2>Samples</h2>
 There are 2 samples bundled with this release <br>
 <ul>
