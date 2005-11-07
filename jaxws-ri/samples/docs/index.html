@@ -5,7 +5,7 @@
   <title>JAX-WS 2.0 Samples Documentation</title>
 </head>
 <body>
-<h1>JAX-WS 2.0 Early Access 2 Samples Documentation</h1>
+<h1>JAX-WS 2.0 Beta<br> Samples Documentation</h1>
 <p>Java APIs for XML Web Services 2.0 is developed as <a
  href="http://jcp.org/en/jsr/detail?id=224">JSR
 224</a> under the <a href="http://jcp.org">Java Community Process</a>
@@ -21,24 +21,6 @@ directory in the bundle:</p>
     <tr>
       <td valign="top" width="15%">docs</td>
       <td valign="top" width="85%">index.html, this file</td>
-    </tr>
-    <tr>
-      <td valign="top">etc</td>
-      <td valign="top">Supporting files required by all the samples</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">utils
-      </td>
-      <td style="vertical-align: top;">Utility source file(s) required by the
-        samples.
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">lib
-      </td>
-      <td style="vertical-align: top;">Utility JAR file(s), generated from the
-        source files in <code>utils</code> directory, required by the samples.
-      </td>
     </tr>
     <tr>
       <td valign="top">fromjava</td>
@@ -129,6 +111,29 @@ embedded binding declarations. </td>
         using JavaBeans as parameter and return types.
       </td>
     </tr>
+    <tr>
+      <td style="vertical-align: top;">mime
+      </td>
+      <td style="vertical-align: top;">Demonstrates how a MIME binding is defined in the WSDL to send 
+wsdl:part as MIME attachments. This requires that the development model is 'starting from WSDL'.
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">wsimport_catalog
+      </td>
+      <td style="vertical-align: top;">Demonstrates a how 
+a WSDL and schema URI's can be resolved using catalog mechanism using wsimport ant tasks' catalog attribute 
+and also using ant's core type xmlcatalog.
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">catalog
+      </td>
+      <td style="vertical-align: top;">Shows the catalog capability on the client side; 
+         Catalog is used every time the implementation tries to access a resource identified 
+         by URI that is believed to contain either a WSDL document or any other document on which it depends .
+      </td>
+    </tr>
   </tbody>
 </table>
 <h2>2.0 Prerequisites</h2>
@@ -196,7 +201,7 @@ service
 endpoint correctly before building the client. </p>
 <p>&nbsp;</p>
 <p>We appreciate your feedback, please send it to <a
- href="mailto:users@jax-rpc.dev.java.net">users@jax-rpc.dev.java.net</a>.</p>
+ href="mailto:users@jax-ws.dev.java.net">users@jax-ws.dev.java.net</a>.</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 </body>
