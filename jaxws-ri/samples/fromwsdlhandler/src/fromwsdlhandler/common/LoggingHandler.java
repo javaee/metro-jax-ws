@@ -38,22 +38,22 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
     // change this to redirect output if desired
     private static PrintStream out = System.out;
     
-    public Set<QName> getHeaders () {
+    public Set<QName> getHeaders() {
         return null;
     }
     
-    public boolean handleMessage (SOAPMessageContext smc) {
-        logToSystemOut (smc);
+    public boolean handleMessage(SOAPMessageContext smc) {
+        logToSystemOut(smc);
         return true;
     }
     
-    public boolean handleFault (SOAPMessageContext smc) {
-        logToSystemOut (smc);
+    public boolean handleFault(SOAPMessageContext smc) {
+        logToSystemOut(smc);
         return true;
     }
     
     // nothing to clean up
-    public void close (MessageContext messageContext) {
+    public void close(MessageContext messageContext) {
     }
     
     /*
@@ -63,22 +63,22 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
      * output the message. The writeTo() method can throw
      * SOAPException or IOException
      */
-    private void logToSystemOut (SOAPMessageContext smc) {
+    private void logToSystemOut(SOAPMessageContext smc) {
         Boolean outboundProperty = (Boolean)
-        smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+            smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         
-        if (outboundProperty.booleanValue ()) {
-            out.println ("\nOutbound message:");
+        if (outboundProperty.booleanValue()) {
+            out.println("\nOutbound message:");
         } else {
-            out.println ("\nInbound message:");
+            out.println("\nInbound message:");
         }
         
-        SOAPMessage message = smc.getMessage ();
+        SOAPMessage message = smc.getMessage();
         try {
-            message.writeTo (out);
-            out.println ("");   // just to add a newline
+            message.writeTo(out);
+            out.println("");   // just to add a newline
         } catch (Exception e) {
-            out.println ("Exception in handler: " + e);
+            out.println("Exception in handler: " + e);
         }
     }
 }
