@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.68 2005-11-01 18:50:10 kwalsh Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.69 2005-11-07 02:46:31 jitu Exp $
  */
 
 /*
@@ -248,7 +248,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sm = encoder.toSOAPMessage(im, messageInfo);
 
             Map<String, Object> context = processMetadata(messageInfo, sm);
-
+/*
             // set the MIME headers on connection headers
             Map<String, List<String>> ch = new HashMap<String, List<String>>();
             for (Iterator iter = sm.getMimeHeaders().getAllHeaders(); iter.hasNext();) {
@@ -259,9 +259,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 h.add(mh.getValue());
                 ch.put(mh.getName(), h);
             }
+ */
 
             setConnection(messageInfo, context);
-            ((WSConnection) messageInfo.getConnection()).setHeaders(ch);
+            //((WSConnection) messageInfo.getConnection()).setHeaders(ch);
 
             if (!isAsync(messageInfo)) {
                 WSConnection connection = (WSConnection) messageInfo.getConnection();
