@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.67 2005-10-26 02:07:58 jitu Exp $
+ * $Id: RuntimeEndpointInfo.java,v 1.68 2005-11-07 20:44:08 jitu Exp $
  */
 
 /*
@@ -259,7 +259,16 @@ public class RuntimeEndpointInfo extends Endpoint
                     setPortName(new QName(tns, local));
                 }
             } else {
-                setPortName(RuntimeModeler.getPortName(getImplementorClass()));
+                setPortName(RuntimeModeler.getPortName(getImplementorClass(),
+                    getServiceName().getNamespaceURI()));
+            }
+        } else {
+            String serviceNS = getServiceName().getNamespaceURI();
+            String portNS = getPortName().getNamespaceURI();
+            if (!serviceNS.equals(portNS)) {
+                throw new ServerRtException("wrong.tns.for.port",
+                    new Object[] { portNS, serviceNS });
+
             }
         }
     }

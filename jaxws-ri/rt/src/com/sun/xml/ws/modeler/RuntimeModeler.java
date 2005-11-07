@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeModeler.java,v 1.68 2005-10-26 20:02:05 kohlert Exp $
+ * $Id: RuntimeModeler.java,v 1.69 2005-11-07 20:44:07 jitu Exp $
  */
 
 /*
@@ -1192,31 +1192,40 @@ public class RuntimeModeler {
     /**
      * gets the <code>wsdl:portName</code> for a given implementation class
      * @param implClass the implementation class
+     * @param targetNamespace Namespace URI for service name
      * @return the <code>wsdl:portName</code> for the <code>implClass</code>
      */
-    public static QName getPortName(Class implClass) {
+    public static QName getPortName(Class implClass, String targetNamespace) {
         WebService webService =
             (WebService)implClass.getAnnotation(WebService.class);
         if (webService == null) {
             throw new RuntimeModelerException("runtime.modeler.no.webservice.annotation",
                 new Object[] {implClass.getCanonicalName()});
         }
-        String name = implClass.getSimpleName()+PORT;
+        String name = null;
         if (webService.portName().length() > 0) {
             name = webService.portName();
         } else if (webService.name().length() > 0) {
             name = webService.name()+PORT;
+        } else {
+            name = implClass.getSimpleName()+PORT;
         }
-        String packageName = null;
-        if (implClass.getPackage() != null) {
-            packageName = implClass.getPackage().getName();
-        }
-        String targetNamespace = getNamespace(packageName);
-        if (webService.targetNamespace().length() > 0) {
-            targetNamespace = webService.targetNamespace();
-        } else if (targetNamespace == null) {
-            throw new RuntimeModelerException("runtime.modeler.no.package",
-                new Object[] {implClass.getName()});
+        
+        if (targetNamespace == null) {
+            if (webService.targetNamespace().length() > 0) {
+                targetNamespace = webService.targetNamespace();
+            } else {
+                String packageName = null;
+                if (implClass.getPackage() != null) {
+                    packageName = implClass.getPackage().getName();
+                }
+                targetNamespace = getNamespace(packageName);
+                if (targetNamespace == null) {
+                    throw new RuntimeModelerException("runtime.modeler.no.package",
+                        new Object[] {implClass.getName()});
+                }
+            }
+
         }
 
         return new QName(targetNamespace, name);
