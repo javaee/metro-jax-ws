@@ -32,23 +32,28 @@ public class AppMsgContextImpl implements MessageContext {
 
     private MessageContext ctxt;
     private Map<String, Object> appContext; // properties in APPLICATION scope
+    
+    private void init() {
+        if (appContext == null) {
+            appContext = new HashMap<String, Object>();
+            Iterator<Entry<String, Object>> i = ctxt.entrySet().iterator();
+            while(i.hasNext()) {
+                Entry<String, Object> entry = i.next();
+                if (ctxt.getScope(entry.getKey()) == Scope.APPLICATION) {
+                    appContext.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
 
     public AppMsgContextImpl(MessageContext ctxt) {
-        this.ctxt = ctxt;     
-        appContext = new HashMap<String, Object>();
-        
-        Iterator<Entry<String, Object>> i = ctxt.entrySet().iterator();
-        while(i.hasNext()) {
-            Entry<String, Object> entry = i.next();
-            if (ctxt.getScope(entry.getKey()) == Scope.APPLICATION) {
-                appContext.put(entry.getKey(), entry.getValue());
-            }
-        }        
+        this.ctxt = ctxt;
     }
     
     /* java.util.Map methods below here */
     
     public void clear() {
+        init();
         Set<Entry<String, Object>> props = appContext.entrySet();
         for (Entry<String, Object> prop : props) {
             ctxt.remove(prop.getKey());
@@ -57,30 +62,37 @@ public class AppMsgContextImpl implements MessageContext {
     }
 
     public boolean containsKey(Object obj) {
+        init();
         return appContext.containsKey(obj);
     }
 
     public boolean containsValue(Object obj) {
+        init();
         return appContext.containsValue(obj);
     }
 
     public Set<Entry<String, Object>> entrySet() {
+        init();
         return appContext.entrySet();
     }
 
     public Object get(Object obj) {
+        init();
         return appContext.get(obj);
     }
 
     public boolean isEmpty() {
+        init();
         return appContext.isEmpty();
     }
 
     public Set<String> keySet() {
+        init();
         return appContext.keySet();
     }
 
     public Object put(String str, Object obj) {
+        init();
         Scope scope = null;
         try {
             scope = ctxt.getScope(str);
@@ -97,6 +109,7 @@ public class AppMsgContextImpl implements MessageContext {
     }
 
     public void putAll(Map<? extends String, ? extends Object> map) {
+        init();
         Set<? extends Entry<? extends String, ? extends Object>> props = map.entrySet();
         for(Entry<? extends String, ? extends Object> prop : props) {
             put(prop.getKey(), prop.getValue());
@@ -104,6 +117,7 @@ public class AppMsgContextImpl implements MessageContext {
     }
 
     public Object remove(Object key) {
+        init();
         Scope scope = null;
         try {
             scope = ctxt.getScope((String)key);
@@ -119,15 +133,13 @@ public class AppMsgContextImpl implements MessageContext {
     }
 
     public int size() {
+        init();
         return appContext.size();
     }
 
     public Collection<Object> values() {
+        init();
         return appContext.values();
-    }
-    
-    public Method getMethod() {
-        return null;
     }
     
     public void setScope(String name, Scope scope) {
