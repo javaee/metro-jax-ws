@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.namespace.QName;
 
 /**
  * Instances are created by the service, which then
@@ -50,7 +51,7 @@ import javax.xml.ws.soap.SOAPBinding;
  *
  * @author WS Development Team
  */
-public abstract class BindingImpl implements 
+public abstract class BindingImpl implements
     com.sun.xml.ws.spi.runtime.Binding {
 
     // caller ignored on server side
@@ -59,6 +60,7 @@ public abstract class BindingImpl implements
     private SystemHandlerDelegate systemHandlerDelegate;
     private List<Handler> handlers;
     private String bindingId;
+    protected QName serviceName;
 
     // called by DispatchImpl
     public BindingImpl(String bindingId) {
@@ -68,6 +70,15 @@ public abstract class BindingImpl implements
     public BindingImpl(List<Handler> handlerChain, String bindingId) {
         handlers = handlerChain;
         this.bindingId = bindingId;
+    }
+
+
+    /**
+     * Sets the Service QName for the Binding if known. Used when
+     * createing the SystemHandlerDelegate for the client
+     */
+    public void setServiceName(QName serviceName){
+        this.serviceName = serviceName;
     }
 
     /**
@@ -105,7 +116,7 @@ public abstract class BindingImpl implements
     public String getBindingId(){
         return bindingId;
     }
-    
+
     public String getActualBindingId() {
         return bindingId;
     }
@@ -117,10 +128,10 @@ public abstract class BindingImpl implements
     public void setSystemHandlerDelegate(SystemHandlerDelegate delegate) {
         systemHandlerDelegate = delegate;
     }
-    
+
     public static com.sun.xml.ws.spi.runtime.Binding getBinding(String bindingId,
-        Class implementorClass, boolean tokensOK) {
-        
+                                                                Class implementorClass, boolean tokensOK) {
+
         if (bindingId == null) {
             // Gets bindingId from @BindingType annotation
             bindingId = RuntimeModeler.getBindingId(implementorClass);
@@ -140,17 +151,17 @@ public abstract class BindingImpl implements
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
             || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
             || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
-            return new SOAPBindingImpl(bindingId); 
+            return new SOAPBindingImpl(bindingId);
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
             return new HTTPBindingImpl();
         } else {
             throw new IllegalArgumentException("Wrong bindingId "+bindingId);
         }
     }
-    
+
     public static Binding getDefaultBinding() {
         return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
     }
 
-        
+
 }

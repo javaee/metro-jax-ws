@@ -36,6 +36,7 @@ import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -63,13 +64,13 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     public SOAPBindingImpl(String bindingId) {
         super(bindingId);
         setup(getBindingId());
-        setupSystemHandlerDelegate();
+        //setupSystemHandlerDelegate();
     }
 
     public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
         super(handlerChain, bindingId);
         setup(getBindingId());
-        setupSystemHandlerDelegate();
+        //setupSystemHandlerDelegate();
     }
 
     // if the binding id is unknown, no roles are added
@@ -199,12 +200,12 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     }
 
 
-    protected void setupSystemHandlerDelegate() {
+    protected void setupSystemHandlerDelegate(QName serviceName) {
 
         SystemHandlerDelegateFactory shdFactory = SystemHandlerDelegateFactory.getFactory();
         if (shdFactory != null) {
             setSystemHandlerDelegate((SystemHandlerDelegate)
-                shdFactory.create());
+                shdFactory.getDelegate(serviceName));
         }
     }
 }

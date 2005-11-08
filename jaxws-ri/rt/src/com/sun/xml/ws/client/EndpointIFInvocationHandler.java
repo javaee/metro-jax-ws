@@ -44,8 +44,6 @@ public class EndpointIFInvocationHandler
     Object _proxy;
     DelegateBase _delegate;
 
-
-
     EndpointIFContext _endpointContext;
 
     Class _portInterface;
