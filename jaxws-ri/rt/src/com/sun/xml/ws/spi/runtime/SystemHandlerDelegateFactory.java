@@ -20,47 +20,86 @@
 package com.sun.xml.ws.spi.runtime;
 
 import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
 import static java.lang.Class.forName;
 import static java.lang.Thread.currentThread;
 import java.util.Map;
+import java.util.HashMap;
 
 public abstract class SystemHandlerDelegateFactory {
-    //this is currently hardcoded to xws SystemHandlerDelegate
-    //package is com.sun.xml.xwss
-    private static SystemHandlerDelegateFactory factory = null;
-    private final static String SHD_FACTORY_NAME =
+  
+    private final static String DEFAULT_FACTORY_NAME =
         "com.sun.xml.xwss.SystemHandlerDelegateFactory";
+
+    private static String factoryName;
+
+    private static HashMap factoryMap;
+
+    static {
+        init();
+    }
+
+    private static synchronized void init() {
+        factoryName = DEFAULT_FACTORY_NAME;
+        factoryMap = new HashMap();
+    };
+
+    // foctory implementations that maintain a map of serviceName to
+    // would override this method
+    public SystemHandlerDelegate getDelegate(QName serviceName) {
+        return create();
+    }
 
     public abstract SystemHandlerDelegate create();
 
     public abstract boolean isEnabled(MessageContext messageContext);
 
-    public static SystemHandlerDelegateFactory getFactory() {
-        if (factory == null) {
-            ClassLoader classLoader = null;
-            Class shdFactoryClass = null;
+    // factory name can be set to null, in which case,
+    // the default factory will be disabled.
+    public static synchronized void setFactoryName(String name) {
+        factoryName = name;
+    }
+
+    public static synchronized String getFactoryName() {
+        return factoryName;
+    }
+
+    public static synchronized SystemHandlerDelegateFactory getFactory() {
+
+        SystemHandlerDelegateFactory factory =
+            (SystemHandlerDelegateFactory) factoryMap.get(factoryName);
+
+        if (factory != null || factoryMap.containsKey(factoryName)) {
+            return factory;
+        } else {
+
+            Class clazz = null;
             try {
-                classLoader = currentThread().getContextClassLoader();
+                ClassLoader loader = currentThread().getContextClassLoader();
+
+                if (loader == null) {
+                    clazz = forName(factoryName);
+                } else {
+                    clazz = loader.loadClass(factoryName);
+                }
+
+                if (clazz != null) {
+                    factory = (SystemHandlerDelegateFactory) clazz.newInstance();
+                }
+            } catch (ClassNotFoundException e) {
+                factory = null;
+                // e.printStackTrace(); //todo:need to add log
             } catch (Exception x) {
                 throw new WebServiceException(x);
-            }
-
-            try {
-                if (classLoader == null) {
-                    shdFactoryClass = forName(SHD_FACTORY_NAME);
-                } else {
-                    shdFactoryClass = classLoader.loadClass(SHD_FACTORY_NAME);
-                }
-                return (SystemHandlerDelegateFactory) shdFactoryClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                //e.printStackTrace(); //todo:need to add log
-            } catch (IllegalAccessException e) {
-                throw new WebServiceException(e);
-            } catch (InstantiationException e) {
-                throw new WebServiceException(e);
+            } finally {
+                // stores null factory values in map to prevent
+                // repeated class loading and instantiation errors.
+                factoryMap.put(factoryName, factory);
             }
         }
         return factory;
     }
-
 }
+
+
+
