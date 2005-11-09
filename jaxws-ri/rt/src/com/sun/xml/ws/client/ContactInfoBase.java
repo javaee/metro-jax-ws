@@ -45,6 +45,7 @@ public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
     protected Encoder _encoder;
     protected Decoder _decoder;
     private String bindingId;
+    private InternalEncoder internalEncoder;
 
     public ContactInfoBase(Connection connection,
                            MessageDispatcher messageDispatcher, Encoder encoder, Decoder decoder,
@@ -53,6 +54,7 @@ public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
         _messageDispatcher = messageDispatcher;
         _encoder = encoder;
         _decoder = decoder;
+        internalEncoder = new ClientEncoderDecoder();
         this.bindingId = bindingId;
     }
 
@@ -116,7 +118,7 @@ public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
     }
 
     public InternalEncoder getInternalEncoder() {
-        return new ClientEncoderDecoder();
+        return internalEncoder;
     }
 
     public String getBindingId() {
