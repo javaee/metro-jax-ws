@@ -1,5 +1,5 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.11 2005-11-09 23:54:17 jitu Exp $
+ * $Id: ServletConnectionImpl.java,v 1.12 2005-11-10 05:22:58 jitu Exp $
  */
 
 /*
@@ -126,21 +126,12 @@ public class ServletConnectionImpl extends WSConnectionImpl {
             }
         }
         try {
-            return response.getOutputStream();
+            outputStream = response.getOutputStream();
+            return outputStream;
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
         return null;
-    }
-    
-    @Override
-    public void closeOutput() {
-        // No need to close. Servlet Container takes care of it
-    }
-    
-    @Override
-    public void closeInput() {
-        // No need to close. Servlet Container takes care of it
     }
 
 }
