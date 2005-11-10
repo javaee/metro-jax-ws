@@ -150,7 +150,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     }
 
     public void setExecutor(Executor executor) {
-        executor = this.executor;
+        this.executor = executor;
     }
 
 
