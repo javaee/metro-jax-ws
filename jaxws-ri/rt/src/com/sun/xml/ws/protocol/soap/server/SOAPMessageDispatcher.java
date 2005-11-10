@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.43 2005-11-03 19:08:56 joehw Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.44 2005-11-10 06:49:47 joehw Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -59,6 +59,8 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.Binding;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.MessageContext.Scope;
+
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Method;
@@ -232,9 +234,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         //rtCtxt.setHandlerContext(hc);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         WebServiceContext wsContext = endpointInfo.getWebServiceContext();
+        hc.getMessageContext().put(CONTENT_NEGOTIATION_PROPERTY, 
+                messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY));        
+        hc.getMessageContext().setScope(CONTENT_NEGOTIATION_PROPERTY, Scope.APPLICATION);
         if (wsContext != null) {
             AppMsgContextImpl appCtxt = new AppMsgContextImpl(hc.getMessageContext());
-            appCtxt.put(CONTENT_NEGOTIATION_PROPERTY, messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY));
             wsContext.setMessageContext(appCtxt);
         }
     }
