@@ -1,5 +1,5 @@
 /*
- * $Id: HttpClientTransport.java,v 1.22 2005-10-18 22:00:28 jitu Exp $
+ * $Id: HttpClientTransport.java,v 1.23 2005-11-14 18:25:08 bhaktimehta Exp $
  */
 
 /*
@@ -447,3 +447,4 @@ public class HttpClientTransport extends WSConnectionImpl {
     boolean isFailure = false;
     OutputStream _logStream = null;
 }
+

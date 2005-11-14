@@ -1,5 +1,5 @@
 /*
- * $Id: ClientTransportException.java,v 1.6 2005-09-23 22:05:25 kohsuke Exp $
+ * $Id: ClientTransportException.java,v 1.7 2005-11-14 18:20:31 bhaktimehta Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -42,3 +42,4 @@ public class ClientTransportException extends JAXWSExceptionBase {
         return "com.sun.xml.ws.resources.client";
     }
 }
+

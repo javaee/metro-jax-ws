@@ -123,3 +123,4 @@ public interface RuntimeEndpointInfo {
     public void setPortName(QName name);
 
 }
+
