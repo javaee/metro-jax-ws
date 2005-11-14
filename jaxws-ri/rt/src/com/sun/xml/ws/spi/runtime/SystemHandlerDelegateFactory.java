@@ -23,7 +23,6 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 import static java.lang.Class.forName;
 import static java.lang.Thread.currentThread;
-import java.util.Map;
 import java.util.HashMap;
 
 public abstract class SystemHandlerDelegateFactory {
@@ -46,24 +45,61 @@ public abstract class SystemHandlerDelegateFactory {
 
     // foctory implementations that maintain a map of serviceName to
     // would override this method
+    /**
+    * Used by the Appserver on client and server sides
+    * factory implementations that maintain a map of serviceName to
+    * factory
+    * @param serviceName when called by the SOAPBindingImpl to
+    * create the SystemHandlerDelegate. serviceName must be
+    * a QName
+    * @return com.sun.xml.ws.spi.runtime.SystemHandlerDelegate
+    * @throws java.lang.Exception when the create failed.
+    */
     public SystemHandlerDelegate getDelegate(QName serviceName) {
         return create();
     }
 
+    /**
+    * Used by the Appserver and xws-security on client and server sides
+    * factory implementations that maintain a map of serviceName to
+    * factory
+    * @return com.sun.xml.ws.spi.runtime.SystemHandlerDelegate
+    * @throws java.lang.Exception when the create failed.
+    */
     public abstract SystemHandlerDelegate create();
 
+    //currently not used
     public abstract boolean isEnabled(MessageContext messageContext);
 
     // factory name can be set to null, in which case,
     // the default factory will be disabled.
+    /**
+    * Used by the Appserver on client and server sides
+    * factoryName can be set to null, in which case the defaultFactory will be
+    * disabled
+    * @param name when called by the SOAPBindingImpl to
+    * create the SystemHandlerDelegate. serviceName must be
+    * a String
+    */
     public static synchronized void setFactoryName(String name) {
         factoryName = name;
     }
 
+    /**
+    * Used by the Appserver on client and server sides
+    * factoryName can be set to null, in which case the defaultFactory will be
+    * disabled and will be null on return
+    * @return java.lang.String - name of factory
+    */
     public static synchronized String getFactoryName() {
         return factoryName;
     }
-
+    /**
+    * Used by the JAX-WS implementation on client and server sides
+    * to load the SystemHandlerDelegateFactory
+    * @return com.sun.xml.ws.spi.runtime.SystemHandlerDelegateFactory
+    * @throws javax.xml.ws.WebServiceException when the load fails.
+    */
     public static synchronized SystemHandlerDelegateFactory getFactory() {
 
         SystemHandlerDelegateFactory factory =
