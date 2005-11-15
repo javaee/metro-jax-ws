@@ -48,7 +48,7 @@ public class EndpointImpl extends Endpoint {
         rtEndpointInfo.setImplementor(impl);
         rtEndpointInfo.setImplementorClass(impl.getClass());
         com.sun.xml.ws.spi.runtime.Binding binding =
-            BindingImpl.getBinding(bindingId, impl.getClass(), false);
+            BindingImpl.getBinding(bindingId, impl.getClass(), null, false);
         rtEndpointInfo.setBinding(binding);
     }
     

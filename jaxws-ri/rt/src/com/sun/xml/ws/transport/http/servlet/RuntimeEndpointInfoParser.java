@@ -1,5 +1,5 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.14 2005-09-23 22:05:35 kohsuke Exp $
+ * $Id: RuntimeEndpointInfoParser.java,v 1.15 2005-11-15 19:28:18 kwalsh Exp $
  */
 
 /*
@@ -120,7 +120,7 @@ public class RuntimeEndpointInfoParser {
                 //set Binding using DD, annotation, or default one(in that order)
                 String bindingId = getAttribute(attrs, ATTR_BINDING);
                 Binding binding = BindingImpl.getBinding(bindingId,
-					implementorClass, true);
+                    implementorClass, rei.getServiceName(), true);
                 rei.setBinding(binding);
 
                 //get enable-mtom attribute value
