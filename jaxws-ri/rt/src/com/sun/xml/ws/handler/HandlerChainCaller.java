@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerChainCaller.java,v 1.17 2005-10-05 20:10:34 bbissett Exp $
+ * $Id: HandlerChainCaller.java,v 1.18 2005-11-15 21:14:04 bbissett Exp $
  */
 
 /*
@@ -178,10 +178,19 @@ public class HandlerChainCaller {
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
+     *
+     * This method should only be called during a request,
+     * because during a response an exception from a handler
+     * is dispatched rather than replacing the message with
+     * a fault. So this method can use the MESSAGE_OUTBOUND_PROPERTY
+     * to determine whether it is being called on the client
+     * or the server side. If this changes in the spec, then
+     * something else will need to be passed to the method 
+     * to determine whether the fault code is client or server.
      */
     private void insertFaultMessage(ContextHolder holder,
         ProtocolException exception) {
-
+        
         try {
             SOAPMessageContext context = holder.getSMC();
             if (context == null) { // non-soap case
@@ -192,6 +201,12 @@ public class HandlerChainCaller {
                 return;
             }
             
+            String faultCodeLocal = "Server";
+            if ((Boolean) context.get(
+                MessageContext.MESSAGE_OUTBOUND_PROPERTY)) {
+                faultCodeLocal = "Client";
+            }
+
             SOAPMessage message = context.getMessage();
             SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
             SOAPBody body = envelope.getBody();
@@ -214,7 +229,7 @@ public class HandlerChainCaller {
                 if (faultCode == null) {
                     faultCode = new QName(
                         envelopeNamespace,
-                        "Server", "env");
+                        faultCodeLocal, "env");
                 }
                 fault.setFaultCode(faultCode);
                 
@@ -238,7 +253,7 @@ public class HandlerChainCaller {
                     fault.addChildElement(userFault.getDetail());
                 }
             } else {
-                fault.setFaultCode(envelope.createName("Server",
+                fault.setFaultCode(envelope.createName(faultCodeLocal,
                     "env", envelopeNamespace));
                 if (exception.getMessage() != null) {
                     fault.setFaultString(exception.getMessage());
