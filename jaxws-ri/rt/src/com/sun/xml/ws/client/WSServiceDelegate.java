@@ -308,8 +308,8 @@ public class WSServiceDelegate extends ServiceDelegate {
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
             bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             SOAPBindingImpl bindingImpl = new SOAPBindingImpl(handlerChain,
-                bindingId.toString());
-            bindingImpl.setServiceName(getServiceName());
+                bindingId.toString(), getServiceName());
+            
             if (serviceContext.getRoles() != null) {
                 bindingImpl.setRoles(serviceContext.getRoles());
             }
