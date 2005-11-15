@@ -95,6 +95,13 @@ public abstract class BindingImpl implements
         }
         return new ArrayList(handlers);
     }
+    
+    public boolean hasHandlers() {
+        if (handlers == null || handlers.size() == 0) {
+            return false;
+        }
+        return true;
+    }
 
     public void setHandlerChain(List<Handler> chain) {
         if (chainCaller != null) {
