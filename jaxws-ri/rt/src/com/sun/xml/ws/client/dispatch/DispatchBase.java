@@ -1,5 +1,5 @@
 /**
- * $Id: DispatchBase.java,v 1.24 2005-11-04 23:55:35 kwalsh Exp $
+ * $Id: DispatchBase.java,v 1.25 2005-11-15 19:26:17 kwalsh Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -65,6 +65,7 @@ import javax.xml.ws.Response;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPBinding;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -409,7 +410,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
             messageStruct.setData(new Object[]{msg});
             setMetadata(getRequestContext(), msg, messageStruct);
-            
+
             // Initialize content negotiation property
             ContentNegotiation.initialize(getRequestContext(), messageStruct);
 
@@ -552,6 +553,18 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
     Executor getCurrentExecutor(){
         return _service.getExecutor();
+    }
+
+    public QName getServiceName(){
+        if (_service != null)
+        return _service.getServiceName();
+        return null;
+    }
+
+    public QName getPortName(){
+        if (_portInfo != null)
+            return _portInfo.getName();
+        return null;
     }
 
     private static ClientTransportFactory defaultTransportFactory = null;
