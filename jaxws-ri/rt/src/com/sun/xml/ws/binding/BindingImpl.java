@@ -62,24 +62,18 @@ public abstract class BindingImpl implements
     private String bindingId;
     protected QName serviceName;
 
-    // called by DispatchImpl
-    public BindingImpl(String bindingId) {
+   // called by DispatchImpl
+    public BindingImpl(String bindingId, QName serviceName) {
         this.bindingId = bindingId;
-    }
-
-    public BindingImpl(List<Handler> handlerChain, String bindingId) {
-        handlers = handlerChain;
-        this.bindingId = bindingId;
-    }
-
-
-    /**
-     * Sets the Service QName for the Binding if known. Used when
-     * createing the SystemHandlerDelegate for the client
-     */
-    public void setServiceName(QName serviceName){
         this.serviceName = serviceName;
     }
+
+    public BindingImpl(List<Handler> handlerChain, String bindingId, QName serviceName) {
+        handlers = handlerChain;
+        this.bindingId = bindingId;
+        this.serviceName = serviceName;
+    }
+
 
     /**
      * Return a copy of the list. If there is a handler chain caller,
@@ -128,6 +122,10 @@ public abstract class BindingImpl implements
         return bindingId;
     }
 
+    public void setServiceName(QName serviceName){
+        this.serviceName = serviceName;
+    }
+
     public SystemHandlerDelegate getSystemHandlerDelegate() {
         return systemHandlerDelegate;
     }
@@ -137,7 +135,7 @@ public abstract class BindingImpl implements
     }
 
     public static com.sun.xml.ws.spi.runtime.Binding getBinding(String bindingId,
-                                                                Class implementorClass, boolean tokensOK) {
+                                                                Class implementorClass, QName serviceName, boolean tokensOK) {
 
         if (bindingId == null) {
             // Gets bindingId from @BindingType annotation
@@ -158,7 +156,7 @@ public abstract class BindingImpl implements
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
             || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
             || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
-            return new SOAPBindingImpl(bindingId);
+            return new SOAPBindingImpl(bindingId, serviceName);
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
             return new HTTPBindingImpl();
         } else {
@@ -170,5 +168,7 @@ public abstract class BindingImpl implements
         return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING);
     }
 
-
+    public static Binding getDefaultBinding(QName serviceName) {
+        return new SOAPBindingImpl(SOAPBinding.SOAP11HTTP_BINDING, serviceName);
+    }
 }

@@ -37,11 +37,11 @@ import com.sun.xml.ws.util.localization.Localizer;
 public class HTTPBindingImpl extends BindingImpl implements HTTPBinding {
 
     public HTTPBindingImpl() {
-        super(HTTPBinding.HTTP_BINDING);
+        super(HTTPBinding.HTTP_BINDING, null);
     }
 
     public HTTPBindingImpl(List<Handler> handlerChain) {
-        super(handlerChain, HTTPBinding.HTTP_BINDING);
+        super(handlerChain, HTTPBinding.HTTP_BINDING, null);
     }
 
     /*

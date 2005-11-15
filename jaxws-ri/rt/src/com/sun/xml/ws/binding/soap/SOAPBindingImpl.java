@@ -60,17 +60,24 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     protected Set<URI> roles;
     protected boolean enableMtom = false;
 
-    // called by DispatchImpl
-    public SOAPBindingImpl(String bindingId) {
-        super(bindingId);
+
+     // called by DispatchImpl
+    public SOAPBindingImpl(String bindingId, QName serviceName) {
+        super(bindingId, serviceName);
         setup(getBindingId());
-        //setupSystemHandlerDelegate();
+        setupSystemHandlerDelegate(serviceName);
     }
 
-    public SOAPBindingImpl(List<Handler> handlerChain, String bindingId) {
-        super(handlerChain, bindingId);
+     public SOAPBindingImpl(String bindingId) {
+        super(bindingId, null);
         setup(getBindingId());
-        //setupSystemHandlerDelegate();
+        setupSystemHandlerDelegate(null);
+    }
+
+    public SOAPBindingImpl(List<Handler> handlerChain, String bindingId, QName serviceName) {
+        super(handlerChain, bindingId, serviceName);
+        setup(getBindingId());
+        setupSystemHandlerDelegate(serviceName);
     }
 
     // if the binding id is unknown, no roles are added
@@ -198,7 +205,6 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
             throw new RuntimeException(e);
         }
     }
-
 
     protected void setupSystemHandlerDelegate(QName serviceName) {
 
