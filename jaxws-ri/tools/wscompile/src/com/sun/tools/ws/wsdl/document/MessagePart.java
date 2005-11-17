@@ -1,8 +1,4 @@
 /*
- * $Id: MessagePart.java,v 1.6 2005-10-13 22:56:07 vivekp Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

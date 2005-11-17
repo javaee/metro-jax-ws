@@ -1,8 +1,4 @@
 /*
- * $Id: Types.java,v 1.3 2005-09-10 19:49:57 kohsuke Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

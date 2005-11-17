@@ -1,7 +1,3 @@
-/**
- * $Id: SeiGenerator.java,v 1.36 2005-10-17 21:11:35 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

@@ -1,7 +1,3 @@
-/**
- * $Id: SOAP12ExtensionHandler.java,v 1.4 2005-09-10 19:50:12 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

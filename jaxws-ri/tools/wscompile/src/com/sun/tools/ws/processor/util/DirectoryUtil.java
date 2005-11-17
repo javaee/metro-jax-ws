@@ -18,10 +18,6 @@
  * [name of copyright owner]
  */
 
-/*
- * $Id: DirectoryUtil.java,v 1.4 2005-09-10 19:49:49 kohsuke Exp $
- */
-
 package com.sun.tools.ws.processor.util;
 
 import java.io.File;

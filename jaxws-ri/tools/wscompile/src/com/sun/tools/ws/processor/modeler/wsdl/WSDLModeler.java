@@ -1,8 +1,4 @@
 /*
- * $Id: WSDLModeler.java,v 1.3 2005-11-17 01:53:47 vivekp Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

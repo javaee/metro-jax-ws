@@ -1,12 +1,3 @@
-/**
- * $Id: JAXBTypeAndAnnotation.java,v 1.3 2005-09-28 19:54:05 vivekp Exp $
- */
-package com.sun.tools.ws.processor.model.jaxb;
-
-import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.codemodel.JType;
-import com.sun.codemodel.JAnnotatable;
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -26,6 +17,11 @@ import com.sun.codemodel.JAnnotatable;
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
+package com.sun.tools.ws.processor.model.jaxb;
+
+import com.sun.tools.xjc.api.TypeAndAnnotation;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JAnnotatable;
 
 /**
  * Holds JAXB JType and TypeAndAnnotation. This provides abstration over

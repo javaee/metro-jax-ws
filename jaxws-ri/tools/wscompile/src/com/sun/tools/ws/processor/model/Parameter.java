@@ -1,8 +1,4 @@
 /*
- * $Id: Parameter.java,v 1.4 2005-10-12 23:33:20 vivekp Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
