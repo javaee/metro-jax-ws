@@ -1,6 +1,3 @@
-/**
- * $Id: DispatchBase.java,v 1.25 2005-11-15 19:26:17 kwalsh Exp $
- */
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

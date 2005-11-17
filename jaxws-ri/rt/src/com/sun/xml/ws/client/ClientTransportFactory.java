@@ -1,7 +1,4 @@
 /*
- * $Id: ClientTransportFactory.java,v 1.6 2005-09-10 19:47:23 kohsuke Exp $
- */
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

@@ -1,8 +1,4 @@
 /*
- * $Id: DispatchDelegate.java,v 1.10 2005-10-20 01:58:28 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
