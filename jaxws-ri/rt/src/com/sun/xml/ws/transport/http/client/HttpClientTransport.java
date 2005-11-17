@@ -214,6 +214,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     protected Map<String, List<String>> collectResponseMimeHeaders() {
+        /*
         MimeHeaders mimeHeaders = new MimeHeaders();
         for (int i = 1; ; ++i) {
             String key = httpConnection.getHeaderFieldKey(i);
@@ -236,6 +237,8 @@ public class HttpClientTransport extends WSConnectionImpl {
             headers.put (header.getName (), h);
         }
         return headers;
+         */
+        return httpConnection.getHeaderFields();
     }
 
     protected void connectForResponse()

@@ -54,7 +54,11 @@ public class SOAPConnectionUtil {
                 for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
                     String name = entry.getKey();
                     for (String value : entry.getValue()) {
-                        mh.addHeader(name, value);
+                        try {
+                            mh.addHeader(name, value);
+                        } catch(IllegalArgumentException ie) {
+                            // Not a mime header. Ignore it.
+                        }
                     }
                 }
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
