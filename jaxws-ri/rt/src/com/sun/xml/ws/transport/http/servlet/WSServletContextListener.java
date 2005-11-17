@@ -1,8 +1,4 @@
 /*
- * $Id: WSServletContextListener.java,v 1.16 2005-09-22 23:10:01 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

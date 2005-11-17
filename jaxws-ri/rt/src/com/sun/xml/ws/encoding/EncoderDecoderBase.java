@@ -1,7 +1,3 @@
-/**
- * $Id: EncoderDecoderBase.java,v 1.6 2005-10-20 01:58:30 jitu Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

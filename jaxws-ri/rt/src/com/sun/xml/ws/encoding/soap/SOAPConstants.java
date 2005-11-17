@@ -1,8 +1,4 @@
 /*
- * $Id: SOAPConstants.java,v 1.5 2005-10-21 04:59:10 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

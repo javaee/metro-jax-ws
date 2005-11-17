@@ -1,9 +1,4 @@
 /*
- * $Id: WSDLPatcher.java,v 1.13 2005-10-08 01:07:25 jitu Exp $
- *
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

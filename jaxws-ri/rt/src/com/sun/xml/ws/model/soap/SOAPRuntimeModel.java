@@ -1,7 +1,3 @@
-/**
- * $Id: SOAPRuntimeModel.java,v 1.15 2005-11-02 21:23:14 bbissett Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

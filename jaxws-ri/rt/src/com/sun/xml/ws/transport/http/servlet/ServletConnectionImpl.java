@@ -1,8 +1,4 @@
 /*
- * $Id: ServletConnectionImpl.java,v 1.12 2005-11-10 05:22:58 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

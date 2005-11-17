@@ -1,7 +1,3 @@
-/**
- * $Id: Service.java,v 1.3 2005-09-10 19:48:22 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

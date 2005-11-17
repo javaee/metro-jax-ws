@@ -1,7 +1,3 @@
-/**
- * $Id: SOAPMessageDispatcher.java,v 1.70 2005-11-17 01:15:30 vivekp Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

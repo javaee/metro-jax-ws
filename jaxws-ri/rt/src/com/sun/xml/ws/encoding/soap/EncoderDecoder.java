@@ -1,6 +1,3 @@
-/**
- * $Id: EncoderDecoder.java,v 1.33 2005-10-24 23:21:36 vivekp Exp $
- */
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

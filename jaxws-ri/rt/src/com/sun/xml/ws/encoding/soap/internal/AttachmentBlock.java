@@ -1,8 +1,4 @@
 /*
- * $Id: AttachmentBlock.java,v 1.10 2005-10-26 23:41:40 vivekp Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

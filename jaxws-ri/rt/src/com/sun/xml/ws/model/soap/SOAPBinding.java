@@ -1,7 +1,3 @@
-/**
- * $Id: SOAPBinding.java,v 1.5 2005-09-20 02:35:28 vivekp Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

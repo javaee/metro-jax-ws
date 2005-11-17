@@ -1,8 +1,4 @@
 /*
- * $Id: RuntimeEndpointInfo.java,v 1.68 2005-11-07 20:44:08 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

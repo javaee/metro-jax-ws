@@ -1,8 +1,4 @@
 /*
- * $Id: WSRtObjectFactoryImpl.java,v 1.9 2005-10-18 22:16:55 jitu Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

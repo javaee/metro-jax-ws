@@ -1,7 +1,3 @@
-/**
- * $Id: Binding.java,v 1.7 2005-09-10 19:48:20 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

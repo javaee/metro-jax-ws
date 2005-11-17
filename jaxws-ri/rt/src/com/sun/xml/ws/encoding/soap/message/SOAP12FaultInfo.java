@@ -1,7 +1,3 @@
-/**
- * $Id: SOAP12FaultInfo.java,v 1.8 2005-10-20 01:58:40 jitu Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

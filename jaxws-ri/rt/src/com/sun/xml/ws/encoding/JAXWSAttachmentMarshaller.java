@@ -1,7 +1,3 @@
-/**
- * $Id: JAXWSAttachmentMarshaller.java,v 1.19 2005-10-18 20:39:45 vivekp Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

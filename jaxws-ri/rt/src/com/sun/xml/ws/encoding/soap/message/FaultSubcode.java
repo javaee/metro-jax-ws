@@ -1,18 +1,3 @@
-package com.sun.xml.ws.encoding.soap.message;
-
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.encoding.soap.SOAP12Constants;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
-import java.util.Iterator;
-
-/**
- * $Id: FaultSubcode.java,v 1.3 2005-09-10 19:47:44 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -32,6 +17,16 @@ import java.util.Iterator;
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
+package com.sun.xml.ws.encoding.soap.message;
+
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
+import java.util.Iterator;
 
 /**
  * SOAP 1.2 soapenv:Code

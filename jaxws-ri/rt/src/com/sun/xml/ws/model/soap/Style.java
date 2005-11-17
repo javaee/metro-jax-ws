@@ -1,7 +1,3 @@
-/**
- * $Id: Style.java,v 1.2 2005-09-10 19:47:51 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

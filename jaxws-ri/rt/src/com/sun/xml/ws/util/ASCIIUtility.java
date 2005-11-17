@@ -1,7 +1,3 @@
-/**
- * $Id: ASCIIUtility.java,v 1.6 2005-10-10 18:04:19 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

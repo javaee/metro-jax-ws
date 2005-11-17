@@ -1,9 +1,4 @@
 /*
- * $Id: DocInfo.java,v 1.9 2005-10-25 23:11:11 jitu Exp $
- *
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

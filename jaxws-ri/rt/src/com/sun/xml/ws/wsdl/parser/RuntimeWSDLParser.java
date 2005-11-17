@@ -1,7 +1,3 @@
-/**
- * $Id: RuntimeWSDLParser.java,v 1.28 2005-10-05 22:56:59 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

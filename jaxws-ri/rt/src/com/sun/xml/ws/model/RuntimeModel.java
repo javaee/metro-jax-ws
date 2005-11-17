@@ -1,7 +1,3 @@
-/**
- * $Id: RuntimeModel.java,v 1.28 2005-10-20 01:59:11 jitu Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

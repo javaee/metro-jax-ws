@@ -1,7 +1,3 @@
-/**
- * $Id: XMLMessageDispatcher.java,v 1.13 2005-10-20 18:58:56 jitu Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

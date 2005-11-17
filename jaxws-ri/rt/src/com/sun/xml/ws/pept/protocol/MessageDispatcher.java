@@ -1,6 +1,3 @@
-/**
- * $Id: MessageDispatcher.java,v 1.1 2005-10-20 01:59:53 jitu Exp $
- */
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

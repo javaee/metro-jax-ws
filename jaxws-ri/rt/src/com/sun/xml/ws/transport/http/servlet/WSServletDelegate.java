@@ -1,9 +1,4 @@
 /*
- * $Id: WSServletDelegate.java,v 1.15 2005-10-26 02:19:30 jitu Exp $
- *
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

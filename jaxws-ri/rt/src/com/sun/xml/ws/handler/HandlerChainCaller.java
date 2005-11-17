@@ -1,8 +1,4 @@
 /*
- * $Id: HandlerChainCaller.java,v 1.18 2005-11-15 21:14:04 bbissett Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

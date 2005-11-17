@@ -1,8 +1,4 @@
 /*
- * $Id: JAXWSExceptionBase.java,v 1.5 2005-09-23 22:12:35 kohsuke Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

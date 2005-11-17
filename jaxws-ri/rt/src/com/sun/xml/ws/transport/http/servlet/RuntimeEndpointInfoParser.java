@@ -1,8 +1,4 @@
 /*
- * $Id: RuntimeEndpointInfoParser.java,v 1.15 2005-11-15 19:28:18 kwalsh Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

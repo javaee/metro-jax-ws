@@ -1,9 +1,4 @@
 /*
- * $Id: ServletDocInfo.java,v 1.8 2005-10-26 02:20:35 jitu Exp $
- *
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

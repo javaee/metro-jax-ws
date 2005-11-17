@@ -1,7 +1,3 @@
-/**
- * $Id: SOAP12XMLDecoder.java,v 1.16 2005-10-21 04:59:11 jitu Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

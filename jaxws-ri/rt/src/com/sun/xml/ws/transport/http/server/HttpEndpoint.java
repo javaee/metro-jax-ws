@@ -1,8 +1,4 @@
 /*
- * $Id: HttpEndpoint.java,v 1.25 2005-10-10 18:04:15 kohsuke Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

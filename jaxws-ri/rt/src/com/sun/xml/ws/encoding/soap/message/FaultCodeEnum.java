@@ -1,14 +1,3 @@
-package com.sun.xml.ws.encoding.soap.message;
-
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
-
-import javax.xml.namespace.QName;
-
-/**
- * $Id: FaultCodeEnum.java,v 1.3 2005-09-10 19:47:43 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
@@ -28,6 +17,13 @@ import javax.xml.namespace.QName;
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
+package com.sun.xml.ws.encoding.soap.message;
+
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+
+import javax.xml.namespace.QName;
+
 public enum FaultCodeEnum {
     VersionMismatch(new QName(SOAP12NamespaceConstants.ENVELOPE, "VersionMismatch", SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE)),
     MustUnderstand(new QName(SOAP12NamespaceConstants.ENVELOPE, "MustUnderstand", SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE)),

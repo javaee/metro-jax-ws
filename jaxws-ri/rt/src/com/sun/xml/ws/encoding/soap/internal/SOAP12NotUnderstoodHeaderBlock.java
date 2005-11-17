@@ -1,8 +1,4 @@
 /*
- * $Id: SOAP12NotUnderstoodHeaderBlock.java,v 1.1 2005-11-02 21:23:12 bbissett Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

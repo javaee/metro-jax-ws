@@ -1,6 +1,3 @@
-/**
- * $Id: ServerEncoderDecoder.java,v 1.22 2005-10-20 01:58:35 jitu Exp $
- */
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

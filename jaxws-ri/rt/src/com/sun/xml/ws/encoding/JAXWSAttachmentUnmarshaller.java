@@ -1,7 +1,3 @@
-/**
- * $Id: JAXWSAttachmentUnmarshaller.java,v 1.10 2005-10-05 22:05:13 kohsuke Exp $
- */
-
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

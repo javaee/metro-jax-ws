@@ -1,8 +1,4 @@
 /*
- * $Id: HttpClientTransport.java,v 1.23 2005-11-14 18:25:08 bhaktimehta Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except

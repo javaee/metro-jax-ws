@@ -1,8 +1,4 @@
 /*
- * $Id: LocalConnectionImpl.java,v 1.8 2005-10-10 18:04:17 kohsuke Exp $
- */
-
-/*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
