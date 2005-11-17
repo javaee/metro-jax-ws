@@ -20,13 +20,17 @@
 package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
+import com.sun.xml.ws.util.ByteArrayDataSource;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
 import javax.activation.DataHandler;
 
 
@@ -84,6 +88,15 @@ public class MessageContextUtil {
         for(String cid:attachments.keySet()){
             AttachmentBlock ab = attachments.get(cid);
             attachMap.put(cid, ab.asDataHandler());
+        }
+    }
+
+    public static void setMessageAttachments(MessageContext ctxt, Iterator<AttachmentPart> attachments) throws SOAPException {
+        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
+        while(attachments.hasNext()){
+            AttachmentPart ap = attachments.next();
+            DataHandler dh = new DataHandler(new ByteArrayDataSource(ap.getRawContentBytes(), ap.getContentType()),ap.getContentType());
+            attachMap.put(ap.getContentId(), dh);
         }
     }
 

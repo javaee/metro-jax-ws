@@ -401,12 +401,6 @@ public abstract class SOAPDecoder implements Decoder {
             AttachmentPart ap = (AttachmentPart) iter.next();
             im.addAttachment(AttachmentBlock.fromSAAJ(ap));
         }
-
-        //set MESSAGE_ATTACHMENTS property
-        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(mi);
-        if (msgCtxt != null) {
-            MessageContextUtil.setMessageAttachments(msgCtxt, im.getAttachments());
-        }
     }
 
     /**

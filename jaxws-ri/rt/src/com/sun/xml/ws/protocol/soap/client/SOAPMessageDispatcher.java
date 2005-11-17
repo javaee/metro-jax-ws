@@ -1,5 +1,5 @@
 /**
- * $Id: SOAPMessageDispatcher.java,v 1.69 2005-11-07 02:46:31 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.70 2005-11-17 01:15:30 vivekp Exp $
  */
 
 /*
@@ -85,6 +85,7 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.activation.DataHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Proxy;
@@ -475,6 +476,20 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         RuntimeContext rtContext = MessageInfoUtil.getRuntimeContext(messageInfo);
         if (rtContext != null)
             rtContext.setHandlerContext(handlerContext);
+
+        //set MESSAGE_ATTACHMENTS property
+        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);
+        if (msgCtxt != null) {
+            try {
+                //clear the attMap on this messageContext, its from request
+                Map<String, DataHandler> attMap = (Map<String, DataHandler>) msgCtxt.get(MessageContext.MESSAGE_ATTACHMENTS);
+                if(attMap != null)
+                    attMap.clear();
+                MessageContextUtil.setMessageAttachments(msgCtxt, sm.getAttachments());
+            } catch (SOAPException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         SystemHandlerDelegate systemHandlerDelegate =
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).

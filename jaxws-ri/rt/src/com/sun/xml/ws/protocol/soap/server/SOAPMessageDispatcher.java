@@ -1,5 +1,5 @@
 /*
- * $Id: SOAPMessageDispatcher.java,v 1.45 2005-11-15 03:49:01 jitu Exp $
+ * $Id: SOAPMessageDispatcher.java,v 1.46 2005-11-17 01:15:31 vivekp Exp $
  */
 /*
  * The contents of this file are subject to the terms
@@ -129,7 +129,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SOAPHandlerContext context = new SOAPHandlerContext(messageInfo, null,
                 soapMessage);
             updateHandlerContext(messageInfo, context);
-                    
+            //set MESSAGE_ATTACHMENTS property
+            MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);
+            if (msgCtxt != null) {
+                MessageContextUtil.setMessageAttachments(msgCtxt, soapMessage.getAttachments());
+            }                    
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
                 context, shd);
