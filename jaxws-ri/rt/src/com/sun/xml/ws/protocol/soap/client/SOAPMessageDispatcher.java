@@ -197,8 +197,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         am.setXOPPackage(isXopped);
                     }
                 } catch (ProtocolException pe) {
-                    // message has already been replaced with fault
                     handlerResult = false;
+                    if (MessageContextUtil.ignoreFaultInMessage(
+                        handlerContext.getMessageContext())) {
+                        // ignore fault in this case and use exception
+                        throw new WebServiceException(pe);
+                    }
                 }
                 sm = handlerContext.getSOAPMessage();
                 postHandlerOutboundHook(messageInfo, handlerContext, sm);

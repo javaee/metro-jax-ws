@@ -78,6 +78,8 @@ import java.util.logging.Logger;
 public class HandlerChainCaller {
 
     public static final String HANDLER_CHAIN_CALLER = "handler_chain_caller";
+    public static final String IGNORE_FAULT_PROPERTY =
+        "ignore fault in message";
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".handler");
@@ -266,30 +268,20 @@ public class HandlerChainCaller {
     }
 
     /*
-     * The expectation of SOAPMessageDispatcher on the server
-     * side is that, if a ProtocolException is thrown from the
-     * handler chain, the message contents reflect the protocol
-     * exception. So if handleFault() throws a ProtocolException
-     * then insertFaultMessage() must be called again with the
-     * new exception.
+     * The expectation of the rest of the code is that,
+     * if a ProtocolException is thrown from the handler chain,
+     * the message contents reflect the protocol exception.
+     * However, if a new ProtocolException is thrown from
+     * the handleFault method, then the fault should be
+     * ignored and the new exception should be dispatched.
      *
-     * This method removes the existing fault and calls
-     * insertFaultMessage() to do the work.
+     * This method simply sets a property that is checked
+     * by the client and server code when a ProtocolException
+     * is caught.
      */
-    private void replaceExistingFault(ContextHolder holder,
-        ProtocolException exception) {
-        
-        SOAPMessageContext context = holder.getSMC();
-        if (context != null) {
-            try {
-                context.getMessage().getSOAPBody().removeContents();
-            } catch (Exception e) {
-                logger.log(Level.SEVERE,
-                    "exception while replacing fault message in handler chain", e);
-                throw new RuntimeException(e);
-            }
-        }
-        insertFaultMessage(holder, exception);
+    private void addIgnoreFaultProperty(ContextHolder holder) {
+        LogicalMessageContext context = holder.getLMC();
+        context.put(IGNORE_FAULT_PROPERTY, Boolean.TRUE);
     }
     
     /**
@@ -307,7 +299,7 @@ public class HandlerChainCaller {
     
     /**
      * Method used to call handlers with a HandlerContext that
-     * may contain logical and protocol handlers.
+     * may contain logical handlers only.
      */
     public boolean callHandlers(Direction direction,
         RequestOrResponse messageType,
@@ -451,8 +443,7 @@ public class HandlerChainCaller {
                         try {
                             callLogicalHandleFault(holder, i-1, 0);
                         } catch (ProtocolException re1) {
-                            replaceExistingFault(holder,
-                                (ProtocolException) re1);
+                            addIgnoreFaultProperty(holder);
                             re = re1;
                         } catch (RuntimeException re2) {
                             re = re2;
@@ -507,7 +498,7 @@ public class HandlerChainCaller {
                                 soapHandlers.size()-1);
                         }
                     } catch (ProtocolException re1) {
-                        replaceExistingFault(holder, (ProtocolException) re1);
+                        addIgnoreFaultProperty(holder);
                         re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;
@@ -572,7 +563,7 @@ public class HandlerChainCaller {
                                 logicalHandlers.size()-1, 0);
                         }
                     } catch (ProtocolException re1) {
-                        replaceExistingFault(holder, (ProtocolException) re1);
+                        addIgnoreFaultProperty(holder);
                         re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;
@@ -620,7 +611,7 @@ public class HandlerChainCaller {
                                 soapHandlers.size()-1);
                         }
                     } catch (ProtocolException re1) {
-                        replaceExistingFault(holder, (ProtocolException) re1);
+                        addIgnoreFaultProperty(holder);
                         re = re1;
                     } catch (RuntimeException re2) {
                         re = re2;

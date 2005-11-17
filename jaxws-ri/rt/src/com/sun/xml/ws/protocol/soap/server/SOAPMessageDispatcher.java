@@ -361,6 +361,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     RequestOrResponse.REQUEST, context, responseExpected);
             } catch(ProtocolException pe) {
                 skipEndpoint = true;
+                if (MessageContextUtil.ignoreFaultInMessage(
+                    context.getMessageContext())) {
+                    // don't use the fault, use the exception
+                    InternalMessage internalMessage =
+                        SOAPRuntimeModel.createFaultInBody(pe,
+                        null, null, null);
+                    context.setInternalMessage(internalMessage);
+                    context.setSOAPMessage(null);
+                }
             } catch(RuntimeException re) {
                 skipEndpoint = true;
                 InternalMessage internalMessage =
