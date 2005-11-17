@@ -1,5 +1,5 @@
 /*
- * $Id: WSDLModeler.java,v 1.2 2005-11-03 22:32:37 kohlert Exp $
+ * $Id: WSDLModeler.java,v 1.3 2005-11-17 01:53:47 vivekp Exp $
  */
 
 /*
@@ -368,7 +368,7 @@ public class WSDLModeler extends WSDLModelerBase {
                     if (extensions) {
                         warn("wsdlmodeler.warning.port.SOAPBinding12", wsdlPort.getName());
                     } else {
-                        fail("wsdlmodeler.warning.ignoringSOAPBinding12",
+                        warn("wsdlmodeler.warning.ignoringSOAPBinding12",
                                 wsdlPort.getName());
                         return false;
                     }                                        
