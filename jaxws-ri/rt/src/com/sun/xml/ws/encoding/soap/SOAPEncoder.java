@@ -287,24 +287,16 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         String prefix = reader.getPrefix();
                         String localName = reader.getLocalName();
 
-                        if (prefix == null) {
-                            if (uri == null) {
+                        if ((prefix == null)||(prefix.length() == 0)) {
+                            if ((uri == null)||(uri.length() == 0)) {
                                 writer.writeStartElement(localName);
                             } else {
                                 writer.writeStartElement(uri, localName);
                             }
                         } else {
                             assert uri != null;
-
-                            //Workaround for soapenv:Detail, Zephyr doesnt write the unknown prefix
-                            if (uri.equals(SOAP12Constants.QNAME_FAULT_DETAIL.getNamespaceURI()) &&
-                                localName.equals("Detail")) {
-                                prefix = SOAPNamespaceConstants.NSPREFIX_SOAP_ENVELOPE;
-                            }
-
-                            // [1] When writing an element with an unseen prefix,
-                            // Zephyr calls setPrefix(prefix, uri). Is this OK?
-                            writer.writeStartElement(prefix, localName, uri);
+                            writer.writeStartElement(prefix+":"+localName);
+                            writer.writeNamespace(prefix,uri);
                         }
 
                         // Write namespace declarations
