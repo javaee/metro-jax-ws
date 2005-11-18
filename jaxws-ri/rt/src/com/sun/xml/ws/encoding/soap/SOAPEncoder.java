@@ -287,16 +287,21 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                         String prefix = reader.getPrefix();
                         String localName = reader.getLocalName();
 
-                        if ((prefix == null)||(prefix.length() == 0)) {
-                            if ((uri == null)||(uri.length() == 0)) {
+                        if (prefix == null) {
+                            if (uri == null) {
                                 writer.writeStartElement(localName);
                             } else {
                                 writer.writeStartElement(uri, localName);
                             }
                         } else {
                             assert uri != null;
-                            writer.writeStartElement(prefix+":"+localName);
-                            writer.writeNamespace(prefix,uri);
+
+                            if(prefix.length() > 0){
+                                writer.writeStartElement(prefix+":"+localName);
+                                writer.writeNamespace(prefix,uri);
+                            }else{
+                                writer.writeStartElement(prefix, localName, uri);
+                            }                            
                         }
 
                         // Write namespace declarations
