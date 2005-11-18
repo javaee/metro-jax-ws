@@ -639,10 +639,21 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             responseExpected);
     }
 
+    /*
+     * Because a user's handler can throw a web service exception
+     * (e.g., a ProtocolException), we need to wrap any such exceptions
+     * here because the main catch clause assumes that WebServiceExceptions
+     * are already wrapped.
+     */
     protected boolean callHandlersOnResponse(SOAPHandlerContext handlerContext) {
-        HandlerChainCaller caller = getHandlerChainCaller(handlerContext.getMessageInfo());
-        return caller.callHandlers(Direction.INBOUND, RequestOrResponse.RESPONSE, handlerContext,
-            false);
+        HandlerChainCaller caller =
+            getHandlerChainCaller(handlerContext.getMessageInfo());
+        try {
+            return caller.callHandlers(Direction.INBOUND,
+                RequestOrResponse.RESPONSE, handlerContext, false);
+        } catch (WebServiceException wse) {
+            throw new WebServiceException(wse);
+        }
     }
 
     protected Binding getBinding(MessageInfo messageInfo) {

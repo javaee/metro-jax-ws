@@ -85,6 +85,11 @@ public class RuntimeContext {
     public void setMethodAndMEP(QName qname, MessageInfo mi) {
         if (model != null) {
             mi.setMethod(model.getDispatchMethod(qname));
+            
+            // if null, default MEP is ok
+            if (qname != null && model.getJavaMethod(qname) != null) {
+                mi.setMEP(model.getJavaMethod(qname).getMEP());
+            }
         }
     }
     
