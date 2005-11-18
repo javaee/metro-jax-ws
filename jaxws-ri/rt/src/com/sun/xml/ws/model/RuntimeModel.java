@@ -28,9 +28,11 @@ import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.wsdl.parser.Binding;
 import com.sun.xml.ws.wsdl.parser.Part;
 import com.sun.xml.ws.wsdl.parser.BindingOperation;
+import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
@@ -123,7 +125,14 @@ public abstract class RuntimeModel {
     public JAXBRIContext getJAXBContext() {
         return jaxbContext;
     }
-
+    
+    /** 
+     * @return the known namespaces from JAXBRIContext
+     */
+    public List<String> getKnownNamespaceURIs() {
+        return knownNamespaceURIs;
+    }
+    
     /**
      * @param type
      * @return the <code>Bridge</code> for the <code>type</code>
@@ -179,6 +188,14 @@ public abstract class RuntimeModel {
         } catch (PrivilegedActionException e) {
             throw new WebServiceException(e.getMessage(), e.getException());
         }
+        knownNamespaceURIs = new ArrayList<String>();
+        for (String namespace : jaxbContext.getKnownNamespaceURIs()) {
+            if (namespace.length() > 0) {    
+                if (!namespace.equals(SOAPNamespaceConstants.XSD))
+                    knownNamespaceURIs.add(namespace);
+            }
+        }
+
         return jaxbContext;
     }
 
@@ -553,5 +570,6 @@ public abstract class RuntimeModel {
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
     protected final QName emptyBodyName = new QName("");
     private String targetNamespace = "";
+    private List<String> knownNamespaceURIs = null;
 //    protected Collection<TypeReference> globalTypes = new ArrayList<TypeReference>();
 }

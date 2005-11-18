@@ -395,14 +395,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         if (rtCtxt != null && rtCtxt.getModel() != null) {
+            writer.setPrefix("xsd", SOAPNamespaceConstants.XSD);
+            writer.writeNamespace("xsd", SOAPNamespaceConstants.XSD);
             int i = 1;
             String prefix;
-            for (String namespace : rtCtxt.getModel().getJAXBContext().getKnownNamespaceURIs()) {
-                if (namespace.length() > 0) {
-                    prefix = "ns" + i++;
-                    writer.setPrefix(prefix, namespace);
-                    writer.writeNamespace(prefix, namespace);
-                }
+            for (String namespace : rtCtxt.getModel().getKnownNamespaceURIs()) {
+                prefix = "ns" + i++;
+                writer.setPrefix(prefix, namespace);
+                writer.writeNamespace(prefix, namespace);
             }
             writer.writeCharacters("");
         }
