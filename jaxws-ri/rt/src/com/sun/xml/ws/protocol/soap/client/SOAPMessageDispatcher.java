@@ -272,10 +272,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 SOAPConnectionUtil.sendResponse(connection, sm);
             }
 
-            // if handlerResult is false, the receive has already happened
-            if (isRequestResponse && handlerResult) {
+            if (isRequestResponse) {
                 receive(messageInfo);
-            } else if (isOneway(messageInfo) && handlerResult) {
+            } else if (isOneway(messageInfo)) {
                 checkReturnStatus(messageInfo);
             }
         } catch (WebServiceException wse) {
