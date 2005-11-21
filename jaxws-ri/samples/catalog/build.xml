@@ -30,7 +30,15 @@
     &deployTargets; 
 
     <property environment="env"/>
-    <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
+    <property file="../../../jwsdp-shared/bin/sjsas.props"/>
+      <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
+        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+      </condition>
+    <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
+      <not>
+        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+      </not>
+    </condition>
 
     <property file="etc/build.properties" />
     <property name="build.home" value="${basedir}/build"/>
@@ -40,7 +48,10 @@
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
         <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
-        <fileset dir="${lib.home}" includes="*.jar"/>
+        <fileset dir="${lib.home}">
+            <include name="*.jar"/>
+            <exclude name="j2ee.jar"/>
+        </fileset>
     </path>
 
     <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">

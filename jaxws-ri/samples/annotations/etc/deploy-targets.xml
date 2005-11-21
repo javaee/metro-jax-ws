@@ -19,7 +19,15 @@
 -->
 
 <property environment="env"/>
-<property name="as.home" value="${env.AS_HOME}"/>
+<property file="../../../../jwsdp-shared/bin/sjsas.props"/>
+<condition property="as.home" value="${DOMAIN_DIR}/..">
+    <available file="../../../../jwsdp-shared/bin/sjsas.props"/>
+</condition>
+<condition property="as.home" value="${env.AS_HOME}">
+    <not>
+        <available file="../../../../jwsdp-shared/bin/sjsas.props"/>
+    </not>
+</condition>
 
 <property name="build.home" value="${basedir}/build"/>
 <property name="build.war.home" value="${build.home}/war"/>
