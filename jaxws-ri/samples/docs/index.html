@@ -159,7 +159,10 @@ for SJSAS PE 8.1 for the samples to work. Set <code>AS_HOME</code> to point to
     note that <code>AS_HOME/bin/asant</code> cannot be used for building and
     invoking the samples since JAX-RPC 1.1 implementation is baked into this
     version of ant script.&nbsp;</li>
-  <li>Make sure that the Application Server is not running. Invoke <code>ANT_HOME/bin/ant install</code> from the root
+  <li>If you have installed JAX-WS as part of the JWSDP, then you do not need
+to perform the following step. If you have installed a standalone JAX-WS
+bundle, make sure that the Application Server is not running. Invoke
+<code>ANT_HOME/bin/ant install</code> from the root
 directory of the JAX-WS 2.0 EA2 bundle. This will install JAX-WS 2.0 bundle on
     the Application Server referred by <code>AS_HOME</code> environment
     variable.</li>
