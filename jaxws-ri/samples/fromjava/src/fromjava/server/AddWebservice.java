@@ -19,10 +19,10 @@
  */
 package fromjava.server;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpServer;
+//import java.net.InetSocketAddress;
+//import java.util.concurrent.Executors;
+//import com.sun.net.httpserver.HttpContext;
+//import com.sun.net.httpserver.HttpServer;
 
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
