@@ -66,7 +66,16 @@ public class DispatchContext {
     }
 
     public enum MessageType {
-        JAXB_PAYLOAD, SOURCE_PAYLOAD, JAXB_MESSAGE, SOURCE_MESSAGE , SOAPMESSAGE_MESSAGE, DATASOURCE_PAYLOAD, DATASOURCE_MESSAGE
+        JAXB_PAYLOAD,             //SOAP Binding
+        SOURCE_PAYLOAD,
+        JAXB_MESSAGE,
+        SOURCE_MESSAGE ,
+        SOAPMESSAGE_MESSAGE,
+        //HTTP_DATASOURCE_PAYLOAD,  //HTTP Binding
+        HTTP_DATASOURCE_MESSAGE,
+        HTTP_SOURCE_MESSAGE, //can be allowed with an HTTP GET method
+        HTTP_SOURCE_PAYLOAD,
+        HTTP_JAXB_PAYLOAD,
+        //HTTP_JAXB_MESSAGE
     }
-
 }

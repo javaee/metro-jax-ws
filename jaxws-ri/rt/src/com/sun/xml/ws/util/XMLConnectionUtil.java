@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.http.HTTPException;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -35,6 +36,7 @@ import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.server.*;
 import java.io.ByteArrayInputStream;
+import java.net.HttpURLConnection;
 import javax.xml.transform.stream.StreamSource;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
@@ -84,9 +86,14 @@ public class XMLConnectionUtil {
             }
             con.setHeaders(headers);
             xmlMessage.writeTo(con.getOutput());
-            con.closeOutput();
+
         } catch(Exception e) {
             throw new WebServiceException(e);
+        }
+        try {
+            con.closeOutput();
+        }catch (Exception e){
+            throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
     }
     

@@ -20,34 +20,43 @@
 
 package com.sun.xml.ws.client.dispatch;
 
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.Executor;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
-
-import com.sun.xml.ws.pept.Delegate;
-import com.sun.xml.ws.pept.presentation.MessageStruct;
-
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.*;
+import static com.sun.xml.ws.client.BindingProviderProperties.DISPATCH_CONTEXT;
+import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CLASS;
+import static com.sun.xml.ws.client.dispatch.DispatchContext.MessageType.HTTP_DATASOURCE_MESSAGE;
+import static com.sun.xml.ws.client.dispatch.DispatchContext.MessageType.HTTP_SOURCE_PAYLOAD;
+import static com.sun.xml.ws.client.dispatch.DispatchContext.MessageType.HTTP_JAXB_PAYLOAD;
+
 import com.sun.xml.ws.client.dispatch.impl.DispatchContactInfoList;
 import com.sun.xml.ws.client.dispatch.impl.DispatchDelegate;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
+import com.sun.xml.ws.pept.Delegate;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
+import javax.activation.DataSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
+import javax.xml.ws.*;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+
+import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
+
 
 import static com.sun.xml.ws.client.BindingProviderProperties.DISPATCH_CONTEXT;
 import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CLASS;
@@ -62,6 +71,7 @@ import javax.xml.ws.Response;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.http.HTTPException;
 import javax.xml.namespace.QName;
 
 
@@ -112,12 +122,12 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
      *         either an instance of <code>javax.xml.transform.Source</code>
      *         or a JAXB object.
      * @throws javax.xml.ws.WebServiceException
-     *                                  If there is any error in the configuration of
-     *                                  the <code>Dispatch</code> instance
+     *          If there is any error in the configuration of
+     *          the <code>Dispatch</code> instance
      * @throws javax.xml.ws.WebServiceException
-     *                                  If an error occurs when using a supplied
-     *                                  JAXBContext to marshall msg or unmarshall the response. The cause of
-     *                                  the WebServiceException is the original JAXBException.
+     *          If an error occurs when using a supplied
+     *          JAXBContext to marshall msg or unmarshall the response. The cause of
+     *          the WebServiceException is the original JAXBException.
      */
     public Object invoke(Object msg)
         throws WebServiceException {
@@ -205,9 +215,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     public Future<?> invokeAsync(java.lang.Object msg, AsyncHandler handler) {
 
         MessageStruct messageStruct = setupMessageStruct(msg);
-        if (handler != null){
+        if (handler != null) {
             //messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, handler);
-            messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, (Object)new AsyncHandlerService(handler, getCurrentExecutor()));
+            messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, (Object) new AsyncHandlerService(handler, getCurrentExecutor()));
         } else
             throw new WebServiceException("AsyncHandler argument is null. " +
                 "AsyncHandler is required for asynchronous callback invocations ");
@@ -283,19 +293,19 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     public ClientTransportFactory _getTransportFactory() {
-            _transportFactory =
-                (ClientTransportFactory) getRequestContext().get(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
+        _transportFactory =
+            (ClientTransportFactory) getRequestContext().get(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
 
-            if (_transportFactory == null) {
-                _transportFactory = new HttpClientTransportFactory();
-            }
-            return _transportFactory;
+        if (_transportFactory == null) {
+            _transportFactory = new HttpClientTransportFactory();
         }
+        return _transportFactory;
+    }
 
-        public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
-            getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
-            _transportFactory = (ClientTransportFactory)f;
-        }
+    public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
+        getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
+        _transportFactory = (ClientTransportFactory) f;
+    }
 
     private Object sendAndReceive(MessageStruct messageStruct) {
         Object response = null;
@@ -318,21 +328,20 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     if (soapFaultInfo.getString().contains("javax.xml.bind")) {
                         jbe = new JAXBException(soapFaultInfo.getString());
                         //do I need to put this in a webservice exception
-                    }
-                    SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
-                    sfe.initCause(jbe);
-                    throw sfe;
+                        SOAPFaultException sfe = new SOAPFaultException(soapFaultInfo.getSOAPFault());
+                        sfe.initCause(jbe);
+                    } else
+                        throw new SOAPFaultException(soapFaultInfo.getSOAPFault());
+                } else if (response instanceof HTTPException) {
+                    throw (HTTPException) response;
                 } else if (response instanceof WebServiceException)
                     throw (WebServiceException) response;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
                 if (response instanceof SOAPFaultException) {
                     throw (SOAPFaultException) response;
-                } else
-                //before invocation
-                    if (response instanceof Exception)
-                    throw new WebServiceException(((Exception) response).getMessage(),
-                        (Exception) response);
-                    return response;
+                } else if (response instanceof HTTPException) {
+                    throw (HTTPException) response;
+                } else throw (WebServiceException) response;
             default:
                 if (response != null) //must be some kind of exception
                     throw new WebServiceException("Client side exception - examine cause ", (Exception) response);
@@ -362,7 +371,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
     private Object sendOneWay(MessageStruct messageStruct) {
 
-       _delegate.send(messageStruct);
+        _delegate.send(messageStruct);
         Object response = messageStruct.getResponse();
         //will exceptions be returned from the server-
         //if not then can take this out and just send
@@ -388,7 +397,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         if (msg != null) {
             MessageFactory factory = null;
-            if ((msg instanceof Source) && _mode == Service.Mode.MESSAGE) {
+            if (((msg instanceof Source) && _mode == Service.Mode.MESSAGE) &&
+                (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING)))
+            {
                 try {
 
                     if (_getBindingId().toString().equals(SOAPBinding.SOAP12HTTP_BINDING))
@@ -412,7 +423,16 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
             ContentNegotiation.initialize(getRequestContext(), messageStruct);
 
         } else {
-            throw new WebServiceException("No Message to Send to web service");
+            if (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                throw new WebServiceException("No Message to Send to web service");
+            else {
+                messageStruct.setData(new Object[]{msg});
+                setMetadata(getRequestContext(), msg, messageStruct);
+
+                // Initialize content negotiation property
+                ContentNegotiation.initialize(getRequestContext(), messageStruct);
+
+            }
         }
         return messageStruct;
     }
@@ -427,7 +447,8 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         jaxwsContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
         jaxwsContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
-        jaxwsContext.put(BindingProviderProperties.BINDING_ID_PROPERTY,_getBindingId().toString());
+
+        jaxwsContext.put(BindingProviderProperties.BINDING_ID_PROPERTY, _getBindingId().toString());
         if (_jaxbContext != null)
             jaxwsContext.put(BindingProviderProperties.JAXB_CONTEXT_PROPERTY, _jaxbContext);
         messageStruct.setMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY,
@@ -437,8 +458,8 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         if (_clazz != null)
             messageStruct.setMetaData(DispatchContext.DISPATCH_MESSAGE_CLASS, _clazz);
 
-        DispatchContext context = setDispatchContext(obj, _mode);
-        messageStruct.setMetaData(DISPATCH_CONTEXT, context);
+        DispatchContext context = setDispatchContext(jaxwsContext, obj, _mode);
+        messageStruct.setMetaData(BindingProviderProperties.DISPATCH_CONTEXT, context);
     }
 
     public Binding getBinding() {
@@ -500,34 +521,46 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         return _responseContext;
     }
 
-    public DispatchContext setDispatchContext(Object obj, Service.Mode mode) {
+    public DispatchContext setDispatchContext(Map jaxwsContext, Object obj, Service.Mode mode) {
 
         DispatchContext context = new DispatchContext();
         context.setProperty(DispatchContext.DISPATCH_MESSAGE_MODE, mode);
-        if (_clazz != null)
-            context.setProperty(DISPATCH_MESSAGE_CLASS, _clazz);
-        if (obj instanceof Source)
-            context.setProperty(DISPATCH_MESSAGE_CLASS,
-                DispatchContext.MessageClass.SOURCE);
-        else if (obj instanceof SOAPMessage) {
-            context.setProperty(DISPATCH_MESSAGE_CLASS,
-                DispatchContext.MessageClass.SOAPMESSAGE);
-        } else if (_jaxbContext != null) {
-            context.setProperty(DISPATCH_MESSAGE_CLASS,
-                DispatchContext.MessageClass.JAXBOBJECT);
-        } else if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING) && (_clazz != null) && (_clazz.isAssignableFrom(DataSource.class))) {
-            context.setProperty(DISPATCH_MESSAGE_CLASS,
-                DispatchContext.MessageClass.DATASOURCE);
-        } else {
-            throw new WebServiceException("Object is not a javax.xml.transform.Source or there is no JAXB Context");
+
+
+        if (obj != null) {
+            if (obj instanceof Source){
+                context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS,
+                    DispatchContext.MessageClass.SOURCE);
+             }else if (obj instanceof SOAPMessage) {
+                context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS,
+                    DispatchContext.MessageClass.SOAPMESSAGE);
+            } else if  ((obj instanceof DataSource) &&
+                _getBindingId().toString().equals(HTTPBinding.HTTP_BINDING)) {
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS,
+                        DispatchContext.MessageClass.DATASOURCE);
+
+            } else if (_jaxbContext != null) {
+                context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS,
+                    DispatchContext.MessageClass.JAXBOBJECT);
+            } else {
+                if (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                    throw new WebServiceException("Object is not a javax.xml.transform.Source or there is no JAXB Context");
+            }
         }
 
         if (_clazz != null) {
             if (_clazz.isAssignableFrom(Source.class)) {
-                if (mode == Service.Mode.PAYLOAD)
-                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_PAYLOAD);
-                else if (mode == Service.Mode.MESSAGE)
-                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_MESSAGE);
+                if (mode == Service.Mode.PAYLOAD) {
+                    if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                        context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_SOURCE_PAYLOAD);
+                    else
+                        context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_PAYLOAD);
+                } else if (mode == Service.Mode.MESSAGE) {
+                    if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                        context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_SOURCE_MESSAGE);
+                    else
+                        context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_MESSAGE);
+                }
             } else if (_clazz.isAssignableFrom(SOAPMessage.class)) {
                 if (mode == Service.Mode.PAYLOAD) {
                     throw new WebServiceException("SOAPMessages must be Service.Mode.MESSAGE. ");
@@ -535,30 +568,42 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOAPMESSAGE_MESSAGE);
             } else if (_clazz.isAssignableFrom(DataSource.class)) {
                 if (mode == Service.Mode.PAYLOAD)
-                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.DATASOURCE_PAYLOAD);
+                    throw new WebServiceException("Can not have a Datahandler class with mode PAYLOAD");
+                    //context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_DATASOURCE_PAYLOAD);
                 else if (mode == Service.Mode.MESSAGE)
-                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.DATASOURCE_MESSAGE);
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_DATASOURCE_MESSAGE);
+            } else {               
+                context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS, _clazz);
             }
         } else if (hasJAXBContext(obj, null)) {
-            if (mode == Service.Mode.PAYLOAD)
-                context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.JAXB_PAYLOAD);
-            else if (mode == Service.Mode.MESSAGE)
-                context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.JAXB_MESSAGE);
+            if (mode == Service.Mode.PAYLOAD) {
+                if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_JAXB_PAYLOAD);
+                else
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.JAXB_PAYLOAD);
+            } else if (mode == Service.Mode.MESSAGE) {
+                if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+                    throw new WebServiceException(" Can not have a JAXB object with mode MESSAGE");
+                    //context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_JAXB_MESSAGE);
+                else
+                    context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.JAXB_MESSAGE);
+            }
         }
+               
         return context;
     }
 
-    Executor getCurrentExecutor(){
+    Executor getCurrentExecutor() {
         return _service.getExecutor();
     }
 
-    public QName getServiceName(){
+    public QName getServiceName() {
         if (_service != null)
-        return _service.getServiceName();
+            return _service.getServiceName();
         return null;
     }
 
-    public QName getPortName(){
+    public QName getPortName() {
         if (_portInfo != null)
             return _portInfo.getName();
         return null;

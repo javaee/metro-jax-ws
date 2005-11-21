@@ -97,6 +97,8 @@ public abstract class ContextMap extends HashMap<String,Object>
         temp.add(MessageContext.WSDL_OPERATION);
         temp.add(MessageContext.WSDL_PORT);
         temp.add(MessageContext.WSDL_SERVICE);
+        temp.add(MessageContext.HTTP_REQUEST_METHOD);
+        temp.add(MessageContext.HTTP_REQUEST_HEADERS);
         temp.add(MessageContext.HTTP_RESPONSE_CODE);
         temp.add(MessageContext.HTTP_RESPONSE_HEADERS);
 

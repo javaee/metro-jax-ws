@@ -75,6 +75,8 @@ public final class XMLMessage {
      */
     protected boolean useFastInfoset = false;
 
+    protected boolean noData = false;
+
     /**
      * Construct a message from an input stream. When messages are
      * received, there's two parts -- the transport headers and the
@@ -123,6 +125,8 @@ public final class XMLMessage {
     }
 
     public XMLMessage(Source source, boolean useFastInfoset) {
+        if (source == null)
+           this.noData = true;
         this.data = new XMLSource(source);
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
@@ -139,6 +143,9 @@ public final class XMLMessage {
     }
 
     public XMLMessage(DataSource dataSource, boolean useFastInfoset) {
+        if (dataSource == null)
+            this.noData = true;
+
         String contentType = dataSource.getContentType();
         this.data = new XMLDataSource(dataSource,
             contentType.indexOf("application/fastinfoset") > 0);
@@ -150,6 +157,9 @@ public final class XMLMessage {
     }
 
     public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
+        if (object == null)
+            this.noData = true;
+
         this.data = new XMLJaxb(object, context);
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
@@ -164,6 +174,12 @@ public final class XMLMessage {
         return data.isFastInfoset();
     }
 
+     /**
+     * Returns true if the underlying encoding of this message is FI.
+     */
+    public boolean hasNoData() {
+        return this.noData;
+    }
     /**
      * Returns true if the sender of this message accepts FI. Slow, but
      * should only be called once.
@@ -271,7 +287,8 @@ public final class XMLMessage {
     }
 
     public void writeTo(OutputStream out) throws IOException {
-        data.writeTo(out,useFastInfoset);
+        if (!hasNoData())
+            data.writeTo(out,useFastInfoset);
     }
 
     public Source getPayload() {
@@ -545,7 +562,7 @@ public final class XMLMessage {
         public XMLSource(Source source) {
             this.source = source;
             this.isFastInfoset =
-                (source.getClass() == FastInfosetReflection.fiFastInfosetSource);
+                ((source != null)?(source.getClass() == FastInfosetReflection.fiFastInfosetSource):false);
         }
 
         public boolean isFastInfoset() {
@@ -600,7 +617,8 @@ public final class XMLMessage {
         }
 
         DataSource getDataSource() {
-            throw new UnsupportedOperationException();
+            return null;
+            //throw new UnsupportedOperationException();
         }
 
         /*
@@ -610,6 +628,9 @@ public final class XMLMessage {
         */
         public Source getPayload() {
             try {
+
+
+
                 if (source instanceof DOMSource) {
                     return source;
                 }

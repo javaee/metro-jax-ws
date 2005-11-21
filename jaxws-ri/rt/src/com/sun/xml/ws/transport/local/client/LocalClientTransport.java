@@ -37,10 +37,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+
 import com.sun.xml.ws.transport.local.server.LocalConnectionImpl;
 import com.sun.xml.ws.transport.local.LocalMessage;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
+
+import javax.xml.ws.http.HTTPException;
 
 /**
  * @author WS Development Team
@@ -57,12 +62,12 @@ public class LocalClientTransport extends WSConnectionImpl {
     }
 
     public LocalClientTransport(RuntimeEndpointInfo endpointInfo,
-        OutputStream logStream) {
+                                OutputStream logStream) {
         this.endpointInfo = endpointInfo;
         debugStream = logStream;
     }
 
-    
+
     @Override
     public OutputStream getOutput() {
         try {
@@ -77,63 +82,63 @@ public class LocalClientTransport extends WSConnectionImpl {
     private static void checkMessageContentType(WSConnection con, boolean response) {
         String negotiation = System.getProperty(CONTENT_NEGOTIATION_PROPERTY, "none").intern();
         String contentType = con.getHeaders().get("Content-Type").get(0);
-        
+
         // Use indexOf() to handle Multipart/related types
         if (negotiation == "none") {
             // OK only if XML
             if (contentType.indexOf("text/xml") < 0 &&
                    contentType.indexOf("application/soap+xml") < 0 &&
-                   contentType.indexOf("application/xop+xml") < 0) 
+                   contentType.indexOf("application/xop+xml") < 0)
             {
-                throw new RuntimeException("Invalid content type '" + contentType 
+                throw new RuntimeException("Invalid content type '" + contentType
                     + "' with content negotiation set to '" + negotiation + "'.");
             }
         }
         else if (negotiation == "optimistic") {
             // OK only if FI
-            if (contentType.indexOf("application/fastinfoset") < 0 && 
-                   contentType.indexOf("application/soap+fastinfoset") < 0) 
+            if (contentType.indexOf("application/fastinfoset") < 0 &&
+                   contentType.indexOf("application/soap+fastinfoset") < 0)
             {
-                throw new RuntimeException("Invalid content type '" + contentType 
+                throw new RuntimeException("Invalid content type '" + contentType
                     + "' with content negotiation set to '" + negotiation + "'.");
             }
         }
         else if (negotiation == "pessimistic") {
             // OK if FI request is anything and response is FI
-            if (response && 
-                    contentType.indexOf("application/fastinfoset") < 0 && 
+            if (response &&
+                    contentType.indexOf("application/fastinfoset") < 0 &&
                     contentType.indexOf("application/soap+fastinfoset") < 0)
             {
-                throw new RuntimeException("Invalid content type '" + contentType 
-                    + "' with content negotiation set to '" + negotiation + "'.");                
+                throw new RuntimeException("Invalid content type '" + contentType
+                    + "' with content negotiation set to '" + negotiation + "'.");
             }
         }
     }
-    
+
     @Override
     public void closeOutput() {
         super.closeOutput();
         WSConnection con = new LocalConnectionImpl(lm);
-        
+
         // Copy headers for content negotiation
         con.setHeaders(getHeaders());
-        
+
         // Check request content type based on negotiation property
         checkMessageContentType(this, false);
-     
+
         try {
             // Set a MessageContext per invocation
             WebServiceContext wsContext = endpointInfo.getWebServiceContext();
             wsContext.setMessageContext(new MessageContextImpl());
             tie.handle(con, endpointInfo);
-            
+
             checkMessageContentType(con, true);
-        } 
+        }
         catch (Exception ex) {
-            throw new ClientTransportException("local.client.failed",ex);
+            new ProtocolException("Server side Exception:" + ex);
         }
     }
-    
+
     @Override
     public InputStream getInput() {
         try {
@@ -143,15 +148,15 @@ public class LocalClientTransport extends WSConnectionImpl {
             throw new ClientTransportException("local.client.failed",ex);
         }
     }
-    
+
     @Override
     public void setHeaders(Map<String, List<String>> headers) {
         lm.setHeaders(headers);
     }
-    
+
     @Override
     public Map<String, List<String>> getHeaders() {
         return lm.getHeaders();
     }
-    
+
 }
