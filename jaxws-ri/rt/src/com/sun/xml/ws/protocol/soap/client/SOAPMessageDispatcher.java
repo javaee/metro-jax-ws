@@ -21,7 +21,6 @@ package com.sun.xml.ws.protocol.soap.client;
 
 import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.binding.BindingImpl;
@@ -402,7 +401,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             context.put(CLIENT_TRANSPORT_FACTORY, clientTransportFactory);
         }
         connection = clientTransportFactory.create(context);
-        messageInfo.setConnection((Connection) connection);
+        messageInfo.setConnection(connection);
     }
 
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {

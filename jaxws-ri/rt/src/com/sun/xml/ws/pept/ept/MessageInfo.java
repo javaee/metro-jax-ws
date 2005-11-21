@@ -27,8 +27,7 @@ import com.sun.xml.ws.pept.encoding.Decoder;
 import com.sun.xml.ws.pept.encoding.Encoder;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
-import com.sun.xml.ws.pept.transport.Connection;
-import java.util.*;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 /**
  * <p>
@@ -85,7 +84,7 @@ public interface MessageInfo extends MessageStruct {
  * @return a Connection with ...
  * </p>
  */
-    public Connection getConnection();
+    public WSConnection getConnection();
 /**
  * <p>
  * Does ...
@@ -140,7 +139,7 @@ public interface MessageInfo extends MessageStruct {
  * @param connection ...
  * </p>
  */
-    public void setConnection(Connection connection);
+    public void setConnection(WSConnection connection);
 
 } // end MessageInfo
 

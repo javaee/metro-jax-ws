@@ -40,7 +40,6 @@ import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
-import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
@@ -294,7 +293,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 //            //local transport
         connection = clientTransportFactory.create(context);
 //        }
-        messageInfo.setConnection((Connection) connection);
+        messageInfo.setConnection(connection);
     }
 
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {

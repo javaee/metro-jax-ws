@@ -28,7 +28,7 @@ import com.sun.xml.ws.pept.encoding.Encoder;
 import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
-import com.sun.xml.ws.pept.transport.Connection;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 /**
  * @author WS Development Team
@@ -45,7 +45,7 @@ public class MessageInfoBase implements MessageInfo {
     protected MessageDispatcher _messageDispatcher;
     protected Encoder _encoder;
     protected Decoder _decoder;
-    protected Connection _connection;
+    protected WSConnection _connection;
 
     public void setData(Object[] data) {
         _data = data;
@@ -134,7 +134,7 @@ public class MessageInfoBase implements MessageInfo {
     /*
      * @see MessageInfo#getConnection()
      */
-    public Connection getConnection() {
+    public WSConnection getConnection() {
         return _connection;
     }
 
@@ -162,7 +162,7 @@ public class MessageInfoBase implements MessageInfo {
     /*
      * @see MessageInfo#setConnection(Connection)
      */
-    public void setConnection(Connection connection) {
+    public void setConnection(WSConnection connection) {
         this._connection = connection;
     }
 

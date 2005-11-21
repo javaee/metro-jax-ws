@@ -26,12 +26,12 @@ import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.TargetFinder;
 import com.sun.xml.ws.pept.protocol.Interceptors;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
-import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.soap.ClientEncoderDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 import javax.xml.ws.soap.SOAPBinding;
 
@@ -40,14 +40,14 @@ import javax.xml.ws.soap.SOAPBinding;
  * @author WS Development Team
  */
 public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
-    protected Connection _connection;
+    protected WSConnection _connection;
     protected MessageDispatcher _messageDispatcher;
     protected Encoder _encoder;
     protected Decoder _decoder;
     private String bindingId;
     private InternalEncoder internalEncoder;
 
-    public ContactInfoBase(Connection connection,
+    public ContactInfoBase(WSConnection connection,
                            MessageDispatcher messageDispatcher, Encoder encoder, Decoder decoder,
                            String bindingId) {
         _connection = connection;
@@ -68,7 +68,7 @@ public class ContactInfoBase implements ContactInfo, SOAPEPTFactory {
     /* (non-Javadoc)
      * @see com.sun.pept.ept.ContactInfo#getConnection(com.sun.pept.ept.MessageInfo)
      */
-    public Connection getConnection(MessageInfo arg0) {
+    public WSConnection getConnection(MessageInfo arg0) {
         return _connection;
     }
 

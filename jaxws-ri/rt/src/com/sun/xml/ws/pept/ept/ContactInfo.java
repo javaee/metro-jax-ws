@@ -22,9 +22,7 @@
  *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
  */
 package com.sun.xml.ws.pept.ept;
-
-import com.sun.xml.ws.pept.transport.Connection;
-import java.util.*;
+import com.sun.xml.ws.spi.runtime.WSConnection;
 
 /**
  * <p>
@@ -47,7 +45,7 @@ public interface ContactInfo extends EPTFactory {
  * @param messageInfo ...
  * </p>
  */
-    public Connection getConnection(MessageInfo messageInfo);
+    public WSConnection getConnection(MessageInfo messageInfo);
 
 } // end ContactInfo
 

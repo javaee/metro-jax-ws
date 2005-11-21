@@ -25,13 +25,11 @@ import javax.xml.ws.handler.MessageContext.Scope;
 import com.sun.xml.ws.pept.Delegate;
 import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.model.RuntimeModel;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 /**
@@ -78,7 +76,7 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         
         // Set runtime context on MessageInfo
         MessageInfoUtil.setRuntimeContext(messageInfo, runtimeContext);
-        messageInfo.setConnection((Connection)connection);
+        messageInfo.setConnection(connection);
 
         // Select EPTFactory based on binding, and transport
         EPTFactory eptFactory = EPTFactoryFactoryBase.getEPTFactory(messageInfo);

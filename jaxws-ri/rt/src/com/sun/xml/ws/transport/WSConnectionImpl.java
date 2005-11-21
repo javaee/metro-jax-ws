@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.pept.transport.Connection;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 
 /**
@@ -40,7 +39,7 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
  *
  * @author WS Development Team
  */
-public abstract class WSConnectionImpl implements WSConnection, Connection {
+public abstract class WSConnectionImpl implements WSConnection {
     Map<String, List<String>> headers = null;
     public OutputStream debugStream = null;
     public OutputStream outputStream = null;
@@ -89,22 +88,6 @@ public abstract class WSConnectionImpl implements WSConnection, Connection {
     
     public void setHeaders (Map<String, List<String>> headers) {
         this.headers = headers;
-    }
-
-    public EPTFactory getEPTFactory () {
-        throw new UnsupportedOperationException();
-    }
-
-    public ByteBuffer readUntilEnd () {
-        throw new UnsupportedOperationException();
-    }
-
-    public void write (ByteBuffer byteBuffer) {
-        throw new UnsupportedOperationException();
-    }
-
-    public int read (ByteBuffer byteBuffer) {
-        throw new UnsupportedOperationException();
     }
     
     /**
