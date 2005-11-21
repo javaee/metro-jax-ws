@@ -442,6 +442,9 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     }
     
     public void visitMethodDeclaration(MethodDeclaration method) {
+        // Methods must be public
+        if (!method.getModifiers().contains(Modifier.PUBLIC))
+            return;            
         if (processedMethod(method))
             return;
         WebMethod webMethod = method.getAnnotation(WebMethod.class);

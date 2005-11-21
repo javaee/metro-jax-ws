@@ -53,6 +53,7 @@ import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebFault;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.rmi.RemoteException;
@@ -424,6 +425,9 @@ public class RuntimeModeler {
      * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
      */
     protected void processMethod(Method method, WebService webService) {
+        if (!Modifier.isPublic(method.getModifiers())) {
+            return;
+        }
 
         WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null && webMethod.exclude())
