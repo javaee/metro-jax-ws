@@ -22,7 +22,15 @@
 <project basedir="." default="runclient" name="wsimport_catalog">
 
   <property environment="env"/>
-  <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
+    <property file="../../../jwsdp-shared/bin/sjsas.props"/>
+      <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
+        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+      </condition>
+    <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
+      <not>
+        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+      </not>
+    </condition>
   <property name="as.home" value="${env.AS_HOME}"/>
   <property name="lib.sample.home" value="${basedir}/../lib"/>
   <property name="build.home" value="${basedir}/build"/>
