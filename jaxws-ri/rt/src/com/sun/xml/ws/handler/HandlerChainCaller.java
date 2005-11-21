@@ -22,6 +22,7 @@ package com.sun.xml.ws.handler;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.LogicalMessage;
@@ -41,6 +42,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.xml.ws.encoding.soap.SOAPConstants;
+import com.sun.xml.ws.encoding.soap.SOAP12Constants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 
 /**
  * The class stores the actual "chain" of handlers that is called
@@ -176,15 +181,6 @@ public class HandlerChainCaller {
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
-     *
-     * This method should only be called during a request,
-     * because during a response an exception from a handler
-     * is dispatched rather than replacing the message with
-     * a fault. So this method can use the MESSAGE_OUTBOUND_PROPERTY
-     * to determine whether it is being called on the client
-     * or the server side. If this changes in the spec, then
-     * something else will need to be passed to the method 
-     * to determine whether the fault code is client or server.
      */
     private void insertFaultMessage(ContextHolder holder,
         ProtocolException exception) {
@@ -199,12 +195,6 @@ public class HandlerChainCaller {
                 return;
             }
             
-            String faultCodeLocal = "Server";
-            if ((Boolean) context.get(
-                MessageContext.MESSAGE_OUTBOUND_PROPERTY)) {
-                faultCodeLocal = "Client";
-            }
-
             SOAPMessage message = context.getMessage();
             SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
             SOAPBody body = envelope.getBody();
@@ -225,9 +215,7 @@ public class HandlerChainCaller {
                 
                 QName faultCode = userFault.getFaultCodeAsQName();
                 if (faultCode == null) {
-                    faultCode = new QName(
-                        envelopeNamespace,
-                        faultCodeLocal, "env");
+                    faultCode = determineFaultCode(context);
                 }
                 fault.setFaultCode(faultCode);
                 
@@ -251,8 +239,7 @@ public class HandlerChainCaller {
                     fault.addChildElement(userFault.getDetail());
                 }
             } else {
-                fault.setFaultCode(envelope.createName(faultCodeLocal,
-                    "env", envelopeNamespace));
+                fault.setFaultCode(determineFaultCode(context));
                 if (exception.getMessage() != null) {
                     fault.setFaultString(exception.getMessage());
                 } else {
@@ -282,6 +269,46 @@ public class HandlerChainCaller {
     private void addIgnoreFaultProperty(ContextHolder holder) {
         LogicalMessageContext context = holder.getLMC();
         context.put(IGNORE_FAULT_PROPERTY, Boolean.TRUE);
+    }
+    
+    /**
+     * Figure out if the fault code local part is client,
+     * server, sender, receiver, etc. This is called by
+     * insertFaultMessage.
+     *
+     * This method should only be called during a request,
+     * because during a response an exception from a handler
+     * is dispatched rather than replacing the message with
+     * a fault. So this method can use the MESSAGE_OUTBOUND_PROPERTY
+     * to determine whether it is being called on the client
+     * or the server side. If this changes in the spec, then
+     * something else will need to be passed to the method 
+     * to determine whether the fault code is client or server.
+     *
+     * For determining soap version, start checking with the
+     * latest version and default to soap 1.1.
+     */
+    private QName determineFaultCode(SOAPMessageContext context)
+        throws SOAPException {
+        
+        SOAPEnvelope envelope =
+            context.getMessage().getSOAPPart().getEnvelope();
+        String uri = envelope.getNamespaceURI();
+        
+        // client case
+        if ((Boolean) context.get(
+            MessageContext.MESSAGE_OUTBOUND_PROPERTY)) {
+            if (uri.equals(SOAP12NamespaceConstants.ENVELOPE)) {
+                return SOAP12Constants.FAULT_CODE_CLIENT;
+            }
+            return SOAPConstants.FAULT_CODE_CLIENT;
+        }
+        
+        //server case
+        if (uri.equals(SOAP12NamespaceConstants.ENVELOPE)) {
+            return SOAP12Constants.FAULT_CODE_SERVER;
+        }
+        return SOAPConstants.FAULT_CODE_SERVER;
     }
     
     /**
