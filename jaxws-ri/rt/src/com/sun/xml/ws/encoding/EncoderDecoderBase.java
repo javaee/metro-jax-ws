@@ -25,8 +25,10 @@ import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.model.RuntimeModel;
 
 import javax.xml.bind.JAXBException;
+import java.util.Map;
 
 /**
  * @author Vivek Pandey
@@ -56,7 +58,7 @@ public abstract class EncoderDecoderBase {
 
     /**
      * Get the wrapper child value from a jaxb style wrapper bean.
-     * 
+     *
      * @param context
      *            RuntimeContext to be passed by the encoder/decoder processing
      *            SOAP message during toMessageInfo()
@@ -67,27 +69,24 @@ public abstract class EncoderDecoderBase {
      * @param localName
      *            local name of the wrapper child property
      * @return The wrapper child
-     * 
+     *
      */
     protected Object getWrapperChildValue(RuntimeContext context, Object wrapperBean, String nsURI,
             String localName) {
         if (wrapperBean == null)
             return null;
-        JAXBRIContext jaxbContext = context.getModel().getJAXBContext();
+
+        RawAccessor ra = getRawAccessor(context, wrapperBean.getClass(), nsURI, localName);
         try {
-            RawAccessor ra = jaxbContext.getElementPropertyAccessor(wrapperBean.getClass(), nsURI,
-                    localName);
             return ra.get(wrapperBean);
         } catch (AccessorException e) {
-            throw new SerializationException(e);
-        } catch (JAXBException e) {
             throw new SerializationException(e);
         }
     }
 
     /**
      * Set the wrapper child value from a jaxb style wrapper bean.
-     * 
+     *
      * @param context
      *            context RuntimeContext to be passed by the encoder/decoder
      *            processing SOAP message during toMessageInfo()
@@ -99,23 +98,38 @@ public abstract class EncoderDecoderBase {
      *            namespace of the wrapper child property
      * @param localName
      *            localName local name of the wrapper child property
-     */
-    // TODO: do not invoke jaxbContext.getElementPropertyAccessor excessively like this.
-    // it's used to be called only once during a set up, and not meant to be
-    // invoked in a performance critical path like this. See its javadoc
+     */    
     protected void setWrapperChildValue(RuntimeContext context, Object wrapperBean, Object value,
             String nsURI, String localName) {
         if (wrapperBean == null)
             return;
-        JAXBRIContext jaxbContext = context.getModel().getJAXBContext();
+        RawAccessor ra = getRawAccessor(context, wrapperBean.getClass(), nsURI, localName);
         try {
-            RawAccessor ra = jaxbContext.getElementPropertyAccessor(wrapperBean.getClass(), nsURI,
-                    localName);
             ra.set(wrapperBean, value);
         } catch (AccessorException e) {
             throw new SerializationException(e);
-        } catch (JAXBException e) {
-            throw new SerializationException(e);
         }
+    }
+
+    private RawAccessor getRawAccessor(RuntimeContext context, Class wrapperBean, String nsURI, String localName){
+        RuntimeModel model = context.getModel();
+        Map<Integer, RawAccessor> map = model.getRawAccessorMap();
+        int id  = getHashCode(wrapperBean, nsURI, localName);
+        RawAccessor ra = map.get(id);
+        if(ra == null){
+            JAXBRIContext jaxbContext = model.getJAXBContext();
+            try {
+                ra = jaxbContext.getElementPropertyAccessor(wrapperBean, nsURI,
+                        localName);
+                map.put(id, ra);
+            } catch (JAXBException e) {
+                throw new SerializationException(e);
+            }
+        }
+        return ra;
+    }
+
+    private int getHashCode(Class bean, String uri, String pfix){
+        return bean.hashCode()+uri.hashCode()+pfix.hashCode();
     }
 }

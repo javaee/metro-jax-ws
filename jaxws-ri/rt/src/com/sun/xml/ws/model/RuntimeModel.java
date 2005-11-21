@@ -24,6 +24,7 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
+import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -554,6 +555,10 @@ public abstract class RuntimeModel {
         this.enableMtom = enableMtom;
     }
 
+    public Map<Integer, RawAccessor> getRawAccessorMap() {
+        return rawAccessorMap;
+    }
+
     protected abstract void createDecoderInfo();
 
     private boolean enableMtom = false;
@@ -570,6 +575,7 @@ public abstract class RuntimeModel {
     private final Map<QName, Object> payloadMap = new HashMap<QName, Object>();
     protected final QName emptyBodyName = new QName("");
     private String targetNamespace = "";
+    private final Map<Integer, RawAccessor> rawAccessorMap = new HashMap<Integer, RawAccessor>();
     private List<String> knownNamespaceURIs = null;
 //    protected Collection<TypeReference> globalTypes = new ArrayList<TypeReference>();
 }
