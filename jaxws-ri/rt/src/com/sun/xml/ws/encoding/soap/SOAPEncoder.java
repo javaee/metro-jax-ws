@@ -67,6 +67,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.NamespaceContext;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -298,14 +299,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
                             if(prefix.length() > 0){
                                 writer.writeStartElement(prefix+":"+localName);
-                                writer.writeNamespace(prefix,uri);
+                                setUndeclaredPrefix(prefix, uri, writer);
                             }else{
                                 writer.writeStartElement(prefix, localName, uri);
                             }                            
                         }
 
-                        // Write namespace declarations
                         int n = reader.getNamespaceCount();
+                        // Write namespace declarations
                         for (int i = 0; i < n; i++) {
                             String nsPrefix = reader.getNamespacePrefix(i);
                             if (nsPrefix == null) nsPrefix = "";
@@ -333,6 +334,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                                 attrURI != null ? attrURI : "",
                                 reader.getAttributeLocalName(i),
                                 reader.getAttributeValue(i));
+                            setUndeclaredPrefix(prefix, attrURI, writer);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
@@ -345,6 +347,23 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
         catch (XMLStreamException e) {
             throw new WebServiceException(e);
+        }
+    }
+
+    /**
+     * sets undeclared prefixes on the writer
+     * @param prefix
+     * @param writer
+     * @throws XMLStreamException
+     */
+    private static void setUndeclaredPrefix(String prefix, String readerURI, XMLStreamWriter writer) throws XMLStreamException {
+        String writerURI = null;
+        if (writer.getNamespaceContext() != null)
+            writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
+
+        if (writerURI == null ||(readerURI != null && !writerURI.equals(readerURI))) {
+            writer.setPrefix(prefix, readerURI != null ? readerURI : "");
+            writer.writeNamespace(prefix, readerURI != null ? readerURI : "");
         }
     }
 
