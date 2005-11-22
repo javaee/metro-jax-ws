@@ -238,9 +238,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerContext.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 handlerContext.getBindingId();
-                handlerResult =
-                    systemHandlerDelegate.processRequest(
-                        handlerContext.getSHDSOAPMessageContext());
+                systemHandlerDelegate.processRequest(
+                    handlerContext.getSHDSOAPMessageContext());
                 sm = handlerContext.getSOAPMessage();
             }
 
