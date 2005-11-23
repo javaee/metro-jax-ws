@@ -24,7 +24,6 @@
 package com.sun.xml.ws.pept.presentation;
 
 import com.sun.xml.ws.pept.ept.MessageInfo;
-import java.util.*;
 
 /**
  * <p>

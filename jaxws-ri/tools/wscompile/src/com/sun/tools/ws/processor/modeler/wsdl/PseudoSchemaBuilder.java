@@ -32,7 +32,13 @@ import javax.xml.namespace.QName;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import com.sun.tools.ws.wsdl.document.MessagePart;
 import com.sun.tools.ws.wsdl.document.Operation;
 import com.sun.tools.ws.wsdl.document.Kinds;

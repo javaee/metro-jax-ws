@@ -19,8 +19,10 @@
  */
 package com.sun.istack.ws;
 
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;

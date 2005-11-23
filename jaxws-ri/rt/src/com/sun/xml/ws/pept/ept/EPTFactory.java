@@ -28,7 +28,6 @@ import com.sun.xml.ws.pept.encoding.Encoder;
 import com.sun.xml.ws.pept.presentation.TargetFinder;
 import com.sun.xml.ws.pept.protocol.Interceptors;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
-import java.util.*;
 
 /**
  * <p>

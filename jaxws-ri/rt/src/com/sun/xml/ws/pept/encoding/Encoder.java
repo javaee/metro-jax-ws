@@ -25,7 +25,6 @@ package com.sun.xml.ws.pept.encoding;
 
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import java.nio.ByteBuffer;
-import java.util.*;
 
 /**
  * <p>

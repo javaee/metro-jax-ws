@@ -23,8 +23,6 @@
  */
 package com.sun.xml.ws.pept.ept;
 
-import java.util.*;
-
 /**
  * <p>
  * 

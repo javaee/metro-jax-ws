@@ -33,11 +33,17 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
     

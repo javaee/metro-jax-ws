@@ -35,13 +35,22 @@ import com.sun.xml.ws.wsdl.parser.Part;
 import com.sun.xml.ws.wsdl.parser.BindingOperation;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.model.soap.SOAPBinding;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * model of the web service.  Used by the runtime marshall/unmarshall 

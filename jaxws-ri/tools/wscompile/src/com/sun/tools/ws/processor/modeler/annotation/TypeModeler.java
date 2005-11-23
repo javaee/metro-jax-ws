@@ -19,7 +19,11 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;

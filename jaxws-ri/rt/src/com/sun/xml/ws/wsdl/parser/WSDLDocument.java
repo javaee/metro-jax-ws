@@ -25,7 +25,14 @@ import com.sun.xml.ws.model.Mode;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPBinding;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WSDLDocument {
     protected Map<QName, Message> messages;

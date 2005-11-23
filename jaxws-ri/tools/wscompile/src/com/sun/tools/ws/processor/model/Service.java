@@ -23,7 +23,12 @@ package com.sun.tools.ws.processor.model;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  *

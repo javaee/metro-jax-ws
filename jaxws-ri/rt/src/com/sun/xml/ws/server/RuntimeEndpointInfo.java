@@ -20,29 +20,6 @@
 
 package com.sun.xml.ws.server;
 
-import javax.annotation.Resource;
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.modeler.RuntimeModeler;
-import com.sun.xml.ws.util.HandlerAnnotationInfo;
-import com.sun.xml.ws.util.HandlerAnnotationProcessor;
-import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
-import com.sun.xml.ws.wsdl.parser.WSDLDocument;
-import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
-import com.sun.xml.ws.wsdl.parser.Service;
-import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
-import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
-
-import java.util.*;
-import javax.xml.namespace.QName;
-import com.sun.xml.ws.spi.runtime.Binding;
-import javax.xml.ws.Provider;
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.transform.Source;
-import com.sun.xml.ws.spi.runtime.WebServiceContext;
-import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
-import com.sun.xml.ws.util.localization.Localizer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -51,15 +28,45 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.concurrent.Executor;
+
+import javax.annotation.Resource;
+import javax.xml.namespace.QName;
+import javax.xml.ws.Provider;
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.transform.Source;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Endpoint;
+
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.modeler.RuntimeModeler;
+import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
+import com.sun.xml.ws.spi.runtime.Binding;
+import com.sun.xml.ws.spi.runtime.WebServiceContext;
+import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
+import com.sun.xml.ws.util.localization.Localizer;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
+import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+import com.sun.xml.ws.wsdl.parser.Service;
+import com.sun.xml.ws.wsdl.parser.WSDLDocument;
+import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
+
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 

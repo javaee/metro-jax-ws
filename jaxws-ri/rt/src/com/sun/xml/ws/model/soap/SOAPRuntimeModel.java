@@ -37,7 +37,13 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.soap.SOAPFault;
-import java.util.*;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Creates SOAP specific RuntimeModel

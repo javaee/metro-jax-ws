@@ -56,11 +56,21 @@ import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadFactory;
 import java.net.HttpURLConnection;
 
 /**
@@ -570,7 +580,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     private void postReceiveAndDecodeHook(MessageInfo messageInfo) {
         DispatchContext dispatchContext = (DispatchContext) messageInfo
             .getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
-        if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == javax.xml.ws.Service.Mode.MESSAGE)
+        if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
             && (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE) == DispatchContext.MessageType.SOURCE_MESSAGE))
         {
             Object response = messageInfo.getResponse();

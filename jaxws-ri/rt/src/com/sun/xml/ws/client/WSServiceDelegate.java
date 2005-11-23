@@ -14,8 +14,8 @@ import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
-import org.xml.sax.EntityResolver;
 
+import org.xml.sax.EntityResolver;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -32,6 +32,7 @@ import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.handler.PortInfo;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
@@ -40,7 +41,12 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.rmi.Remote;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;

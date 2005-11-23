@@ -23,8 +23,8 @@
  */
 package com.sun.xml.ws.pept.presentation;
 
-import java.util.*;
 import java.lang.reflect.Method;
+
 /**
  * <p>
  * 

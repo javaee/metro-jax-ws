@@ -22,7 +22,13 @@ package com.sun.tools.ws.processor.model.jaxb;
 import com.sun.tools.xjc.api.*;
 
 import javax.xml.namespace.QName;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.sun.codemodel.JType;
 

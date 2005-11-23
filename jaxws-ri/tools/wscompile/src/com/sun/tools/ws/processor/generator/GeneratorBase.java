@@ -22,9 +22,13 @@ package com.sun.tools.ws.processor.generator;
 
 import com.sun.codemodel.ClassType;
 import com.sun.codemodel.JClassAlreadyExistsException;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 import com.sun.tools.ws.processor.ProcessorAction;
 import com.sun.tools.ws.processor.ProcessorConstants;
