@@ -570,7 +570,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     private void postReceiveAndDecodeHook(MessageInfo messageInfo) {
         DispatchContext dispatchContext = (DispatchContext) messageInfo
             .getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
-        if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+        if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == javax.xml.ws.Service.Mode.MESSAGE)
             && (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE) == DispatchContext.MessageType.SOURCE_MESSAGE))
         {
             Object response = messageInfo.getResponse();
