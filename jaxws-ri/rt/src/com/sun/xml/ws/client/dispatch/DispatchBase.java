@@ -34,8 +34,6 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.pept.Delegate;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
-
-import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.MessageFactory;
@@ -43,9 +41,6 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
-import javax.xml.ws.*;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -60,6 +55,7 @@ import java.util.logging.Logger;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.DISPATCH_CONTEXT;
 import static com.sun.xml.ws.client.dispatch.DispatchContext.DISPATCH_MESSAGE_CLASS;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
 import javax.activation.DataSource;
 

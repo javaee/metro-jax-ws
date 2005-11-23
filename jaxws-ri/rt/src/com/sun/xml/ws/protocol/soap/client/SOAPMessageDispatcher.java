@@ -27,7 +27,6 @@ import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.AsyncHandlerService;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.client.ContextMap;
 import com.sun.xml.ws.client.EndpointIFContext;
 import com.sun.xml.ws.client.EndpointIFInvocationHandler;
@@ -117,6 +116,7 @@ import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_
 import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_FI_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
 import static com.sun.xml.ws.client.BindingProviderProperties.XML_FI_ACCEPT_VALUE;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
 
 /**

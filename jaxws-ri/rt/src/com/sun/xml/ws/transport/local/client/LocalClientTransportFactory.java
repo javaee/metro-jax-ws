@@ -21,8 +21,8 @@
 package com.sun.xml.ws.transport.local.client;
 
 import java.io.OutputStream;
-import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 
 import java.util.Map;

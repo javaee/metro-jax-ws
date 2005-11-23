@@ -19,10 +19,12 @@
  */
 package com.sun.xml.ws.spi.runtime;
 
+import java.util.Map;
+
 /**
  * This class is implemented by
  * com.sun.xml.ws.client.ClientTransportFactory
  */
 public interface ClientTransportFactory {
-    public WSConnection create();
+    public WSConnection create(Map<String, Object> context);
 }

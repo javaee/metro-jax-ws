@@ -23,10 +23,10 @@ import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import java.io.OutputStream;
 
-import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
 import com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -50,21 +50,6 @@ import javax.xml.ws.handler.MessageContext;
  */
 public class WSRtObjectFactoryImpl
     extends com.sun.xml.ws.spi.runtime.WSRtObjectFactory {
-    
-    @Override
-    public com.sun.xml.ws.spi.runtime.ClientTransportFactory
-        createClientTransportFactory(int type, OutputStream outputStream) {
-        
-        ClientTransportFactory clientFactory = null;
-        switch (type) {
-            case ClientTransportFactoryTypes.HTTP :
-                //return new HttpClientTransportFactory(outputStream);
-                
-            case ClientTransportFactoryTypes.LOCAL:         
-                //return new LocalClientTransportFactory(null, outputStream);
-        }
-        return null;
-    }
     
     @Override
     public com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo createRuntimeEndpointInfo() {

@@ -21,19 +21,20 @@
 package com.sun.xml.ws.transport.http.client;
 
 import java.io.OutputStream;
-import com.sun.xml.ws.client.ClientTransportFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import java.util.Map;
 
 import javax.xml.ws.soap.SOAPBinding;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import java.util.HashMap;
 
 /**
  * @author WS Development Team
  */
 public class HttpClientTransportFactory implements ClientTransportFactory {
+
 
     public HttpClientTransportFactory() {
         this(null);
@@ -43,12 +44,14 @@ public class HttpClientTransportFactory implements ClientTransportFactory {
         _logStream = logStream;
     }
 
+    /*
     public WSConnection create() {
         Map<String, Object> context = new HashMap<String, Object>();
         context.put(BINDING_ID_PROPERTY, SOAPBinding.SOAP11HTTP_BINDING);
         
         return new HttpClientTransport(_logStream, context);
     }
+     */
 
     /**
      * Binding Id, Endpoint address and other metadata is in the property bag

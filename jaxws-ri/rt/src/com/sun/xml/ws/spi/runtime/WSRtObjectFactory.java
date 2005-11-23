@@ -67,14 +67,6 @@ public abstract class WSRtObjectFactory {
      */
     public abstract List<RuntimeEndpointInfo> getRuntimeEndpointInfos(
             ServletContext ctxt);
-
-    /**
-     * @param type The type of ClientTransportFactory
-     * @see com.sun.xml.ws.spi.runtime.ClientTransportFactoryTypes
-     */
-    public abstract ClientTransportFactory createClientTransportFactory(
-        int type,
-        OutputStream logStream);
     
     /**
      * creates a Tie object, entry point to JAXWS runtime.

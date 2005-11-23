@@ -28,6 +28,7 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import java.net.URI;
 import java.util.Map;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
 
 /**
@@ -59,7 +60,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
 
     public ClientTransportFactory _getTransportFactory() {
         _transportFactory =
-            (ClientTransportFactory) getRequestContext().get(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
+            (com.sun.xml.ws.spi.runtime.ClientTransportFactory)getRequestContext().get(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY);
 
         if (_transportFactory == null) {
             _transportFactory = new HttpClientTransportFactory();
@@ -67,7 +68,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
         return _transportFactory;
     }
 
-    protected void setTransportFactory(ClientTransportFactory f) {
+    public void _setTransportFactory(ClientTransportFactory f) {
         getRequestContext().put(BindingProviderProperties.CLIENT_TRANSPORT_FACTORY, f);
         _transportFactory = f;
     }
@@ -118,11 +119,6 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
 
     public void _setBinding(BindingImpl binding) {
         this.binding = binding;
-    }
-
-
-    public void _setTransportFactory(com.sun.xml.ws.spi.runtime.ClientTransportFactory f) {
-        setTransportFactory((ClientTransportFactory) f);
     }
 
     /**

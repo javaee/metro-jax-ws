@@ -28,7 +28,6 @@ import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
 import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
-import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
@@ -41,13 +40,13 @@ import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -55,11 +54,9 @@ import javax.xml.ws.*;
 import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,7 +69,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 import java.net.HttpURLConnection;
-
 /**
  * Client-side XML-based message dispatcher {@link com.sun.pept.protocol.MessageDispatcher}
  *
