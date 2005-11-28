@@ -161,15 +161,16 @@ public abstract class ServiceContextBuilder {
             }
 
             //todo:use SCAnnotations and put in map
-            RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName,
-                serviceContext.getWsdlContext().getBindingID().toString());
+            String bindingId = serviceContext.getWsdlContext().getBindingID(
+                serviceName, portName).toString();
+            RuntimeModeler modeler = new RuntimeModeler(portInterface,
+                serviceName, bindingId);
             modeler.setPortName(portName);
             RuntimeModel model = modeler.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
 
             // get handler information
-            String bindingId = modeler.getBindingId();
             HandlerAnnotationInfo chainInfo =
                 HandlerAnnotationProcessor.buildHandlerInfo(portInterface,
                     model.getServiceQName(), model.getPortName(), bindingId);

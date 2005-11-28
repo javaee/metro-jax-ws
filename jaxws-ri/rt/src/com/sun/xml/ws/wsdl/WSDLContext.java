@@ -42,7 +42,6 @@ public class WSDLContext {
     private final URL orgWsdlLocation;
     private String targetNamespace;
     private URI bindingId;
-    private String defaultBindingId = SOAPBinding.SOAP11HTTP_BINDING;
     private final WSDLDocument wsdlDoc;
 
     /**
@@ -112,14 +111,13 @@ public class WSDLContext {
         return wsdlDoc.getFirstPortName();
     }
 
-    public URI getBindingID() {
-        if (bindingId == null)
-            try {
-                return new URI(defaultBindingId);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        return bindingId;
+    public URI getBindingID(QName serviceName, QName portName) {
+        String id = getWsdlDocument().getBindingId(serviceName, portName);
+        try {
+            return new URI(id);
+        } catch (URISyntaxException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     public void setBindingID(String id) {

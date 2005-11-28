@@ -387,7 +387,8 @@ public class WSServiceDelegate extends ServiceDelegate {
         WSDLContext wscontext = serviceContext.getWsdlContext();
         if (wscontext != null) {
             String endpoint = wscontext.getEndpoint(serviceContext.getServiceName(), portQName);
-            URI bindingID = wscontext.getBindingID();
+            URI bindingID = wscontext.getBindingID(
+                serviceContext.getServiceName(), portQName);
             context.setServiceName(serviceContext.getServiceName());
             context.setPortInfo(portQName, endpoint, bindingID);
         }
