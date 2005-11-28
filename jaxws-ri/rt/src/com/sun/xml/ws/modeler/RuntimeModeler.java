@@ -773,7 +773,8 @@ public class RuntimeModeler {
                 resultName = webResult.name();
             if (webResult.partName().length() > 0) {
                 resultPartName = webResult.partName();
-                resultName = resultPartName;
+                if (!isResultHeader)
+                    resultName = resultPartName;
             } else
                 resultPartName = resultName;
             if (webResult.targetNamespace().length() > 0)
@@ -862,9 +863,12 @@ public class RuntimeModeler {
             }
             if (partName.length() == 0) {
                 partName = paramName;
-            } else {
+            } else if (!isHeader) {
                 paramName = partName;
             }
+            if (partName.length() == 0) {
+                partName = paramName;
+            }       
 
             if (!isHeader) {
                 //its rpclit body param, set namespace to ""
