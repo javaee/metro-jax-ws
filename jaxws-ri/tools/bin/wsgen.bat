@@ -1,7 +1,7 @@
 @echo off
 
 REM
-REM $Id: wsgen.bat,v 1.3 2005-09-27 19:38:58 kohsuke Exp $
+REM $Id: wsgen.bat,v 1.4 2005-11-28 20:15:41 kohlert Exp $
 REM
 
 REM
@@ -52,7 +52,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 goto LAUNCH
 
 :LAUNCH
-%JAVA% %WSIMPORT_OPTS% -cp %JAXWS_HOME%\lib\jaxws-tools.jar com.sun.tools.ws.WsGen %*
+%JAVA% %WSGEN_OPTS% -cp %JAXWS_HOME%\lib\jaxws-tools.jar com.sun.tools.ws.WsGen %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%
