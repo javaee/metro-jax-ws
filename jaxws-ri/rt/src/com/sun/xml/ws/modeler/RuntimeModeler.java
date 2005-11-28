@@ -771,9 +771,10 @@ public class RuntimeModeler {
         if (webResult != null) {
             if (webResult.name().length() > 0)
                 resultName = webResult.name();
-            if (webResult.partName().length() > 0)
+            if (webResult.partName().length() > 0) {
                 resultPartName = webResult.partName();
-            else
+                resultName = resultPartName;
+            } else
                 resultPartName = resultName;
             if (webResult.targetNamespace().length() > 0)
                 resultTNS = webResult.targetNamespace();
@@ -857,13 +858,12 @@ public class RuntimeModeler {
             }
 
             if (paramName.length() == 0) {
-                if (partName.length() > 0)
-                    paramName = partName;
-                else
-                    paramName = "arg"+pos;
+                paramName = "arg"+pos;
             }
             if (partName.length() == 0) {
                 partName = paramName;
+            } else {
+                paramName = partName;
             }
 
             if (!isHeader) {
