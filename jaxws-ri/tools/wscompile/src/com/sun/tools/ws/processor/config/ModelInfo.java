@@ -93,11 +93,20 @@ public abstract class ModelInfo {
         this.entityResolver = entityResolver;
     }
 
+    public String getDefaultJavaPackage() {
+        return _defaultJavaPackage;
+    }
+
+    public void setDefaultJavaPackage(String _defaultJavaPackage) {
+        this._defaultJavaPackage = _defaultJavaPackage;
+    }
+
     protected abstract Modeler getModeler(Properties options);
 
     private Configuration _parent;
     private String _name;
     private String _javaPackageName;
+    private String _defaultJavaPackage;
     private HandlerChainInfo _clientHandlerChainInfo;
     private HandlerChainInfo _serverHandlerChainInfo;
     private EntityResolver entityResolver;

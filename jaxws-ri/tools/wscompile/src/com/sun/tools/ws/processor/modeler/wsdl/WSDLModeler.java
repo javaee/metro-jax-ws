@@ -2188,7 +2188,8 @@ public class WSDLModeler extends WSDLModelerBase {
         //set the java package where wsdl artifacts will be generated
         //if user provided package name  using -p switch (or package property on wsimport ant task)
         //ignore the package customization in the wsdl and schema bidnings
-        if(getWSDLModelInfo().getJavaPackageName() != null){
+        if(getWSDLModelInfo().getDefaultJavaPackage() != null){
+            getWSDLModelInfo().setJavaPackageName(getWSDLModelInfo().getDefaultJavaPackage());
             jaxbModelBuilder.getJAXBSchemaCompiler().forcePackageName(getWSDLModelInfo().getJavaPackageName());
         }else{
             String jaxwsPackage = getJavaPackage();

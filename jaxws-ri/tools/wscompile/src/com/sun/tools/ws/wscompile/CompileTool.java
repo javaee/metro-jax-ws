@@ -493,7 +493,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else {
                 processor = new Processor(configuration, properties);
                 configuration.getModelInfo().setEntityResolver(entityResolver);
-                configuration.getModelInfo().setJavaPackageName(defaultPackage);
+                configuration.getModelInfo().setDefaultJavaPackage(defaultPackage);
                 processor.runModeler();
                 withModelHook();
                 registerProcessorActions(processor);
