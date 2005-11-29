@@ -84,20 +84,19 @@ public final class XMLMessage {
      */
     public XMLMessage(MimeHeaders headers, final InputStream in) {
         this.headers = headers;
-        final String ct;
+        String ct = null;
 
         if (headers != null) {
             ct = getContentType(headers);
         }
-        else {
-            throw new XMLMessageException("xml.null.headers");
-        }
-
-        if (ct == null) {
-            throw new XMLMessageException("xml.no.Content-Type");
-        }
 
         try {
+            // RESTful request
+            if (ct == null || ct.equals("application/x-www-form-urlencoded")) {
+                data = new XMLSource(null, false);
+                return;
+            }
+                    
             ContentType contentType = new ContentType(ct);
 
             // In the absence of type attribute we assume it to be text/xml.
@@ -328,6 +327,7 @@ public final class XMLMessage {
             return WSConnection.OK;
         }
     }
+    
 
     /**
      * Data represented as a multi-part MIME message.

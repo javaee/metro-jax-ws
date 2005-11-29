@@ -154,10 +154,11 @@ public class WSServletDelegate {
         throws ServletException {
 
         try {
-
-            MimeHeaders headers = getHeaders(request);
+            /*
             Localizer localizer = getLocalizerFor(request);
 
+            MimeHeaders headers = getHeaders(request);
+            
             if (checkForContent(headers)) {
                 writeInvalidMethodType(
                     localizer,
@@ -171,156 +172,25 @@ public class WSServletDelegate {
                 }
                 return;
             }
+             */
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
-            if (jaxwsInfo == null && request.getQueryString() != null) {
-                writeNotFoundErrorPage(localizer, response, "Invalid Context");
-            } else if (targetEndpoint != null && request.getQueryString() != null) {
-                if (request.getQueryString().equals("WSDL") ||
-                    request.getQueryString().startsWith("wsdl") ||
-                    request.getQueryString().startsWith("xsd")) {
-                    if (publishWSDL
-                        && targetEndpoint.getWSDLFileName() != null) {
-                        // return a WSDL document
-                        publisher.handle(
-                            targetEndpoint,
-                            fixedUrlPatternEndpoints,
-                            request,
-                            response);
+            if (targetEndpoint != null) {
+                String query = request.getQueryString();
+                String path = request.getPathInfo();
+                if (query != null || path != null) {
+                    if (query != null && (query.startsWith("wsdl") || query.startsWith("xsd="))) {
+                        // Sends published WSDL and schema documents
+                        publisher.handle(targetEndpoint, fixedUrlPatternEndpoints,
+                            request, response);
                     } else {
-                        writeNotFoundErrorPage(
-                            localizer,
-                            response,
-                            "Invalid request");
+                        // The request is handled by service or runtime
+                        handle(request, response, targetEndpoint);
                     }
-                } else {
-                    writeNotFoundErrorPage(
-                        localizer,
-                        response,
-                        "Invalid request");
-                }
-            } else if (request.getPathInfo() == null) {
-                if (publishStatusPage) {
-                    // standard browsable page
-                    response.setContentType("text/html");
-                    PrintWriter out = response.getWriter();
-                    out.println("<html>");
-                    out.println("<head><title>");
-                    // out.println("Web Services");
-                    out.println(
-                        localizer.localize(
-                            messageFactory.getMessage("servlet.html.title")));
-                    out.println("</title></head>");
-                    out.println("<body>");
-                    // out.println("<h1>Web Services</h1>");
-                    out.println(
-                        localizer.localize(
-                            messageFactory.getMessage("servlet.html.title2")));
-                    if (jaxwsInfo == null) {
-                        // out.println("<p>No JAX-WS context information available.</p>");
-                        out.println(
-                            localizer.localize(
-                                messageFactory.getMessage(
-                                    "servlet.html.noInfoAvailable")));
-                    } else {
-                        out.println("<table width='100%' border='1'>");
-                        out.println("<tr>");
-                        out.println("<td>");
-                        // out.println("Port Name");
-                        out.println(
-                            localizer.localize(
-                                messageFactory.getMessage(
-                                    "servlet.html.columnHeader.portName")));
-                        out.println("</td>");
-                        out.println("<td>");
-                        // out.println("Status");
-                        out.println(
-                            localizer.localize(
-                                messageFactory.getMessage(
-                                    "servlet.html.columnHeader.status")));
-                        out.println("</td>");
-                        out.println("<td>");
-                        // out.println("Information");
-                        out.println(
-                            localizer.localize(
-                                messageFactory.getMessage(
-                                    "servlet.html.columnHeader.information")));
-                        out.println("</td>");
-                        out.println("</tr>");
-                        String baseAddress =
-                            request.getScheme()
-                                + "://"
-                                + request.getServerName()
-                                + ":"
-                                + request.getServerPort()
-                                + request.getContextPath();
-
-                        for (RuntimeEndpointInfo info : jaxwsInfo) {
-                            String endpointAddress =
-                                baseAddress + getValidPathForEndpoint(info);
-                            out.println("<tr>");
-                            out.println("<td>" + info.getName() + "</td>");
-                            out.println("<td>");
-                            if (info.isDeployed()) {
-                                // out.println("ACTIVE");
-                                out.println(
-                                    localizer.localize(
-                                        messageFactory.getMessage(
-                                            "servlet.html.status.active")));
-                            } else {
-                                // out.println("ERROR");
-                                out.println(
-                                    localizer.localize(
-                                        messageFactory.getMessage(
-                                            "servlet.html.status.error")));
-                            }
-                            out.println("</td>");
-                            out.println("<td>");
-                            out.println(
-                                localizer.localize(
-                                    messageFactory.getMessage(
-                                        "servlet.html.information.table",
-                                        new Object[] {
-                                            endpointAddress,
-                                            info.getPortName(),
-                                            info
-                                                .getImplementor()
-                                                .getClass()
-                                                .getName()})));
-
-                            out.println("</td>");
-                            out.println("</tr>");
-                        }
-                        out.println("</table>");
-                    }
-                    out.println("</body>");
-                    out.println("</html>");
-                } else {
-                    writeNotFoundErrorPage(
-                        localizer,
-                        response,
-                        "Invalid request");
-                }
-            } else {
-                if (publishStatusPage) {
-                    response.setContentType("text/html");
-                    PrintWriter out = response.getWriter();
-                    out.println("<html>");
-                    out.println("<head><title>");
-                    // out.println("Web Services");
-                    out.println(
-                        localizer.localize(
-                            messageFactory.getMessage("servlet.html.title")));
-                    out.println("</title></head>");
-                    out.println("<body>");
-                    out.println("</body>");
-                    out.println("</html>");
-                } else {
-                    writeNotFoundErrorPage(
-                        localizer,
-                        response,
-                        "Invalid request");
+                    return;
                 }
             }
+            // Writes HTML page with all the endpoint descriptions
+            writeWebServicesHtmlPage(request, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new ServletException(e.getMessage());
@@ -354,24 +224,7 @@ public class WSServletDelegate {
                 writeNotFoundErrorPage(localizer, response, "Invalid request");
                 return;
             }
-            WebServiceContext wsCtxt = targetEndpoint.getWebServiceContext();
-            MessageContext msgCtxt = new MessageContextImpl();
-            wsCtxt.setMessageContext(msgCtxt);
-            msgCtxt.put(MessageContext.SERVLET_CONTEXT, servletContext);
-            msgCtxt.setScope(MessageContext.SERVLET_CONTEXT, Scope.APPLICATION);
-            msgCtxt.put(MessageContext.SERVLET_SESSION, request.getSession());
-            msgCtxt.setScope(MessageContext.SERVLET_SESSION, Scope.APPLICATION);
-            msgCtxt.put(MessageContext.SERVLET_REQUEST, request);
-            msgCtxt.setScope(MessageContext.SERVLET_REQUEST, Scope.APPLICATION);
-            msgCtxt.put(MessageContext.SERVLET_RESPONSE, response);
-            msgCtxt.setScope(MessageContext.SERVLET_RESPONSE, Scope.APPLICATION);
-
-            MessageContextUtil.setHttpRequestMethod(msgCtxt, request.getMethod());
-
-            WSConnection connection =
-                new ServletConnectionImpl(request, response);
-            MessageContextUtil.setHttpRequestHeaders(msgCtxt, connection.getHeaders());
-            tie.handle(connection, targetEndpoint);
+            handle(request, response, targetEndpoint);
         } catch (JAXWSExceptionBase e) {
             logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -387,6 +240,32 @@ public class WSServletDelegate {
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    /*
+     * Invokes JAXWS runtime with the correct MessageContext
+     */
+    private void handle(HttpServletRequest request, HttpServletResponse response,
+        RuntimeEndpointInfo targetEndpoint) throws Exception {
+    
+        WebServiceContext wsCtxt = targetEndpoint.getWebServiceContext();
+        MessageContext msgCtxt = new MessageContextImpl();
+        wsCtxt.setMessageContext(msgCtxt);
+        msgCtxt.put(MessageContext.SERVLET_CONTEXT, servletContext);
+        msgCtxt.setScope(MessageContext.SERVLET_CONTEXT, Scope.APPLICATION);
+        msgCtxt.put(MessageContext.SERVLET_SESSION, request.getSession());
+        msgCtxt.setScope(MessageContext.SERVLET_SESSION, Scope.APPLICATION);
+        msgCtxt.put(MessageContext.SERVLET_REQUEST, request);
+        msgCtxt.setScope(MessageContext.SERVLET_REQUEST, Scope.APPLICATION);
+        msgCtxt.put(MessageContext.SERVLET_RESPONSE, response);
+        msgCtxt.setScope(MessageContext.SERVLET_RESPONSE, Scope.APPLICATION);
+
+        MessageContextUtil.setHttpRequestMethod(msgCtxt, request.getMethod());
+
+        WSConnection connection =
+            new ServletConnectionImpl(request, response);
+        MessageContextUtil.setHttpRequestHeaders(msgCtxt, connection.getHeaders());
+        tie.handle(connection, targetEndpoint);
     }
 
     protected void writeNotFoundErrorPage(
@@ -569,6 +448,110 @@ public class WSServletDelegate {
 
     protected QName getFaultServerQName(){
         return SOAPConstants.FAULT_CODE_SERVER;
+    }
+    
+    private void writeWebServicesHtmlPage(HttpServletRequest request,
+        HttpServletResponse response) throws IOException {
+    
+        if (publishStatusPage) {
+            Localizer localizer = getLocalizerFor(request);
+
+            // standard browsable page
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<html>");
+            out.println("<head><title>");
+            // out.println("Web Services");
+            out.println(
+                localizer.localize(
+                    messageFactory.getMessage("servlet.html.title")));
+            out.println("</title></head>");
+            out.println("<body>");
+            // out.println("<h1>Web Services</h1>");
+            out.println(
+                localizer.localize(
+                    messageFactory.getMessage("servlet.html.title2")));
+            if (jaxwsInfo == null) {
+                // out.println("<p>No JAX-WS context information available.</p>");
+                out.println(
+                    localizer.localize(
+                        messageFactory.getMessage(
+                            "servlet.html.noInfoAvailable")));
+            } else {
+                out.println("<table width='100%' border='1'>");
+                out.println("<tr>");
+                out.println("<td>");
+                // out.println("Port Name");
+                out.println(
+                    localizer.localize(
+                        messageFactory.getMessage(
+                            "servlet.html.columnHeader.portName")));
+                out.println("</td>");
+                out.println("<td>");
+                // out.println("Status");
+                out.println(
+                    localizer.localize(
+                        messageFactory.getMessage(
+                            "servlet.html.columnHeader.status")));
+                out.println("</td>");
+                out.println("<td>");
+                // out.println("Information");
+                out.println(
+                    localizer.localize(
+                        messageFactory.getMessage(
+                            "servlet.html.columnHeader.information")));
+                out.println("</td>");
+                out.println("</tr>");
+                String baseAddress =
+                    request.getScheme()
+                        + "://"
+                        + request.getServerName()
+                        + ":"
+                        + request.getServerPort()
+                        + request.getContextPath();
+
+                for (RuntimeEndpointInfo info : jaxwsInfo) {
+                    String endpointAddress =
+                        baseAddress + getValidPathForEndpoint(info);
+                    out.println("<tr>");
+                    out.println("<td>" + info.getName() + "</td>");
+                    out.println("<td>");
+                    if (info.isDeployed()) {
+                        // out.println("ACTIVE");
+                        out.println(
+                            localizer.localize(
+                                messageFactory.getMessage(
+                                    "servlet.html.status.active")));
+                    } else {
+                        // out.println("ERROR");
+                        out.println(
+                            localizer.localize(
+                                messageFactory.getMessage(
+                                    "servlet.html.status.error")));
+                    }
+                    out.println("</td>");
+                    out.println("<td>");
+                    out.println(
+                        localizer.localize(
+                            messageFactory.getMessage(
+                                "servlet.html.information.table",
+                                new Object[] {
+                                    endpointAddress,
+                                    info.getPortName(),
+                                    info
+                                        .getImplementor()
+                                        .getClass()
+                                        .getName()})));
+
+                    out.println("</td>");
+                    out.println("</tr>");
+                }
+                out.println("</table>");
+            }
+            out.println("</body>");
+            out.println("</html>");
+        }
     }
 
     private ServletContext servletContext;
