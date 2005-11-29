@@ -106,9 +106,6 @@ public class JavaMethod {
 
     /**
      * @param p
-     * @throws XYZException
-     *             when a parameter is already added. Its ok to have same in and
-     *             out parameter but not duplicate inout.
      */
     public void addParameter(Parameter p) {
         if (p.isIN() || p.isINOUT()) {
@@ -123,6 +120,18 @@ public class JavaMethod {
             if (requestParams.contains(p)) {
                 // TODO throw exception
             }
+            responseParams.add(p);
+        }
+    }
+
+    public void addRequestParameter(Parameter p){
+        if (p.isIN() || p.isINOUT()) {
+            requestParams.add(p);
+        }
+    }
+
+    public void addResponseParameter(Parameter p){
+        if (p.isOUT() || p.isINOUT()) {            
             responseParams.add(p);
         }
     }

@@ -349,11 +349,11 @@ public abstract class RuntimeModel {
                 continue;
             boolean isRpclit = ((SOAPBinding)method.getBinding()).isRpcLit();
             List<Parameter> reqParams = method.getRequestParameters();
-            List<Parameter> attachParams = null;
+            List<Parameter> reqAttachParams = null;
             for(Parameter param:reqParams){
                 if(param.isWrapperStyle()){
                     if(isRpclit)
-                        attachParams = applyRpcLitParamBinding(method, (WrapperParameter)param, wsdlBinding, Mode.IN);
+                        reqAttachParams = applyRpcLitParamBinding(method, (WrapperParameter)param, wsdlBinding, Mode.IN);
                     continue;
                 }
                 String partName = param.getPartName();
@@ -363,11 +363,6 @@ public abstract class RuntimeModel {
                         partName, Mode.IN);
                 if(paramBinding != null)
                     param.setInBinding(paramBinding);
-            }
-            if(attachParams != null){
-                for(Parameter p : attachParams){
-                    method.addParameter(p);
-                }
             }
 
             List<Parameter> resAttachParams = null;
@@ -389,9 +384,14 @@ public abstract class RuntimeModel {
                 if(paramBinding != null)
                     param.setOutBinding(paramBinding);
             }
+            if(reqAttachParams != null){
+                for(Parameter p : reqAttachParams){
+                    method.addRequestParameter(p);
+                }
+            }
             if(resAttachParams != null){
                 for(Parameter p : resAttachParams){
-                    method.addParameter(p);
+                    method.addResponseParameter(p);
                 }
             }
 
