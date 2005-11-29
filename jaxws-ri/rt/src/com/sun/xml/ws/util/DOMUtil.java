@@ -23,6 +23,7 @@ package com.sun.xml.ws.util;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +32,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * $author: JAXWS Development Team
@@ -55,5 +58,27 @@ public class DOMUtil {
             }
             return db.newDocument();
         }
+    }
+
+    public static Node createDOMNode(InputStream inputStream) {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setValidating(false);
+        try {
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            try {
+                return builder.parse(inputStream);
+            } catch (SAXException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        } catch (ParserConfigurationException pce) {
+            IllegalArgumentException iae = new IllegalArgumentException(pce.getMessage());
+            iae.initCause(pce);
+            throw iae;
+        }
+        return null;
     }
 }

@@ -577,9 +577,9 @@ public final class XMLMessage {
             try {
                 InputStream is = null;
                 boolean canAvoidTransform = false;
-
                 if (source instanceof StreamSource) {
                     is = ((StreamSource)source).getInputStream();
+                    ByteArrayInputStream tis = (ByteArrayInputStream)is;
                     // If use of FI is requested, need to transcode
                     canAvoidTransform = !useFastInfoset;
                 }
@@ -593,15 +593,15 @@ public final class XMLMessage {
 
                 if (canAvoidTransform && is instanceof ByteInputStream) {
                     ByteInputStream bis = (ByteInputStream)is;
-                    bis.close();                // Reset the stream
+                    // Reset the stream
                     byte[] buf = bis.getBytes();
                     out.write(buf);
+                    bis.close();
                     return;
                 }
 
                 // TODO: Use an efficient transformer from SAAJ that knows how to optimally
                 // write to FI results
-
                 Transformer transformer = XmlUtil.newTransformer();
                 transformer.transform(source,
                     useFastInfoset ? FastInfosetReflection.FastInfosetResult_new(out)
@@ -648,12 +648,15 @@ public final class XMLMessage {
 
                 if (is != null && is instanceof ByteInputStream) {
                     ByteInputStream bis = (ByteInputStream)is;
-                    bis.close();                // Reset the stream
+                                  // Reset the stream
                     byte[] buf = bis.getBytes();
+
                     ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+                     bis.close();
                     return isFastInfoset ?
                         FastInfosetReflection.FastInfosetSource_new(is)
-                        : new StreamSource(bais);
+                    : new StreamSource(bais);
+                    
                 }
 
                 // Copy source to result respecting desired encoding
