@@ -12,17 +12,35 @@
   
   <path id="tools.compile.classpath">
     <path refid="runtime.compile.classpath"/>
-    <pathelement location="build"/>
+    <pathelement location="rt_build"/>
   </path>
   
+  <target name="clean">
+    <delete dir="rt_build"/>
+    <delete dir="tools_build"/>
+  </target>
+
   <target name="build">
-    <mkdir dir="build"/>
-    <javac srcdir="src/rt/src" destdir="build">
+    <mkdir dir="rt_build"/>
+    <mkdir dir="tools_build"/>
+    
+    <javac srcdir="src/rt/src" destdir="rt_build" debug="true">
       <classpath refid="runtime.compile.classpath"/>
     </javac>
-    <javac srcdir="src/tools/wscompile/src" destdir="build">
+    <copy todir="rt_build">
+      <fileset dir="src/rt/src">
+        <include name="**/*.properties" />
+      </fileset>
+    </copy>
+    
+    <javac srcdir="src/tools/wscompile/src" destdir="tools_build" debug="true">
       <classpath refid="tools.compile.classpath"/>
     </javac>
+    <copy todir="tools_build">
+      <fileset dir="src/tools/wscompile/src">
+        <include name="**/*.properties" />
+      </fileset>
+    </copy>
   </target>
   
 </project>
