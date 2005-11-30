@@ -298,11 +298,23 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                             assert uri != null;
 
                             if(prefix.length() > 0){
-                                writer.writeStartElement(prefix+":"+localName);
-                                setUndeclaredPrefix(prefix, uri, writer);
+                                /**
+                                 * Before we write the
+                                 */
+                                String writerURI = null;
+                                if (writer.getNamespaceContext() != null)
+                                    writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
+                                String writerPrefix = writer.getPrefix(uri);
+                                if(declarePrefix(prefix, uri, writerPrefix, writerURI)){
+                                    writer.writeStartElement(prefix, localName, uri);
+                                    writer.setPrefix(prefix, uri != null ? uri : "");
+                                    writer.writeNamespace(prefix, uri);
+                                }else{
+                                    writer.writeStartElement(prefix, localName, uri);
+                                }
                             }else{
                                 writer.writeStartElement(prefix, localName, uri);
-                            }                            
+                            }
                         }
 
                         int n = reader.getNamespaceCount();
@@ -318,7 +330,16 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                             // Zephyr: Why is this returning null?
                             // Compare nsPrefix with prefix because of [1] (above)
                             String readerURI = reader.getNamespaceURI(i);
-                            if (writerURI == null || nsPrefix.equals(prefix) || !writerURI.equals(readerURI)) {
+
+                            /**
+                             * write the namespace in 3 conditions
+                             *  - when the namespace URI is not bound to the prefix in writer(writerURI == 0)
+                             *  - when the readerPrefix and writerPrefix are ""
+                             *  - when readerPrefix and writerPrefix are not equal and the URI bound to them
+                             *    are different
+                             */
+                            if (writerURI == null || ((nsPrefix.length() == 0) || (prefix.length() == 0)) ||
+                                    (!nsPrefix.equals(prefix) && !writerURI.equals(readerURI))) {
                                 writer.setPrefix(nsPrefix, readerURI != null ? readerURI : "");
                                 writer.writeNamespace(nsPrefix, readerURI != null ? readerURI : "");
                             }
@@ -334,7 +355,8 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                                 attrURI != null ? attrURI : "",
                                 reader.getAttributeLocalName(i),
                                 reader.getAttributeValue(i));
-                            setUndeclaredPrefix(prefix, attrURI, writer);
+                            // if the attribute prefix is undeclared in current writer scope then declare it
+                            setUndeclaredPrefix(attrPrefix, attrURI, writer);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
@@ -361,10 +383,25 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         if (writer.getNamespaceContext() != null)
             writerURI = writer.getNamespaceContext().getNamespaceURI(prefix);
 
-        if (writerURI == null ||(readerURI != null && !writerURI.equals(readerURI))) {
+        if (writerURI == null) {
             writer.setPrefix(prefix, readerURI != null ? readerURI : "");
             writer.writeNamespace(prefix, readerURI != null ? readerURI : "");
         }
+    }
+
+    /**
+     * check if we need to declare
+     * @param rPrefix
+     * @param rUri
+     * @param wPrefix
+     * @param wUri
+     * @return
+     */
+    private static boolean declarePrefix(String rPrefix, String rUri, String wPrefix, String wUri){
+        if (wUri == null ||((wPrefix != null) && !rPrefix.equals(wPrefix))||
+                (rUri != null && !wUri.equals(rUri)))
+            return true;
+        return false;
     }
 
     protected void serializeSource(Source source, XMLStreamWriter writer) {
