@@ -20,7 +20,7 @@
  [name of copyright owner]
 -->
 
-<project name="JAX-WS 2.0 EA2 On Sun Java System App Server 8.1" default="help" basedir=".">
+<project name="JAX-WS 2.0 Beta On Sun Java System App Server 8.1" default="help" basedir=".">
 	<property environment="env"/>
 	<property name="as.home" value="${env.AS_HOME}"/>
 	<property name="as.lib.home" value="${as.home}/lib"/>
@@ -68,7 +68,7 @@
     </target>
     
     <target name="help">
-        <echo message="install:    Installs JAX-WS 2.0 EA2 on the Application Server"/>
+        <echo message="install:    Installs JAX-WS 2.0 Beta on the Application Server"/>
         <echo message="            Usage: ANT_HOME/bin/ant install"/>
     </target>
 </project>
