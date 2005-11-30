@@ -16,10 +16,34 @@
 This project contains the sources for the
 <a href="https://jax-rpc.dev.java.net">JAX-WS 2.0 (previously JAX-RPC 2.0)</a> project at Java.Net.
 Access to the sources are under the <a href="http://www.opensource.org/licenses/cddl1.php">Common Development and Distribution License</a>.
-
 </p>
 
-<p>
+<h3>Getting Started</h3>
+After checking out the repository you can build the workspace and run the samples by following the steps.
+<pre>
+# SET JAXWS_HOME to the jaxws-ri directory under the jax-ws-sources directory
+export JAXWS_HOME=~/ws/jax-ws/jax-ws-sources/jaxws-ri
+# SET JAVA_HOME to your JDK 5 root directory
+export JAVA_HOME=$ALT_BOOTDIR
+# SET ANT RELATED helper variables
+export ANT_HOME=/usr/local/hc/java/ant/ant-1.6.5
+export ANT=$ANT_HOME/bin/ant
+# SET AS_HOME to your App Server 8.1 directory
+export AS_HOME=/usr/local/hc/java/jstudio/jstudio_ent8/AppServ8.1UR2
 
+cd $JAXWS_HOME
+build.sh dist
+cd dist/jaxws-ri
+$ANT install
+
+# SET JAXWS_HOME to the newly build dist/jaxws-ri directory
+export JAXWS_HOME=~/ws/jax-ws/jax-ws-sources/jaxws-ri/dist/jaxws-ri
+# CD to one of the samples
+cd $JAXWS_HOME/samples/annotations
+$ANT clean server
+# make sure to wait a short time for the deployment to finish
+$ANT clean client
+$ANT run
+</pre>
   </body>
 </html>
