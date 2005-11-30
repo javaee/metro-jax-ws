@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Simple build script for the source code bundle
+  Build script for the source code bundle
 -->
 <project name="jax-ws" default="build">
+
+  <tstamp>
+      <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
+  </tstamp>
+  <property name="build.id" value="${now}(${user.name})" />
+  <property name="build.version" value="${Name} ${version}-${build.id}" />
+  <echo message="The build id is: ${build.version}" /> 
+
+  <macrodef name="versionProp"
+    description="generates a version property file">
+    <attribute name="file" />
+    <sequential>
+      <echo file="@{file}"
+>build-id=${build.id}
+build-version=${build.version}
+major-version=${version}
+</echo>
+    </sequential>
+  </macrodef>
 
   <path id="runtime.compile.classpath">
     <fileset dir="lib">
       <include name="**/*.jar"/>
     </fileset>
   </path>
-  
+
   <path id="tools.compile.classpath">
     <path refid="runtime.compile.classpath"/>
     <pathelement location="rt_build"/>
   </path>
-  
+
   <target name="clean">
     <delete dir="rt_build"/>
     <delete dir="tools_build"/>
@@ -23,24 +42,26 @@
   <target name="build">
     <mkdir dir="rt_build"/>
     <mkdir dir="tools_build"/>
-    
-    <javac srcdir="src/rt/src" destdir="rt_build" debug="true">
-      <classpath refid="runtime.compile.classpath"/>
-    </javac>
+
     <copy todir="rt_build">
       <fileset dir="src/rt/src">
         <include name="**/*.properties" />
       </fileset>
     </copy>
-    
-    <javac srcdir="src/tools/wscompile/src" destdir="tools_build" debug="true">
-      <classpath refid="tools.compile.classpath"/>
+    <versionProp file="rt_build/com/sun/xml/ws/version.properties" />
+    <javac srcdir="src/rt/src" destdir="rt_build" debug="true">
+      <classpath refid="runtime.compile.classpath"/>
     </javac>
+
     <copy todir="tools_build">
       <fileset dir="src/tools/wscompile/src">
         <include name="**/*.properties" />
       </fileset>
     </copy>
+    <versionProp file="tools_build/com/sun/tools/ws/version.properties" />
+    <javac srcdir="src/tools/wscompile/src" destdir="tools_build" debug="true">
+      <classpath refid="tools.compile.classpath"/>
+    </javac>
   </target>
-  
+
 </project>
