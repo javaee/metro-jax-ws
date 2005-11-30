@@ -323,7 +323,7 @@ public class HandlerAnnotationProcessor {
                 getResource(chain.file());
         }
         if (url == null) {
-            String tmp = clazz.getPackage().toString();
+            String tmp = clazz.getPackage().getName();
             tmp = tmp.replace('.', '/');
             tmp += "/" + chain.file();
             url =

@@ -229,7 +229,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (webService != null)
             targetNamespace = webService.targetNamespace();
         if (targetNamespace == null || targetNamespace.length() == 0) {
-            String packageName = d.getPackage().toString();
+            String packageName = d.getPackage().getQualifiedName();
             if (packageName == null || packageName.length() == 0) {
                 builder.onError(d.getPosition(), "webserviceap.no.package.class.must.have.targetnamespace", 
                         new Object[] {d.getQualifiedName()});
