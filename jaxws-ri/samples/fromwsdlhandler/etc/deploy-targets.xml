@@ -19,13 +19,13 @@
 -->
 
 <property environment="env"/>
-<property file="../../../../jwsdp-shared/bin/sjsas.props"/>
+<property file="../../../jwsdp-shared/bin/sjsas.props"/>
 <condition property="as.home" value="${DOMAIN_DIR}/..">
-    <available file="../../../../jwsdp-shared/bin/sjsas.props"/>
+    <available file="../../../jwsdp-shared/bin/sjsas.props"/>
 </condition>
 <condition property="as.home" value="${env.AS_HOME}">
     <not>
-        <available file="../../../../jwsdp-shared/bin/sjsas.props"/>
+        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
     </not>
 </condition>
 
