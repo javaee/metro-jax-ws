@@ -4,6 +4,9 @@
 -->
 <project name="jax-ws" default="build">
 
+  <property name="Name" value="JAX-WS RI"/>
+  <property name="version" value="2.0"/>
+  
   <tstamp>
       <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
   </tstamp>
