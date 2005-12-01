@@ -55,13 +55,13 @@ public class MessageContextUtil {
     }
     
     public static void setQueryString(MessageContext ctxt, String queryString) {
-        ctxt.put("javax.xml.ws.http.request.querystring", queryString);
-        ctxt.setScope("javax.xml.ws.http.request.querystring", Scope.APPLICATION);
+        ctxt.put(MessageContext.QUERY_STRING, queryString);
+        ctxt.setScope(MessageContext.QUERY_STRING, Scope.APPLICATION);
     }
     
     public static void setPathInfo(MessageContext ctxt, String pathInfo) {
-        ctxt.put("javax.xml.ws.http.request.pathinfo", pathInfo);
-        ctxt.setScope("javax.xml.ws.http.request.pathinfo", Scope.APPLICATION);
+        ctxt.put(MessageContext.PATH_INFO, pathInfo);
+        ctxt.setScope(MessageContext.PATH_INFO, Scope.APPLICATION);
     }
     
     public static void setHttpExchange(MessageContext ctxt, HttpExchange exch) {
