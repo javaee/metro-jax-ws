@@ -37,8 +37,6 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.namespace.QName;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,10 +52,10 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     public static final String X_SOAP12HTTP_BINDING =
         "http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/";
 
-    protected static URI ROLE_NONE;
+    protected static String ROLE_NONE;
 
-    protected Set<URI> requiredRoles;
-    protected Set<URI> roles;
+    protected Set<String> requiredRoles;
+    protected Set<String> roles;
     protected boolean enableMtom = false;
 
 
@@ -82,17 +80,15 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
 
     // if the binding id is unknown, no roles are added
     protected void setup(String bindingId) {
-        requiredRoles = new HashSet<URI>();
+        requiredRoles = new HashSet<String>();
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
-            requiredRoles.add(makeURI(
-                SOAPNamespaceConstants.ACTOR_NEXT));
+            requiredRoles.add(SOAPNamespaceConstants.ACTOR_NEXT);
         } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-            requiredRoles.add(makeURI(SOAP12NamespaceConstants.ROLE_NEXT));
-            requiredRoles.add(makeURI(
-                SOAP12NamespaceConstants.ROLE_ULTIMATE_RECEIVER));
+            requiredRoles.add(SOAP12NamespaceConstants.ROLE_NEXT);
+            requiredRoles.add(SOAP12NamespaceConstants.ROLE_ULTIMATE_RECEIVER);
         }
-        ROLE_NONE = makeURI(SOAP12NamespaceConstants.ROLE_NONE);
-        roles = new HashSet<URI>();
+        ROLE_NONE = SOAP12NamespaceConstants.ROLE_NONE;
+        roles = new HashSet<String>();
         addRequiredRoles();
         setRolesOnHandlerChain();
     }
@@ -130,7 +126,7 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         roles.addAll(requiredRoles);
     }
 
-    public java.util.Set<URI> getRoles() {
+    public java.util.Set<String> getRoles() {
         return roles;
     }
 
@@ -138,9 +134,9 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * Adds the next and other roles in case this has
      * been called by a user without them.
      */
-    public void setRoles(Set<URI> roles) {
+    public void setRoles(Set<String> roles) {
         if (roles == null) {
-            roles = new HashSet<URI>();
+            roles = new HashSet<String>();
         }
         if (roles.contains(ROLE_NONE)) {
             LocalizableMessageFactory messageFactory =
@@ -195,20 +191,9 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         }
     }
 
-    // used to create uri's to have exception code in one place
-    protected URI makeURI(String str) {
-        try {
-            return new URI(str);
-        } catch (URISyntaxException e) {
-
-            // this should not happen with the strings in SOAPBindingImpl
-            throw new RuntimeException(e);
-        }
-    }
-
     protected void setupSystemHandlerDelegate(QName serviceName) {
-
-        SystemHandlerDelegateFactory shdFactory = SystemHandlerDelegateFactory.getFactory();
+        SystemHandlerDelegateFactory shdFactory =
+            SystemHandlerDelegateFactory.getFactory();
         if (shdFactory != null) {
             setSystemHandlerDelegate((SystemHandlerDelegate)
                 shdFactory.getDelegate(serviceName));

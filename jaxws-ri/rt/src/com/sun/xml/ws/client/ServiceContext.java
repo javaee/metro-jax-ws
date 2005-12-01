@@ -22,7 +22,6 @@ package com.sun.xml.ws.client;
 import com.sun.xml.ws.handler.HandlerResolverImpl;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +40,7 @@ public class ServiceContext {
     
     private Class serviceClass;
     private HandlerResolverImpl handlerResolver;
-    private Set<URI> roles;
+    private Set<String> roles;
     
     private QName serviceName; //supplied on creation of service
     private SCAnnotations SCAnnotations;
@@ -79,11 +78,11 @@ public class ServiceContext {
         this.handlerResolver = resolver;
     }
     
-    public Set<URI> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
     
-    public void setRoles(Set<URI> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 

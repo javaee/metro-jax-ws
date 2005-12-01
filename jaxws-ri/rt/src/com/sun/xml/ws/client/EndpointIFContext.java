@@ -23,8 +23,7 @@ import com.sun.xml.ws.server.RuntimeContext;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
-import java.net.URI;
-import java.net.URISyntaxException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class EndpointIFContext {
     private QName portName;
     private ArrayList<Handler> handlers;
     private String endpointAddress;
-    private URI bindingId;
+    private String bindingId;
 
 
     public EndpointIFContext(Class sei) {
@@ -85,13 +84,13 @@ public class EndpointIFContext {
         return endpointAddress;
     }
 
-    public void setPortInfo(QName portQName, String endpoint, URI bindingID) {
+    public void setPortInfo(QName portQName, String endpoint, String bindingID) {
         portName = portQName;
         endpointAddress = endpoint;
         this.bindingId = bindingID;
     }
 
-    public URI getBindingID() {
+    public String getBindingID() {
         return bindingId;
     }
 
@@ -110,10 +109,6 @@ public class EndpointIFContext {
     }
 
     public void setBindingID(String bindingId) {
-        try {
-            this.bindingId = new URI(bindingId);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();  
-        }
+        this.bindingId = bindingId;
     }
 }

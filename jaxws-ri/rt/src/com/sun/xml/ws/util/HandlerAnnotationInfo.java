@@ -19,7 +19,6 @@
  */
 package com.sun.xml.ws.util;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +33,7 @@ import javax.xml.ws.handler.Handler;
 public class HandlerAnnotationInfo {
     
     private List<Handler> handlers;
-    private Set<URI> roles;
+    private Set<String> roles;
     
     public List<Handler> getHandlers() {
         return handlers;
@@ -44,11 +43,11 @@ public class HandlerAnnotationInfo {
         this.handlers = handlers;
     }
     
-    public Set<URI> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
     
-    public void setRoles(Set<URI> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
     

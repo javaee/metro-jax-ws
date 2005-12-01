@@ -92,11 +92,11 @@ public class MessageContextUtil {
     }
 
     public static Map<String, DataHandler> getMessageAttachments(MessageContext ctxt) {
-        Object att = ctxt.get(MessageContext.MESSAGE_ATTACHMENTS);
+        Object att = ctxt.get(MessageContext.REQUEST_MESSAGE_ATTACHMENTS);
         if(att == null){
             Map<String, DataHandler> attMap = new HashMap<String, DataHandler>();
-            ctxt.put(MessageContext.MESSAGE_ATTACHMENTS, attMap);
-            ctxt.setScope(MessageContext.MESSAGE_ATTACHMENTS, Scope.APPLICATION);
+            ctxt.put(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, attMap);
+            ctxt.setScope(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, Scope.APPLICATION);
             return attMap;
         }
         return (Map<String, DataHandler>)att;

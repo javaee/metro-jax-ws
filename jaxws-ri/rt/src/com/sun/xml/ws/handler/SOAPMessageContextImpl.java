@@ -36,7 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +44,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.xml.sax.InputSource;
 
 /**
  * Implementation of SOAPMessageContext. This class is used at runtime
@@ -57,7 +59,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
 
     private SOAPHandlerContext handlerCtxt;
     private MessageContext ctxt;
-    private Set<URI> roles;
+    private Set<String> roles;
     private static Map<String, Class> allowedTypes = null;
     private boolean failure;
 
@@ -66,8 +68,9 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         this.ctxt = handlerCtxt.getMessageContext();
         if (allowedTypes == null) {
             allowedTypes = new HashMap<String, Class>();
-            allowedTypes.put(MessageContext.MESSAGE_ATTACHMENTS, Map.class);
-            allowedTypes.put(MessageContext.WSDL_DESCRIPTION, URI.class);
+            allowedTypes.put(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, Map.class);
+            allowedTypes.put(MessageContext.RESPONSE_MESSAGE_ATTACHMENTS, Map.class);
+            allowedTypes.put(MessageContext.WSDL_DESCRIPTION, InputSource.class);
             allowedTypes.put(MessageContext.WSDL_SERVICE, QName.class);
             allowedTypes.put(MessageContext.WSDL_PORT, QName.class);
             allowedTypes.put(MessageContext.WSDL_INTERFACE, QName.class);
@@ -131,11 +134,11 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         }
     }
 
-    public Set<URI> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    void setRoles(Set<URI> roles) {
+    void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 

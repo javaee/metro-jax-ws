@@ -22,14 +22,13 @@ package com.sun.xml.ws.client;
 import com.sun.xml.ws.pept.Delegate;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
-import java.net.URI;
-import java.util.Map;
-import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
+import java.util.Map;
 
 /**
  * @author WS Development Team
@@ -40,7 +39,7 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
     protected Map<String, Object> _requestContext;
     protected Map<String, Object> _responseContext;
 
-    protected URI _bindingId = null;
+    protected String _bindingId = null;
     protected Delegate _delegate = null;
     protected BindingImpl binding;
 
@@ -124,24 +123,10 @@ public class EndpointIFBase implements com.sun.xml.ws.pept.presentation.Stub,
     /**
      * returns binding id from BindingImpl
      *
-     * @return the URI representing the BindingID
+     * @return the String representing the BindingID
      */
-    public URI _getBindingId() {
+    public String _getBindingId() {
         return _bindingId;
     }
 
-//    // default for now is soap binding
-//    public URI _getBindingId() {
-//
-//        if (_bindingId == null) {
-//            try {
-//                // this is a known string and should not cause error
-//                _bindingId = new URI(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
-//            } catch (java.net.URISyntaxException e) {
-//                // should never happen, but just in case
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        return _bindingId;
-//    }
 }

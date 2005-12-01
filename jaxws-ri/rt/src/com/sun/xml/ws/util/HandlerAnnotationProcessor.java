@@ -22,8 +22,6 @@ package com.sun.xml.ws.util;
 import java.io.InputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -247,15 +245,7 @@ public class HandlerAnnotationProcessor {
         }
         
         info.setHandlers(handlerChain);
-        Set<URI> uriRoles = new HashSet<URI>(roles.size());
-        try {
-            for (String role : roles) {
-                uriRoles.add(new URI(role));
-            }
-        } catch (URISyntaxException e) {
-            throw new UtilException(e.getMessage());
-        }
-        info.setRoles(uriRoles);
+        info.setRoles(roles);
         return info;
     }
     

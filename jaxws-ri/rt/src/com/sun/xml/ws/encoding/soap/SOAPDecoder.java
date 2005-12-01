@@ -545,7 +545,7 @@ public abstract class SOAPDecoder implements Decoder {
         roles.addAll(getRequiredRoles());
         HandlerChainCaller hcCaller = MessageInfoUtil.getHandlerChainCaller(mi);
         if (hcCaller != null) {
-            roles.addAll(hcCaller.getRoleStrings());
+            roles.addAll(hcCaller.getRoles());
         }
 
         if (logger.isLoggable(Level.FINEST)) {

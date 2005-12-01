@@ -91,7 +91,8 @@ public abstract class ContextMap extends HashMap<String,Object>
         //Tod:check with mark regarding property modification
         //KNOWN_PROPERTIES = Collections.unmodifiableSet(temp);
 
-        temp.add(MessageContext.MESSAGE_ATTACHMENTS);
+        temp.add(MessageContext.REQUEST_MESSAGE_ATTACHMENTS);
+        temp.add(MessageContext.RESPONSE_MESSAGE_ATTACHMENTS);
         temp.add(MessageContext.WSDL_DESCRIPTION);
         temp.add(MessageContext.WSDL_INTERFACE);
         temp.add(MessageContext.WSDL_OPERATION);

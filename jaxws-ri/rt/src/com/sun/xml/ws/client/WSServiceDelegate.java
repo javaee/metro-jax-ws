@@ -37,9 +37,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Proxy;
-import java.net.URI;
 import java.net.URL;
-import java.net.URISyntaxException;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,10 +182,12 @@ public class WSServiceDelegate extends ServiceDelegate {
     }
 
     //todo: rename addPort :spec tbd
-    public void addPort(QName portName, URI bindingId, String endpointAddress) throws WebServiceException {
+    public void addPort(QName portName, String bindingId,
+        String endpointAddress) throws WebServiceException {
 
         if (!dispatchPorts.containsKey(portName)) {
-            dispatchPorts.put(portName, new PortInfoBase(endpointAddress, portName, bindingId));
+            dispatchPorts.put(portName, new PortInfoBase(endpointAddress,
+                portName, bindingId));
         } else
             throw new WebServiceException("Port " + portName.toString() + " already exists can not create a port with the same name.");
         // need to add port to list for HandlerRegistry
@@ -246,18 +246,16 @@ public class WSServiceDelegate extends ServiceDelegate {
             knownPorts =
                 wscontext.getPortsAsSet(serviceName);
             if (knownPorts != null) {
-                QName[] portz = (QName[]) knownPorts.toArray(new QName[knownPorts.size()]);
+                QName[] portz = (QName[]) knownPorts.toArray(
+                    new QName[knownPorts.size()]);
                 addPorts(portz);
                 for (QName port : portz) {
                     String endpoint =
                         wscontext.getEndpoint(serviceName, port);
-                    URI bid = null;
-                    try {
-                        bid = new URI(wscontext.getWsdlBinding(serviceName, port).getBindingId());
-                    } catch (URISyntaxException e) {
-                        new WebServiceException("Error getting bindingId. ", e);
-                    }
-                    dispatchPorts.put(port, new PortInfoBase(endpoint, port, bid));
+                    String bid = wscontext.getWsdlBinding(serviceName, port)
+                        .getBindingId();
+                    dispatchPorts.put(port,
+                        new PortInfoBase(endpoint, port, bid));
                 }
             }
         }
@@ -292,13 +290,12 @@ public class WSServiceDelegate extends ServiceDelegate {
         return ports;
     }
 
-/*
-* Set the binding on the binding provider. Called by the service
-* class when creating the binding provider.
-*/
-
+    /*
+     * Set the binding on the binding provider. Called by the service
+     * class when creating the binding provider.
+     */
     protected void setBindingOnProvider(InternalBindingProvider provider,
-                                        QName portName, URI bindingId) {
+        QName portName, String bindingId) {
 
         // get handler chain
         List<Handler> handlerChain = null;
@@ -387,7 +384,7 @@ public class WSServiceDelegate extends ServiceDelegate {
         WSDLContext wscontext = serviceContext.getWsdlContext();
         if (wscontext != null) {
             String endpoint = wscontext.getEndpoint(serviceContext.getServiceName(), portQName);
-            URI bindingID = wscontext.getBindingID(
+            String bindingID = wscontext.getBindingID(
                 serviceContext.getServiceName(), portQName);
             context.setServiceName(serviceContext.getServiceName());
             context.setPortInfo(portQName, endpoint, bindingID);

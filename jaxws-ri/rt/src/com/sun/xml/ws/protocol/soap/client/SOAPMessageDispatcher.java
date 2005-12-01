@@ -479,7 +479,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (msgCtxt != null) {
             try {
                 //clear the attMap on this messageContext, its from request
-                Map<String, DataHandler> attMap = (Map<String, DataHandler>) msgCtxt.get(MessageContext.MESSAGE_ATTACHMENTS);
+                Map<String, DataHandler> attMap = (Map<String, DataHandler>)
+                    msgCtxt.get(MessageContext.REQUEST_MESSAGE_ATTACHMENTS);
                 if(attMap != null)
                     attMap.clear();
                 MessageContextUtil.setMessageAttachments(msgCtxt, sm.getAttachments());

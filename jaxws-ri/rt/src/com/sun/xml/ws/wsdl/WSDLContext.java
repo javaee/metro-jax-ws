@@ -27,9 +27,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
+
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,7 +40,7 @@ import java.util.Set;
 public class WSDLContext {
     private final URL orgWsdlLocation;
     private String targetNamespace;
-    private URI bindingId;
+    private String bindingId;
     private final WSDLDocument wsdlDoc;
 
     /**
@@ -111,21 +110,12 @@ public class WSDLContext {
         return wsdlDoc.getFirstPortName();
     }
 
-    public URI getBindingID(QName serviceName, QName portName) {
-        String id = getWsdlDocument().getBindingId(serviceName, portName);
-        try {
-            return new URI(id);
-        } catch (URISyntaxException e) {
-            throw new WebServiceException(e);
-        }
+    public String getBindingID(QName serviceName, QName portName) {
+        return getWsdlDocument().getBindingId(serviceName, portName);
     }
 
     public void setBindingID(String id) {
-        try {
-            bindingId = new URI(id);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        bindingId = id;
     }
 
     public String getTargetNamespace() {

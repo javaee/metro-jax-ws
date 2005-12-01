@@ -20,8 +20,6 @@
 package com.sun.xml.ws.client;
 
 import javax.xml.namespace.QName;
-import java.net.URI;
-
 
 /**
  * JAXWS Development Team
@@ -32,7 +30,7 @@ public class PortInfoBase {
     protected String defaultNamespace;
     protected QName name;
     protected QName portTypeName;
-    protected java.net.URI bindingId;
+    protected String bindingId;
 
     public PortInfoBase(QName name) {
         this.name = name;
@@ -40,7 +38,7 @@ public class PortInfoBase {
         defaultNamespace = "";
     }
 
-    public PortInfoBase(String targetEndpoint, QName name, URI bindingId) {
+    public PortInfoBase(String targetEndpoint, QName name, String bindingId) {
         this.targetEndpoint = targetEndpoint;
         this.name = name;
         this.bindingId = bindingId;
@@ -62,11 +60,11 @@ public class PortInfoBase {
         return targetEndpoint;
     }
 
-    void setBindingId(java.net.URI id) {
+    void setBindingId(String id) {
         bindingId = id;
     }
 
-    public java.net.URI getBindingId() {
+    public String getBindingId() {
         return bindingId;
     }
 

@@ -44,7 +44,6 @@ import javax.xml.transform.Source;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
@@ -467,16 +466,10 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     // default for now is soap binding
-    public URI _getBindingId() {
+    public String _getBindingId() {
         _bindingId = _portInfo.getBindingId();
         if (_bindingId == null) {
-            try {
-                // this is a known string and should not cause error
-                _bindingId = new URI(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
-            } catch (java.net.URISyntaxException e) {
-                // should never happen, but just in case
-                throw new RuntimeException(e);
-            }
+            _bindingId = SOAPBinding.SOAP11HTTP_BINDING;
         }
         return _bindingId;
     }
@@ -619,7 +612,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     protected Delegate _delegate = null;
     protected PortInfoBase _portInfo = null;
 
-    protected URI _bindingId = null;
+    protected String _bindingId = null;
     protected BindingImpl binding;
 
     private ClientTransportFactory _transportFactory;

@@ -27,7 +27,7 @@ import com.sun.xml.ws.binding.BindingImpl;
  * that implement BindingProvider.
  *
  * @see WebService#setBindingOnProvider(InternalBindingProvider,
- *      QName, URI)
+ *      QName, String)
  */
 public interface InternalBindingProvider {
     public void _setBinding(BindingImpl binding);

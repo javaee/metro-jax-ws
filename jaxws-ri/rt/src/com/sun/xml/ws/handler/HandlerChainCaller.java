@@ -35,7 +35,6 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +98,7 @@ public class HandlerChainCaller {
     private List<LogicalHandler> logicalHandlers;
     private List<SOAPHandler> soapHandlers;
     
-    private Set<URI> roles;
+    private Set<String> roles;
 
     /**
      * The handlers that are passed in will be sorted into
@@ -124,26 +123,14 @@ public class HandlerChainCaller {
         return (handlers.size() != 0);
     }
 
-    public void setRoles(Set<URI> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 
-    public Set<URI> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
     
-    // returns a string version of the roles
-    public Set<String> getRoleStrings() {
-        if (roles == null) {
-            return null;
-        }
-        Set<String> rStrings = new HashSet<String>(roles.size());
-        for (URI role : roles) {
-            rStrings.add(role.toString());
-        }
-        return rStrings;
-    }
-
     public Set<QName> getUnderstoodHeaders() {
         return understoodHeaders;
     }
