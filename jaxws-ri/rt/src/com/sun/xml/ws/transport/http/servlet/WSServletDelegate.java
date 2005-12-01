@@ -19,6 +19,7 @@
  */
 
 package com.sun.xml.ws.transport.http.servlet;
+import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.handler.MessageContextImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -53,6 +54,7 @@ import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
 import javax.xml.ws.handler.MessageContext.Scope;
+import javax.xml.ws.http.HTTPBinding;
 
 /**
  * Servlet for WS invocations
@@ -176,21 +178,24 @@ public class WSServletDelegate {
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
             if (targetEndpoint != null) {
                 String query = request.getQueryString();
-                String path = request.getPathInfo();
-                if (query != null || path != null) {
-                    if (query != null && (query.startsWith("wsdl") || query.startsWith("xsd="))) {
-                        // Sends published WSDL and schema documents
-                        publisher.handle(targetEndpoint, fixedUrlPatternEndpoints,
-                            request, response);
-                    } else {
-                        // The request is handled by service or runtime
-                        handle(request, response, targetEndpoint);
-                    }
+                if (query != null && (query.startsWith("wsdl") || query.startsWith("xsd="))) {
+                    // Sends published WSDL and schema documents
+                    publisher.handle(targetEndpoint, fixedUrlPatternEndpoints,
+                        request, response);
                     return;
                 }
+                BindingImpl binding = (BindingImpl)targetEndpoint.getBinding();
+                if (binding.getBindingId().equals(HTTPBinding.HTTP_BINDING)) {
+                    // The request is handled by endpoint or runtime
+                    handle(request, response, targetEndpoint);
+                } else {
+                    // Writes HTML page with all the endpoint descriptions
+                    writeWebServicesHtmlPage(request, response);
+                }
+            } else {
+                Localizer localizer = getLocalizerFor(request);
+                writeNotFoundErrorPage(localizer, response, "Invalid Request");
             }
-            // Writes HTML page with all the endpoint descriptions
-            writeWebServicesHtmlPage(request, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw new ServletException(e.getMessage());
