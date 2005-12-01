@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,9 +78,18 @@ public class WSHttpHandler implements HttpHandler {
         logger.fine("Received HTTP request:"+msg.getRequestURI());
         String method = msg.getRequestMethod();
         if (method.equals(GET_METHOD)) {
-            get(msg);
+            String queryString = msg.getRequestURI().getQuery();
+            logger.fine("Query String for request ="+queryString);
+            if (queryString != null &&
+                (queryString.equals("wsdl") || queryString.startsWith("wsdl=")
+                || queryString.startsWith("xsd="))) {
+                // Handles WSDL, Schema documents
+                processDocRequest(msg);
+            } else {
+                process(msg);
+            }
         } else if (method.equals(POST_METHOD)) {
-            post(msg);
+            process(msg);
         } else {
             logger.warning(
                 localizer.localize(
@@ -96,7 +106,7 @@ public class WSHttpHandler implements HttpHandler {
     /*
      * Handles POST requests
      */
-    private void post(HttpExchange msg) {
+    private void process(HttpExchange msg) {
         WSConnection con = new ServerConnectionImpl(msg);
         try {
             MessageContext msgCtxt = new MessageContextImpl();
@@ -104,6 +114,18 @@ public class WSHttpHandler implements HttpHandler {
             wsContext.setMessageContext(msgCtxt);
             MessageContextUtil.setHttpRequestMethod(msgCtxt, msg.getRequestMethod());
             MessageContextUtil.setHttpRequestHeaders(msgCtxt, con.getHeaders());
+            MessageContextUtil.setHttpExchange(msgCtxt, msg);
+            URI requestUri = msg.getRequestURI();
+            String query = requestUri.getQuery();
+            if (query != null) {
+                MessageContextUtil.setQueryString(msgCtxt, query);
+            }
+            String reqPath = requestUri.getPath();
+            String ctxtPath = msg.getHttpContext().getPath();
+            if (reqPath.length() > ctxtPath.length()) {
+                String extraPath = reqPath.substring(ctxtPath.length());
+                MessageContextUtil.setPathInfo(msgCtxt, extraPath);
+            }
             tie.handle(con, endpointInfo);
         } catch(Exception e) {
             e.printStackTrace();
@@ -113,15 +135,13 @@ public class WSHttpHandler implements HttpHandler {
     }
     
     /*
-     * Handles GET requests
+     * Handles GET requests for WSDL and Schema docuemnts
      */ 
-    public void get(HttpExchange msg) {
+    public void processDocRequest(HttpExchange msg) {
         WSConnection con = new ServerConnectionImpl(msg);
         try {
             con.getInput();
             String queryString = msg.getRequestURI().getQuery();
-            logger.fine("Query String for request ="+queryString);
-
             String inPath = endpointInfo.getPath(queryString);
             if (inPath == null) {
                 String message =

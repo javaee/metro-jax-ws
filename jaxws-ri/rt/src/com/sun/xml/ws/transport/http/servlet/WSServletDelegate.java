@@ -261,6 +261,12 @@ public class WSServletDelegate {
         msgCtxt.setScope(MessageContext.SERVLET_RESPONSE, Scope.APPLICATION);
 
         MessageContextUtil.setHttpRequestMethod(msgCtxt, request.getMethod());
+        if (request.getQueryString() != null) {
+            MessageContextUtil.setQueryString(msgCtxt, request.getQueryString());
+        }
+        if (request.getPathInfo() != null) {
+            MessageContextUtil.setPathInfo(msgCtxt, request.getPathInfo());
+        }
 
         WSConnection connection =
             new ServletConnectionImpl(request, response);

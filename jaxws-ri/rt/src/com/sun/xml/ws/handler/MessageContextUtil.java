@@ -19,6 +19,8 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 
@@ -50,6 +52,21 @@ public class MessageContextUtil {
     public static void setHttpStatusCode(MessageContext ctxt, Integer code) {
         ctxt.put(MessageContext.HTTP_RESPONSE_CODE, code);
         ctxt.setScope(MessageContext.HTTP_RESPONSE_CODE, Scope.APPLICATION);
+    }
+    
+    public static void setQueryString(MessageContext ctxt, String queryString) {
+        ctxt.put("javax.xml.ws.http.request.querystring", queryString);
+        ctxt.setScope("javax.xml.ws.http.request.querystring", Scope.APPLICATION);
+    }
+    
+    public static void setPathInfo(MessageContext ctxt, String pathInfo) {
+        ctxt.put("javax.xml.ws.http.request.pathinfo", pathInfo);
+        ctxt.setScope("javax.xml.ws.http.request.pathinfo", Scope.APPLICATION);
+    }
+    
+    public static void setHttpExchange(MessageContext ctxt, HttpExchange exch) {
+        ctxt.put(JAXWSProperties.HTTP_EXCHANGE, exch);
+        ctxt.setScope(JAXWSProperties.HTTP_EXCHANGE, Scope.APPLICATION);
     }
     
     public static void setHttpRequestMethod(MessageContext ctxt, String method) {
