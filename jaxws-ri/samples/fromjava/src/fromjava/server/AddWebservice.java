@@ -27,8 +27,6 @@ package fromjava.server;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.Endpoint;
 
-import java.net.URI;
-
 public class AddWebservice {
     
     public static void main (String[] args) throws Exception {

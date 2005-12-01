@@ -23,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
@@ -67,14 +65,8 @@ public class AddNumbersClient {
 
         AddNumbersClient client = new AddNumbersClient();
 
-        try {
-            URI soapBindingURI = null;
-
-            soapBindingURI = new URI(SOAPBinding.SOAP11HTTP_BINDING);
-            service = new AddNumbersService();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String soapBindingURI = SOAPBinding.SOAP11HTTP_BINDING;
+        service = new AddNumbersService();
 
         try {
             //dispatch using Source
