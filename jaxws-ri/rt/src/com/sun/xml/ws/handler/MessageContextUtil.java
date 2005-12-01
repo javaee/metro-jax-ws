@@ -114,7 +114,7 @@ public class MessageContextUtil {
         Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
         while(attachments.hasNext()){
             AttachmentPart ap = attachments.next();
-            DataHandler dh = new DataHandler(new ByteArrayDataSource(ap.getRawContentBytes(), ap.getContentType()),ap.getContentType());
+            DataHandler dh = new DataHandler(new ByteArrayDataSource(ap.getRawContentBytes(), ap.getContentType()));
             attachMap.put(ap.getContentId(), dh);
         }
     }
