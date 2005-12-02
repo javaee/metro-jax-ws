@@ -769,6 +769,7 @@ public class RuntimeModeler {
         WebResult webResult = method.getAnnotation(WebResult.class);
 
         if (webResult != null) {
+            isResultHeader = webResult.header();
             if (webResult.name().length() > 0)
                 resultName = webResult.name();
             if (webResult.partName().length() > 0) {
