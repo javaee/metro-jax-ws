@@ -64,7 +64,7 @@ public class HandlerContext {
         this.messageInfo = messageInfo;
         this.internalMessage = internalMessage;
         this.msgContext = new MessageContextImpl();
-        populateAttachmentMap();
+        //populateAttachmentMap();
     }
 
     /**
@@ -157,7 +157,7 @@ public class HandlerContext {
         this.invoker = invoker;
     }
 
-    private void populateAttachmentMap(){
+    public void populateAttachmentMap(){
         //populate the attachment map
         if(internalMessage != null){
             for(AttachmentBlock ab: internalMessage.getAttachments().values()){

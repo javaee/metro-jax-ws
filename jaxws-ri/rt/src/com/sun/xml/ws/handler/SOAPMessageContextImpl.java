@@ -68,8 +68,8 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         this.ctxt = handlerCtxt.getMessageContext();
         if (allowedTypes == null) {
             allowedTypes = new HashMap<String, Class>();
-            allowedTypes.put(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, Map.class);
-            allowedTypes.put(MessageContext.RESPONSE_MESSAGE_ATTACHMENTS, Map.class);
+            allowedTypes.put(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, Map.class);
+            allowedTypes.put(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS, Map.class);
             allowedTypes.put(MessageContext.WSDL_DESCRIPTION, InputSource.class);
             allowedTypes.put(MessageContext.WSDL_SERVICE, QName.class);
             allowedTypes.put(MessageContext.WSDL_PORT, QName.class);

@@ -91,26 +91,21 @@ public class MessageContextUtil {
         ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);
     }
 
-    public static Map<String, DataHandler> getMessageAttachments(MessageContext ctxt) {
-        Object att = ctxt.get(MessageContext.REQUEST_MESSAGE_ATTACHMENTS);
+    private static Map<String, DataHandler> getMessageAttachments(MessageContext ctxt) {
+        String property = MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
+        if((Boolean)ctxt.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY))
+            property = MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS;
+        Object att = ctxt.get(property);
         if(att == null){
             Map<String, DataHandler> attMap = new HashMap<String, DataHandler>();
-            ctxt.put(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, attMap);
-            ctxt.setScope(MessageContext.REQUEST_MESSAGE_ATTACHMENTS, Scope.APPLICATION);
+            ctxt.put(property, attMap);
+            ctxt.setScope(property, Scope.APPLICATION);
             return attMap;
         }
         return (Map<String, DataHandler>)att;
     }
 
-    public static void setMessageAttachments(MessageContext ctxt, Map<String, AttachmentBlock> attachments){
-        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
-        for(String cid:attachments.keySet()){
-            AttachmentBlock ab = attachments.get(cid);
-            attachMap.put(cid, ab.asDataHandler());
-        }
-    }
-
-    public static void setMessageAttachments(MessageContext ctxt, Iterator<AttachmentPart> attachments) throws SOAPException {
+    public static void copyInboundMessageAttachments(MessageContext ctxt, Iterator<AttachmentPart> attachments) throws SOAPException {
         Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
         while(attachments.hasNext()){
             AttachmentPart ap = attachments.next();
@@ -120,7 +115,7 @@ public class MessageContextUtil {
     }
 
     public static void addMessageAttachment(MessageContext ctxt, String cid, DataHandler dh){
-        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);        
+        Map<String, DataHandler> attachMap = getMessageAttachments(ctxt);
         attachMap.put(cid, dh);
     }
     

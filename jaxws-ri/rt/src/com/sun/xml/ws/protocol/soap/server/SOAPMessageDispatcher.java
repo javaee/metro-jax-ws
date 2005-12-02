@@ -126,19 +126,19 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SOAPHandlerContext context = new SOAPHandlerContext(messageInfo, null,
                 soapMessage);
             updateHandlerContext(messageInfo, context);
+            context.getMessageContext().put(
+                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
             //set MESSAGE_ATTACHMENTS property
             MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);
             if (msgCtxt != null) {
-                MessageContextUtil.setMessageAttachments(msgCtxt, soapMessage.getAttachments());
+                MessageContextUtil.copyInboundMessageAttachments(msgCtxt, soapMessage.getAttachments());
             }                    
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
                 context, shd);
             if (shd == null) {
                 implementor.invoke();
-            } else {                
-                context.getMessageContext().put(
-                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
+            } else {
                 context.setInvoker(implementor);
                 if (shd.processRequest(context.getSHDSOAPMessageContext())) {
                     implementor.invoke();
@@ -545,6 +545,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     }
                     updateWebServiceContext(messageInfo, context);
                     invokeEndpoint(messageInfo, context);
+                    context.getMessageContext().put(
+                        MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 }
 
                 if (isOneway(messageInfo)) {

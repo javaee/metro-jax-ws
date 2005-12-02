@@ -179,6 +179,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (caller.hasHandlers()) {
                 im = preHandlerOutboundHook(sm, im);
                 handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
+
+                //this is needed so that attachments are compied from RESPONSE_MESSAGE_ATTACHMEMTN PROPERTY
+                handlerContext.getMessageContext().put(
+                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+
+                //now that the MESSAGE_OUTBOUND_PROPERTY is set so populate the attachemnts
+                handlerContext.populateAttachmentMap();
+
                 encoder.setAttachmentsMap(messageInfo, im);
                 updateMessageContext(messageInfo, handlerContext);
                 try {
@@ -227,6 +235,13 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (systemHandlerDelegate != null) {
                 if (handlerContext == null) {
                     handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
+                    //this is needed so that attachments are compied from RESPONSE_MESSAGE_ATTACHMEMTN PROPERTY
+                    handlerContext.getMessageContext().put(
+                                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+
+                    //now that the MESSAGE_OUTBOUND_PROPERTY is set so populate the attachemnts
+                    handlerContext.populateAttachmentMap();
+
                     updateMessageContext(messageInfo, handlerContext);
                 }
 
@@ -235,8 +250,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 if ((sm != null) && (im != null))
                     handlerContext.setInternalMessage(null);
 
-                handlerContext.getMessageContext().put(
-                    MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+
                 handlerContext.getBindingId();
                 systemHandlerDelegate.processRequest(
                     handlerContext.getSHDSOAPMessageContext());
@@ -474,16 +488,17 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         if (rtContext != null)
             rtContext.setHandlerContext(handlerContext);
 
+        handlerContext.getMessageContext().put(
+                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
         //set MESSAGE_ATTACHMENTS property
         MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);
         if (msgCtxt != null) {
             try {
                 //clear the attMap on this messageContext, its from request
-                Map<String, DataHandler> attMap = (Map<String, DataHandler>)
-                    msgCtxt.get(MessageContext.REQUEST_MESSAGE_ATTACHMENTS);
+                Map<String, DataHandler> attMap = (Map<String, DataHandler>) msgCtxt.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
                 if(attMap != null)
                     attMap.clear();
-                MessageContextUtil.setMessageAttachments(msgCtxt, sm.getAttachments());
+                MessageContextUtil.copyInboundMessageAttachments(msgCtxt, sm.getAttachments());
             } catch (SOAPException e) {
                 throw new RuntimeException(e);
             }
@@ -493,8 +508,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             ((com.sun.xml.ws.spi.runtime.Binding) getBinding(messageInfo)).
                 getSystemHandlerDelegate();
         if (systemHandlerDelegate != null) {
-            handlerContext.getMessageContext().put(
-                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
+//            handlerContext.getMessageContext().put(
+//                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
             try {
                 systemHandlerDelegate.processResponse(handlerContext.getSHDSOAPMessageContext());
             } catch (Exception e) {
