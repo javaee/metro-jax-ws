@@ -51,6 +51,7 @@ import org.xml.sax.EntityResolver;
  */
 public class WsImport extends MatchingTask {
 
+    private CommandlineJava cmd = new CommandlineJava();
     /*************************  -d option *************************/
     private File destDir = null;
 
@@ -95,19 +96,15 @@ public class WsImport extends MatchingTask {
         return pkg;
     }
 
-    /********************  -jvmargs option **********************/
-    protected String jvmargs;
-
-    /** Gets the Java VM options. **/
-    public String getJvmargs() {
-        return jvmargs;
+    /**
+     * Adds a JVM argument.
+     *
+     * @return JVM argument created
+     */
+    public Commandline.Argument createJvmarg() {
+        return cmd.createVmArgument();
     }
-
-    /** Sets the Java VM options. **/
-    public void setJvmargs(String jvmargs) {
-        this.jvmargs = jvmargs;
-    }
-
+    
     /********************  -extensions option **********************/
     protected boolean extension;
 
@@ -290,33 +287,20 @@ public class WsImport extends MatchingTask {
         }
     }
 
-    private Commandline setupWsimportCommand() {
-        Commandline cmd = setupWsimportArgs();
-        return cmd;
-    }
-
-    private Commandline setupWsimportForkCommand() {
-        CommandlineJava forkCmd = new CommandlineJava();
+    private void setupWsimportForkCommand() {
         ClassLoader loader = this.getClass().getClassLoader();
 
         Path classpath = new Path(project);
         if (loader instanceof AntClassLoader) {
            classpath = new Path(project, ((AntClassLoader)loader).getClasspath());
         }
-        forkCmd.createClasspath(getProject()).append(classpath);
-        forkCmd.setClassname("com.sun.tools.ws.WsImport");
-        if (null != getJvmargs()) {
-            forkCmd.createVmArgument().setLine(getJvmargs());
-        }
-
-        Commandline cmd = setupWsimportArgs();
-        cmd.createArgument(true).setLine(forkCmd.toString());
-        return cmd;
+        cmd.createClasspath(getProject()).append(classpath);
+        cmd.setClassname("com.sun.tools.ws.WsImport");
+        //setupWsimportArgs();
+        //cmd.createArgument(true).setLine(forkCmd.toString());        
     }
 
-    private Commandline setupWsimportArgs() {
-        Commandline cmd = new Commandline();
-
+    private void setupWsimportArgs() {
         // d option
         if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
@@ -387,8 +371,6 @@ public class WsImport extends MatchingTask {
                 cmd.createArgument().setFile(binding);
             }
         }
-
-        return cmd;
     }
 
 
@@ -400,15 +382,24 @@ public class WsImport extends MatchingTask {
         LogOutputStream logstr = null;
         boolean ok = false;
         try {
-            Commandline cmd = fork ?
-                setupWsimportForkCommand() : setupWsimportCommand();
-            if (verbose) {
-                log("command line: "+"wsimport "+cmd.toString());
+            if(fork){
+                setupWsimportForkCommand();
+            } else {
+                if (cmd.getVmCommand().size() > 1) {
+                    log("JVM args ignored when same JVM is used.",Project.MSG_WARN);
+                }
             }
+            setupWsimportArgs();
             if (fork) {
+                if (verbose) {
+                    log("command line: "+"wsimport "+cmd.toString());
+                }
                 int status = run(cmd.getCommandline());
                 ok = (status == 0) ? true : false;
             } else {
+                if (verbose) {
+                    log("command line: "+"wsimport "+cmd.getJavaCommand().toString());
+                }
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
 
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
@@ -423,7 +414,7 @@ public class WsImport extends MatchingTask {
                     if (loader instanceof AntClassLoader) {
                         System.setProperty("java.class.path", ((AntClassLoader)loader).getClasspath());
                     }
-                    ok = compTool.run(cmd.getArguments());
+                    ok = compTool.run(cmd.getJavaCommand().getArguments());
                 } finally {
                     if (sysPath != null) {
                         System.setProperty("java.class.path", sysPath);

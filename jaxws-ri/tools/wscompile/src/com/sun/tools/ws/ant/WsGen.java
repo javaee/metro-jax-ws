@@ -48,7 +48,7 @@ import com.sun.xml.ws.util.VersionUtil;
  *
  */
 public class WsGen extends MatchingTask {
-
+    private CommandlineJava cmd = new CommandlineJava();
     /*************************  -classpath option *************************/
     protected Path compileClasspath = null;
 
@@ -115,17 +115,13 @@ public class WsGen extends MatchingTask {
         this.destDir = base;
     }
 
-    /********************  -jvmargs option **********************/
-    protected String jvmargs;
-
-    /** Gets the Java VM options. **/
-    public String getJvmargs() {
-        return jvmargs;
-    }
-
-    /** Sets the Java VM options. **/
-    public void setJvmargs(String jvmargs) {
-        this.jvmargs = jvmargs;
+    /**
+     * Adds a JVM argument.
+     *
+     * @return JVM argument created
+     */
+    public Commandline.Argument createJvmarg() {
+        return cmd.createVmArgument();
     }
 
     /********************  -extensions option **********************/
@@ -335,36 +331,28 @@ public class WsGen extends MatchingTask {
         this.sei = endpointImplementationClass;
     }
 
-    private Commandline setupWscompileCommand() {
-        Commandline cmd = setupWscompileArgs();
-
+    private void setupWscompileCommand() {
         Path classpath = getClasspath();
-
         if (classpath != null && !classpath.toString().equals("")) {
             cmd.createArgument().setValue("-classpath");
             cmd.createArgument().setPath(classpath);
         }
-        return cmd;
+        setupWscompileArgs();
+
     }
 
-    private Commandline setupWscompileForkCommand() {
-        CommandlineJava forkCmd = new CommandlineJava();
-
+    private void setupWscompileForkCommand() {
+        
         Path classpath = getClasspath();
-        forkCmd.createClasspath(getProject()).append(classpath);
-        forkCmd.setClassname("com.sun.tools.ws.WsGen");
-        if (null != getJvmargs()) {
-            forkCmd.createVmArgument().setLine(getJvmargs());
-        }
-
-        Commandline cmd = setupWscompileArgs();
-        cmd.createArgument(true).setLine(forkCmd.toString());
-        return cmd;
+        cmd.createClasspath(getProject()).append(classpath);
+        cmd.setClassname("com.sun.tools.ws.WsGen");
+        setupWscompileArgs();
+        //cmd.createArgument(true).setLine(forkCmd.toString());
+        
     }
 
-    private Commandline setupWscompileArgs() {
-        Commandline cmd = new Commandline();
-
+    private void setupWscompileArgs() {
+        
         // d option
         if (null != getDestdir() && !getDestdir().getName().equals("")) {
             cmd.createArgument().setValue("-d");
@@ -430,8 +418,7 @@ public class WsGen extends MatchingTask {
         if (getSei() != null) {
             cmd.createArgument().setValue(getSei());
         }
-
-        return cmd;
+        
     }
 
 
@@ -443,22 +430,31 @@ public class WsGen extends MatchingTask {
         LogOutputStream logstr = null;
         boolean ok = false;
         try {
-            Commandline cmd = fork ?
-                setupWscompileForkCommand() : setupWscompileCommand();
-            if (verbose) {
-                log("command line: "+"wsgen "+cmd.toString());
+            if(fork){
+                setupWscompileForkCommand();
+            } else {
+                if (cmd.getVmCommand().size() > 1) {
+                    log("JVM args ignored when same JVM is used.",Project.MSG_WARN);
+                }
+                setupWscompileCommand();
             }
             if (fork) {
+                if (verbose) {
+                    log("command line: "+"wsimport "+cmd.toString());
+                }
                 int status = run(cmd.getCommandline());
                 ok = (status == 0) ? true : false;
             } else {
+                if (verbose) {
+                    log("command line: "+"wsimport "+cmd.getJavaCommand().toString());
+                }
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
 
                 ClassLoader old = Thread.currentThread().getContextClassLoader();
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 try {
                     CompileTool compTool = new CompileTool(logstr, "wsgen");
-                    ok = compTool.run(cmd.getArguments());
+                    ok = compTool.run(cmd.getJavaCommand().getArguments());
                 } finally {
                     Thread.currentThread().setContextClassLoader(old);
                 }
