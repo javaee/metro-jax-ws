@@ -159,9 +159,15 @@ public abstract class ContextMap extends HashMap<String,Object>
     }
 
     private boolean isAllowedValue(String name, Object value) {
+        if ( name.equals(MessageContext.PATH_INFO) ||
+            name.equals(MessageContext.QUERY_STRING))
+                return true;
+
         if (value == null)
             return false;
 
+        return true;
+    }
 // no value check needed today
 //        Object[] values = _allowedValues.get(name);
 //        if (values != null) {
@@ -183,8 +189,7 @@ public abstract class ContextMap extends HashMap<String,Object>
 //            }
 //            return allowed;
 //        }
-        return true;
-    }
+
 
 
     private boolean isAllowedClass(String propName, Object value) {
