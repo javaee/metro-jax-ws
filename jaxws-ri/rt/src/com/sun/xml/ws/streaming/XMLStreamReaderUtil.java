@@ -31,6 +31,8 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 
 import static javax.xml.stream.XMLStreamConstants.*;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * <p> XMLStreamReaderUtil provides some utility methods intended to be used
@@ -48,15 +50,15 @@ public class XMLStreamReaderUtil {
             reader.close();
         }
         catch (XMLStreamException e) {
-            throw wrapException(e);            
+            throw wrapException(e);
         }
     }
-    
+
     public static int next(XMLStreamReader reader) {
         try {
             int readerEvent = reader.next();
-            
-            while (readerEvent != END_DOCUMENT) {            
+
+            while (readerEvent != END_DOCUMENT) {
                 switch (readerEvent) {
                     case START_ELEMENT:
                     case END_ELEMENT:
@@ -69,12 +71,12 @@ public class XMLStreamReaderUtil {
                 }
                 readerEvent = reader.next();
             }
-            
+
             return readerEvent;
         }
         catch (XMLStreamException e) {
             throw wrapException(e);
-        }        
+        }
     }
 
     public static int nextElementContent(XMLStreamReader reader) {
@@ -100,27 +102,27 @@ public class XMLStreamReaderUtil {
                     }
             }
         }
-    }    
-    
+    }
+
     /**
      * Skip current element, leaving the cursor at END_ELEMENT of
      * current element.
      */
     public static void skipElement(XMLStreamReader reader) {
         assert reader.getEventType() == START_ELEMENT;
-        skipTags(reader, true);        
+        skipTags(reader, true);
         assert reader.getEventType() == END_ELEMENT;
     }
-    
+
     /**
      * Skip following siblings, leaving cursor at END_ELEMENT of
      * parent element.
      */
     public static void skipSiblings(XMLStreamReader reader, QName parent) {
-        skipTags(reader, reader.getName().equals(parent));        
+        skipTags(reader, reader.getName().equals(parent));
         assert reader.getEventType() == END_ELEMENT;
     }
-    
+
     private static void skipTags(XMLStreamReader reader, boolean exitCondition) {
         try {
             int state, tags = 0;
@@ -138,10 +140,10 @@ public class XMLStreamReaderUtil {
             throw wrapException(e);
         }
     }
-        
+
     /*
-     * Get the text of an element
-     */
+    * Get the text of an element
+    */
     public static String getElementText(XMLStreamReader reader) {
         try {
             return reader.getElementText();
@@ -149,24 +151,24 @@ public class XMLStreamReaderUtil {
             throw wrapException(e);
         }
     }
-    
+
     /*
-     * Get a QName with 'someUri' and 'localname' from an
-     * element of qname type:
-     * <xyz xmlns:ns1="someUri">ns1:localname</xyz>
-     */
+    * Get a QName with 'someUri' and 'localname' from an
+    * element of qname type:
+    * <xyz xmlns:ns1="someUri">ns1:localname</xyz>
+    */
     public static QName getElementQName(XMLStreamReader reader) {
         try {
             String namespaceURI = reader.getNamespaceURI(0);
             String text = reader.getElementText();
             if (namespaceURI == null) {
-                String prefix = text.substring(0, 
+                String prefix = text.substring(0,
                     text.indexOf(':'));
                 namespaceURI = reader.getNamespaceURI(prefix);
                 if (namespaceURI == null) {
                     namespaceURI = "";
                 }
-            } 
+            }
             String localPart = text.substring(
                 text.indexOf(':') + 1,  text.length());
             return new QName(namespaceURI, localPart);
@@ -174,7 +176,7 @@ public class XMLStreamReaderUtil {
             throw wrapException(e);
         }
     }
-    
+
     /**
      * Read all attributes into an data structure. Note that this method cannot
      * be called multiple times to get the same list of attributes. 
@@ -184,7 +186,7 @@ public class XMLStreamReaderUtil {
                 reader.getEventType() == reader.ATTRIBUTE) ?
                 new AttributesImpl(reader) : null;
     }
-        
+
     public static void verifyReaderState(XMLStreamReader reader, int expectedState) {
         int state = reader.getEventType();
         if (state != expectedState) {
@@ -207,7 +209,7 @@ public class XMLStreamReaderUtil {
     public static String getStateName(XMLStreamReader reader) {
         return getStateName(reader.getEventType());
     }
-    
+
     public static String getStateName(int state) {
         switch (state) {
             case ATTRIBUTE:
@@ -248,15 +250,15 @@ public class XMLStreamReaderUtil {
     private static XMLStreamReaderException wrapException(XMLStreamException e) {
         return new XMLStreamReaderException("xmlreader.ioException",e);
     }
-    
+
     // -- Auxiliary classes ----------------------------------------------
-    
+
     /**
      * AttributesImpl class copied from old StAXReader. This class is used to implement
      * getAttributes() on a StAX Reader.
      */
     public static class AttributesImpl implements Attributes {
-        
+
         static final String XMLNS_NAMESPACE_URI = "http://www.w3.org/2000/xmlns/";
 
         static class AttributeInfo {
@@ -299,7 +301,7 @@ public class XMLStreamReaderUtil {
                 return (name.getNamespaceURI() == XMLNS_NAMESPACE_URI);
             }
         }
-    
+
         // stores qname and value for each attribute
         AttributeInfo [] atInfos;
 

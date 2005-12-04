@@ -36,12 +36,18 @@ import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
 
 /**
  * @author WS Development Team
@@ -78,47 +84,55 @@ public final class DispatchSerializer {
         //should not happen
     }
 
-    // TODO: this is very very inefficient.
-    public Source deserializeSource(XMLStreamReader reader) {
+
+    private static String convertNull(String s) {
+        return (s != null) ? s : "";
+    }
+
+    // this is very very inefficient.
+    //kw-needs lots of cleanup
+    //kw-modifying this in any way will cause dispatch tests sqe failures
+    public Source deserializeSource(XMLStreamReader reader, DispatchUtil dispatchUtil) {
+
         ByteArrayBuffer baos = new ByteArrayBuffer();
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(baos);
-
+        dispatchUtil.populatePrefixes(writer);
         try {
             while (reader.hasNext()) {
                 int state = reader.getEventType();
                 switch (state) {
                     case START_ELEMENT:
-                        QName name = reader.getName();
-                        //bug fix for 6333609
-                        writer.writeStartElement(name.getPrefix() + ":" + name.getLocalPart());
-                        //writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
-                        if ((name.getPrefix() != null) && (reader.getNamespaceContext().getNamespaceURI(name.getPrefix()) != null))
-                            writer.writeNamespace(name.getPrefix(),reader.getNamespaceContext().getNamespaceURI(name.getPrefix()));
-                        else writer.writeNamespace(name.getPrefix(), name.getNamespaceURI());
-                        //comment out for bug fix 6333609
-                        //writer.writeStartElement(name.getPrefix(),name.getLocalPart(), name.getNamespaceURI());
+
+                        String uri = reader.getNamespaceURI();
+                        String rprefix = reader.getPrefix();
+                        String nlocal = reader.getLocalName();
+                        setWriterPrefixes(rprefix, uri, writer);
+
+                        String prefix = null;
+                        String wprefix = writer.getNamespaceContext().getPrefix(uri);
+                        if ((wprefix != null && !"".equals(wprefix)) && wprefix.length() > 0){
+                            prefix = wprefix;
+                        } else
+                        if ((rprefix != null && !"".equals(rprefix)) && (uri != null && !"null".equals(uri))){
+                            prefix = setWriterPrefixes(reader, uri, writer);
+                        } else {
+                            prefix = convertNull(prefix);
+                            uri = convertNull(uri);
+                        }
+
+                        writer.writeStartElement(prefix, nlocal, uri);
+                        writer.writeNamespace(prefix, uri);
 
                         Attributes atts = XMLStreamReaderUtil.getAttributes(reader);
                         writer.flush();
-                        for (int i = 0; i < atts.getLength(); i++) {
-                            if (atts.isNamespaceDeclaration(i)) {
-                                String value = atts.getValue(i);
-                                String localName = atts.getName(i).getLocalPart();
-                                writer.setPrefix(localName, value);
-                                writer.writeNamespace(localName, value);
-                            } else {
-                                writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i),
-                                    atts.getValue(i));
-                            }
-                        }
+                        writeAttributes(atts, writer, prefix, uri);
                         break;
                     case END_ELEMENT:
                         writer.writeEndElement();
-                        writer.flush();
                         break;
                     case CHARACTERS:
                         writer.writeCharacters(reader.getText());
-                        writer.flush();
+
                 }
                 state = XMLStreamReaderUtil.next(reader);
                 if ((reader.getEventType() == END_ELEMENT) && (reader.getName().equals(bodyTagName)))
@@ -132,6 +146,105 @@ public final class DispatchSerializer {
         }
 
         return new StreamSource(baos.newInputStream());
+    }
+
+    private void writeAttributes(Attributes atts, XMLStreamWriter writer, String prefix, String uri) throws XMLStreamException {
+        for (int i = 0; i < atts.getLength(); i++) {
+
+            String value = atts.getValue(i);
+            String localName = atts.getName(i).getLocalPart();
+            String aprefix = atts.getPrefix(i);
+            String auri = atts.getURI(i);
+
+            setWriterPrefix(localName, value, aprefix, writer);
+            if (atts.isNamespaceDeclaration(i)) {
+                writeAttrNamespace(aprefix, auri, writer, localName, prefix, uri, value);
+            } else {
+                writeAttribute(atts, i, writer);
+            }
+        }
+    }
+
+    private void setWriterPrefix(String localName, String value, String aprefix, XMLStreamWriter writer) throws XMLStreamException {
+        if (localName.equals("xsi") &&
+            value.equals("http://www.w3.org/2001/XMLSchema-instance") &&
+            aprefix.equals("xmlns")) {
+            //kw was aa prefix
+            writer.setPrefix(localName, value);
+        }
+    }
+
+    private String setWriterPrefixes(XMLStreamReader reader, String nuri, XMLStreamWriter writer) {
+
+        String prefix = reader.getNamespaceContext().getPrefix(nuri);
+        if (prefix == null)
+            prefix = convertNull(prefix);
+        if (prefix != null && prefix.length() > 0 && nuri != null && !prefix.equals("xmlns"))        {
+            try {
+                writer.setPrefix(prefix, nuri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return prefix;
+    }
+
+    private void setWriterPrefixes(String npre, String nuri, XMLStreamWriter writer) throws XMLStreamException {
+        if ((npre != null && npre.length() > 0) && (nuri.length() > 0 && nuri != null))
+        {
+            if ((npre.equals("null") || nuri.equals("null"))) {
+                writer.setPrefix(npre, nuri);
+            }
+        }
+    }
+
+    private void writeAttrNamespace(String aprefix, String auri, XMLStreamWriter writer, String localName, String prefix, String nuri, String value) throws XMLStreamException {
+        if (aprefix == null || !aprefix.equals("") || (aprefix.equals("xmlns")))
+        {
+            String temp = aprefix;
+            if (auri != null) {
+                String wprefix = writer.getNamespaceContext().getPrefix(auri);
+                if (aprefix.equals("xmlns") && !(localName.equals("xsi"))){
+                    aprefix = prefix;
+                    auri = nuri;
+                } else {
+                    if (!wprefix.equals("xmlns")) {
+                        aprefix = wprefix;
+                    }
+                }
+                if (aprefix == null)
+                    convertNull(aprefix);
+            }
+
+            writeNamespace(aprefix, prefix, auri, nuri, writer);
+            writeXSINamspece(localName, value, temp, writer, aprefix, auri);
+        }
+    }
+
+    private void writeNamespace(String aprefix, String prefix, String auri, String nuri, XMLStreamWriter writer) throws XMLStreamException {
+        if (!(aprefix.equals(prefix) && auri.equals(nuri))){
+            if (!aprefix.equals("xmlns")) {
+                writer.writeNamespace(aprefix, auri);
+            }
+        }
+    }
+
+    private void writeXSINamspece(String localName, String value, String temp, XMLStreamWriter writer, String aprefix, String auri) throws XMLStreamException {
+        if (localName.equals("xsi") &&
+            value.equals("http://www.w3.org/2001/XMLSchema-instance") &&
+            temp.equals("xmlns")) {
+            writer.setPrefix(localName, value);
+            writer.writeAttribute(aprefix, auri, localName, value);
+        }
+    }
+
+    private void writeAttribute(Attributes atts, int i, XMLStreamWriter writer) throws XMLStreamException {
+        if ((atts.getURI(i) == null) && (atts.getPrefix(i) != null))        {
+            String ns = writer.getNamespaceContext().getNamespaceURI(atts.getURI(i));
+            writer.writeAttribute(atts.getPrefix(i), ns, atts.getLocalName(i),
+                atts.getValue(i));
+        }
+        writer.writeAttribute(atts.getPrefix(i), atts.getURI(i), atts.getLocalName(i), atts.getValue(i));
     }
 
     void serializeSource(Object source, XMLStreamWriter writer) {

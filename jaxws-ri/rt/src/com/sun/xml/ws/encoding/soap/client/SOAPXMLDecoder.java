@@ -26,6 +26,7 @@ import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchSerializer;
+import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchUtil;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
@@ -35,6 +36,7 @@ import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAP12Constants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
@@ -43,9 +45,12 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.Attributes;
+import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.util.SOAPUtil;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.StAXSource;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
@@ -57,6 +62,8 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -64,9 +71,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author WS Development Team
@@ -76,7 +87,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     public SOAPXMLDecoder() {
     }
 
-    protected DispatchSerializer getSerializerInstance(){
+    protected DispatchSerializer getSerializerInstance() {
         return DispatchSerializer.SOAP_1_0;
     }
 
@@ -86,28 +97,83 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         return SOAPConnectionUtil.getSOAPMessage(connection, messageInfo, getBindingId());
     }
 
-    @Override
+    /*protected void decodeBody(XMLStreamReader reader, InternalMessage response,
+                              MessageInfo messageInfo) {
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
+        int state = XMLStreamReaderUtil.nextElementContent(reader);
+        decodeBodyContent(reader, response, messageInfo);
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
+    }
+    */
+
+
+    /*
+    * skipBody is true, the body is skipped during parsing.
+    */
+    protected void decodeEnvelope(XMLStreamReader reader, InternalMessage request,
+                                  boolean skipBody, MessageInfo messageInfo) {
+
+        XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
+        //XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
+        if (isDispatch(messageInfo))
+           dispatchUtil.collectPrefixes(reader);
+
+        XMLStreamReaderUtil.nextElementContent(reader);
+
+        if (skipHeader(messageInfo)) {
+            //System.out.println("Skipping header");
+            skipHeader(reader, messageInfo);
+        } else {
+            //System.out.println("Decoding header");
+            decodeHeader(reader, messageInfo, request);
+        }
+
+        if (skipBody) {
+            //System.out.println("Skipping body");
+            skipBody(reader);
+        } else {
+            //System.out.println("Decodong body");
+            decodeBody(reader, request, messageInfo);
+        }
+
+        XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+        XMLStreamReaderUtil.verifyTag(reader, getEnvelopeTag());
+        XMLStreamReaderUtil.nextElementContent(reader);
+        XMLStreamReaderUtil.verifyReaderState(reader, END_DOCUMENT);
+    }
+
+    private static String convertNull(String s) {
+        return (s != null) ? s : "";
+    }
+
+    //@Override
     protected void decodeBody(XMLStreamReader reader, InternalMessage response, MessageInfo messageInfo) {
         DispatchContext context = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
         if (context != null) {
+            //System.out.println("Dispatch context not null");
             XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
             XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
             int state = XMLStreamReaderUtil.nextElementContent(reader);
             // if Body is not empty, then deserialize the Body
             if (state != END_ELEMENT) {
                 BodyBlock responseBody;
-
                 QName responseBodyName = reader.getName();   // Operation name
 
-                if (responseBodyName.equals(getFaultTag())){
+                if (responseBodyName.equals(getFaultTag())) {
                     SOAPFaultInfo soapFaultInfo = decodeFault(reader, response, messageInfo);
                     responseBody = new BodyBlock(soapFaultInfo);
                 } else {
+                   // System.out.println("Deserializing body");
                     JAXBContext jaxbContext = getJAXBContext(messageInfo);
-                    if(jaxbContext==null) {
-                        responseBody = new BodyBlock(getSerializerInstance().deserializeSource(reader));
+                    if (jaxbContext == null) {
+                        //System.out.println("JAXBContext == null");
+                        responseBody = new BodyBlock(getSerializerInstance().deserializeSource(reader, dispatchUtil));
                     } else {
                         //jaxb will leave reader on ending </body> element
+                        //System.out.println("Doing a jaxb bean");
                         JAXBBeanInfo jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
                         responseBody = new BodyBlock(jaxBean);
                     }
@@ -118,8 +184,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
             XMLStreamReaderUtil.verifyTag(reader, getBodyTag());
             XMLStreamReaderUtil.nextElementContent(reader);
-        } else
-            super.decodeBody(reader, response, messageInfo);
+        } //else
+        else super.decodeBody(reader, response, messageInfo);
     }
 
     @Override
@@ -134,23 +200,25 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             encoder.toMessageInfo(internalMessage, messageInfo);
 
         } else {
-            if (internalMessage.getBody() != null){
-            if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo) {
-                messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
-                messageInfo.setResponse(internalMessage.getBody().getValue());
-            } else if (internalMessage.getBody().getValue() instanceof Exception) {
-                messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
-                messageInfo.setResponse(internalMessage.getBody().getValue());
-            } else {
-                messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
-                //unfortunately we must do this
-                if (internalMessage.getBody().getValue() instanceof JAXBBeanInfo)
-                    messageInfo.setResponse(((JAXBBeanInfo) internalMessage.getBody().getValue()).getBean());
-                else
+            if (internalMessage != null && internalMessage.getBody() != null) {
+                if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo)
+                {
+                    messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
                     messageInfo.setResponse(internalMessage.getBody().getValue());
-            }
+                } else
+                if (internalMessage.getBody().getValue() instanceof Exception) {
+                    messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
+                    messageInfo.setResponse(internalMessage.getBody().getValue());
+                } else {
+                    messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
+                    //unfortunately we must do this
+                    if (internalMessage.getBody().getValue() instanceof JAXBBeanInfo)
+                        messageInfo.setResponse(((JAXBBeanInfo) internalMessage.getBody().getValue()).getBean());
+                    else
+                        messageInfo.setResponse(internalMessage.getBody().getValue());
+                }
             } else
-             messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
+                messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
         }
     }
 
@@ -208,8 +276,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             Source source = soapMessage.getSOAPPart().getContent();
             reader = SourceReaderFactory.createSourceReader(source, true, getSOAPMessageCharsetEncoding(soapMessage));
             XMLStreamReaderUtil.nextElementContent(reader);
-            decodeEnvelope(reader, response, true, messageInfo);
-            convertBodyBlock(response, messageInfo);
+            decodeEnvelope(reader, response, !isDispatch(messageInfo), messageInfo);
+
+            if (!isDispatch(messageInfo))
+                convertBodyBlock(response, messageInfo);
+            
         } catch (Exception e) {
             // TODO
             e.printStackTrace();
@@ -296,7 +367,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             if (elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
                 XMLStreamReaderUtil.nextContent(reader);
                 if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) == null)
-                faultdetail = readFaultDetail(reader,messageInfo);
+                    faultdetail = readFaultDetail(reader, messageInfo);
                 else {
                     XMLStreamReaderUtil.skipElement(reader);
                     XMLStreamReaderUtil.next(reader);
@@ -307,8 +378,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 if (internalMessage.getHeaders() != null) {
                     boolean isHeaderFault = false;
                     // could be a header fault or a protocol exception with no detail
-                    for (HeaderBlock headerBlock : internalMessage.getHeaders()) {
-                        if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName)) {
+                    for (HeaderBlock headerBlock : internalMessage.getHeaders())
+                    {
+                        if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName))
+                        {
                             isHeaderFault = true;
                             faultdetail = headerBlock.getValue();
                         }
@@ -325,7 +398,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             // a header fault (with no faultactor)
             if (internalMessage.getHeaders() != null) {
                 for (HeaderBlock headerBlock : internalMessage.getHeaders()) {
-                    if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName)) {
+                    if (rtCtxt.getModel().isKnownFault(headerBlock.getName(), methodName))
+                    {
                         faultdetail = headerBlock.getValue();
                     }
                 }
@@ -349,22 +423,26 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
     /**
      * Decodes the fault &lt;detail> into a {@link Detail} object or a JAXB object.
-     *
+     * <p/>
      * Upon entry the cursor must be at the start tag of the first child element of &lt;detail>.
      * Upon a successful completion, the cursor is left at &lt;/detail>.
-     */     
-    protected final Object readFaultDetail(XMLStreamReader reader, MessageInfo mi){
-        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext (mi);
-
-        QName faultName = reader.getName ();
-        if (rtCtxt.getModel().isKnownFault (faultName, mi.getMethod ())) {
-            Object decoderInfo = rtCtxt.getDecoderInfo (faultName);
+     */
+    protected final Object readFaultDetail(XMLStreamReader reader, MessageInfo mi) {
+        RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
+        if (rtCtxt == null){
+            XMLStreamReaderUtil.skipElement(reader);
+            XMLStreamReaderUtil.nextElementContent(reader);
+            return null;
+        }
+        QName faultName = reader.getName();
+        if (rtCtxt.getModel().isKnownFault(faultName, mi.getMethod())) {
+            Object decoderInfo = rtCtxt.getDecoderInfo(faultName);
             if (decoderInfo != null && decoderInfo instanceof JAXBBridgeInfo) {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
-                bridgeInfo.deserialize (reader, rtCtxt.getBridgeContext());
-                XMLStreamReaderUtil.verifyReaderState (reader, END_ELEMENT);
-                XMLStreamReaderUtil.verifyTag (reader, getFaultDetailTag());
+                bridgeInfo.deserialize(reader, rtCtxt.getBridgeContext());
+                XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
+                XMLStreamReaderUtil.verifyTag(reader, getFaultDetailTag());
                 return bridgeInfo;
             }
         }
@@ -374,7 +452,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
     /**
      * Decodes the fault &lt;detail> into a {@link Detail} object.
-     *
+     * <p/>
      * Upon entry the cursor must be at the start tag of the first child element of &lt;detail>.
      * Upon a successful completion, the cursor is left at &lt;/detail>.
      */
@@ -389,8 +467,8 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
             // repeatedly copy all the child elements of <detail>.
             do {
-                trans.transform(new StAXSource(reader,true), new DOMResult(detail));
-            } while(XMLStreamReaderUtil.nextContent(reader)==START_ELEMENT);
+                trans.transform(new StAXSource(reader, true), new DOMResult(detail));
+            } while (XMLStreamReaderUtil.nextContent(reader) == START_ELEMENT);
 
             // now we should be at </detail>.
             return detail;
@@ -399,49 +477,66 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         } catch (TransformerException e) {
             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         } catch (TransformerFactoryConfigurationError e) {
-             throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
+            throw new WebServiceException("sender.response.cannotDecodeFaultDetail", e);
         }
     }
+
+   /* protected static String getCurrentPrefix(XMLStreamReader reader, String tokens, String namespaceURI) {
+        tokens = reader.getText();
+        String uri = "";
+        tokens = EncoderUtils.collapseWhitespace(tokens);
+        String prefix = XmlUtil.getPrefix(tokens);
+        if (prefix != null) {
+            uri = reader.getNamespaceURI(prefix);
+            if (uri == null) {
+                throw new DeserializationException("xsd.unknownPrefix", prefix);
+            }
+        }
+        String localPart = XmlUtil.getLocalPart(tokens);
+        return prefix;
+    }
+    */
 
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         JAXBContext jc = null;
 
-        RequestContext requestContext = (RequestContext) messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         if (requestContext != null)
             // TODO: does this really need to be copied?
-            jc = (JAXBContext)requestContext.copy ().get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
+            jc = (JAXBContext) requestContext.copy().get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
         return jc;
     }
 
-    protected String getBindingId(MessageInfo messageInfo){
+    protected String getBindingId(MessageInfo messageInfo) {
         RequestContext requestContext = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
-        if (requestContext != null){
-            String bindingId = (String)requestContext.get(BindingProviderProperties.BINDING_ID_PROPERTY);
+        if (requestContext != null) {
+            String bindingId = (String) requestContext.get(BindingProviderProperties.BINDING_ID_PROPERTY);
             if (bindingId != null)
                 return bindingId;
         }
         return getBindingId();
     }
-    
+
+   
     @Override
     public String getBindingId() {
         return SOAPBinding.SOAP11HTTP_BINDING;
     }
-    
+
     @Override
     protected QName getSenderFaultCode() {
         return SOAPConstants.FAULT_CODE_SERVER;
     }
-    
+
     @Override
     protected QName getReceiverFaultCode() {
         return SOAPConstants.FAULT_CODE_CLIENT;
     }
-    
+
     @Override
     protected QName getVersionMismatchFaultCode() {
         return SOAPConstants.FAULT_CODE_VERSION_MISMATCH;
     }
-    
+
 }
 

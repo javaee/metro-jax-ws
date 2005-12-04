@@ -602,6 +602,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 transformer.transform((StreamSource) response,
                     new StreamResult(out));
                 byte[] bytes = out.toByteArray();
+                //could do to string
                 if (new String(bytes).indexOf("HTTPException") > -1)
                     throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 else {
