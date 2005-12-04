@@ -94,7 +94,7 @@
         </javac>
     </target>
 
-    <target name="run">
+    <target name="run-url">
         <java fork="true" classname="${client}">
             <classpath>
                 <path refid="jaxws.classpath"/>
@@ -104,7 +104,7 @@
         </java>
     </target>
 
-    <target name="run-dispatch">
+    <target name="run">
         <java fork="true" classname="${dispatch.client}">
             <classpath>
                 <path refid="jaxws.classpath"/>
