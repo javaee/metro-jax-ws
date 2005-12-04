@@ -64,7 +64,7 @@ public class XMLConnectionUtil {
             }
             return new XMLMessage(mh, con.getInput());
         } catch (Exception e) {
-            throw new WebServiceException(e);
+            throw (HTTPException)new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR).initCause(e);
         }
     }
 
@@ -87,12 +87,12 @@ public class XMLConnectionUtil {
             xmlMessage.writeTo(con.getOutput());
 
         } catch (Exception e) {
-            throw new WebServiceException(e);
+            throw (HTTPException)new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR).initCause(e);
         }
         try {
             con.closeOutput();
         } catch (Exception e) {
-            throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            throw (HTTPException)new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR).initCause(e);
         }
     }
 

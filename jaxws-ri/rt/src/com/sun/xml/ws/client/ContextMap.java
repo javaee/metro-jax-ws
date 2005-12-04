@@ -37,13 +37,7 @@ public abstract class ContextMap extends HashMap<String,Object>
      */
     private static final Set<String> KNOWN_PROPERTIES;
 
-//    private static final HashMap<String,Object[]> _allowedValues = new HashMap<String,Object[]>();
     private static final HashMap<String,Class> _allowedClass = new HashMap<String, Class>();
-
-
-//    private static final String[] ALLOWED_ENCODING = {"", SOAPConstants.URI_ENCODING};
-//    private static final String[] ALLOWED_OPERATION_STYLE = {"document", "rpc"};
-
 
     protected BindingProvider _owner;
     protected PortInfoBase portInfo;
@@ -102,7 +96,8 @@ public abstract class ContextMap extends HashMap<String,Object>
         temp.add(MessageContext.HTTP_REQUEST_HEADERS);
         temp.add(MessageContext.HTTP_RESPONSE_CODE);
         temp.add(MessageContext.HTTP_RESPONSE_HEADERS);
-
+        temp.add(MessageContext.PATH_INFO);
+        temp.add(MessageContext.QUERY_STRING);
         // Content negotiation property for FI -- "none", "pessimistic", "optimistic"
         temp.add(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
         temp.add(BindingProviderProperties.MTOM_THRESHOLOD_VALUE);
@@ -113,8 +108,6 @@ public abstract class ContextMap extends HashMap<String,Object>
     public ContextMap(PortInfoBase info, BindingProvider provider) {
         _owner = provider;
         if (info != null) {
-            //put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-            //    info.getTargetEndpoint());
             this.portInfo = info;
         }
     }
@@ -236,19 +229,11 @@ public abstract class ContextMap extends HashMap<String,Object>
 
     }
 
-//    private static final Class STRING_CLASS = String.class;
-//    private static final Class BOOLEAN_CLASS = Boolean.class;
-//    private static final Class ENDPOINT_IF_BASE_CLASS = EndpointIFBase.class;
-//    private static final Class DISPATCH_CLASS = Dispatch.class;
-//    private static final Class PROXY_CLASS = Proxy.class;
-//    private final static Class JAXBCONTEXT_CLASS =
-//        JAXBContext.class;
-//    private static Class CLIENT_TRANSPORT_FACTORY_CLASS = ClientTransportFactory.class;
-
-    public static enum StyleAndUse {
+ //currently not used
+ /*   public static enum StyleAndUse {
         RPC_LITERAL,
         DOCLIT_WRAPPER_STYLE, DOCLIT_NONWRAPPER_STYLE
     }
-
+*/
 }
 

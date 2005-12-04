@@ -71,6 +71,9 @@ import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.*;
 import java.util.*;
 import java.io.*;
@@ -97,15 +100,14 @@ import java.util.concurrent.ThreadFactory;
 public class XMLMessageDispatcher implements MessageDispatcher {
 
     protected static final int MAX_THREAD_POOL_SIZE = 3;
-
     protected static final long AWAIT_TERMINATION_TIME = 10L;
 
     protected ExecutorService executorService = null;
-    private Map requestContext;
 
     /**
      * Default constructor
      */
+
     public XMLMessageDispatcher() {
     }
 
@@ -259,7 +261,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? XML_FI_ACCEPT_VALUE : XML_ACCEPT_VALUE);
         }
-
 
         //setRequestHeaders
         Map requestHeaders = (Map)
@@ -744,9 +745,65 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             messageContext.put(MessageContext.HTTP_REQUEST_METHOD, requestContext.get(MessageContext.HTTP_REQUEST_METHOD));
         if (requestContext.get(MessageContext.HTTP_REQUEST_HEADERS) != null)
             messageContext.put(MessageContext.HTTP_REQUEST_HEADERS, requestContext.get(MessageContext.HTTP_REQUEST_HEADERS));
-    }
 
-    protected boolean isHTTPMessageType(DispatchContext dispatchContext) {
+        //resolve endpoint look for query parameters, pathInfo
+        String pathInfo = null;
+        String queryString = null;
+        if (requestContext.get(MessageContext.PATH_INFO) != null) {
+            pathInfo = (String) requestContext.get(MessageContext.PATH_INFO);
+        }
+        if (requestContext.get(MessageContext.QUERY_STRING) != null) {
+            queryString = (String) requestContext.get(MessageContext.QUERY_STRING);
+        }
+        String endpoint = null;
+        String resolvedEndpoint = null;
+        if (pathInfo != null || queryString != null) {
+            pathInfo = checkPath(pathInfo);
+            queryString = checkQuery(queryString);
+            if (requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY) != null)
+            {
+                endpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+                try {
+                    URI endpointURI = new URI(endpoint);
+                    resolvedEndpoint = resolveURI(endpointURI, pathInfo, queryString);
+                } catch (URISyntaxException e) {
+                    resolvedEndpoint = endpoint;
+                }
+            }
+            //where does endpointProp come from here
+            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
+            messageContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
+        }
+    }
+        protected String resolveURI(URI endpointURI , String pathInfo, String queryString){
+            String query = null;
+            String fragment = null;
+            if (queryString != null){
+                URI result = endpointURI.resolve(queryString);
+                query = result.getQuery();
+                fragment = result.getFragment();
+            }
+            String path = (pathInfo != null)? pathInfo:endpointURI.getPath();
+            try {
+                URI temp = new URI(null, null, path, query, fragment);
+                return endpointURI.resolve(temp).toString();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            return endpointURI.toString();
+        }
+
+        private String checkPath(String path){
+            //does it begin with /
+            return (path == null || path.startsWith("/"))?path:"/" + path;
+        }
+
+        private String checkQuery(String query){
+            //does it begin with ?
+            return (query == null || query.startsWith("?"))?query:"?" + query;
+        }
+
+        protected boolean isHTTPMessageType(DispatchContext dispatchContext) {
 
         DispatchContext.MessageType type = (DispatchContext.MessageType)
             dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE);
@@ -762,7 +819,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return false;
     }
 
-    protected XMLMessage makeXMLMessage(MessageInfo messageInfo) {
+        protected XMLMessage makeXMLMessage
+        (MessageInfo
+        messageInfo) {
 
         XMLMessage xm = null;
 
@@ -786,12 +845,12 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return xm;
     }
 
-    class DaemonThreadFactory implements ThreadFactory {
-        public Thread newThread(Runnable r) {
-            Thread daemonThread = new Thread(r);
-            daemonThread.setDaemon(Boolean.TRUE);
-            return daemonThread;
+        class DaemonThreadFactory implements ThreadFactory {
+            public Thread newThread(Runnable r) {
+                Thread daemonThread = new Thread(r);
+                daemonThread.setDaemon(Boolean.TRUE);
+                return daemonThread;
+            }
         }
-    }
 
-}
+    }

@@ -65,6 +65,7 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.Response;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.http.HTTPException;
 import javax.xml.namespace.QName;
@@ -211,7 +212,6 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         MessageStruct messageStruct = setupMessageStruct(msg);
         if (handler != null) {
-            //messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, handler);
             messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, (Object) new AsyncHandlerService(handler, getCurrentExecutor()));
         } else
             throw new WebServiceException("AsyncHandler argument is null. " +
@@ -368,8 +368,8 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         _delegate.send(messageStruct);
         Object response = messageStruct.getResponse();
-        //will exceptions be returned from the server-
-        //if not then can take this out and just send
+        //no exceptions should be returned from server but
+        //exceptions may be returned from the client        
         switch (messageStruct.getResponseType()) {
             case MessageStruct.NORMAL_RESPONSE:
                 break;
@@ -411,25 +411,28 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                 }
             }
 
-            messageStruct.setData(new Object[]{msg});
-            setMetadata(getRequestContext(), msg, messageStruct);
-
-            // Initialize content negotiation property
-            ContentNegotiation.initialize(getRequestContext(), messageStruct);
+            //setMessageStruct(messageStruct, msg);
 
         } else {
-            if (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
+            //todo - needs to be a get request
+            if (!isValidHttpGETRequest(msg))
+            //if (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
                 throw new WebServiceException("No Message to Send to web service");
-            else {
-                messageStruct.setData(new Object[]{msg});
-                setMetadata(getRequestContext(), msg, messageStruct);
+            //else {
+                //setMessageStruct(messageStruct, msg);
 
-                // Initialize content negotiation property
-                ContentNegotiation.initialize(getRequestContext(), messageStruct);
-
-            }
+           //}
         }
+        setMessageStruct(messageStruct, msg);
         return messageStruct;
+    }
+
+    private void setMessageStruct(MessageStruct messageStruct, Object msg) {
+        messageStruct.setData(new Object[]{msg});
+        setMetadata(getRequestContext(), msg, messageStruct);
+
+        // Initialize content negotiation property
+        ContentNegotiation.initialize(getRequestContext(), messageStruct);
     }
 
     private void updateResponseContext(MessageStruct messageStruct) {
@@ -515,7 +518,6 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         DispatchContext context = new DispatchContext();
         context.setProperty(DispatchContext.DISPATCH_MESSAGE_MODE, mode);
 
-
         if (obj != null) {
             if (obj instanceof Source){
                 context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS,
@@ -596,6 +598,19 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         if (_portInfo != null)
             return _portInfo.getName();
         return null;
+    }
+
+    private boolean isValidHttpGETRequest(Object msg){
+       boolean isValid = false;
+
+       String bindingId = _getBindingId().toString();
+       String method = (String)getRequestContext().get(MessageContext.HTTP_REQUEST_METHOD);
+       if (method != null){
+          isValid = "GET".equalsIgnoreCase(method)?true:false &&
+           (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
+               HTTPBinding.HTTP_BINDING.equals(bindingId))?true:false;
+       }
+        return isValid;
     }
 
     private static ClientTransportFactory defaultTransportFactory = null;

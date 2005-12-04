@@ -26,7 +26,7 @@ import java.util.HashMap;
  */
 public class DispatchContext {
 
-    HashMap dprops = null;
+    private HashMap dprops = null;
 
     public DispatchContext() {
         dprops = new HashMap();
@@ -54,12 +54,6 @@ public class DispatchContext {
         "com.sun.xml.ws.rt.client.dispatch.mode";
     public static final String DISPATCH_MESSAGE_CLASS =
         "com.sun.xml.ws.rt.client.dispatch.messageclass";
-
-    //public static final int DOMSOURCE = 100;
-    //public static final int SAXSOURCE = 200;
-    //public static final int STREAMSOURCE = 300;
-    //public static final int JAXBOBJECT = 400;
-    //public static final int SOAPMESSAGE = 500;
 
     public enum MessageClass {
         SOURCE ,JAXBOBJECT, SOAPMESSAGE, DATASOURCE
