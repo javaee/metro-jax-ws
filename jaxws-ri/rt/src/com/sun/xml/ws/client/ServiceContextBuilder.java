@@ -186,8 +186,7 @@ public abstract class ServiceContextBuilder {
                     model.getPortName(),
                     model.getServiceQName()),
                     chainInfo.getHandlers());
-                serviceContext.setHandlerResolver(resolver);
-                serviceContext.setRoles(chainInfo.getRoles());
+                serviceContext.setRoles(portName,chainInfo.getRoles());
 
             }
         }

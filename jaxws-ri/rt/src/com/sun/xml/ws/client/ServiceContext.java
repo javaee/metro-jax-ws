@@ -23,6 +23,7 @@ import com.sun.xml.ws.handler.HandlerResolverImpl;
 import com.sun.xml.ws.wsdl.WSDLContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,8 +41,6 @@ public class ServiceContext {
     
     private Class serviceClass;
     private HandlerResolverImpl handlerResolver;
-    private Set<String> roles;
-    
     private QName serviceName; //supplied on creation of service
     private SCAnnotations SCAnnotations;
     private final HashSet<EndpointIFContext> seiContext = new HashSet<EndpointIFContext>();
@@ -49,7 +48,7 @@ public class ServiceContext {
      * To be used to resolve WSDL resources.
      */
     private final EntityResolver entityResolver;
-
+    private HashMap<QName,Set<String>> rolesMap = new HashMap<QName,Set<String>>();
     public ServiceContext(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
     }
@@ -78,12 +77,12 @@ public class ServiceContext {
         this.handlerResolver = resolver;
     }
     
-    public Set<String> getRoles() {
-        return roles;
+    public Set<String> getRoles(QName portName) {
+        return rolesMap.get(portName);
     }
     
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setRoles(QName portName,Set<String> roles) {
+        rolesMap.put(portName,roles);
     }
 
     public EndpointIFContext getEndpointIFContext(String className) {

@@ -40,7 +40,6 @@ import java.util.Set;
 public class WSDLContext {
     private final URL orgWsdlLocation;
     private String targetNamespace;
-    private String bindingId;
     private final WSDLDocument wsdlDoc;
 
     /**
@@ -62,11 +61,7 @@ public class WSDLContext {
             throw new WebServiceException(e);
         } catch (SAXException e) {
             throw new WebServiceException(e);
-        }
-
-        String bId = wsdlDoc.getBindingId();
-        if (bId != null)
-            setBindingID(bId);
+        }        
     }
 
     public URL getWsdlLocation() {
@@ -112,10 +107,6 @@ public class WSDLContext {
 
     public String getBindingID(QName serviceName, QName portName) {
         return getWsdlDocument().getBindingId(serviceName, portName);
-    }
-
-    public void setBindingID(String id) {
-        bindingId = id;
     }
 
     public String getTargetNamespace() {
