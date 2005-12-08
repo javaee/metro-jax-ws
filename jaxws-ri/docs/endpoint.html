@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
+  <title>Java(tm) API for XML WEb Services 2.0 - Provider</title>
+  <meta name="CREATED" content="20050329;17163443">
+  <meta name="CHANGED" content="20050401;8215806">
+</head>
+<body lang="en-US">
+<h1>JAX-WS 2.0 Beta<br>
+Endpoint</h1>
+<hr>
+<p>Last Modified: 12/08/05</p>
+<p>Web Service endpoints can be created and published programmatically
+using javax.xml.ws.Endpoint API. An endpoint consists of a Web Service
+Implementation object and some configuration information. The
+implementation hosts the web service endpoint using a light weight http
+server and clients can access the
+web service as if the endpoint is deployed in a J2EE container. This
+means that there is no need to have any J2EE servlet or ejb container
+to host the endpoint.&nbsp; The Endpoint API provides a way to
+configure the endpoint with the necessary binding, metadata(WSDL and
+schema documents), handlers etc.<br>
+</p>
+<h2><code>Endpoint</code></h2>
+An endpoint can be created using any of the following constructors: <br>
+<pre>Endpoint.create(implementor)<br>Endpoint.create(bindingId, implementor)<br>Endpoint.publish(address, implementor)</pre>
+Once the Endpoint object is created using the first two constructors,
+it can be published using Endpoint.publish(). Any published Endpoint
+can be stopped using Endpoint.stop(). <a
+ href="../samples/supplychain/src/supplychain/server/WarehouseLightWeight.java">supplychain</a>
+sample shows creating and publishing an Endpoint.<br>
+<p></p>
+<h2><code>Endpoint and Properties</code><code></code></h2>
+<p>An endpoint can be configured to match service name and port name of
+WSDL using properties. This overwrites implementor object's
+serviceName, portName from @WebService annotation. The port address for
+an endpoint is patched only if the corresponding port's service name,
+and port name in WSDL are matched.</p>
+<p>For example:</p>
+<pre>  Endpoint endpoint = ...<br>  Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();<br>  map.put(Endpoint.WSDL_SERVICE, new QName(...));<br>  map.put(Endpoint.WSDL_PORT, new QName(...));<br>  endpoint.setProperties(map);<br></pre>
+<h2><code>Endpoint and Binding</code><code></code></h2>
+<p>
+Endpoint can be configured for different bindings using
+binding ids. These binding ids are defined in JAX-WS API and endpoint
+can be configured by specifying @BindingType annotation or using
+binding id in the Endpoint() constructors. The parameter in constructor
+overwrites
+binding defined by @BindingType annotation. If the binding is not
+specified using @BindingType or using a parameter in Endpoint()
+constructor, the default binding
+is SOAP1.1/HTTP. Binding object is used to configure MTOM, handler
+chain etc. SOAP binding object is used to configure SOAP binding
+specifics like roles.</p>
+<p>For example:</p>
+<pre>  The following configures the endpoint for XML/HTTP binding.<br><br>  Endpoint endpoint = Endpoint.create(HTTPBinding.HTTP_BINDING, implementor);<br><br>For example:<br><br>  // setting MTOM<br>  SOAPBinding binding = (SOAPBinding)endpoint.getBinding();<br>  binding.setMTOMEnabled((true);<br><br>  // setting SOAP binding roles<br>  binding.setRoles(...);<br><br>  // setting handler chain<br>  binding.setHandlerChain(...);<br></pre>
+<h2><code>Endpoint</code> and <code>metadata</code></h2>
+When the service endpoint is created using existing java classes, the
+implementation dynamically generates and publishes WSDL and schema
+documents. But when the service endpoint is created using existing WSDL
+documents, the same WSDL documents can be used for publishing using
+metadata facility. When a Source object is created, set systemid always
+and make sure the imports are resolvable w.r.t systemids.<br>
+<br>
+For example:<br>
+<pre>&nbsp;&nbsp; // metadata processing for WSDL, schema files<br>   List &lt;File&gt; metadataFile = ...<br>   List&lt;Source&gt; metadata = new ArrayList&lt;Source&gt;();<br>   for(File file : metadataFile) {<br>       Source source = new StreamSource(new FileInputStream(file));<br>       source.setSystemId(file.toURL().toExternalForm());<br>       metadata.add(source);<br>   }<br>   endpoint.setMetadata(metadata);</pre>
+<hr>
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
+Microsystems, Inc. All rights reserved.</font></i></a></p>
+<p><br>
+<br>
+</p>
+</body>
+</html>
