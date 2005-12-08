@@ -407,11 +407,11 @@ public class HttpClientTransport extends WSConnectionImpl {
         String method = "POST";
         String requestMethod = (String) context.get(MessageContext.HTTP_REQUEST_METHOD);
         if (context.get(BindingProviderProperties.BINDING_ID_PROPERTY).equals(HTTPBinding.HTTP_BINDING)){
-            method = requestMethod;
+            method = (requestMethod != null)?requestMethod:method;            
         } else if
             (context.get(BindingProviderProperties.BINDING_ID_PROPERTY).equals(SOAPBinding.SOAP12HTTP_BINDING) &&
             "GET".equalsIgnoreCase(requestMethod)) {
-            method = requestMethod;
+            method = (requestMethod != null)?requestMethod:method;
         }
         ((HttpURLConnection)httpConnection).setRequestMethod(method);
 
