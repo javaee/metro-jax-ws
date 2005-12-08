@@ -22,8 +22,7 @@ User's Guide</h1>
 <h2><a class="mozTocH2" name="mozTocId114381"></a>Contents</h2>
 <ol id="mozToc">
 <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId143593">JAX-WS
-2.0 
-User's Guide</a>
+2.0 User's Guide</a>
     <ol>
       <li><a href="#mozTocId114381">Contents</a></li>
       <li><a href="#mozTocId604515">1. Introduction</a>
@@ -77,6 +76,9 @@ Service Endpoint Interface</a></li>
 Service Endpoint Interface</a></li>
               <li><a href="#mozTocId853441">3.1.2.3
 Create a WAR</a></li>
+              <li><a href="#3.1.2.4_j2se_endpoints">3.1.2.4 J2SE
+Endpoints</a><br>
+              </li>
             </ol>
           </li>
           <li><a href="#mozTocId69398">3.2 Client</a>
@@ -536,7 +538,15 @@ descriptor, click <a href="jaxws-war.html">here</a>.</p>
 <p>The WAR file created&nbsp;<code></code> can now be published on a
 JAX-WS 2.0 SI enabled servlet container such as the <a
  href="http://java.sun.com/j2ee/1.4/download.html">Sun Java System
-Application Server Platform Edition 8.1</a></p>
+Application Server Platform Edition 8.1</a><br>
+</p>
+<h4><a class="mozTocH4" name="mozTocId853441"></a><a
+ name="3.1.2.4_j2se_endpoints" id="2.1.2.3_Create_raw_war_"></a>3.1.2.4
+J2SE Endpoints</h4>
+Endpoints can be created and published programmatically using
+javax.xml.ws.Endpoint API in J2SE. To learn more about these endpoints,
+see <a href="endpoint.html">here</a>.<br>
+<br>
 <h3><a class="mozTocH3" name="mozTocId69398"></a><a name="2.2_Client"
  id="2.2_Client"></a>3.2 Client</h3>
 <p>A client application can access a remote web service endpoint in one
@@ -572,8 +582,10 @@ in the <code>fromjava</code> sample application:</p>
 <p>The Dispatch API is intended for advanced XML developers who prefer
 using XML constructs at the <code>java.lang.transform.Source</code> or
 <code>javax.xml.soap.SOAPMessage</code> level. For added convenience
-use of Dispatch with JAXB data binding object is supported. With the XML/HTTP
-Binding a <code>javax.activation.DataSource</code> can also be used. The Dispatch APIs
+use of Dispatch with JAXB data binding object is supported. With the
+XML/HTTP
+Binding a <code>javax.activation.DataSource</code> can also be used.
+The Dispatch APIs
 can be used in both <code>Message</code> and <code>Payload</code>modes.
 The Dispatch API client with an XML/HTTP Binding can be used with REST
 Web Services. Please see the restful sample program for more infomation.</p>
@@ -588,7 +600,8 @@ http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html.</p>
 <p>Please use the <a
  href="http://forums.java.net/jive/forum.jspa?forumID=46&amp;start=0">JAXB
 2.0 and JAX-WS 2.0</a> forum for feedback.</p>
-<p>The JAX-WS project on Java.net is: <a href="http://jax-ws.dev.java.net">http://jax-ws.dev.java.net</a>.</p>
+<p>The JAX-WS project on Java.net is: <a
+ href="http://jax-ws.dev.java.net">http://jax-ws.dev.java.net</a>.</p>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>
