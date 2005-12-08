@@ -120,7 +120,7 @@ public class EndpointIFInvocationHandler
     }
 
     /**
-     * Gets a new {@link com.sun.pept.presentation.MessageStruct} from the Delegate, copies
+     * Gets a new {@link com.sun.xml.ws.pept.presentation.MessageStruct} from the Delegate, copies
      * the data and metadata into the newly created MessageStruct, invokes Delegate.send, and
      * returns the response.
      */

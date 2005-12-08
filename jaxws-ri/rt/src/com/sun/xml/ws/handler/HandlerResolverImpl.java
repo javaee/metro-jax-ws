@@ -31,6 +31,24 @@ import javax.xml.ws.handler.HandlerResolver;
 import javax.xml.ws.handler.PortInfo;
 
 /**
+ * <p>Implementation class of HandlerResolver. This class is a simple
+ * map of PortInfo objects to handler chains. It is used by a
+ * {@link com.sun.xml.ws.client.ServiceContext} object, and can
+ * be replaced by user code with a different class implementing
+ * HandlerResolver. This class is only used on the client side, and
+ * it includes a lot of logging to help when there are issues since
+ * it deals with port names, service names, and bindings. All three
+ * must match when getting a handler chain from the map.
+ *
+ * <p>It is created by the {@link com.sun.xml.ws.client.ServiceContextBuilder}
+ * class and set on the ServiceContext. The ServiceContextBuilder uses
+ * the {@link com.sun.xml.ws.util.HandlerAnnotationProcessor} to create
+ * a handler chain and then it sets the chains on this class and they
+ * are put into the map. The ServiceContext uses the map to set handler
+ * chains on bindings when they are created.
+ * 
+ * @see com.sun.xml.ws.client.ServiceContext
+ * @see com.sun.xml.ws.handler.PortInfoImpl
  *
  * @author WS Development Team
  */
@@ -44,6 +62,14 @@ public class HandlerResolverImpl implements HandlerResolver {
         chainMap = new HashMap<PortInfo, List<Handler>>();
     }
 
+    /**
+     * API method to return the correct handler chain for a given
+     * PortInfo class.
+     *
+     * @param info A PortInfo object.
+     * @return A list of handler objects. If there is no handler chain
+     * found, it will return an empty list rather than null.
+     */
     public List<Handler> getHandlerChain(PortInfo info) {
         List<Handler> chain = chainMap.get(info);
         if (chain == null) {
@@ -55,6 +81,13 @@ public class HandlerResolverImpl implements HandlerResolver {
         return chain;
     }
     
+    /**
+     * Sets the handler chain for a given PortInfo object into
+     * the map.
+     *
+     * @param info The PortInfo that represents the port.
+     * @param chain The list of handlers.
+     */
     public void setHandlerChain(PortInfo info, List<Handler> chain) {
         if (logger.isLoggable(Level.FINER)) {
             logSetChain(info, chain);

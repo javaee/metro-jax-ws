@@ -52,9 +52,7 @@ import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
  * by a {@link com.sun.xml.ws.binding.BindingImpl} class when a
  * binding provider is created. On the server side, where a Binding
  * object may be passed from an outside source, the handler chain
- * caller is created by the
- * {@link com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher}
- * or {@link com.sun.xml.ws.protocol.xml.server.XMLMessageDispatcher}.
+ * caller may be created by the message dispatcher classes.
  *
  * <p>When created, a java.util.List of Handlers is passed in. This list
  * is sorted into logical and protocol handlers, so the handler order
@@ -102,7 +100,12 @@ public class HandlerChainCaller {
 
     /**
      * The handlers that are passed in will be sorted into
-     * logical and soap handlers.
+     * logical and soap handlers. During this sorting, the
+     * understood headers are also obtained from any soap
+     * handlers.
+     *
+     * @param chain A list of handler objects, which can
+     * be protocol or logical handlers.
      */
     public HandlerChainCaller(List<Handler> chain) {
         if (chain == null) { // should only happen in testing
@@ -115,6 +118,12 @@ public class HandlerChainCaller {
         sortHandlers();
     }
     
+    /**
+     * This list may be different than the chain that is passed
+     * in since the logical and protocol handlers must be separated.
+     *
+     * @return The list of handlers, sorted by logical and then protocol.
+     */
     public List<Handler> getHandlerChain() {
         return handlers;
     }
@@ -123,14 +132,33 @@ public class HandlerChainCaller {
         return (handlers.size() != 0);
     }
 
+    /**
+     * These are set by the SOAPBindingImpl when it creates the
+     * HandlerChainCaller or when new roles are set on the binding.
+     *
+     * @param roles A set of roles strings.
+     */
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 
+    /**
+     * Returns the roles that were passed in by the binding
+     * in the case of soap binding.
+     */
     public Set<String> getRoles() {
         return roles;
     }
     
+    /**
+     * Returns the headers understood by the handlers. This set
+     * is created when the handler chain caller is instantiated and
+     * the handlers are sorted. The set is comprised of headers
+     * returned from SOAPHandler.getHeaders() method calls.
+     *
+     * @return The set of all headers that the handlers declare
+     * that they understand.
+     */
     public Set<QName> getUnderstoodHeaders() {
         return understoodHeaders;
     }
@@ -241,17 +269,18 @@ public class HandlerChainCaller {
         }
     }
 
-    /*
-     * The expectation of the rest of the code is that,
+    /**
+     * <p>The expectation of the rest of the code is that,
      * if a ProtocolException is thrown from the handler chain,
      * the message contents reflect the protocol exception.
      * However, if a new ProtocolException is thrown from
      * the handleFault method, then the fault should be
      * ignored and the new exception should be dispatched.
      *
-     * This method simply sets a property that is checked
+     * <p>This method simply sets a property that is checked
      * by the client and server code when a ProtocolException
-     * is caught.
+     * is caught. The property can be checked with
+     * {@link MessageContextUtil#ignoreFaultInMessage}
      */
     private void addIgnoreFaultProperty(ContextHolder holder) {
         LogicalMessageContext context = holder.getLMC();
@@ -259,11 +288,11 @@ public class HandlerChainCaller {
     }
     
     /**
-     * Figure out if the fault code local part is client,
+     * <p>Figure out if the fault code local part is client,
      * server, sender, receiver, etc. This is called by
      * insertFaultMessage.
      *
-     * This method should only be called during a request,
+     * <p>This method should only be called during a request,
      * because during a response an exception from a handler
      * is dispatched rather than replacing the message with
      * a fault. So this method can use the MESSAGE_OUTBOUND_PROPERTY
@@ -272,7 +301,7 @@ public class HandlerChainCaller {
      * something else will need to be passed to the method 
      * to determine whether the fault code is client or server.
      *
-     * For determining soap version, start checking with the
+     * <p>For determining soap version, start checking with the
      * latest version and default to soap 1.1.
      */
     private QName determineFaultCode(SOAPMessageContext context)
@@ -299,8 +328,28 @@ public class HandlerChainCaller {
     }
     
     /**
-     * Method used to call handlers with a HandlerContext that
-     * may contain logical and protocol handlers.
+     * <p>Method used to call handlers with a HandlerContext that
+     * may contain logical and protocol handlers. This is the
+     * main entry point for calling the handlers in the case
+     * of SOAP binding. Before calling the handlers, the
+     * handler chain caller will set the outbound property and
+     * the roles on the message context.
+     *
+     * <p>Besides the context object passed in, the other information
+     * is used to control handler execution and closing. See the
+     * handler section of the spec for the rules concering handlers
+     * returning false, throwing exceptions, etc.
+     *
+     * @param direction Inbound or outbound.
+     * @param messageType Request or response.
+     * @param context A soap handler context containing the message.
+     * @param responseExpected A boolean indicating whether or not
+     * a response is expected to the current message (should be false
+     * for responses or one-way requests).
+     *
+     * @return True in the normal case, false if a handler
+     * returned false. This normally means that the runtime
+     * should reverse direction if called during a request.
      */
     public boolean callHandlers(Direction direction,
         RequestOrResponse messageType,
@@ -313,7 +362,27 @@ public class HandlerChainCaller {
     
     /**
      * Method used to call handlers with a HandlerContext that
-     * may contain logical handlers only.
+     * may contain logical handlers only. This is the
+     * main entry point for calling the handlers in the case
+     * of http binding. Before calling the handlers, the
+     * handler chain caller will set the outbound property on
+     * the message context.
+     *
+     * <p>Besides the context object passed in, the other information
+     * is used to control handler execution and closing. See the
+     * handler section of the spec for the rules concering handlers
+     * returning false, throwing exceptions, etc.
+     *
+     * @param direction Inbound or outbound.
+     * @param messageType Request or response.
+     * @param context A soap handler context containing the message.
+     * @param responseExpected A boolean indicating whether or not
+     * a response is expected to the current message (should be false
+     * for responses or one-way requests).
+     *
+     * @return True in the normal case, false if a handler
+     * returned false. This normally means that the runtime
+     * should reverse direction if called during a request.
      */
     public boolean callHandlers(Direction direction,
         RequestOrResponse messageType,
@@ -645,7 +714,8 @@ public class HandlerChainCaller {
     /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
-     * Start and end indices are inclusive.
+     * Start and end indices are inclusive. In this case, the return
+     * value or exception from the handler is ignored.
      */
     private void callLogicalHandleMessage(ContextHolder holder,
             int start, int end) {
@@ -669,7 +739,8 @@ public class HandlerChainCaller {
     /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
-     * Start and end indices are inclusive.
+     * Start and end indices are inclusive. In this case, the return
+     * value or exception from the handler is ignored.
      */
     private void callProtocolHandleMessage(ContextHolder holder,
         int start, int end) {

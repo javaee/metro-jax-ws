@@ -179,6 +179,13 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         return SOAPUtil.getMessageFactory(getBindingId());
     }
 
+    /**
+     * This call defers to the super class to get the
+     * handler chain caller. It then sets the roles on the
+     * caller before returning it.
+     *
+     * @see com.sun.xml.ws.binding.BindingImpl#getHandlerChainCaller
+     */
     public HandlerChainCaller getHandlerChainCaller() {
         HandlerChainCaller caller = super.getHandlerChainCaller();
         caller.setRoles(roles);

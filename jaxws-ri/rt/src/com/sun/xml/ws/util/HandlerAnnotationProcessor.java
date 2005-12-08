@@ -51,8 +51,25 @@ import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 
 /**
- * Used by client and server side to create handler information
- * from annotated class.
+ * <p>Used by client and server side to create handler information
+ * from annotated class. The public methods all return a
+ * HandlerChainInfo that contains the handlers and role information
+ * needed at runtime.
+ * 
+ * <p>All of the handler chain descriptors follow the same schema,
+ * whether they are wsdl customizations, handler files specified
+ * by an annotation, or are included in the sun-jaxws.xml file.
+ * So this class is used for all handler xml information. The
+ * two public entry points are
+ * {@link HandlerAnnotationProcessor#buildHandlerInfo}, called
+ * when you have an annotated class that points to a file, and
+ * {@link HandlerAnnotationProcessor#parseHandlerFile}, called
+ * when the file reader already exists.
+ *
+ * <p>The methods in the class are static so that it may called
+ * from the runtime statically.
+ *
+ * @see com.sun.xml.ws.util.HandlerAnnotationInfo
  *
  * @author JAX-WS Development Team
  */
@@ -61,9 +78,20 @@ public class HandlerAnnotationProcessor {
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".util");
     
-    /*
-     * Returns an object that stores handler lists and roles. Will
-     * return null if there is no handler annotation.
+    /**
+     * <p>This method is called by
+     * {@link com.sun.xml.ws.client.ServiceContextBuilder} and
+     * {@link com.sun.xml.ws.server.RuntimeEndpointInfo} when
+     * they have an annotated class.
+     *
+     * <p>If there is no handler chain annotation on the class,
+     * this method will return null. Otherwise it will load the
+     * class and call the parseHandlerFile method to read the
+     * information.
+     *
+     * @return A HandlerAnnotationInfo object that stores the
+     * handlers and roles. Will return null if the class passed
+     * in has no handler chain annotation.
      */
     public static HandlerAnnotationInfo buildHandlerInfo(Class clazz,
         QName serviceName, QName portName, String bindingId) {
@@ -117,6 +145,16 @@ public class HandlerAnnotationProcessor {
         return clazz;
     }
     
+    /**
+     * <p>This method is called internally by HandlerAnnotationProcessor,
+     * and by
+     * {@link com.sun.xml.ws.transport.http.servlet.RuntimeEndpointInfoParser}
+     * directly when it reaches the handler chains element in the
+     * descriptor file it is parsing.
+     *
+     * @return A HandlerAnnotationInfo object that stores the
+     * handlers and roles.
+     */
     public static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
         ClassLoader classLoader, QName serviceName, QName portName,
         String bindingId) {

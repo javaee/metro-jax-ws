@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * {@link com.sun.xml.ws.protocol.soap.server.SOAPMessageDispatcher} to hold
  * information about the current message.
  *
- * <p>It stores a {@link com.sun.pept.ept.MessageInfo} and
+ * <p>It stores a {@link com.sun.xml.ws.pept.ept.MessageInfo} and
  * {@link com.sun.xml.ws.encoding.soap.internal.InternalMessage}
  * which are used by the rest of the runtime, and provides a bridge
  * between these and the soap and logical message contexts that

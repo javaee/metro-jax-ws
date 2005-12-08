@@ -78,7 +78,16 @@ public abstract class BindingImpl implements
     /**
      * Return a copy of the list. If there is a handler chain caller,
      * this is the proper list. Otherwise, return a copy of 'handlers'
-     * or null if list is null.
+     * or null if list is null. The RuntimeEndpointInfo.init() method
+     * relies on this list being null if there were no handlers
+     * in the deployment descriptor file.
+     *
+     * @return The list of handlers. This can be null if there are
+     * no handlers. The list may have a different order depending on
+     * whether or not the handlers have been called yet, since the
+     * logical and protocol handlers will be sorted before calling them.
+     *
+     * @see com.sun.xml.ws.server.RuntimeEndpointInfo#init
      */
     public List<Handler> getHandlerChain() {
         if (chainCaller != null) {
@@ -97,6 +106,12 @@ public abstract class BindingImpl implements
         return true;
     }
 
+    /**
+     * Sets the handlers on the binding. If the handler chain
+     * caller already exists, then the handlers will be set on
+     * the caller and the handler chain held by the binding will
+     * be the sorted list.
+     */
     public void setHandlerChain(List<Handler> chain) {
         if (chainCaller != null) {
             chainCaller = new HandlerChainCaller(chain);
@@ -106,7 +121,12 @@ public abstract class BindingImpl implements
         }
     }
 
-    // used by client runtime before invoking handlers
+    /**
+     * Creates the handler chain caller if needed and returns
+     * it. Once the handler chain caller exists, this class
+     * defers getHandlers() calls to it to get the new sorted
+     * list of handlers.
+     */
     public HandlerChainCaller getHandlerChainCaller() {
         if (chainCaller == null) {
             chainCaller = new HandlerChainCaller(handlers);
