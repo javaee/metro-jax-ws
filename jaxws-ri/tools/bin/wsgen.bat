@@ -1,10 +1,6 @@
 @echo off
 
 REM
-REM $Id: wsgen.bat,v 1.4 2005-11-28 20:15:41 kohlert Exp $
-REM
-
-REM
 REM The contents of this file are subject to the terms
 REM of the Common Development and Distribution License
 REM (the "License").  You may not use this file except

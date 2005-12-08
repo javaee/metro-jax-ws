@@ -1,10 +1,6 @@
 #!/bin/sh
 
 #
-# $Id: wsimport.sh,v 1.2 2005/05/20 00:14:36 vivekp Exp $
-#
-
-#
 # The contents of this file are subject to the terms
 # of the Common Development and Distribution License
 # (the "License").  You may not use this file except

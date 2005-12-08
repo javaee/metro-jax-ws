@@ -1,10 +1,6 @@
 @echo off
 
 REM
-REM $Id: wsimport.bat,v 1.3 2005-09-27 19:38:59 kohsuke Exp $
-REM
-
-REM
 REM The contents of this file are subject to the terms
 REM of the Common Development and Distribution License
 REM (the "License").  You may not use this file except
