@@ -184,7 +184,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
             if (!isAsync(messageInfo)) {
                 WSConnection connection = (WSConnection) messageInfo.getConnection();
-                //logRequestMessage(xm, messageInfo);
+                //logRequestMessage(xm, messageInfo);                
                 XMLConnectionUtil.sendResponse(connection, xm);
             }
 
@@ -306,7 +306,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {
-        e.printStackTrace();
+        //e.printStackTrace();
         if (e instanceof RuntimeException) {
             messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
             if (e instanceof ClientTransportException) {

@@ -22,6 +22,7 @@ package com.sun.xml.ws.transport.http.client;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.client.BindingProviderProperties;
 import com.sun.xml.ws.transport.WSConnectionImpl;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 
@@ -29,6 +30,8 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -67,7 +70,7 @@ public class HttpClientTransport extends WSConnectionImpl {
         this.context = context;
         _logStream = logStream;
 
-        String bindingId = (String)context.get(BINDING_ID_PROPERTY);
+        String bindingId = (String) context.get(BINDING_ID_PROPERTY);
         try {
             if (bindingId == null)
                 bindingId = SOAPBinding.SOAP11HTTP_BINDING;
@@ -77,7 +80,7 @@ public class HttpClientTransport extends WSConnectionImpl {
             else
                 _messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
 
-            endpoint = (String)context.get(ENDPOINT_ADDRESS_PROPERTY);
+            endpoint = (String) context.get(ENDPOINT_ADDRESS_PROPERTY);
         } catch (Exception e) {
             throw new ClientTransportException("http.client.cannotCreateMessageFactory");
         }
@@ -91,13 +94,16 @@ public class HttpClientTransport extends WSConnectionImpl {
         try {
             httpConnection = createHttpConnection(endpoint, context);
             cookieJar = sendCookieAsNeeded();
-            
+
             // how to incorporate redirect processing: message dispatcher does not seem to tbe right place
-            outputStream = httpConnection.getOutputStream();
+            if (!httpConnection.getRequestMethod().equalsIgnoreCase("GET"))
+                outputStream = httpConnection.getOutputStream();
+            //if use getOutputStream method set as "POST"
+            //but for "Get" request no need to get outputStream
             connectForResponse();
 
         } catch (Exception ex) {
-            throw new ClientTransportException("http.client.failed",ex);
+            throw new ClientTransportException("http.client.failed", ex);
         }
 
         return outputStream;
@@ -115,8 +121,8 @@ public class HttpClientTransport extends WSConnectionImpl {
             in = readResponse();
         } catch (IOException e) {
             if (statusCode == HttpURLConnection.HTTP_NO_CONTENT
-                    || (isFailure
-                    && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+                || (isFailure
+                && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 try {
                     throw new ClientTransportException("http.status.code",
                         statusCode, httpConnection.getResponseMessage());
@@ -126,7 +132,7 @@ public class HttpClientTransport extends WSConnectionImpl {
                 }
             }
             throw new ClientTransportException("http.client.failed",
-                    e.getMessage());
+                e.getMessage());
         }
         httpConnection = null;
 
@@ -139,17 +145,17 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders () {
+    public Map<String, List<String>> getHeaders() {
         if (respHeaders != null) {
             return respHeaders;
         }
         try {
-            isFailure = checkResponseCode ();
+            isFailure = checkResponseCode();
 
-            respHeaders = collectResponseMimeHeaders ();
+            respHeaders = collectResponseMimeHeaders();
 
-            saveCookieAsNeeded (cookieJar);
-            setHeaders (respHeaders);
+            saveCookieAsNeeded(cookieJar);
+            setHeaders(respHeaders);
 
             return respHeaders;
         } catch (IOException e) {
@@ -157,19 +163,19 @@ public class HttpClientTransport extends WSConnectionImpl {
                 || (isFailure
                 && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 try {
-                    throw new ClientTransportException ("http.status.code",
+                    throw new ClientTransportException("http.status.code",
                         new Object[]{
                             statusCode,
-                            httpConnection.getResponseMessage ()});
+                            httpConnection.getResponseMessage()});
                 } catch (IOException ex) {
-                    throw new ClientTransportException ("http.status.code",
+                    throw new ClientTransportException("http.status.code",
                         new Object[]{
                             statusCode,
                             ex});
                 }
             }
-            throw new ClientTransportException ("http.client.failed",
-                e.getMessage ());
+            throw new ClientTransportException("http.client.failed",
+                e.getMessage());
         }
 
     }
@@ -193,24 +199,24 @@ public class HttpClientTransport extends WSConnectionImpl {
 //    }
 
     protected InputStream readResponse()
-            throws IOException {
+        throws IOException {
         InputStream contentIn =
-                (isFailure
+            (isFailure
                 ? httpConnection.getErrorStream()
                 : httpConnection.getInputStream());
 
         ByteArrayBuffer bab = new ByteArrayBuffer();
-        if(contentIn!=null) { // is this really possible?
+        if (contentIn != null) { // is this really possible?
             bab.write(contentIn);
             bab.close();
         }
 
         int length =
-                httpConnection.getContentLength() == -1
+            httpConnection.getContentLength() == -1
                 ? bab.size()
                 : httpConnection.getContentLength();
 
-        return bab.newInputStream(0,length);
+        return bab.newInputStream(0, length);
     }
 
     protected Map<String, List<String>> collectResponseMimeHeaders() {
@@ -242,7 +248,7 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     protected void connectForResponse()
-            throws IOException {
+        throws IOException {
 
         httpConnection.connect();
     }
@@ -253,48 +259,48 @@ public class HttpClientTransport extends WSConnectionImpl {
      * response from the servlet or 404 not found)
      */
     protected boolean checkResponseCode()
-            throws IOException {
+        throws IOException {
         boolean isFailure = false;
         try {
 
             statusCode = httpConnection.getResponseCode();
-            setStatus (statusCode);
+            setStatus(statusCode);
 
             if ((httpConnection.getResponseCode()
-                    == HttpURLConnection.HTTP_INTERNAL_ERROR)) {
+                == HttpURLConnection.HTTP_INTERNAL_ERROR)) {
                 isFailure = true;
                 //added HTTP_ACCEPT for 1-way operations
             } else if (
-                    httpConnection.getResponseCode()
+                httpConnection.getResponseCode()
                     == HttpURLConnection.HTTP_UNAUTHORIZED) {
 
                 // no soap message returned, so skip reading message and throw exception
                 throw new ClientTransportException("http.client.unauthorized",
-                        httpConnection.getResponseMessage());
+                    httpConnection.getResponseMessage());
             } else if (
-                    httpConnection.getResponseCode()
+                httpConnection.getResponseCode()
                     == HttpURLConnection.HTTP_NOT_FOUND) {
 
                 // no message returned, so skip reading message and throw exception
                 throw new ClientTransportException("http.not.found",
-                        httpConnection.getResponseMessage());
+                    httpConnection.getResponseMessage());
             } else if (
-                    (statusCode == HttpURLConnection.HTTP_MOVED_TEMP) ||
+                (statusCode == HttpURLConnection.HTTP_MOVED_TEMP) ||
                     (statusCode == HttpURLConnection.HTTP_MOVED_PERM)) {
                 isFailure = true;
 
                 if (!redirect || (redirectCount <= 0)) {
                     throw new ClientTransportException("http.status.code",
-                            new Object[]{
-                                statusCode,
-                                getStatusMessage(httpConnection)});
-                }
-            } else if (
-                    statusCode < 200 || (statusCode >= 303 && statusCode < 500)) {
-                throw new ClientTransportException("http.status.code",
                         new Object[]{
                             statusCode,
                             getStatusMessage(httpConnection)});
+                }
+            } else if (
+                statusCode < 200 || (statusCode >= 303 && statusCode < 500)) {
+                throw new ClientTransportException("http.status.code",
+                    new Object[]{
+                        statusCode,
+                        getStatusMessage(httpConnection)});
             } else if (statusCode >= 500) {
                 isFailure = true;
             }
@@ -312,13 +318,13 @@ public class HttpClientTransport extends WSConnectionImpl {
     }
 
     protected String getStatusMessage(HttpURLConnection httpConnection)
-            throws IOException {
+        throws IOException {
         int statusCode = httpConnection.getResponseCode();
         String message = httpConnection.getResponseMessage();
         if (statusCode == HttpURLConnection.HTTP_CREATED
-                || (statusCode >= HttpURLConnection.HTTP_MULT_CHOICE
-                && statusCode != HttpURLConnection.HTTP_NOT_MODIFIED
-                && statusCode < HttpURLConnection.HTTP_BAD_REQUEST)) {
+            || (statusCode >= HttpURLConnection.HTTP_MULT_CHOICE
+            && statusCode != HttpURLConnection.HTTP_NOT_MODIFIED
+            && statusCode < HttpURLConnection.HTTP_BAD_REQUEST)) {
             String location = httpConnection.getHeaderField("Location");
             if (location != null)
                 message += " - Location: " + location;
@@ -336,7 +342,7 @@ public class HttpClientTransport extends WSConnectionImpl {
             CookieJar cookieJar = (CookieJar) context.get(HTTP_COOKIE_JAR);
             if (cookieJar == null) {
                 cookieJar = new CookieJar();
-                
+
                 // need to store in binding's context so it is not lost
                 BindingProvider bp =
                     (BindingProvider) context.get(JAXWS_CLIENT_HANDLE_PROPERTY);
@@ -357,12 +363,12 @@ public class HttpClientTransport extends WSConnectionImpl {
 
     protected HttpURLConnection createHttpConnection(String endpoint,
                                                      Map<String, Object> context)
-            throws IOException {
+        throws IOException {
 
         boolean verification = false;
         // does the client want client hostname verification by the service
         String verificationProperty =
-                (String) context.get(HOSTNAME_VERIFICATION_PROPERTY);
+            (String) context.get(HOSTNAME_VERIFICATION_PROPERTY);
         if (verificationProperty != null) {
             if (verificationProperty.equalsIgnoreCase("true"))
                 verification = true;
@@ -370,7 +376,7 @@ public class HttpClientTransport extends WSConnectionImpl {
 
         // does the client want request redirection to occur
         String redirectProperty =
-                (String) context.get(REDIRECT_REQUEST_PROPERTY);
+            (String) context.get(REDIRECT_REQUEST_PROPERTY);
         if (redirectProperty != null) {
             if (redirectProperty.equalsIgnoreCase("false"))
                 redirect = false;
@@ -395,18 +401,30 @@ public class HttpClientTransport extends WSConnectionImpl {
         httpConnection.setDoInput(true);
         // the soap message is always sent as a Http POST
         // HTTP Get is disallowed by BP 1.0
-        httpConnection.setRequestMethod("POST");
+        // needed for XML/HTTPBinding and SOAP12Binding
+        // for xml/http binding other methods are allowed.
+        // for Soap 1.2 "GET" is allowed.
+        String method = "POST";
+        String requestMethod = (String) context.get(MessageContext.HTTP_REQUEST_METHOD);
+        if (context.get(BindingProviderProperties.BINDING_ID_PROPERTY).equals(HTTPBinding.HTTP_BINDING)){
+            method = requestMethod;
+        } else if
+            (context.get(BindingProviderProperties.BINDING_ID_PROPERTY).equals(SOAPBinding.SOAP12HTTP_BINDING) &&
+            "GET".equalsIgnoreCase(requestMethod)) {
+            method = requestMethod;
+        }
+        ((HttpURLConnection)httpConnection).setRequestMethod(method);
 
         // set the properties on HttpURLConnection
         for (Map.Entry entry : super.getHeaders().entrySet()) {
-            httpConnection.addRequestProperty ((String)entry.getKey(), ((List<String>)entry.getValue()).get(0));
+            httpConnection.addRequestProperty((String) entry.getKey(), ((List<String>) entry.getValue()).get(0));
         }
 
         return httpConnection;
     }
 
     private java.net.HttpURLConnection createConnection(String endpoint)
-            throws IOException {
+        throws IOException {
         return (HttpURLConnection) new URL(endpoint).openConnection();
     }
 
