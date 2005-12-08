@@ -755,19 +755,21 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         if (requestContext.get(MessageContext.QUERY_STRING) != null) {
             queryString = (String) requestContext.get(MessageContext.QUERY_STRING);
         }
-        String endpoint = null;
+        String origEndpoint = null;
         String resolvedEndpoint = null;
         if (pathInfo != null || queryString != null) {
             pathInfo = checkPath(pathInfo);
             queryString = checkQuery(queryString);
             if (requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY) != null)
             {
-                endpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+                origEndpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
                 try {
-                    URI endpointURI = new URI(endpoint);
+                    URI endpointURI = new URI(origEndpoint);
+                    //String origPath = endpointURI.getPath();
+                    //String newPath = origPath + pathInfo;
                     resolvedEndpoint = resolveURI(endpointURI, pathInfo, queryString);
                 } catch (URISyntaxException e) {
-                    resolvedEndpoint = endpoint;
+                    resolvedEndpoint = origEndpoint;
                 }
             }
             //where does endpointProp come from here
@@ -783,7 +785,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 query = result.getQuery();
                 fragment = result.getFragment();
             }
-            String path = (pathInfo != null)? pathInfo:endpointURI.getPath();
+            String path = (pathInfo != null)? endpointURI.getPath() + pathInfo:endpointURI.getPath();
             try {
                 URI temp = new URI(null, null, path, query, fragment);
                 return endpointURI.resolve(temp).toString();
