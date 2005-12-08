@@ -142,10 +142,11 @@
         </java>
     </target>
 
-    <target name="help">
-        <echo message="server:       Builds and deploy the service endpoint WAR"/>
-        <echo message="client:       Builds the client"/>
-        <echo message="run:          Runs the client"/>
+    <target name="help"> 
+        <echo message="server:            Builds and deploy the service endpoint WAR"/>
+        <echo message="server-j2se:       Builds and deploy the Endpoint API based service"/>
+        <echo message="client:            Builds the client"/>
+        <echo message="run:               Runs the client"/>
     </target>
 
     <target name="server" depends="setup">
@@ -158,5 +159,21 @@
 
         <antcall target="deploy" />
     </target>
+
+    <target name="server-j2se" depends="setup">
+
+        <antcall target="clean" />
+
+        <antcall target="build-server-java" />
+
+        <java fork="true" classname="${j2se.sei}">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+            </classpath>
+        </java>
+
+    </target>
+
 
 </project>
