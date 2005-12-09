@@ -255,15 +255,17 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             XMLStreamReaderUtil.nextElementContent(reader);
             decodeEnvelope(reader, response, false, messageInfo);
             return response;
+        } catch (DeserializationException e) {
+            //e.printStackTrace();
+            throw new WebServiceException(e.getCause());
         } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+            //e.printStackTrace();
+            throw new WebServiceException(e);
         } finally {
             if (reader != null) {
                 XMLStreamReaderUtil.close(reader);
             }
-        }
-        return null;
+        }        
     }
 
     @Override
@@ -281,9 +283,12 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             if (!isDispatch(messageInfo))
                 convertBodyBlock(response, messageInfo);
             
+        } catch (DeserializationException e) {
+            //e.printStackTrace();
+            throw new WebServiceException(e.getCause());
         } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+            //e.printStackTrace();
+            throw new WebServiceException(e);
         } finally {
             if (reader != null) {
                 XMLStreamReaderUtil.close(reader);
