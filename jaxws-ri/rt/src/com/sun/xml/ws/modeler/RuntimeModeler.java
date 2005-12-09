@@ -622,7 +622,6 @@ public class RuntimeModeler {
                 resultQName = new QName(resultTNS, RETURN);
             }
         }
-        System.out.println("resultTNS: "+resultTNS);
 
         if(javaMethod.isAsync()){
             returnType = getAsyncReturnType(method, returnType);
