@@ -606,7 +606,10 @@ public class RuntimeModeler {
         Class returnType = method.getReturnType();
         boolean isResultHeader = false;
         if (webResult != null) {
-            resultName = webResult.name();
+            if (webResult.name().length() > 0)
+                resultName = webResult.name();
+            else
+                resultName = RETURN;
             resultTNS = webResult.targetNamespace();
             isResultHeader = webResult.header();
             if (resultTNS.length() == 0 && webResult.header()) {
@@ -619,6 +622,7 @@ public class RuntimeModeler {
                 resultQName = new QName(resultTNS, RETURN);
             }
         }
+        System.out.println("resultTNS: "+resultTNS);
 
         if(javaMethod.isAsync()){
             returnType = getAsyncReturnType(method, returnType);
@@ -772,6 +776,8 @@ public class RuntimeModeler {
             isResultHeader = webResult.header();
             if (webResult.name().length() > 0)
                 resultName = webResult.name();
+            else
+                resultName = RETURN;
             if (webResult.partName().length() > 0) {
                 resultPartName = webResult.partName();
                 if (!isResultHeader)
@@ -1013,7 +1019,6 @@ public class RuntimeModeler {
             resultPartName = webResult.partName();
             isResultHeader = webResult.header();
         }
-
         Class returnType = method.getReturnType();
 
         if(javaMethod.isAsync()){
