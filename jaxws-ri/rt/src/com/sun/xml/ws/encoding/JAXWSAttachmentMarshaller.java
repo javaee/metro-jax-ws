@@ -147,12 +147,12 @@ public class JAXWSAttachmentMarshaller extends AttachmentMarshaller {
     }
 
     private void addToMessageContext(String cid, DataHandler dh){
-//        if(hc == null)
-//            return;
-//        MessageContext ctxt = hc.getMessageContext();
-//        if(ctxt == null)
-//            return;
-//        MessageContextUtil.addMessageAttachment(ctxt, cid, dh);
+        if(hc == null)
+            return;
+        MessageContext ctxt = hc.getMessageContext();
+        if(ctxt == null)
+            return;
+        MessageContextUtil.addMessageAttachment(ctxt, cid, dh);
     }
 
     /**
