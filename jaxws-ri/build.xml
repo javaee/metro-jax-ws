@@ -29,6 +29,7 @@
 
   <property name="Name" value="JAX-WS RI"/>
   <property name="version" value="2.0"/>
+  <property name="version.impl.suffix" value="ea3" />
       
   <property name="build.home" value="${basedir}/build"/>  
   <property name="lib.home" value="${basedir}/lib"/>
@@ -48,7 +49,7 @@
       <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
   </tstamp>
   <property name="build.id" value="${now}(${user.name})" />
-  <property name="build.version" value="${Name} ${version}-${build.id}" />
+  <property name="build.version" value="${Name} ${version}-${build.id}-${version.impl.suffix}" />
   <echo message="The build id is: ${build.version}" /> 
 
   <property file="${user.home}/build.properties"/>   <!-- User local        -->
