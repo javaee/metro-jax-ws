@@ -409,6 +409,7 @@ major-version=${release.impl.version}
         <include name="**/*.html" />
         <include name="**/*.txt" />
         <include name="**/*.jpg" />
+        <include name="**/*.css"/>
         <exclude name="**/internal/**" />
       </fileset>
       <filterset begintoken="@@" endtoken="@@">
@@ -455,6 +456,18 @@ major-version=${release.impl.version}
   	
   	<copy todir="${dist20.home}/samples">
         <fileset dir="samples" includes="**" excludes="**/CVS/**" />
+        <filterset begintoken="@@" endtoken="@@">
+          <filter token="SPEC_VERSION" 
+                  value="${release.spec.version}" />
+          <filter token="IMPL_VERSION"
+                  value="${release.impl.version}"/>
+          <filter token="IMPL_VERSION_SUFFIX"
+                  value="${release.impl.version.suffix}"/>
+          <!--filter token="@@JWSDP_VERSION@@"
+                  value="${jwsdp.impl.version}"/>
+          <filter token="@@JWSDP_ROOTDIR@@" 
+                  value="${jwsdp.root.directory}"/-->
+        </filterset>
 	</copy>
   	
     <copy todir="${dist20.home}">

@@ -1,0 +1,73 @@
+/*
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
+ * in compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * https://jwsdp.dev.java.net/CDDLv1.0.html
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
+ * add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your
+ * own identifying information: Portions Copyright [yyyy]
+ * [name of copyright owner]
+ */
+
+/*
+ * Default CSS stylesheet
+ */
+
+body {
+    background-color: white;
+}
+
+h1, h2 {
+    text-align: center;
+    font-family: sans-serif;
+    color: #000099;
+}
+
+h3, h4, h5, h6 {
+    text-align: left;
+    font-family: sans-serif;
+    color: #000099;
+}
+
+code {
+    font-family: Courier, monospace;
+}
+
+diff {
+    font-family: Courier, monospace;
+    color: red;
+}
+
+table.property {
+	margin-left: 2em;
+}
+
+table.property tr td {
+	background-color: rgb(240,240,255);
+	padding: 0.2em;
+}
+
+pre.code {
+	background-color: rgb(240,240,255);
+	border: 1px solid navy;
+	color: black;
+	font-weight: bold;
+	padding: 0.5em;
+	margin-left: 2em;
+}
+
+/*
+hr {
+    align: center;
+    width: 70%;
+}
+*/

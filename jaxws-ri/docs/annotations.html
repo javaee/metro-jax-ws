@@ -3,16 +3,22 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>Java(tm) API for XML Web Services 2.0 - Annotations</title>
+  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Annotations</title>
+  <link rel="stylesheet" type="text/css" href="style/default.css"/>
   <meta name="CREATED" content="20050329;10243973">
   <meta name="CHANGED" content="20050403;16584428">
 </head>
 <body dir="ltr" lang="en-US">
-<h1><a name="1. Overview|outline" id="1. Overview|outline"></a>JAX-WS
-2.0 Beta<br>
-Annotations</h1>
+<center>
+<h1><a name="1. Overview|outline" id="1. Overview|outline"></a>
+  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
+      Annotations
+</h1>
+   <b>Specification Version:</b> @@SPEC_VERSION@@<br />
+   <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
+  </center>
 <hr>
-<p>Last Modified: 11/3/05</p>
+<p>Last Modified: 12/14/05</p>
 <h2>Contents</h2>
 <pre><a href="#1.%20Overview%7Coutline"><font size="3"><font
  face="Thorndale, serif">1. Overview</font></font></a>
@@ -93,7 +99,7 @@ Annotations</h1>
  face="Thorndale, serif">5.3 javax.annotation.PreDestroy</font></font></a><br><br><br></pre>
 <h2>1. Overview</h2>
 <p style="margin-bottom: 0in;">Annotations play a critical role in
-JAX-WS 2.0. First, annotations are used in mapping Java to WSDL and
+JAX-WS @@SPEC_VERSION@@. First, annotations are used in mapping Java to WSDL and
 schema. Second, annotations are used a runtime to control how the
 JAX-WS runtime processes and responds to web service invocations.
 Currently the annotations utilized by JAXR-WS 2.0 are defined in
@@ -235,7 +241,7 @@ required.</font></font></font></p>
       <td bgcolor="#ffffff" width="54%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
  color="#000000"><font face="Times, serif"><font size="3">Not currently
-used by JAXR-RPC 2.0</font></font></font></p>
+used by JAX-WS @@IMPL_VERSION@@</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="30%">
       <p align="left"><br>
@@ -254,7 +260,7 @@ used by JAXR-RPC 2.0</font></font></font></p>
 </p>
 <p>If you are familiar with JAX-RPC 1.1, you will notice that the <font
  face="Cumberland, monospace">AddNumbersImpl</font> implementation
-class does not implement a service endpoint interface. In JAX-WS 2.0 a
+class does not implement a service endpoint interface. In JAX-WS @@SPEC_VERSION@@ a
 service endpoint interface is no longer required. If a service endpoint
 interfaces is desired, then the @WebService annotation on the endpoint
 implementation is modified to specify the endpoint interface and the
@@ -711,7 +717,7 @@ javax.jws.soap.SOAPBinding</h3>
 endpoint implementation or service endpoint interface. This annotation
 lets the developer choose between document/literal wrapped,
 document/literal bare, rpc/literal and rpc/encoded endpoints with the
-default being document/literal wrapped. JAX-WS 2.0 does not support
+default being document/literal wrapped. JAX-WS @@SPEC_VERSION@@ does not support
 rpc/encoded. The main difference between document/literal bare and
 document/literal wrapped is that methods on a document/literal wrapped
 endpoint can have multiple parameters bound to the body of a SOAP
@@ -763,7 +769,7 @@ the style for messages used in a web service. The value can be either <font
       <p style="font-style: normal; text-decoration: none;" align="left"><font
  color="#000000"><font face="Times, serif"><font size="3">Defines the
 encoding used for messages used in web service. Can only be <font
- face="Cumberland, monospace">LITERAL</font> for JAX-WS 2.0</font></font></font></p>
+ face="Cumberland, monospace">LITERAL</font> for JAX-WS @@SPEC_VERSION@@</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="30%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
