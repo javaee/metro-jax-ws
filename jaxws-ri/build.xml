@@ -28,8 +28,6 @@
 <project name="JAXWS-RI" default="main" basedir=".">
 
   <property name="Name" value="JAX-WS RI"/>
-  <property name="version" value="2.0"/>
-  <property name="version.impl.suffix" value="ea3" />
       
   <property name="build.home" value="${basedir}/build"/>  
   <property name="lib.home" value="${basedir}/lib"/>
@@ -48,15 +46,15 @@
   <tstamp>
       <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour" locale="en_US"/>
   </tstamp>
-  <property name="build.id" value="${now}(${user.name})" />
-  <property name="build.version" value="${Name} ${version}-${build.id}-${version.impl.suffix}" />
-  <echo message="The build id is: ${build.version}" /> 
 
   <property file="${user.home}/build.properties"/>   <!-- User local        -->
   <property file="build.properties"/>                <!-- Component local   -->
   <property file="../build.properties"/>             <!-- Commons local     -->  
-
   <property file="project.properties"/>
+
+  <property name="build.id" value="${now}(${user.name})" />
+  <property name="build.version" value="${Name} ${release.impl.version}-${build.id}-${release.impl.version.suffix}" />
+  <echo message="The build id is: ${build.version}" />
 
 
   <path id="runtime.compile.classpath">
@@ -72,7 +70,7 @@
   </path>
   
   <target name="init">
-    <echo message="-------- ${Name} ${version} --------"/>
+    <echo message="-------- ${Name} ${release.impl.version} --------"/>
   </target>
 
   <target name="prepare" depends="init">
@@ -132,7 +130,7 @@
       <echo file="@{file}"
 >build-id=${build.id}
 build-version=${build.version}
-major-version=${version}
+major-version=${release.impl.version}
 </echo>
     </sequential>
   </macrodef>
@@ -144,7 +142,7 @@ major-version=${version}
       <manifest mode="update" file="@{file}">
         <attribute name="Build-Id" value="${build.id}" />
         <attribute name="Build-Version" value="${build.version}" />
-        <attribute name="Major-Version" value="${version}" />
+        <attribute name="Major-Version" value="${release.impl.version}" />
       </manifest>
     </sequential>
   </macrodef>
@@ -413,6 +411,18 @@ major-version=${version}
         <include name="**/*.jpg" />
         <exclude name="**/internal/**" />
       </fileset>
+      <filterset begintoken="@@" endtoken="@@">
+        <filter token="SPEC_VERSION" 
+                value="${release.spec.version}" />
+        <filter token="IMPL_VERSION"
+                value="${release.impl.version}"/>
+        <filter token="IMPL_VERSION_SUFFIX"
+                value="${release.impl.version.suffix}"/>
+        <!--filter token="@@JWSDP_VERSION@@"
+                value="${jwsdp.impl.version}"/>
+        <filter token="@@JWSDP_ROOTDIR@@" 
+                value="${jwsdp.root.directory}"/-->
+      </filterset>
     </copy>
   </target>
     
