@@ -130,8 +130,11 @@ public class ModelerUtils {
                 continue;
             QName name = part.getDescriptor();
             TypeAndAnnotation typeAndAnn = jaxbModel.getJavaType(name);
-            if(typeAndAnn == null)
-                continue;
+            if(typeAndAnn == null){
+                String msgQName = "{"+message.getDefining().getTargetNamespaceURI()+"}"+message.getName();
+                throw new ModelerException("wsdlmodeler.rpclit.unkownschematype", name.toString(),
+                        part.getName(), msgQName);
+            }
             String type = typeAndAnn.getTypeClass().fullName();
             type = ClassNameInfo.getGenericClass(type);
             RpcLitMember param = new RpcLitMember(new QName("", part.getName()), type);
