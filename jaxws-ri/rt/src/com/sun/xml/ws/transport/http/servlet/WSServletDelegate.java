@@ -258,8 +258,6 @@ public class WSServletDelegate {
         wsCtxt.setMessageContext(msgCtxt);
         msgCtxt.put(MessageContext.SERVLET_CONTEXT, servletContext);
         msgCtxt.setScope(MessageContext.SERVLET_CONTEXT, Scope.APPLICATION);
-        msgCtxt.put(MessageContext.SERVLET_SESSION, request.getSession());
-        msgCtxt.setScope(MessageContext.SERVLET_SESSION, Scope.APPLICATION);
         msgCtxt.put(MessageContext.SERVLET_REQUEST, request);
         msgCtxt.setScope(MessageContext.SERVLET_REQUEST, Scope.APPLICATION);
         msgCtxt.put(MessageContext.SERVLET_RESPONSE, response);
