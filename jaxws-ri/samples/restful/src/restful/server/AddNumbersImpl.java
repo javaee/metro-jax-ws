@@ -20,35 +20,20 @@
 package restful.server;
 
 import java.io.ByteArrayInputStream;
-import java.rmi.RemoteException;
-import java.util.Map;
+import java.util.StringTokenizer;
 
-import javax.xml.ws.Provider;
-import javax.xml.ws.Service;
-import javax.xml.ws.Service.Mode;
-import javax.xml.ws.ServiceMode;
+import javax.annotation.Resource;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-import org.w3c.dom.Node;
-import javax.xml.ws.WebServiceProvider;
-
+import javax.xml.ws.Provider;
 import javax.xml.ws.WebServiceContext;
-import java.io.ByteArrayInputStream;
-import javax.xml.ws.Provider;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.ws.handler.MessageContext;
-import javax.annotation.Resource;
 import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.BindingType;
-import java.util.StringTokenizer;
 
 @ServiceMode(value=Service.Mode.PAYLOAD)
 @WebServiceProvider
