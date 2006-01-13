@@ -117,7 +117,8 @@
     <target name="help">
         <echo message="server:       Builds and deploy the service endpoint WAR"/>
         <echo message="client:       Builds the client"/>
-        <echo message="run:          Runs the client"/>
+        <echo message="run:          Runs the Dispatch client"/>
+        <echo message="run-url:      Runs the stub/proxy client"/>
     </target>
 
     <target name="server" depends="setup">
