@@ -51,7 +51,7 @@ import javax.xml.ws.BindingType;
 import java.util.StringTokenizer;
 
 @ServiceMode(value=Service.Mode.PAYLOAD)
-@WebServiceProvider(wsdlLocation="WEB-INF/wsdl/AddNumbers.wsdl")
+@WebServiceProvider
 @BindingType(value=HTTPBinding.HTTP_BINDING)
 public class AddNumbersImpl implements Provider<Source> {
 
