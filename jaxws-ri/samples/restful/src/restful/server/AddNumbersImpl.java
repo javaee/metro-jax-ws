@@ -35,7 +35,6 @@ import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.BindingType;
 
-@ServiceMode(value=Service.Mode.PAYLOAD)
 @WebServiceProvider
 @BindingType(value=HTTPBinding.HTTP_BINDING)
 public class AddNumbersImpl implements Provider<Source> {
