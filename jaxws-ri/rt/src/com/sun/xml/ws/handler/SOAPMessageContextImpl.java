@@ -108,25 +108,25 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
         handlerCtxt.setInternalMessage(null);
     }
 
-    /*
-     * TODO: take care of allRoles parameter
-     *
-     */
+    
     public Object[] getHeaders(QName header, JAXBContext jaxbContext, boolean allRoles) {
         try {
             List beanList = new ArrayList();
             SOAPMessage msg = getMessage();
-            Name name = SOAPFactory.newInstance().createName(header.getLocalPart(),
-                    header.getPrefix(), header.getNamespaceURI());
             SOAPHeader sHeader = msg.getSOAPHeader();
             if (sHeader == null) {
                 return new Object[0];
             }
-            Iterator i = sHeader.getChildElements(name);
+            Iterator i = sHeader.getChildElements(header);
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
-                Source source = new DOMSource(child);
-                beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
+                //Add all headers when allRoles is true
+                //Add only headers with matching roles if allRoles is false
+                if( (allRoles == true) || 
+                    ((allRoles == false) && getRoles().contains(child.getActor()))  ) {                   
+                    Source source = new DOMSource(child);
+                    beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
+                }    
             }
             return beanList.toArray();
         } catch(Exception e) {
