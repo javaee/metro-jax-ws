@@ -120,13 +120,18 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
             Iterator i = sHeader.getChildElements(header);
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
-                //Add all headers when allRoles is true
-                //Add only headers with matching roles if allRoles is false
-                if( (allRoles == true) || 
-                    ((allRoles == false) && getRoles().contains(child.getActor()))  ) {                   
+                if(allRoles == true) {                   
+                    //If allRoles is true, add all headers
                     Source source = new DOMSource(child);
                     beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
-                }    
+                } else { 
+                    //If allRoles is false, add only headers with matching roles and headers with no role
+                    if( (child.getActor() == null)|| 
+                        (getRoles().contains(child.getActor()))  ) {                   
+                        Source source = new DOMSource(child);
+                        beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
+                    }    
+                }   
             }
             return beanList.toArray();
         } catch(Exception e) {
