@@ -44,6 +44,10 @@ public interface BindingProviderProperties extends JAXWSProperties{
     public static final String ONE_WAY_OPERATION =
         "com.sun.xml.ws.server.OneWayOperation";
 
+    
+    // Proprietary
+    public static final String REQUEST_TIMEOUT = 
+        "com.sun.xml.ws.request.timeout";
 
     //JAXWS 2.0
     public static final String JAXWS_RUNTIME_CONTEXT =

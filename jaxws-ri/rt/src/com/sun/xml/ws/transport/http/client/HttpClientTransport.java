@@ -415,6 +415,11 @@ public class HttpClientTransport extends WSConnectionImpl {
         }
         ((HttpURLConnection)httpConnection).setRequestMethod(method);
 
+        Integer reqTimeout = (Integer)context.get(BindingProviderProperties.REQUEST_TIMEOUT);
+        if (reqTimeout != null) {
+            httpConnection.setReadTimeout(reqTimeout);
+        }
+        
         // set the properties on HttpURLConnection
         for (Map.Entry entry : super.getHeaders().entrySet()) {
             httpConnection.addRequestProperty((String) entry.getKey(), ((List<String>) entry.getValue()).get(0));

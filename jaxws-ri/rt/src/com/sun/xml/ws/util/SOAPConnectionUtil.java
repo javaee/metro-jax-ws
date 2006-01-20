@@ -77,7 +77,7 @@ public class SOAPConnectionUtil {
                 con.getInput(), bindingId);
             return soapMessage;
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             throw new WebServiceException(e);
         }
     }
