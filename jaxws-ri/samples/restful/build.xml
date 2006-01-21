@@ -47,12 +47,17 @@
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
         <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
+        <pathelement location="etc/servlet.jar"/>
         <fileset dir="${lib.home}">
             <include name="*.jar"/>
             <exclude name="j2ee.jar"/>
         </fileset>
     </path>
 
+    <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
+        <classpath refid="jaxws.classpath"/>
+    </taskdef>
+    
     <target name="setup">
         <mkdir dir="${build.home}"/>
         <mkdir dir="${build.classes.home}"/>
@@ -64,13 +69,30 @@
     </target>
 
     <target name="build-server-wsdl" depends="setup">
-        <javac
+<!--        <javac
             fork="true"
             srcdir="${basedir}/src"
             destdir="${build.classes.home}"
             includes="**/server/**,**/common/**">
             <classpath refid="jaxws.classpath"/>
-        </javac>
+        </javac>-->
+        <apt
+            fork="true"
+            debug="${debug}"
+       	verbose="${verbose}"
+       	destdir="${build.classes.home}"
+      	sourcedestdir="${build.classes.home}"
+      	sourcepath="${basedir}/src">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${basedir}/src"/>
+            </classpath>
+            <option key="r" value="${build.home}"/>
+            <source dir="${basedir}/src">
+                <include name="**/server/*.java"/>
+                <include name="**/common/*.java"/>
+            </source>
+        </apt>
     </target>
 
     <target name="create-war">

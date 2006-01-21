@@ -24,10 +24,8 @@
     version="2.0">
 
     <endpoint
-        name="provider"
+        name="restful-addnumbers"
         implementation="restful.server.AddNumbersImpl"
         wsdl="WEB-INF/wsdl/AddNumbers.wsdl"
-        service="{http://duke.org}AddNumbersService"
-        port="{http://duke.org}AddNumbersPort"
         url-pattern="/addnumbers/*" />
 </endpoints>

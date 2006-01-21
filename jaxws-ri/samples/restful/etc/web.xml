@@ -19,20 +19,16 @@
  [name of copyright owner]
 -->
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee">
-  <display-name>provider</display-name>
-  <description>provider</description>
   <listener>
     <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
-    <servlet-name>provider</servlet-name>
-    <display-name>provider</display-name>
-    <description>JAX-WS endpoint - provider</description>
+    <servlet-name>restful-addnumbers</servlet-name>
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>provider</servlet-name>
+    <servlet-name>restful-addnumbers</servlet-name>
     <url-pattern>/addnumbers/*</url-pattern>
   </servlet-mapping>
   <session-config>
