@@ -120,7 +120,7 @@ public class SOAPMessageContextImpl implements SOAPMessageContext {
             Iterator i = sHeader.getChildElements(header);
             while(i.hasNext()) {
                 SOAPHeaderElement child = (SOAPHeaderElement)i.next();
-                if(allRoles == true) {                   
+                if(allRoles) {                   
                     //If allRoles is true, add all headers
                     Source source = new DOMSource(child);
                     beanList.add(JAXBTypeSerializer.deserialize(source, jaxbContext));
