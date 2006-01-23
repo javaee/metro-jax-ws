@@ -21,18 +21,14 @@ package com.sun.xml.ws.protocol.xml.client;
 
 import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.ws.binding.BindingImpl;
-
+import com.sun.xml.ws.client.*;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
-import com.sun.xml.ws.client.*;
-//import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-//import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
-import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-import com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder;
 import com.sun.xml.ws.encoding.soap.client.SOAP12XMLEncoder;
-
+import com.sun.xml.ws.encoding.soap.client.SOAPXMLEncoder;
+import com.sun.xml.ws.encoding.soap.internal.MessageInfoBase;
 import com.sun.xml.ws.encoding.xml.XMLEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
@@ -48,49 +44,32 @@ import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
+import com.sun.xml.ws.util.Base64Util;
 import com.sun.xml.ws.util.XMLConnectionUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-
-import javax.xml.ws.http.HTTPException;
-import javax.xml.ws.http.HTTPBinding;
-import javax.xml.ws.handler.MessageContext;
-
-//import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.ws.*;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
-
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.*;
+import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
+import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.http.HTTPBinding;
+import javax.xml.ws.http.HTTPException;
+import javax.xml.ws.soap.SOAPBinding;
+import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.*;
 import java.util.*;
-import java.io.*;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * Client-side XML-based message dispatcher {@link com.sun.xml.ws.pept.protocol.MessageDispatcher}
@@ -232,6 +211,21 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 // consume PEPT-specific properties
                 if (propName.equals(ClientTransportFactory.class.getName())) {
                     messageContext.put(CLIENT_TRANSPORT_FACTORY, (ClientTransportFactory) properties.get(propName));
+                } else if (propName.equals(USERNAME_PROPERTY)) {
+                    String credentials = (String) properties.get(USERNAME_PROPERTY);
+                    if (credentials != null) {
+                        credentials += ":";
+                        String password = (String) properties.get(PASSWORD_PROPERTY);
+                        if (password != null)
+                            credentials += password;
+
+                        try {
+                            credentials = Base64Util.encode(credentials.getBytes());
+                        } catch (Exception ex) {
+                            throw new WebServiceException(ex);
+                        }
+                        xm.getMimeHeaders().addHeader("Authorization", "Basic " + credentials);
+                    }
                 } else
                 if (propName.equals(BindingProvider.SESSION_MAINTAIN_PROPERTY))
                 {
@@ -777,35 +771,36 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             messageContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
         }
     }
-        protected String resolveURI(URI endpointURI , String pathInfo, String queryString){
-            String query = null;
-            String fragment = null;
-            if (queryString != null){
-                URI result = endpointURI.resolve(queryString);
-                query = result.getQuery();
-                fragment = result.getFragment();
-            }
-            String path = (pathInfo != null)? endpointURI.getPath() + pathInfo:endpointURI.getPath();
-            try {
-                URI temp = new URI(null, null, path, query, fragment);
-                return endpointURI.resolve(temp).toString();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-            return endpointURI.toString();
-        }
 
-        private String checkPath(String path){
-            //does it begin with /
-            return (path == null || path.startsWith("/"))?path:"/" + path;
+    protected String resolveURI(URI endpointURI, String pathInfo, String queryString) {
+        String query = null;
+        String fragment = null;
+        if (queryString != null) {
+            URI result = endpointURI.resolve(queryString);
+            query = result.getQuery();
+            fragment = result.getFragment();
         }
-
-        private String checkQuery(String query){
-            //does it begin with ?
-            return (query == null || query.startsWith("?"))?query:"?" + query;
+        String path = (pathInfo != null) ? endpointURI.getPath() + pathInfo : endpointURI.getPath();
+        try {
+            URI temp = new URI(null, null, path, query, fragment);
+            return endpointURI.resolve(temp).toString();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
+        return endpointURI.toString();
+    }
 
-        protected boolean isHTTPMessageType(DispatchContext dispatchContext) {
+    private String checkPath(String path) {
+        //does it begin with /
+        return (path == null || path.startsWith("/")) ? path : "/" + path;
+    }
+
+    private String checkQuery(String query) {
+        //does it begin with ?
+        return (query == null || query.startsWith("?")) ? query : "?" + query;
+    }
+
+    protected boolean isHTTPMessageType(DispatchContext dispatchContext) {
 
         DispatchContext.MessageType type = (DispatchContext.MessageType)
             dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE);
@@ -821,9 +816,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return false;
     }
 
-        protected XMLMessage makeXMLMessage
+    protected XMLMessage makeXMLMessage
         (MessageInfo
-        messageInfo) {
+            messageInfo) {
 
         XMLMessage xm = null;
 
@@ -847,12 +842,12 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return xm;
     }
 
-        class DaemonThreadFactory implements ThreadFactory {
-            public Thread newThread(Runnable r) {
-                Thread daemonThread = new Thread(r);
-                daemonThread.setDaemon(Boolean.TRUE);
-                return daemonThread;
-            }
+    class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread daemonThread = new Thread(r);
+            daemonThread.setDaemon(Boolean.TRUE);
+            return daemonThread;
         }
-
     }
+
+}
