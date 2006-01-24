@@ -96,11 +96,16 @@ public class HandlerAnnotationProcessor {
     public static HandlerAnnotationInfo buildHandlerInfo(Class clazz,
         QName serviceName, QName portName, String bindingId) {
         
-        clazz = checkClass(clazz);
+//        clazz = checkClass(clazz);
         HandlerChain handlerChain =
             (HandlerChain) clazz.getAnnotation(HandlerChain.class);
         if (handlerChain == null) {
-            return null;
+            clazz = getSEI(clazz);
+            if (clazz != null)
+            handlerChain =
+                (HandlerChain) clazz.getAnnotation(HandlerChain.class);  
+            if (handlerChain == null)
+                return null;
         }
         
         if (clazz.getAnnotation(SOAPMessageHandlers.class) != null) {
@@ -125,7 +130,7 @@ public class HandlerAnnotationProcessor {
         }
     }
     
-    static Class checkClass(Class clazz) {
+    static Class getSEI(Class clazz) {
         if (!clazz.isAnnotationPresent(WebService.class)) {
             throw new UtilException("util.handler.no.webservice.annotation",
                 new Object[] {clazz.getCanonicalName()});
@@ -141,8 +146,9 @@ public class HandlerAnnotationProcessor {
                 throw new UtilException("util.handler.endpoint.interface.no.webservice",
                                     new Object[] {webService.endpointInterface()});
             }
+            return clazz;
         }
-        return clazz;
+        return null;
     }
     
     /**
