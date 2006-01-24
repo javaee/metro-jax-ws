@@ -55,6 +55,8 @@ import com.sun.xml.ws.util.localization.LocalizableMessage;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceProvider;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Collection;
@@ -196,6 +198,10 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         }
     }
 
+    public void onWarning(String key) {
+        onWarning(new LocalizableMessage(getResourceBundleName(), key));
+    }
+
     public void onWarning(Localizable msg) {
         String message = localizer.localize(getMessage("webserviceap.warning", localizer.localize(msg)));
         if (messager != null) {
@@ -314,19 +320,28 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
 
     private void buildModel() {
         WebService webService;
+        WebServiceProvider webServiceProvider = null;
         WebServiceVisitor wrapperGenerator = createWrapperGenerator();
         boolean processedEndpoint = false;
         for (TypeDeclaration typedecl: apEnv.getSpecifiedTypeDeclarations()) {
             if (!(typedecl instanceof ClassDeclaration))
                 continue;
+            webServiceProvider = typedecl.getAnnotation(WebServiceProvider.class);
             webService = typedecl.getAnnotation(WebService.class);
+            if (webServiceProvider != null) {
+                if (webService != null) {
+                    onError("webserviceap.webservice.and.webserviceprovider",
+                            new Object[] {typedecl.getQualifiedName()});
+                }
+                processedEndpoint = true;
+            }
             if (!shouldProcessWebService(webService))
                 continue;
             typedecl.accept(wrapperGenerator);
             processedEndpoint = true;
         }
         if (!processedEndpoint) {
-            onError("webserviceap.no.webservice.endpoint.found");
+            onWarning("webserviceap.no.webservice.endpoint.found");
         }
     }
 
@@ -373,7 +388,6 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
                 seiContext.getNamespaceURI(), apEnv));
 //            for (JAXBMapping map : jaxBModel.getMappings()) {System.out.println("map.getClazz: "+map.getClazz());}
             seiContext.setJAXBModel(jaxBModel);
-            //decl.accept(webServiceModeler);
         }
     }
 

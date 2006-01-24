@@ -98,7 +98,6 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
                                             
         if (wsAP == null) {
             AnnotationProcessorContext context = new AnnotationProcessorContext();
-//            wsAP = new WebServiceAP(context);
             wsAP = new WebServiceAP(null, null, null, context);    
 
         }
