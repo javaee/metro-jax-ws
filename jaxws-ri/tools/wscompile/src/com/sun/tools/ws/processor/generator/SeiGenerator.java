@@ -66,10 +66,7 @@ import java.util.Iterator;
 public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
-    
-    // empty string per section 9.2.1.3
-    private static final String HANDLER_CHAIN_NAME = "";
-    
+       
     public SeiGenerator() {
     }
 
