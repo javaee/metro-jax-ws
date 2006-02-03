@@ -111,14 +111,14 @@
     </copy>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib/install/templates" overwrite="yes">
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/share/lib/install/templates" overwrite="yes">
       <fileset dir="${basedir}/pkg/${pkg.jaxws}">
         <include name="*.template"/>
       </fileset>
     </copy>
 
     <!-- copy jaxws specific jar files into the right directory structure -->
-    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib" overwrite="yes">
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/share/lib" overwrite="yes">
       <fileset dir="${dist20.home}/lib">
         <include name="jaxws-api.jar"/>
         <include name="jaxws-rt.jar"/>
