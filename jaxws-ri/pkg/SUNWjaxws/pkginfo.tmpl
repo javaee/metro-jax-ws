@@ -2,7 +2,7 @@
 # Copyright 2002 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-#ident	"$Id: pkginfo.tmpl,v 1.2 2005-11-15 19:46:09 jitu Exp $"
+#ident	"$Id: pkginfo.tmpl,v 1.3 2006-02-03 00:08:13 jitu Exp $"
 #
 #
 # This required package information file describes characteristics of the
@@ -15,7 +15,7 @@ ARCH="@arch@"
 VERSION="@jaxws.version@,REV=@datestamp@"
 SUNW_PRODNAME="@prod.name@"
 SUNW_PRODVERS="@jaxws.version@"
-SUNW_PKGTYPE="usr"
+#SUNW_PKGTYPE="usr"
 MAXINST="1000"
 CATEGORY="system"
 DESC="The Java API for XML Web Services @jaxws.version@"
@@ -23,7 +23,7 @@ VENDOR="Sun Microsystems, Inc."
 HOTLINE="Please contact your local service provider"
 EMAIL=""
 CLASSES="none jwsenv"
-BASEDIR=/
+BASEDIR=/opt
 SUNW_PKGVERS="1.0"
 ASCONFDIR=USRCONFDIR
 ASINSTDIR=USRINSTDIR
