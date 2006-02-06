@@ -99,6 +99,10 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     private ToolBase tool;
     private boolean donotOverride = false;
     private boolean wrapperGenerated = false;
+    /* 
+     * Is this invocation from APT or JavaC?
+     */
+    private boolean isAPTInvocation = false;
 
 
     public void run() {
@@ -154,6 +158,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
                 env.setFlags(ProcessorEnvironment.F_VERBOSE);
             }
             messager = apEnv.getMessager();
+            isAPTInvocation = true;
         }
         env.setFiler(apEnv.getFiler());
     }
@@ -341,7 +346,10 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
             processedEndpoint = true;
         }
         if (!processedEndpoint) {
-            onWarning("webserviceap.no.webservice.endpoint.found");
+            if (isAPTInvocation)
+                onWarning("webserviceap.no.webservice.endpoint.found");
+            else
+                onError("webserviceap.no.webservice.endpoint.found");                
         }
     }
 
