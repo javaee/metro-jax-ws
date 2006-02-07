@@ -83,6 +83,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     protected ExecutorService executorService = null;
 
+
     /**
      * Default constructor
      */
@@ -741,6 +742,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             messageContext.put(MessageContext.HTTP_REQUEST_HEADERS, requestContext.get(MessageContext.HTTP_REQUEST_HEADERS));
 
         //resolve endpoint look for query parameters, pathInfo
+        String origEndpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+
         String pathInfo = null;
         String queryString = null;
         if (requestContext.get(MessageContext.PATH_INFO) != null) {
@@ -749,24 +752,20 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         if (requestContext.get(MessageContext.QUERY_STRING) != null) {
             queryString = (String) requestContext.get(MessageContext.QUERY_STRING);
         }
-        String origEndpoint = null;
+
         String resolvedEndpoint = null;
         if (pathInfo != null || queryString != null) {
             pathInfo = checkPath(pathInfo);
             queryString = checkQuery(queryString);
-            if (requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY) != null)
-            {
-                origEndpoint = (String) requestContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+            if (origEndpoint != null) {
                 try {
                     URI endpointURI = new URI(origEndpoint);
-                    //String origPath = endpointURI.getPath();
-                    //String newPath = origPath + pathInfo;
                     resolvedEndpoint = resolveURI(endpointURI, pathInfo, queryString);
                 } catch (URISyntaxException e) {
                     resolvedEndpoint = origEndpoint;
                 }
             }
-            //where does endpointProp come from here
+
             requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
             messageContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, resolvedEndpoint);
         }
