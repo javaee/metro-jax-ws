@@ -444,7 +444,9 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     private void setMetadata(Map jaxwsContext, Object obj, MessageStruct messageStruct) {
 
         jaxwsContext.put(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY, this);
-        jaxwsContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
+
+        if (jaxwsContext.get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY) == null)
+            jaxwsContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, _portInfo.getTargetEndpoint());
 
         jaxwsContext.put(BindingProviderProperties.BINDING_ID_PROPERTY, _getBindingId().toString());
         if (_jaxbContext != null)
