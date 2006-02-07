@@ -237,11 +237,13 @@ public final class XMLMessage {
     }
 
     protected static boolean isXMLType(String primary, String sub) {
-        return primary.equalsIgnoreCase("text") && sub.equalsIgnoreCase("xml");
+        return primary.equalsIgnoreCase("text") && sub.equalsIgnoreCase("xml") ||
+            primary.equalsIgnoreCase("application") && sub.equalsIgnoreCase("xml");
     }
 
     protected static boolean isXMLType(String type) {
-        return type.toLowerCase().startsWith("text/xml");
+        return type.toLowerCase().startsWith("text/xml") ||
+            type.toLowerCase().startsWith("application/xml");
     }
 
     protected static boolean isFastInfosetType(String primary, String sub) {
