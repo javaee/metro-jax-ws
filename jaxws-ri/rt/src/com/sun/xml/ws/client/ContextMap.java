@@ -206,14 +206,14 @@ public abstract class ContextMap extends HashMap<String,Object>
             throw new WebServiceException(name + " is a User-defined property - property name can not be null. ",
                 new IllegalArgumentException("Name of property is null.  This is an invalid property name. "));
 
-
+        /* Spec clarifies that this check is not needed. 
         if (!KNOWN_PROPERTIES.contains(name)) {
             //do validation check on not "javax.xml.ws."
             if (name.startsWith("javax.xml.ws"))
                 throw new WebServiceException(name + " is a User-defined property - can not start with javax.xml.ws. package",
                     new IllegalArgumentException("can not start with javax.xml.ws. package"));                                            //let's check the propertyContext
         }
-
+        */
         //is it alreadySet
         //Object currentPropValue = get(name);
         //if (currentPropValue != null) {
