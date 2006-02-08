@@ -191,7 +191,7 @@ public class WSDLDocument {
     }
 
     public void finalizeBinding(Binding binding){
-        assert(binding == null);
+        assert(binding != null);
         QName portTypeName = binding.getPortTypeName();
         if(portTypeName == null)
             return;
