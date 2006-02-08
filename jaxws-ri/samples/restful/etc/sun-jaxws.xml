@@ -26,6 +26,5 @@
     <endpoint
         name="restful-addnumbers"
         implementation="restful.server.AddNumbersImpl"
-        wsdl="WEB-INF/wsdl/AddNumbers.wsdl"
         url-pattern="/addnumbers/*" />
 </endpoints>
