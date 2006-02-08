@@ -237,9 +237,8 @@ public class RuntimeEndpointInfo extends Endpoint
                         WebServiceProvider.class);
                 String tns = wsProvider.targetNamespace();
                 String local = wsProvider.serviceName();
-                if (local.length() > 0) {
-                    setServiceName(new QName(tns, local));
-                }
+                // create QName("", ""), if the above values are default
+                setServiceName(new QName(tns, local));
             } else {
                 setServiceName(RuntimeModeler.getServiceName(getImplementorClass()));
             }
@@ -353,6 +352,9 @@ public class RuntimeEndpointInfo extends Endpoint
     }
     
     public boolean needWSDLGeneration() {
+        if (isProviderEndpoint()) {
+            return false;
+        }
         return (getWsdlUrl() == null);
     }
     
@@ -550,8 +552,11 @@ public class RuntimeEndpointInfo extends Endpoint
      * return - /WEB-INF/wsdl/xxx.wsdl
      */
     public String getPath(String queryString) {
-        DocInfo docInfo = query2Doc.get(queryString);
-        return (docInfo == null) ? null : docInfo.getUrl().toString();
+        if (query2Doc != null) {
+            DocInfo docInfo = query2Doc.get(queryString);
+            return (docInfo == null) ? null : docInfo.getUrl().toString();
+        }
+        return null;
     }
     
     /*
@@ -787,7 +792,7 @@ public class RuntimeEndpointInfo extends Endpoint
     throws XMLStreamException {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         if (metadata != null) {
-            for(Entry<String, DocInfo> entry: metadata.entrySet()) {
+            for(Entry<String, DocInfo> entry: metadata.entrySet()) {               
                 RuntimeWSDLParser.fillDocInfo(entry.getValue(),
                     endpointInfo.getServiceName(),
                     endpointInfo.getPortTypeName());
