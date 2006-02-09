@@ -523,6 +523,9 @@ public class WSServletDelegate {
                 for (RuntimeEndpointInfo info : jaxwsInfo) {
                     String endpointAddress =
                         baseAddress + getValidPathForEndpoint(info);
+                    String wsdl = (info.getPath("wsdl") == null)
+                        ? "NO WSDL PUBLISHED"
+                        : endpointAddress+"?wsdl";
                     out.println("<tr>");
                     out.println("<td>" + info.getName() + "</td>");
                     out.println("<td>");
@@ -551,7 +554,8 @@ public class WSServletDelegate {
                                     info
                                         .getImplementor()
                                         .getClass()
-                                        .getName()})));
+                                        .getName(),
+                                     wsdl})));
 
                     out.println("</td>");
                     out.println("</tr>");
