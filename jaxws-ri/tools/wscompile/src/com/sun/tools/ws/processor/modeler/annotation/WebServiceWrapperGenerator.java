@@ -386,6 +386,16 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return type;
     }
     
+    private ArrayList<MemberInfo> sortMembers(ArrayList<MemberInfo> members) {
+        Map<String, MemberInfo> sortedMap = new java.util.TreeMap<String, MemberInfo>();
+        for (MemberInfo member : members) {
+            sortedMap.put(member.getParamName(), member);
+        }
+        ArrayList<MemberInfo> sortedMembers = new ArrayList<MemberInfo>();
+        sortedMembers.addAll(sortedMap.values());
+        return sortedMembers;
+    }
+    
     private void writeMembers(JDefinedClass cls, ArrayList<MemberInfo> members) throws IOException {
         if (cls == null)
             return;
@@ -427,23 +437,35 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (processedExceptions.contains(exceptionName))
             return false;
         processedExceptions.add(exceptionName);
+        WebFault webFault = thrownDecl.getAnnotation(WebFault.class);
         String className = beanPackage+ exceptionName + BEAN;
         
         Map<String, TypeMirror> propertyToTypeMap;
         propertyToTypeMap = TypeModeler.getExceptionProperties(thrownDecl);
-        WebFault webFault = isWSDLException(propertyToTypeMap, thrownDecl);
+        boolean isWSDLException = isWSDLException(propertyToTypeMap, thrownDecl);
+        String namespace = typeNamespace;
+        String name = exceptionName;
         FaultInfo faultInfo;
-        if (webFault != null) {
+        if (isWSDLException) {
             TypeMirror beanType = propertyToTypeMap.get(FAULT_INFO);
             faultInfo = new FaultInfo(TypeMonikerFactory.getTypeMoniker(beanType), true);
-            String namespace = webFault.targetNamespace().length()>0 ?
-                               webFault.targetNamespace() : typeNamespace;
-            String name = webFault.name().length()>0 ?
-                          webFault.name() : exceptionName;
+            namespace = webFault.targetNamespace().length()>0 ?
+                               webFault.targetNamespace() : namespace;
+            name = webFault.name().length()>0 ?
+                          webFault.name() : name;
             faultInfo.setElementName(new QName(namespace, name));
             seiContext.addExceptionBeanEntry(thrownDecl.getQualifiedName(), faultInfo, builder);
             return false;
         } 
+        if (webFault != null) {
+            namespace = webFault.targetNamespace().length()>0 ?
+                        webFault.targetNamespace() : namespace;
+            name = webFault.name().length()>0 ?
+                   webFault.name() : name;
+            className = webFault.faultBean().length()>0 ?
+                        webFault.faultBean() : className;
+            
+        }
         JDefinedClass cls = getCMClass(className, CLASS);
         faultInfo = new FaultInfo(className, false);
 
@@ -481,9 +503,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
         
         // XmlElement Declarations
-        writeXmlElementDeclaration(cls, exceptionName, typeNamespace);
+        writeXmlElementDeclaration(cls, name, namespace);
         
         // XmlType Declaration
+        members = sortMembers(members);
         writeXmlTypeDeclaration(cls, exceptionName, typeNamespace, members);
         
         writeMembers(cls, members);
@@ -492,11 +515,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return true;
     }
     
-    protected WebFault isWSDLException(Map<String, TypeMirror>map, ClassDeclaration thrownDecl) {
+    protected boolean isWSDLException(Map<String, TypeMirror>map, ClassDeclaration thrownDecl) {
         WebFault webFault = thrownDecl.getAnnotation(WebFault.class);
+        if (webFault == null)
+            return false;
         if (map.size() != 2 || map.get(FAULT_INFO) == null)
-            return null;
-        return webFault;
+            return false;
+        return true;
     }
 
     private void writeXmlElementDeclaration(JDefinedClass cls, String elementName, String namespaceUri)
