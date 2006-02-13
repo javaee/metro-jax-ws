@@ -363,22 +363,24 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     private void setResponse(MessageInfo messageInfo, XMLMessage xm) {
         DispatchContext dispatchContext = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
-        Object clazz = dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE_CLASS);
-        if (clazz instanceof DispatchContext.MessageClass) {
-
-            switch ((DispatchContext.MessageClass) clazz) {
-                case SOURCE:
+        DispatchContext.MessageType msgtype = (DispatchContext.MessageType)dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE);
+        if (msgtype != null) {
+            switch ((DispatchContext.MessageType) msgtype) {
+                case HTTP_SOURCE_MESSAGE:
                     messageInfo.setResponse(xm.getSource());
                     break;
-                case DATASOURCE:
+                case HTTP_SOURCE_PAYLOAD:
                     if (xm.getDataSource() != null)
-                        messageInfo.setResponse(xm.getDataSource());
+                        messageInfo.setResponse(xm.getSource());
                     break;
-                case JAXBOBJECT:
+                case HTTP_JAXB_PAYLOAD:
                     messageInfo.setResponse(xm.getPayload(getJAXBContext(messageInfo)));
                     break;
+                case HTTP_DATASOURCE_MESSAGE:
+                    messageInfo.setResponse(xm.getDataSource());
+                    break;
                 default:
-                    throw new WebServiceException();
+                    throw new WebServiceException("Unknown invocation return object ");
             }
         } else {
             //tbd just assume source for now
