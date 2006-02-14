@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 
 import javax.annotation.Resource;
+import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Provider;
 import javax.xml.ws.handler.Handler;
@@ -110,6 +111,8 @@ public class RuntimeEndpointInfo extends Endpoint
     private static final Localizer localizer = new Localizer();
     private static final LocalizableMessageFactory messageFactory =
         new LocalizableMessageFactory("com.sun.xml.ws.resources.server");
+    private WebService ws;
+    private WebServiceProvider wsProvider;
 
     public String getName() {
         return name;
@@ -302,6 +305,7 @@ public class RuntimeEndpointInfo extends Endpoint
         }
         
         // verify if implementor class has @WebService or @WebServiceProvider
+        verifyImplementorClass();
         
         // ServiceName processing
         doServiceNameProcessing();
@@ -841,5 +845,32 @@ public class RuntimeEndpointInfo extends Endpoint
         }
         endpointInfo.updateQuery2DocInfo();
     }
+    
+    public void verifyImplementorClass() {
+        if (wsProvider == null) {
+            wsProvider = (WebServiceProvider)implementorClass.getAnnotation(
+                    WebServiceProvider.class);
+        }
+        if (ws == null) {
+            ws = (WebService)implementorClass.getAnnotation(WebService.class);
+        }
+        if (wsProvider == null && ws == null) {
+            throw new ServerRtException("no.ws.annotation", implementorClass);
+                
+        }
+        if (wsProvider != null && ws != null) {
+            throw new ServerRtException("both.ws.annotations", implementorClass); 
+        }
+    }
+    
+    public String getWsdlLocation() {
+        if (wsProvider != null && wsProvider.wsdlLocation().length() > 0) {
+            return wsProvider.wsdlLocation();
+        } else if (ws != null && ws.wsdlLocation().length() > 0) {
+            return ws.wsdlLocation();
+        }
+        return null;
+    }
+
 
 }

@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import javax.jws.WebService;
 
 import javax.xml.namespace.QName;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
@@ -93,22 +95,9 @@ public class RuntimeEndpointInfoParser {
                 Class implementorClass = getImplementorClass(implementationName);
                 rei.setImplementorClass(implementorClass);
                 rei.setImplementor(getImplementor(implementorClass));
-                String wsdlFile = getAttribute(attrs, ATTR_WSDL);
-                if (wsdlFile != null) {
-                    if (!wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
-                        logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
-                                +WSServletContextListener.JAXWS_WSDL_DD_DIR
-                                +". Going to generate and publish a new WSDL.");
-                        wsdlFile = null;
-                    }
-                } else {
-                    WebServiceProvider wsProvider =
-                        (WebServiceProvider)implementorClass.getAnnotation(
-                            WebServiceProvider.class);
-                    if (wsProvider != null && !wsProvider.wsdlLocation().equals("")) {
-                        wsdlFile = wsProvider.wsdlLocation();
-                    }
-                }
+                rei.verifyImplementorClass();
+                
+                String wsdlFile = processWsdlLocation(attrs, rei);
                 rei.setWSDLFileName(wsdlFile);
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
                 rei.setPortName(getQNameAttribute(attrs, ATTR_PORT));
@@ -146,6 +135,24 @@ public class RuntimeEndpointInfoParser {
         reader.close();
 
         return endpoints;
+    }
+    
+    private String processWsdlLocation(Attributes attrs, RuntimeEndpointInfo rei) {
+        String wsdlFile = getAttribute(attrs, ATTR_WSDL);
+        if (wsdlFile == null) {
+            wsdlFile = rei.getWsdlLocation();
+        }
+        if (wsdlFile != null) {
+            if (!wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
+                logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
+                        +WSServletContextListener.JAXWS_WSDL_DD_DIR);
+                wsdlFile = null;
+            }
+        }
+        if (wsdlFile == null) {
+            logger.info("wsdl cannot be found from DD or annotation. Will generate and publish a new WSDL for SEI endpoints.");
+        }
+        return wsdlFile;
     }
 
     protected String getAttribute(Attributes attrs, String name) {

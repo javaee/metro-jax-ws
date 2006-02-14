@@ -28,6 +28,9 @@ import com.sun.xml.ws.server.Tie;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.xml.transform.stream.StreamSource;
 import org.xml.sax.EntityResolver;
 
 import javax.xml.namespace.QName;
@@ -58,6 +61,7 @@ public class HttpEndpoint {
     private HttpContext httpContext;
     private boolean published;
     private RuntimeEndpointInfo endpointInfo;
+    private String primaryWsdl;
     
     private static final int MAX_THREADS = 5;
     
@@ -94,6 +98,32 @@ public class HttpEndpoint {
      */
     private void setDocInfo() throws MalformedURLException {
         List<Source> metadata = endpointInfo.getMetadata();
+        
+        // Takes care of @WebService, @WebServiceProvider's wsdlLocation
+        String wsdlLocation = endpointInfo.getWsdlLocation();
+        if (wsdlLocation != null) {
+            ClassLoader cl = getClass().getClassLoader();
+            URL url = cl.getResource(wsdlLocation);
+            if (url == null) {
+                logger.info("WSDL specified by wsdlLocation="+wsdlLocation+" is not found. Ignoring it.");
+            } else {
+                Source source = null;
+                try {
+                    source = new StreamSource(url.openStream());
+                } catch(IOException ioe) {
+                    throw new ServerRtException("server.rt.err", ioe);
+                }
+                primaryWsdl = url.toExternalForm();
+                source.setSystemId(primaryWsdl);
+                if (metadata != null) {
+                    metadata = new ArrayList<Source>();
+                    endpointInfo.setMetadata(metadata);
+                }
+                metadata.add(source);
+            }
+        }
+        
+        // Creates DocInfo for each metdata Source
         if (metadata != null) {
             Map<String, DocInfo> newMetadata = new HashMap<String, DocInfo>();
             Transformer transformer = XmlUtil.newTransformer();
@@ -117,6 +147,13 @@ public class HttpEndpoint {
     // Finds primary WSDL
     private void findPrimaryWSDL() throws Exception {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
+        // Checks whether the wsdlLocation resource is a primary wsdl 
+        if (primaryWsdl != null) {
+            DocInfo docInfo = metadata.get(primaryWsdl);
+            if (docInfo.getService() == null) {
+                throw new ServerRtException("not.primary.wsdl", primaryWsdl);
+            }
+        }
         if (metadata != null) {
             for(Entry<String, DocInfo> entry: metadata.entrySet()) {
                 DocInfo docInfo = entry.getValue();
@@ -217,6 +254,7 @@ public class HttpEndpoint {
     }
 
     private void publish (HttpContext context) throws Exception {
+        endpointInfo.verifyImplementorClass();
         fillEndpointInfo();
         endpointInfo.init();
         generateWSDLDocs();
@@ -228,6 +266,8 @@ public class HttpEndpoint {
         endpointInfo.beginService();
         Tie tie = new Tie();
         context.setHandler(new WSHttpHandler(tie, endpointInfo));
-    }       
+    }    
+    
+
     
 }
