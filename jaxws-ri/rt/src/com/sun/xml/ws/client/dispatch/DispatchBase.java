@@ -336,7 +336,12 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
                     throw (SOAPFaultException) response;
                 } else if (response instanceof HTTPException) {
                     throw (HTTPException) response;
-                } else throw (WebServiceException) response;
+                } else if (response instanceof WebServiceException) {
+                     throw (WebServiceException) response;
+                } else if (response instanceof Exception){
+                    throw new WebServiceException((Exception)response);
+                }
+                break;   //just break and return response                
             default:
                 if (response != null) //must be some kind of exception
                     throw new WebServiceException("Client side exception - examine cause ", (Exception) response);
