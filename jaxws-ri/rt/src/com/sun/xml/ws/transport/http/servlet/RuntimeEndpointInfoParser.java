@@ -119,7 +119,9 @@ public class RuntimeEndpointInfoParser {
 
                 if(rei.getBinding() instanceof SOAPBindingImpl){
                     SOAPBinding sb = (SOAPBinding)rei.getBinding();
-                    sb.setMTOMEnabled((mtom != null)?Boolean.valueOf(mtom):false);
+                    if (mtom != null) {
+                        sb.setMTOMEnabled(Boolean.valueOf(mtom));
+                    }
                 }
 
                 rei.setUrlPattern(

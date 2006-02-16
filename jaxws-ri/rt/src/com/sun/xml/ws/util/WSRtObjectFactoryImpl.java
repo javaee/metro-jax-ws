@@ -83,7 +83,9 @@ public class WSRtObjectFactoryImpl
     @Override
     public com.sun.xml.ws.spi.runtime.Binding createBinding(String bindingId) {
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-                bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) ||
+            bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING) ||
+            bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
             return new SOAPBindingImpl(bindingId);
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
             return new HTTPBindingImpl();

@@ -62,24 +62,24 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      // called by DispatchImpl
     public SOAPBindingImpl(String bindingId, QName serviceName) {
         super(bindingId, serviceName);
-        setup(getBindingId());
+        setup(getBindingId(), getActualBindingId());
         setupSystemHandlerDelegate(serviceName);
     }
 
      public SOAPBindingImpl(String bindingId) {
         super(bindingId, null);
-        setup(getBindingId());
+        setup(getBindingId(), getActualBindingId());
         setupSystemHandlerDelegate(null);
     }
 
     public SOAPBindingImpl(List<Handler> handlerChain, String bindingId, QName serviceName) {
         super(handlerChain, bindingId, serviceName);
-        setup(getBindingId());
+        setup(getBindingId(), getActualBindingId());
         setupSystemHandlerDelegate(serviceName);
     }
 
     // if the binding id is unknown, no roles are added
-    protected void setup(String bindingId) {
+    protected void setup(String bindingId, String actualBindingId) {
         requiredRoles = new HashSet<String>();
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
             requiredRoles.add(SOAPNamespaceConstants.ACTOR_NEXT);
@@ -91,15 +91,27 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
         roles = new HashSet<String>();
         addRequiredRoles();
         setRolesOnHandlerChain();
+        if (actualBindingId.equals(SOAP11HTTP_MTOM_BINDING)
+            || actualBindingId.equals(SOAP12HTTP_MTOM_BINDING)) {            
+            setMTOMEnabled(true);
+        }
     }
 
-    /*
-    * For a non standard SOAP1.2 binding, return actual SOAP1.2 binding
-    */
+    /**
+     * For a non standard SOAP1.2 binding, return actual SOAP1.2 binding
+     * For SOAP 1.1 MTOM binding, return SOAP1.1 binding
+     * For SOAP 1.2 MTOM binding, return SOAP 1.2 binding
+     */
     @Override
     public String getBindingId() {
         String bindingId = super.getBindingId();
         if (bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
+            return SOAP12HTTP_BINDING;
+        }
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING)) {
+            return SOAP11HTTP_BINDING;
+        }
+        if (bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
             return SOAP12HTTP_BINDING;
         }
         return bindingId;

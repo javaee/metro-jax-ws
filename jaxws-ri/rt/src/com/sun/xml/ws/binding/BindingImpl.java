@@ -167,14 +167,20 @@ public abstract class BindingImpl implements
         if (tokensOK) {
             if (bindingId.equals("##SOAP11_HTTP")) {
                 bindingId = SOAPBinding.SOAP11HTTP_BINDING;
+            } else if (bindingId.equals("##SOAP11_HTTP_MTOM")) {
+                bindingId = SOAPBinding.SOAP11HTTP_MTOM_BINDING;
             } else if (bindingId.equals("##SOAP12_HTTP")) {
                 bindingId = SOAPBinding.SOAP12HTTP_BINDING;
+            } else if (bindingId.equals("##SOAP12_HTTP_MTOM")) {
+                bindingId = SOAPBinding.SOAP12HTTP_MTOM_BINDING;
             } else if (bindingId.equals("##XML_HTTP")) {
                 bindingId = HTTPBinding.HTTP_BINDING;
             }
         }
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)
+            || bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING)
             || bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)
+            || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)
             || bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
             return new SOAPBindingImpl(bindingId, serviceName);
         } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {

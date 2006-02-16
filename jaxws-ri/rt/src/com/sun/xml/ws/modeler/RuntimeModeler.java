@@ -1299,7 +1299,9 @@ public class RuntimeModeler {
             String bindingId = bindingType.value();
             if (bindingId.length() > 0) {
                 if (!bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
+                    && !bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING)
                     && !bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+                    && !bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)
                     && !bindingId.equals(HTTPBinding.HTTP_BINDING)
                     && !bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
                     throw new IllegalArgumentException("Wrong binding id "+bindingId+" in @BindingType");
