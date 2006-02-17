@@ -2,7 +2,7 @@
 # Copyright 2002 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-#ident	"$Id: prototype_com,v 1.3 2006-02-03 00:08:13 jitu Exp $"
+#ident	"$Id: prototype_com,v 1.4 2006-02-17 18:46:11 jitu Exp $"
 #
 # This required package information file contains a list of package contents.
 # The 'pkgmk' command uses this file to identify the contents of a package
@@ -18,7 +18,6 @@
 i copyright
 i pkginfo
 i depend
-i i.jwsenv
 #
 # source locations relative to the prototype file
 #
@@ -26,18 +25,11 @@ i i.jwsenv
 #
 d none SUNWjax 755 root sys
 d none SUNWjax/bin 755 root bin
-e jwsenv SUNWjax/bin/wsgen=SUNWjax/share/lib/install/templates/wsgen.template 755 root bin
-e jwsenv SUNWjax/bin/wsimport=SUNWjax/share/lib/install/templates/wsimport.template 755 root bin
-#d none SUNWjax/share/man/man1 755 root bin
-#f none SUNWjax/share/man/man1/wsdeploy.1 444 root bin
-#f none SUNWjax/share/man/man1/wscompile.1 444 root bin
 d none SUNWjax/share 755 root sys
 d none SUNWjax/share/lib 755 root sys
 f none SUNWjax/share/lib/jaxws-api.jar 444 root sys
 f none SUNWjax/share/lib/jaxws-tools.jar 444 root sys
 f none SUNWjax/share/lib/jaxws-rt.jar 444 root sys
 f none SUNWjax/share/lib/jsr181-api.jar 444 root sys
-#d none SUNWjax/share/lib/install 755 root sys
-#d none SUNWjax/share/lib/install/templates 755 root sys
-#f none SUNWjax/share/lib/install/templates/wscompile.template 644 root sys
-#f none SUNWjax/share/lib/install/templates/wsdeploy.template 644 root sys
+1 f none SUNWjax/bin/wsgen 0755 root bin
+1 f none SUNWjax/bin/wsimport 0755 root bin
