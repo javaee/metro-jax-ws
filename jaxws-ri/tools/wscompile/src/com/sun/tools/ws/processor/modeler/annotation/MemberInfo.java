@@ -20,18 +20,20 @@
 package com.sun.tools.ws.processor.modeler.annotation;
 
 import javax.xml.namespace.QName;
-import com.sun.tools.ws.processor.modeler.annotation.*;
+
+import com.sun.mirror.type.TypeMirror;
+
 /**
  *
  * @author  WS Development Team
  */
 public class MemberInfo implements Comparable<MemberInfo> {
     int paramIndex;
-    String paramType;
+    TypeMirror paramType;
     String paramName;
     QName elementName;
 
-    public MemberInfo(int paramIndex, String paramType, String paramName,
+    public MemberInfo(int paramIndex, TypeMirror paramType, String paramName,
         QName elementName) {
         this.paramIndex = paramIndex;
         this.paramType = paramType;
@@ -43,7 +45,7 @@ public class MemberInfo implements Comparable<MemberInfo> {
         return paramIndex;
     }
 
-    public String getParamType() {
+    public TypeMirror getParamType() {
         return paramType;
     }
 

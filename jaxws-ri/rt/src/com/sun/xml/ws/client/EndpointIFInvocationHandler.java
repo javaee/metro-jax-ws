@@ -141,7 +141,7 @@ public class EndpointIFInvocationHandler
 
         if (mmep == MessageStruct.ASYNC_CALLBACK_MEP) {
             for (Object param : parameters) {
-                if (AsyncHandler.class.isAssignableFrom(param.getClass())) {
+                if (param != null && AsyncHandler.class.isAssignableFrom(param.getClass())) {
                     //messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER, param);
                     messageStruct.setMetaData(BindingProviderProperties.JAXWS_CLIENT_ASYNC_HANDLER,
                         new AsyncHandlerService((AsyncHandler)param, getCurrentExecutor()));

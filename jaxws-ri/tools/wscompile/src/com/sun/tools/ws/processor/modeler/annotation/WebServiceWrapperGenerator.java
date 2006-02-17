@@ -42,10 +42,12 @@ import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.ParameterDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
+
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.ReferenceType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
+
 import com.sun.tools.ws.processor.generator.GeneratorBase;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
@@ -72,6 +74,7 @@ import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebFault;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,10 +93,12 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     protected Set<String> wrapperNames;
     protected Set<String> processedExceptions;
     protected JCodeModel cm;
+    protected MakeSafeTypeVisitor makeSafeVisitor;
 
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
+        makeSafeVisitor = new MakeSafeTypeVisitor();
     }
 
     protected void processWebService(WebService webService, TypeDeclaration d) {
@@ -285,13 +290,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         for (FieldDeclaration field : fields) {
             XmlElement xmlElement = field.getAnnotation(XmlElement.class);
             String fieldName = field.getSimpleName();
-            String typeName = field.getType().toString();
+//            String typeName = field.getType().toString();
             String elementName = xmlElement != null ? xmlElement.name() : fieldName;
             String namespace =  xmlElement != null ? xmlElement.namespace() : "";
 
             String idxStr = fieldName.substring(3);
             int index = Integer.parseInt(idxStr);
-            member = new MemberInfo(index, typeName,
+            member = new MemberInfo(index, field.getType(),
                                     field.getSimpleName(),
                                     new QName(namespace, elementName));
             int j=0;
@@ -327,31 +332,36 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
         // class members 
         WebParam webParam;
-        String paramType;
+        TypeMirror paramType;
         String paramName;
         String paramNamespace;
         TypeMirror holderType;
         int paramIndex = -1;
+//        System.out.println("method: "+method.toString());
+//        System.out.println("returnType: "+ method.getReturnType());
 
-        TypeMirror typeMirror = apEnv.getTypeUtils().getErasure(method.getReturnType());
+//        TypeMirror typeMirror = apEnv.getTypeUtils().getErasure(method.getReturnType());
+        TypeMirror typeMirror = getSafeType(method.getReturnType());
         String retType = typeMirror.toString();                
         if (!(method.getReturnType() instanceof VoidType) && !isResultHeader) {                    
-            responseMembers.add(new MemberInfo(-1, retType, RETURN_VALUE, 
+            responseMembers.add(new MemberInfo(-1, typeMirror, RETURN_VALUE, 
                 new QName(responseNamespace, responseElementName)));
         }
 
         for (ParameterDeclaration param : method.getParameters()) {
             WebParam.Mode mode = null;
             paramIndex++;
+//            System.out.println("param.getType(): "+param.getType());
             holderType = builder.getHolderValueType(param.getType());
             webParam = param.getAnnotation(WebParam.class);
-            typeMirror = apEnv.getTypeUtils().getErasure(param.getType());
-            paramType = typeMirror.toString();
+//            typeMirror = apEnv.getTypeUtils().getErasure(param.getType());            
+            typeMirror =  getSafeType(param.getType());
+            paramType = typeMirror;
             paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
             if (holderType != null) {
-                paramType = holderType.toString();
+                paramType = holderType;
             }
-            paramName =  "arg"+paramIndex; //param.getSimpleName();
+            paramName =  "arg"+paramIndex; 
             if (webParam != null && webParam.header()) {
                 continue;
             }                   
@@ -374,16 +384,26 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }
         }
     }
-
-    private JType getType(String typeName) throws IOException {
-        JType type = null;
+    
+    private TypeMirror getSafeType(TypeMirror type) {
+//        System.out.println("type: "+type+" type.getClass(): "+type.getClass());
+        TypeMirror retType = makeSafeVisitor.apply(type, builder.getAPEnv().getTypeUtils());
+//        System.out.println("retType: "+retType+" retType.getClass(): "+retType.getClass());
+        return retType;
+    }
+       
+    private JType getType(TypeMirror typeMirror) throws IOException {
+        String type = typeMirror.toString();
+        JType jType = null;
         try {
-            type = cm.parseType(typeName);
-            return type;
+//            System.out.println("typeName: "+typeName);
+            jType = cm.parseType(type);
+//            System.out.println("type: "+type);
+            return jType;
         } catch (ClassNotFoundException e) {
-            type = cm.ref(typeName);
+            jType = cm.ref(type);
         }
-        return type;
+        return jType;
     }
     
     private ArrayList<MemberInfo> sortMembers(ArrayList<MemberInfo> members) {
@@ -447,7 +467,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         String name = exceptionName;
         FaultInfo faultInfo;
         if (isWSDLException) {
-            TypeMirror beanType = propertyToTypeMap.get(FAULT_INFO);
+            TypeMirror beanType =  getSafeType(propertyToTypeMap.get(FAULT_INFO));
             faultInfo = new FaultInfo(TypeMonikerFactory.getTypeMoniker(beanType), true);
             namespace = webFault.targetNamespace().length()>0 ?
                                webFault.targetNamespace() : namespace;
@@ -481,8 +501,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         TreeSet<String> keys = new TreeSet<String>(propertyToTypeMap.keySet());
         for (String key : keys) {
             TypeMirror type = propertyToTypeMap.get(key);
-            erasureType = apEnv.getTypeUtils().getErasure(type);
-            member = new MemberInfo(-10, erasureType.toString(), key, null);
+            erasureType =  getSafeType(type);
+            member = new MemberInfo(-10, erasureType, key, null);
             members.add(member);
         } 
         faultInfo.setMembers(members);
@@ -553,7 +573,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
-    private void writeMember(JDefinedClass cls, int paramIndex, String paramType, 
+    private void writeMember(JDefinedClass cls, int paramIndex, TypeMirror paramType, 
         String paramName, QName elementName) throws IOException {
 
         if (cls == null)

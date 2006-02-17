@@ -989,7 +989,7 @@ public class RuntimeModeler {
      * exception that contains the <code>WebFault</code> annotation.  Otherwise it returns null
      */
     protected Method getWSDLExceptionFaultInfo(Class exception) {
-        if (!exception.isAnnotationPresent(WebFault.class))
+        if (getPrivClassAnnotation(exception, WebFault.class) == null)
             return null;
         try {
             Method getFaultInfo = exception.getMethod("getFaultInfo", new Class[0]);
