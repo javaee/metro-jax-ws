@@ -323,7 +323,7 @@ public class RuntimeEndpointInfo extends Endpoint
         }
         
         if (isProviderEndpoint()) {
-            deployProvider();
+            checkProvider();
         } else {
             // Create runtime model for non Provider endpoints    
             createModel();
@@ -333,7 +333,14 @@ public class RuntimeEndpointInfo extends Endpoint
             if (getPortName() == null) {
                 setPortName(runtimeModel.getPortName());
             }
-            if (getBinding().getHandlerChain() == null) {
+            //set mtom processing
+            if(binding instanceof SOAPBindingImpl){
+                runtimeModel.enableMtom(((SOAPBinding)binding).isMTOMEnabled());
+            }
+        }
+        // Process @HandlerChain, if handler-chain is not set via Deployment 
+        // Descriptor
+        if (getBinding().getHandlerChain() == null) {
                 String bindingId = ((BindingImpl) binding).getBindingId();
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
@@ -346,11 +353,6 @@ public class RuntimeEndpointInfo extends Endpoint
                             chainInfo.getRoles());
                     }
                 }
-            }
-            //set momt processing
-            if(binding instanceof SOAPBindingImpl){
-                runtimeModel.enableMtom(((SOAPBinding)binding).isMTOMEnabled());
-            }
         }
         deployed = true;
     }
@@ -408,7 +410,7 @@ public class RuntimeEndpointInfo extends Endpoint
     /*
      * Provider endpoint validation
      */
-    private void deployProvider() {
+    private void checkProvider() {
         if (!Provider.class.isAssignableFrom(getImplementorClass())) {
             throw new ServerRtException("not.implement.provider",
                 new Object[] {getImplementorClass()});
