@@ -36,14 +36,19 @@ public class MessageContextImpl extends HashMap<String, Object>
     private HashMap<String, Scope> propertyScopes =
         new HashMap<String, Scope>();
 
-    // todo: check property names
+    
     public void setScope(String name, Scope scope) {
+        if (!this.containsKey(name)) {
+            throw new IllegalArgumentException("Illegal use of setScope() on " +
+                    "non-existant property :"+ name);
+        }
         propertyScopes.put(name, scope);
     }
 
     public Scope getScope(String name) {
         if (!this.containsKey(name)) {
-            throw new IllegalArgumentException("todo: text");
+            throw new IllegalArgumentException("Illegal use of getScope() on " +
+                    "non-existant property :"+ name);
         }
         Scope scope = propertyScopes.get(name);
         if (scope == null) {
