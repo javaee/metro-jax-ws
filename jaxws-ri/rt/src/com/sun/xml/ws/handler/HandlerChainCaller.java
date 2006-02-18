@@ -502,7 +502,7 @@ public class HandlerChainCaller {
                 while (i < logicalHandlers.size()) {
                     if (logicalHandlers.get(i).
                         handleMessage(holder.getLMC()) == false) {
-
+                        holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                         if (responseExpected) {
                             // reverse and call handle message
                             callLogicalHandleMessage(holder, i-1, 0);
@@ -520,8 +520,8 @@ public class HandlerChainCaller {
                 logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
                     insertFaultMessage(holder, (ProtocolException) re);
-
                     // reverse direction and handle fault
+                    holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                     if (i>0) {
                         try {
                             callLogicalHandleFault(holder, i-1, 0);
@@ -549,6 +549,7 @@ public class HandlerChainCaller {
 
                         if (responseExpected) {
                             // reverse and call handle message/response
+                            holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
                             callLogicalHandleMessage(holder, i+1,
                                 logicalHandlers.size()-1);
                             callProtocolHandleMessage(holder, 0,
@@ -572,6 +573,7 @@ public class HandlerChainCaller {
                     insertFaultMessage(holder, (ProtocolException) re);
                     
                     // reverse direction and handle fault
+                    holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
                     try {
                         // if i==size-1, no more logical handlers to call
                         if (i == logicalHandlers.size()-1 ||
@@ -616,6 +618,7 @@ public class HandlerChainCaller {
 
                         if (responseExpected) {
                             // reverse and call handle message/response
+                            holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                             if (i>0) {
                                 callProtocolHandleMessage(holder, i-1, 0);
                             }
@@ -639,6 +642,7 @@ public class HandlerChainCaller {
                     insertFaultMessage(holder, (ProtocolException) re);
 
                     // reverse direction and handle fault
+                    holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                     try {
                         if (i == 0 || // still on first handler
                             callProtocolHandleFault(holder, i-1, 0)) {
@@ -668,6 +672,7 @@ public class HandlerChainCaller {
                         handleMessage(holder.getSMC()) == false) {
 
                         // reverse and call handle message/response
+                        holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
                         if (responseExpected && i != soapHandlers.size()-1) {
                             callProtocolHandleMessage(holder, i+1,
                                 soapHandlers.size()-1);
@@ -688,6 +693,7 @@ public class HandlerChainCaller {
                     insertFaultMessage(holder, (ProtocolException) re);
 
                     // reverse direction and handle fault
+                    holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
                     try {
                         if (i < soapHandlers.size()-1) {
                             callProtocolHandleFault(holder, i+1,
@@ -714,8 +720,7 @@ public class HandlerChainCaller {
     /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
-     * Start and end indices are inclusive. In this case, the return
-     * value or exception from the handler is ignored.
+     * Start and end indices are inclusive. 
      */
     private void callLogicalHandleMessage(ContextHolder holder,
             int start, int end) {
@@ -725,22 +730,14 @@ public class HandlerChainCaller {
             start == logicalHandlers.size()) {
             return;
         }
-        if (start > end) {
-            for (int i=start; i>=end; i--) {
-                abstractHandle(logicalHandlers.get(i), holder.getLMC());
-            }
-        } else {
-            for (int i=start; i<=end; i++) {
-                abstractHandle(logicalHandlers.get(i), holder.getLMC());
-            }
-        }
+        callGenericHandleMessage(logicalHandlers,holder.getLMC(),start,end);        
+        
     }
 
     /**
      * Method called for abnormal processing (for instance, as the
      * result of a handler returning false during normal processing).
-     * Start and end indices are inclusive. In this case, the return
-     * value or exception from the handler is ignored.
+     * Start and end indices are inclusive. 
      */
     private void callProtocolHandleMessage(ContextHolder holder,
         int start, int end) {
@@ -748,28 +745,47 @@ public class HandlerChainCaller {
         if (soapHandlers.isEmpty()) {
             return;
         }
-
-        if (start > end) {
-            for (int i=start; i>=end; i--) {
-                abstractHandle(soapHandlers.get(i), holder.getSMC());
-            }
-        } else {
-            for (int i=start; i<=end; i++) {
-                abstractHandle(soapHandlers.get(i), holder.getSMC());
-            }
-        }
+        callGenericHandleMessage(soapHandlers,holder.getSMC(),start,end);        
     }
 
     /**
-     * Utility method for calling handleMessage and ignoring
-     * the result.
+     * Utility method for calling handleMessage during abnormal processing(for 
+     * instance, as the result of a handler returning false during normal 
+     * processing). Start and end indices are inclusive. 
      */
-    private void abstractHandle(Handler h, MessageContext c) {
-        try {
-            h.handleMessage(c);
-        } catch (Exception e) {
-            logger.log(Level.INFO, "Exception ignored during handleMessage", e);
+     
+    private <C extends MessageContext> void callGenericHandleMessage(List<? extends Handler> handlerList,
+        C context, int start, int end) {
+        if (handlerList.isEmpty()) {
+            return ;
         }
+        int i = start;
+        if (start > end) {
+            try {
+                while (i >= end) {
+                    if (handlerList.get(i).handleMessage(context) == false)
+                        return;
+                    i--;
+                }
+            } catch (RuntimeException re) {
+                logger.log(Level.FINER,
+                    "exception in handler chain", re);
+                throw re;
+            }
+        } else {
+            try {
+                while (i <= end) {
+                    if (handlerList.get(i).handleMessage(context) == false) 
+                        return ;
+                    i++;
+                }
+            } catch (RuntimeException re) {
+                logger.log(Level.FINER,
+                    "exception in handler chain", re);
+                throw re;
+            }
+        }
+        return;
     }
 
     /*
@@ -799,8 +815,8 @@ public class HandlerChainCaller {
     /*
      * Used by callLogicalHandleFault and callProtocolHandleFault.
      */
-    private boolean callGenericHandleFault(List<? extends Handler> handlerList,
-        MessageContext context, int start, int end) {
+    private <C extends MessageContext> boolean callGenericHandleFault(List<? extends Handler> handlerList,
+        C context, int start, int end) {
 
         if (handlerList.isEmpty()) {
             return true;
