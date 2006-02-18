@@ -98,8 +98,8 @@ public class Tie implements com.sun.xml.ws.spi.runtime.Tie {
         ctxt.setScope(MessageContext.WSDL_SERVICE, Scope.APPLICATION);
         ctxt.put(MessageContext.WSDL_PORT, endpoint.getPortName());          
         ctxt.setScope(MessageContext.WSDL_PORT, Scope.APPLICATION);
-        ctxt.setScope(JAXWSProperties.MTOM_THRESHOLOD_VALUE, Scope.APPLICATION);
         ctxt.put(JAXWSProperties.MTOM_THRESHOLOD_VALUE, endpoint.getMtomThreshold());
+        ctxt.setScope(JAXWSProperties.MTOM_THRESHOLOD_VALUE, Scope.APPLICATION);
     }
     
 }
