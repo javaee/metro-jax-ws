@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import com.sun.xml.ws.spi.runtime.Binding;
 
 /**
  *
@@ -59,14 +60,16 @@ public class HttpEndpoint {
     
     private String address;
     private HttpContext httpContext;
-    private boolean published;
-    private RuntimeEndpointInfo endpointInfo;
+    private final RuntimeEndpointInfo endpointInfo;
     private String primaryWsdl;
     
     private static final int MAX_THREADS = 5;
     
-    public HttpEndpoint(RuntimeEndpointInfo rtEndpointInfo) {
-        this.endpointInfo = rtEndpointInfo;
+    public HttpEndpoint(Object implementor, Binding binding, List<Source>metadata, Map<String, Object> properties ) {
+        endpointInfo = new RuntimeEndpointInfo();
+        endpointInfo.setImplementor(implementor);
+        endpointInfo.setImplementorClass(implementor.getClass());
+        endpointInfo.setBinding(binding);
         endpointInfo.setUrlPattern("");
     }
     
@@ -224,24 +227,17 @@ public class HttpEndpoint {
     }
 
     public void publish(Object serverContext) {
-        if (!(serverContext instanceof HttpContext)) {
-            throw new ServerRtException("not.HttpContext.type",
-                new Object[] { serverContext.getClass() });
-        }
-        
         this.httpContext = (HttpContext)serverContext;
         try {
             publish(httpContext);
         } catch(Exception e) {
             throw new ServerRtException("server.rt.err", new Object[] { e } );
         }
-        published = true;
     }
 
     public void stop() {
         if (address == null) {
             // Application created its own HttpContext
-            // httpContext.setHandler(null);
             httpContext.getServer().removeContext(httpContext);
         } else {
             // Remove HttpContext created by JAXWS runtime 
@@ -250,7 +246,6 @@ public class HttpEndpoint {
         
         // Invoke WebService Life cycle method
         endpointInfo.endService();
-        published = false;
     }
 
     private void publish (HttpContext context) throws Exception {
@@ -267,7 +262,5 @@ public class HttpEndpoint {
         Tie tie = new Tie();
         context.setHandler(new WSHttpHandler(tie, endpointInfo));
     }    
-    
-
     
 }

@@ -23,6 +23,8 @@ package com.sun.xml.ws.transport.http.server;
 
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Binding;
@@ -41,69 +43,106 @@ public class EndpointImpl extends Endpoint {
     private static final WebServicePermission ENDPOINT_PUBLISH_PERMISSION =
         new WebServicePermission("publishEndpoint");
     private Object actualEndpoint;        // Don't declare as HttpEndpoint type
-    private RuntimeEndpointInfo rtEndpointInfo;
+    private Executor executor;
+    private boolean published;
+    private boolean stopped;
+    private final com.sun.xml.ws.spi.runtime.Binding binding;
+    private final Object implementor;
+    private Map<String, Object> properties;
+    private java.util.List<Source> metadata;
    
     public EndpointImpl(String bindingId, Object impl) {
-        rtEndpointInfo = new RuntimeEndpointInfo();
-        rtEndpointInfo.setImplementor(impl);
-        rtEndpointInfo.setImplementorClass(impl.getClass());
-        com.sun.xml.ws.spi.runtime.Binding binding =
-            BindingImpl.getBinding(bindingId, impl.getClass(), null, false);
-        rtEndpointInfo.setBinding(binding);
+        this.implementor = impl;
+        this.binding = BindingImpl.getBinding(bindingId, impl.getClass(), null, false);
     }
     
     public Binding getBinding() {
-        return rtEndpointInfo.getBinding();
+        return binding;
     }
 
     public Object getImplementor() {
-        return rtEndpointInfo.getImplementor();
+        return implementor;
     }
 
     public void publish(String address) {
+        canPublish();
+        URL url;
+        try {
+            url = new URL(address);
+        } catch (MalformedURLException ex) {
+            throw new IllegalArgumentException("Cannot create URL for this address "+address);
+        }
+        if (!url.getProtocol().equals("http")) {
+            throw new IllegalArgumentException(url.getProtocol()+" protocol based address is not supported");
+        }
         checkPlatform();
+        // Don't load HttpEndpoint class before as it may load HttpServer classes
+        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties);
         ((HttpEndpoint)actualEndpoint).publish(address);
+        published = true;
     }
 
     public void publish(Object serverContext) {
+        canPublish();
         checkPlatform();
+        if (!com.sun.net.httpserver.HttpContext.class.isAssignableFrom(serverContext.getClass())) {
+            throw new IllegalArgumentException(serverContext.getClass()+" is not a supported context.");
+        }
+        // Don't load HttpEndpoint class before as it may load HttpServer classes
+        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties);
         ((HttpEndpoint)actualEndpoint).publish(serverContext);
+        published = true;
     }
 
     public void stop() {
-        ((HttpEndpoint)actualEndpoint).stop();
+        if (published) {
+            ((HttpEndpoint)actualEndpoint).stop();
+            published = false;
+            stopped = true;
+        }
     }
 
     public boolean isPublished() {
-        return rtEndpointInfo.isDeployed();
+        return published;
+    }
+    
+    private void canPublish() {
+        if (published) {
+            throw new IllegalStateException(
+                "Cannot publish this endpoint. Endpoint has been already published.");
+        }
+        if (stopped) {
+            throw new IllegalStateException(
+                "Cannot publish this endpoint. Endpoint has been already stopped.");
+        }
     }
 
     public java.util.List<Source> getMetadata() {
-        return rtEndpointInfo.getMetadata();
+        return metadata;
     }
 
     public void setMetadata(java.util.List<Source> metadata) {
-        if (isPublished()) {
-            throw new IllegalStateException("Cannot set Metadata. Already published");
+        if (published) {
+            throw new IllegalStateException("Cannot set Metadata. Endpoint is already published");
         }
-        rtEndpointInfo.setMetadata(metadata);
-        
+        this.metadata = metadata;
     }
 
     public Executor getExecutor() {
-        return rtEndpointInfo.getExecutor();
+        return executor;
     }
 
     public void setExecutor(Executor executor) {
-        rtEndpointInfo.setExecutor(executor);
+        // Not used in our implementation
+        this.executor = executor;
     }
 
     public Map<String, Object> getProperties() {
-        return rtEndpointInfo.getProperties();
+        return properties;
     }
 
     public void setProperties(Map<String, Object> map) {
-        rtEndpointInfo.setProperties(map);
+        this.properties = map;
     }
     
     /*
@@ -125,8 +164,6 @@ public class EndpointImpl extends Endpoint {
             throw new UnsupportedOperationException("NOT SUPPORTED");
         }
         
-        // Don't load HttpEndpoint class before as it may load HttpServer classes
-        actualEndpoint = new HttpEndpoint(rtEndpointInfo);
     }
     
 }
