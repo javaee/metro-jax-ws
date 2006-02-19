@@ -71,6 +71,8 @@ public class HttpEndpoint {
         endpointInfo.setImplementorClass(implementor.getClass());
         endpointInfo.setBinding(binding);
         endpointInfo.setUrlPattern("");
+        endpointInfo.setMetadata(metadata);
+        endpointInfo.setProperties(properties);
     }
     
     // If Service Name is in properties, set it on RuntimeEndpointInfo
