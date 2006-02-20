@@ -40,6 +40,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.Provider;
 
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
@@ -131,6 +132,10 @@ public class HandlerAnnotationProcessor {
     }
     
     static Class getSEI(Class clazz) {
+        if (Provider.class.isAssignableFrom(clazz)) {
+            //No SEI for Provider Implementation
+            return null;
+        }
         if (!clazz.isAnnotationPresent(WebService.class)) {
             throw new UtilException("util.handler.no.webservice.annotation",
                 new Object[] {clazz.getCanonicalName()});
