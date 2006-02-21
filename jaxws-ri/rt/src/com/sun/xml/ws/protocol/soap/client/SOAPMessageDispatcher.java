@@ -253,9 +253,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             setResponseType(wse, messageInfo);
             messageInfo.setResponse(wse);
         } catch (Throwable e) {
-            WebServiceException wse = new WebServiceException(e);
-            setResponseType(wse, messageInfo);
-            messageInfo.setResponse(wse);
+            RuntimeException ex = (RuntimeException)e;
+            setResponseType(ex, messageInfo);
+            messageInfo.setResponse(ex);
         }
         return sm;
     }
@@ -390,10 +390,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     protected void setResponseType(Throwable e, MessageInfo messageInfo) {
         if (e instanceof RuntimeException) {
             messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
-            if (e instanceof ClientTransportException) {
-                Throwable temp = e;
-                e = new WebServiceException(temp.getMessage(), temp);
-            }
         } else {
             messageInfo.setResponseType(MessageStruct.CHECKED_EXCEPTION_RESPONSE);
         }
@@ -663,9 +659,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sm.saveChanges();
             }
         } catch (SOAPException e) {
-            throw new WebServiceException(e);
+            throw new RuntimeException(e);
         } catch (TransformerException e) {
-            throw new WebServiceException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -774,7 +770,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 try {
                     messageInfo.setResponse(part.getContent());
                 } catch (SOAPException e) {
-                    throw new WebServiceException(e);
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -807,12 +803,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 if (response instanceof SOAPFaultException) {
                     messageInfo.setResponse((SOAPFaultException) response);
                 } else {
-                    WebServiceException jex = null;
+
                     if (response instanceof Exception) {
-                        jex = new WebServiceException((Exception) response);
+                        RuntimeException jex = (RuntimeException)response;
                         messageInfo.setResponse(jex);
                     }
-                    messageInfo.setResponse(response);
                 }
                 return;
             default:
@@ -838,7 +833,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 try {
                     sm.saveChanges();
                 } catch (SOAPException e) {
-                    throw new WebServiceException(e);
+                    throw new RuntimeException(e);
                 }
         }
     }
@@ -855,7 +850,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 try {
                     sm.saveChanges();
                 } catch (SOAPException e) {
-                    throw new WebServiceException(e);
+                    throw new RuntimeException(e);
                 }
         }
     }

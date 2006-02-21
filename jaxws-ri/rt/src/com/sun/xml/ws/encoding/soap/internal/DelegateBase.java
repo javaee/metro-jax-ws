@@ -71,7 +71,6 @@ public class DelegateBase implements Delegate {
         if (!contactInfoList.iterator().hasNext())
             throw new RuntimeException("can't pickup message encoder/decoder, no ContactInfo!");
 
-        //TODO: use new prop MAP-kw
         ContextMap properties = (ContextMap)
                 messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         BindingProvider stub = (BindingProvider)properties.get(BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY);

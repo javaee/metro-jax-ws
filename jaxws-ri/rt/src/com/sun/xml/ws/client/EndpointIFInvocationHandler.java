@@ -106,16 +106,8 @@ public class EndpointIFInvocationHandler
             } else {
                 return method.invoke(this, args);
             }
-        } catch (IllegalAccessException e) {
-            throw new WebServiceException(e.getMessage(), e);
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } catch (java.lang.reflect.UndeclaredThrowableException ex) {
-            throw new WebServiceException(ex.getMessage(), ex.getCause());
-        } catch (java.lang.reflect.GenericSignatureFormatError ex) {
-            throw new WebServiceException(ex.getMessage(), ex);
-        } catch (java.lang.reflect.MalformedParameterizedTypeException ex) {
-            throw new WebServiceException(ex.getMessage(), ex);
         }
     }
 
