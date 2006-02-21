@@ -106,16 +106,12 @@
         <include name="prototype*"/>
         <include name="depend"/>
         <include name="copyright"/>
-        <include name="i.jwsenv"/>
       </fileset>
     </copy>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy todir="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/share/lib/install/templates" overwrite="yes">
-      <fileset dir="${basedir}/pkg/${pkg.jaxws}">
-        <include name="*.template"/>
-      </fileset>
-    </copy>
+    <copy file="${basedir}/pkg/${pkg.jaxws}/wsgen.sh" tofile="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/bin/wsgen" overwrite="yes"/>
+    <copy file="${basedir}/pkg/${pkg.jaxws}/wsimport.sh" tofile="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/bin/wsimport" overwrite="yes"/>
 
     <!-- copy jaxws specific jar files into the right directory structure -->
     <copy todir="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/share/lib" overwrite="yes">
