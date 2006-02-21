@@ -435,6 +435,18 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     private void setMessageStruct(MessageStruct messageStruct, Object msg) {
         messageStruct.setData(new Object[]{msg});
         setMetadata(getRequestContext(), msg, messageStruct);
+         //set mtom threshold value to
+        Object mtomThreshold = getRequestContext().get(BindingProviderProperties.MTOM_THRESHOLOD_VALUE);
+        messageStruct.setMetaData(BindingProviderProperties.MTOM_THRESHOLOD_VALUE, mtomThreshold);
+
+        // Set MTOM processing for XML requests only
+       /* if (_rtcontext != null && _rtcontext.getModel() != null) {
+            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding) ? (javax.xml.ws.soap.SOAPBinding) binding : null;
+            if (sb != null) {
+                _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
+            }
+        }
+        */
 
         // Initialize content negotiation property
         ContentNegotiation.initialize(getRequestContext(), messageStruct);

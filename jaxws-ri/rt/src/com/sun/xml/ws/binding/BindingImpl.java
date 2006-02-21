@@ -138,6 +138,10 @@ public abstract class BindingImpl implements
         return bindingId;
     }
 
+    public void setBindingId(String id) {
+        this.bindingId = id;
+    }
+
     public String getActualBindingId() {
         return bindingId;
     }

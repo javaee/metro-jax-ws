@@ -215,13 +215,15 @@ public class SOAPRuntimeModel extends RuntimeModel {
         } else if (obj instanceof SOAPVersionMismatchException) {
             QName faultCode = SOAPConstants.FAULT_CODE_VERSION_MISMATCH;
             String faultString = "SOAP envelope version mismatch";
-            faultInfo = new SOAPFaultInfo(faultString, faultCode, actor, null, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
+            faultInfo =
+                new SOAPFaultInfo(faultString, faultCode, actor, null, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
         } else if (obj instanceof Exception) {
             faultInfo = createSOAPFaultInfo((Exception)obj, actor, detail);
         } else {
             QName faultCode = SOAPConstants.FAULT_CODE_SERVER;
             String faultString = "Unknown fault type:"+obj.getClass();
-            faultInfo = new SOAPFaultInfo(faultString, faultCode, actor, null,javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
+            faultInfo =
+                new SOAPFaultInfo(faultString, faultCode, actor, null,javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING);
         }
 
         if (internalMsg == null) {

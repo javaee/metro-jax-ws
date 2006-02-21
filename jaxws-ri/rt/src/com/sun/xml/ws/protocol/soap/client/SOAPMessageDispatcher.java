@@ -19,20 +19,10 @@
  */
 package com.sun.xml.ws.protocol.soap.client;
 
-import com.sun.xml.ws.pept.ept.EPTFactory;
-import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.ws.pept.presentation.MessageStruct;
-import com.sun.xml.ws.pept.protocol.MessageDispatcher;
+import com.sun.xml.messaging.saaj.soap.MessageImpl;
 import com.sun.xml.ws.binding.BindingImpl;
-import com.sun.xml.ws.client.AsyncHandlerService;
-import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.client.ClientTransportException;
-import com.sun.xml.ws.client.ContextMap;
-import com.sun.xml.ws.client.EndpointIFContext;
-import com.sun.xml.ws.client.EndpointIFInvocationHandler;
-import com.sun.xml.ws.client.RequestContext;
-import com.sun.xml.ws.client.ResponseContext;
-import com.sun.xml.ws.client.WSFuture;
+import com.sun.xml.ws.client.*;
+import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.ResponseImpl;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
@@ -46,10 +36,16 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.handler.SOAPHandlerContext;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.model.RuntimeModel;
+import com.sun.xml.ws.pept.ept.EPTFactory;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.pept.presentation.MessageStruct;
+import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
@@ -59,64 +55,27 @@ import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPConnectionUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import javax.xml.soap.MimeHeader;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
+import javax.xml.soap.*;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.ws.Binding;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.ProtocolException;
-import javax.xml.ws.Response;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebServiceException;
+import javax.xml.ws.*;
+import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
+import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
-import javax.activation.DataHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadFactory;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.xml.ws.handler.MessageContextUtil;
-import com.sun.xml.messaging.saaj.soap.MessageImpl;
-
-import static javax.xml.ws.BindingProvider.PASSWORD_PROPERTY;
-import static javax.xml.ws.BindingProvider.USERNAME_PROPERTY;
-
-import static com.sun.xml.ws.client.BindingProviderProperties.ACCEPT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.BINDING_ID_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.CLIENT_TRANSPORT_FACTORY;
-import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CLIENT_HANDLE_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_CONTEXT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RESPONSE_CONTEXT_PROPERTY;
-import static com.sun.xml.ws.client.BindingProviderProperties.JAXWS_RUNTIME_CONTEXT;
-import static com.sun.xml.ws.client.BindingProviderProperties.ONE_WAY_OPERATION;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.SOAP12_XML_FI_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_ACCEPT_VALUE;
-import static com.sun.xml.ws.client.BindingProviderProperties.XML_FI_ACCEPT_VALUE;
-import com.sun.xml.ws.spi.runtime.ClientTransportFactory;
 
 
 /**
@@ -166,7 +125,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         boolean isRequestResponse = (messageInfo.getMEP() == MessageStruct.REQUEST_RESPONSE_MEP);
 
         try {
-            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+            if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+            {
                 sm = (SOAPMessage) messageInfo.getData()[0];
                 // Ensure supplied message is encoded according to conneg
                 FastInfosetUtil.ensureCorrectEncoding(messageInfo, sm);
@@ -237,7 +197,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerContext = new SOAPHandlerContext(messageInfo, im, sm);
                     //this is needed so that attachments are compied from RESPONSE_MESSAGE_ATTACHMEMTN PROPERTY
                     handlerContext.getMessageContext().put(
-                                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                        MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
 
                     //now that the MESSAGE_OUTBOUND_PROPERTY is set so populate the attachemnts
                     handlerContext.populateAttachmentMap();
@@ -327,7 +287,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         // process the properties
         if (properties != null) {
-            for (Iterator names = properties.getPropertyNames(); names.hasNext();) {
+            for (Iterator names = properties.getPropertyNames(); names.hasNext();)
+            {
                 String propName = (String) names.next();
 
                 // consume PEPT-specific properties
@@ -348,7 +309,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         }
                         soapMessage.getMimeHeaders().addHeader("Authorization", "Basic " + credentials);
                     }
-                } else if (propName.equals(BindingProvider.SOAPACTION_USE_PROPERTY)) {
+                } else
+                if (propName.equals(BindingProvider.SOAPACTION_USE_PROPERTY)) {
                     useSoapAction = ((Boolean)
                         properties.get(BindingProvider.SOAPACTION_USE_PROPERTY)).booleanValue();
                     if (useSoapAction)
@@ -364,7 +326,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
 
         String bindingId = getBindingId(messageInfo);
-        if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+        if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)|| bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
             soapMessage.getMimeHeaders().setHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
         } else {
@@ -381,7 +343,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (javaMethod != null) {
                 soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
                 header.clear();
-                if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+                if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)|| bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
                     if ((soapAction != null) && (soapAction.length() > 0)) {
                         ((MessageImpl) soapMessage).setAction(soapAction);
                     }
@@ -393,13 +355,21 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     }
                 }
             }
-        } else if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null) {
+        } else
+        if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null)
+        {
             //bug fix 6344358
             header.clear();
-            if (soapAction == null) {
-                soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
+            if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
+                if ((soapAction != null) && (soapAction.length() > 0)) {
+                    ((MessageImpl) soapMessage).setAction(soapAction);
+                }
             } else {
-                soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
+                if (soapAction == null) {
+                    soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"\"");
+                } else {
+                    soapMessage.getMimeHeaders().addHeader("SOAPAction", "\"" + soapAction + "\"");
+                }
             }
         }
 
@@ -460,7 +430,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         // If XML request
         if (contentNegotiationType == "pessimistic") {
             try {
-                if (((com.sun.xml.messaging.saaj.soap.MessageImpl) sm).isFastInfoset()) {
+                if (((com.sun.xml.messaging.saaj.soap.MessageImpl) sm).isFastInfoset())
+                {
                     Map requestContext = (Map) messageInfo.getMetaData(JAXWS_CONTEXT_PROPERTY);
                     // Further requests will be send using FI
                     requestContext.put(CONTENT_NEGOTIATION_PROPERTY, "optimistic");
@@ -489,14 +460,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             rtContext.setHandlerContext(handlerContext);
 
         handlerContext.getMessageContext().put(
-                MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
+            MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
         //set MESSAGE_ATTACHMENTS property
         MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);
         if (msgCtxt != null) {
             try {
                 //clear the attMap on this messageContext, its from request
                 Map<String, DataHandler> attMap = (Map<String, DataHandler>) msgCtxt.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
-                if(attMap != null)
+                if (attMap != null)
                     attMap.clear();
                 MessageContextUtil.copyInboundMessageAttachments(msgCtxt, sm.getAttachments());
             } catch (SOAPException e) {
@@ -548,7 +519,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         decoder.toMessageInfo(im, messageInfo);
         updateResponseContext(messageInfo, handlerContext);
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+        {
             messageInfo.setResponse(sm);
             postReceiveAndDecodeHook(messageInfo);
         }
@@ -794,7 +766,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         DispatchContext dispatchContext = (DispatchContext) messageInfo
             .getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
         if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
-            && (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE) == DispatchContext.MessageType.SOURCE_MESSAGE)) {
+            && (dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE) == DispatchContext.MessageType.SOURCE_MESSAGE))
+        {
             Object response = messageInfo.getResponse();
             if (response instanceof SOAPMessage) {
                 SOAPPart part = ((SOAPMessage) response).getSOAPPart();
@@ -854,7 +827,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void postHandlerOutboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+        {
             InternalMessage im = handlerContext.getInternalMessage();
             if (im != null) {
                 Object value = im.getBody().getValue();
@@ -870,7 +844,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void postHandlerInboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+        {
             InternalMessage im = handlerContext.getInternalMessage();
             if (im != null) {
                 Object value = im.getBody().getValue();

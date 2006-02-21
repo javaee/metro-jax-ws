@@ -151,7 +151,8 @@ public class EndpointIFInvocationHandler
 
         messageStruct.setMethod(method);
         messageStruct.setData(parameters);
-        RequestContext requestContext = (RequestContext)(java.util.Map)((BindingProvider) _proxy).getRequestContext();
+        RequestContext requestContext = (RequestContext)(java.util.Map)
+            ((BindingProvider) _proxy).getRequestContext();
         requestContext.put(JAXWS_CLIENT_HANDLE_PROPERTY, _proxy);
         messageStruct.setMetaData(JAXWS_RUNTIME_CONTEXT, _rtcontext);
         messageStruct.setMetaData(JAXWS_CONTEXT_PROPERTY, requestContext);
@@ -167,7 +168,9 @@ public class EndpointIFInvocationHandler
 
         // Set MTOM processing for XML requests only
         if (_rtcontext != null && _rtcontext.getModel() != null) {
-            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding) ? (javax.xml.ws.soap.SOAPBinding) binding : null;
+            javax.xml.ws.soap.SOAPBinding sb =
+                (binding instanceof javax.xml.ws.soap.SOAPBinding) ?
+                    (javax.xml.ws.soap.SOAPBinding) binding : null;
             if (sb != null) {
                 _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
             }
