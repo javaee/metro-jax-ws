@@ -167,9 +167,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     handlerResult = false;
                     if (MessageContextUtil.ignoreFaultInMessage(
                         handlerContext.getMessageContext())) {
-                        // ignore fault in this case and use exception
+                        // Ignore fault in this case and use exception.
+                        // This line will change to "throw pe;" and
+                        // WSE must also be rethrown without wrapping.
                         throw new WebServiceException(pe);
                     }
+                } catch (RuntimeException re) {
+                    // handlers are expected to be able to throw RE
+                    throw new WebServiceException(re);
                 }
                 sm = handlerContext.getSOAPMessage();
                 postHandlerOutboundHook(messageInfo, handlerContext, sm);
@@ -625,6 +630,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      * (e.g., a ProtocolException), we need to wrap any such exceptions
      * here because the main catch clause assumes that WebServiceExceptions
      * are already wrapped.
+     *
+     * This will change in the spec and web service exceptions will
+     * not be rewrapped
      */
     protected boolean callHandlersOnResponse(SOAPHandlerContext handlerContext) {
         HandlerChainCaller caller =
@@ -632,8 +640,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         try {
             return caller.callHandlers(Direction.INBOUND,
                 RequestOrResponse.RESPONSE, handlerContext, false);
-        } catch (WebServiceException wse) {
-            throw new WebServiceException(wse);
+        } catch (RuntimeException re) {
+            // handlers are expected to be able to throw RE
+            throw new WebServiceException(re);
         }
     }
 
