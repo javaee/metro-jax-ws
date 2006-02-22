@@ -98,7 +98,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
-        makeSafeVisitor = new MakeSafeTypeVisitor();
+        makeSafeVisitor = new MakeSafeTypeVisitor(builder.getAPEnv());
     }
 
     protected void processWebService(WebService webService, TypeDeclaration d) {

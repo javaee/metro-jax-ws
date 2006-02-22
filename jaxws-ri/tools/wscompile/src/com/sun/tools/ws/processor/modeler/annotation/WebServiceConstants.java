@@ -68,6 +68,10 @@ public interface WebServiceConstants { //extends RmiConstants {
         java.io.Serializable.class.getName();
     public static final String HOLDER_CLASSNAME =
         javax.xml.ws.Holder.class.getName();
+    public static final String COLLECTION_CLASSNAME =
+        java.util.Collection.class.getName();    
+    public static final String MAP_CLASSNAME =
+        java.util.Map.class.getName();    
     
 
     // 181 constants

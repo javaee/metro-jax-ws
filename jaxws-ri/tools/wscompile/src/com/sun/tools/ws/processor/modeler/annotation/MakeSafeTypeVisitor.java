@@ -25,6 +25,7 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
 import com.sun.istack.tools.APTTypeVisitor;
 
+import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
@@ -46,22 +47,24 @@ import java.util.List;
  *
  * @author dkohlert
  */
-public class MakeSafeTypeVisitor extends APTTypeVisitor<TypeMirror, Types> {
-    
+public class MakeSafeTypeVisitor extends APTTypeVisitor<TypeMirror, Types> implements WebServiceConstants {
+    TypeDeclaration collectionDecl;
+    TypeDeclaration mapDecl;
 
     /**
      * Creates a new instance of MakeSafeTypeVisitor
      */
-    public MakeSafeTypeVisitor() {
+    public MakeSafeTypeVisitor(AnnotationProcessorEnvironment apEnv) {
+        collectionDecl = apEnv.getTypeDeclaration(COLLECTION_CLASSNAME);        
+        mapDecl = apEnv.getTypeDeclaration(MAP_CLASSNAME);
     }
     
     protected TypeMirror onArrayType(ArrayType type, Types apTypes) {
-        TypeMirror itemType = apply(type.getComponentType(), apTypes);
-        return apTypes.getArrayType(itemType);
+        return apTypes.getErasure(type);   
     }
     
     protected TypeMirror onPrimitiveType(PrimitiveType type, Types apTypes) {
-        return type;
+        return apTypes.getErasure(type);   
     }
      
     protected TypeMirror onClassType(ClassType type, Types apTypes) {
@@ -73,13 +76,17 @@ public class MakeSafeTypeVisitor extends APTTypeVisitor<TypeMirror, Types> {
     }
     
     private TypeMirror processDeclaredType(DeclaredType type, Types apTypes) {
-        Collection<TypeMirror> args = type.getActualTypeArguments();
-        TypeMirror[] safeArgs = new TypeMirror[args.size()];
-        int i = 0;
-        for (TypeMirror arg : args) {
-            safeArgs[i++]= apply(arg, apTypes);                    
+        if (TypeModeler.isSubtype(type.getDeclaration(), collectionDecl) ||
+            TypeModeler.isSubtype(type.getDeclaration(), mapDecl)) {
+            Collection<TypeMirror> args = type.getActualTypeArguments();
+            TypeMirror[] safeArgs = new TypeMirror[args.size()];
+            int i = 0;
+            for (TypeMirror arg : args) {
+                safeArgs[i++]= apply(arg, apTypes);                    
+            }
+            return apTypes.getDeclaredType(type.getDeclaration(), safeArgs);
         }
-        return apTypes.getDeclaredType(type.getDeclaration(), safeArgs);
+        return apTypes.getErasure(type);
     }
     
     protected TypeMirror onTypeVariable(TypeVariable type, Types apTypes) {
@@ -91,16 +98,6 @@ public class MakeSafeTypeVisitor extends APTTypeVisitor<TypeMirror, Types> {
     }
 
     protected TypeMirror onWildcard(WildcardType type, Types apTypes) {
-        Collection<ReferenceType> bounds = type.getLowerBounds();
-        Collection<ReferenceType> safeLowerBounds = new ArrayList<ReferenceType>(bounds.size());
-        for (ReferenceType lType : bounds) {
-            safeLowerBounds.add((ReferenceType)apply(lType, apTypes));
-        }
-        bounds = type.getUpperBounds();
-        Collection<ReferenceType> safeUpperBounds = new ArrayList<ReferenceType>(bounds.size());
-        for (ReferenceType lType : bounds) {
-            safeUpperBounds.add((ReferenceType)apply(lType, apTypes));
-        }
-        return apTypes.getWildcardType(safeUpperBounds, safeLowerBounds);
+        return apTypes.getErasure(type);   
     }
 }
