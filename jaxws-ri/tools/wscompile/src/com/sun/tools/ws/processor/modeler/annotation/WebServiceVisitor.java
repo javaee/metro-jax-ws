@@ -520,11 +520,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
                     new Object[] {classDecl.getQualifiedName()});
                     return false;
         }
-/*        if (classDecl.getDeclaringType() != null) {
-            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.is.innerclass",
+        if (classDecl.getDeclaringType() != null && !modifiers.contains(Modifier.STATIC)) {
+            builder.onError(classDecl.getPosition(), "webserviceap.webservice.class.is.innerclass.not.static",
                     new Object[] {classDecl.getQualifiedName()});
                     return false;
-        }*/
+        }
         boolean hasDefaultConstructor = false;
         for (ConstructorDeclaration constructor : classDecl.getConstructors()) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) &&
