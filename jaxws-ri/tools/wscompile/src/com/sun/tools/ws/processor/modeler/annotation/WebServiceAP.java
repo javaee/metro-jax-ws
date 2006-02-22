@@ -328,7 +328,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         WebServiceProvider webServiceProvider = null;
         WebServiceVisitor wrapperGenerator = createWrapperGenerator();
         boolean processedEndpoint = false;
-        for (TypeDeclaration typedecl: apEnv.getSpecifiedTypeDeclarations()) {
+        for (TypeDeclaration typedecl: apEnv.getTypeDeclarations()) {
             if (!(typedecl instanceof ClassDeclaration))
                 continue;
             webServiceProvider = typedecl.getAnnotation(WebServiceProvider.class);
