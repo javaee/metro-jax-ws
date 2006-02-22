@@ -30,6 +30,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.soap.MessageFactory;
@@ -305,6 +306,7 @@ public class HttpClientTransport extends WSConnectionImpl {
                 isFailure = true;
             }
         } catch (IOException e) {
+            throw new WebServiceException(e);
             // on JDK1.3.1_01, we end up here, but then getResponseCode() succeeds!
 //            if (httpConnection.getResponseCode()
 //                    == HttpURLConnection.HTTP_INTERNAL_ERROR) {
