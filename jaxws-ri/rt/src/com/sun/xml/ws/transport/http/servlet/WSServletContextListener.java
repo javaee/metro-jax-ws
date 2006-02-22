@@ -21,6 +21,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
+import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.WSDLPatcher;
 import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import java.io.InputStream;
@@ -193,10 +194,13 @@ public class WSServletContextListener
             if (wsdlFile != null) {
                 try {
                     wsdlFile = "/"+wsdlFile;
-                    URL wsdlUrl = context.getResource(wsdlFile);                   
+                    URL wsdlUrl = context.getResource(wsdlFile);
+                    if (wsdlUrl == null) {
+                        throw new ServerRtException("cannot.load.wsdl", wsdlFile);
+                    }
                     endpoint.setWsdlInfo(wsdlUrl, entityResolver);
                 } catch(java.net.MalformedURLException e) {
-                    e.printStackTrace();
+                    throw new ServerRtException("cannot.load.wsdl", wsdlFile);
                 }
             }
             

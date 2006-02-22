@@ -146,9 +146,7 @@ public class RuntimeEndpointInfoParser {
         }
         if (wsdlFile != null) {
             if (!wsdlFile.startsWith(WSServletContextListener.JAXWS_WSDL_DD_DIR)) {
-                logger.warning("Ignoring wrong wsdl="+wsdlFile+". It should start with "
-                        +WSServletContextListener.JAXWS_WSDL_DD_DIR);
-                wsdlFile = null;
+                throw new ServerRtException("runtime.parser.wrong.wsdl.location", wsdlFile);
             }
         }
         if (wsdlFile == null) {

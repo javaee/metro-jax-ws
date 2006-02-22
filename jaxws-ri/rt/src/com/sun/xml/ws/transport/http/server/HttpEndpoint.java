@@ -110,7 +110,7 @@ public class HttpEndpoint {
             ClassLoader cl = getClass().getClassLoader();
             URL url = cl.getResource(wsdlLocation);
             if (url == null) {
-                logger.info("WSDL specified by wsdlLocation="+wsdlLocation+" is not found. Ignoring it.");
+                throw new ServerRtException("cannot.load.wsdl", wsdlLocation);
             } else {
                 Source source = null;
                 try {
