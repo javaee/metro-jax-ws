@@ -81,11 +81,9 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
     // if the binding id is unknown, no roles are added
     protected void setup(String bindingId, String actualBindingId) {
         requiredRoles = new HashSet<String>();
-        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-            bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING)) {
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
             requiredRoles.add(SOAPNamespaceConstants.ACTOR_NEXT);
-        } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) ||
-            bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
+        } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             requiredRoles.add(SOAP12NamespaceConstants.ROLE_NEXT);
             requiredRoles.add(SOAP12NamespaceConstants.ROLE_ULTIMATE_RECEIVER);
         }
@@ -111,10 +109,10 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
             return SOAP12HTTP_BINDING;
         }
         if (bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING)) {
-            return SOAP11HTTP_MTOM_BINDING;
+            return SOAP11HTTP_BINDING;
         }
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
-            return SOAP12HTTP_MTOM_BINDING;
+            return SOAP12HTTP_BINDING;
         }
         return bindingId;
     }
@@ -181,16 +179,8 @@ public class SOAPBindingImpl extends BindingImpl implements SOAPBinding {
      * @param b
      */
     public void setMTOMEnabled(boolean b) {
-        if (b){
-            if (getBindingId().equals(SOAPBinding.SOAP11HTTP_BINDING))
-                setBindingId(SOAPBinding.SOAP11HTTP_MTOM_BINDING);
-            else if (getBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING))
-                setBindingId(SOAPBinding.SOAP12HTTP_MTOM_BINDING);
-        }
         this.enableMtom = b;
     }
-
-
 
     public SOAPFactory getSOAPFactory() {
         return SOAPUtil.getSOAPFactory(getBindingId());

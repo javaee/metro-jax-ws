@@ -130,21 +130,17 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
                 Object detail = getDetail(jm.getCheckedException(result.getClass()), result);
                 JAXBBridgeInfo di = new JAXBBridgeInfo(model.getBridge(ce.getDetailType()), detail);
 
-                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING) ||
-                    bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING)) {
+                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)) {
                     SOAPRuntimeModel.createFaultInBody(result, null, di, im);
-                } else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING) ||
-                    bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING)){
+                } else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)){
                     SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, di, im);
                 }
 
                 return im;
             case MessageStruct.UNCHECKED_EXCEPTION_RESPONSE:
-                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)  ||
-                    bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING))
+                if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING))
                     SOAPRuntimeModel.createFaultInBody(result, getActor(), null, im);
-                else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)||
-                    bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING))
+                else if (bindingId.equals(javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING))
                     SOAPRuntimeModel.createSOAP12FaultInBody(result, null, null, null, im);
                 return im;
         }
