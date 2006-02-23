@@ -103,8 +103,7 @@ public class RuntimeWSDLParser {
                 if (WSDLConstants.QNAME_PORT_TYPE.equals(name)) {
                     String pn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
                     if (portTypeName != null) {
-                        if(!portTypeName.getLocalPart().equals(pn)
-                           || !portTypeName.getNamespaceURI().equals(docInfo.getTargetNamespace())) {
+                        if(portTypeName.getLocalPart().equals(pn) && portTypeName.getNamespaceURI().equals(docInfo.getTargetNamespace())) {
                             docInfo.setPortType(true);
                         }
                     }
