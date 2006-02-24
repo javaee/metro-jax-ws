@@ -258,7 +258,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             setResponseType(wse, messageInfo);
             messageInfo.setResponse(wse);
         } catch (Throwable e) {
-            RuntimeException ex = (RuntimeException)e;
+            RuntimeException ex = (RuntimeException) e;
             setResponseType(ex, messageInfo);
             messageInfo.setResponse(ex);
         }
@@ -331,7 +331,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
 
         String bindingId = getBindingId(messageInfo);
-        if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)|| bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
+        if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING))
+        {
             soapMessage.getMimeHeaders().setHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
         } else {
@@ -348,7 +349,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             if (javaMethod != null) {
                 soapAction = ((com.sun.xml.ws.model.soap.SOAPBinding) javaMethod.getBinding()).getSOAPAction();
                 header.clear();
-                if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)|| bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
+                if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING))
+                {
                     if ((soapAction != null) && (soapAction.length() > 0)) {
                         ((MessageImpl) soapMessage).setAction(soapAction);
                     }
@@ -365,7 +367,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         {
             //bug fix 6344358
             header.clear();
-            if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) {
+            if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) || bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING))
+            {
                 if ((soapAction != null) && (soapAction.length() > 0)) {
                     ((MessageImpl) soapMessage).setAction(soapAction);
                 }
@@ -424,8 +427,17 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
         SOAPXMLDecoder decoder = (SOAPXMLDecoder) contactInfo.getDecoder(messageInfo);
 
-        SOAPMessage sm = decoder.toSOAPMessage(messageInfo);
 
+        SOAPMessage sm = null;
+        try {
+            sm = decoder.toSOAPMessage(messageInfo);
+        } catch (RuntimeException e) {
+            //if there is a transport error HTTP status code and response Headers
+            //need to be populated into messageContext and requestContext
+            //bug 6373688
+            setContexts(messageInfo, sm);
+            throw e;
+        }
         // Content negotiation logic
         String contentNegotiationType = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
         // If XML request
@@ -525,6 +537,14 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             messageInfo.setResponse(sm);
             postReceiveAndDecodeHook(messageInfo);
         }
+    }
+
+    private void setContexts(MessageInfo messageInfo, SOAPMessage sm) {
+        WSConnection con = (WSConnection) messageInfo.getConnection();
+        SOAPHandlerContext handlerContext = getInboundHandlerContext(messageInfo, sm);
+        MessageContextUtil.setHttpStatusCode(handlerContext.getMessageContext(),
+        con.getStatus());
+        updateResponseContext(messageInfo, handlerContext);
     }
 
 
@@ -814,7 +834,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 } else {
 
                     if (response instanceof Exception) {
-                        RuntimeException jex = (RuntimeException)response;
+                        RuntimeException jex = (RuntimeException) response;
                         messageInfo.setResponse(jex);
                     }
                 }
