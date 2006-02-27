@@ -34,6 +34,7 @@ import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.handler.XMLHandlerContext;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.pept.ept.EPTFactory;
@@ -480,19 +481,47 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected boolean callHandlersOnRequest(XMLHandlerContext handlerContext) {
+        
         HandlerChainCaller caller = getHandlerChainCaller(
-            handlerContext.getMessageInfo());
+                handlerContext.getMessageInfo());
         boolean responseExpected = (handlerContext.getMessageInfo().getMEP() !=
-            MessageStruct.ONE_WAY_MEP);
-        return caller.callHandlers(Direction.OUTBOUND,
-            RequestOrResponse.REQUEST, handlerContext, responseExpected);
+                MessageStruct.ONE_WAY_MEP);
+        try{
+            return caller.callHandlers(Direction.OUTBOUND,
+                    RequestOrResponse.REQUEST, handlerContext, responseExpected);
+        } catch (ProtocolException pe) {
+            if (MessageContextUtil.ignoreFaultInMessage(
+                    handlerContext.getMessageContext())) {
+                // Ignore fault in this case and use exception.
+                throw pe;
+            } else
+                return false;
+        } catch (WebServiceException wse) {
+            throw wse;
+        } catch (RuntimeException re) {
+            // handlers are expected to be able to throw RE
+            throw new WebServiceException(re);
+        }
     }
-
+    
+    /*
+     * User's handler can throw a RuntimeExceptions
+     * (e.g., a ProtocolException).
+     * Need to wrap any RuntimeException (other than WebServiceException) in
+     * WebServiceException.
+     */
     protected boolean callHandlersOnResponse(XMLHandlerContext handlerContext) {
         HandlerChainCaller caller = getHandlerChainCaller(
             handlerContext.getMessageInfo());
-        return caller.callHandlers(Direction.INBOUND,
-            RequestOrResponse.RESPONSE, handlerContext, false);
+        try {
+            return caller.callHandlers(Direction.INBOUND,
+                RequestOrResponse.RESPONSE, handlerContext, false);
+        } catch (WebServiceException wse) {
+            throw wse;
+        } catch (RuntimeException re) {    
+            // handlers are expected to be able to throw RE
+            throw new WebServiceException(re);
+        }
     }
 
     protected Binding getBinding(MessageInfo messageInfo) {

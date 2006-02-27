@@ -149,33 +149,21 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
                 encoder.setAttachmentsMap(messageInfo, im);
                 updateMessageContext(messageInfo, handlerContext);
-                try {
-                    JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
-                    boolean isXopped = false;
-                    //there are handlers so disable Xop encoding if enabled, so that they dont
-                    // see xop:Include reference
-                    if ((am != null) && am.isXOPPackage()) {
-                        isXopped = am.isXOPPackage();
-                        am.setXOPPackage(false);
-                    }
-                    handlerResult = callHandlersOnRequest(handlerContext);
-                    // now put back the old value
-                    if ((am != null)) {
-                        am.setXOPPackage(isXopped);
-                    }
-                } catch (ProtocolException pe) {
-                    handlerResult = false;
-                    if (MessageContextUtil.ignoreFaultInMessage(
-                        handlerContext.getMessageContext())) {
-                        // Ignore fault in this case and use exception.
-                        // This line will change to "throw pe;" and
-                        // WSE must also be rethrown without wrapping.
-                        throw new WebServiceException(pe);
-                    }
-                } catch (RuntimeException re) {
-                    // handlers are expected to be able to throw RE
-                    throw new WebServiceException(re);
+                
+                JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
+                boolean isXopped = false;
+                //there are handlers so disable Xop encoding if enabled, so that they dont
+                // see xop:Include reference
+                if ((am != null) && am.isXOPPackage()) {
+                    isXopped = am.isXOPPackage();
+                    am.setXOPPackage(false);
                 }
+                handlerResult = callHandlersOnRequest(handlerContext);
+                // now put back the old value
+                if ((am != null)) {
+                    am.setXOPPackage(isXopped);
+                }
+                
                 sm = handlerContext.getSOAPMessage();
                 postHandlerOutboundHook(messageInfo, handlerContext, sm);
                 if (sm == null) {
@@ -639,20 +627,31 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
 
     protected boolean callHandlersOnRequest(SOAPHandlerContext handlerContext) {
-        HandlerChainCaller caller = getHandlerChainCaller(handlerContext.getMessageInfo());
-        boolean responseExpected = (handlerContext.getMessageInfo().getMEP() != MessageStruct.ONE_WAY_MEP);
-        return caller.callHandlers(Direction.OUTBOUND, RequestOrResponse.REQUEST, handlerContext,
-            responseExpected);
+        try {
+            HandlerChainCaller caller = getHandlerChainCaller(handlerContext.getMessageInfo());
+            boolean responseExpected = (handlerContext.getMessageInfo().getMEP() != MessageStruct.ONE_WAY_MEP);
+            return caller.callHandlers(Direction.OUTBOUND, RequestOrResponse.REQUEST, handlerContext,
+                    responseExpected);
+        } catch (ProtocolException pe) {
+            if (MessageContextUtil.ignoreFaultInMessage(
+                    handlerContext.getMessageContext())) {
+                // Ignore fault in this case and use exception.
+                throw pe;
+            } else 
+                return false;
+        } catch (WebServiceException wse) {
+            throw wse;
+        } catch (RuntimeException re) {
+            // handlers are expected to be able to throw RE
+            throw new WebServiceException(re);
+        }
     }
 
     /*
-     * Because a user's handler can throw a web service exception
-     * (e.g., a ProtocolException), we need to wrap any such exceptions
-     * here because the main catch clause assumes that WebServiceExceptions
-     * are already wrapped.
-     *
-     * This will change in the spec and web service exceptions will
-     * not be rewrapped
+     * User's handler can throw RuntimeExceptions
+     * (e.g., a ProtocolException).
+     * Need to wrap any RuntimeException (other than WebServiceException) in
+     * WebServiceException.
      */
     protected boolean callHandlersOnResponse(SOAPHandlerContext handlerContext) {
         HandlerChainCaller caller =
@@ -660,7 +659,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         try {
             return caller.callHandlers(Direction.INBOUND,
                 RequestOrResponse.RESPONSE, handlerContext, false);
-        } catch (RuntimeException re) {
+        } catch (WebServiceException wse) {
+            throw wse;
+        } catch (RuntimeException re) {    
             // handlers are expected to be able to throw RE
             throw new WebServiceException(re);
         }
