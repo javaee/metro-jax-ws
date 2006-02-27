@@ -671,7 +671,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         HandlerChainCaller caller = getHandlerChainCaller(
             context.getMessageInfo());
         if (caller != null && caller.hasHandlers()) {
-            caller.forceCloseHandlers(context);
+            caller.forceCloseHandlersOnClient(context);
         }
     }
 

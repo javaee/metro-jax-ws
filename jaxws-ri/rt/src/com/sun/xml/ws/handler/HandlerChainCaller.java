@@ -888,13 +888,10 @@ public class HandlerChainCaller {
 
     /**
      * This version is called by the server code once it determines
-     * that an incoming message is a one-way request. Or it is called
-     * by the client when an MU fault occurs since the handler chain
-     * never gets invoked. Either way, the direction is an inbound message.
+     * that an incoming message is a one-way request. 
      */
-    public void forceCloseHandlers(SOAPHandlerContext context) {
+    public void forceCloseHandlersOnServer(SOAPHandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
-
         // only called after an inbound request
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
         ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
@@ -902,17 +899,40 @@ public class HandlerChainCaller {
     }
 
     /**
+     * It is called by the client when an MU fault occurs since the handlerchain
+     * never gets invoked. The direction is an inbound message.
+     */
+    public void forceCloseHandlersOnClient(SOAPHandlerContext context) {
+        ContextHolder ch = new ContextHolder(context);
+
+        // only called after an inbound request
+        ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
+        closeHandlersClient(ch);
+    }
+    
+    /**
      * Version of forceCloseHandlers(HandlerContext) that is used
      * by XML binding.
      */
-    public void forceCloseHandlers(XMLHandlerContext context) {
+    public void forceCloseHandlersOnServer(XMLHandlerContext context) {
         ContextHolder ch = new ContextHolder(context);
-
         // only called after an inbound request
         ch.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
         closeHandlersServer(ch);
     }
-
+    
+    /**
+     * Version of forceCloseHandlers(HandlerContext) that is used
+     * by XML binding.
+     */
+    public void forceCloseHandlersOnClient(XMLHandlerContext context) {
+        ContextHolder ch = new ContextHolder(context);
+        // only called after an inbound request
+        ch.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
+        closeHandlersClient(ch);
+    }
+    
     private void closeProtocolHandlers(ContextHolder holder,
         int start, int end) {
         

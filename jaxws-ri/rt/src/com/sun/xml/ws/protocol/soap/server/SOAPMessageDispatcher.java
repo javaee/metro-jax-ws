@@ -417,7 +417,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     private void closeHandlers(MessageInfo info, SOAPHandlerContext context) {
         HandlerChainCaller handlerCaller = getCallerFromMessageInfo(info);
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
-            handlerCaller.forceCloseHandlers(context);
+            handlerCaller.forceCloseHandlersOnServer(context);
         }
     }
 

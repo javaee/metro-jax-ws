@@ -347,7 +347,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     private void closeHandlers(MessageInfo info, XMLHandlerContext context) {
         HandlerChainCaller handlerCaller = getCallerFromMessageInfo(info);
         if (handlerCaller != null && handlerCaller.hasHandlers()) {
-            handlerCaller.forceCloseHandlers(context);
+            handlerCaller.forceCloseHandlersOnServer(context);
         }
     }
 
