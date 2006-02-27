@@ -868,7 +868,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     private void postHandlerInboundHook(MessageInfo messageInfo, SOAPHandlerContext handlerContext, SOAPMessage sm) {
-        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)
+        if ((messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.MESSAGE)||
+           (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) == Service.Mode.PAYLOAD))
         {
             InternalMessage im = handlerContext.getInternalMessage();
             if (im != null) {
