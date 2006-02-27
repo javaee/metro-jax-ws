@@ -446,8 +446,20 @@ public class HandlerChainCaller {
          * handlers if it determines that an incoming request is a
          * one way message.
          */
-        if (!responseExpected) {
-            closeHandlers(ch);
+                if (!responseExpected) {
+            if (messageType == RequestOrResponse.REQUEST) {
+                if (direction == Direction.INBOUND) {
+                    closeHandlersServer(ch);
+                } else {
+                    closeHandlersClient(ch);
+                }
+            } else {
+                if (direction == Direction.INBOUND) {
+                    closeHandlersClient(ch);
+                } else {
+                    closeHandlersServer(ch);
+                }
+            }
         }
         return true;
     }
@@ -484,7 +496,7 @@ public class HandlerChainCaller {
             logger.log(Level.FINER, "exception in handler chain", re);
             throw re;
         } finally {
-            closeHandlers(ch);
+            closeHandlersServer(ch); // this is always called on server side
         }
         return true;
     }
@@ -502,13 +514,13 @@ public class HandlerChainCaller {
                 while (i < logicalHandlers.size()) {
                     if (logicalHandlers.get(i).
                         handleMessage(holder.getLMC()) == false) {
-                        holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                         if (responseExpected) {
                             // reverse and call handle message
+                            holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
                             callLogicalHandleMessage(holder, i-1, 0);
                         }
                         if (type == RequestOrResponse.RESPONSE) {
-                            closeHandlers(holder);
+                            closeHandlersServer(holder);
                         } else {
                             closeLogicalHandlers(holder, i, 0);
                         }
@@ -534,7 +546,7 @@ public class HandlerChainCaller {
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
-                    closeHandlers(holder);
+                    closeHandlersServer(holder);
                 } else {
                     closeLogicalHandlers(holder, i, 0);
                 }
@@ -556,12 +568,12 @@ public class HandlerChainCaller {
                                 soapHandlers.size()-1);
                         }
                         if (type == RequestOrResponse.RESPONSE) {
-                            closeHandlers(holder);
+                            closeHandlersClient(holder);
                         } else {
-                            closeProtocolHandlers(holder,
-                                soapHandlers.size()-1, 0);
-                            closeLogicalHandlers(holder,
-                                logicalHandlers.size()-1, i);
+                            closeLogicalHandlers(holder, i,
+                                logicalHandlers.size()-1);
+                            closeProtocolHandlers(holder, 0,
+                                soapHandlers.size()-1);                            
                         }
                         return false;
                     }
@@ -590,10 +602,10 @@ public class HandlerChainCaller {
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
-                    closeHandlers(holder);
+                    closeHandlersClient(holder);
                 } else {
-                    closeProtocolHandlers(holder, soapHandlers.size()-1, 0);
-                    closeLogicalHandlers(holder, logicalHandlers.size()-1, i);
+                    closeLogicalHandlers(holder, i, logicalHandlers.size()-1);
+                    closeProtocolHandlers(holder, 0, soapHandlers.size()-1);                    
                 }
                 throw re;
             }
@@ -626,7 +638,7 @@ public class HandlerChainCaller {
                                 logicalHandlers.size()-1, 0);
                         }
                         if (type == RequestOrResponse.RESPONSE) {
-                            closeHandlers(holder);
+                            closeHandlersServer(holder);
                         } else {
                             closeProtocolHandlers(holder, i, 0);
                             closeLogicalHandlers(holder,
@@ -657,7 +669,7 @@ public class HandlerChainCaller {
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
-                    closeHandlers(holder);
+                    closeHandlersServer(holder);
                 } else {
                     closeProtocolHandlers(holder, i, 0);
                     closeLogicalHandlers(holder, logicalHandlers.size()-1, 0);
@@ -678,10 +690,10 @@ public class HandlerChainCaller {
                                 soapHandlers.size()-1);
                         }
                         if (type == RequestOrResponse.RESPONSE) {
-                            closeHandlers(holder);
+                            closeHandlersClient(holder);
                         } else {
-                            closeProtocolHandlers(holder,
-                                soapHandlers.size()-1, i);
+                            closeProtocolHandlers(holder, i,
+                                soapHandlers.size()-1);
                         }
                         return false;
                     }
@@ -707,9 +719,9 @@ public class HandlerChainCaller {
                     }
                 }
                 if (type == RequestOrResponse.RESPONSE) {
-                    closeHandlers(holder);
+                    closeHandlersClient(holder);
                 } else {
-                    closeProtocolHandlers(holder, soapHandlers.size()-1, i);
+                    closeProtocolHandlers(holder, i, soapHandlers.size()-1);
                 }
                 throw re;
             }
@@ -857,12 +869,21 @@ public class HandlerChainCaller {
     }
 
     /**
-     * Utility method that closes protocol handlers and then
+     * Method that closes protocol handlers and then
      * logical handlers.
      */
-    private void closeHandlers(ContextHolder holder) {
+    private void closeHandlersClient(ContextHolder holder) {
         closeProtocolHandlers(holder, soapHandlers.size()-1, 0);
         closeLogicalHandlers(holder, logicalHandlers.size()-1, 0);
+    }
+
+    /**
+     * Method that closes logical handlers and then
+     * protocol handlers.
+     */
+    private void closeHandlersServer(ContextHolder holder) {
+        closeLogicalHandlers(holder, 0, logicalHandlers.size()-1);
+        closeProtocolHandlers(holder, 0, soapHandlers.size()-1);
     }
 
     /**
@@ -877,7 +898,7 @@ public class HandlerChainCaller {
         // only called after an inbound request
         ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
         ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
-        closeHandlers(ch);
+        closeHandlersServer(ch);
     }
 
     /**
@@ -889,7 +910,7 @@ public class HandlerChainCaller {
 
         // only called after an inbound request
         ch.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
-        closeHandlers(ch);
+        closeHandlersServer(ch);
     }
 
     private void closeProtocolHandlers(ContextHolder holder,
