@@ -223,7 +223,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                     resNamespace = resWrapper.targetNamespace();
             }
             if (duplicateName(responseClassName)) {
-                builder.onError("webserviceap.method.respone.wrapper.bean.name.not.unique",
+                builder.onError("webserviceap.method.response.wrapper.bean.name.not.unique",
                                  new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
             canOverwriteResponse = builder.canOverWriteClass(requestClassName);
