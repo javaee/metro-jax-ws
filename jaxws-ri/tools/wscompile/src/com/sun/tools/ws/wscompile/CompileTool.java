@@ -396,6 +396,14 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             } else if (args[i].startsWith("-help")) {
                 help();
                 return false;
+            } else if (args[i].equals("-Xdonotoverwrite")) {
+                if(program.equals(WSIMPORT)) {
+                    onError(getMessage("wscompile.invalidOption", args[i]));
+                    usage();
+                    return false;
+                }                
+                doNotOverWrite = true;
+                args[i] = null;
             }
         }
 
@@ -787,6 +795,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             properties.setProperty(ProcessorOptions.WSDL_LOCATION, wsdlLocation);
         if(defaultPackage != null)
             properties.setProperty(ProcessorOptions.DEFAULT_PACKAGE, defaultPackage);
+        properties.setProperty(ProcessorOptions.DONOT_OVERWRITE_CLASSES, (doNotOverWrite ? TRUE : FALSE));
     }
 
     protected String getGenericErrorMessage() {
@@ -899,6 +908,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected boolean compilerOptimize = false;
     protected boolean verbose = false;
     protected boolean keepGenerated = false;
+    protected boolean doNotOverWrite = false;
     protected boolean extensions = false;
     protected String userClasspath = null;
     protected Set<String> bindingFiles = new HashSet<String>();

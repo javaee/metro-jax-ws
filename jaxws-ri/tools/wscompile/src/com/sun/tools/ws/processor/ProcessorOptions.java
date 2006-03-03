@@ -36,7 +36,7 @@ public class ProcessorOptions {
     public final static String EXPLICIT_SERVICE_CONTEXT_PROPERTY =
         "explicitServiceContext";
     public final static String PRINT_STACK_TRACE_PROPERTY = "printStackTrace";
-    public final static String DONOT_OVERRIDE_CLASSES = "donotOverride";
+    public final static String DONOT_OVERWRITE_CLASSES = "doNotOverWrite";
     public final static String NO_DATA_BINDING_PROPERTY = "noDataBinding";
     public final static String USE_WSI_BASIC_PROFILE = "useWSIBasicProfile";
     public final static String STRICT_COMPLIANCE = "strictCompliance";

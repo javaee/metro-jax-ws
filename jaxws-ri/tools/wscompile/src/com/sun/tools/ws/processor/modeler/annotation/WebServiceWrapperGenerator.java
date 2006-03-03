@@ -201,14 +201,15 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 reqNamespace = reqWrapper.targetNamespace();
         }
         builder.log("requestWrapper: "+requestClassName);
-        if (duplicateName(requestClassName)) {
-            builder.onError("webserviceap.method.request.wrapper.bean.name.not.unique",
-                             new Object[] {typeDecl.getQualifiedName(), method.toString()});
-        }
         boolean canOverwriteRequest = builder.canOverWriteClass(requestClassName);
         if (!canOverwriteRequest) {
             builder.log("Class " + requestClassName + " exists. Not overwriting.");
+        } 
+        if (duplicateName(requestClassName) && canOverwriteRequest) {
+            builder.onError("webserviceap.method.request.wrapper.bean.name.not.unique",
+                             new Object[] {typeDecl.getQualifiedName(), method.toString()});
         }
+
         String responseClassName = null;
         boolean canOverwriteResponse = canOverwriteRequest;
         if (!isOneway) {
@@ -222,13 +223,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
             }
-            if (duplicateName(responseClassName)) {
-                builder.onError("webserviceap.method.response.wrapper.bean.name.not.unique",
-                                 new Object[] {typeDecl.getQualifiedName(), method.toString()});
-            }
             canOverwriteResponse = builder.canOverWriteClass(requestClassName);
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
+            }
+            if (duplicateName(responseClassName) && canOverwriteResponse) {
+                builder.onError("webserviceap.method.response.wrapper.bean.name.not.unique",
+                                 new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
         }
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
@@ -245,8 +246,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             seiContext.setResWrapperOperation(method, resWrapperInfo);
         try {
             if (!canOverwriteRequest && !canOverwriteResponse) {
-                getWrapperMembers(reqWrapperInfo);
-                getWrapperMembers(resWrapperInfo);
+//                getWrapperMembers(reqWrapperInfo);
+//                getWrapperMembers(resWrapperInfo);
                 return false;
             }
 
@@ -279,7 +280,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return true;
     }
 
-    private void getWrapperMembers(WrapperInfo wrapperInfo) throws Exception {
+/*    private void getWrapperMembers(WrapperInfo wrapperInfo) throws Exception {
         if (wrapperInfo == null)
             return;
         TypeDeclaration type = builder.getTypeDeclaration(wrapperInfo.getWrapperName());
@@ -309,7 +310,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         for (MemberInfo member2 : members) {
             wrapperInfo.addMember(member2);
         }
-    }
+    }*/
     
     private void collectMembers(MethodDeclaration method, String operationName, String namespace,
                                ArrayList<MemberInfo> requestMembers,

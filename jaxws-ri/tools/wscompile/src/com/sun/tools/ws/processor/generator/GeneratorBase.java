@@ -140,7 +140,7 @@ public abstract class GeneratorBase
             new LocalizableMessageFactory("com.sun.tools.ws.resources.generator");
         this.targetVersion =
             properties.getProperty(ProcessorOptions.JAXWS_SOURCE_VERSION);
-        key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
+        key = ProcessorOptions.DONOT_OVERWRITE_CLASSES;
         this.donotOverride =
             Boolean.valueOf(properties.getProperty(key)).booleanValue();
         this.printStackTrace = Boolean.valueOf(properties.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));

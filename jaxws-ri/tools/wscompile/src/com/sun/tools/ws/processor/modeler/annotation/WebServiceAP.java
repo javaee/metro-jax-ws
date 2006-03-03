@@ -97,7 +97,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     protected Messager messager;
     private ByteArrayOutputStream output;
     private ToolBase tool;
-    private boolean donotOverride = false;
+    private boolean doNotOverWrite = false;
     private boolean wrapperGenerated = false;
     /* 
      * Is this invocation from APT or JavaC?
@@ -119,8 +119,8 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
         this.env = env;
         if (options != null) {
             sourceDir = new File(options.getProperty(ProcessorOptions.SOURCE_DIRECTORY_PROPERTY));
-            String key = ProcessorOptions.DONOT_OVERRIDE_CLASSES;
-            this.donotOverride =
+            String key = ProcessorOptions.DONOT_OVERWRITE_CLASSES;
+            this.doNotOverWrite =
                 Boolean.valueOf(options.getProperty(key));
         }
     }
@@ -467,7 +467,7 @@ public class WebServiceAP extends ToolBase implements AnnotationProcessor, Model
     }
 
     public boolean canOverWriteClass(String className) {
-        return !((donotOverride && GeneratorUtil.classExists(env, className)));
+        return !((doNotOverWrite && GeneratorUtil.classExists(env, className)));
     }
 
     public void log(String msg) {
