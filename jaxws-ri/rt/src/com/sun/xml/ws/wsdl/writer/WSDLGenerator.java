@@ -633,7 +633,7 @@ public class WSDLGenerator {
             if (soapBinding.getUse().equals(Use.LITERAL)) {
                 body.use(LITERAL);
                 if (headerParams.size() > 0) {
-//                    if (bodyParams.size() > 0) {
+                    if (bodyParams.size() > 0) {
                         Parameter param = bodyParams.iterator().next();
                         if (isRpc) {
                             StringBuffer parts = new StringBuffer();
@@ -649,9 +649,9 @@ public class WSDLGenerator {
                         } else {
                            body.parts(param.getPartName());
                         }
-//                    } else {
-//                        body.parts("");
-//                    }
+                    } else {
+                        body.parts("");
+                    }
                     generateSOAP12Headers(input, headerParams, requestMessage);
                 }
                 if (isRpc) {
