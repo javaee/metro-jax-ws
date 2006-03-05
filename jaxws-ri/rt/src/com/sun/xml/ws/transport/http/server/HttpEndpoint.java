@@ -141,9 +141,19 @@ public class HttpEndpoint {
                     throw new ServerRtException("server.rt.err",te);
                 }
                 String systemId = source.getSystemId();
-                URL url = new URL(systemId);
+                URL url;
+                try {
+                    url = new URL(systemId);
+                } catch(MalformedURLException me) {
+                    logger.severe("Metadata Source's systemId="+systemId+
+                            " is incorrect. Provide a correct one");
+                    throw me;
+                }
                 EndpointDocInfo docInfo = new EndpointDocInfo(url, baos);
-                newMetadata.put(systemId, docInfo);
+                DocInfo old = newMetadata.put(systemId, docInfo);
+                if (old != null) {
+                    logger.warning("Duplicate Source objects for systemId="+systemId+" in metadata");
+                }
             }
             endpointInfo.setMetadata(newMetadata);
         }
@@ -157,6 +167,28 @@ public class HttpEndpoint {
             DocInfo docInfo = metadata.get(primaryWsdl);
             if (docInfo.getService() == null) {
                 throw new ServerRtException("not.primary.wsdl", primaryWsdl);
+            }
+        }
+        // Checks whether metadata contains duplicate primary wsdls or abstract wsdsl
+        if (metadata != null) {
+            boolean concreteWsdl = false;
+            boolean abstractWsdl = false;
+            for(Entry<String, DocInfo> entry: metadata.entrySet()) {
+                DocInfo docInfo = entry.getValue();
+                if (docInfo.getService() != null) {
+                    if (!concreteWsdl) {
+                        concreteWsdl = true;
+                    } else {
+                        throw new ServerRtException("duplicate.primary.wsdl", entry.getKey());
+                    }
+                }
+                if (docInfo.hasPortType()) {
+                    if (!abstractWsdl) {
+                        abstractWsdl = true;
+                    } else {
+                        throw new ServerRtException("duplicate.abstract.wsdl", entry.getKey());
+                    }
+                }
             }
         }
         if (metadata != null) {
