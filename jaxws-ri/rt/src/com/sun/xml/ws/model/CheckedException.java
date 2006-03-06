@@ -80,7 +80,15 @@ public class CheckedException {
     public boolean isHeaderFault() {
         return headerFault;
     }
+    
+    public void setMessageName(String messageName) {
+        this.messageName = messageName;
+    }
 
+    public String getMessageName() {
+        return messageName;
+    }
+    
     private Class exceptionClass;
 
     private TypeReference detail;
@@ -88,4 +96,6 @@ public class CheckedException {
     private ExceptionType exceptionType;
 
     private boolean headerFault = false;
+    
+    private String messageName;
 }

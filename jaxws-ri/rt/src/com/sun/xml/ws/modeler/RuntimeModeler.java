@@ -977,6 +977,7 @@ public class RuntimeModeler {
                 anns);
             CheckedException checkedException =
                 new CheckedException((Class)exception, typeRef, exceptionType);
+            checkedException.setMessageName(((Class)exception).getSimpleName());
             javaMethod.addException(checkedException);
         }
     }
