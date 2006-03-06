@@ -21,6 +21,8 @@
 package com.sun.xml.ws.encoding.soap.server;
 
 import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.ws.model.JavaMethod;
+import com.sun.xml.ws.model.RuntimeModel;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,6 +57,7 @@ import javax.xml.ws.handler.MessageContext;
 public class SOAPXMLDecoder extends SOAPDecoder {
     
     private static final Set<String> requiredRoles = new HashSet<String>();
+    private static final QName emptyBodyName = new QName("");
     
     public SOAPXMLDecoder() {
         requiredRoles.add("http://schemas.xmlsoap.org/soap/actor/next");
@@ -140,15 +143,19 @@ public class SOAPXMLDecoder extends SOAPDecoder {
     @Override
     public void decodeDispatchMethod(XMLStreamReader reader, InternalMessage request, MessageInfo messageInfo) {
         // Operation's QName. takes care of <body/>
-        QName name = (reader.getEventType() == XMLStreamConstants.START_ELEMENT) ? reader.getName() : null;
-        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);        
-        if (msgCtxt != null) {
-            MessageContextUtil.setWsdlOperation(msgCtxt, name);
-        }
+        QName name = (reader.getEventType() == XMLStreamConstants.START_ELEMENT) ? reader.getName() : emptyBodyName;
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
-        Method method = rtCtxt.getDispatchMethod(name, messageInfo);
+        RuntimeModel rtModel = rtCtxt.getModel();
+        JavaMethod javaMethod = rtModel.getJavaMethod(name);
+        Method method = (javaMethod == null) ? null : javaMethod.getMethod();
         if (method == null) {
             raiseFault(getSenderFaultCode(), "Cannot find the dispatch method");
+        }
+        MessageContext msgCtxt = MessageInfoUtil.getMessageContext(messageInfo);        
+        if (msgCtxt != null) {
+            String opNsUri = rtModel.getPortTypeName().getNamespaceURI();
+            String opName = javaMethod.getOperationName();
+            MessageContextUtil.setWsdlOperation(msgCtxt, new QName(opNsUri, opName));
         }
         messageInfo.setMethod(method);
     }
