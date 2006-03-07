@@ -62,7 +62,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.xml.bind.annotation.AccessType;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -556,7 +556,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             xmlRootElementAnn.param("namespace", namespaceUri);
         }
         JAnnotationUse xmlAccessorTypeAnn = cls.annotate(cm.ref(XmlAccessorType.class));
-        xmlAccessorTypeAnn.param("value", AccessType.FIELD);
+        xmlAccessorTypeAnn.param("value", XmlAccessType.FIELD);
     }
    
     private void writeXmlTypeDeclaration(JDefinedClass cls, String typeName, String namespaceUri,
