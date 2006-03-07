@@ -76,14 +76,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.soapmd");
-    /*
-    private Localizer localizer = new Localizer();
-    private LocalizableMessageFactory messageFactory =
-        new LocalizableMessageFactory("com.sun.xml.ws.resources.soapmd");
-     */
-
-    private final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
-        "SOAP must understand error";
 
     public SOAPMessageDispatcher() {
     }
@@ -93,25 +85,27 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         throw new UnsupportedOperationException();
     }
 
-    // TODO: need to work the exception logic
     public void receive(MessageInfo messageInfo) {
         try {
-            try {
-                checkContentType(messageInfo);
-            } catch(ServerRtException e) {
-                SOAPConnectionUtil.sendKnownError(messageInfo,
-                        WSConnection.UNSUPPORTED_MEDIA);
-                return;
-            }
+            checkContentType(messageInfo);
+        } catch(ServerRtException e) {
+            SOAPConnectionUtil.sendKnownError(messageInfo,
+                    WSConnection.UNSUPPORTED_MEDIA);
+            return;
+        }
+        
+        SOAPMessage soapMessage = null;
+        try {
+            soapMessage = getSOAPMessage(messageInfo);
+        } catch(Exception e) {
+            sendResponseError(messageInfo, e);
+            return;
+        }
+        
+        // if transport creates any exception, don't try to send again
+        boolean sent = false;
+        try {
             
-            SOAPMessage soapMessage = null;
-            try {
-                soapMessage = getSOAPMessage(messageInfo);
-            } catch(Exception e) {
-                sendResponseError(messageInfo, e);
-                return;
-            }
-
             // Content negotiation logic
             try {
                 // If FI is accepted by client, set property to optimistic
@@ -136,24 +130,33 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
             SoapInvoker implementor = new SoapInvoker(messageInfo, soapMessage,
                 context, shd);
-            if (shd == null) {
-                implementor.invoke();
-            } else {
-                context.setInvoker(implementor);
-                if (shd.processRequest(context.getSHDSOAPMessageContext())) {
+            try {
+                if (shd == null) {
                     implementor.invoke();
-                    context.getMessageContext().put(
-                        MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
-                    shd.processResponse(context.getSHDSOAPMessageContext());
+                } else {
+                    context.setInvoker(implementor);
+                    if (shd.processRequest(context.getSHDSOAPMessageContext())) {
+                        implementor.invoke();
+                        context.getMessageContext().put(
+                            MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                        shd.processResponse(context.getSHDSOAPMessageContext());
+                    }
                 }
+            } catch(Exception e) {
+                sent = implementor.isSent();
+                throw e;
             }
             if (!isOneway(messageInfo)) {
                 makeSOAPMessage(messageInfo, context);
+                sent = true;
                 sendResponse(messageInfo, context);
             }
         } catch(Exception e) {
+            e.printStackTrace();
             logger.log(Level.SEVERE, e.getMessage(), e);
-            sendResponseError(messageInfo, e);
+            if (!sent) {
+                sendResponseError(messageInfo, e);
+            }
         }
     }
 
@@ -429,12 +432,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
 
-/*
-    protected void fine(String key, Object obj) {
-        logger.fine(localizer.localize(messageFactory.getMessage(key, new Object[] { ""+obj.hashCode() })));
-    }
-*/
-
 
     /*
      * Sets MessageContext into HandlerContext and sets HandlerContext in
@@ -465,6 +462,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         SOAPHandlerContext context;
         boolean skipEndpoint;
         SystemHandlerDelegate shd;
+        boolean sent;
         
         SoapInvoker(MessageInfo messageInfo, SOAPMessage soapMessage,
                 SOAPHandlerContext context, SystemHandlerDelegate shd) {
@@ -533,6 +531,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 toMessageInfo(messageInfo, context);
 
                 if (isOneway(messageInfo)) {
+                    sent = true;
                     sendResponseOneway(messageInfo);
                     if (!peekOneWay) { // handler chain didn't already clos
                         closeHandlers(messageInfo, context);
@@ -562,6 +561,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         public Method getMethod(QName name) {
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
             return rtCtxt.getDispatchMethod(name, messageInfo);
+        }
+        
+        public boolean isSent() {
+            return sent;
         }
     }
 
