@@ -662,9 +662,20 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     protected boolean callHandlersOnResponse(SOAPHandlerContext handlerContext) {
         HandlerChainCaller caller =
             getHandlerChainCaller(handlerContext.getMessageInfo());
-        try {
+        try {            
+            int httpResponseCode = (Integer) handlerContext.getMessageContext().get(
+                    MessageContext.HTTP_RESPONSE_CODE);
+            if(httpResponseCode != 200 && httpResponseCode != 202) {
+                //Check if it is a fault message
+                SOAPMessage sm = handlerContext.getSOAPMessage();
+                if((sm != null) && sm.getSOAPBody().hasFault())
+                    return caller.callHandleFaultOnClient(handlerContext);
+            }           
+            
             return caller.callHandlers(Direction.INBOUND,
                 RequestOrResponse.RESPONSE, handlerContext, false);
+        } catch (SOAPException se) {
+            throw new WebServiceException(se);
         } catch (WebServiceException wse) {
             throw wse;
         } catch (RuntimeException re) {

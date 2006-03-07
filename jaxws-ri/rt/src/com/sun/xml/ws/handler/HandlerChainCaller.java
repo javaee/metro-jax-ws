@@ -500,7 +500,39 @@ public class HandlerChainCaller {
         }
         return true;
     }
+    
+    /**
+     * This method called by the client when it sees a SOAPFault message.
+     * This method calls handleFault on the handlers and closes them. Because 
+     * this method is called only during a response, all of the handlers have 
+     * been called during the request and so all are closed.
+     */
+    public boolean callHandleFaultOnClient(SOAPHandlerContext context) {
+        ContextHolder ch = new ContextHolder(context);
+        ch.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY, false);
+        ((SOAPMessageContextImpl) ch.getSMC()).setRoles(getRoles());
 
+        try {
+            for (int i=soapHandlers.size()-1; i>=0; i--) {
+                if (soapHandlers.get(i).handleFault(ch.getSMC()) == false) {
+                    return false;
+                }                
+            }
+            for (int i=logicalHandlers.size()-1; i>=0; i--) {
+                if (logicalHandlers.get(i).handleFault(ch.getLMC()) == false) {
+                    return false;
+                }
+            }
+        } catch (RuntimeException re) {
+            logger.log(Level.FINER, "exception in handler chain", re);
+            throw re;
+        } finally {
+            closeHandlersClient(ch);
+        }
+        return true;
+    }
+
+    
     /**
      * Called from the main callHandlers() method.
      * Logical message context updated before this method is called.
