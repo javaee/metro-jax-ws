@@ -19,6 +19,7 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.spi.runtime.WSConnection;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPEnvelope;
@@ -196,20 +197,28 @@ public class HandlerChainCaller {
      * Replace the message in the given message context with a
      * fault message. If the context already contains a fault
      * message, then return without changing it.
+     * Also sets the HTTP_RESPONSE_CODE in the context on Server-side.
      */
     private void insertFaultMessage(ContextHolder holder,
         ProtocolException exception) {
-        
         try {
             SOAPMessageContext context = holder.getSMC();
             if (context == null) { // non-soap case
-                LogicalMessage msg = holder.getLMC().getMessage();
+                LogicalMessageContext lmc = holder.getLMC();
+                LogicalMessage msg = lmc.getMessage();
                 if (msg != null) {
                     msg.setPayload(null);
                 }
+                //Set Status Code only if it is on server
+                if((Boolean)lmc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)){
+                    lmc.put(MessageContext.HTTP_RESPONSE_CODE,WSConnection.INTERNAL_ERR);
+                }
                 return;
             }
-            
+            //Set Status Code only if it is on server
+            if((Boolean)context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)){
+                context.put(MessageContext.HTTP_RESPONSE_CODE,WSConnection.INTERNAL_ERR);
+            }
             SOAPMessage message = context.getMessage();
             SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
             SOAPBody body = envelope.getBody();
@@ -268,6 +277,8 @@ public class HandlerChainCaller {
             throw new RuntimeException(e);
         }
     }
+    
+    
 
     /**
      * <p>The expectation of the rest of the code is that,
@@ -292,10 +303,9 @@ public class HandlerChainCaller {
      * server, sender, receiver, etc. This is called by
      * insertFaultMessage.
      *
-     * <p>This method should only be called during a request,
-     * because during a response an exception from a handler
-     * is dispatched rather than replacing the message with
-     * a fault. So this method can use the MESSAGE_OUTBOUND_PROPERTY
+     * <p>This method should only be called when there is a ProtocolException 
+     * during request. Reverse the Message direction first,
+     * So this method can use the MESSAGE_OUTBOUND_PROPERTY
      * to determine whether it is being called on the client
      * or the server side. If this changes in the spec, then
      * something else will need to be passed to the method 
@@ -312,7 +322,7 @@ public class HandlerChainCaller {
         String uri = envelope.getNamespaceURI();
         
         // client case
-        if ((Boolean) context.get(
+        if (!(Boolean) context.get(
             MessageContext.MESSAGE_OUTBOUND_PROPERTY)) {
             if (uri.equals(SOAP12NamespaceConstants.ENVELOPE)) {
                 return SOAP12Constants.FAULT_CODE_CLIENT;
@@ -563,9 +573,9 @@ public class HandlerChainCaller {
             } catch (RuntimeException re) {
                 logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    insertFaultMessage(holder, (ProtocolException) re);
                     // reverse direction and handle fault
                     holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
+                    insertFaultMessage(holder, (ProtocolException) re);                    
                     if (i>0) {
                         try {
                             callLogicalHandleFault(holder, i-1, 0);
@@ -614,10 +624,10 @@ public class HandlerChainCaller {
             } catch (RuntimeException re) {
                 logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    insertFaultMessage(holder, (ProtocolException) re);
-                    
                     // reverse direction and handle fault
                     holder.getLMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
+                    insertFaultMessage(holder, (ProtocolException) re);                   
+                    
                     try {
                         // if i==size-1, no more logical handlers to call
                         if (i == logicalHandlers.size()-1 ||
@@ -683,10 +693,9 @@ public class HandlerChainCaller {
             } catch (RuntimeException re) {
                 logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    insertFaultMessage(holder, (ProtocolException) re);
-
                     // reverse direction and handle fault
                     holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,false);
+                    insertFaultMessage(holder, (ProtocolException) re);
                     try {
                         if (i == 0 || // still on first handler
                             callProtocolHandleFault(holder, i-1, 0)) {
@@ -734,10 +743,9 @@ public class HandlerChainCaller {
             } catch (RuntimeException re) {
                 logger.log(Level.FINER, "exception in handler chain", re);
                 if (responseExpected && re instanceof ProtocolException) {
-                    insertFaultMessage(holder, (ProtocolException) re);
-
                     // reverse direction and handle fault
                     holder.getSMC().put(MessageContext.MESSAGE_OUTBOUND_PROPERTY,true);
+                    insertFaultMessage(holder, (ProtocolException) re);
                     try {
                         if (i < soapHandlers.size()-1) {
                             callProtocolHandleFault(holder, i+1,
