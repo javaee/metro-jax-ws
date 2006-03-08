@@ -150,25 +150,10 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     
     public void close() {
         try {
-            if (!closedInput) {
-                if (is == null) {
-                    getInput();
-                }
-                closeInput();
-            }
-            if (!closedOutput) {
-                if (out == null) {
-                    getOutput();    
-                }
-                closeOutput();
-            }
-        } finally {
-            try {
-                httpExchange.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
-            }
-        }
+            httpExchange.close();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }  
     }
     
     private static class NoCloseInputStream extends InputStream {
