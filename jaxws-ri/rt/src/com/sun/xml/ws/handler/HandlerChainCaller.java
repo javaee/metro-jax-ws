@@ -34,6 +34,7 @@ import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import java.util.ArrayList;
@@ -211,10 +212,14 @@ public class HandlerChainCaller {
                 }
                 //Set Status Code only if it is on server
                 if((Boolean)lmc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)){
-                    lmc.put(MessageContext.HTTP_RESPONSE_CODE,WSConnection.INTERNAL_ERR);
+                    if (exception instanceof HTTPException) {
+                        lmc.put(MessageContext.HTTP_RESPONSE_CODE,((HTTPException)exception).getStatusCode());
+                    } else {                        
+                        lmc.put(MessageContext.HTTP_RESPONSE_CODE,WSConnection.INTERNAL_ERR);
+                    }                    
                 }
                 return;
-            }
+            }    
             //Set Status Code only if it is on server
             if((Boolean)context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)){
                 context.put(MessageContext.HTTP_RESPONSE_CODE,WSConnection.INTERNAL_ERR);
