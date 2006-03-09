@@ -142,14 +142,16 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         shd.processResponse(context.getSHDSOAPMessageContext());
                     }
                 }
-            } catch(Exception e) {
+            } finally {
                 sent = implementor.isSent();
-                throw e;
             }
             if (!isOneway(messageInfo)) {
                 makeSOAPMessage(messageInfo, context);
                 sent = true;
                 sendResponse(messageInfo, context);
+            } else if (!sent) {
+                sent = true;
+                sendResponseOneway(messageInfo);
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -158,6 +160,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sendResponseError(messageInfo, e);
             }
         }
+        assert(sent == true);
     }
 
     protected void toMessageInfo(MessageInfo messageInfo, SOAPHandlerContext context) {
