@@ -81,8 +81,8 @@ public class WSHttpHandler implements HttpHandler {
             String queryString = msg.getRequestURI().getQuery();
             logger.fine("Query String for request ="+queryString);
             if (queryString != null &&
-                (queryString.equals("wsdl") || queryString.startsWith("wsdl=")
-                || queryString.startsWith("xsd="))) {
+                (queryString.equals("WSDL") || queryString.equals("wsdl")
+                || queryString.startsWith("wsdl=") || queryString.startsWith("xsd="))) {
                 // Handles WSDL, Schema documents
                 processDocRequest(msg);
             } else {

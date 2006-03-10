@@ -491,21 +491,10 @@ public class RuntimeEndpointInfo extends Endpoint
     
     public void setMetadata(Map<String, DocInfo> docs) {
         this.docs = docs;
-        // update uri-->DocInfo map
-        if (query2Doc != null) {
-            query2Doc.clear();
-        } else {
-            query2Doc = new HashMap<String, DocInfo>();
-        }
-        Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();
-        for(Map.Entry<String, DocInfo> entry : entries) {
-            DocInfo docInfo = entry.getValue();
-            query2Doc.put(docInfo.getQueryString(), docInfo);
-        }
     }
     
-    public void updateQuery2DocInfo() {
-        // update uri-->DocInfo map
+    private void updateQuery2DocInfo() {
+        // update (wsdl, xsd=1 )-->DocInfo map
         if (query2Doc != null) {
             query2Doc.clear();
         } else {
@@ -513,7 +502,11 @@ public class RuntimeEndpointInfo extends Endpoint
         }
         Set<Map.Entry<String, DocInfo>> entries = docs.entrySet();        
         for(Map.Entry<String, DocInfo> entry : entries) {
-            DocInfo docInfo = entry.getValue();          
+            DocInfo docInfo = entry.getValue();
+            // Check to handle ?WSDL
+            if (docInfo.getQueryString().equals("wsdl")) {
+                query2Doc.put("WSDL", docInfo);
+            }
             query2Doc.put(docInfo.getQueryString(), docInfo);
         }        
     }
@@ -547,10 +540,6 @@ public class RuntimeEndpointInfo extends Endpoint
             }
         }
         return null;
-        /*
-        DocInfo docInfo = docs.get(path);
-        return (docInfo == null) ? null : docInfo.getQueryString();
-         */
     }
     
     /*

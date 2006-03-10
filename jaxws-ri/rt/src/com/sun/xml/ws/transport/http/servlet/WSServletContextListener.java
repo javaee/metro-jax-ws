@@ -219,7 +219,6 @@ public class WSServletContextListener
 				RuntimeEndpointInfo.fillDocInfo(endpoint);
             }
 			RuntimeEndpointInfo.publishWSDLDocs(endpoint);
-            endpoint.updateQuery2DocInfo();
         }
     }
 

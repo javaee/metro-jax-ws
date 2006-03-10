@@ -178,7 +178,8 @@ public class WSServletDelegate {
             RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
             if (targetEndpoint != null) {
                 String query = request.getQueryString();
-                if (query != null && (query.startsWith("wsdl") || query.startsWith("xsd="))) {
+                if (query != null && (query.equals("WSDL") || query.startsWith("wsdl") 
+                                      || query.startsWith("xsd="))) {
                     // Sends published WSDL and schema documents
                     publisher.handle(targetEndpoint, fixedUrlPatternEndpoints,
                         request, response);
