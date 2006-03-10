@@ -93,8 +93,11 @@ public class MessageContextUtil {
 
     private static Map<String, DataHandler> getMessageAttachments(MessageContext ctxt) {
         String property = MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
-        if((Boolean)ctxt.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY))
+        Boolean out = (Boolean)ctxt.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        if (out != null && out) {
             property = MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS;
+        }
+            
         Object att = ctxt.get(property);
         if(att == null){
             Map<String, DataHandler> attMap = new HashMap<String, DataHandler>();
