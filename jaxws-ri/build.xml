@@ -524,6 +524,14 @@ major-version=${release.impl.version}
          dest="lib/saaj-api-src.zip" />
   </target>
 
+  <target name="integrate-sjsxp-hudson" depends="prepare"
+          description="integrate the last successful sjsxp Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/build/sjsxp.jar"
+         dest="lib/sjsxp.jar" />
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/build/sjsxp-src-1_0.zip"
+         dest="lib/sjsxp-src.zip" />
+  </target>
+
     <taskdef name="installerBuilder"
         classname="com.sun.tools.xjc.installer.builder.BuilderTask">
       <classpath>
