@@ -27,6 +27,7 @@ import com.sun.xml.ws.handler.MessageContextImpl;
 import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.WSDLPatcher;
+import java.util.concurrent.Executor;
 import javax.xml.ws.handler.MessageContext;
 import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.Tie;
@@ -48,6 +49,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
+ * Implementation of HttpContext's HttpHandler. HttpServer calls this when there
+ * is request that matches the context path. Then the handler processes 
+ * HttpExchange and sends appropriate response
  *
  * @author WS Development Team
  */
@@ -66,44 +70,78 @@ public class WSHttpHandler implements HttpHandler {
     private static final LocalizableMessageFactory messageFactory =
         new LocalizableMessageFactory("com.sun.xml.ws.resources.httpserver");
     
-    private RuntimeEndpointInfo endpointInfo;
-    private Tie tie;
+    private final RuntimeEndpointInfo endpointInfo;
+    private final Tie tie;
+    private final Executor executor;
     
-    public WSHttpHandler(Tie tie, RuntimeEndpointInfo endpointInfo) {
+    public WSHttpHandler(Tie tie, RuntimeEndpointInfo endpointInfo, Executor executor) {
         this.tie = tie;
         this.endpointInfo = endpointInfo;
+        this.executor = executor;
     }
     
+    /**
+     * Called by HttpServer when there is a matching request for the context
+     */
     public void handle(HttpExchange msg) {
         logger.fine("Received HTTP request:"+msg.getRequestURI());
-        String method = msg.getRequestMethod();
-        if (method.equals(GET_METHOD)) {
-            String queryString = msg.getRequestURI().getQuery();
-            logger.fine("Query String for request ="+queryString);
-            if (queryString != null &&
-                (queryString.equals("WSDL") || queryString.equals("wsdl")
-                || queryString.startsWith("wsdl=") || queryString.startsWith("xsd="))) {
-                // Handles WSDL, Schema documents
-                processDocRequest(msg);
-            } else {
-                process(msg);
-            }
-        } else if (method.equals(POST_METHOD)) {
-            process(msg);
+        if (executor != null) {
+            // Use endpoint's Executor to handle request
+            executor.execute(new HttpHandlerRunnable(msg));
         } else {
-            logger.warning(
-                localizer.localize(
-                    messageFactory.getMessage(
-                        "unexpected.http.method", method)));
-            try {
-                msg.close();
-            } catch(IOException ioe) {
-                ioe.printStackTrace();          // Not much can be done
-            }
+            handleExchange(msg);
         }
     }
     
-    /*
+    /**
+     * Handles the HTTP request for GET, POST
+     *
+     */
+    private void handleExchange(HttpExchange msg) {
+        try {
+            String method = msg.getRequestMethod();
+            if (method.equals(GET_METHOD)) {
+                String queryString = msg.getRequestURI().getQuery();
+                logger.fine("Query String for request ="+queryString);
+                if (queryString != null &&
+                    (queryString.equals("WSDL") || queryString.equals("wsdl")
+                    || queryString.startsWith("wsdl=") || queryString.startsWith("xsd="))) {
+                    // Handles WSDL, Schema documents
+                    processDocRequest(msg);
+                } else {
+                    process(msg);
+                }
+            } else if (method.equals(POST_METHOD)) {
+                process(msg);
+            } else {
+                logger.warning(
+                    localizer.localize(
+                        messageFactory.getMessage(
+                            "unexpected.http.method", method)));
+                msg.close();
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Wrapping the processing of request in a Runnable so that it can be
+     * executed in Executor.
+     */
+    class HttpHandlerRunnable implements Runnable {
+        final HttpExchange msg;
+        
+        HttpHandlerRunnable(HttpExchange msg) {
+            this.msg = msg;
+        }
+        
+        public void run() {
+            handleExchange(msg);
+        }
+    }
+    
+    /**
      * Handles POST requests
      */
     private void process(HttpExchange msg) {
@@ -134,7 +172,7 @@ public class WSHttpHandler implements HttpHandler {
         }
     }
     
-    /*
+    /**
      * Handles GET requests for WSDL and Schema docuemnts
      */ 
     public void processDocRequest(HttpExchange msg) {
@@ -201,7 +239,7 @@ public class WSHttpHandler implements HttpHandler {
         }
     }
 
-    /*
+    /**
      * writes error html page
      */
     private void writeErrorPage(WSConnection con, int status, String message) {

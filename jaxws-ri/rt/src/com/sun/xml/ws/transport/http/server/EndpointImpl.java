@@ -81,7 +81,7 @@ public class EndpointImpl extends Endpoint {
         }
         checkPlatform();
         // Don't load HttpEndpoint class before as it may load HttpServer classes
-        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties);
+        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties, executor);
         ((HttpEndpoint)actualEndpoint).publish(address);
         published = true;
     }
@@ -93,7 +93,7 @@ public class EndpointImpl extends Endpoint {
             throw new IllegalArgumentException(serverContext.getClass()+" is not a supported context.");
         }
         // Don't load HttpEndpoint class before as it may load HttpServer classes
-        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties);
+        actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties, executor);
         ((HttpEndpoint)actualEndpoint).publish(serverContext);
         published = true;
     }
@@ -137,7 +137,6 @@ public class EndpointImpl extends Endpoint {
     }
 
     public void setExecutor(Executor executor) {
-        // Not used in our implementation
         this.executor = executor;
     }
 
@@ -149,7 +148,7 @@ public class EndpointImpl extends Endpoint {
         this.properties = map;
     }
     
-    /*
+    /**
      * Checks the permission of "publishEndpoint" before accessing HTTP classes.
      * Also it checks if there is an available HTTP server implementation.
      */

@@ -80,8 +80,7 @@ import org.xml.sax.SAXException;
  * WSDL & Schema Metadata
  * @author WS Development Team
  */
-public class RuntimeEndpointInfo extends Endpoint
-    implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
+public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo {
     
     private String name;
     private QName portName;
@@ -100,11 +99,9 @@ public class RuntimeEndpointInfo extends Endpoint
     private boolean beginServiceDone;
     private boolean endServiceDone;
     private boolean injectedContext;
-    private boolean publishingDone;
     private URL wsdlUrl;
     private EntityResolver wsdlResolver;
     private QName portTypeName;
-    private Map<String, Object> properties;
     private Integer mtomThreshold;
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
@@ -150,24 +147,6 @@ public class RuntimeEndpointInfo extends Endpoint
     public boolean isDeployed() {
         return deployed;
     }
-    
-    public boolean isPublished() {
-        return deployed;
-    }
-    
-    public void stop() {
-        
-    }
-    
-    public void publish(Object obj) {
-        
-    }
-    
-    public void publish(String address) {
-        
-    }
-    
-    
     
     public void createModel() {
         // Create runtime model for non Provider endpoints
@@ -364,14 +343,6 @@ public class RuntimeEndpointInfo extends Endpoint
         return (getWsdlUrl() == null);
     }
     
-    public boolean isPublishingDone() {
-        return publishingDone;
-    }
-    
-    public void setPublishingDone(boolean publishingDone) {
-        this.publishingDone = publishingDone;
-    }
-    
     /*
      * Generates the WSDL and XML Schema for the endpoint if necessary
      * It generates WSDL only for SOAP1.1, and for XSOAP1.2 bindings
@@ -402,9 +373,7 @@ public class RuntimeEndpointInfo extends Endpoint
         } catch(Exception e) {
             throw new ServerRtException("server.rt.err",e);
         }
-        //setMetadata(wsdlResolver.getDocs());
         setWSDLFileName(wsdlResolver.getWSDLFile());
-        setPublishingDone(true);
     }
     
     /*
@@ -752,22 +721,6 @@ public class RuntimeEndpointInfo extends Endpoint
                 }
             }
         }
-    }
-    
-    public Executor getExecutor() {
-        return null;
-    }
-
-    public void setExecutor(Executor executor) {
-       
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
     }
 
     /**

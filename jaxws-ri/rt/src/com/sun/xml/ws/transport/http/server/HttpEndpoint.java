@@ -30,6 +30,7 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 import javax.xml.transform.stream.StreamSource;
 import org.xml.sax.EntityResolver;
 
@@ -62,22 +63,26 @@ public class HttpEndpoint {
     private HttpContext httpContext;
     private final RuntimeEndpointInfo endpointInfo;
     private String primaryWsdl;
+    private Executor executor;
+    private final Map<String, Object> properties;
     
     private static final int MAX_THREADS = 5;
     
-    public HttpEndpoint(Object implementor, Binding binding, List<Source>metadata, Map<String, Object> properties ) {
+    public HttpEndpoint(Object implementor, Binding binding, List<Source>metadata, Map<String, Object> properties, Executor executor) {
         endpointInfo = new RuntimeEndpointInfo();
         endpointInfo.setImplementor(implementor);
         endpointInfo.setImplementorClass(implementor.getClass());
         endpointInfo.setBinding(binding);
         endpointInfo.setUrlPattern("");
         endpointInfo.setMetadata(metadata);
-        endpointInfo.setProperties(properties);
+        this.properties = properties;
+        this.executor = executor;
     }
     
-    // If Service Name is in properties, set it on RuntimeEndpointInfo
+    /**
+     * If Service Name is in properties, set it on RuntimeEndpointInfo
+     */
     private void setServiceName() {
-        Map<String, Object> properties = endpointInfo.getProperties();
         if (properties != null) {
             QName serviceName = (QName)properties.get(Endpoint.WSDL_SERVICE);
             if (serviceName != null) {
@@ -86,9 +91,10 @@ public class HttpEndpoint {
         }
     }
     
-    // If Port Name is in properties, set it on RuntimeEndpointInfo
+    /**
+     * If Port Name is in properties, set it on RuntimeEndpointInfo
+     */
     private void setPortName() {
-        Map<String, Object> properties = endpointInfo.getProperties();
         if (properties != null) {
             QName portName = (QName)properties.get(Endpoint.WSDL_PORT);
             if (portName != null) {
@@ -97,7 +103,7 @@ public class HttpEndpoint {
         }
     }
 
-    /*
+    /**
      * Convert metadata sources using identity transform. So that we can
      * reuse the Source object multiple times.
      */
@@ -159,7 +165,9 @@ public class HttpEndpoint {
         }
     }
     
-    // Finds primary WSDL
+    /**
+     * Finds primary WSDL
+     */
     private void findPrimaryWSDL() throws Exception {
         Map<String, DocInfo> metadata = endpointInfo.getDocMetadata();
         // Checks whether the wsdlLocation resource is a primary wsdl 
@@ -206,7 +214,7 @@ public class HttpEndpoint {
         }
     }
     
-    /*
+    /**
      * Fills RuntimeEndpointInfo with ServiceName, and PortName from properties
      */
     public void fillEndpointInfo() throws Exception {
@@ -236,7 +244,7 @@ public class HttpEndpoint {
         
     }
     
-    /*
+    /**
      * Generates necessary WSDL and Schema documents
      */
     public void generateWSDLDocs() {
@@ -294,7 +302,7 @@ public class HttpEndpoint {
         endpointInfo.injectContext();
         endpointInfo.beginService();
         Tie tie = new Tie();
-        context.setHandler(new WSHttpHandler(tie, endpointInfo));
+        context.setHandler(new WSHttpHandler(tie, endpointInfo, executor));
     }    
     
 }
