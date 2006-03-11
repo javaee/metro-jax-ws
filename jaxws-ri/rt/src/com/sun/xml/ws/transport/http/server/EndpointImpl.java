@@ -75,6 +75,10 @@ public class EndpointImpl extends Endpoint {
         if (!url.getProtocol().equals("http")) {
             throw new IllegalArgumentException(url.getProtocol()+" protocol based address is not supported");
         }
+        if (!url.getPath().startsWith("/")) {
+            throw new IllegalArgumentException("Incorrect WebService address="+address+
+                    ". The address's path should start with /");
+        }
         checkPlatform();
         // Don't load HttpEndpoint class before as it may load HttpServer classes
         actualEndpoint = new HttpEndpoint(implementor, binding, metadata, properties);
