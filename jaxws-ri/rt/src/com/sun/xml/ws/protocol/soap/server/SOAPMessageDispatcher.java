@@ -86,6 +86,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     public void receive(MessageInfo messageInfo) {
+        // Checks the Content-Type to send unsupported media error
         try {
             checkContentType(messageInfo);
         } catch(ServerRtException e) {
@@ -94,6 +95,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             return;
         }
         
+        // Gets request stream from WSConnection and creates SOAP message
         SOAPMessage soapMessage = null;
         try {
             soapMessage = getSOAPMessage(messageInfo);
@@ -102,7 +104,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             return;
         }
         
-        // if transport creates any exception, don't try to send again
+        // Set it before response is sent on transport. If transport creates
+        // any exception, this can be used not to send again
         boolean sent = false;
         try {
             
@@ -117,8 +120,10 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // Content negotiation fails
             }
             
+            // context holds MessageInfo, InternalMessage, SOAPMessage
             SOAPHandlerContext context = new SOAPHandlerContext(messageInfo, null,
                 soapMessage);
+            // WebServiceContext's MessageContext is set into HandlerContext
             updateHandlerContext(messageInfo, context);
             context.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.FALSE);
@@ -132,6 +137,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 context, shd);
             try {
                 if (shd == null) {
+                    // Invokes request handler chain, endpoint, response handler chain
                     implementor.invoke();
                 } else {
                     context.setInvoker(implementor);
@@ -143,14 +149,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     }
                 }
             } finally {
-                sent = implementor.isSent();
+                sent = implementor.isSent();    // response is sent or not
             }
             if (!isOneway(messageInfo)) {
                 makeSOAPMessage(messageInfo, context);
                 sent = true;
                 sendResponse(messageInfo, context);
             } else if (!sent) {
-                sent = true;
+                // Oneway and request handler chain reversed the execution direction
+                sent = true;                
                 sendResponseOneway(messageInfo);
             }
         } catch(Exception e) {
@@ -160,9 +167,15 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sendResponseError(messageInfo, e);
             }
         }
-        assert(sent == true);
+        assert sent;            // Make sure response is sent
     }
 
+    /*
+     * This decodes the SOAPMessage into InternalMessage. Then InternalMessage
+     * is converted to java method and parameters and populates them into
+     * MessageInfo.
+     *
+     */
     protected void toMessageInfo(MessageInfo messageInfo, SOAPHandlerContext context) {
         InternalMessage internalMessage = context.getInternalMessage();
         try {
@@ -207,7 +220,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     /*
-     * Gets SOAPMessage from the connection
+     * Creates SOAPMessage from the connection's request stream
      */
     private SOAPMessage getSOAPMessage(MessageInfo messageInfo) {
         WSConnection con = (WSConnection)messageInfo.getConnection();
@@ -215,7 +228,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
     
     /*
-     * Checks against know Content-Type headers
+     * Checks against known Content-Type headers
      */
     private void checkContentType(MessageInfo mi) {
         WSConnection con = (WSConnection)mi.getConnection();
@@ -251,15 +264,27 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
     /*
-     * Invokes the endpoint.
+     * Invokes the endpoint. For Provider endpoints, whether the operation is
+     * oneway or not known only after the endpoint is invoked. ProviderSOAPMD
+     * overrides this and sends the response message on transport for oneway
+     * operations.
+     *
+     * @return true if response is sent on transport
      */
-    protected void invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
+    protected boolean invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
         TargetFinder targetFinder =
             messageInfo.getEPTFactory().getTargetFinder(messageInfo);
         Tie tie = targetFinder.findTarget(messageInfo);
         tie._invoke(messageInfo);
+        return false;
     }
 
+    /**
+     * Converts java method parameters, and return value to InternalMessage.
+     * It calls response handlers. At the end, the context has either
+     * InternalMessage or SOAPMessage
+     *
+     */
     protected void getResponse(MessageInfo messageInfo, SOAPHandlerContext context) {
         setResponseInContext(messageInfo, context);
         try {
@@ -289,11 +314,33 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            InternalMessage internalMessage = SOAPRuntimeModel.createFaultInBody(
-                    e, null, null, null);
-            context.setInternalMessage(internalMessage);
-            context.setSOAPMessage(null);
+            createInternalMessageForException(messageInfo, e, context);
         }
+    }
+    
+    /*
+     *
+     *
+     *
+     */
+    private boolean createInternalMessageForException(MessageInfo messageInfo,
+            Exception e, SOAPHandlerContext context) {
+        boolean soap12 = false;
+        RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
+            messageInfo).getRuntimeEndpointInfo();
+        String id = ((SOAPBindingImpl)rei.getBinding()).getBindingId();
+        InternalMessage internalMessage = null;
+        if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
+            internalMessage = SOAPRuntimeModel.createFaultInBody(
+                e, null, null, null);
+        } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+            internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
+                e, null, null, null, null);
+            soap12 = true;
+        }
+        context.setInternalMessage(internalMessage);
+        context.setSOAPMessage(null);
+        return soap12;
     }
     
     private void makeSOAPMessage(MessageInfo messageInfo, SOAPHandlerContext context) {
@@ -370,18 +417,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 if (MessageContextUtil.ignoreFaultInMessage(
                     context.getMessageContext())) {
                     // don't use the fault, use the exception
-                    InternalMessage internalMessage =
-                        SOAPRuntimeModel.createFaultInBody(pe,
-                        null, null, null);
-                    context.setInternalMessage(internalMessage);
-                    context.setSOAPMessage(null);
+                    createInternalMessageForException(messageInfo, pe, context);
                 }
             } catch(RuntimeException re) {
                 skipEndpoint = true;
-                InternalMessage internalMessage =
-                    SOAPRuntimeModel.createFaultInBody(re, null, null, null);
-                context.setInternalMessage(internalMessage);
-                context.setSOAPMessage(null);
+                createInternalMessageForException(messageInfo, re, context);
             }
         }
         return skipEndpoint;
@@ -398,7 +438,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
         return null;
     }
-
+    
+    /**
+     *
+     * Invokes response handler chain
+     */
     protected boolean callHandlersOnResponse(HandlerChainCaller caller,
         SOAPHandlerContext context) {
 
@@ -406,7 +450,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             RequestOrResponse.RESPONSE, context, false);
     }
 
-    /*
+    /**
      * Used when the endpoint throws an exception. HandleFault is called
      * on the server handlers rather than handleMessage.
      */
@@ -414,7 +458,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         return caller.callHandleFault(context);
     }
 
-    /*
+    /**
      * Server does not know if a message is one-way until after
      * the handler chain has finished processing the request. If
      * it is a one-way message, have the handler chain caller
@@ -436,7 +480,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
     }
 
 
-    /*
+    /**
      * Sets MessageContext into HandlerContext and sets HandlerContext in
      * RuntimeContext
      */
@@ -452,12 +496,20 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         }
     }
     
+    /**
+     * Gets SystemHandlerDelegate from endpoint's Binding 
+     */
     private SystemHandlerDelegate getSystemHandlerDelegate(MessageInfo mi) {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(mi);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         return endpointInfo.getBinding().getSystemHandlerDelegate();
     }
     
+    /**
+     * Invokes request handler chain, endpoint and response handler chain.
+     * Separated as a separate class, so that SHD can call this in doPriv()
+     * block.
+     */
     private class SoapInvoker implements Invoker {
     
         MessageInfo messageInfo;
@@ -489,22 +541,9 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                     context.setMethod(messageInfo.getMethod());
                 } catch (SOAPFaultException e) {
                     skipEndpoint = true;
-                    RuntimeEndpointInfo rei = MessageInfoUtil.getRuntimeContext(
-                        messageInfo).getRuntimeEndpointInfo();
-                    String id = ((SOAPBindingImpl)
-                        rei.getBinding()).getBindingId();
-                    InternalMessage internalMessage = null;
-                    if (id.equals(SOAPBinding.SOAP11HTTP_BINDING)) {
-                        internalMessage = SOAPRuntimeModel.createFaultInBody(
-                            e, null, null, null);
-                    } else if (id.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
-                        internalMessage = SOAPRuntimeModel.createSOAP12FaultInBody(
-                            e, null, null, null, null);
-                        SOAPRuntimeModel.addHeaders(internalMessage,
+                    boolean soap12 = createInternalMessageForException(messageInfo, e, context);
+                    SOAPRuntimeModel.addHeaders(context.getInternalMessage(),
                             messageInfo);
-                    }
-                    context.setInternalMessage(internalMessage);
-                    context.setSOAPMessage(null);
                 }
             }
 
@@ -527,7 +566,6 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 // Ensure message is encoded according to conneg                
                 FastInfosetUtil.ensureCorrectEncoding(messageInfo, soapMessage);
                 
-                //sendResponse(messageInfo, soapMessage);
                 context.setSOAPMessage(soapMessage);
                 context.setInternalMessage(null);
             } else {
@@ -546,7 +584,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         shd.preInvokeEndpointHook(context.getSHDSOAPMessageContext());
                     }
                     updateWebServiceContext(messageInfo, context);
-                    invokeEndpoint(messageInfo, context);
+                    sent = invokeEndpoint(messageInfo, context);
                     context.getMessageContext().put(
                         MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 }
@@ -561,11 +599,22 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
             }
         }
         
+        /**
+         * Gets the dispatch method in the endpoint for the payload's QName
+         *
+         * @return dispatch method
+         */
         public Method getMethod(QName name) {
             RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
             return rtCtxt.getDispatchMethod(name, messageInfo);
         }
         
+        /*
+         * Is the message sent on transport. Happens when the operation is oneway
+         *
+         * @return true if the message is sent
+         *        false otherwise
+         */
         public boolean isSent() {
             return sent;
         }

@@ -156,11 +156,14 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
      * This is taken care here after invoking the endpoint.
      */
     @Override
-    protected void invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
+    protected boolean invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
         super.invokeEndpoint(messageInfo, hc);
+        boolean sent = false;
         if (isOneway(messageInfo)) {
+            sent = true;
             sendResponseOneway(messageInfo);
         }
+        return sent;
     }
 
     /*
