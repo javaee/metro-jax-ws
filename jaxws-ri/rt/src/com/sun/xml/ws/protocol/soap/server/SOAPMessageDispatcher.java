@@ -167,7 +167,7 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 sendResponseError(messageInfo, e);
             }
         }
-        assert sent;            // Make sure response is sent
+        assert sent;            // Make sure response is sent       
     }
 
     /*
@@ -271,12 +271,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
      *
      * @return true if response is sent on transport
      */
-    protected boolean invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
+    protected void invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
         TargetFinder targetFinder =
             messageInfo.getEPTFactory().getTargetFinder(messageInfo);
         Tie tie = targetFinder.findTarget(messageInfo);
         tie._invoke(messageInfo);
-        return false;
     }
 
     /**
@@ -584,7 +583,12 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                         shd.preInvokeEndpointHook(context.getSHDSOAPMessageContext());
                     }
                     updateWebServiceContext(messageInfo, context);
-                    sent = invokeEndpoint(messageInfo, context);
+                    invokeEndpoint(messageInfo, context);
+                    // For Provider endpoints Oneway is known only after executing endpoint
+                    if (!sent && isOneway(messageInfo)) {    
+                        sent = true;
+                        sendResponseOneway(messageInfo);
+                    }
                     context.getMessageContext().put(
                         MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
                 }

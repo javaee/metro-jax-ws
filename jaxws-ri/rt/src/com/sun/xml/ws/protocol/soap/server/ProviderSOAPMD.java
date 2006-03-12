@@ -151,22 +151,6 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
     }
 
     /*
-     * In this case, Oneway is known only after invoking the endpoint. For other
-     * endpoints, the HTTP response code is sent before invoking the endpoint.
-     * This is taken care here after invoking the endpoint.
-     */
-    @Override
-    protected boolean invokeEndpoint(MessageInfo messageInfo, SOAPHandlerContext hc) {
-        super.invokeEndpoint(messageInfo, hc);
-        boolean sent = false;
-        if (isOneway(messageInfo)) {
-            sent = true;
-            sendResponseOneway(messageInfo);
-        }
-        return sent;
-    }
-
-    /*
      * Is it PAYLOAD or MESSAGE ??
      */
     private static Service.Mode getServiceMode(Class c) {
