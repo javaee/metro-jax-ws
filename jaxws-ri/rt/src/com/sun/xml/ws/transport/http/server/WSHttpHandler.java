@@ -59,6 +59,9 @@ public class WSHttpHandler implements HttpHandler {
     
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
+    private static final String HEAD_METHOD = "HEAD";
+    private static final String PUT_METHOD = "PUT";
+    private static final String DELETE_METHOD = "DELETE";
     private static final String HTML_CONTENT_TYPE = "text/html";
     private static final String XML_CONTENT_TYPE = "text/xml";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
@@ -111,7 +114,8 @@ public class WSHttpHandler implements HttpHandler {
                 } else {
                     process(msg);
                 }
-            } else if (method.equals(POST_METHOD)) {
+            } else if (method.equals(POST_METHOD) || method.equals(HEAD_METHOD)
+                        || method.equals(PUT_METHOD) || method.equals(DELETE_METHOD)) {
                 process(msg);
             } else {
                 logger.warning(

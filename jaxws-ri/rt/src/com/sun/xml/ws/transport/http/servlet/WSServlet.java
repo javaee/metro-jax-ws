@@ -87,6 +87,26 @@ public class WSServlet extends HttpServlet {
         }
     }
 
+    protected void doPut(
+        HttpServletRequest request,
+        HttpServletResponse response)
+        throws ServletException {
+        if (delegate != null) {
+            delegate.doPut(request, response);
+        }
+    }
+    
+    protected void doDelete(
+        HttpServletRequest request,
+        HttpServletResponse response)
+        throws ServletException {
+        if (delegate != null) {
+            delegate.doDelete(request, response);
+        }
+    }
+
+
+    
     protected WSServletDelegate delegate = null;
     private LocalizableMessageFactory messageFactory;
     private Localizer localizer;
@@ -95,8 +115,6 @@ public class WSServlet extends HttpServlet {
         "com.sun.xml.ws.server.http.info";
     public static final String JAXWS_RI_PROPERTY_PUBLISH_WSDL =
         "com.sun.xml.ws.server.http.publishWSDL";
-    public static final String JAXWS_RI_PROPERTY_PUBLISH_MODEL =
-        "com.sun.xml.ws.server.http.publishModel";
     public static final String JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE =
         "com.sun.xml.ws.server.http.publishStatusPage";
 

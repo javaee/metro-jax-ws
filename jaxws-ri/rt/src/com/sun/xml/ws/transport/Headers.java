@@ -201,4 +201,8 @@ public class Headers implements Map<String,List<String>> {
     public int hashCode() {
         return map.hashCode();
     }
+    
+    public String toString() {
+        return map.toString();
+    }
 }

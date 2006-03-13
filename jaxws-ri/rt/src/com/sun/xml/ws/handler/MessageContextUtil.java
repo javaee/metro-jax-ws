@@ -86,6 +86,10 @@ public class MessageContextUtil {
         ctxt.setScope(MessageContext.HTTP_RESPONSE_HEADERS, Scope.APPLICATION);
     }
     
+    public static Map<String, List<String>> getHttpResponseHeaders(MessageContext ctxt) {
+        return (Map<String, List<String>>)ctxt.get(MessageContext.HTTP_RESPONSE_HEADERS);
+    }
+    
     public static void setWsdlOperation(MessageContext ctxt, QName name) {
         ctxt.put(MessageContext.WSDL_OPERATION, name);
         ctxt.setScope(MessageContext.WSDL_OPERATION, Scope.APPLICATION);

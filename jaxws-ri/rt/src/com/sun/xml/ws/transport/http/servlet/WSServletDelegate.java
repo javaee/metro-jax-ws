@@ -202,6 +202,61 @@ public class WSServletDelegate {
             throw new ServletException(e.getMessage());
         }
     }
+    
+    
+    /**
+     * Handles HTTP PUT for XML/HTTP binding based endpoints
+     */
+    public void doPut(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException {
+        
+        try {
+            RuntimeEndpointInfo targetEndpoint = getEndpointFor(request);
+            if (targetEndpoint != null) {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest(defaultLocalizer.localize(
+                            messageFactory.getMessage(
+                                "servlet.trace.gotRequestForEndpoint",
+                                targetEndpoint.getName())));
+                }
+            } else {
+                Localizer localizer = getLocalizerFor(request);
+                writeNotFoundErrorPage(localizer, response, "Invalid request");
+                return;
+            }
+            BindingImpl binding = (BindingImpl)targetEndpoint.getBinding();
+            if (binding.getBindingId().equals(HTTPBinding.HTTP_BINDING)) {
+                handle(request, response, targetEndpoint);
+            } else {
+                response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            }
+        } catch (JAXWSExceptionBase e) {
+            logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (Throwable e) {
+            if (e instanceof Localizable) {
+                logger.log(
+                    Level.SEVERE,
+                    defaultLocalizer.localize((Localizable) e),
+                    e);
+            } else {
+                logger.log(Level.SEVERE, "caught throwable", e);
+            }
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+    
+    /**
+     * Handles HTTP DELETE for XML/HTTP binding based endpoints
+     */
+    public void doDelete(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException {
+        
+        // At preseent, there is no difference for between PUT and DELETE processing  
+        doPut(request, response);
+    }
+    
 
     /**
      * processes web service requests by finding the <code>RuntimeEndpointInfo</code>
@@ -248,7 +303,7 @@ public class WSServletDelegate {
         }
     }
     
-    /*
+    /**
      * Invokes JAXWS runtime with the correct MessageContext
      */
     private void handle(HttpServletRequest request, HttpServletResponse response,

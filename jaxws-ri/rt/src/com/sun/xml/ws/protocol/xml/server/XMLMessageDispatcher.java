@@ -18,6 +18,7 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.protocol.xml.server;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.presentation.TargetFinder;
@@ -38,6 +39,14 @@ import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
 import com.sun.xml.ws.util.localization.Localizer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.MimeHeaders;
 import javax.xml.ws.Binding;
 import javax.xml.ws.handler.MessageContext;
 import java.util.logging.Level;
@@ -115,7 +124,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                     XMLEncoder encoder = eptf.getXMLEncoder();
                     xmlMessage = encoder.toXMLMessage(internalMessage, messageInfo);
                 }
-                sendResponse(messageInfo, xmlMessage);
+                sendResponse(messageInfo, xmlMessage, context);
             } else {
                 toMessageInfo(messageInfo, context);
 
@@ -147,7 +156,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                                 context.getXMLMessageContext());
                          */
                     }
-                    sendResponse(messageInfo, xmlMessage);
+                    sendResponse(messageInfo, xmlMessage, context);
                 }
             }
         } catch(Exception e) {
@@ -264,13 +273,47 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         context.setXMLMessage(null);
     }
 
-    /*
-     * Sends SOAPMessage response on the connection
+    /**
+     * Sends XMLMessage response on the connection
      */
-    // TODO: HTTP response code
-    private void sendResponse(MessageInfo messageInfo, XMLMessage xmlMessage) {
-        WSConnection con = (WSConnection)messageInfo.getConnection();
-        XMLConnectionUtil.sendResponse(con, xmlMessage);
+    private void sendResponse(MessageInfo messageInfo, XMLMessage xmlMessage,
+            XMLHandlerContext ctxt) throws IOException {
+        MessageContext msgCtxt = ctxt.getMessageContext();
+        WSConnection con = messageInfo.getConnection();
+        
+        // See if MessageContext.HTTP_STATUS_CODE is present
+        Integer status = MessageContextUtil.getHttpStatusCode(msgCtxt);
+        int statusCode = (status == null) ? xmlMessage.getStatus() : status;
+        
+
+        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        
+        // put all headers from MessageContext.HTTP_RESPONSE_HEADERS
+        Map<String, List<String>> ctxtHdrs = MessageContextUtil.getHttpResponseHeaders(msgCtxt);
+        if (ctxtHdrs != null) {
+            headers.putAll(ctxtHdrs);
+        }
+        // put all headers from XMLMessage
+        MimeHeaders mhs = xmlMessage.getMimeHeaders();
+        Iterator i = mhs.getAllHeaders();
+        while (i.hasNext()) {
+            MimeHeader mh = (MimeHeader) i.next();
+            String name = mh.getName();
+            List<String> values = headers.get(name);
+            if (values == null) {
+                values = new ArrayList<String>();
+                headers.put(name, values);
+            }
+            values.add(mh.getValue());
+        }
+        
+        // Set HTTP status code
+        con.setStatus(statusCode);
+        // put response headers on the connection
+        con.setHeaders(headers);
+        // Write contents on the connection
+        xmlMessage.writeTo(con.getOutput());
+        con.closeOutput();
     }
 
     protected void sendResponseOneway(MessageInfo messageInfo) {
