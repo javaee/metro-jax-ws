@@ -75,12 +75,12 @@ public interface DocInfo {
     /*
      * Sets if the endpoint Port Type is defined in this document
      */
-    public void setPortType(boolean portType);
+    public void setHavingPortType(boolean portType);
     
     /*
      * returns true if endpoint PortType is present in this document
      */
-    public boolean hasPortType();
+    public boolean isHavingPortType();
     
     /*
      * @return /WEB-INF/wsdl/xxx.wsdl

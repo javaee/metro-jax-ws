@@ -190,7 +190,7 @@ public class HttpEndpoint {
                         throw new ServerRtException("duplicate.primary.wsdl", entry.getKey());
                     }
                 }
-                if (docInfo.hasPortType()) {
+                if (docInfo.isHavingPortType()) {
                     if (!abstractWsdl) {
                         abstractWsdl = true;
                     } else {

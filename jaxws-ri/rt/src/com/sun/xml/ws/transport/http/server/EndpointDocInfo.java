@@ -81,11 +81,11 @@ public class EndpointDocInfo implements DocInfo {
         return service;
     }
     
-    public void setPortType(boolean portType) {
+    public void setHavingPortType(boolean portType) {
         this.portType = portType;
     }
     
-    public boolean hasPortType() {
+    public boolean isHavingPortType() {
         return portType;
     }
     

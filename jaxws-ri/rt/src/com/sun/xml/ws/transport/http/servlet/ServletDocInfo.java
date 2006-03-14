@@ -87,11 +87,11 @@ public class ServletDocInfo implements DocInfo {
         return service;
     }
     
-    public void setPortType(boolean portType) {
+    public void setHavingPortType(boolean portType) {
         this.hasPortType = portType;
     }
     
-    public boolean hasPortType() {
+    public boolean isHavingPortType() {
         return hasPortType;
     }
     

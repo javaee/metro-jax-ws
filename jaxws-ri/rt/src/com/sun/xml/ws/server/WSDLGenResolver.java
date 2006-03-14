@@ -54,7 +54,7 @@ public class WSDLGenResolver implements WSDLOutputResolver {
         Set<Entry<String, DocInfo>> docEntries = docs.entrySet();
         for(Entry<String, DocInfo> entry : docEntries) {
             DocInfo docInfo = entry.getValue();
-            if (docInfo.hasPortType()) {
+            if (docInfo.isHavingPortType()) {
                 abstractWsdl = docInfo;
             }
             if (docInfo.getDocType() == DOC_TYPE.SCHEMA) {
@@ -237,11 +237,11 @@ public class WSDLGenResolver implements WSDLOutputResolver {
             return null;
         }
 
-        public void setPortType(boolean portType) {
+        public void setHavingPortType(boolean portType) {
 
         }
 
-        public boolean hasPortType() {
+        public boolean isHavingPortType() {
             return false;
         }
     }

@@ -104,7 +104,7 @@ public class RuntimeWSDLParser {
                     String pn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
                     if (portTypeName != null) {
                         if(portTypeName.getLocalPart().equals(pn) && portTypeName.getNamespaceURI().equals(docInfo.getTargetNamespace())) {
-                            docInfo.setPortType(true);
+                            docInfo.setHavingPortType(true);
                         }
                     }
                     XMLStreamReaderUtil.skipElement(reader);
