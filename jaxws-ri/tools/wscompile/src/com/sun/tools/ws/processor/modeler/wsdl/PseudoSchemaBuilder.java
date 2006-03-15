@@ -194,9 +194,12 @@ public class PseudoSchemaBuilder {
                 "           xmlns:jaxb=''http://java.sun.com/xml/ns/jaxb''" +
                 "           xmlns:xjc=''http://java.sun.com/xml/ns/jaxb/xjc''" +
                 "           jaxb:extensionBindingPrefixes=''xjc''" +
-                "           jaxb:version=''1.0''" +
-                "           targetNamespace=''{0}''>",
-                elementName.getNamespaceURI());
+                "           jaxb:version=''1.0''");
+        if((elementName != null) && elementName.getNamespaceURI().length() > 0){
+            print("           targetNamespace=''{0}''>", elementName.getNamespaceURI());
+        }else{
+            print("           >");
+        }
 
         writeImports(elementName, allParts);
 
@@ -235,7 +238,7 @@ public class PseudoSchemaBuilder {
 
         // reset the StringWriter, so that next operation element could be written
         if(buf.toString().length() > 0){
-            //System.out.println("Response bean Schema for operation========> "+ elementName+"\n\n"+buf);
+//            System.out.println("Response bean Schema for operation========> "+ elementName+"\n\n"+buf);
             InputSource is = new InputSource(new StringReader(buf.toString()));
             schemas.add(is);
             buf.getBuffer().setLength(0);
