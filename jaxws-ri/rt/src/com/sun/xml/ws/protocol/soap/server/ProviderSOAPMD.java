@@ -19,10 +19,7 @@
  */
 package com.sun.xml.ws.protocol.soap.server;
 
-import com.sun.xml.ws.server.provider.*;
-import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
-import javax.xml.ws.ServiceMode;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
@@ -41,11 +38,12 @@ import com.sun.xml.ws.server.RuntimeEndpointInfo;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.MessageInfoUtil;
 import com.sun.xml.ws.util.SOAPUtil;
-
-import com.sun.xml.messaging.saaj.soap.MessageImpl;
 import com.sun.xml.ws.util.FastInfosetUtil;
 
 import static com.sun.xml.ws.developer.JAXWSProperties.*;
+import com.sun.xml.ws.server.provider.ProviderModel;
+import com.sun.xml.ws.server.provider.ProviderPeptTie;
+
 public class ProviderSOAPMD extends SOAPMessageDispatcher {
 
     /*
@@ -59,20 +57,15 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Class providerClass = endpointInfo.getImplementorClass();
-        boolean isSource = isSource(providerClass);
-        boolean isSoapMessage = isSoapMessage(providerClass);
-        if (!(isSource || isSoapMessage)) {
-            throw new UnsupportedOperationException(
-                    "Endpoint should implement Provider<Source> or Provider<SOAPMessage>");
-        }
+        ProviderModel model = endpointInfo.getProviderModel();
+        boolean isSource = model.isSource();
+        Service.Mode mode = model.getServiceMode();
 
-        if (getServiceMode(providerClass) == Service.Mode.PAYLOAD) {
+        if (mode == Service.Mode.PAYLOAD) {
             if (isSource) {
                 data[0] = new LogicalMessageImpl(context).getPayload();
-            } else {
-                throw new UnsupportedOperationException(
-                        "Illeagal combination Mode.PAYLOAD and Provider<SOAPMessage>");
             }
+            // else doesn't happen and it is checked while creating the model
         } else {
             InternalMessage internalMessage = context.getInternalMessage();
             SOAPMessage soapMessage = context.getSOAPMessage();
@@ -114,9 +107,11 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
         RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Class providerClass = endpointInfo.getImplementorClass();
+        ProviderModel model = endpointInfo.getProviderModel();
+        Service.Mode mode = model.getServiceMode();
         
         if (messageInfo.getResponseType() == MessageInfo.NORMAL_RESPONSE &&
-                getServiceMode(providerClass) == Service.Mode.MESSAGE) {
+                mode == Service.Mode.MESSAGE) {
             SOAPMessage soapMessage = null;
             if (obj instanceof SOAPMessage) {
                 soapMessage = (SOAPMessage)obj;
@@ -148,43 +143,6 @@ public class ProviderSOAPMD extends SOAPMessageDispatcher {
             context.setInternalMessage(internalMessage);
             context.setSOAPMessage(null);
         }
-    }
-
-    /*
-     * Is it PAYLOAD or MESSAGE ??
-     */
-    private static Service.Mode getServiceMode(Class c) {
-        ServiceMode mode = (ServiceMode)c.getAnnotation(ServiceMode.class);
-        if (mode == null) {
-            return Service.Mode.PAYLOAD;
-        }
-        return mode.value();
-    }
-
-    /*
-     * Is it Provider<Source> ?
-     */
-    private static boolean isSource(Class c) {
-        try {
-            c.getMethod("invoke",  Source.class);
-            return true;
-        } catch(NoSuchMethodException ne) {
-            // ignoring intentionally
-        }
-        return false;
-    }
-
-    /*
-     * Is it Provider<SOAPMessage> ?
-     */
-    private static boolean isSoapMessage(Class c) {
-        try {
-            c.getMethod("invoke",  SOAPMessage.class);
-            return true;
-        } catch(NoSuchMethodException ne) {
-            // ignoring intentionally
-        }
-        return false;
     }
 
 }

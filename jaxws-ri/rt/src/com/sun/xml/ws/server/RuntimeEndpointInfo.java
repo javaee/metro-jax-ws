@@ -20,6 +20,7 @@
 
 package com.sun.xml.ws.server;
 
+import com.sun.xml.ws.server.provider.ProviderModel;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -110,6 +111,7 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
         new LocalizableMessageFactory("com.sun.xml.ws.resources.server");
     private WebService ws;
     private WebServiceProvider wsProvider;
+    private ProviderModel providerModel;
 
     public String getName() {
         return name;
@@ -148,7 +150,11 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
         return deployed;
     }
     
-    public void createModel() {
+    public void createProviderModel() {
+        providerModel = new ProviderModel(implementorClass, binding);
+    }
+    
+    public void createSEIModel() {
         // Create runtime model for non Provider endpoints
 
         // wsdlURL will be null, means we will generate WSDL. Hence no need to apply
@@ -303,9 +309,10 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
         
         if (isProviderEndpoint()) {
             checkProvider();
+            createProviderModel();
         } else {
             // Create runtime model for non Provider endpoints    
-            createModel();
+            createSEIModel();
             if (getServiceName() == null) {
                 setServiceName(runtimeModel.getServiceQName());
             }
@@ -814,6 +821,10 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
             return ws.wsdlLocation();
         }
         return null;
+    }
+    
+    public ProviderModel getProviderModel() {
+        return providerModel;
     }
 
 

@@ -19,6 +19,7 @@
  */
 package com.sun.xml.ws.protocol.xml.server;
 
+import com.sun.xml.ws.server.provider.ProviderModel;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
@@ -55,17 +56,9 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         Provider provider = (Provider)endpointInfo.getImplementor();
         Class providerClass = provider.getClass();
-        boolean isSource = isSource(providerClass);
-        boolean isDataSource = isDataSource(providerClass);
-        if (!(isSource || isDataSource)) {
-            throw new UnsupportedOperationException(
-                    "Endpoint should implement Provider<Source> or Provider<DataSource>");
-        }
-        Service.Mode mode = getServiceMode(providerClass);
-        if (mode == Service.Mode.PAYLOAD && isDataSource) {
-            throw new UnsupportedOperationException(
-                    "Illeagal combination Mode.PAYLOAD and Provider<DataSource>");
-        } 
+        ProviderModel model = endpointInfo.getProviderModel();
+        boolean isSource = model.isSource();
+        Service.Mode mode = model.getServiceMode();
         XMLMessage xmlMessage = context.getXMLMessage();
         try {
             if (isSource) {
@@ -124,43 +117,6 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
         if (isOneway(messageInfo)) {
             sendResponseOneway(messageInfo);
         }
-    }
-
-    /*
-     * Is it PAYLOAD or MESSAGE ??
-     */
-    private static Service.Mode getServiceMode(Class c) {
-        ServiceMode mode = (ServiceMode)c.getAnnotation(ServiceMode.class);
-        if (mode == null) {
-            return Service.Mode.PAYLOAD;
-        }
-        return mode.value();
-    }
-
-    /*
-     * Is it Provider<Source> ?
-     */
-    private static boolean isSource(Class c) {
-        try {
-            c.getMethod("invoke",  Source.class);
-            return true;
-        } catch(NoSuchMethodException ne) {
-            // ignoring intentionally
-        }
-        return false;
-    }
-
-    /*
-     * Is it Provider<DataSource> ?
-     */
-    private static boolean isDataSource(Class c) {
-        try {
-            c.getMethod("invoke",  DataSource.class);
-            return true;
-        } catch(NoSuchMethodException ne) {
-            // ignoring intentionally
-        }
-        return false;
     }
 
 }
