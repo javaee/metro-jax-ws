@@ -63,19 +63,6 @@ public abstract class ServiceContextBuilder {
             if (serviceCAnnotations == null)
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
             serviceContext.setSCAnnotations(serviceCAnnotations);
-            
-            //if @HandlerChain present, set HandlerResolver on service context
-            HandlerChain handlerChain = (HandlerChain)
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run() {
-                    return service.getAnnotation(HandlerChain.class);
-                }
-            });
-            if(handlerChain != null) {
-                HandlerResolverImpl hresolver = new HandlerResolverImpl(serviceContext);
-                serviceContext.setHandlerResolver(hresolver);
-            }
-
         }
         
         String temp = !(wsdlLocation == null) ? wsdlLocation.toString() : serviceCAnnotations.wsdlLocation;
@@ -95,7 +82,17 @@ public abstract class ServiceContextBuilder {
                 processAnnotations(serviceContext, clazz);
             }
         }
-
+        //if @HandlerChain present, set HandlerResolver on service context
+            HandlerChain handlerChain = (HandlerChain)
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    return service.getAnnotation(HandlerChain.class);
+                }
+            });
+            if(handlerChain != null) {
+                HandlerResolverImpl hresolver = new HandlerResolverImpl(serviceContext);
+                serviceContext.setHandlerResolver(hresolver);
+            }
         return serviceContext;
     }
 

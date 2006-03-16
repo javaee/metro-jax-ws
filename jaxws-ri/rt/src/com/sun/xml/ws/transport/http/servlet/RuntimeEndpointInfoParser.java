@@ -20,6 +20,7 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
+import com.sun.xml.ws.handler.HandlerChainsModel;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,6 @@ import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
-import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 
 /**
  * @author WS Development Team
@@ -215,7 +215,7 @@ public class RuntimeEndpointInfoParser {
         if (XMLStreamReaderUtil.nextElementContent(reader) ==
             XMLStreamConstants.END_ELEMENT ||
             !reader.getName().equals(
-            HandlerAnnotationProcessor.QNAME_HANDLER_CHAINS)) {
+            HandlerChainsModel.QNAME_HANDLER_CHAINS)) {
 
             return;
         }
@@ -227,7 +227,7 @@ public class RuntimeEndpointInfoParser {
         }
         
         HandlerAnnotationInfo handlerInfo =
-            HandlerAnnotationProcessor.parseHandlerFile(reader, classLoader,
+            HandlerChainsModel.parseHandlerFile(reader, classLoader,
             serviceName, rei.getPortName(),
             ((BindingImpl) rei.getBinding()).getBindingId());
 

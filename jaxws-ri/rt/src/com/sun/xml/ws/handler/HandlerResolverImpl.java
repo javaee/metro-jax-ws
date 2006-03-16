@@ -21,6 +21,7 @@ package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.ServiceContext;
+import com.sun.xml.ws.handler.HandlerChainsModel;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ import javax.xml.ws.handler.PortInfo;
  * @author WS Development Team
  */
 public class HandlerResolverImpl implements HandlerResolver {
-    
+    private HandlerChainsModel handlerModel;
     private Map<PortInfo, List<Handler>> chainMap;
     private ServiceContext serviceContext;
     private static final Logger logger = Logger.getLogger(
@@ -65,6 +66,7 @@ public class HandlerResolverImpl implements HandlerResolver {
     
     public HandlerResolverImpl(ServiceContext serviceContext) {
         this.serviceContext = serviceContext;
+        handlerModel = HandlerAnnotationProcessor.buildHandlerChainsModel(serviceContext.getServiceClass());        
         chainMap = new HashMap<PortInfo, List<Handler>>();
     }
 
@@ -77,15 +79,17 @@ public class HandlerResolverImpl implements HandlerResolver {
      * found, it will return an empty list rather than null.
      */
     public List<Handler> getHandlerChain(PortInfo info) {
+        //Check in cache first
         List<Handler> chain = chainMap.get(info);
-        //For now parse Service class always
-        HandlerAnnotationInfo chainInfo =
-                HandlerAnnotationProcessor.buildHandlerInfo(serviceContext.getServiceClass(),
-                    info.getServiceName(), info.getPortName(), info.getBindingID());
-        if(chainInfo != null) {
-            chain = chainInfo.getHandlers();
-            chainMap.put(info,chain);
-            serviceContext.setRoles(info.getPortName(),chainInfo.getRoles());
+        
+        if(chain != null)
+            return chain;
+        if(handlerModel != null) {
+            HandlerAnnotationInfo chainInfo = handlerModel.getHandlersForPortInfo(info);
+            if(chainInfo != null) {
+                chain = chainInfo.getHandlers();
+                serviceContext.setRoles(info.getPortName(),chainInfo.getRoles());
+            }
         }
         if (chain == null) {
             if (logger.isLoggable(Level.FINE)) {
@@ -93,6 +97,8 @@ public class HandlerResolverImpl implements HandlerResolver {
             }
             chain = new ArrayList<Handler>();
         }
+        // Put it in cache
+        chainMap.put(info,chain);
         return chain;
     }
     

@@ -113,7 +113,7 @@ public final class JAXWSUtils {
      * QName, which may contain wildcard characters.
      */
     public static boolean matchQNames(QName target, QName pattern) {
-        if (target == null) {
+        if ((target == null) || (pattern == null))  {
             // if no service or port is in descriptor
             return false;
         }
