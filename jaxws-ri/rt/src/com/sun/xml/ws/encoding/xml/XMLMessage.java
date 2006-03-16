@@ -142,10 +142,12 @@ public final class XMLMessage {
     }
 
     public XMLMessage(DataSource dataSource, boolean useFastInfoset) {
-        if (dataSource == null)
+        if (dataSource == null){
             this.noData = true;
+        }
 
-        String contentType = dataSource.getContentType();
+        String contentType = (dataSource != null) ? dataSource.getContentType() : null;
+        contentType =  (contentType == null) ? contentType = "text/xml": contentType;
         this.data = new XMLDataSource(dataSource,
             contentType.indexOf("application/fastinfoset") > 0);
         this.headers = new MimeHeaders();
@@ -153,6 +155,7 @@ public final class XMLMessage {
         headers.addHeader("Content-Type",
             !useFastInfoset ? contentType
                 : contentType.replaceFirst("text/xml", "application/fastinfoset"));
+
     }
 
     public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
