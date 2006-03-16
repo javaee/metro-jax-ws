@@ -66,6 +66,7 @@ import javax.xml.namespace.QName;
  */
 public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
     private String serviceNS;
+    private WSDLModelInfo wsdlModelInfo;
 
     public ServiceGenerator() {
         super();
@@ -76,6 +77,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
         Configuration config,
         Properties properties) {
         super(model, config, properties);
+        this.wsdlModelInfo = (WSDLModelInfo)config.getModelInfo();
     }
 
     public GeneratorBase getGenerator(
@@ -186,6 +188,10 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             //@WebService
             JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
             writeWebServiceClientAnnotation(service, webServiceClientAnn);
+
+            //@HandlerChain
+            writeHandlerConfig(env.getNames().customJavaTypeClassName(service.getJavaInterface()), cls, wsdlModelInfo);
+
             for (Port port: service.getPorts()) {
                 if (port.isProvider()) {
                     continue;  // No getXYZPort() for porvider based endpoint

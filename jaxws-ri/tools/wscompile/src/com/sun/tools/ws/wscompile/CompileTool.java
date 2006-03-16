@@ -101,8 +101,8 @@ import org.xml.sax.EntityResolver;
  *    CustomExceptionGenerator} to generate Exception classes,
  *    the {@link com.sun.tools.ws.processor.generator.JAXBTypeGenerator 
  *    JAXBTypeGenerator} to generate JAXB types,
- *    the {@link com.sun.tools.ws.processor.generator.ServiceInterfaceGenerator 
- *    ServiceInterfaceGenerator} to generate the Service interface, and
+ *    the {@link com.sun.tools.ws.processor.generator.ServiceGenerator
+ *    ServiceGenerator} to generate the Service interface, and
  *    the {@link com.sun.tools.ws.processor.generator.SeiGenerator
  *    RemoteInterfaceGenerator} to generate the service endpoint interface.
  *    The CompileTool then invokes the {@link com.sun.tools.ws.processor.Processor#runActions() 

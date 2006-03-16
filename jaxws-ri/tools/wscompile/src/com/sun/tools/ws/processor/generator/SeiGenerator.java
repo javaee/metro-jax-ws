@@ -66,7 +66,7 @@ import java.util.Iterator;
 public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     private WSDLModelInfo wsdlModelInfo;
     private String serviceNS;
-       
+
     public SeiGenerator() {
     }
 
@@ -135,7 +135,7 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         writeWebServiceAnnotation(service, port, webServiceAnn);
 
         //@HandlerChain
-        writeHandlerConfig(port, cls);
+        writeHandlerConfig(env.getNames().customJavaTypeClassName(port.getJavaInterface()), cls, wsdlModelInfo);
 
         //@SOAPBinding
         writeSOAPBinding(port, cls);
@@ -426,27 +426,6 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         }
     }
 
-    private void writeHandlerConfig(Port port, JDefinedClass cls) {
-        Element e = wsdlModelInfo.getHandlerConfig();
-        if(e == null)
-            return;
-        JAnnotationUse handlerChainAnn = cls.annotate(cm.ref(HandlerChain.class));
-        String fullName = env.getNames().customJavaTypeClassName(port.getJavaInterface());
-        NodeList nl = e.getElementsByTagNameNS(
-            "http://java.sun.com/xml/ns/javaee", "handler-chain");
-        if(nl.getLength() > 0){
-            Element hn = (Element)nl.item(0);
-            String fName = getHandlerConfigFileName(fullName);
-            handlerChainAnn.param("file", fName);
-            generateHandlerChainFile(e, fullName);
-        }
-    }
-
-     private String getHandlerConfigFileName(String fullName){
-        String name = Names.stripQualifier(fullName);
-        return name+"_handler.xml";
-    }
-
     private void writeWebServiceAnnotation(Service service, Port port, JAnnotationUse wsa) {
         String serviceName = service.getName().getLocalPart();
         QName name = (QName) port.getProperty(ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
@@ -488,38 +467,6 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
             throw new GeneratorException(
                 "generator.nestedGeneratorError",
                 e);
-        }
-    }
-
-    private void generateHandlerChainFile(Element hChains, String name) {
-        String hcName = getHandlerConfigFileName(name);
-
-        File packageDir = DirectoryUtil.getOutputDirectoryFor(name, destDir, env);
-        File hcFile = new File(packageDir, hcName);
-
-        /* adding the file name and its type */
-        GeneratedFileInfo fi = new GeneratedFileInfo();
-        fi.setFile(hcFile);
-        fi.setType("HandlerConfig");
-        env.addGeneratedFile(fi);
-
-        try {
-            IndentingWriter p =
-                new IndentingWriter(
-                    new OutputStreamWriter(new FileOutputStream(hcFile)));
-            Transformer it = XmlUtil.newTransformer();
-
-            it.setOutputProperty(OutputKeys.METHOD, "xml");
-            it.setOutputProperty(OutputKeys.INDENT, "yes");
-            it.setOutputProperty(
-                "{http://xml.apache.org/xslt}indent-amount",
-                "2");
-            it.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            it.transform( new DOMSource(hChains), new StreamResult(p) );
-        } catch (Exception e) {
-            throw new GeneratorException(
-                    "generator.nestedGeneratorError",
-                    e);
         }
     }
 }
