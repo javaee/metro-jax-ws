@@ -106,17 +106,4 @@ public class ProviderXMLMD extends XMLMessageDispatcher {
         context.setInternalMessage(null);
     }
 
-    /*
-     * In this case, Oneway is known only after invoking the endpoint. For other
-     * endpoints, the HTTP response code is sent before invoking the endpoint.
-     * This is taken care here after invoking the endpoint.
-     */
-    @Override
-    protected void invokeEndpoint(MessageInfo messageInfo, XMLHandlerContext hc) {
-        super.invokeEndpoint(messageInfo, hc);
-        if (isOneway(messageInfo)) {
-            sendResponseOneway(messageInfo);
-        }
-    }
-
 }

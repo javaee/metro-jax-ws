@@ -25,26 +25,23 @@ import com.sun.xml.ws.pept.presentation.TargetFinder;
 import com.sun.xml.ws.pept.presentation.Tie;
 import com.sun.xml.ws.pept.protocol.MessageDispatcher;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.encoding.xml.XMLDecoder;
-import com.sun.xml.ws.encoding.xml.XMLEPTFactory;
-import com.sun.xml.ws.encoding.xml.XMLEncoder;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.XMLHandlerContext;
-import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
+import com.sun.xml.ws.server.provider.ProviderPeptTie;
+import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.spi.runtime.WSConnection;
 import com.sun.xml.ws.util.MessageInfoUtil;
-import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
-import com.sun.xml.ws.util.localization.Localizer;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.ws.Binding;
@@ -62,13 +59,10 @@ import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATIO
  * @author WS Development Team
  *
  */
-public class XMLMessageDispatcher implements MessageDispatcher {
+public abstract class XMLMessageDispatcher implements MessageDispatcher {
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.xmlmd");
-    private Localizer localizer = new Localizer();
-    private LocalizableMessageFactory messageFactory =
-        new LocalizableMessageFactory("com.sun.xml.ws.resources.xmlmd");
 
     public XMLMessageDispatcher() {
     }
@@ -80,14 +74,17 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     // TODO: need to work the exception logic
     public void receive(MessageInfo messageInfo) {
+        XMLMessage xmlMessage = null;
         try {
-            XMLMessage xmlMessage = null;
-            try {
-                xmlMessage = getXMLMessage(messageInfo);
-            } catch(Exception e) {
-                sendResponseError(messageInfo, e);
-                return;
-            }
+            xmlMessage = getXMLMessage(messageInfo);
+        } catch(Exception e) {
+            sendResponseError(messageInfo, e);
+            return;
+        }
+        // Set it before response is sent on transport. If transport creates
+        // any exception, this can be used not to send again
+        boolean sent = false;
+        try {
             
             // If FI is accepted by client, set property to optimistic
             if (xmlMessage.acceptFastInfoset()) {
@@ -96,117 +93,47 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
             XMLHandlerContext context = new XMLHandlerContext(messageInfo, null,
                 xmlMessage);
-            updateContextPropertyBag(messageInfo, context);
-                    
-            boolean skipEndpoint = false;
+            updateHandlerContext(messageInfo, context);
+            
+            
             SystemHandlerDelegate shd = getSystemHandlerDelegate(messageInfo);
-            if (shd != null) {
-                /*
-                skipEndpoint = !shd.processRequest(
-                        context.getLogicalMessageContext());
-                 */
-                // TODO: need to act if processRequest() retuns false
-            }
-            boolean peekOneWay = false;
-
-            // Call inbound handlers. It also calls outbound handlers incase of
-            // reversal of flow.
-            if (!skipEndpoint) {
-                skipEndpoint = callHandlersOnRequest(
-                    messageInfo, context, !peekOneWay);
-            }
-
-            if (skipEndpoint) {
-                xmlMessage = context.getXMLMessage();
-                if (xmlMessage == null) {
-                    InternalMessage internalMessage = context.getInternalMessage();
-                    XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-                    XMLEncoder encoder = eptf.getXMLEncoder();
-                    xmlMessage = encoder.toXMLMessage(internalMessage, messageInfo);
-                }
-                sendResponse(messageInfo, xmlMessage, context);
-            } else {
-                toMessageInfo(messageInfo, context);
-
-                if (isOneway(messageInfo)) {
-                    sendResponseOneway(messageInfo);
-                    if (!peekOneWay) { // handler chain didn't already clos
-                        closeHandlers(messageInfo, context);
-                    }
-                }
-
-                if (!isFailure(messageInfo)) {
-                    if (shd != null) {
-                        //shd.preInvokeEndpointHook(context.getMessageContext());
-                    }
-                    updateWebServiceContext(messageInfo, context);
-                    invokeEndpoint(messageInfo, context);
-                }
-
-                if (isOneway(messageInfo)) {
-                    if (isFailure(messageInfo)) {
-                        // Just log the error. Not much to do
-                    }
+            XmlInvoker implementor = new XmlInvoker(messageInfo, xmlMessage,
+                context, shd);
+            try {
+                if (shd == null) {
+                    // Invokes request handler chain, endpoint, response handler chain
+                    implementor.invoke();
                 } else {
-                    updateContextPropertyBag(messageInfo, context);
-                    xmlMessage = getResponse(messageInfo, context);
-                    if (shd != null) {
-                        /*
-                        shd.processResponse(
-                                context.getXMLMessageContext());
-                         */
+                    context.setInvoker(implementor);
+                    if (shd.processRequest(context.getSHDXMLMessageContext())) {
+                        implementor.invoke();
+                        context.getMessageContext().put(
+                            MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
+                        shd.processResponse(context.getSHDXMLMessageContext());
                     }
-                    sendResponse(messageInfo, xmlMessage, context);
                 }
+            } finally {
+                sent = implementor.isSent();    // response is sent or not
+            }
+            if (!isOneway(messageInfo)) {
+                sent = true;
+                sendResponse(messageInfo, context);
+            } else if (!sent) {
+                // Oneway and request handler chain reversed the execution direction
+                sent = true;                
+                sendResponseOneway(messageInfo);
             }
         } catch(Exception e) {
-            sendResponseError(messageInfo, e);
+            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            if (!sent) {
+                sendResponseError(messageInfo, e);
+            }
         }
+        assert sent;            // Make sure response is sent      
     }
 
-    protected void toMessageInfo(MessageInfo messageInfo, XMLHandlerContext context) {
-        InternalMessage internalMessage = context.getInternalMessage();
-        try {
-            XMLMessage xmlMessage = context.getXMLMessage();
-            if (internalMessage == null) {
-                // Bind headers, body from SOAPMessage
-                XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-                XMLDecoder decoder = eptf.getXMLDecoder();
-                internalMessage = decoder.toInternalMessage(xmlMessage, messageInfo);
-            } else {
-                // Bind headers from SOAPMessage
-                XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-                XMLDecoder decoder = eptf.getXMLDecoder();
-                internalMessage = decoder.toInternalMessage(xmlMessage, internalMessage, messageInfo);
-                // Convert to JAXB bean if body contains Source, or bean in other
-                // JAXBContext
-                //context.toJAXBBean(decoderUtil.getJAXBContext());
-            }
-        } catch(Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            messageInfo.setResponseType(MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
-            messageInfo.setResponse(e);
-        }
-        // InternalMessage to MessageInfo
-        if (!isFailure(messageInfo)) {
-            XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-            eptf.getInternalEncoder().toMessageInfo(internalMessage, messageInfo);
-            if (messageInfo.getMethod() == null) {
-                messageInfo.setResponseType(
-                    MessageStruct.UNCHECKED_EXCEPTION_RESPONSE);
-//                SOAPFaultInfo faultInfo = new SOAPFaultInfo(
-//                    "Cannot find dispatch method",
-//                    SOAPConstants.FAULT_CODE_SERVER,
-//                    null, null);
-//                messageInfo.setResponse(faultInfo);
-            } else {
-                /*
-                context.put(MessageContext.WSDL_OPERATION,
-                    messageInfo.getMetaData("METHOD_QNAME"));
-                 */
-            }
-        }
-    }
+    protected abstract void toMessageInfo(MessageInfo messageInfo, XMLHandlerContext context);
 
     /*
      * Gets XMLMessage from the connection
@@ -216,10 +143,14 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return XMLConnectionUtil.getXMLMessage(con, messageInfo);
     }
 
-    /*
-     * Invokes the endpoint.
+    /**
+     * Invokes the endpoint
+     *
+     * In this case, Oneway is known only after invoking the endpoint. For other
+     * endpoints, the HTTP response code is sent before invoking the endpoint.
+     * This is taken care here after invoking the endpoint.
      */
-    protected void invokeEndpoint(MessageInfo messageInfo, XMLHandlerContext hc) {
+    private void invokeEndpoint(MessageInfo messageInfo, XMLHandlerContext hc) {
         TargetFinder targetFinder =
             messageInfo.getEPTFactory().getTargetFinder(messageInfo);
         Tie tie = targetFinder.findTarget(messageInfo);
@@ -243,16 +174,9 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            InternalMessage internalMessage = SOAPRuntimeModel.createFaultInBody(
-                    e, null, null, null);
-            context.setInternalMessage(internalMessage);
-            context.setXMLMessage(null);
-        }
-        InternalMessage internalMessage = context.getInternalMessage();
-        if (internalMessage != null) {
-            XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-            XMLEncoder encoder = eptf.getXMLEncoder();
-            XMLMessage xmlMessage = encoder.toXMLMessage(internalMessage, messageInfo);
+            boolean useFastInfoset = 
+                messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic";
+            XMLMessage xmlMessage = new XMLMessage(e, useFastInfoset);
             context.setXMLMessage(xmlMessage);
         }
         return context.getXMLMessage();
@@ -260,24 +184,17 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
     /*
      * MessageInfo contains the endpoint invocation results. The information
-     * is converted to InternalMessage or SOAPMessage and set in HandlerContext
+     * is converted to XMLMessage and is set in HandlerContext
      */
-    protected void setResponseInContext(MessageInfo messageInfo,
-            XMLHandlerContext context) {
-        // MessageInfo to InternalMessage
-        XMLEPTFactory eptf = (XMLEPTFactory)messageInfo.getEPTFactory();
-        InternalMessage internalMessage = (InternalMessage)eptf.getInternalEncoder().toInternalMessage(
-                messageInfo);
-        // set handler context
-        context.setInternalMessage(internalMessage);
-        context.setXMLMessage(null);
-    }
+    protected abstract void setResponseInContext(MessageInfo messageInfo,
+            XMLHandlerContext context);
 
     /**
      * Sends XMLMessage response on the connection
      */
-    private void sendResponse(MessageInfo messageInfo, XMLMessage xmlMessage,
-            XMLHandlerContext ctxt) throws IOException {
+    private void sendResponse(MessageInfo messageInfo, XMLHandlerContext ctxt)
+    throws IOException {
+        XMLMessage xmlMessage = ctxt.getXMLMessage();
         MessageContext msgCtxt = ctxt.getMessageContext();
         WSConnection con = messageInfo.getConnection();
         
@@ -402,7 +319,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return (messageInfo.getMEP() == MessageStruct.ONE_WAY_MEP);
     }
 
-        /*
+    /*
      * Sets the WebServiceContext with correct MessageContext which contains
      * APPLICATION scope properties
      */
@@ -416,8 +333,10 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         }
     }
     
-    // copy from message info to handler context
-    private void updateContextPropertyBag(MessageInfo messageInfo,
+    /**
+     * copy from message info to handler context
+     */
+    private void updateHandlerContext(MessageInfo messageInfo,
             XMLHandlerContext context) {
         
         RuntimeEndpointInfo endpointInfo = 
@@ -434,5 +353,79 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         return endpointInfo.getBinding().getSystemHandlerDelegate();
     }
 
+    /**
+     * Invokes request handler chain, endpoint and response handler chain.
+     * Separated as a separate class, so that SHD can call this in doPriv()
+     * block.
+     */
+    private class XmlInvoker implements Invoker {
+    
+        MessageInfo messageInfo;
+        XMLMessage xmlMessage;
+        XMLHandlerContext context;
+        SystemHandlerDelegate shd;
+        boolean sent;
+        
+        XmlInvoker(MessageInfo messageInfo, XMLMessage xmlMessage,
+                XMLHandlerContext context, SystemHandlerDelegate shd) {
+            this.messageInfo = messageInfo;
+            this.xmlMessage = xmlMessage;
+            this.context = context;
+            this.shd = shd;
+        }
+        
+        public void invoke() throws Exception {
+            boolean skipEndpoint = false;
+
+            // Call inbound handlers. It also calls outbound handlers incase of
+            // reversal of flow.
+            skipEndpoint = callHandlersOnRequest(messageInfo, context, true);
+
+            if (!skipEndpoint) {
+                toMessageInfo(messageInfo, context);
+                if (!isFailure(messageInfo)) {
+                    if (shd != null) {
+                        shd.preInvokeEndpointHook(context.getSHDXMLMessageContext());
+                    }
+                    updateWebServiceContext(messageInfo, context);
+                    invokeEndpoint(messageInfo, context);
+                     // For Provider endpoints Oneway is known only after executing endpoint
+                    if (!sent && isOneway(messageInfo)) {    
+                        sent = true;
+                        sendResponseOneway(messageInfo);
+                    }
+                }
+
+                if (isOneway(messageInfo)) {
+                    if (isFailure(messageInfo)) {
+                        // Just log the error. Not much to do
+                    }
+                } else {
+                    updateHandlerContext(messageInfo, context);
+                    xmlMessage = getResponse(messageInfo, context);
+                    context.setXMLMessage(xmlMessage);
+                }
+            }
+        }
+        
+        /**
+         * Gets the dispatch method in the endpoint for the payload's QName
+         *
+         * @return dispatch method
+         */
+        public Method getMethod(QName name) {
+            return ProviderPeptTie.invoke_Method;
+        }
+        
+        /*
+         * Is the message sent on transport. Happens when the operation is oneway
+         *
+         * @return true if the message is sent
+         *        false otherwise
+         */
+        public boolean isSent() {
+            return sent;
+        }
+    }
 }
 

@@ -19,6 +19,10 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.spi.runtime.Invoker;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.ws.handler.LogicalMessageContext;
 import com.sun.xml.ws.spi.runtime.MessageContext;
 
@@ -44,6 +48,7 @@ public class XMLHandlerContext extends HandlerContext {
 
     private XMLMessage xmlMessage;
     private LogicalMessageContext logicalContext;
+    private SHDXMLMessageContext shdXmlContext;
 
     public XMLHandlerContext(MessageInfo messageInfo,
             InternalMessage internalMessage,
@@ -71,6 +76,44 @@ public class XMLHandlerContext extends HandlerContext {
      */
     public void setXMLMessage(XMLMessage xmlMessage) {
         this.xmlMessage = xmlMessage;
+    }
+    
+    public SHDXMLMessageContext getSHDXMLMessageContext() {
+        if (shdXmlContext == null) {
+            shdXmlContext = new SHDXMLMessageContext(this);
+        }
+        return shdXmlContext;
+    }
+    
+    private static class SHDXMLMessageContext extends XMLLogicalMessageContextImpl implements com.sun.xml.ws.spi.runtime.MessageContext {
+
+        XMLHandlerContext handlerCtxt;
+
+        public SHDXMLMessageContext(XMLHandlerContext handlerCtxt) {
+            super(handlerCtxt);
+            this.handlerCtxt = handlerCtxt;
+        }
+
+        public String getBindingId() {
+            return handlerCtxt.getBindingId();
+        }
+
+        public Method getMethod() {
+            return handlerCtxt.getMethod();
+        }
+
+        public void setCanonicalization(String algorithm) {
+            handlerCtxt.setCanonicalization(algorithm);
+        }
+
+        public Invoker getInvoker() {
+            return handlerCtxt.getInvoker();
+        }
+
+        public boolean isMtomEnabled() {
+            return false;
+        }
+
     }
 
 }
