@@ -29,7 +29,7 @@ import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.wsdl.WSDLContext;
 import org.xml.sax.EntityResolver;
-
+import javax.jws.HandlerChain;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
@@ -53,7 +53,7 @@ public abstract class ServiceContextBuilder {
     /**
      * Creates a new {@link ServiceContext}.
      */
-    public static ServiceContext build(URL wsdlLocation, Class service, EntityResolver er) throws WebServiceException {
+    public static ServiceContext build(URL wsdlLocation, final Class service, EntityResolver er) throws WebServiceException {
 
         ServiceContext serviceContext = new ServiceContext(er);
         SCAnnotations serviceCAnnotations = null;
@@ -63,8 +63,21 @@ public abstract class ServiceContextBuilder {
             if (serviceCAnnotations == null)
                 throw new WebServiceException("Service Interface Annotations required, exiting...");
             serviceContext.setSCAnnotations(serviceCAnnotations);
-        }
+            
+            //if @HandlerChain present, set HandlerResolver on service context
+            HandlerChain handlerChain = (HandlerChain)
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    return service.getAnnotation(HandlerChain.class);
+                }
+            });
+            if(handlerChain != null) {
+                HandlerResolverImpl hresolver = new HandlerResolverImpl(serviceContext);
+                serviceContext.setHandlerResolver(hresolver);
+            }
 
+        }
+        
         String temp = !(wsdlLocation == null) ? wsdlLocation.toString() : serviceCAnnotations.wsdlLocation;
 
         try {
@@ -75,7 +88,7 @@ public abstract class ServiceContextBuilder {
 
         if (wsdlLocation != null)
             serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
-
+        
         if (serviceCAnnotations != null) {
             serviceContext.setServiceClass(service);
             for (Class clazz : serviceCAnnotations.classes) {
@@ -169,15 +182,15 @@ public abstract class ServiceContextBuilder {
             RuntimeModel model = modeler.buildRuntimeModel();
 
             eifc.setRuntimeContext(new RuntimeContext(model));
-
+            /*
             // get handler information
             HandlerAnnotationInfo chainInfo =
                 HandlerAnnotationProcessor.buildHandlerInfo(portInterface,
                     model.getServiceQName(), model.getPortName(), bindingId);
-
+            */        
             if (serviceContext.getServiceName() == null)
                 serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
-
+            /*    
             if (chainInfo != null) {
                 HandlerResolverImpl resolver =
                     getHandlerResolver(serviceContext);
@@ -189,9 +202,10 @@ public abstract class ServiceContextBuilder {
                 serviceContext.setRoles(portName,chainInfo.getRoles());
 
             }
+             */
         }
     }
-
+/*
     private static HandlerResolverImpl getHandlerResolver(
         ServiceContext serviceContext) {
         if (serviceContext.getHandlerResolver() == null) {
@@ -199,7 +213,7 @@ public abstract class ServiceContextBuilder {
         }
         return serviceContext.getHandlerResolver();
     }
-
+*/
     private ArrayList<Class<?>> getSEI(final Class sc) {
 
         if (sc == null) {

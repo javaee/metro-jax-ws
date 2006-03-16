@@ -19,6 +19,10 @@
  */
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.client.*;
+import com.sun.xml.ws.client.ServiceContext;
+import com.sun.xml.ws.util.HandlerAnnotationInfo;
+import com.sun.xml.ws.util.HandlerAnnotationProcessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,10 +59,12 @@ import javax.xml.ws.handler.PortInfo;
 public class HandlerResolverImpl implements HandlerResolver {
     
     private Map<PortInfo, List<Handler>> chainMap;
+    private ServiceContext serviceContext;
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".handler");
     
-    public HandlerResolverImpl() {
+    public HandlerResolverImpl(ServiceContext serviceContext) {
+        this.serviceContext = serviceContext;
         chainMap = new HashMap<PortInfo, List<Handler>>();
     }
 
@@ -72,6 +78,15 @@ public class HandlerResolverImpl implements HandlerResolver {
      */
     public List<Handler> getHandlerChain(PortInfo info) {
         List<Handler> chain = chainMap.get(info);
+        //For now parse Service class always
+        HandlerAnnotationInfo chainInfo =
+                HandlerAnnotationProcessor.buildHandlerInfo(serviceContext.getServiceClass(),
+                    info.getServiceName(), info.getPortName(), info.getBindingID());
+        if(chainInfo != null) {
+            chain = chainInfo.getHandlers();
+            chainMap.put(info,chain);
+            serviceContext.setRoles(info.getPortName(),chainInfo.getRoles());
+        }
         if (chain == null) {
             if (logger.isLoggable(Level.FINE)) {
                 logGetChain(info);
@@ -79,27 +94,6 @@ public class HandlerResolverImpl implements HandlerResolver {
             chain = new ArrayList<Handler>();
         }
         return chain;
-    }
-    
-    /**
-     * Sets the handler chain for a given PortInfo object into
-     * the map.
-     *
-     * @param info The PortInfo that represents the port.
-     * @param chain The list of handlers.
-     */
-    public void setHandlerChain(PortInfo info, List<Handler> chain) {
-        if (logger.isLoggable(Level.FINER)) {
-            logSetChain(info, chain);
-        }
-        chainMap.put(info, chain);
-    }
-    
-    // logged at finer level
-    private void logSetChain(PortInfo info, List<Handler> chain) {
-        logger.finer("Setting chain of length " + chain.size() +
-            " for port info");
-        logPortInfo(info, Level.FINER);
     }
     
     // logged at fine level

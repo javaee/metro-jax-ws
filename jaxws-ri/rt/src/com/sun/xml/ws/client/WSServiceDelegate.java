@@ -14,9 +14,7 @@ import com.sun.xml.ws.binding.http.HTTPBindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
-
 import org.xml.sax.EntityResolver;
-
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
@@ -85,7 +83,7 @@ public class WSServiceDelegate extends ServiceDelegate {
 
     protected HashMap<QName, PortInfoBase> dispatchPorts;
     protected HandlerResolver handlerResolver;
-
+    
     protected Object serviceProxy;
     protected URL wsdlLocation;
     protected ServiceContext serviceContext;
@@ -102,7 +100,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     public WSServiceDelegate(ServiceContext scontext) {
         serviceContext = scontext;
         this.dispatchPorts = new HashMap();
-        seiProxies = new HashSet();
+        seiProxies = new HashSet();        
         if (serviceContext.getHandlerResolver() != null) {
             handlerResolver = serviceContext.getHandlerResolver();
         }
@@ -120,7 +118,7 @@ public class WSServiceDelegate extends ServiceDelegate {
         } else {
             serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
             serviceContext.setServiceName(serviceName);
-        }
+        }        
         if (serviceContext.getHandlerResolver() != null) {
             handlerResolver = serviceContext.getHandlerResolver();
         }
@@ -163,7 +161,7 @@ public class WSServiceDelegate extends ServiceDelegate {
     }
 
     public void setHandlerResolver(HandlerResolver resolver) {
-        handlerResolver = resolver;
+        handlerResolver = resolver;        
     }
 
     public Object getPort(QName portName, Class portInterface)
@@ -296,26 +294,26 @@ public class WSServiceDelegate extends ServiceDelegate {
      */
     protected void setBindingOnProvider(InternalBindingProvider provider,
         QName portName, String bindingId) {
-
+        
         // get handler chain
         List<Handler> handlerChain = null;
-        if (getHandlerResolver() != null && getServiceName() != null) {
-            PortInfo portInfo = new PortInfoImpl(bindingId.toString(),
-                portName, getServiceName());
-            handlerChain = getHandlerResolver().getHandlerChain(portInfo);
+        HandlerResolver hResolver = getHandlerResolver();
+        if ( handlerResolver != null && getServiceName() != null) {
+            PortInfo portInfo = new PortInfoImpl(bindingId, portName,
+                    getServiceName());
+            handlerChain = handlerResolver.getHandlerChain(portInfo);
         } else {
             handlerChain = new ArrayList<Handler>();
         }
-
         // create binding
         if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
             bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             SOAPBindingImpl bindingImpl = new SOAPBindingImpl(handlerChain,
                 bindingId.toString(), getServiceName());
-            
-            if (serviceContext.getRoles(portName) != null) {
-                bindingImpl.setRoles(serviceContext.getRoles(portName));
-            }
+            Set<String> roles = serviceContext.getRoles(portName);
+            if (roles != null) {
+                bindingImpl.setRoles(roles);
+            }                      
             provider._setBinding(bindingImpl);
         } else if (bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
             provider._setBinding(new HTTPBindingImpl(handlerChain));
