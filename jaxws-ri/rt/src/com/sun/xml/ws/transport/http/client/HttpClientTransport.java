@@ -97,7 +97,11 @@ public class HttpClientTransport extends WSConnectionImpl {
             cookieJar = sendCookieAsNeeded();
 
             // how to incorporate redirect processing: message dispatcher does not seem to tbe right place
-            if (!httpConnection.getRequestMethod().equalsIgnoreCase("GET"))
+            String requestMethod = httpConnection.getRequestMethod();
+            boolean skipOut = ("GET".equalsIgnoreCase(requestMethod) ||
+                "HEAD".equalsIgnoreCase(requestMethod) ||
+                "DELETE".equalsIgnoreCase(requestMethod));
+            if (!skipOut)
                 outputStream = httpConnection.getOutputStream();
             //if use getOutputStream method set as "POST"
             //but for "Get" request no need to get outputStream
@@ -136,7 +140,7 @@ public class HttpClientTransport extends WSConnectionImpl {
                 e.getMessage());
         }
         httpConnection = null;
-
+        
         return in;
     }
 
