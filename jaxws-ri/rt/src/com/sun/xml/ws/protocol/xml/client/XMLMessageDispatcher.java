@@ -379,6 +379,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 case HTTP_DATASOURCE_MESSAGE:
                     if (xm.getDataSource() != null)
                         messageInfo.setResponse(xm.getDataSource());
+                    else if (xm.getSource() != null)
+                        messageInfo.setResponse(xm.getSource());
                     break;
                 default:
                     throw new WebServiceException("Unknown invocation return object ");
@@ -481,17 +483,17 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected boolean callHandlersOnRequest(XMLHandlerContext handlerContext) {
-        
+
         HandlerChainCaller caller = getHandlerChainCaller(
-                handlerContext.getMessageInfo());
+            handlerContext.getMessageInfo());
         boolean responseExpected = (handlerContext.getMessageInfo().getMEP() !=
-                MessageStruct.ONE_WAY_MEP);
-        try{
+            MessageStruct.ONE_WAY_MEP);
+        try {
             return caller.callHandlers(Direction.OUTBOUND,
-                    RequestOrResponse.REQUEST, handlerContext, responseExpected);
+                RequestOrResponse.REQUEST, handlerContext, responseExpected);
         } catch (ProtocolException pe) {
             if (MessageContextUtil.ignoreFaultInMessage(
-                    handlerContext.getMessageContext())) {
+                handlerContext.getMessageContext())) {
                 // Ignore fault in this case and use exception.
                 throw pe;
             } else
@@ -503,13 +505,13 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             throw new WebServiceException(re);
         }
     }
-    
+
     /*
-     * User's handler can throw a RuntimeExceptions
-     * (e.g., a ProtocolException).
-     * Need to wrap any RuntimeException (other than WebServiceException) in
-     * WebServiceException.
-     */
+    * User's handler can throw a RuntimeExceptions
+    * (e.g., a ProtocolException).
+    * Need to wrap any RuntimeException (other than WebServiceException) in
+    * WebServiceException.
+    */
     protected boolean callHandlersOnResponse(XMLHandlerContext handlerContext) {
         HandlerChainCaller caller = getHandlerChainCaller(
             handlerContext.getMessageInfo());
@@ -518,7 +520,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 RequestOrResponse.RESPONSE, handlerContext, false);
         } catch (WebServiceException wse) {
             throw wse;
-        } catch (RuntimeException re) {    
+        } catch (RuntimeException re) {
             // handlers are expected to be able to throw RE
             throw new WebServiceException(re);
         }
@@ -623,18 +625,21 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         Object response = messageInfo.getResponse();
         if (response instanceof StreamSource) {
             InputStream is = ((StreamSource) response).getInputStream();
+
             Transformer transformer = XmlUtil.newTransformer();
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream(is.available());
-                transformer.transform((StreamSource) response,
-                    new StreamResult(out));
-                byte[] bytes = out.toByteArray();
-                //could do to string
-                if (new String(bytes).indexOf("HTTPException") > -1)
-                    throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
-                else {
-                    InputStream bis = new ByteArrayInputStream(bytes);
-                    messageInfo.setResponse(new StreamSource(bis));
+                if (out.size() > 0) {
+                    transformer.transform((StreamSource) response,
+                        new StreamResult(out));
+                    byte[] bytes = out.toByteArray();
+                    //could do to string
+                    if (new String(bytes).indexOf("HTTPException") > -1)
+                        throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    else {
+                        InputStream bis = new ByteArrayInputStream(bytes);
+                        messageInfo.setResponse(new StreamSource(bis));
+                    }
                 }
             } catch (TransformerException e) {
                 throw new WebServiceException(e);
