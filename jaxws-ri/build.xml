@@ -526,9 +526,9 @@ major-version=${release.impl.version}
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/build/sjsxp.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/dist/sjsxp-1_0/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/build/sjsxp-src-1_0.zip"
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/dist/sjsxp-src-1_0.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
