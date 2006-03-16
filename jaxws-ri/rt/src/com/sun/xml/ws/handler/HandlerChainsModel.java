@@ -192,16 +192,20 @@ public class HandlerChainsModel {
                     logger.warning("handler chain sepcified for bindingId " +
                             "but bindingId passed to parser is null");
                 }
-                String bindingList = XMLStreamReaderUtil.getElementText(reader);
+                String bindingConstraint = XMLStreamReaderUtil.getElementText(reader);
                 boolean skipThisChain = true;
-                if (bindingId.equals(HTTPBinding.HTTP_BINDING) &&
-                        bindingList.indexOf(PROTOCOL_XML_TOKEN) != -1) {
-                    skipThisChain = false;
-                } else if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) &&
-                        bindingList.indexOf(PROTOCOL_SOAP11_TOKEN) != -1) {
-                    skipThisChain = false;
-                } else if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING) &&
-                        bindingList.indexOf(PROTOCOL_SOAP12_TOKEN) != -1) {
+                StringTokenizer stk = new StringTokenizer(bindingConstraint);
+                List<String> bindingList = new ArrayList<String>();
+                while(stk.hasMoreTokens()) {
+                    String tokenOrURI = stk.nextToken();
+                    String binding = tokenBindingMap.get(tokenOrURI);
+                    if(binding == null) {
+                        //Unknown binding or Unknown token, Put it as it is
+                        binding = tokenOrURI;
+                    }
+                    bindingList.add(binding);
+                }
+                if(bindingList.contains(bindingId)){
                     skipThisChain = false;
                 }
                 
