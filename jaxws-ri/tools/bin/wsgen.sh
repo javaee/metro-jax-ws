@@ -62,9 +62,14 @@ fi
 #
 if [ -n "$JAVA_HOME" ]
 then
-    JAVA="$JAVA_HOME/bin/java"
+    JAVA="$JAVA_HOME"/bin/java
+    LOCALCLASSPATH="$JAVA_HOME"/lib/tools.jar
 else
     JAVA=java
+    JAVACMD=`which $JAVA`
+    BINDIR=`dirname $JAVACMD`
+    LOCALCLASSPATH="$BINDIR"/../lib/tools.jar
 fi
 
-exec $JAVA $WSGEN_OPTS -cp "$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.tools.ws.WsGen "$@"
+
+exec $JAVA $WSGEN_OPTS -cp "$LOCALCLASSPATH:$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.tools.ws.WsGen "$@"
