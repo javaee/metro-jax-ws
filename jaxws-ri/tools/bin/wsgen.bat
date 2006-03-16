@@ -48,7 +48,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 goto LAUNCH
 
 :LAUNCH
-%JAVA% %WSGEN_OPTS% -cp %JAXWS_HOME%\lib\jaxws-tools.jar com.sun.tools.ws.WsGen %*
+%JAVA% %WSGEN_OPTS% -cp "%JAVA_HOME%\lib\tools.jar;%JAXWS_HOME%\lib\jaxws-tools.jar" com.sun.tools.ws.WsGen %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%

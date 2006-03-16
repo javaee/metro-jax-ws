@@ -48,7 +48,7 @@ set JAVA="%JAVA_HOME%\bin\java"
 goto LAUNCH
 
 :LAUNCH
-%JAVA% %WSIMPORT_OPTS% -cp %JAXWS_HOME%\lib\jaxws-tools.jar com.sun.tools.ws.WsImport %*
+%JAVA% %WSIMPORT_OPTS% -cp "%JAVA_HOME%\lib\tools.jar;%JAXWS_HOME%\lib\jaxws-tools.jar" com.sun.tools.ws.WsImport %*
 
 :END
 %COMSPEC% /C exit %ERRORLEVEL%
