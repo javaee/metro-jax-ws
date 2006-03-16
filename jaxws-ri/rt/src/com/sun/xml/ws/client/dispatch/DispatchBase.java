@@ -392,7 +392,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         } else {
             //todo - needs to be a get request
-            if (!isValidHttpGETRequest(msg))
+            if (!isValidHttpMethodRequest(msg))
                 throw new WebServiceException("No Message to Send to web service");
         }
         setMessageStruct(messageStruct, msg);
@@ -586,16 +586,20 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         return null;
     }
 
-    private boolean isValidHttpGETRequest(Object msg) {
+    private boolean isValidHttpMethodRequest(Object msg) {
+
+        //currently msg null or non null doesn't matter- implementations
+        //servlet containers will allow both- later if this is stricter can check for message null
         boolean isValid = false;
 
         String bindingId = _getBindingId().toString();
         String method = (String) getRequestContext().get(MessageContext.HTTP_REQUEST_METHOD);
         if (method != null) {
-            isValid = "GET".equalsIgnoreCase(method) ? true : false &&
+            isValid = ("GET".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method))? true : false &&
                 (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
                     HTTPBinding.HTTP_BINDING.equals(bindingId)) ? true : false;
         }
+
         return isValid;
     }
 
