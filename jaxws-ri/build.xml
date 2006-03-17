@@ -471,8 +471,12 @@ major-version=${release.impl.version}
                   value="${jwsdp.root.directory}"/-->
         </filterset>
 	</copy>
-  	
-    <copy todir="${dist20.home}">
+
+    <copy todir="${dist20.home}/samples/restful/etc">
+        <fileset dir="lib" includes="servlet.jar"/>
+    </copy>
+
+      <copy todir="${dist20.home}">
   	<fileset dir="${build.home}" includes="*.txt"/>
     </copy>
 
