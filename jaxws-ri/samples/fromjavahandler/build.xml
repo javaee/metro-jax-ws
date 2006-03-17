@@ -20,26 +20,22 @@
  [name of copyright owner]
 -->
 
-<!DOCTYPE project [
-<!ENTITY deployTargets SYSTEM "etc/deploy-targets.xml">
-]>
-
 <project basedir="." default="help" name="fromjavahandler">
 
-    &deployTargets; 
+    <import file="etc/deploy-targets.xml"/>
 
     <property environment="env"/>
     <property file="../../../jwsdp-shared/bin/sjsas.props"/>
-      <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
+    <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
         <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-      </condition>
+    </condition>
     <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
-      <not>
-        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-      </not>
+        <not>
+            <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+        </not>
     </condition>
 
-    <property file="etc/build.properties" />
+    <property file="etc/build.properties"/>
     <property name="build.home" value="${basedir}/build"/>
     <property name="build.classes.home" value="${build.home}/classes"/>
     <property name="build.war.home" value="${build.home}/war"/>
@@ -71,12 +67,12 @@
 
     <target name="build-server-java" depends="setup">
         <apt
-            fork="true"
-            debug="${debug}"
-       	verbose="${verbose}"
-       	destdir="${build.classes.home}"
-      	sourcedestdir="${build.classes.home}"
-      	sourcepath="${basedir}/src">
+                fork="true"
+                debug="${debug}"
+                verbose="${verbose}"
+                destdir="${build.classes.home}"
+                sourcedestdir="${build.classes.home}"
+                sourcepath="${basedir}/src">
             <classpath>
                 <path refid="jaxws.classpath"/>
                 <pathelement location="${basedir}/src"/>
@@ -96,38 +92,38 @@
     </target>
 
     <target name="clean">
-        <delete dir="${build.home}" includeEmptyDirs="true" />
+        <delete dir="${build.home}" includeEmptyDirs="true"/>
     </target>
 
     <target name="create-war">
         <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
-    	      <webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
-    	      <zipfileset
-                dir="${basedir}/etc"
-                includes="*.wsdl, *.xsd"
-                prefix="WEB-INF/wsdl"/>
-    	      <classes dir="${build.classes.home}"/>
+            <webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
+            <zipfileset
+                    dir="${basedir}/etc"
+                    includes="*.wsdl, *.xsd"
+                    prefix="WEB-INF/wsdl"/>
+            <classes dir="${build.classes.home}"/>
         </war>
     </target>
 
     <target name="generate-client" depends="setup">
         <wsimport
-            debug="${debug}"
-            verbose="${verbose}"
-            keep="${keep}"
-            extension="${extension}"
-            destdir="${build.classes.home}"
-            wsdl="${client.wsdl}">
+                debug="${debug}"
+                verbose="${verbose}"
+                keep="${keep}"
+                extension="${extension}"
+                destdir="${build.classes.home}"
+                wsdl="${client.wsdl}">
             <binding dir="${basedir}/etc" includes="${client.binding}"/>
         </wsimport>
     </target>
 
     <target name="client" depends="generate-client">
         <javac
-            fork="true"
-            srcdir="${basedir}/src"
-            destdir="${build.classes.home}"
-            includes="**/client/**,**/common/**">
+                fork="true"
+                srcdir="${basedir}/src"
+                destdir="${build.classes.home}"
+                includes="**/client/**,**/common/**">
             <classpath refid="jaxws.classpath"/>
         </javac>
     </target>
@@ -150,13 +146,13 @@
 
     <target name="server" depends="setup">
 
-        <antcall target="clean" />
+        <antcall target="clean"/>
 
-        <antcall target="build-server-java" />
+        <antcall target="build-server-java"/>
 
-        <antcall target="create-war" />
+        <antcall target="create-war"/>
 
-        <antcall target="deploy" />
+        <antcall target="deploy"/>
     </target>
 
 </project>

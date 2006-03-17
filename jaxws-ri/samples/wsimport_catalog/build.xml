@@ -21,80 +21,80 @@
 -->
 <project basedir="." default="runclient" name="wsimport_catalog">
 
-  <property environment="env"/>
+    <property environment="env"/>
     <property file="../../../jwsdp-shared/bin/sjsas.props"/>
-      <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
+    <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
         <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-      </condition>
-    <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
-      <not>
-        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-      </not>
     </condition>
-  <property name="as.home" value="${env.AS_HOME}"/>
-  <property name="lib.sample.home" value="${basedir}/../lib"/>
-  <property name="build.home" value="${basedir}/build"/>
-  <property name="build.classes.home" value="${build.home}"/>
+    <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
+        <not>
+            <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+        </not>
+    </condition>
+    <property name="as.home" value="${env.AS_HOME}"/>
+    <property name="lib.sample.home" value="${basedir}/../lib"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="build.classes.home" value="${build.home}"/>
 
-<path id="jaxws.classpath">
-    <pathelement location="${java.home}/../lib/tools.jar"/>
-    <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
-    <fileset dir="${lib.home}" includes="*.jar"/>
-</path>
+    <path id="jaxws.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+        <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
+        <fileset dir="${lib.home}" includes="*.jar"/>
+    </path>
 
-<taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-    <classpath refid="jaxws.classpath"/>
-</taskdef>
-
-  <target name="server"/>
-
-  <target name="runclient" depends="client">
-    <antcall target="run"/>
-  </target>
-
-  <target name="client" depends="setup,generate-artifacts">
-	<javac srcdir="${basedir}"
-             fork="true"
-             destdir="${build.classes.home}"
-             debug="true"
-             includes="**">
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
         <classpath refid="jaxws.classpath"/>
-	</javac>
-  </target>    
-<target name="run">
-    <java fork="true" classname="wsimport_catalog.WsimportCatalogTester">
-        <classpath>
-            <path refid="jaxws.classpath"/>
-            <pathelement location="${build.classes.home}"/>
-            <pathelement location="${basedir}/etc"/>
-        </classpath>
-    </java>
-</target>
+    </taskdef>
 
-<target name="setup">
-    <mkdir dir="${build.home}"/>
-    <mkdir dir="${build.classes.home}"/>
-</target>
+    <target name="server"/>
 
-  <target name="generate-artifacts">
-	<wsimport
-        debug="true"
-        extension="true"
-        keep="${keep}"
-        destdir="${build.home}/"
-        verbose="false"
-        catalog="wsdlcatalog.xml"
-        package="wsimport_catalog"
-        wsdl="http://foo.org/hello?wsdl">
-        <xmlcatalog refid="wsimportcatalog"/>
-	</wsimport>
-  </target>
+    <target name="runclient" depends="client">
+        <antcall target="run"/>
+    </target>
 
-  <xmlcatalog id="wsimportcatalog">
-      <entity publicid="http://helloservice.org/types/HelloTypes.xsd" location="${basedir}/HelloTypes.xsd"/>
-  </xmlcatalog>
+    <target name="client" depends="setup,generate-artifacts">
+        <javac srcdir="${basedir}"
+               fork="true"
+               destdir="${build.classes.home}"
+               debug="true"
+               includes="**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+    </target>
+    <target name="run">
+        <java fork="true" classname="wsimport_catalog.WsimportCatalogTester">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+        </java>
+    </target>
 
-<target name="clean">
-    <delete dir="${build.home}" includeEmptyDirs="true" />
-</target>
+    <target name="setup">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${build.classes.home}"/>
+    </target>
+
+    <target name="generate-artifacts">
+        <wsimport
+                debug="true"
+                extension="true"
+                keep="${keep}"
+                destdir="${build.home}/"
+                verbose="false"
+                catalog="wsdlcatalog.xml"
+                package="wsimport_catalog"
+                wsdl="http://foo.org/hello?wsdl">
+            <xmlcatalog refid="wsimportcatalog"/>
+        </wsimport>
+    </target>
+
+    <xmlcatalog id="wsimportcatalog">
+        <entity publicid="http://helloservice.org/types/HelloTypes.xsd" location="${basedir}/HelloTypes.xsd"/>
+    </xmlcatalog>
+
+    <target name="clean">
+        <delete dir="${build.home}" includeEmptyDirs="true"/>
+    </target>
 </project>

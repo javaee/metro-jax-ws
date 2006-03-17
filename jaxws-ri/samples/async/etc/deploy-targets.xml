@@ -18,25 +18,31 @@
  [name of copyright owner]
 -->
 
-<property environment="env"/>
-<property file="../../../jwsdp-shared/bin/sjsas.props"/>
-<condition property="as.home" value="${DOMAIN_DIR}/..">
-    <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-</condition>
-<condition property="as.home" value="${env.AS_HOME}">
-    <not>
+<project>
+    <property environment="env"/>
+    <property file="../../../jwsdp-shared/bin/sjsas.props"/>
+    <condition property="as.home" value="${DOMAIN_DIR}/..">
         <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-    </not>
-</condition>
+    </condition>
+    <condition property="as.home" value="${env.AS_HOME}">
+        <not>
+            <available file="../../../jwsdp-shared/bin/sjsas.props"/>
+        </not>
+    </condition>
 
-<property name="build.home" value="${basedir}/build"/>
-<property name="build.war.home" value="${build.home}/war"/>
-<property name="domain" value="domain1"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="build.war.home" value="${build.home}/war"/>
+    <property name="domain" value="domain1"/>
 
-<target name="deploy">
-    <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
-        todir="${as.home}/domains/${domain}/autodeploy"/>
-</target>
+    <target name="deploy" depends="deploy-tomcat, deploy-appserver"/>
 
+    <target name="deploy-appserver" unless="tomcat">
+        <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+              todir="${as.home}/domains/${domain}/autodeploy"/>
+    </target>
 
-
+    <target name="deploy-tomcat" if="tomcat">
+        <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+              todir="${env.CATALINA_HOME}/webapps"/>
+    </target>
+</project>
