@@ -25,9 +25,9 @@
 		<property environment="env" />
         <property name="verbose" value="false"/>
 
-        <echo message="Installing JAX-WS 2.0 on ${env.TOMCAT_HOME} ..." />
+        <echo message="Installing JAX-WS 2.0 on ${env.CATALINA_HOME} ..." />
 		
-		<copy toDir="${env.TOMCAT_HOME}/shared/lib" overwrite="true" verbose="${verbose}">
+		<copy toDir="${env.CATALINA_HOME}/shared/lib" overwrite="true" verbose="${verbose}">
 			<fileset dir="lib">
 				<include name="*.jar"/>
 			</fileset>
@@ -39,6 +39,6 @@
     <target name="help">
         <echo message="install:    Installs the JAX-WS 2.0 on Tomcat 5.5.x"/>
         <echo message="            Usage: ant install"/>
-        <echo message="                   Make sure TOMCAT_HOME is set."/>
+        <echo message="                   Make sure CATALINA_HOME is set to Tomcat root directory."/>
     </target>
 </project>
