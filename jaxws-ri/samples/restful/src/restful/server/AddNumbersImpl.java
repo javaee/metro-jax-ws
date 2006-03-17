@@ -34,7 +34,6 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.http.HTTPException;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.BindingType;
-import javax.servlet.ServletRequest;
 
 @WebServiceProvider
 @BindingType(value=HTTPBinding.HTTP_BINDING)
@@ -46,37 +45,32 @@ public class AddNumbersImpl implements Provider<Source> {
     public Source invoke(Source source) {
         try {
             MessageContext mc = wsContext.getMessageContext();
-            // check for a PATH_INFO request
-            String path = (String)mc.get(MessageContext.PATH_INFO);
-            if (path != null && path.contains("/num1") &&
-                       path.contains("/num2")) {
-                return createResultSource(path);
-            }
             String query = (String)mc.get(MessageContext.QUERY_STRING);
+            String path = (String)mc.get(MessageContext.PATH_INFO);
             System.out.println("Query String = "+query);
-//            System.out.println("PathInfo = "+path);
-            ServletRequest req = (ServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
-            int num1 = Integer.parseInt(req.getParameter("num1"));
-            int num2 = Integer.parseInt(req.getParameter("num2"));
-            System.out.println("num1: "+num1+" num2: "+num2);
-            return createResultSource(num1+num2);
+            System.out.println("PathInfo = "+path);
+            if (query != null && query.contains("num1=") &&
+                query.contains("num2=")) {
+                return createSource(query);
+            } else if (path != null && path.contains("/num1") &&
+                       path.contains("/num2")) {
+                return createSource(path);
+            } else {
+                throw new HTTPException(404);
+            }
         } catch(Exception e) {
             e.printStackTrace();
             throw new HTTPException(500);
         }
     }
     
-    private Source createResultSource(String str) {
+    private Source createSource(String str) {
         StringTokenizer st = new StringTokenizer(str, "=&/");
         String token = st.nextToken();
         int number1 = Integer.parseInt(st.nextToken());
         st.nextToken();
         int number2 = Integer.parseInt(st.nextToken());
         int sum = number1+number2;
-        return createResultSource(sum);
-    }
-    
-    private Source createResultSource(int sum) {
         String body =
             "<ns:addNumbersResponse xmlns:ns=\"http://duke.org\"><ns:return>"
             +sum
