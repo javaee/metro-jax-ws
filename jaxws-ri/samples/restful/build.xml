@@ -65,14 +65,14 @@
     </target>
 
     <target name="build-server-wsdl" depends="setup">
-        <!--        <javac
+        <javac
             fork="true"
             srcdir="${basedir}/src"
             destdir="${build.classes.home}"
             includes="**/server/**,**/common/**">
             <classpath refid="jaxws.classpath"/>
-        </javac>-->
-        <apt
+        </javac>
+        <!-- apt
                 fork="true"
                 debug="${debug}"
                 verbose="${verbose}"
@@ -88,7 +88,7 @@
                 <include name="**/server/*.java"/>
                 <include name="**/common/*.java"/>
             </source>
-        </apt>
+        </apt -->
     </target>
 
     <target name="create-war">
