@@ -9,9 +9,10 @@
  * with the handler chain annotation and will create a handler xml file
  * to which the annotation points. At runtime, thus, only deployment
  * descriptors and handler files pointed to by annotations are parsed.
- * The schema in all cases is the same, and so the actual parsing of
- * any file is done by
- * {@link com.sun.xml.ws.util.HandlerAnnotationProcessor}.
+ * The schema in all cases is the same, and  @HandlerChainAnnotation is 
+ * processed by {@link com.sun.xml.ws.util.HandlerAnnotationProcessor}, which 
+ * delegates the parsing of handler configuartion file to 
+ * {@link com.sun.xml.ws.handler.HandlerChainsModel} .
  *
  * <h3>Server side handler creation</h3>
  *
@@ -33,13 +34,12 @@
  *
  * <h3>Client side handler creation</h3>
  *
- * <p>On the client side, the handler annotation file is parsed by
- * {@link com.sun.xml.ws.client.ServiceContextBuilder#processAnnotations}.
- * If there are any handlers, the ServiceContextBuilder gets the 
- * {@link com.sun.xml.ws.handler.HandlerResolverImpl} from
- * {@link com.sun.xml.ws.client.ServiceContext} and adds the handler
- * chain to the handler resolver. It also sets the roles on the service
- * context.
+ * <p>On the client side, the @HandlerChain annotation on generated Service 
+ * class is processed by {@link com.sun.xml.ws.client.ServiceContextBuilder#build}.
+ * If there is @HandlerChain on service class, the ServiceContextBuilder creates 
+ * HandlerResolverImpl from that handler file and sets it on the 
+ * {@link com.sun.xml.ws.client.ServiceContext}. @HandlerChain annotations on 
+ * the SEIs are ignored on the client-side. 
  *
  * <p>Unlike the server side, there is no binding object already
  * created when the handlers are parsed. When a binding provider is created, the
