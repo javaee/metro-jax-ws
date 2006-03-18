@@ -19,34 +19,21 @@
  */
 package com.sun.xml.ws.util;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import javax.annotation.PostConstruct;
-import javax.jws.HandlerChain;
-import javax.jws.soap.SOAPMessageHandlers;
-import javax.jws.WebService;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 import com.sun.xml.ws.handler.HandlerChainsModel;
-import javax.xml.namespace.QName;
-import javax.xml.ws.Provider;
-import javax.xml.ws.Service;
-
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.Handler;
-
-import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPMessageHandlers;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.ws.Provider;
+import javax.xml.ws.Service;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * <p>Used by client and server side to create handler information

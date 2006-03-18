@@ -19,21 +19,19 @@
  */
 package com.sun.xml.ws.handler;
 
-import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.ServiceContext;
-import com.sun.xml.ws.handler.HandlerChainsModel;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.HandlerAnnotationProcessor;
+
+import javax.xml.ws.handler.Handler;
+import javax.xml.ws.handler.HandlerResolver;
+import javax.xml.ws.handler.PortInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.HandlerResolver;
-import javax.xml.ws.handler.PortInfo;
 
 /**
  * <p>Implementation class of HandlerResolver. This class is a simple

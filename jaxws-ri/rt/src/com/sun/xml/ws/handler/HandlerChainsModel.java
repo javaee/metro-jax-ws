@@ -24,15 +24,7 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.UtilException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -41,6 +33,9 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.PortInfo;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.SOAPBinding;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Logger;
 
 
 public class HandlerChainsModel {
