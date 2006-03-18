@@ -56,8 +56,15 @@ public abstract class ServiceContextBuilder {
     public static ServiceContext build(URL wsdlLocation, QName serviceName, final Class service, EntityResolver er) throws WebServiceException {
         ServiceContext serviceContext = new ServiceContext(service, serviceName, er);
 
-        if (wsdlLocation != null)
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
+        if (wsdlLocation != null){
+            WSDLContext wsCtx = new WSDLContext(wsdlLocation, er);
+
+            //check if the serviceName is a valid one, if its not in the given WSDL fail
+            if(!wsCtx.contains(serviceName))
+                throw new ClientConfigurationException("service.invalidServiceName", serviceName, wsdlLocation);
+
+            serviceContext.setWsdlContext(wsCtx);
+        }
         
         //if @HandlerChain present, set HandlerResolver on service context
         HandlerChain handlerChain = (HandlerChain)

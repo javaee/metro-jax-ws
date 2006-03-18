@@ -76,10 +76,8 @@ public class WSDLContext {
         return wsdlDoc.getFirstServiceName();
     }
 
-    public QName getServiceQName(QName serviceName) {
-        if (wsdlDoc.getServices().containsKey(serviceName))
-            return serviceName;
-        throw new WebServiceException("Error supplied serviceQName is not correct.");
+    public boolean contains(QName serviceName) {
+        return (wsdlDoc.getServices().containsKey(serviceName));
     }
 
     //just get the first one for now
