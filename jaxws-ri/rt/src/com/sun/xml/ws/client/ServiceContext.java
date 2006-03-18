@@ -42,7 +42,6 @@ public class ServiceContext {
     private Class serviceClass;
     private HandlerResolverImpl handlerResolver;
     private QName serviceName; //supplied on creation of service
-    private SCAnnotations SCAnnotations;
     private final HashSet<EndpointIFContext> seiContext = new HashSet<EndpointIFContext>();
     /**
      * To be used to resolve WSDL resources.
@@ -53,12 +52,10 @@ public class ServiceContext {
         this.entityResolver = entityResolver;
     }
 
-    public SCAnnotations getSCAnnotations() {
-        return SCAnnotations;
-    }
-
-    public void setSCAnnotations(SCAnnotations SCAnnotations) {
-        this.SCAnnotations = SCAnnotations;
+    public ServiceContext(Class serviceClass, QName serviceName, EntityResolver entityResolver) {
+        this.serviceClass = serviceClass;
+        this.serviceName = serviceName;
+        this.entityResolver = entityResolver;
     }
 
     public WSDLContext getWsdlContext() {
@@ -139,16 +136,8 @@ public class ServiceContext {
             ", handleResolver=" + handlerResolver +
             ", serviceClass=" + serviceClass +
             ", serviceName=" + serviceName +
-            ", SCAnnotations=" + SCAnnotations +
             ", seiContext=" + seiContext +
             ", entityResolver=" + entityResolver +
             "}";
     }
-}
-class SCAnnotations {
-    String tns;
-    QName serviceQName;
-    ArrayList<QName> portQNames = new ArrayList<QName>();
-    final ArrayList<Class> classes = new ArrayList<Class>();
-    String wsdlLocation;
 }

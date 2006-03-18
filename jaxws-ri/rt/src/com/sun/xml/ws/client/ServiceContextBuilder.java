@@ -53,74 +53,29 @@ public abstract class ServiceContextBuilder {
     /**
      * Creates a new {@link ServiceContext}.
      */
-    public static ServiceContext build(URL wsdlLocation, final Class service, EntityResolver er) throws WebServiceException {
-
-        ServiceContext serviceContext = new ServiceContext(er);
-        SCAnnotations serviceCAnnotations = null;
-
-        if (service != javax.xml.ws.Service.class) {
-            serviceCAnnotations = getSCAnnotations(service);
-            if (serviceCAnnotations == null)
-                throw new WebServiceException("Service Interface Annotations required, exiting...");
-            serviceContext.setSCAnnotations(serviceCAnnotations);
-        }
-        
-        String temp = !(wsdlLocation == null) ? wsdlLocation.toString() : serviceCAnnotations.wsdlLocation;
-
-        try {
-            wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(temp));
-        } catch (MalformedURLException e) {
-            throw new WebServiceException(e);
-        }
+    public static ServiceContext build(URL wsdlLocation, QName serviceName, final Class service, EntityResolver er) throws WebServiceException {
+        ServiceContext serviceContext = new ServiceContext(service, serviceName, er);
 
         if (wsdlLocation != null)
             serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, er));
         
-        if (serviceCAnnotations != null) {
-            serviceContext.setServiceClass(service);
-            for (Class clazz : serviceCAnnotations.classes) {
-                processAnnotations(serviceContext, clazz);
-            }
-        }
         //if @HandlerChain present, set HandlerResolver on service context
-            HandlerChain handlerChain = (HandlerChain)
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run() {
-                    return service.getAnnotation(HandlerChain.class);
-                }
-            });
-            if(handlerChain != null) {
-                HandlerResolverImpl hresolver = new HandlerResolverImpl(serviceContext);
-                serviceContext.setHandlerResolver(hresolver);
+        HandlerChain handlerChain = (HandlerChain)
+        AccessController.doPrivileged(new PrivilegedAction() {
+            public Object run() {
+                return service.getAnnotation(HandlerChain.class);
             }
+        });
+        if(handlerChain != null) {
+            HandlerResolverImpl hresolver = new HandlerResolverImpl(serviceContext);
+            serviceContext.setHandlerResolver(hresolver);
+        }
         return serviceContext;
     }
 
     public static void completeServiceContext(ServiceContext serviceContext, Class portInterface) {
-        if ((serviceContext.getWsdlContext() == null) && (portInterface != null)) {
-            URL wsdlLocation = null;
-            try {
-                wsdlLocation = new URL(JAXWSUtils.getFileOrURLName(getWSDLLocation(portInterface)));
-            } catch (MalformedURLException e) {
-                throw new WebServiceException(e);
-            }
-
-            serviceContext.setWsdlContext(new WSDLContext(wsdlLocation, serviceContext.getEntityResolver()));
-        }
-
-        if ((portInterface != null) && (serviceContext.getEndpointIFContext().isEmpty()))
+        if (portInterface != null)
             processAnnotations(serviceContext, portInterface);
-    }
-
-    private static QName getServiceName(Class serviceInterface) {
-        WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
-        QName serviceName = null;
-        if (wsClient != null) {
-            String name = wsClient.name();
-            String namespace = wsClient.targetNamespace();
-            serviceName = new QName(namespace, name);
-        }
-        return serviceName;
     }
 
     private static QName getPortName(Class portInterface, Class serviceInterface) {
@@ -149,68 +104,37 @@ public abstract class ServiceContextBuilder {
     //todo: valid port in wsdl
     private static void processAnnotations(ServiceContext serviceContext, Class portInterface) throws WebServiceException {
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
-        if ((eifc == null) || (eifc.getRuntimeContext() == null)) {
-
-            if (eifc == null) {
-                eifc = new EndpointIFContext(portInterface);
-                serviceContext.addEndpointIFContext(eifc);
-            }
-
-            //toDo:
-            QName serviceName = serviceContext.getServiceName();
-            QName portName = eifc.getPortName();
-            if (serviceContext.getServiceClass() != null) {
-                if (serviceName == null)
-                    serviceName = getServiceName(serviceContext.getServiceClass());
-                if (portName == null)
-                    portName = getPortName(portInterface, serviceContext.getServiceClass());
-            }
-
-            if (portName == null) {
-                portName = serviceContext.getWsdlContext().getPortName();
-            }
-
-            //todo:use SCAnnotations and put in map
-            String bindingId = serviceContext.getWsdlContext().getBindingID(
-                serviceName, portName).toString();
-            RuntimeModeler modeler = new RuntimeModeler(portInterface,
-                serviceName, bindingId);
-            modeler.setPortName(portName);
-            RuntimeModel model = modeler.buildRuntimeModel();
-
-            eifc.setRuntimeContext(new RuntimeContext(model));
-            /*
-            // get handler information
-            HandlerAnnotationInfo chainInfo =
-                HandlerAnnotationProcessor.buildHandlerInfo(portInterface,
-                    model.getServiceQName(), model.getPortName(), bindingId);
-            */        
-            if (serviceContext.getServiceName() == null)
-                serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
-            /*    
-            if (chainInfo != null) {
-                HandlerResolverImpl resolver =
-                    getHandlerResolver(serviceContext);
-                resolver.setHandlerChain(new PortInfoImpl(
-                    bindingId,
-                    model.getPortName(),
-                    model.getServiceQName()),
-                    chainInfo.getHandlers());
-                serviceContext.setRoles(portName,chainInfo.getRoles());
-
-            }
-             */
+        if ((eifc != null) && (eifc.getRuntimeContext() != null)) {
+            return;
         }
-    }
-/*
-    private static HandlerResolverImpl getHandlerResolver(
-        ServiceContext serviceContext) {
-        if (serviceContext.getHandlerResolver() == null) {
-            serviceContext.setHandlerResolver(new HandlerResolverImpl());
+        if (eifc == null) {
+            eifc = new EndpointIFContext(portInterface);
+            serviceContext.addEndpointIFContext(eifc);
         }
-        return serviceContext.getHandlerResolver();
+
+        QName serviceName = serviceContext.getServiceName();
+        QName portName = eifc.getPortName();
+        if (serviceContext.getServiceClass() != null) {
+            if (portName == null)
+                portName = getPortName(portInterface, serviceContext.getServiceClass());
+        }
+
+        if (portName == null) {
+            portName = serviceContext.getWsdlContext().getPortName();
+        }
+
+        String bindingId = serviceContext.getWsdlContext().getBindingID(
+            serviceName, portName).toString();
+        RuntimeModeler modeler = new RuntimeModeler(portInterface,
+            serviceName, bindingId);
+        modeler.setPortName(portName);
+        RuntimeModel model = modeler.buildRuntimeModel();
+
+        eifc.setRuntimeContext(new RuntimeContext(model));
+        if (serviceContext.getServiceName() == null)
+            serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
     }
-*/
+
     private ArrayList<Class<?>> getSEI(final Class sc) {
 
         if (sc == null) {
@@ -241,77 +165,4 @@ public abstract class ServiceContextBuilder {
         return classes;
     }
 
-    /**
-     * Utility method to get wsdlLocation attribute from @WebService annotation on sei.
-     *
-     * @return the URL of the location of the WSDL for the sei, or null if none was found.
-     */
-//this will change
-    private static String getWSDLLocation(Class<?> sei) throws MalformedURLException {
-        WebService ws = sei.getAnnotation(WebService.class);
-        if (ws == null)
-            return null;
-        return ws.wsdlLocation();
-    }
-
-//this will change
-
-    private static SCAnnotations getSCAnnotations(Class sc) {
-
-        SCAnnotations SCAnnotations = new SCAnnotations();
-        ArrayList<QName> portQNames = new ArrayList<QName>();
-        if (sc != null) {
-            //WebServiceClient wsc = (WebServiceClient) sc.getAnnotation(WebServiceClient.class);
-            final Class tmpSC = sc;
-            WebServiceClient wsc = (WebServiceClient)
-                AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        return tmpSC.getAnnotation(WebServiceClient.class);
-                    }
-            });            
-            if (wsc != null) {
-                String name = wsc.name();
-                String tns = wsc.targetNamespace();
-                SCAnnotations.tns = tns;
-                if (name != null)
-                    SCAnnotations.serviceQName = new QName(tns, name);
-                SCAnnotations.wsdlLocation = wsc.wsdlLocation();
-
-                final Class myClass = sc;
-                Method[] methods = (Method[])
-                    AccessController.doPrivileged(new PrivilegedAction() {
-                        public Object run() {
-                            return myClass.getDeclaredMethods();
-                        }
-                    });
-
-                if (methods != null) {
-                    ArrayList<Class<?>> classes = new ArrayList<Class<?>>(methods.length);
-                    for (final Method method : methods) {
-                        WebEndpoint webEndpoint = getPrivMethodAnnotation(method, WebEndpoint.class);
-                        if (webEndpoint != null) {
-                            String endpointName = webEndpoint.name();
-                            QName portQName = new QName(tns, endpointName);
-                            portQNames.add(portQName);
-                        }
-                        Class<?> seiClazz = method.getReturnType();
-                        if ((seiClazz != null) && (!seiClazz.equals("void"))) {
-                            classes.add(seiClazz);
-                        }
-                    }
-                    SCAnnotations.portQNames.addAll(portQNames);
-                    SCAnnotations.classes.addAll(classes);
-                }
-            }
-        }
-        return SCAnnotations;
-    }
-
-    private static <T> T getPrivMethodAnnotation(final Method method, final Class<WebEndpoint> T) {
-        return (T) AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                return method.getAnnotation(T);
-            }
-        });
-    }
 }

@@ -427,11 +427,9 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
     }
 
     private void writeWebServiceAnnotation(Service service, Port port, JAnnotationUse wsa) {
-        String serviceName = service.getName().getLocalPart();
         QName name = (QName) port.getProperty(ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
         wsa.param("name", name.getLocalPart());
         wsa.param("targetNamespace", name.getNamespaceURI());
-        wsa.param("wsdlLocation", wsdlLocation);
     }
 
 

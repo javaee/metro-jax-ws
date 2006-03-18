@@ -107,27 +107,24 @@ public class WSServiceDelegate extends ServiceDelegate {
     }
 
     public WSServiceDelegate(URL wsdlDocumentLocation, QName serviceName, Class serviceClass) {
+        //we cant create a Service without serviceName
+        if(serviceName == null)
+            throw new ClientConfigurationException("service.noServiceName");
+
         this.dispatchPorts = new HashMap();
-        //this.ports = new HashSet();
         seiProxies = new HashSet();
 
-        if (wsdlDocumentLocation != null) {
-            serviceContext = ServiceContextBuilder.build(
-                wsdlDocumentLocation, serviceClass, XmlUtil.createDefaultCatalogResolver());
+        serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation, serviceName,
+                serviceClass, XmlUtil.createDefaultCatalogResolver());
 
-        } else {
-            serviceContext = new ServiceContext(XmlUtil.createDefaultCatalogResolver());
-            serviceContext.setServiceName(serviceName);
-        }        
         if (serviceContext.getHandlerResolver() != null) {
             handlerResolver = serviceContext.getHandlerResolver();
         }
-        if (ports == null)
-            populatePorts();
 
+        populatePorts();
     }
 
-    private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
+    private void processServiceContext(Class portInterface) throws WebServiceException {
         ServiceContextBuilder.completeServiceContext(serviceContext, portInterface);
     }
 
@@ -270,13 +267,16 @@ public class WSServiceDelegate extends ServiceDelegate {
     }
 
     private Object createEndpointIFBaseProxy(QName portName, Class portInterface) throws WebServiceException {
+        //fail if service doesnt have WSDL
+        if(serviceContext.getWsdlContext() == null)
+            throw new ClientConfigurationException("service.noWSDLUrl");
 
-        processServiceContext(portName, portInterface);
+        processServiceContext(portInterface);
         if (portName == null) {
             portName = serviceContext.getEndpointIFContext(portInterface.getName()).getPortName();
         }
         if (!serviceContext.getWsdlContext().contains(getServiceName(), portName)) {
-            throw new WebServiceException("Port " + portName + "is not found in service " + serviceContext.getServiceName());
+            throw new ClientConfigurationException("service.invalidPort", portName, serviceContext.getServiceName(), serviceContext.getWsdlContext().getWsdlLocation().toString());
         }
 
         return buildEndpointIFProxy(portName, portInterface);
