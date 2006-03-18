@@ -124,8 +124,8 @@ public class WSServiceDelegate extends ServiceDelegate {
         populatePorts();
     }
 
-    private void processServiceContext(Class portInterface) throws WebServiceException {
-        ServiceContextBuilder.completeServiceContext(serviceContext, portInterface);
+    private void processServiceContext(QName portName, Class portInterface) throws WebServiceException {
+        ServiceContextBuilder.completeServiceContext(portName, serviceContext, portInterface);
     }
 
     public URL getWSDLLocation() {
@@ -271,13 +271,17 @@ public class WSServiceDelegate extends ServiceDelegate {
         if(serviceContext.getWsdlContext() == null)
             throw new ClientConfigurationException("service.noWSDLUrl");
 
-        processServiceContext(portInterface);
-        if (portName == null) {
-            portName = serviceContext.getEndpointIFContext(portInterface.getName()).getPortName();
-        }
-        if (!serviceContext.getWsdlContext().contains(getServiceName(), portName)) {
+        //if there is portName validate it
+        if ((portName != null) && !serviceContext.getWsdlContext().contains(serviceContext.getServiceName(), portName)) {
             throw new ClientConfigurationException("service.invalidPort", portName, serviceContext.getServiceName(), serviceContext.getWsdlContext().getWsdlLocation().toString());
         }
+
+        processServiceContext(portName, portInterface);
+
+        //if the portName is null it must have been set inside processServiceContext, now get it
+        //from EndpointIfContext
+        if(portName == null)
+            portName = serviceContext.getEndpointIFContext(portInterface.getName()).getPortName();
 
         return buildEndpointIFProxy(portName, portInterface);
     }

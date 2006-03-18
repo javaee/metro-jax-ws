@@ -108,6 +108,10 @@ public class EndpointIFContext {
         this.serviceName = serviceName;
     }
 
+    public void setPortName(QName portName) {
+        this.portName = portName;
+    }
+
     public void setBindingID(String bindingId) {
         this.bindingId = bindingId;
     }

@@ -190,6 +190,20 @@ public class WSDLDocument {
         return bs;
     }
 
+    public QName getPortName(QName serviceName, QName portType){
+        Service service = services.get(serviceName);
+        for(Port port:service.values()){
+            QName bindingName = port.getBindingName();
+            assert (bindingName != null);
+            Binding binding = bindings.get(bindingName);
+            QName ptName = binding.getPortTypeName();
+            assert (ptName != null);
+            if(ptName.equals(portType))
+                return port.getName();
+        }
+        return null;
+    }
+
     public void finalizeBinding(Binding binding){
         assert(binding != null);
         QName portTypeName = binding.getPortTypeName();

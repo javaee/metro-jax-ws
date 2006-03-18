@@ -73,36 +73,13 @@ public abstract class ServiceContextBuilder {
         return serviceContext;
     }
 
-    public static void completeServiceContext(ServiceContext serviceContext, Class portInterface) {
+    public static void completeServiceContext(QName portName, ServiceContext serviceContext, Class portInterface) {
         if (portInterface != null)
-            processAnnotations(serviceContext, portInterface);
+            processAnnotations(portName, serviceContext, portInterface);
     }
 
-    private static QName getPortName(Class portInterface, Class serviceInterface) {
-        QName portName = null;
-        WebServiceClient wsClient = (WebServiceClient) serviceInterface.getAnnotation(WebServiceClient.class);
-        for (Method method : serviceInterface.getMethods()) {
-            if (!method.getDeclaringClass().equals(serviceInterface)) {
-                continue;
-            }
-            WebEndpoint webEndpoint = method.getAnnotation(WebEndpoint.class);
-            if (webEndpoint == null) {
-                continue;
-            }
-            if (method.getGenericReturnType().equals(portInterface)) {
-                if (method.getName().startsWith("get")) {
-                    portName = new QName(wsClient.targetNamespace(), webEndpoint.name());
-                    break;
-                }
-            }
-        }
-        return portName;
-    }
-
-    //does any necessagy checking and validation
-
-    //todo: valid port in wsdl
-    private static void processAnnotations(ServiceContext serviceContext, Class portInterface) throws WebServiceException {
+    private static void processAnnotations(QName portName, ServiceContext serviceContext, Class portInterface) throws WebServiceException {
+        WSDLContext wsdlContext = serviceContext.getWsdlContext();
         EndpointIFContext eifc = serviceContext.getEndpointIFContext(portInterface.getName());
         if ((eifc != null) && (eifc.getRuntimeContext() != null)) {
             return;
@@ -113,26 +90,26 @@ public abstract class ServiceContextBuilder {
         }
 
         QName serviceName = serviceContext.getServiceName();
-        QName portName = eifc.getPortName();
-        if (serviceContext.getServiceClass() != null) {
-            if (portName == null)
-                portName = getPortName(portInterface, serviceContext.getServiceClass());
-        }
 
+        //if portName is null get it from the WSDL
         if (portName == null) {
-            portName = serviceContext.getWsdlContext().getPortName();
+            //get the first port corresponding to the SEI
+            QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
+            portName = wsdlContext.getWsdlDocument().getPortName(serviceContext.getServiceName(), portTypeName);
         }
 
-        String bindingId = serviceContext.getWsdlContext().getBindingID(
-            serviceName, portName);
+        //still no portName, fail
+        if(portName == null)
+            throw new ClientConfigurationException("service.noPortName", portInterface.getName(), wsdlContext.getWsdlLocation().toString());
+
+        eifc.setPortName(portName);
+        String bindingId = wsdlContext.getBindingID(serviceName, portName);
         RuntimeModeler modeler = new RuntimeModeler(portInterface,
             serviceName, bindingId);
         modeler.setPortName(portName);
         RuntimeModel model = modeler.buildRuntimeModel();
 
         eifc.setRuntimeContext(new RuntimeContext(model));
-        if (serviceContext.getServiceName() == null)
-            serviceContext.setServiceName(serviceContext.getWsdlContext().getFirstServiceName());
     }
 
     private ArrayList<Class<?>> getSEI(final Class sc) {

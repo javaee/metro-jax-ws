@@ -34,5 +34,5 @@ public class Service extends LinkedHashMap<QName, Port> {
 
     public QName getName() {
         return name;
-    }
+    }    
 }
