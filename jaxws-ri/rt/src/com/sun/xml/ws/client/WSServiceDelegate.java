@@ -306,16 +306,16 @@ public class WSServiceDelegate extends ServiceDelegate {
             handlerChain = new ArrayList<Handler>();
         }
         // create binding
-        if (bindingId.toString().equals(SOAPBinding.SOAP11HTTP_BINDING) ||
-            bindingId.toString().equals(SOAPBinding.SOAP12HTTP_BINDING)) {
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) ||
+                bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             SOAPBindingImpl bindingImpl = new SOAPBindingImpl(handlerChain,
-                bindingId.toString(), getServiceName());
+                    bindingId, getServiceName());
             Set<String> roles = serviceContext.getRoles(portName);
             if (roles != null) {
                 bindingImpl.setRoles(roles);
-            }                      
+            }
             provider._setBinding(bindingImpl);
-        } else if (bindingId.toString().equals(HTTPBinding.HTTP_BINDING)) {
+        } else if (bindingId.equals(HTTPBinding.HTTP_BINDING)) {
             provider._setBinding(new HTTPBindingImpl(handlerChain));
         }
     }

@@ -124,7 +124,7 @@ public abstract class ServiceContextBuilder {
         }
 
         String bindingId = serviceContext.getWsdlContext().getBindingID(
-            serviceName, portName).toString();
+            serviceName, portName);
         RuntimeModeler modeler = new RuntimeModeler(portInterface,
             serviceName, bindingId);
         modeler.setPortName(portName);
