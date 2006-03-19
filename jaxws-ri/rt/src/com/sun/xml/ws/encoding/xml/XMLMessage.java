@@ -584,7 +584,6 @@ public final class XMLMessage {
                 boolean canAvoidTransform = false;
                 if (source instanceof StreamSource) {
                     is = ((StreamSource)source).getInputStream();
-                    ByteArrayInputStream tis = (ByteArrayInputStream)is;
                     // If use of FI is requested, need to transcode
                     canAvoidTransform = !useFastInfoset;
                 }
@@ -593,10 +592,8 @@ public final class XMLMessage {
                     // If use of FI is not requested, need to transcode
                     canAvoidTransform = useFastInfoset;
                 }
-
-                assert is != null;
-
-                if (canAvoidTransform && is instanceof ByteInputStream) {
+                
+                if (canAvoidTransform && is != null && is instanceof ByteInputStream) {
                     ByteInputStream bis = (ByteInputStream)is;
                     // Reset the stream
                     byte[] buf = bis.getBytes();
