@@ -19,8 +19,6 @@
  */
 package com.sun.xml.ws.encoding.soap.client;
 
-import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
 import static com.sun.xml.ws.client.BindingProviderProperties.*;
 import com.sun.xml.ws.client.RequestContext;
@@ -29,32 +27,33 @@ import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
+import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SOAPEPTFactory;
 import com.sun.xml.ws.encoding.soap.SOAPEncoder;
-import com.sun.xml.ws.encoding.soap.SOAPConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.streaming.XMLStreamWriterFactory;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import com.sun.xml.ws.util.SOAPUtil;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
+import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamReader;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.ws.Service;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 
@@ -64,22 +63,22 @@ import static java.util.logging.Logger.getLogger;
 public class SOAPXMLEncoder extends SOAPEncoder {
 
     private static final Logger logger =
-        getLogger (new StringBuffer ().append (com.sun.xml.ws.util.Constants.LoggingDomain).append (".client.dispatch.util").toString ());
+        getLogger(new StringBuffer().append(com.sun.xml.ws.util.Constants.LoggingDomain).append(".client.dispatch.util").toString());
 
-    public SOAPXMLEncoder () {
+    public SOAPXMLEncoder() {
     }
 
-    protected JAXBContext getJAXBContext (MessageInfo messageInfo) {
+    protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         JAXBContext jc = null;
-        RequestContext context = (RequestContext)messageInfo.getMetaData (BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        RequestContext context = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
         if (context != null)
-            jc = (JAXBContext)context.get (BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
+            jc = (JAXBContext) context.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
 
         return jc;
     }
 
-    protected boolean skipHeader (MessageInfo messageInfo) {
-        if (messageInfo.getMetaData (DispatchContext.DISPATCH_MESSAGE_MODE) ==
+    protected boolean skipHeader(MessageInfo messageInfo) {
+        if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
             Service.Mode.PAYLOAD) {
             return true;
         }
@@ -90,10 +89,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return SOAPConstants.QNAME_SOAP_HEADER;
     }
 
-     protected void skipHeader(XMLStreamReader writer) {
+    protected void skipHeader(XMLStreamReader writer) {
         //XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         //if (!SOAPNamespaceConstants.TAG_HEADER.equals(reader.getLocalName())) {
-          //  return;
+        //  return;
         //}
         //XMLStreamReaderUtil.verifyTag(reader, getHeaderTag());
         //XMLStreamReaderUtil.skipElement(reader);    // Moves to </Header>
@@ -101,43 +100,51 @@ public class SOAPXMLEncoder extends SOAPEncoder {
     }
 
     @Override
-    public InternalMessage toInternalMessage (MessageInfo messageInfo) {
-        InternalMessage internalMessage = new InternalMessage ();
-        DispatchContext context = (DispatchContext) messageInfo.getMetaData (BindingProviderProperties.DISPATCH_CONTEXT);
+    public InternalMessage toInternalMessage(MessageInfo messageInfo) {
+        InternalMessage internalMessage = new InternalMessage();
+        DispatchContext context = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
         if (context != null) {
             DispatchContext.MessageType type =
-                (DispatchContext.MessageType) context.getProperty (DispatchContext.DISPATCH_MESSAGE);
-            Object[] data = messageInfo.getData ();
+                (DispatchContext.MessageType) context.getProperty(DispatchContext.DISPATCH_MESSAGE);
+            Object[] data = messageInfo.getData();
             BodyBlock bodyBlock = null;
             switch (type) {
                 case JAXB_MESSAGE:
                     break;
                 case JAXB_PAYLOAD:
-                    JAXBBeanInfo jaxbInfo = new JAXBBeanInfo (data[0], getJAXBContext (messageInfo));
-                    bodyBlock = new BodyBlock (jaxbInfo);
+                    JAXBBeanInfo jaxbInfo = new JAXBBeanInfo(data[0], getJAXBContext(messageInfo));
+                    bodyBlock = new BodyBlock(jaxbInfo);
                     break;
                 case SOURCE_PAYLOAD:
-                    data = messageInfo.getData ();
-                    bodyBlock = new BodyBlock ((Source) data[0]);
+                    data = messageInfo.getData();
+                    bodyBlock = new BodyBlock((Source) data[0]);
                     break;
                 default:
             }
             if (bodyBlock != null)
-                internalMessage.setBody (bodyBlock);
+                internalMessage.setBody(bodyBlock);
+
+            //look for attachments here
+            Map<String, DataHandler> attMap = (Map<String, DataHandler>) ((Map<String, Object>)
+                messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY)).get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+            
+            if (attMap != null)
+                for (Map.Entry<String, DataHandler> att : attMap.entrySet()) {
+                    internalMessage.addAttachment(AttachmentBlock.fromDataHandler(att.getKey(), att.getValue()));
+                }
 
         } else {
-            SOAPEPTFactory eptf = (SOAPEPTFactory) messageInfo.getEPTFactory ();
-            InternalEncoder internalEncoder = eptf.getInternalEncoder ();
+            SOAPEPTFactory eptf = (SOAPEPTFactory) messageInfo.getEPTFactory();
+            InternalEncoder internalEncoder = eptf.getInternalEncoder();
             //processProperties(messageInfo);
-            return (InternalMessage) internalEncoder.toInternalMessage (messageInfo);
+            return (InternalMessage) internalEncoder.toInternalMessage(messageInfo);
         }
         return internalMessage;
     }
 
     @Override
     public SOAPMessage toSOAPMessage(InternalMessage internalMessage,
-                                     MessageInfo messageInfo)
-    {
+                                     MessageInfo messageInfo) {
         SOAPMessage message = null;
         XMLStreamWriter writer = null;
         JAXWSAttachmentMarshaller marshaller = null;
@@ -147,7 +154,8 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             setAttachmentsMap(messageInfo, internalMessage);
             ByteArrayBuffer bab = new ByteArrayBuffer();
 
-            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic") {
+            if (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic")
+            {
                 writer = XMLStreamWriterFactory.createFIStreamWriter(bab);
 
                 // Turn XOP off for FI
@@ -157,8 +165,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
                     marshaller.setXOPPackage(false);
                 }
 
-            }
-            else {
+            } else {
                 // Store output stream to use in JAXB bridge (not with FI)
                 messageInfo.setMetaData(JAXB_OUTPUTSTREAM, bab);
                 writer = XMLStreamWriterFactory.createXMLStreamWriter(bab);
@@ -175,10 +182,10 @@ public class SOAPXMLEncoder extends SOAPEncoder {
             writer.close();
 
             // TODO: Copy the mime headers from messageInfo.METADATA
-            MimeHeaders mh = new MimeHeaders ();
-            mh.addHeader ("Content-Type", getContentType(messageInfo, marshaller));
-            message = SOAPUtil.createMessage (mh, bab.newInputStream(), getBindingId());
-            processAttachments (internalMessage, message);
+            MimeHeaders mh = new MimeHeaders();
+            mh.addHeader("Content-Type", getContentType(messageInfo, marshaller));
+            message = SOAPUtil.createMessage(mh, bab.newInputStream(), getBindingId());
+            processAttachments(internalMessage, message);
 
             // Restore default XOP processing before returning
             if (marshaller != null) {
@@ -208,26 +215,25 @@ public class SOAPXMLEncoder extends SOAPEncoder {
         return message;
     }
 
-    public InternalMessage createInternalMessage (MessageInfo messageInfo) {
+    public InternalMessage createInternalMessage(MessageInfo messageInfo) {
 
-        InternalMessage internalMessage = new InternalMessage ();
-        Object response = messageInfo.getResponse ();
+        InternalMessage internalMessage = new InternalMessage();
+        Object response = messageInfo.getResponse();
 
         BodyBlock bodyBlock = null;
-        if (getJAXBContext (messageInfo) != null) {
-            JAXBBeanInfo jaxbBean = new JAXBBeanInfo (response, getJAXBContext (messageInfo));
-            bodyBlock = new BodyBlock (jaxbBean);
+        if (getJAXBContext(messageInfo) != null) {
+            JAXBBeanInfo jaxbBean = new JAXBBeanInfo(response, getJAXBContext(messageInfo));
+            bodyBlock = new BodyBlock(jaxbBean);
         } else if (response instanceof Source) {
-            bodyBlock = new BodyBlock ((Source) response);
+            bodyBlock = new BodyBlock((Source) response);
         }
 
-        internalMessage.setBody (bodyBlock);
+        internalMessage.setBody(bodyBlock);
         return internalMessage;
     }
 
     protected String getContentType(MessageInfo messageInfo,
-                                    JAXWSAttachmentMarshaller marshaller)
-    {
+                                    JAXWSAttachmentMarshaller marshaller) {
         String contentNegotiation = (String)
             messageInfo.getMetaData(BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY);
 
@@ -237,8 +243,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
         if (marshaller != null && marshaller.isXopped()) {
             return XOP_SOAP11_XML_TYPE_VALUE;
-        }
-        else {
+        } else {
             return (contentNegotiation == "optimistic") ?
                 FAST_INFOSET_TYPE_SOAP11 : XML_CONTENT_TYPE_VALUE;
         }
@@ -249,7 +254,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
      *
      * @return the BindingID associated with this encoder
      */
-    protected String getBindingId () {
+    protected String getBindingId() {
         return SOAPBinding.SOAP11HTTP_BINDING;
     }
 }
