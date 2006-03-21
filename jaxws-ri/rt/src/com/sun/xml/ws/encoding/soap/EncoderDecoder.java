@@ -293,6 +293,9 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             for (Map.Entry<String,AttachmentBlock> entry : attachments.entrySet()) {
                 AttachmentBlock ab = entry.getValue();
                 String part = ab.getWSDLPartName();
+                if(part == null){
+                    throw new SerializationException("mime.contentId.part", ab.getId());
+                }
                 if(part.equals(param.getPartName()) || part.equals("<"+param.getPartName())){
                     Class type = (Class)param.getTypeReference().type;
 
