@@ -392,7 +392,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         } else {
             //todo - needs to be a get request
-            if (!isValidHttpMethodRequest(msg))
+            if (!isValidNullParameter(msg))
                 throw new WebServiceException("No Message to Send to web service");
         }
         setMessageStruct(messageStruct, msg);
@@ -586,21 +586,26 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         return null;
     }
 
-    private boolean isValidHttpMethodRequest(Object msg) {
-
-        //currently msg null or non null doesn't matter- implementations
-        //servlet containers will allow both- later if this is stricter can check for message null
-        boolean isValid = false;
+    private boolean isValidNullParameter(Object msg) {
 
         String bindingId = _getBindingId().toString();
+        if (_mode == Service.Mode.MESSAGE && !HTTPBinding.HTTP_BINDING.equals(bindingId) && msg == null)
+            throw new WebServiceException("Service.Mode.MESSAGE and SOAPBinding is not allowed with a null invocation parameter");
+
         String method = (String) getRequestContext().get(MessageContext.HTTP_REQUEST_METHOD);
         if (method != null) {
-            isValid = ("GET".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method))? true : false &&
+            if (method == null || "POST".equalsIgnoreCase(method) &&
+                HTTPBinding.HTTP_BINDING.equals(bindingId) && msg == null)
+                throw new WebServiceException("Service.Mode.MESSAGE or Service.Mode.PAYLOAD and HTTPBinding with requestMethod POST not allowed with a null invocation parameter");
+
+            boolean isValid = ("GET".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method)) ? true : false &&
                 (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
                     HTTPBinding.HTTP_BINDING.equals(bindingId)) ? true : false;
+            if (!isValid)
+                throw new WebServiceException("HTTPBinding is not allowed with a null invocation parameter unless HTTP Request method is GET, DELETE, or HEAD");
         }
 
-        return isValid;
+        return true;
     }
 
     private static ClientTransportFactory defaultTransportFactory = null;

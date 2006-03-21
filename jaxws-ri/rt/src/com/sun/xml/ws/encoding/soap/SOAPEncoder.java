@@ -23,6 +23,7 @@ import com.sun.xml.ws.pept.encoding.Encoder;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.dispatch.DispatchContext;
 import static com.sun.xml.ws.client.BindingProviderProperties.JAXB_OUTPUTSTREAM;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
@@ -550,8 +551,13 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                     serializeSource((Source) value, writer);
                 } else if (value instanceof SOAPFaultInfo) {
                     writeFault((SOAPFaultInfo) value, messageInfo, writer);
-                } else if (value instanceof JAXBBeanInfo) {
+                } else if (value instanceof JAXBBeanInfo) {                    
                     writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
+                } else if (value == null && (DispatchContext)
+                    messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null) {
+                    //bug 6400596  -Dispatch and null invocation parameter payload mode
+                    //can skip this here as we want to write and empty SOAPBody
+                    //writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
                 } else {
                     throw new SerializationException("unknown.object",
                         value.getClass().getName());
