@@ -22,6 +22,7 @@ package com.sun.xml.ws.encoding.soap;
 import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.RequestContext;
 import com.sun.xml.ws.encoding.internal.InternalEncoder;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
@@ -42,9 +43,12 @@ import com.sun.xml.ws.model.WrapperParameter;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.ws.handler.HandlerContext;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.handler.MessageContext;
+import javax.activation.DataHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -311,6 +315,9 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         JavaMethod jm = model.getJavaMethod(mi.getMethod());
         Object[] data = mi.getData();
         InternalMessage im = new InternalMessage();
+        //copy the attachments from the outbound attachments to InternalMessage
+        RequestContext ctxt = (RequestContext)mi.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        copyAttachmentProperty(ctxt, im);            
         Iterator<Parameter> iter = jm.getRequestParameters().iterator();
         SOAPBinding soapBinding = (SOAPBinding)jm.getBinding();
         while (iter.hasNext()) {
@@ -327,4 +334,5 @@ public class ClientEncoderDecoder extends EncoderDecoder implements InternalEnco
         }
         return im;
     }
+
 }

@@ -114,6 +114,9 @@ public class ServerEncoderDecoder extends EncoderDecoder implements InternalEnco
         Object[] data = mi.getData();
         Object result = mi.getResponse();
         InternalMessage im = new InternalMessage();
+        if(rtContext.getHandlerContext() != null){
+            copyAttachmentProperty(rtContext.getHandlerContext().getMessageContext(), im);
+        }
         BindingImpl bindingImpl = 
             (BindingImpl)rtContext.getRuntimeEndpointInfo().getBinding();
         String bindingId = bindingImpl.getBindingId();

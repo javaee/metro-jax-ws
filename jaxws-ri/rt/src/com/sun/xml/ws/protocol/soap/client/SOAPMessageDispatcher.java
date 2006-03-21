@@ -169,11 +169,11 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
                 handlerContext.getMessageContext().put(
                     MessageContext.MESSAGE_OUTBOUND_PROPERTY, Boolean.TRUE);
 
-                //now that the MESSAGE_OUTBOUND_PROPERTY is set so populate the attachemnts
-                handlerContext.populateAttachmentMap();
-
                 encoder.setAttachmentsMap(messageInfo, im);
                 updateMessageContext(messageInfo, handlerContext);
+
+                //now that the MESSAGE_OUTBOUND_PROPERTY is set so populate the attachemnts
+                handlerContext.populateAttachmentMap();                
 
                 JAXWSAttachmentMarshaller am = MessageInfoUtil.getAttachmentMarshaller(messageInfo);
                 boolean isXopped = false;

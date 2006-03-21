@@ -33,6 +33,9 @@ import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.handler.MessageContextUtil;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.client.RequestContext;
 
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
@@ -293,9 +296,11 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
             for (Map.Entry<String,AttachmentBlock> entry : attachments.entrySet()) {
                 AttachmentBlock ab = entry.getValue();
                 String part = ab.getWSDLPartName();
-                if(part == null){
-                    throw new SerializationException("mime.contentId.part", ab.getId());
-                }
+                // part can be null if the Content-Id is not encoded as per AP 1.0 R2933. Which is ok since there could be attachments
+                // other than WSDL MIME bound
+                if(part == null)
+                    continue;
+
                 if(part.equals(param.getPartName()) || part.equals("<"+param.getPartName())){
                     Class type = (Class)param.getTypeReference().type;
 
@@ -367,6 +372,17 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         }
 
         im.addAttachment(ab);
+    }
+
+    protected void copyAttachmentProperty(Map<String, Object> ctxt, InternalMessage im) {
+        if(ctxt == null)
+            return;
+        Map<String, DataHandler> attMap = (Map<String, DataHandler>) ctxt.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+        if (attMap == null)
+            return;
+        for (Map.Entry<String, DataHandler> att : attMap.entrySet()) {
+            im.addAttachment(AttachmentBlock.fromDataHandler(att.getKey(), att.getValue()));
+        }
     }
 
     private boolean isXMLMimeType(String mimeType){

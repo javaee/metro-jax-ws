@@ -44,7 +44,8 @@ public class MessageInfoUtil {
     }
 
     public static RuntimeContext getRuntimeContext(MessageInfo messageInfo) {
-        return (RuntimeContext)messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        Object rtxt = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+        return rtxt == null?null:(RuntimeContext)rtxt;
     }
     
     public static MessageContext getMessageContext(MessageInfo messageInfo) {
