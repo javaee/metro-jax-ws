@@ -30,6 +30,7 @@ import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.server.RuntimeContext;
 
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.bind.Marshaller;
 import java.util.Set;
 
 /**
@@ -77,10 +78,9 @@ public class MessageInfoUtil {
                 return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
             }
         } else {
-            BridgeContext bc = (BridgeContext)
-                messageInfo.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
-            if (bc != null) {
-                return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
+             Marshaller m = (Marshaller)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_MARSHALLER);
+            if (m != null) {
+                return (JAXWSAttachmentMarshaller) m.getAttachmentMarshaller();
             }
         }
         return null;

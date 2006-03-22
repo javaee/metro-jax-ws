@@ -59,16 +59,12 @@ public final class JAXBTypeSerializer {
     }
 
     public static void serialize(Object obj, XMLStreamWriter writer,
-                                 JAXBContext context, Marshaller marshaller, BridgeContext bc) {
+                                 JAXBContext context, Marshaller marshaller) {
 
         try {
             if (marshaller == null)
                 marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            if (bc != null) {
-                ((MarshallerImpl) marshaller).setAttachmentMarshaller(bc.getAttachmentMarshaller());
-            }
-
             marshaller.marshal(obj, writer);
         } catch (RuntimeException e) {
             throw e;
@@ -93,16 +89,12 @@ public final class JAXBTypeSerializer {
     }
 
     public static void serialize(Object obj, OutputStream os,
-                                 JAXBContext context, Marshaller marshaller, BridgeContext bc) {
+                                 JAXBContext context, Marshaller marshaller) {
 
         try {
             if (marshaller == null)
                 marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
-            if (bc != null) {
-                ((MarshallerImpl) marshaller).setAttachmentMarshaller(bc.getAttachmentMarshaller());
-            }
-
             marshaller.marshal(obj, os);
         } catch (RuntimeException e) {
             throw e;
@@ -163,7 +155,7 @@ public final class JAXBTypeSerializer {
         }
     }
 
-    public static Object deserialize(XMLStreamReader reader, JAXBContext context, BridgeContext bc) {
+    public static Object deserialize(XMLStreamReader reader, JAXBContext context, Unmarshaller bc) {
         Object obj = null;
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -217,4 +209,6 @@ public final class JAXBTypeSerializer {
             throw new DeserializationException(e);
         }
     }
+
+
 }

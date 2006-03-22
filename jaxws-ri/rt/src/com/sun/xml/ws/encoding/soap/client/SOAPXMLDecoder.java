@@ -56,6 +56,8 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
 import javax.xml.soap.MessageFactory;
@@ -176,11 +178,11 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                         //jaxb will leave reader on ending </body> element
                         //System.out.println("Doing a jaxb bean");
                         JAXBBeanInfo jaxBean = null;
-                        BridgeContext bc = (BridgeContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
-                        if (bc != null)
-                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, bc);
+                        Unmarshaller um = (Unmarshaller)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_UNMARSHALLER);
+                        if (um != null)
+                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, um);
                         else
-                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, bc);
+                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
                         
                         responseBody = new BodyBlock(jaxBean);
                     }

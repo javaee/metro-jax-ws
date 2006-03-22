@@ -78,6 +78,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.xml.stream.XMLStreamReader.*;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * @author WS Development Team
@@ -405,9 +407,9 @@ public abstract class SOAPDecoder implements Decoder {
                 au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
             else {
                 //for dispatch
-                BridgeContext bc = (BridgeContext)mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
-                if (bc != null)
-                    au = (JAXWSAttachmentUnmarshaller) bc.getAttachmentUnmarshaller();
+                Unmarshaller m = (Unmarshaller)mi.getMetaData(BindingProviderProperties.DISPATCH_UNMARSHALLER);
+                if (m != null)
+                    au = (JAXWSAttachmentUnmarshaller) m.getAttachmentUnmarshaller();
             }
             au.setXOPPackage(isXOPPackage(message));
             au.setAttachments(im.getAttachments());

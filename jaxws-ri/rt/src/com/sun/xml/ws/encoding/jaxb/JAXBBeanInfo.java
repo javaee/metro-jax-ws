@@ -59,9 +59,9 @@ public final class JAXBBeanInfo {
         return new JAXBBeanInfo(obj, context);
     }
 
-    public static JAXBBeanInfo fromStAX(XMLStreamReader reader, JAXBContext context, BridgeContext bc) {
+    public static JAXBBeanInfo fromStAX(XMLStreamReader reader, JAXBContext context, Unmarshaller um) {
 
-        Object obj = JAXBTypeSerializer.deserialize(reader, context, bc);
+        Object obj = JAXBTypeSerializer.deserialize(reader, context, um);
         return new JAXBBeanInfo(obj, context);
     }
 
@@ -86,27 +86,18 @@ public final class JAXBBeanInfo {
      * Writes this bean to StAX.
      */
         public void writeTo(XMLStreamWriter w) {
-            if (bc != null) {
-            JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext, marshaller,bc);
-            }else
+            if (marshaller != null)
+                JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext, marshaller);
+            else
             JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext);
         }
 
         public void writeTo(OutputStream os) {
-            if (bc != null){
-             JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext,marshaller, bc);
-            }else
+            if (marshaller != null)
+                JAXBTypeSerializer.serialize(jaxbBean, os, jaxbContext, marshaller);
+            else
              JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext);
         }
-
-
-
-    public void setBridgeContext(BridgeContext bc){
-        this.bc = bc;
-    }
-    public BridgeContext getBridgeContext() {
-        return bc;
-    }
 
     public void setMarshallers(Marshaller m, Unmarshaller u) {
         this.marshaller = m;

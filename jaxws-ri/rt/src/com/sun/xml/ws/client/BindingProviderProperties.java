@@ -116,7 +116,8 @@ public interface BindingProviderProperties extends JAXWSProperties{
         FAST_INFOSET_TYPE_SOAP12 + ", " + SOAP12_XML_ACCEPT_VALUE;
 
     public String DISPATCH_CONTEXT = "com.sun.xml.ws.client.dispatch.context";
-    public String DISPATCH_BRIDGE_CONTEXT = "com.sun.xml.ws.client.dispatch.bridge.context";
+    public String DISPATCH_MARSHALLER = "com.sun.xml.ws.client.dispatch.marshaller";
+    public String DISPATCH_UNMARSHALLER = "com.sun.xml.ws.client.dispatch.unmarshaller";
     public static final String BINDING_ID_PROPERTY = "com.sun.xml.ws.binding";
 
 //    // Content negotiation property: values "none", "pessimistic" and "optimistic"
