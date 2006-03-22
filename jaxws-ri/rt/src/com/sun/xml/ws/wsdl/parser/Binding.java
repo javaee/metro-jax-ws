@@ -79,6 +79,20 @@ public class Binding extends HashMap<String, BindingOperation> {
             return op.getOutputBinding(part);
     }
 
+    /**
+     * Gives binding for a given {@link BindingOperation} a wsdl part and {@link Mode}
+     * @param op  must be non-null
+     * @param part must be non-null
+     * @param mode must be non-null
+     * @return  parameter Binding, null the binding could not be determined.
+     */
+    public ParameterBinding getBinding(BindingOperation op, String part, Mode mode){
+        if((Mode.IN == mode)||(Mode.INOUT == mode))
+            return op.getInputBinding(part);
+        else
+            return op.getOutputBinding(part);
+    }
+
     public String getMimeType(String operation, String part, Mode mode){
         BindingOperation op = get(operation);
         if(Mode.IN == mode)

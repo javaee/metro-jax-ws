@@ -1320,7 +1320,15 @@ public class RuntimeModeler {
             else
                 return ParameterBinding.BODY;
         }
-        return binding.getBinding(operation, part, mode);
+        BindingOperation bo = binding.get(operation);
+
+        //if the binding Operation corresponding to the operation is not found in the WSDL then
+        //throw the exception
+        if(bo == null){
+            throw new RuntimeModelerException("runtime.operation.noBinding", operation, portName);
+        }
+        
+        return binding.getBinding(bo, part, mode);
     }
 
     private Part getPart(String opName, String partName, Mode mode){
