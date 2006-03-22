@@ -702,7 +702,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         throws IOException, MessagingException, TransformerException {
 
         OutputStream out = ((WSConnection) messageInfo.getConnection()).getDebug();
-        out = System.out;
+
         if (out != null) {
             String s = "******************\nRequest\n";
             out.write(s.getBytes());
@@ -729,7 +729,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         throws IOException, MessagingException, TransformerException {
 
         OutputStream out = ((WSConnection) messageInfo.getConnection()).getDebug();
-        out = System.out;
+        
         if (out != null) {
             String s = "Response\n";
             out.write(s.getBytes());

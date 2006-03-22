@@ -400,15 +400,17 @@ public abstract class SOAPDecoder implements Decoder {
     protected void processAttachments(MessageInfo mi, InternalMessage im, SOAPMessage message) throws SOAPException, ParseException, IOException {
         Iterator iter = message.getAttachments();
         if (iter.hasNext()) {
-            RuntimeContext rtxt = MessageInfoUtil.getRuntimeContext(mi);
-            if(rtxt != null){
-                BridgeContext bc = MessageInfoUtil.getRuntimeContext(mi).getBridgeContext();
-                if(bc != null){
-                    JAXWSAttachmentUnmarshaller au = (JAXWSAttachmentUnmarshaller) bc.getAttachmentUnmarshaller();
-                    au.setXOPPackage(isXOPPackage(message));
-                    au.setAttachments(im.getAttachments());
-                }
+            JAXWSAttachmentUnmarshaller au = null;
+            if (MessageInfoUtil.getRuntimeContext(mi) != null)
+                au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
+            else {
+                //for dispatch
+                BridgeContext bc = (BridgeContext)mi.getMetaData("dispatch.bridge.context");
+                if (bc != null)
+                    au = (JAXWSAttachmentUnmarshaller) bc.getAttachmentUnmarshaller();
             }
+            au.setXOPPackage(isXOPPackage(message));
+            au.setAttachments(im.getAttachments());
         }
 
         while (iter.hasNext()) {

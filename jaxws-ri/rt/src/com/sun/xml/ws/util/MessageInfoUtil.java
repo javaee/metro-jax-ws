@@ -19,19 +19,18 @@
  */
 package com.sun.xml.ws.util;
 
-import java.util.Set;
-
-import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.ws.server.RuntimeContext;
+import com.sun.xml.bind.api.BridgeContext;
 import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.handler.HandlerChainCaller;
-import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.encoding.JAXWSAttachmentMarshaller;
 import com.sun.xml.ws.encoding.soap.SOAPDecoder;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
-import com.sun.xml.bind.api.BridgeContext;
+import com.sun.xml.ws.handler.HandlerChainCaller;
+import com.sun.xml.ws.handler.HandlerContext;
+import com.sun.xml.ws.pept.ept.MessageInfo;
+import com.sun.xml.ws.server.RuntimeContext;
 
 import javax.xml.ws.handler.MessageContext;
+import java.util.Set;
 
 /**
  * @author WS RI Development Team
@@ -39,20 +38,22 @@ import javax.xml.ws.handler.MessageContext;
 public class MessageInfoUtil {
 
     public static void setRuntimeContext(MessageInfo messageInfo,
-        RuntimeContext runtimeContext) {
-        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT,  runtimeContext);
+                                         RuntimeContext runtimeContext) {
+        messageInfo.setMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT, runtimeContext);
     }
 
     public static RuntimeContext getRuntimeContext(MessageInfo messageInfo) {
-        Object rtxt = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        return rtxt == null?null:(RuntimeContext)rtxt;
+        return (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
     }
-    
+
     public static MessageContext getMessageContext(MessageInfo messageInfo) {
         RuntimeContext rtCtxt = getRuntimeContext(messageInfo);
-        if(rtCtxt == null)
-            return null;
-        HandlerContext hdCtxt = rtCtxt.getHandlerContext();
+        HandlerContext hdCtxt = null;
+        if (rtCtxt != null)
+            hdCtxt = rtCtxt.getHandlerContext();
+        else
+            hdCtxt = (HandlerContext)
+                messageInfo.getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY);
         return (hdCtxt == null) ? null : hdCtxt.getMessageContext();
     }
 
@@ -61,17 +62,23 @@ public class MessageInfoUtil {
         return (HandlerChainCaller) messageInfo.getMetaData(
             HandlerChainCaller.HANDLER_CHAIN_CALLER);
     }
-    
+
     public static void setHandlerChainCaller(MessageInfo messageInfo,
-        HandlerChainCaller caller) {
+                                             HandlerChainCaller caller) {
         messageInfo.setMetaData(HandlerChainCaller.HANDLER_CHAIN_CALLER,
             caller);
     }
 
-    public static JAXWSAttachmentMarshaller  getAttachmentMarshaller(MessageInfo messageInfo) {
+    public static JAXWSAttachmentMarshaller getAttachmentMarshaller(MessageInfo messageInfo) {
         Object rtc = messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
         if (rtc != null) {
             BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
+            if (bc != null) {
+                return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
+            }
+        } else {
+            BridgeContext bc = (BridgeContext)
+                messageInfo.getMetaData("dispatch.bridge.context");
             if (bc != null) {
                 return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
             }
@@ -80,14 +87,14 @@ public class MessageInfoUtil {
     }
 
     public static void setNotUnderstoodHeaders(MessageInfo messageInfo,
-        Set<HeaderBlock> headers) {
-        
+                                               Set<HeaderBlock> headers) {
+
         messageInfo.setMetaData(SOAPDecoder.NOT_UNDERSTOOD_HEADERS, headers);
     }
-    
+
     public static Set<HeaderBlock> getNotUnderstoodHeaders(
         MessageInfo messageInfo) {
-        
+
         return (Set<HeaderBlock>) messageInfo.getMetaData(
             SOAPDecoder.NOT_UNDERSTOOD_HEADERS);
     }

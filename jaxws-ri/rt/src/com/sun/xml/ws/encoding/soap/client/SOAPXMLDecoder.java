@@ -53,6 +53,7 @@ import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.StAXSource;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
@@ -174,7 +175,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     } else {
                         //jaxb will leave reader on ending </body> element
                         //System.out.println("Doing a jaxb bean");
-                        JAXBBeanInfo jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext);
+                        JAXBBeanInfo jaxBean = null;
+                        BridgeContext bc = (BridgeContext)messageInfo.getMetaData("dispatch.bridge.context");
+                        if (bc != null)
+                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, bc);
+                        else
+                            jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, bc);
+                        
                         responseBody = new BodyBlock(jaxBean);
                     }
                 }
@@ -199,7 +206,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             InternalEncoder encoder = eptf.getInternalEncoder();
             encoder.toMessageInfo(internalMessage, messageInfo);
 
-        } else {
+        } else {  //here we need to set attachments in response context
             if (internalMessage != null && internalMessage.getBody() != null) {
                 if (internalMessage.getBody().getValue() instanceof SOAPFaultInfo)
                 {
@@ -211,6 +218,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                     messageInfo.setResponse(internalMessage.getBody().getValue());
                 } else {
                     messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
+                    setAttachments(internalMessage, messageInfo);
                     //unfortunately we must do this
                     if (internalMessage.getBody().getValue() instanceof JAXBBeanInfo)
                         messageInfo.setResponse(((JAXBBeanInfo) internalMessage.getBody().getValue()).getBean());
@@ -220,6 +228,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
             } else
                 messageInfo.setResponseType(MessageStruct.NORMAL_RESPONSE);
         }
+    }
+
+    private void setAttachments(InternalMessage internalMessage, MessageInfo messageInfo) {
+
     }
 
     protected void decodeEnvelope(XMLStreamReader reader, MessageInfo messageInfo) {

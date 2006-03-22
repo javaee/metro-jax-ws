@@ -20,9 +20,11 @@
 package com.sun.xml.ws.encoding.jaxb;
 
 import com.sun.xml.ws.encoding.soap.SerializationException;
+import com.sun.xml.bind.api.BridgeContext;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.Source;
 import javax.xml.stream.XMLStreamWriter;
@@ -36,7 +38,10 @@ import java.io.OutputStream;
  */
 public final class JAXBBeanInfo {
     private final Object jaxbBean;
-    private final JAXBContext jaxbContext;
+    private JAXBContext jaxbContext;
+    private BridgeContext bc;
+    private Marshaller marshaller;
+    private Unmarshaller unmarshaller;
 
     public JAXBBeanInfo(Object payload, JAXBContext jaxbContext) {
         this.jaxbBean = payload;
@@ -49,9 +54,18 @@ public final class JAXBBeanInfo {
     }
 
     public static JAXBBeanInfo fromStAX(XMLStreamReader reader, JAXBContext context) {
+
         Object obj = JAXBTypeSerializer.deserialize(reader, context);
         return new JAXBBeanInfo(obj, context);
     }
+
+    public static JAXBBeanInfo fromStAX(XMLStreamReader reader, JAXBContext context, BridgeContext bc) {
+
+        Object obj = JAXBTypeSerializer.deserialize(reader, context, bc);
+        return new JAXBBeanInfo(obj, context);
+    }
+
+
 
     public Object getBean() {
         return jaxbBean;
@@ -71,11 +85,31 @@ public final class JAXBBeanInfo {
     /**
      * Writes this bean to StAX.
      */
-    public void writeTo(XMLStreamWriter w) {
-        JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext);
+        public void writeTo(XMLStreamWriter w) {
+            if (bc != null) {
+            JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext, marshaller,bc);
+            }else
+            JAXBTypeSerializer.serialize(jaxbBean, w, jaxbContext);
+        }
+
+        public void writeTo(OutputStream os) {
+            if (bc != null){
+             JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext,marshaller, bc);
+            }else
+             JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext);
+        }
+
+
+
+    public void setBridgeContext(BridgeContext bc){
+        this.bc = bc;
+    }
+    public BridgeContext getBridgeContext() {
+        return bc;
     }
 
-    public void writeTo(OutputStream os) {
-        JAXBTypeSerializer.serialize(jaxbBean,os,jaxbContext);
+    public void setMarshallers(Marshaller m, Unmarshaller u) {
+        this.marshaller = m;
+        this.unmarshaller = u;
     }
 }

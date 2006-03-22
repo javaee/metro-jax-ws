@@ -67,7 +67,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
     public SOAPXMLEncoder() {
     }
-
+    /* moved to super
     protected JAXBContext getJAXBContext(MessageInfo messageInfo) {
         JAXBContext jc = null;
         RequestContext context = (RequestContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
@@ -76,7 +76,7 @@ public class SOAPXMLEncoder extends SOAPEncoder {
 
         return jc;
     }
-
+    */
     protected boolean skipHeader(MessageInfo messageInfo) {
         if (messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_MODE) ==
             Service.Mode.PAYLOAD) {

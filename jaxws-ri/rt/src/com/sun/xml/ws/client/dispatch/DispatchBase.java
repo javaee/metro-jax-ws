@@ -21,6 +21,7 @@
 package com.sun.xml.ws.client.dispatch;
 
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.client.dispatch.impl.DispatchContactInfoList;
 import com.sun.xml.ws.client.dispatch.impl.DispatchDelegate;
@@ -407,13 +408,12 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         messageStruct.setMetaData(BindingProviderProperties.MTOM_THRESHOLOD_VALUE, mtomThreshold);
 
         // Set MTOM processing for XML requests only
-        /* if (_rtcontext != null && _rtcontext.getModel() != null) {
-            javax.xml.ws.soap.SOAPBinding sb = (binding instanceof javax.xml.ws.soap.SOAPBinding) ? (javax.xml.ws.soap.SOAPBinding) binding : null;
-            if (sb != null) {
-                _rtcontext.getModel().enableMtom(sb.isMTOMEnabled());
-            }
-        }
-        */
+        String bindingId =
+            (getBinding() instanceof SOAPBinding)?
+                ((SOAPBindingImpl)binding).getBindingId().toString():HTTPBinding.HTTP_BINDING;
+        if (bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING)||
+        bindingId.equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING))
+           messageStruct.setMetaData("com.sun.xml.ws.mtom.enabled", ((SOAPBindingImpl)getBinding()).isMTOMEnabled());
 
         // Initialize content negotiation property
         ContentNegotiation.initialize(getRequestContext(), messageStruct);
