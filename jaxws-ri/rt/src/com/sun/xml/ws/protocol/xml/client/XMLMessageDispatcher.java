@@ -356,6 +356,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         if (caller.hasHandlers()) {
             callHandlersOnResponse(handlerContext);
             updateResponseContext(messageInfo, handlerContext);
+            xm = handlerContext.getXMLMessage();
         }
 
         //set messageInfo response with appropriate result
