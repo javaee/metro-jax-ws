@@ -78,7 +78,7 @@ public class MessageInfoUtil {
             }
         } else {
             BridgeContext bc = (BridgeContext)
-                messageInfo.getMetaData("dispatch.bridge.context");
+                messageInfo.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
             if (bc != null) {
                 return (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
             }

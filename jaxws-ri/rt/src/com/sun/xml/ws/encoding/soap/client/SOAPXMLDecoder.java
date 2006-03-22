@@ -176,7 +176,7 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                         //jaxb will leave reader on ending </body> element
                         //System.out.println("Doing a jaxb bean");
                         JAXBBeanInfo jaxBean = null;
-                        BridgeContext bc = (BridgeContext)messageInfo.getMetaData("dispatch.bridge.context");
+                        BridgeContext bc = (BridgeContext)messageInfo.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
                         if (bc != null)
                             jaxBean = JAXBBeanInfo.fromStAX(reader, jaxbContext, bc);
                         else

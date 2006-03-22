@@ -405,7 +405,7 @@ public abstract class SOAPDecoder implements Decoder {
                 au = (JAXWSAttachmentUnmarshaller) MessageInfoUtil.getRuntimeContext(mi).getBridgeContext().getAttachmentUnmarshaller();
             else {
                 //for dispatch
-                BridgeContext bc = (BridgeContext)mi.getMetaData("dispatch.bridge.context");
+                BridgeContext bc = (BridgeContext)mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
                 if (bc != null)
                     au = (JAXWSAttachmentUnmarshaller) bc.getAttachmentUnmarshaller();
             }

@@ -176,7 +176,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                                    XMLStreamWriter writer) {
         // Pass output stream directly to JAXB when available
         OutputStream os = (OutputStream) messageInfo.getMetaData(JAXB_OUTPUTSTREAM);
-        BridgeContext bc = (BridgeContext) messageInfo.getMetaData("dispatch.bridge.context");
+        BridgeContext bc = (BridgeContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
         if (bc != null)
                 beanInfo.setBridgeContext(bc);
         Marshaller m = (Marshaller) messageInfo.getMetaData("dispatch.beaninfo.marshaller");
@@ -628,30 +628,26 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             JAXBContext jc = (JAXBContext) map.get(BindingProviderProperties.JAXB_CONTEXT_PROPERTY);
 
             //com.sun.xml.bind.v2.runtime.BridgeContextImpl bc = getBridgeContext(jc);
-            BridgeContext bc = getBridgeContext(jc);
+
             if (jc != null) {
                 try {
-                    Marshaller marshaller = jc.createMarshaller();
-                    Unmarshaller unmarshaller = jc.createUnmarshaller();
-                    JAXWSAttachmentMarshaller am = new JAXWSAttachmentMarshaller(((SOAPBinding) provider.getBinding()).isMTOMEnabled());
-                    marshaller.setAttachmentMarshaller(am);
+                    BridgeContext bc = getBridgeContext(jc);
+                    JAXWSAttachmentMarshaller am =
+                        new JAXWSAttachmentMarshaller(((SOAPBinding) provider.getBinding()).isMTOMEnabled());
                     JAXWSAttachmentUnmarshaller uam = new JAXWSAttachmentUnmarshaller();
-                    unmarshaller.setAttachmentUnmarshaller(uam);
-                    mi.setMetaData("dispatch.beaninfo.marshaller", marshaller);
-                    mi.setMetaData("dispatch.beaninfo.unmarshaller", unmarshaller);
                     am.setAttachments(im.getAttachments());
                     bc.setAttachmentMarshaller(am);
                     bc.setAttachmentUnmarshaller(uam);
-                    //using this to hold attachment marshallers
-                    mi.setMetaData("dispatch.bridge.context", bc);
-                    //ok so where do I get handlerContext from
-                    //right now it may be null
-                    //right now assuming it comes from messageInfo if set
-                    am.setHandlerContaxt((SOAPHandlerContext)mi.getMetaData("handler.context"));
+                    //using bc this to hold attachment marshallers
+                    mi.setMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT, bc);
+
+                    am.setHandlerContaxt((SOAPHandlerContext)
+                        mi.getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY));
                     
-                    HandlerContext hc = null; //todo:temp for now//((RuntimeContext) rtc).getHandlerContext();
-                    am.setXOPPackage(((SOAPBinding)provider.getBinding()).isMTOMEnabled());
-                    uam.setXOPPackage(((SOAPBinding)provider.getBinding()).isMTOMEnabled());
+                    HandlerContext hc =
+                        (HandlerContext)mi.getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY);
+                    //am.setXOPPackage(((SOAPBinding)provider.getBinding()).isMTOMEnabled());
+                    //uam.setXOPPackage(((SOAPBinding)provider.getBinding()).isMTOMEnabled());
                     Object mtomThreshold;
                     if (hc == null) {
                         //to be removed when client guarantees handlerContext
@@ -732,12 +728,13 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         if (rtc != null) {
             BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
             if (bc != null) {
-                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)
+                    ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
                 am.setMtomCallback(mtomCallback);
             }
         } else {
             //dispatch
-            BridgeContext bc = (BridgeContext)mi.getMetaData("dispatch.bridge.context");
+            BridgeContext bc = (BridgeContext)mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
             if (bc != null) {
                 JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
                 am.setMtomCallback(mtomCallback);
@@ -776,7 +773,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             }
         } else {
             //dispatch
-            BridgeContext bc = (BridgeContext)mi.getMetaData("dispatch.bridge.context");
+            BridgeContext bc = (BridgeContext)mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
             if (bc != null) {
                 JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
                 am.setMtomCallback(mtomCallback);
@@ -797,19 +794,15 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
+        //needed for Dispatch to hang attachment marshaller/unmarshaller off
         public BridgeContext getBridgeContext
         (JAXBContext
         jaxbContext) {
-        BridgeContext bc = null;
+
         if (jaxbContext == null)
             return null;
-
-        bc = ((JAXBRIContext) jaxbContext).createBridgeContext();
-        bc.setAttachmentMarshaller(new JAXWSAttachmentMarshaller(true));
-        bc.setAttachmentUnmarshaller(new JAXWSAttachmentUnmarshaller());
-        //bridgeContext.set(bc);
-        //}
-        return bc;
+        //do I want this in a threadlocal?
+        return ((JAXBRIContext) jaxbContext).createBridgeContext();
     }
 
 }       
