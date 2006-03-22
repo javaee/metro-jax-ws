@@ -198,7 +198,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 throw new WebServiceException(e);
             }
 
-            
+
             beanInfo.writeTo(os);
 
         } else {
@@ -575,7 +575,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                     serializeSource((Source) value, writer);
                 } else if (value instanceof SOAPFaultInfo) {
                     writeFault((SOAPFaultInfo) value, messageInfo, writer);
-                } else if (value instanceof JAXBBeanInfo) {                    
+                } else if (value instanceof JAXBBeanInfo) {
                     writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
                 } else if (value == null && (DispatchContext)
                     messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null) {
@@ -606,7 +606,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
             if (bc == null)
                 return;
-            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
+            JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
             am.setAttachments(im.getAttachments());
             am.setHandlerContaxt(((RuntimeContext) rtc).getHandlerContext());
 
@@ -643,7 +643,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
                     am.setHandlerContaxt((SOAPHandlerContext)
                         mi.getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY));
-                    
+
                     HandlerContext hc =
                         (HandlerContext)mi.getMetaData(BindingProviderProperties.JAXWS_HANDLER_CONTEXT_PROPERTY);
                     //am.setXOPPackage(((SOAPBinding)provider.getBinding()).isMTOMEnabled());
@@ -665,30 +665,24 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
 
         }
     }
-        /**
-         * Add all the attachments in the InternalMessage to the SOAPMessage
-         *
-         * @param im
-         * @param msg
-         */
-        protected void processAttachments
-        (InternalMessage
-        im, SOAPMessage
-        msg) throws SOAPException
-        {
-            for (Map.Entry<String, AttachmentBlock> e : im.getAttachments().entrySet())
-            {
-                AttachmentBlock block = e.getValue();
-                block.addTo(msg);
-            }
-        }
 
-        /*
-        * writes end tag of envelope: </env:Envelope>
-        */
-        protected void endEnvelope
-        (XMLStreamWriter
-        writer) {
+    /**
+     * Add all the attachments in the InternalMessage to the SOAPMessage
+     *
+     * @param im
+     * @param msg
+     */
+    protected void processAttachments(InternalMessage im, SOAPMessage msg) throws SOAPException {
+        for (Map.Entry<String, AttachmentBlock> e : im.getAttachments().entrySet()) {
+            AttachmentBlock block = e.getValue();
+            block.addTo(msg);
+        }
+    }
+
+    /*
+    * writes end tag of envelope: </env:Envelope>
+    */
+    protected void endEnvelope(XMLStreamWriter writer) {
         try {
             writer.writeEndElement();
         }
@@ -697,30 +691,17 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
-        protected void writeFault
-        (SOAPFaultInfo
-        instance, MessageInfo
-        messageInfo, XMLStreamWriter
-        writer) {
+    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, XMLStreamWriter writer) {
         throw new UnsupportedOperationException();
     }
 
-        protected void writeFault
-        (SOAPFaultInfo
-        instance, MessageInfo
-        messageInfo, OutputStream
-        out) {
+    protected void writeFault(SOAPFaultInfo instance, MessageInfo messageInfo, OutputStream out) {
         XMLStreamWriter writer = XMLStreamWriterFactory.createXMLStreamWriter(out);
         writeFault(instance, messageInfo, writer);
     }
 
 
-        public void write
-        (Object
-        value, Object
-        obj, OutputStream
-        writer, MtomCallback
-        mtomCallback) {
+    public void write(Object value, Object obj, OutputStream writer, MtomCallback mtomCallback) {
         if (!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
         MessageInfo mi = (MessageInfo) obj;
@@ -729,14 +710,14 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
             BridgeContext bc = ((RuntimeContext) rtc).getBridgeContext();
             if (bc != null) {
                 JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)
-                    ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
+                        ((RuntimeContext) rtc).getBridgeContext().getAttachmentMarshaller();
                 am.setMtomCallback(mtomCallback);
             }
         } else {
             //dispatch
-            BridgeContext bc = (BridgeContext)mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
+            BridgeContext bc = (BridgeContext) mi.getMetaData(BindingProviderProperties.DISPATCH_BRIDGE_CONTEXT);
             if (bc != null) {
-                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller)bc.getAttachmentMarshaller();
+                JAXWSAttachmentMarshaller am = (JAXWSAttachmentMarshaller) bc.getAttachmentMarshaller();
                 am.setMtomCallback(mtomCallback);
             }
         }
@@ -755,12 +736,7 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
-        public void write
-        (Object
-        value, Object
-        obj, XMLStreamWriter
-        writer, MtomCallback
-        mtomCallback) {
+    public void write(Object value, Object obj, XMLStreamWriter writer, MtomCallback mtomCallback) {
         if (!(obj instanceof MessageInfo))
             throw new SerializationException("incorrect.messageinfo", obj.getClass().getName());
         MessageInfo mi = (MessageInfo) obj;
@@ -794,15 +770,12 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
         }
     }
 
-        //needed for Dispatch to hang attachment marshaller/unmarshaller off
-        public BridgeContext getBridgeContext
-        (JAXBContext
-        jaxbContext) {
-
+    //needed for Dispatch to hang attachment marshaller/unmarshaller off
+    public BridgeContext getBridgeContext(JAXBContext jaxbContext) {
         if (jaxbContext == null)
             return null;
         //do I want this in a threadlocal?
         return ((JAXBRIContext) jaxbContext).createBridgeContext();
     }
 
-}       
+}
