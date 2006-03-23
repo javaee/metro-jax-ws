@@ -208,7 +208,7 @@ public final class DispatchSerializer {
                     aprefix = prefix;
                     auri = nuri;
                 } else {
-                    if (!wprefix.equals("xmlns")) {
+                    if (wprefix != null && !wprefix.equals("xmlns")) {
                         aprefix = wprefix;
                     }
                 }
