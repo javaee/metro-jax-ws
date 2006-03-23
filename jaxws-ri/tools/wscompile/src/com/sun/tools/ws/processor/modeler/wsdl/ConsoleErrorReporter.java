@@ -33,6 +33,7 @@ public class ConsoleErrorReporter implements ErrorListener{
     private LocalizableMessageFactory messageFactory;
     private ProcessorEnvironment env;
     private boolean printStackTrace;
+    private boolean hasError;
 
     public ConsoleErrorReporter(ProcessorEnvironment env, boolean printStackTrace) {
         this.env = env;
@@ -41,7 +42,12 @@ public class ConsoleErrorReporter implements ErrorListener{
             new LocalizableMessageFactory("com.sun.tools.ws.resources.model");
     }
 
+    public boolean hasError() {
+        return hasError;
+    }
+
     public void error(SAXParseException e) {
+        hasError = true;
         if(printStackTrace)
             e.printStackTrace();
         env.error(messageFactory.getMessage("model.saxparser.exception",
@@ -49,6 +55,7 @@ public class ConsoleErrorReporter implements ErrorListener{
     }
 
     public void fatalError(SAXParseException e) {
+        hasError = true;
         if(printStackTrace)
             e.printStackTrace();
 

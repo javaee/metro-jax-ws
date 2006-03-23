@@ -63,8 +63,9 @@ public class JAXBModelBuilder {
         _env = (ProcessorEnvironment) modelInfo.getParent().getEnvironment();
         _classNameAllocator = new ClassNameAllocatorImpl(classNameCollector);
 
-        internalBuildJAXBModel(elements);
         printstacktrace = Boolean.valueOf(options.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
+        consoleErrorReporter = new ConsoleErrorReporter(_env, printstacktrace);
+        internalBuildJAXBModel(elements);
     }
 
     /**
@@ -78,7 +79,7 @@ public class JAXBModelBuilder {
         try {
             schemaCompiler = XJC.createSchemaCompiler();
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
-            schemaCompiler.setErrorListener(new ConsoleErrorReporter(_env, printstacktrace));
+            schemaCompiler.setErrorListener(consoleErrorReporter);
             schemaCompiler.setEntityResolver(_modelInfo.getEntityResolver());
             int schemaElementCount = 1;
             String wsdlLocation =((WSDLModelInfo)_modelInfo).getLocation();
@@ -122,6 +123,9 @@ public class JAXBModelBuilder {
 
     protected void bind(){
         com.sun.tools.xjc.api.JAXBModel rawJaxbModel = schemaCompiler.bind();
+        if(consoleErrorReporter.hasError()){
+            System.exit(-1);
+        }
         jaxbModel = new JAXBModel(rawJaxbModel);
         jaxbModel.setGeneratedClassNames(_classNameAllocator.getJaxbGeneratedClasses());
     }
@@ -152,9 +156,10 @@ public class JAXBModelBuilder {
 
     private JAXBModel jaxbModel;
     private SchemaCompiler schemaCompiler;
-    private LocalizableMessageFactory _messageFactory;
-    private ModelInfo _modelInfo;
-    private ProcessorEnvironment _env;
-    private boolean printstacktrace;
-    private ClassNameAllocatorImpl _classNameAllocator;
+    private final LocalizableMessageFactory _messageFactory;
+    private final ModelInfo _modelInfo;
+    private final ProcessorEnvironment _env;
+    private final boolean printstacktrace;
+    private final ClassNameAllocatorImpl _classNameAllocator;
+    private final ConsoleErrorReporter consoleErrorReporter;
 }
