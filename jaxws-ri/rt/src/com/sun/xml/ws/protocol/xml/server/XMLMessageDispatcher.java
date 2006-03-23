@@ -30,6 +30,7 @@ import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.XMLHandlerContext;
+import com.sun.xml.ws.server.provider.ProviderModel;
 import com.sun.xml.ws.server.provider.ProviderPeptTie;
 import com.sun.xml.ws.spi.runtime.Invoker;
 import com.sun.xml.ws.spi.runtime.WSConnection;
@@ -41,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -179,6 +181,24 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
             XMLMessage xmlMessage = new XMLMessage(e, useFastInfoset);
             context.setXMLMessage(xmlMessage);
         }
+        // Set attachments for Provider<Source>
+        MessageContext msgCtxt = context.getMessageContext();
+        Map<String, DataHandler> atts = (Map<String, DataHandler>)msgCtxt.get(
+                MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+        if (atts != null) {
+            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
+            ProviderModel model = endpointInfo.getProviderModel();
+            boolean isSource = model.isSource();
+            if (isSource) {
+                XMLMessage xmlMessage = context.getXMLMessage();
+                xmlMessage = new XMLMessage(xmlMessage.getSource(), atts,
+                        xmlMessage.isFastInfoset());
+                context.setXMLMessage(xmlMessage);
+            } else {
+                logger.warning("MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS is ignored for Provider<DataSource>");
+            }
+        }
         return context.getXMLMessage();
     }
 
@@ -227,7 +247,7 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
         // Set HTTP status code
         con.setStatus(statusCode);
         // put response headers on the connection
-        con.setHeaders(headers);
+        con.setHeaders(headers);        
         // Write contents on the connection
         xmlMessage.writeTo(con.getOutput());
         con.closeOutput();
