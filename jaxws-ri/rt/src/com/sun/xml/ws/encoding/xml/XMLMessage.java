@@ -283,7 +283,7 @@ public final class XMLMessage {
     }
 
     public MimeHeaders getMimeHeaders() {
-        return this.headers;
+        return data.getMimeHeaders();
     }
 
     private static String getContentType(MimeHeaders headers) {
@@ -348,6 +348,7 @@ public final class XMLMessage {
         abstract Source getSource();
         abstract DataSource getDataSource();
         abstract Map<String, DataHandler> getAttachments();
+        abstract MimeHeaders getMimeHeaders();
         int getStatus() {
             return WSConnection.OK;
         }
@@ -388,10 +389,17 @@ public final class XMLMessage {
         
         public XMLDataSource(final Source source, final Map<String, DataHandler> atts, boolean isFastInfoset) {
             this.isFastInfoset = isFastInfoset;
-            multipart = new MimeMultipart();
-            MimeBodyPart root = new MimeBodyPart();
-            root.setContent(source, (isFastInfoset ? "application/fastinfoset" : "text/xml"));
-            multipart.addBodyPart(root);
+            multipart = new MimeMultipart("related");
+            multipart.getContentType().setParameter("type", "text/xml");
+
+            ByteOutputStream bos = new ByteOutputStream();
+            new XMLSource(source).writeTo(bos, isFastInfoset);
+            InternetHeaders headers = new InternetHeaders();
+            headers.addHeader("Content-Type",
+                isFastInfoset ? "application/fastinfoset" : "text/xml");
+            MimeBodyPart rootPart = new MimeBodyPart(headers, bos.getBytes(),bos.getCount());
+            multipart.addBodyPart(rootPart, 0);
+
             for(Map.Entry<String, DataHandler> e : atts.entrySet()) {
                 MimeBodyPart part = new MimeBodyPart();
                 part.setDataHandler(e.getValue());
@@ -559,7 +567,7 @@ public final class XMLMessage {
                 }
 
                 // Finally, possibly re-encode root part and write it out
-                replaceRootPart(useFastInfoset);
+                replaceRootPart(useFastInfoset);              
                 multipart.writeTo(out);
             }
             catch(Exception e) {
@@ -586,6 +594,18 @@ public final class XMLMessage {
             } catch (MessagingException ex) {
                 throw new XMLMessageException("xml.get.source.err",ex);
             }
+        }
+
+        MimeHeaders getMimeHeaders() {
+            MimeHeaders headers = new MimeHeaders();
+            if (dataSource != null) {
+                headers.addHeader("Content-Type", dataSource.getContentType());
+            } else {
+                if (multipart != null ) {
+                    headers.addHeader("Content-Type", multipart.getContentType().toString());
+                }
+            }
+            return headers;
         }
 
     }
@@ -729,6 +749,13 @@ public final class XMLMessage {
             return null;
         }
 
+        MimeHeaders getMimeHeaders() {
+            MimeHeaders headers = new MimeHeaders();
+            headers.addHeader("Content-Type",
+                isFastInfoset() ? "application/fastinfoset" : "text/xml");
+            return headers;               
+        }
+
     }
 
     /**
@@ -778,6 +805,13 @@ public final class XMLMessage {
         
         public Map<String, DataHandler> getAttachments() {
             return null;
+        }
+
+        MimeHeaders getMimeHeaders() {
+            MimeHeaders headers = new MimeHeaders();
+            headers.addHeader("Content-Type",
+                isFastInfoset() ? "application/fastinfoset" : "text/xml");
+            return headers;
         }
 
     }
@@ -830,6 +864,13 @@ public final class XMLMessage {
                 return ((HTTPException)err).getStatusCode();
             }
             return WSConnection.INTERNAL_ERR;
+        }
+
+        MimeHeaders getMimeHeaders() {
+            MimeHeaders headers = new MimeHeaders();
+            headers.addHeader("Content-Type",
+                isFastInfoset() ? "application/fastinfoset" : "text/xml");
+            return headers;
         }
     }
 }

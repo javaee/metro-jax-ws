@@ -38,11 +38,13 @@ import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPE
 public class FastInfosetUtil {
     
     public static boolean isFastInfosetAccepted(String[] accepts) {
-        for (String accept : accepts) {
-            if (isFastInfosetAccepted(accept)) {
-                return true;
+        if (accepts != null) {
+            for (String accept : accepts) {
+                if (isFastInfosetAccepted(accept)) {
+                    return true;
+                }
             }
-        }        
+        }
         return false;
     }
 
