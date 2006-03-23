@@ -408,13 +408,13 @@ public abstract class SOAPDecoder implements Decoder {
             else {
                 //for dispatch
                 Unmarshaller m = (Unmarshaller)mi.getMetaData(BindingProviderProperties.DISPATCH_UNMARSHALLER);
-                if (m != null) {
+                if (m != null)
                     au = (JAXWSAttachmentUnmarshaller) m.getAttachmentUnmarshaller();
-                    au.setXOPPackage(isXOPPackage(message));
-                    au.setAttachments(im.getAttachments());
-                }
             }
-
+            if (au != null){
+                au.setXOPPackage(isXOPPackage(message));
+                au.setAttachments(im.getAttachments());
+            }
         }
 
         while (iter.hasNext()) {
