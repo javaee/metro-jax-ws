@@ -101,10 +101,7 @@ public class WSServletContextListener
             classLoader = getClass().getClassLoader();
         }
         try {
-            // Get all the WSDL & schema documents under WEB-INF/wsdl directory
-            Map<String, DocInfo> docs = new HashMap<String, DocInfo>();
-            collectDocs(context, JAXWS_WSDL_DIR, docs);
-            logger.fine("war metadata="+docs);
+
 
             // Parse the descriptor file and build endpoint infos
             RuntimeEndpointInfoParser parser =
@@ -117,7 +114,7 @@ public class WSServletContextListener
             createWebServiceContext(endpoints);
             
             // Creates WSDL & schema metadata and runtime model
-            createModelAndMetadata(endpoints, docs);
+            createModelAndMetadata(endpoints);
 
         } catch (Exception e) {
             logger.log(
@@ -150,16 +147,6 @@ public class WSServletContextListener
             }
         }
     }
-
-	private Map<String, DocInfo> copyDocs(Map<String, DocInfo> docs) {
-		Map<String, DocInfo> newDocs = new HashMap<String, DocInfo>();
-		Set<Entry<String, DocInfo>> entries = docs.entrySet();
-		for(Entry<String, DocInfo> entry : entries) {
-			String docPath = entry.getValue().getPath();
-			newDocs.put(entry.getKey(), new ServletDocInfo(context, docPath));
-		}
-		return newDocs;
-	}
     
     /*
      * Setting the WebServiceContext for each endpoint. WebServiceContextImpl
@@ -178,8 +165,7 @@ public class WSServletContextListener
      * updates metadata with query string and builds runtime model for each
      * endpoint
      */
-    private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints,
-            Map<String, DocInfo> docs)  throws Exception {
+    private void createModelAndMetadata(List<RuntimeEndpointInfo> endpoints)  throws Exception {
         URL catalogUrl = null;
         try {
             catalogUrl = context.getResource("/WEB-INF/jax-ws-catalog.xml");
@@ -188,8 +174,12 @@ public class WSServletContextListener
         }
         EntityResolver entityResolver = XmlUtil.createEntityResolver(catalogUrl);
                     
-     
         for(RuntimeEndpointInfo endpoint : endpoints) {
+            // Get all the WSDL & schema documents under WEB-INF/wsdl directory
+            Map<String, DocInfo> docs = new HashMap<String, DocInfo>();
+            collectDocs(context, JAXWS_WSDL_DIR, docs);
+            logger.fine("Endpoint metadata="+docs);
+            
             String wsdlFile = endpoint.getWSDLFileName();
             if (wsdlFile != null) {
                 try {
@@ -208,7 +198,7 @@ public class WSServletContextListener
             if (endpoint.needWSDLGeneration()) {
                 endpoint.generateWSDL();
             } else {
-                endpoint.setMetadata(copyDocs(docs));
+                endpoint.setMetadata(docs);
 				if (endpoint.getWsdlUrl() != null) {
 					docs = endpoint.getDocMetadata();
 					DocInfo wsdlDoc = docs.get(endpoint.getWsdlUrl().toString());

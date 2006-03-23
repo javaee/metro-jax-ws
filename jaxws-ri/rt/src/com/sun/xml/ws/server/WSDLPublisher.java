@@ -92,12 +92,11 @@ public class WSDLPublisher {
         addrBuf.append(request.getServerName());
         addrBuf.append(":");
         addrBuf.append(request.getServerPort());
-        addrBuf.append(request.getContextPath());
-        addrBuf.append(urlPattern);
+        addrBuf.append(request.getRequestURI());
         
-        String baseAddress = addrBuf.toString();
-        //String baseAddress =
-        //    actualAddress.substring(0, actualAddress.lastIndexOf(urlPattern));
+        String actualAddress = addrBuf.toString();
+        String baseAddress =
+            actualAddress.substring(0, actualAddress.lastIndexOf(urlPattern));
 
         String inPath = targetEndpoint.getPath(request.getQueryString());
         if (inPath == null) {
