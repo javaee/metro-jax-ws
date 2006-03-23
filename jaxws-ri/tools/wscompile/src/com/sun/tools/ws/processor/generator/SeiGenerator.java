@@ -430,7 +430,6 @@ public class SeiGenerator extends GeneratorBase implements ProcessorAction {
         QName name = (QName) port.getProperty(ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
         wsa.param("name", name.getLocalPart());
         wsa.param("targetNamespace", name.getNamespaceURI());
-        wsa.param("wsdlLocation", wsdlLocation);
     }
 
 
