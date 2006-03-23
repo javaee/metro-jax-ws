@@ -25,6 +25,7 @@ import com.sun.xml.ws.encoding.soap.internal.DelegateBase;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.wsdl.WSDLContext;
+import com.sun.xml.ws.wsdl.parser.PortType;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.AsyncHandler;
@@ -201,5 +202,9 @@ public class EndpointIFInvocationHandler
 
      Executor getCurrentExecutor(){
         return _service.getExecutor();
+    }
+
+    public QName getWSDLPortTypeQName(){
+        return _service.getWSDLBinding(_endpointContext.getPortName()).getPortTypeName();
     }
 }

@@ -244,21 +244,8 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
 
 
             Map<String, Object> context = processMetadata(messageInfo, sm);
-/*
-            // set the MIME headers on connection headers
-            Map<String, List<String>> ch = new HashMap<String, List<String>>();
-            for (Iterator iter = sm.getMimeHeaders().getAllHeaders(); iter.hasNext();) {
-                List<String> h = new ArrayList<String>();
-                MimeHeader mh = (MimeHeader) iter.next();
-
-                h.clear();
-                h.add(mh.getValue());
-                ch.put(mh.getName(), h);
-            }
- */
 
             setConnection(messageInfo, context);
-            //((WSConnection) messageInfo.getConnection()).setHeaders(ch);
 
             if (!isAsync(messageInfo)) {
                 WSConnection connection = (WSConnection) messageInfo.getConnection();
@@ -752,31 +739,32 @@ public class SOAPMessageDispatcher implements MessageDispatcher {
         BindingProvider provider = (BindingProvider) context.getMessageContext()
             .get(JAXWS_CLIENT_HANDLE_PROPERTY);
 
-        //context.setBindingId(.);
+        QName portTypeQName = null;
         if (provider != null) {
             if (Proxy.isProxyClass(provider.getClass())) {
+
                 EndpointIFInvocationHandler invocationHandler = (EndpointIFInvocationHandler) Proxy.getInvocationHandler(provider);
                 EndpointIFContext endpointContext = invocationHandler.getEndpointContext();
+                portTypeQName = invocationHandler.getWSDLPortTypeQName();
 
                 messageContext.put(MessageContext.WSDL_SERVICE, invocationHandler.getServiceQName());
                 messageContext.put(MessageContext.WSDL_PORT, endpointContext.getPortName());
 
                 context.setBindingId(endpointContext.getBindingID().toString());
-                //this should already be in messageContext String endpointAddress = endpointContext.getEndpointAddress();
+
+                RuntimeContext rtContext = (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
+                if (rtContext != null) {   //should never be
+                    RuntimeModel model = rtContext.getModel();
+                    JavaMethod javaMethod = model.getJavaMethod(messageInfo.getMethod());
+                    String opname = javaMethod.getOperationName();
+                    if (portTypeQName != null) {
+                        String tns = portTypeQName.getNamespaceURI();
+                        messageContext.put(MessageContext.WSDL_OPERATION, new QName(tns,opname));
+                    }
+                }
+                //set handlerContext
+                rtContext.setHandlerContext(context);
             }
-        }
-        RuntimeContext rtContext = (RuntimeContext) messageInfo.getMetaData(BindingProviderProperties.JAXWS_RUNTIME_CONTEXT);
-        if (rtContext != null) {
-            RuntimeModel model = rtContext.getModel();
-            JavaMethod javaMethod = model.getJavaMethod(messageInfo.getMethod());
-            String opname = javaMethod.getOperationName();
-            if (javaMethod != null) {
-                QName name = model.getQNameForJM(javaMethod);
-                String tns = name.getNamespaceURI();
-                messageContext.put(MessageContext.WSDL_OPERATION, new QName(tns,opname));
-            }
-            //set handlerContext
-            rtContext.setHandlerContext(context);
         }
 
         //now get value for ContentNegotiation

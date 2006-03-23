@@ -349,7 +349,7 @@ public class WSServiceDelegate extends ServiceDelegate {
         //apply parameter bindings
         RuntimeModel model = eif.getRuntimeContext().getModel();
         if (portQName != null) {
-            Binding binding = serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(), portQName);
+            Binding binding = getWSDLBinding(portQName);
             eif.setBindingID(binding.getBindingId());
             model.applyParameterBinding(binding);
         }
@@ -368,6 +368,10 @@ public class WSServiceDelegate extends ServiceDelegate {
             }, handler);
         handler.setProxy((Object) proxy);
         return (BindingProvider) proxy;
+    }
+
+    Binding getWSDLBinding(QName portQName) {
+        return serviceContext.getWsdlContext().getWsdlBinding(serviceContext.getServiceName(), portQName);
     }
 
     private EndpointIFContext completeEndpointIFContext(ServiceContext serviceContext, QName portQName, Class portInterface) {
