@@ -245,9 +245,9 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
                         WebServiceProvider.class);
                 String tns = wsProvider.targetNamespace();
                 String local = wsProvider.portName();
-                if (local.length() > 0) {
-                    setPortName(new QName(tns, local));
-                }
+                // create QName("", ""), if the above values are default
+                setPortName(new QName(tns, local));
+                
             } else {
                 setPortName(RuntimeModeler.getPortName(getImplementorClass(),
                     getServiceName().getNamespaceURI()));

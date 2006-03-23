@@ -100,8 +100,9 @@ public class RuntimeEndpointInfoParser {
                 String wsdlFile = processWsdlLocation(attrs, rei);
                 rei.setWSDLFileName(wsdlFile);
                 rei.setServiceName(getQNameAttribute(attrs, ATTR_SERVICE));
+                rei.doServiceNameProcessing();
                 rei.setPortName(getQNameAttribute(attrs, ATTR_PORT));
-
+                rei.doPortNameProcessing();
                 //set Binding using DD, annotation, or default one(in that order)
                 String bindingId = getAttribute(attrs, ATTR_BINDING);
                 Binding binding = BindingImpl.getBinding(bindingId,
@@ -221,11 +222,6 @@ public class RuntimeEndpointInfoParser {
         }
 
         QName serviceName = rei.getServiceName();
-        if (serviceName == null) {
-            serviceName =
-                RuntimeModeler.getServiceName(rei.getImplementorClass());
-        }
-        
         HandlerAnnotationInfo handlerInfo =
             HandlerChainsModel.parseHandlerFile(reader, classLoader,
             serviceName, rei.getPortName(),
