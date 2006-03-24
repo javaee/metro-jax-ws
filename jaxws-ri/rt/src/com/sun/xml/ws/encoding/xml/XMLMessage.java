@@ -179,11 +179,13 @@ public final class XMLMessage {
     
 
     public XMLMessage(Source source, Map<String, DataHandler> attachments, boolean useFastInfoset) {
-        if (source == null)
-            this.noData = true;
-        this.data = (attachments == null) 
-            ? new XMLSource(source)
-            : new XMLDataSource(source, attachments, useFastInfoset);
+        if (attachments == null) {
+            if (source == null)
+                this.noData = true;
+            this.data = new XMLSource(source);
+        } else {
+            this.data = new XMLDataSource(source, attachments, useFastInfoset);
+        }
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
         headers.addHeader("Content-Type",
@@ -191,9 +193,13 @@ public final class XMLMessage {
     }
     
     public XMLMessage(Object object, JAXBContext context, Map<String, DataHandler> attachments, boolean useFastInfoset) {
-        if (object == null)
-            this.noData = true;
-        this.data = new XMLJaxb(object, context);
+        if (attachments == null) {
+            if (object == null)
+                this.noData = true;
+            this.data = new XMLJaxb(object, context);
+        } else {
+            this.data = new XMLDataSource(JAXBTypeSerializer.serialize(object, context), attachments, useFastInfoset);
+        }
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
         headers.addHeader("Content-Type",
@@ -222,11 +228,11 @@ public final class XMLMessage {
     }
 
     public Source getSource() {
-        return data.getSource();
+        return hasNoData() ? null : data.getSource();
     }
 
     public DataSource getDataSource() {
-        return data.getDataSource();
+        return hasNoData() ? null : data.getDataSource();
     }
 
     /**
@@ -326,7 +332,7 @@ public final class XMLMessage {
     }
 
     public Source getPayload() {
-        return data.getPayload();
+        return hasNoData() ? null : data.getPayload();
     }
     
     public Map<String, DataHandler> getAttachments() {
@@ -392,11 +398,15 @@ public final class XMLMessage {
             };
         }
         
-        public XMLDataSource(final Source source, final Map<String, DataHandler> atts, boolean isFastInfoset) {
+        public XMLDataSource(Source source, final Map<String, DataHandler> atts, boolean isFastInfoset) {
             this.isFastInfoset = isFastInfoset;
             multipart = new MimeMultipart("related");
             multipart.getContentType().setParameter("type", "text/xml");
 
+            // Creates Primary part
+            if (source == null) {
+                source = new StreamSource((InputStream)null);
+            }
             ByteOutputStream bos = new ByteOutputStream();
             new XMLSource(source).writeTo(bos, isFastInfoset);
             InternetHeaders headers = new InternetHeaders();
