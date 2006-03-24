@@ -154,8 +154,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             checkForInvalidImplAnnotation(d, SOAPBinding.class);
             if (webService.name().length() > 0)
                 annotationError(pos, ANNOTATION_ELEMENT_ERROR,"name");
-            if (webService.wsdlLocation().length() > 0)
-                annotationError(pos, ANNOTATION_ELEMENT_ERROR, "wsdlLocation");
             endpointReferencesInterface = true;
             verifyImplAnnotations(d);
             inspectEndpointInterface(endpointInterfaceName, d);
