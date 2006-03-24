@@ -167,7 +167,7 @@ public class WSDLPatcher {
             if (query == null) {
                 return null;
             }
-            String abs = baseAddress+targetEndpoint.getUrlPattern()+"?"+query;
+            String abs = baseAddress+targetEndpoint.getUrlPatternWithoutStar()+"?"+query;
             return abs;
         } catch(MalformedURLException mue) {
             return null;
@@ -289,7 +289,7 @@ public class WSDLPatcher {
                     && docServiceName != null && docPortName != null
                     && serviceName.equals(docServiceName)
                     && docPortName.equals(portName)) {
-                return baseAddress+endpointInfo.getUrlPattern();
+                return baseAddress+endpointInfo.getUrlPatternWithoutStar();
             }
         }
         return null;

@@ -420,6 +420,15 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
     public String getUrlPattern() {
         return urlPattern;
     }
+    
+    public String getUrlPatternWithoutStar() {
+        if (urlPattern.endsWith("/*")) {
+            return urlPattern.substring(0, urlPattern.length() - 2);
+        } else {
+            return urlPattern;
+        }
+    }
+
 
     public void setUrlPattern(String s) {
         urlPattern = s;
