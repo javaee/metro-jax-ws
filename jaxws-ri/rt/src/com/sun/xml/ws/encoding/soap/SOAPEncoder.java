@@ -574,7 +574,10 @@ public abstract class SOAPEncoder implements Encoder, InternalSoapEncoder {
                 } else if (value instanceof SOAPFaultInfo) {
                     writeFault((SOAPFaultInfo) value, messageInfo, writer);
                 } else if (value instanceof JAXBBeanInfo) {
-                    writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
+
+                       if (((JAXBBeanInfo)value).getBean() != null && (DispatchContext)
+                    messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null)
+                       writeJAXBBeanInfo((JAXBBeanInfo) value, messageInfo, writer);
                 } else if (value == null && (DispatchContext)
                     messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) != null) {
                     //bug 6400596  -Dispatch and null invocation parameter payload mode

@@ -20,6 +20,10 @@
 
 package com.sun.xml.ws.client.dispatch;
 
+import static javax.xml.ws.Service.Mode.MESSAGE;
+import static javax.xml.ws.Service.Mode.*;
+import static javax.xml.ws.Service.*;
+
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
 import com.sun.xml.ws.client.*;
@@ -370,7 +374,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         if (msg != null) {
             MessageFactory factory = null;
-            if (((msg instanceof Source) && _mode == Service.Mode.MESSAGE) &&
+            if (((msg instanceof Source) && _mode == MESSAGE) &&
                 (!_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING)))
             {
                 try {
@@ -394,7 +398,7 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
         } else {
             //todo - needs to be a get request
             if (!isValidNullParameter(msg))
-                throw new WebServiceException("No Message to Send to web service");
+                throw new WebServiceException("This is not a valid request ");
         }
         setMessageStruct(messageStruct, msg);
         return messageStruct;
@@ -527,38 +531,38 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
 
         if (_clazz != null) {
             if (_clazz.isAssignableFrom(Source.class)) {
-                if (mode == Service.Mode.PAYLOAD) {
+                if (mode == PAYLOAD) {
                     if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
                         context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_SOURCE_PAYLOAD);
                     else
                         context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_PAYLOAD);
-                } else if (mode == Service.Mode.MESSAGE) {
+                } else if (mode == MESSAGE) {
                     if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
                         context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_SOURCE_MESSAGE);
                     else
                         context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOURCE_MESSAGE);
                 }
             } else if (_clazz.isAssignableFrom(SOAPMessage.class)) {
-                if (mode == Service.Mode.PAYLOAD) {
+                if (mode == PAYLOAD) {
                     throw new WebServiceException("SOAPMessages must be Service.Mode.MESSAGE. ");
-                } else if (mode == Service.Mode.MESSAGE)
+                } else if (mode == MESSAGE)
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.SOAPMESSAGE_MESSAGE);
             } else if (_clazz.isAssignableFrom(DataSource.class)) {
-                if (mode == Service.Mode.PAYLOAD)
+                if (mode == PAYLOAD)
                     throw new WebServiceException("Can not have a Datahandler class with mode PAYLOAD");
                     //context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_DATASOURCE_PAYLOAD);
-                else if (mode == Service.Mode.MESSAGE)
+                else if (mode == MESSAGE)
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_DATASOURCE_MESSAGE);
             } else {
                 context.setProperty(DispatchContext.DISPATCH_MESSAGE_CLASS, _clazz);
             }
         } else if (hasJAXBContext(obj, null)) {
-            if (mode == Service.Mode.PAYLOAD) {
+            if (mode == PAYLOAD) {
                 if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_JAXB_PAYLOAD);
                 else
                     context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.JAXB_PAYLOAD);
-            } else if (mode == Service.Mode.MESSAGE) {
+            } else if (mode == MESSAGE) {
                 if (_getBindingId().toString().equals(HTTPBinding.HTTP_BINDING))
                     throw new WebServiceException(" Can not have a JAXB object with mode MESSAGE");
                     //context.setProperty(DispatchContext.DISPATCH_MESSAGE, DispatchContext.MessageType.HTTP_JAXB_MESSAGE);
@@ -587,25 +591,96 @@ public class DispatchBase implements BindingProvider, InternalBindingProvider,
     }
 
     private boolean isValidNullParameter(Object msg) {
-
-        String bindingId = _getBindingId().toString();
-        if (_mode == Service.Mode.MESSAGE && !HTTPBinding.HTTP_BINDING.equals(bindingId) && msg == null)
-            throw new WebServiceException("Service.Mode.MESSAGE and SOAPBinding is not allowed with a null invocation parameter");
+        if (msg != null)
+            return true;
 
         String method = (String) getRequestContext().get(MessageContext.HTTP_REQUEST_METHOD);
-        if (method != null) {
-            if (method == null || "POST".equalsIgnoreCase(method) &&
-                HTTPBinding.HTTP_BINDING.equals(bindingId) && msg == null)
-                throw new WebServiceException("Service.Mode.MESSAGE or Service.Mode.PAYLOAD and HTTPBinding with requestMethod POST not allowed with a null invocation parameter");
+        if (method == null)
+            method = "POST";
 
-            boolean isValid = ("GET".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method)) ? true : false &&
-                (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
-                    HTTPBinding.HTTP_BINDING.equals(bindingId)) ? true : false;
-            if (!isValid)
-                throw new WebServiceException("HTTPBinding is not allowed with a null invocation parameter unless HTTP Request method is GET, DELETE, or HEAD");
+        String bindingId = _getBindingId().toString();
+        if (("POST".equalsIgnoreCase(method))) {
+
+            if (SOAPBinding.SOAP11HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP11HTTP_MTOM_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                        throw new WebServiceException("SOAP 1.1 Binding with null invocation parameter is not allowed with HTTP POST Request Method in MESSAGE mode");
+                        //return false;
+                    case PAYLOAD:
+                        return true;
+                }
+            } else if (HTTPBinding.HTTP_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                    case PAYLOAD:
+                        throw new WebServiceException("XML/HTTP Binding with null invocation parameter is not allowed with HTTP POST Request Method in MESSAGE or PAYLOAD mode");
+                }
+
+            } else if (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP12HTTP_MTOM_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                        throw new WebServiceException("SOAP 1.2 Binding with null invocation parameter is not allowed with HTTP POST Request Method in MESSAGE mode");
+                        //return false;
+                    case PAYLOAD:
+                        return true;
+                }
+            }
+
+        } else if ("GET".equalsIgnoreCase(method)) {
+
+            if (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP12HTTP_MTOM_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                        //return false;
+                        throw new WebServiceException("SOAP 1.2 Binding with null invocation parameter is not allowed with HTTP GET Request Method in MESAGE mode.");
+                    case PAYLOAD:
+                        return true;
+                }
+            } else if (SOAPBinding.SOAP11HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP11HTTP_MTOM_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                    case PAYLOAD:
+                        throw new WebServiceException("SOAP 1.1 Binding with null invocation parameter is not allowed with HTTP GET Request Method in either PAYLOAD or MESAGE mode.");
+                        //return false;
+                }
+            } else if (HTTPBinding.HTTP_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                    case PAYLOAD:
+                        return true;
+                }
+            }
+
+        } else if ("DELETE".equalsIgnoreCase(method) || "HEAD".equalsIgnoreCase(method)) {
+
+            if (HTTPBinding.HTTP_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                    case PAYLOAD:
+                        return true;
+                }
+            } else if (SOAPBinding.SOAP12HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP12HTTP_MTOM_BINDING.equals(bindingId)) {
+                switch (_mode) {
+                    case MESSAGE:
+                        //return false;
+                        throw new WebServiceException("SOAP 1.2 Binding with null invocation parameter is not allowed with HTTP " + method + " Request Method in MESAGE mode.");
+                    case PAYLOAD:
+                        return true;
+                }
+            } else if (SOAPBinding.SOAP11HTTP_BINDING.equals(bindingId) ||
+                SOAPBinding.SOAP11HTTP_MTOM_BINDING.equals(bindingId)) {
+                //return false;
+                throw new WebServiceException("SOAP 1.1 Binding with null invocation parameter is not allowed with HTTP " + method + " Request Method in either PAYLOAD or MESAGE mode.");
+                //return false;
+            }
+
         }
-
-        return true;
+        return false;
     }
 
     private static ClientTransportFactory defaultTransportFactory = null;
