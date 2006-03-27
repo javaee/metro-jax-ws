@@ -1253,7 +1253,7 @@ public class RuntimeModeler {
      * @return  <code>wsdl:portType@name</code>, null if it could not find the annotated class.
      */
     public static QName getPortTypeName(Class implOrSeiClass){
-        assert(implOrSeiClass == null);
+        assert(implOrSeiClass != null);
         Class clazz = implOrSeiClass;
         WebService webService = null;
         if (!implOrSeiClass.isAnnotationPresent(javax.jws.WebService.class))

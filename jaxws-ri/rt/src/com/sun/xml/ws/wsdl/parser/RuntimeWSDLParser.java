@@ -111,12 +111,14 @@ public class RuntimeWSDLParser {
                 } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
                     String sn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
                     QName sqn = new QName(docInfo.getTargetNamespace(), sn);
-                    if(!serviceName.equals(sqn))
-                        continue;
-                    parser.parseService(reader);
-                    docInfo.setService(parser.wsdlDoc.getService(sqn));
-                    if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
-                        XMLStreamReaderUtil.next(reader);
+                    if(serviceName.equals(sqn)) {
+                        parser.parseService(reader);
+                        docInfo.setService(parser.wsdlDoc.getService(sqn));
+                        if(reader.getEventType() != XMLStreamConstants.END_ELEMENT)
+                            XMLStreamReaderUtil.next(reader);
+                    } else {
+                        XMLStreamReaderUtil.skipElement(reader);
+                    }
                 } else{
                     XMLStreamReaderUtil.skipElement(reader);
                 }
