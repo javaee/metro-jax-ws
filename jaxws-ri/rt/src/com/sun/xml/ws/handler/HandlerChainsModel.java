@@ -64,8 +64,11 @@ public class HandlerChainsModel {
     public void setId(java.lang.String value) {
         this.id = value;
     }
-    
+    /**
+     * reader should be on <handler-chains> element
+     */
     public static HandlerChainsModel parseHandlerConfigFile(Class annotatedClass, XMLStreamReader reader) {
+        ensureProperName(reader,QNAME_HANDLER_CHAINS);
         HandlerChainsModel handlerModel = new HandlerChainsModel(annotatedClass);
         List<HandlerChainType> hChains = handlerModel.getHandlerChain();
         XMLStreamReaderUtil.nextElementContent(reader);
@@ -158,7 +161,7 @@ public class HandlerChainsModel {
     public static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
             ClassLoader classLoader, QName serviceName, QName portName,
             String bindingId) {
-        
+        ensureProperName(reader,QNAME_HANDLER_CHAINS);
         HandlerAnnotationInfo info = new HandlerAnnotationInfo();
         
         XMLStreamReaderUtil.nextElementContent(reader);
