@@ -36,6 +36,7 @@ import com.sun.xml.ws.handler.HandlerChainCaller.Direction;
 import com.sun.xml.ws.handler.HandlerChainCaller.RequestOrResponse;
 import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.handler.XMLHandlerContext;
+import com.sun.xml.ws.handler.HandlerContext;
 import com.sun.xml.ws.model.JavaMethod;
 import com.sun.xml.ws.pept.ept.EPTFactory;
 import com.sun.xml.ws.pept.ept.MessageInfo;
@@ -50,6 +51,7 @@ import com.sun.xml.ws.util.XMLConnectionUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
 import javax.activation.DataSource;
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeader;
 import javax.xml.soap.MimeHeaders;
@@ -249,7 +251,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
 
         String bindingId = getBindingId(messageInfo);
-        //Todo: not soap -fast currently disabled
+
         if (bindingId.equals(SOAPBinding.SOAP12HTTP_BINDING)) {
             xm.getMimeHeaders().addHeader(ACCEPT_PROPERTY,
                 contentNegotiation != "none" ? SOAP12_XML_FI_ACCEPT_VALUE : SOAP12_XML_ACCEPT_VALUE);
@@ -355,15 +357,20 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
         if (caller.hasHandlers()) {
             callHandlersOnResponse(handlerContext);
-            updateResponseContext(messageInfo, handlerContext);
             xm = handlerContext.getXMLMessage();
         }
 
         //set messageInfo response with appropriate result
-        setResponse(messageInfo, xm);
+        //at same time sets ResponseContext
+        setResponse(messageInfo, xm, handlerContext);
     }
 
-    private void setResponse(MessageInfo messageInfo, XMLMessage xm) {
+    private void setResponse(MessageInfo messageInfo, XMLMessage xm, HandlerContext handlerContext) {
+
+        Map<String, DataHandler> attachments = getAttachments(handlerContext, xm);
+
+        updateResponseContext(messageInfo, (XMLHandlerContext)handlerContext, attachments);
+
         DispatchContext dispatchContext = (DispatchContext) messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT);
         DispatchContext.MessageType msgtype = (DispatchContext.MessageType) dispatchContext.getProperty(DispatchContext.DISPATCH_MESSAGE);
         if (msgtype != null) {
@@ -390,6 +397,29 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             //tbd just assume source for now
             messageInfo.setResponse(xm.getSource());
         }
+
+    }
+
+    private Map<String, DataHandler> getAttachments(HandlerContext handlerContext, XMLMessage xm) {
+        //are there attachments on the MessageContext properties ? Handlers
+        Map<String, DataHandler> attmc = (Map<String, DataHandler>)
+            handlerContext.getMessageContext().get(MessageContext.INBOUND_MESSAGE_ATTACHMENTS);
+        //can we get it from XMLMessage as well?
+        Map<String, DataHandler> attxm = xm.getAttachments();
+
+        Map<String, DataHandler> attachments = new HashMap<String, DataHandler>();
+        if (attxm != null && attmc != null) {
+            attachments.putAll(attxm);
+            attachments.putAll(attmc);
+        } else if (attxm != null) {
+            attachments.putAll(attxm);
+        } else if (attmc != null)
+            attachments.putAll(attmc);
+        else {
+            attachments = null; //gc it
+            return null;
+        }
+        return attachments;
     }
 
     private XMLHandlerContext getInboundHandlerContext(
@@ -557,7 +587,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     }
 
     protected void updateResponseContext(MessageInfo messageInfo,
-                                         XMLHandlerContext context) {
+                                         XMLHandlerContext context, Map<String, DataHandler> attachments) {
 
         MessageContext messageContext = context.getMessageContext();
         BindingProvider provider = (BindingProvider)
@@ -581,6 +611,10 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         }
         responseContext.put(MessageContext.HTTP_RESPONSE_HEADERS, responseHeaders);
         responseContext.put(MessageContext.HTTP_RESPONSE_CODE, context.getXMLMessage().getStatus());
+
+        //attachments for ResponseContext
+        if (attachments != null)
+           responseContext.put(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, attachments);
 
         ResponseImpl asyncResponse = (ResponseImpl) messageInfo.getMetaData(
             JAXWS_CLIENT_ASYNC_RESPONSE_CONTEXT);
@@ -861,6 +895,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         Class clazz = (Class)
             messageInfo.getMetaData(DispatchContext.DISPATCH_MESSAGE_CLASS);
 
+        Map<String, Object> context = (Map<String, Object>)
+            messageInfo.getMetaData(BindingProviderProperties.JAXWS_CONTEXT_PROPERTY);
+        Map<String, DataHandler> attachments = (context != null) ?
+            (Map<String, DataHandler> )context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS) : null;
+
         // Determine if Fast Infoset is to be used
         boolean useFastInfoset =
             (messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY) == "optimistic");
@@ -868,11 +907,11 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         Object object = messageInfo.getData()[0];
 
         if (clazz != null && clazz.isAssignableFrom(Source.class)) {
-            xm = new XMLMessage((Source) object, useFastInfoset);
+            xm = new XMLMessage((Source) object, attachments, useFastInfoset);
         } else if (clazz != null && clazz.isAssignableFrom(DataSource.class)) {
             xm = new XMLMessage((DataSource) object, useFastInfoset);
         } else {
-            xm = new XMLMessage(object, getJAXBContext(messageInfo), useFastInfoset);
+            xm = new XMLMessage(object, getJAXBContext(messageInfo), attachments, useFastInfoset);
         }
 
         return xm;
