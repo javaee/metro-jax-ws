@@ -327,7 +327,7 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
         // Process @HandlerChain, if handler-chain is not set via Deployment 
         // Descriptor
         if (getBinding().getHandlerChain() == null) {
-                String bindingId = ((BindingImpl) binding).getBindingId();
+                String bindingId = ((BindingImpl) binding).getActualBindingId();
                 HandlerAnnotationInfo chainInfo =
                     HandlerAnnotationProcessor.buildHandlerInfo(
                     implementorClass, getServiceName(),

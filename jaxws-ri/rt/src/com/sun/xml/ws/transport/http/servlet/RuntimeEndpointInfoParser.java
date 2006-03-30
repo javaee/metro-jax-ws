@@ -225,7 +225,7 @@ public class RuntimeEndpointInfoParser {
         HandlerAnnotationInfo handlerInfo =
             HandlerChainsModel.parseHandlerFile(reader, classLoader,
             serviceName, rei.getPortName(),
-            ((BindingImpl) rei.getBinding()).getBindingId());
+            ((BindingImpl) rei.getBinding()).getActualBindingId());
 
         rei.getBinding().setHandlerChain(handlerInfo.getHandlers());
         if (rei.getBinding() instanceof SOAPBinding) {
