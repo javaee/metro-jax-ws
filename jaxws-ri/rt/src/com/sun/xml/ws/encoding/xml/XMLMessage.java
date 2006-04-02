@@ -37,11 +37,13 @@ import com.sun.xml.ws.util.FastInfosetUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.activation.DataHandler;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
@@ -73,6 +75,10 @@ public final class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
 
+    /*
+     * TODO: remove haeaders
+     * @deprecated
+     */
     protected MimeHeaders headers;
 
     private final DataRepresentation data;
@@ -83,8 +89,6 @@ public final class XMLMessage {
      */
     protected boolean useFastInfoset = false;
 
-    protected boolean noData = false;
-
     /**
      * Construct a message from an input stream. When messages are
      * received, there's two parts -- the transport headers and the
@@ -93,73 +97,65 @@ public final class XMLMessage {
     public XMLMessage(MimeHeaders headers, final InputStream in) {
         this.headers = headers;
         String ct = null;
-
         if (headers != null) {
             ct = getContentType(headers);
         }
-
+        this.data = getData(ct, in);
+    }
+    
+    private DataRepresentation getData(final String ct, final InputStream in) {
+        DataRepresentation data;
         try {
-            // RESTful request
-            if (ct == null || ct.equals("application/x-www-form-urlencoded")) {
-                data = new XMLSource(null, false);
-                return;
+            if (ct != null) {
+                ContentType contentType = new ContentType(ct);
+                int contentTypeId = identifyContentType(contentType);
+                boolean isFastInfoset = (contentTypeId & FI_ENCODED_FLAG) > 0;
+                if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
+                    data = new XMLMultiPart(ct, in, isFastInfoset);
+                } else if ((contentTypeId & PLAIN_XML_FLAG) != 0 || (contentTypeId & FI_ENCODED_FLAG) != 0) {
+                    data = new XMLSource(in, isFastInfoset);
+                } else {
+                    data = new UnknownContent(ct, in);
+                }
+            } else {
+                data = new NullContent();
             }
-                    
-            ContentType contentType = new ContentType(ct);
-
-            // In the absence of type attribute we assume it to be text/xml.
-            // That would mean we're easy on accepting the message and
-            // generate the correct thing
-            if (contentType.getParameter("type") == null) {
-                contentType.setParameter("type", "text/xml");
-            }
-
-            int contentTypeId = identifyContentType(contentType);
-            boolean isFastInfoset = (contentTypeId & FI_ENCODED_FLAG) > 0;
-
-            if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
-                data = new XMLSource(in, isFastInfoset);
-            }
-            else if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                data = new XMLDataSource(ct, in, isFastInfoset);
-            }
-            else {
-                throw new XMLMessageException("xml.unknown.Content-Type");
-            }
-        } catch (Exception ex) {
-            throw new XMLMessageException("xml.cannot.internalize.message",ex);
+        } catch(Exception ex) {
+            throw new WebServiceException(ex);
         }
+        return data;
     }
 
+
     public XMLMessage(Source source, boolean useFastInfoset) {
-        if (source == null)
-            this.noData = true;
-        this.data = new XMLSource(source);
-        this.headers = new MimeHeaders();
+        this.data = (source == null) ? new NullContent() : new XMLSource(source);
         this.useFastInfoset = useFastInfoset;
+        
+        this.headers = new MimeHeaders();
         headers.addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
 
     public XMLMessage(Exception err, boolean useFastInfoset) {
         this.data = new XMLErr(err);
-        this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
+        
+        this.headers = new MimeHeaders();
         headers.addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
 
-    public XMLMessage(DataSource dataSource, boolean useFastInfoset) {
-        if (dataSource == null){
-            this.noData = true;
+    public XMLMessage(DataSource ds, boolean useFastInfoset) {
+        this.useFastInfoset = useFastInfoset;
+        try {
+            this.data = (ds == null) ? new NullContent() : getData(ds.getContentType(), ds.getInputStream());
+        } catch(IOException ioe) {
+            throw new WebServiceException(ioe);
         }
 
-        String contentType = (dataSource != null) ? dataSource.getContentType() : null;
+        String contentType = (ds != null) ? ds.getContentType() : null;
         contentType =  (contentType == null) ? contentType = "text/xml": contentType;
-        this.data = new XMLDataSource(dataSource,
-            contentType.indexOf("application/fastinfoset") > 0);
         this.headers = new MimeHeaders();
-        this.useFastInfoset = useFastInfoset;
         headers.addHeader("Content-Type",
             !useFastInfoset ? contentType
                 : contentType.replaceFirst("text/xml", "application/fastinfoset"));
@@ -167,12 +163,10 @@ public final class XMLMessage {
     }
 
     public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
-        if (object == null)
-            this.noData = true;
-
-        this.data = new XMLJaxb(object, context);
-        this.headers = new MimeHeaders();
+        this.data = (object == null) ? new NullContent() : new XMLJaxb(object, context);
         this.useFastInfoset = useFastInfoset;
+        
+        this.headers = new MimeHeaders();
         headers.addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
@@ -180,11 +174,13 @@ public final class XMLMessage {
 
     public XMLMessage(Source source, Map<String, DataHandler> attachments, boolean useFastInfoset) {
         if (attachments == null) {
-            if (source == null)
-                this.noData = true;
-            this.data = new XMLSource(source);
+            this.data = (source == null) ? new NullContent() : new XMLSource(source);
         } else {
-            this.data = new XMLDataSource(source, attachments, useFastInfoset);
+            if (source == null) {
+                this.data = new UnknownContent(attachments);
+            } else {
+                this.data = new XMLMultiPart(source, attachments, useFastInfoset);
+            }
         }
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
@@ -194,11 +190,13 @@ public final class XMLMessage {
     
     public XMLMessage(Object object, JAXBContext context, Map<String, DataHandler> attachments, boolean useFastInfoset) {
         if (attachments == null) {
-            if (object == null)
-                this.noData = true;
-            this.data = new XMLJaxb(object, context);
+            this.data = (object == null) ? new NullContent() : new XMLJaxb(object, context);
         } else {
-            this.data = new XMLDataSource(JAXBTypeSerializer.serialize(object, context), attachments, useFastInfoset);
+            if (object == null) {
+                this.data = new UnknownContent(attachments);
+            } else {
+                this.data = new XMLMultiPart(JAXBTypeSerializer.serialize(object, context), attachments, useFastInfoset);
+            }
         }
         this.headers = new MimeHeaders();
         this.useFastInfoset = useFastInfoset;
@@ -213,12 +211,7 @@ public final class XMLMessage {
         return data.isFastInfoset();
     }
 
-     /**
-     * Returns true if the underlying encoding of this message is FI.
-     */
-    public boolean hasNoData() {
-        return this.noData;
-    }
+    
     /**
      * Returns true if the sender of this message accepts FI. Slow, but
      * should only be called once.
@@ -228,52 +221,43 @@ public final class XMLMessage {
     }
 
     public Source getSource() {
-        return hasNoData() ? null : data.getSource();
+        return data.getSource();
     }
 
     public DataSource getDataSource() {
-        return hasNoData() ? null : data.getDataSource();
+        return data.getDataSource();
     }
 
     /**
      * Verify a contentType.
      *
-     * @return PLAIN_XML_CODE for plain XML and MIME_MULTIPART_CODE for MIME multipart
+     * @return
+     * MIME_MULTIPART_FLAG | PLAIN_XML_FLAG
+     * MIME_MULTIPART_FLAG | FI_ENCODED_FLAG;
+     * PLAIN_XML_FLAG
+     * FI_ENCODED_FLAG
+     *
      */
     private static int identifyContentType(ContentType contentType) {
-
         String primary = contentType.getPrimaryType();
         String sub = contentType.getSubType();
 
-        if (primary.equalsIgnoreCase("multipart")) {
-            if (sub.equalsIgnoreCase("related")) {
-                String type = contentType.getParameter("type");
+        if (primary.equalsIgnoreCase("multipart") && sub.equalsIgnoreCase("related")) {
+            String type = contentType.getParameter("type");
+            if (type != null) {
                 if (isXMLType(type)) {
-                    return MIME_MULTIPART_FLAG;
-                }
-                else if (isFastInfosetType(type)) {
+                    return MIME_MULTIPART_FLAG | PLAIN_XML_FLAG;
+                } else if (isFastInfosetType(type)) {
                     return MIME_MULTIPART_FLAG | FI_ENCODED_FLAG;
                 }
-                else {
-                    throw new XMLMessageException(
-                            "xml.content-type.mustbe.multipart");
-                }
             }
-            else {
-                throw new XMLMessageException("xml.invalid.content-type",
-                        new Object[] { primary+"/"+sub } );
-            }
-        }
-        else if (isXMLType(primary, sub)) {
+            return 0;
+        } else if (isXMLType(primary, sub)) {
             return PLAIN_XML_FLAG;
+        } else if (isFastInfosetType(primary, sub)) {
+            return FI_ENCODED_FLAG;
         }
-        else if (isFastInfosetType(primary, sub)) {
-            return PLAIN_XML_FLAG | FI_ENCODED_FLAG;
-        }
-        else {
-            throw new XMLMessageException("xml.invalid.content-type",
-                    new Object[] { primary+"/"+sub } );
-        }
+        return 0;
     }
 
     protected static boolean isXMLType(String primary, String sub) {
@@ -302,37 +286,16 @@ public final class XMLMessage {
         return (values == null) ? null : values[0];
     }
 
-    /*
-     * Get the complete ContentType value along with optional parameters.
-     */
-    public String getContentType() {
-        return getContentType(this.headers);
-    }
-
-    public void setContentType(String type) {
-        headers.setHeader("Content-Type", type);
-    }
-
-//    private ContentType ContentType() {
-//        try {
-//            return new ContentType(getContentType());
-//        } catch (ParseException e) {
-//            throw new XMLMessageException("xml.Content-Type.parse.err",
-//                    new LocalizableExceptionAdapter(e));
-//        }
-//    }
-
     public int getStatus() {
         return data.getStatus();
     }
 
     public void writeTo(OutputStream out) throws IOException {
-        if (!hasNoData())
-            data.writeTo(out,useFastInfoset);
+        data.writeTo(out,useFastInfoset);
     }
 
     public Source getPayload() {
-        return hasNoData() ? null : data.getPayload();
+        return data.getPayload();
     }
     
     public Map<String, DataHandler> getAttachments() {
@@ -349,16 +312,39 @@ public final class XMLMessage {
      * Defines operations available regardless of the actual in-memory data representation.
      */
     private static abstract class DataRepresentation {
+        /**
+         * Can be called multiple times. Typically from XMLLogicalMessageImpl
+         */
         abstract Source getPayload();
+        
+        /**
+         * Should be called only once. Once this is called, don't use this object anymore
+         */
         abstract void writeTo(OutputStream out,boolean useFastInfoset) throws IOException;
         /**
          * Returns true whenever the underlying representation of this message
          * is a Fast Infoset stream.
          */
         abstract boolean isFastInfoset();
+        
+        /**
+         * Should be called only once. Once this is called, don't use this object anymore
+         */
         abstract Source getSource();
+        
+        /**
+         * Should be called only once. Once this is called, don't use this object anymore
+         */
         abstract DataSource getDataSource();
+        
+        /**
+         * Should be called only once. Once this is called, don't use this object anymore
+         */
         abstract Map<String, DataHandler> getAttachments();
+        
+        /**
+         * Should contain Content-Type for this message.
+         */
         abstract MimeHeaders getMimeHeaders();
         int getStatus() {
             return WSConnection.OK;
@@ -367,17 +353,18 @@ public final class XMLMessage {
     
 
     /**
-     * Data represented as a multi-part MIME message.
+     * Data represented as a multi-part MIME message. It also has XML as
+     * root part
      *
      * This class parses {@link MimeMultipart} lazily.
      */
-    private static final class XMLDataSource extends DataRepresentation {
+    private static final class XMLMultiPart extends DataRepresentation {
         private DataSource dataSource;
         private MimeMultipart multipart;
         private XMLSource xmlSource;
         private boolean isFastInfoset;
 
-        public XMLDataSource(final String contentType, final InputStream is, boolean isFastInfoset) {
+        public XMLMultiPart(final String contentType, final InputStream is, boolean isFastInfoset) {
             this.isFastInfoset = isFastInfoset;
             dataSource = new DataSource() {
                 public InputStream getInputStream() {
@@ -398,15 +385,12 @@ public final class XMLMessage {
             };
         }
         
-        public XMLDataSource(Source source, final Map<String, DataHandler> atts, boolean isFastInfoset) {
+        public XMLMultiPart(Source source, final Map<String, DataHandler> atts, boolean isFastInfoset) {
             this.isFastInfoset = isFastInfoset;
             multipart = new MimeMultipart("related");
             multipart.getContentType().setParameter("type", "text/xml");
 
             // Creates Primary part
-            if (source == null) {
-                source = new StreamSource((InputStream)null);
-            }
             ByteOutputStream bos = new ByteOutputStream();
             new XMLSource(source).writeTo(bos, isFastInfoset);
             InternetHeaders headers = new InternetHeaders();
@@ -422,7 +406,7 @@ public final class XMLMessage {
             }
         }
 
-        public XMLDataSource(DataSource dataSource, boolean isFastInfoset) {
+        public XMLMultiPart(DataSource dataSource, boolean isFastInfoset) {
             this.dataSource = dataSource;
             this.isFastInfoset = isFastInfoset;
         }
@@ -470,6 +454,7 @@ public final class XMLMessage {
 
         private MimeBodyPart getRootPart() {
             try {
+                convertToMultipart();
                 ContentType contentType = multipart.getContentType();
                 String startParam = contentType.getParameter("start");
                 MimeBodyPart sourcePart = (startParam == null)
@@ -695,8 +680,44 @@ public final class XMLMessage {
         }
 
         DataSource getDataSource() {
-            return null;
-            //throw new UnsupportedOperationException();
+            return new DataSource() {
+                public InputStream getInputStream() {
+                    try {
+                        InputStream is = null;
+                        if (source instanceof StreamSource) {
+                            is = ((StreamSource)source).getInputStream();
+                        } else if (source.getClass() == FastInfosetReflection.fiFastInfosetSource) {
+                            is = FastInfosetReflection.FastInfosetSource_getInputStream(source);
+                        }
+                        if (is != null) {
+                            return is;
+                        }
+                        // Copy source to result respecting desired encoding
+                        ByteArrayBuffer bab = new ByteArrayBuffer();
+                        Transformer transformer = XmlUtil.newTransformer();
+                        transformer.transform(source, isFastInfoset() ?
+                            FastInfosetReflection.FastInfosetResult_new(bab)
+                            : new StreamResult(bab));
+                        bab.close();
+                        return bab.newInputStream();
+                    } catch(Exception e) {
+                        throw new WebServiceException(e);
+                    }
+                }
+
+                public OutputStream getOutputStream() {
+                    return null;
+                }
+
+                public String getContentType() {
+                    return isFastInfoset() ? "application/fastinfoset" : "text/xml";
+                }
+
+                public String getName() {
+                    return "";
+                }
+            };
+
         }
 
         /*
@@ -720,8 +741,6 @@ public final class XMLMessage {
                     is = FastInfosetReflection.FastInfosetSource_getInputStream(source);
                 }
 
-                assert is != null;
-
                 if (is != null && is instanceof ByteInputStream) {
                     ByteInputStream bis = (ByteInputStream)is;
                                   // Reset the stream
@@ -738,13 +757,17 @@ public final class XMLMessage {
                 // Copy source to result respecting desired encoding
                 ByteArrayBuffer bab = new ByteArrayBuffer();
                 Transformer transformer = XmlUtil.newTransformer();
+                // Adding this to work with empty source. Is it JAXP bug ?
+                Properties oprops = new Properties();
+                oprops.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                transformer.setOutputProperties(oprops);
                 transformer.transform(source, isFastInfoset ?
                     FastInfosetReflection.FastInfosetResult_new(bab)
                     : new StreamResult(bab));
                 bab.close();
 
                 // Set internal source
-                InputStream bis = bab.newInputStream();
+                InputStream bis = (bab.size() == 0) ? null : bab.newInputStream();
                 source = isFastInfoset ?
                     FastInfosetReflection.FastInfosetSource_new(bis)
                     : new StreamSource(bis);
@@ -801,12 +824,29 @@ public final class XMLMessage {
         }
 
         public Source getSource() {
-            return JAXBTypeSerializer.serialize(
-                object, jaxbContext);
+            return JAXBTypeSerializer.serialize(object, jaxbContext);
         }
 
         DataSource getDataSource() {
-            throw new UnsupportedOperationException();
+            return new DataSource() {
+                public InputStream getInputStream() {
+                    ByteOutputStream bos = new ByteOutputStream();
+                    JAXBTypeSerializer.serialize(object, bos, jaxbContext);
+                    return bos.newInputStream();
+                }
+
+                public OutputStream getOutputStream() {
+                    return null;
+                }
+
+                public String getContentType() {
+                    return isFastInfoset() ? "application/fastinfoset" : "text/xml";
+                }
+
+                public String getName() {
+                    return "";
+                }
+            };
         }
 
         /*
@@ -831,6 +871,117 @@ public final class XMLMessage {
 
     }
 
+    
+    /**
+     * Don't know about this content. It's conent-type is NOT the XML types
+     * we recognize(text/xml, application/xml, multipart/related;text/xml etc).
+     *
+     * This could be used to represent image/jpeg etc
+     */
+    public static class UnknownContent extends DataRepresentation {
+        private final String ct;
+        private final InputStream in;
+        private final MimeMultipart multipart;
+
+        public UnknownContent(String ct, InputStream in) {
+            this.ct = ct;
+            this.in = in;
+            this.multipart = null;
+        }
+        
+        public UnknownContent(Map<String, DataHandler> atts) {
+            this.in = null;
+            multipart = new MimeMultipart("mixed");
+            for(Map.Entry<String, DataHandler> e : atts.entrySet()) {
+                MimeBodyPart part = new MimeBodyPart();
+                part.setDataHandler(e.getValue());
+                multipart.addBodyPart(part);
+            }
+            this.ct = multipart.getContentType().toString();
+        }
+
+        public void writeTo(OutputStream out, boolean useFastInfoset) {
+            try {
+                if (multipart != null) {
+                    multipart.writeTo(out);
+                }
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) != -1) {
+                    out.write(buf, 0, len);
+                }
+            } catch (Exception ex) {
+                throw new WebServiceException(ex);
+            }
+        }
+
+        boolean isFastInfoset() {
+            return false;
+        }
+        
+        /**
+         * NO XML content so return null
+         */
+        public Source getSource() {
+            return null;
+        }
+
+        DataSource getDataSource() {
+            return new DataSource() {
+                public InputStream getInputStream() {
+                    if (multipart != null) {
+                        try {
+                            ByteOutputStream bos = new ByteOutputStream();
+                            multipart.writeTo(bos);
+                            return bos.newInputStream();
+                        } catch(Exception ioe) {
+                            throw new WebServiceException(ioe);
+                        }
+                    }
+                    return in;
+                }
+
+                public OutputStream getOutputStream() {
+                    return null;
+                }
+
+                public String getContentType() {
+                    assert ct != null;
+                    return ct;
+                }
+
+                public String getName() {
+                    return "";
+                }
+            };
+        }
+
+        /**
+         * NO XML content so return null
+         */
+        public Source getPayload() {
+            return null;
+        }
+        
+        /**
+         * JAXWS doesn't know about this conent. So we treate the whole content
+         * as one payload.
+         */
+        public Map<String, DataHandler> getAttachments() {
+            return null;
+        }
+
+        MimeHeaders getMimeHeaders() {
+            MimeHeaders headers = new MimeHeaders();
+            headers.addHeader("Content-Type", ct);
+            return headers;
+        }
+
+    }
+    
+    /**
+     * Represents HTTPException or anyother exception
+     */
     private static final class XMLErr extends DataRepresentation {
         private final Exception err;
 
@@ -855,8 +1006,7 @@ public final class XMLMessage {
 
             if (useFastInfoset) {
                 FastInfosetUtil.transcodeXMLStringToFI(msg, out);
-            }
-            else {
+            } else {
                 out.write(msg.getBytes());
             }
         }
@@ -870,7 +1020,7 @@ public final class XMLMessage {
         }
 
         DataSource getDataSource() {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         @Override
@@ -886,6 +1036,41 @@ public final class XMLMessage {
             headers.addHeader("Content-Type",
                 isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;
+        }
+    }
+    
+    
+    /**
+     * There is no content to write.
+     */
+    private static final class NullContent extends DataRepresentation {
+
+        public Source getPayload() {
+            return null;
+        }
+        
+        public Map<String, DataHandler> getAttachments() {
+            return null;
+        }
+
+        public void writeTo(OutputStream out, boolean useFastInfoset) throws IOException {
+            // Nothing to do
+        }
+
+        boolean isFastInfoset() {
+            return false;
+        }
+
+        Source getSource() {
+            return null;
+        }
+
+        DataSource getDataSource() {
+            return null;
+        }
+
+        MimeHeaders getMimeHeaders() {
+            return new MimeHeaders();
         }
     }
 }

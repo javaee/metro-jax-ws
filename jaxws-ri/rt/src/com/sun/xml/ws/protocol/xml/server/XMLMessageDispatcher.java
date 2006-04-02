@@ -54,6 +54,7 @@ import com.sun.xml.ws.server.*;
 import com.sun.xml.ws.spi.runtime.SystemHandlerDelegate;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import com.sun.xml.ws.util.XMLConnectionUtil;
+import javax.xml.ws.handler.MessageContext.Scope;
 
 import static com.sun.xml.ws.client.BindingProviderProperties.CONTENT_NEGOTIATION_PROPERTY;
 
@@ -181,23 +182,21 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
             XMLMessage xmlMessage = new XMLMessage(e, useFastInfoset);
             context.setXMLMessage(xmlMessage);
         }
-        // Set attachments for Provider<Source>
+        // Create a new XMLMessage from existing message and OUTBOUND attachments property
         MessageContext msgCtxt = context.getMessageContext();
         Map<String, DataHandler> atts = (Map<String, DataHandler>)msgCtxt.get(
                 MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
         if (atts != null) {
-            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
-            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
-            ProviderModel model = endpointInfo.getProviderModel();
-            boolean isSource = model.isSource();
-            if (isSource) {
-                XMLMessage xmlMessage = context.getXMLMessage();
-                xmlMessage = new XMLMessage(xmlMessage.getSource(), atts,
-                        xmlMessage.isFastInfoset());
-                context.setXMLMessage(xmlMessage);
+            XMLMessage xmlMessage = context.getXMLMessage();
+            Map<String, DataHandler> allAtts = xmlMessage.getAttachments();
+            if (allAtts != null) {
+                allAtts.putAll(atts);
             } else {
-                logger.warning("MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS is ignored for Provider<DataSource>");
+                allAtts = atts;
             }
+            xmlMessage = new XMLMessage(xmlMessage.getSource(), allAtts,
+                    xmlMessage.isFastInfoset());
+            context.setXMLMessage(xmlMessage);
         }
         return context.getXMLMessage();
     }
@@ -266,7 +265,7 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
 
 
 
-    /*
+    /**
      * Calls inbound handlers. It also calls outbound handlers incase flow is
      * reversed. If the handler throws a ProtocolException, SOAP message is
      * already set in the context. Otherwise, it creates InternalMessage,
@@ -286,6 +285,18 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
                 RequestOrResponse.REQUEST, context, responseExpected);
         }
         return skipEndpoint;
+    }
+    
+    /**
+     * Use this to find out if handlers are there in the execution path or not
+     *
+     * @return true if there are handlers in execution path
+     *         falst otherwise
+     */
+    private boolean hasHandlers(MessageInfo messageInfo) {
+        HandlerChainCaller handlerCaller =
+            getCallerFromMessageInfo(messageInfo);
+        return (handlerCaller != null && handlerCaller.hasHandlers()) ? true : false;
     }
 
     private HandlerChainCaller getCallerFromMessageInfo(MessageInfo info) {
@@ -372,6 +383,47 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
         RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
         return endpointInfo.getBinding().getSystemHandlerDelegate();
     }
+    
+    /**
+     * This breaks the XMLMessage into source and attachments. A new XMLMessage
+     * is created with source and is set in XMLHandlerContext. The attachments
+     * are set in MessageContext as INBOUND attachments.
+     */
+    private void setInboundAttachments(MessageInfo messageInfo, XMLHandlerContext context) {
+        if (hasHandlers(messageInfo)) {
+            XMLMessage xmlMessage = context.getXMLMessage();
+            Map<String, DataHandler> atts = xmlMessage.getAttachments();
+            if (atts != null) {
+                MessageContext msgCtxt = context.getMessageContext();
+                msgCtxt.put(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, atts);
+                msgCtxt.setScope(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, MessageContext.Scope.APPLICATION);
+                xmlMessage = new XMLMessage(xmlMessage.getSource(), xmlMessage.isFastInfoset());
+                context.setXMLMessage(xmlMessage);
+            }
+        }
+    }
+    
+    /**
+     * This creates a new XMLMessage from existing source and inbound attachments.
+     * inbound attachements cannot be there if there are no handlers.
+     * If the endpoint is Provider<Source>, it doesn't create a new message.
+     */
+    private void processInboundAttachments(MessageInfo messageInfo, XMLHandlerContext context) {
+        if (hasHandlers(messageInfo)) {
+            RuntimeContext rtCtxt = MessageInfoUtil.getRuntimeContext(messageInfo);
+            RuntimeEndpointInfo endpointInfo = rtCtxt.getRuntimeEndpointInfo();
+            ProviderModel model = endpointInfo.getProviderModel();
+            boolean isSource = model.isSource();
+            if (!isSource) {
+                XMLMessage xmlMessage = context.getXMLMessage();
+                MessageContext msgCtxt = context.getMessageContext();
+                Map<String, DataHandler> atts = (Map<String, DataHandler>)
+                    msgCtxt.get(MessageContext.INBOUND_MESSAGE_ATTACHMENTS);
+                xmlMessage = new XMLMessage(xmlMessage.getSource(), atts, xmlMessage.isFastInfoset());
+                context.setXMLMessage(xmlMessage);
+            }
+        }
+    }
 
     /**
      * Invokes request handler chain, endpoint and response handler chain.
@@ -397,11 +449,16 @@ public abstract class XMLMessageDispatcher implements MessageDispatcher {
         public void invoke() throws Exception {
             boolean skipEndpoint = false;
 
+            // Sets INBOUND_MESSAGE_ATTACHMENTS in MessageContext
+            setInboundAttachments(messageInfo, context);
             // Call inbound handlers. It also calls outbound handlers incase of
             // reversal of flow.
             skipEndpoint = callHandlersOnRequest(messageInfo, context, true);
 
             if (!skipEndpoint) {
+                // new XMLMessage is created using INBOUND_MESSAGE_ATTACHMENTS
+                // in MessageContext
+                processInboundAttachments(messageInfo, context);
                 toMessageInfo(messageInfo, context);
                 if (!isFailure(messageInfo)) {
                     if (shd != null) {
