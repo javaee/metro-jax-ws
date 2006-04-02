@@ -454,7 +454,8 @@ public class WSServletDelegate {
                 ) {
                 RuntimeEndpointInfo candidate =
                     (RuntimeEndpointInfo) iter.next();
-                if (path.startsWith(getValidPathForEndpoint(candidate))) {
+                String noSlashStar = getValidPathForEndpoint(candidate);
+                if (path.equals(noSlashStar) || path.startsWith(noSlashStar+"/") || path.startsWith(noSlashStar+"?")) {
                     result = candidate;
                     break;
                 }
