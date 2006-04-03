@@ -329,6 +329,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         EPTFactory contactInfo = messageInfo.getEPTFactory();
 
         XMLMessage xm = getXMLMessage(messageInfo);
+
         // Content negotiation logic
         String contentNegotiation = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
         // If XML request
@@ -353,7 +354,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
         XMLHandlerContext handlerContext =
             getInboundHandlerContext(messageInfo, xm);
-
+       
         HandlerChainCaller caller = getHandlerChainCaller(messageInfo);
         if (caller.hasHandlers()) {
             callHandlersOnResponse(handlerContext);
@@ -387,15 +388,13 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                 case HTTP_DATASOURCE_MESSAGE:
                     if (xm.getDataSource() != null)
                         messageInfo.setResponse(xm.getDataSource());
-                    else if (xm.getSource() != null)
-                        messageInfo.setResponse(xm.getSource());
                     break;
                 default:
                     throw new WebServiceException("Unknown invocation return object ");
             }
         } else {
             //tbd just assume source for now
-            messageInfo.setResponse(xm.getSource());
+            throw new WebServiceException("Unknown invocation return object");
         }
 
     }
@@ -589,6 +588,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
     protected void updateResponseContext(MessageInfo messageInfo,
                                          XMLHandlerContext context, Map<String, DataHandler> attachments) {
 
+
         MessageContext messageContext = context.getMessageContext();
         BindingProvider provider = (BindingProvider)
             messageContext.get(JAXWS_CLIENT_HANDLE_PROPERTY);
@@ -601,7 +601,15 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             }
         }
 
-        Map responseHeaders = new HashMap();
+        //let's update status code
+        MessageContext mc =  context.getMessageContext();
+        WSConnection con = messageInfo.getConnection();
+        Map<String, List<String>> headers = con.getHeaders();
+
+        responseContext.put(MessageContext.HTTP_RESPONSE_HEADERS, headers);
+        responseContext.put(MessageContext.HTTP_RESPONSE_CODE, con.getStatus());
+
+       /* Map responseHeaders = new HashMap();
         for (Iterator iter =
             context.getXMLMessage().getMimeHeaders().getAllHeaders();
              iter.hasNext();
@@ -611,7 +619,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         }
         responseContext.put(MessageContext.HTTP_RESPONSE_HEADERS, responseHeaders);
         responseContext.put(MessageContext.HTTP_RESPONSE_CODE, context.getXMLMessage().getStatus());
-
+        */
         //attachments for ResponseContext
         if (attachments != null)
            responseContext.put(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, attachments);
