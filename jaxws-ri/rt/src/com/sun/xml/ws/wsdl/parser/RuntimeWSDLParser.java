@@ -24,6 +24,7 @@ import com.sun.xml.ws.server.DocInfo;
 import com.sun.xml.ws.server.DocInfo.DOC_TYPE;
 import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.TidyXMLStreamReader;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -34,7 +35,11 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.Closeable;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +143,25 @@ public class RuntimeWSDLParser {
      * to parse a WSDL file.
      */
     private static XMLStreamReader createReader(InputSource source) {
-        return XMLStreamReaderFactory.createFreshXMLStreamReader(source,true);
+        // Char stream available?
+        if (source.getCharacterStream() != null) {
+            Reader reader = source.getCharacterStream();
+            return new TidyXMLStreamReader(XMLStreamReaderFactory.createFreshXMLStreamReader(source.getSystemId(), reader), reader);
+        }
+
+        // Byte stream available?
+        if (source.getByteStream() != null) {
+            InputStream stream = source.getByteStream();
+            return new TidyXMLStreamReader(XMLStreamReaderFactory.createFreshXMLStreamReader(source.getSystemId(), stream), stream);
+        }
+
+        // Otherwise, open URI
+        try {
+            InputStream stream = new URL(source.getSystemId()).openStream();
+            return new TidyXMLStreamReader(XMLStreamReaderFactory.createFreshXMLStreamReader(source.getSystemId(), stream), stream);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     private void parseWSDL(URL wsdlLoc) throws XMLStreamException, IOException, SAXException {

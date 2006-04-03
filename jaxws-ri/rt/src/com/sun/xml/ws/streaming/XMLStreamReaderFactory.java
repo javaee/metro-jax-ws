@@ -105,6 +105,40 @@ public class XMLStreamReaderFactory {
             throw new XMLReaderException("stax.cantCreate",e);
         }
     }
+
+    /**
+     * This factory method would be used for example when caller wants to close the stream.
+     */
+    public static XMLStreamReader createFreshXMLStreamReader(String systemId, InputStream stream) {
+        try {
+            synchronized (xmlInputFactory) {
+                // Otherwise, open URI
+                return xmlInputFactory.createXMLStreamReader(systemId,
+                    stream);
+            }
+        }
+        catch (Exception e) {
+            throw new XMLReaderException("stax.cantCreate",e);
+        }
+    }
+
+    /**
+     * This factory method would be used for example when caller wants to close the stream.
+     */
+    public static XMLStreamReader createFreshXMLStreamReader(String systemId, Reader reader) {
+        try {
+            synchronized (xmlInputFactory) {
+                // Otherwise, open URI
+                return xmlInputFactory.createXMLStreamReader(systemId,
+                    reader);
+            }
+        }
+        catch (Exception e) {
+            throw new XMLReaderException("stax.cantCreate",e);
+        }
+    }
+
+
     
     /**
      * Returns a StAX parser from an InputStream.
