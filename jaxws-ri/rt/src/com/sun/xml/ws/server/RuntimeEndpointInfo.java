@@ -358,6 +358,7 @@ public class RuntimeEndpointInfo implements com.sun.xml.ws.spi.runtime.RuntimeEn
         BindingImpl bindingImpl = (BindingImpl)getBinding();
         String bindingId = bindingImpl.getActualBindingId();
         if (!bindingId.equals(SOAPBinding.SOAP11HTTP_BINDING) &&
+            !bindingId.equals(SOAPBinding.SOAP11HTTP_MTOM_BINDING) &&
             !bindingId.equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING)) {
             throw new ServerRtException("can.not.generate.wsdl", bindingId);
         }

@@ -50,12 +50,16 @@ import com.sun.xml.ws.util.VersionUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
+import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.binding.soap.SOAPBindingImpl;
+
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.Holder;
+import javax.xml.ws.soap.SOAPBinding;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -376,15 +380,16 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                     value = value.substring(1);
                     index = value.indexOf('/');
                     if (index == -1) {
-                        protocol = value; //.toLowerCase();
+                        protocol = value; 
                         transport = HTTP;
                     } else {
-                        protocol = value.substring(0, index);//.toLowerCase();
+                        protocol = value.substring(0, index);
                         transport = value.substring(index + 1);
                     }
                     if (!isValidProtocol(protocol)) {
                         onError(getMessage("wsgen.invalid.protocol", protocol, VALID_PROTOCOLS));
                     }
+                    protocolSet = true;
                     if (!isValidTransport(transport)) {
                         onError(getMessage("wsgen.invalid.transport", transport, VALID_TRANSPORTS));
                     }               
@@ -454,6 +459,28 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
             onError(getMessage("wsgen.class.must.be.implementation.class", className));
             return false;
         }
+        if (genWsdl) {
+            BindingImpl binding = (BindingImpl)BindingImpl.getBinding(null, clazz, null, false);
+            if (!(binding instanceof SOAPBinding)) {
+                onError(getMessage("wsgen.cannot.gen.wsdl.for.non.soap.binding", 
+                        new Object[] {className, binding.getBindingId()})); 
+                return false;
+            }
+            SOAPBindingImpl soapBinding = (SOAPBindingImpl)binding;
+            if ((soapBinding.getActualBindingId().equals(SOAPBinding.SOAP12HTTP_BINDING) ||
+                soapBinding.getActualBindingId().equals(SOAPBinding.SOAP12HTTP_MTOM_BINDING)) &&
+                    !(protocol.equals(X_SOAP12) && extensions)) {
+                onError(getMessage("wsgen.cannot.gen.wsdl.for.soap12.binding", 
+                        new Object[] {className, binding.getBindingId()}));                                
+                return false;
+            }
+            if (soapBinding.getActualBindingId().equals(SOAPBindingImpl.X_SOAP12HTTP_BINDING) &&
+                !extensions) {                
+                onError(getMessage("wsgen.cannot.gen.wsdl.for.xsoap12.binding.wo.extention", 
+                        new Object[] {className, binding.getBindingId()}));                                
+                return false;
+            }
+        }
         return true;
     }
     
@@ -481,7 +508,6 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     
     
     static public boolean isValidProtocol(String protocol) {
-        System.out.println("protocol: "+protocol);
         return (protocol.equalsIgnoreCase(SOAP11) ||   
                 protocol.equalsIgnoreCase(X_SOAP12));
     }
@@ -592,11 +618,10 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
                 environment.error(getMessage("wsgen.class.not.found", endpoint));
             }
             String bindingID = getBindingID(protocol);
-            if (bindingID == null) {
-                BindingType bindingType = endpointClass.getAnnotation(BindingType.class);
-                if (bindingType != null && 
-                    bindingType.value().length()>0)
-                    bindingID = bindingType.value();
+            if (!protocolSet) {
+                BindingImpl binding = (BindingImpl)BindingImpl.getBinding(null, 
+                                                    endpointClass, null, false);
+                bindingID = binding.getBindingId();
             }
             com.sun.xml.ws.modeler.RuntimeModeler rtModeler = 
                     new com.sun.xml.ws.modeler.RuntimeModeler(endpointClass, serviceName, bindingID);
@@ -914,6 +939,7 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
     protected Set<String> bindingFiles = new HashSet<String>();
     protected boolean genWsdl = false;
     protected String protocol = SOAP11;
+    protected boolean protocolSet = false;
     protected String transport = HTTP;
     protected static final String SOAP11 = "soap1.1";
     protected static final String X_SOAP12 = "Xsoap1.2";
