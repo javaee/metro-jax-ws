@@ -151,11 +151,11 @@ File</h4>
 <p>The following shows a <code>web.xml</code> file for a simple <code>HelloWorld</code>
 service. It specifies JAX-WS RI specific listener, servlet classes.
 These classes are
-com.sun.ws.transport.http.servlet.JAXRPCContextListener, and
-com.sun.xml.ws.transport.http.servlet.JAXRPCServlet is servlet<br>
+com.sun.ws.transport.http.servlet.WSServletContextListener, and
+com.sun.xml.ws.transport.http.servlet.WSServlet is servlet<br>
 </p>
 <code></code>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd"&gt;<br><br>&lt;web-app&gt;<br>  &lt;listener&gt;<br>    &lt;listener-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCContextListener&lt;/listener-class&gt;<br>  &lt;/listener&gt;<br>  &lt;servlet&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;servlet-class&gt;com.sun.xml.ws.transport.http.servlet.JAXRPCServlet&lt;/servlet-class&gt;<br>    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;<br>  &lt;/servlet&gt;<br>  &lt;servlet-mapping&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;<br>  &lt;/servlet-mapping&gt;<br>  &lt;session-config&gt;<br>    &lt;session-timeout&gt;60&lt;/session-timeout&gt;<br>  &lt;/session-config&gt;<br>&lt;/web-app&gt;<code></code><br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd"&gt;<br><br>&lt;web-app&gt;<br>  &lt;listener&gt;<br>    &lt;listener-class&gt;com.sun.xml.ws.transport.http.servlet.WSServletContextListener&lt;/listener-class&gt;<br>  &lt;/listener&gt;<br>  &lt;servlet&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;servlet-class&gt;com.sun.xml.ws.transport.http.servlet.WSServlet&lt;/servlet-class&gt;<br>    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;<br>  &lt;/servlet&gt;<br>  &lt;servlet-mapping&gt;<br>    &lt;servlet-name&gt;hello&lt;/servlet-name&gt;<br>    &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;<br>  &lt;/servlet-mapping&gt;<br>  &lt;session-config&gt;<br>    &lt;session-timeout&gt;60&lt;/session-timeout&gt;<br>  &lt;/session-config&gt;<br>&lt;/web-app&gt;<code></code><br></pre>
 <p>Remember these requirements when building a WAR:</p>
 <ul>
   <li>WSDL and auxiliary WSDL, Schema files should be packaged under
