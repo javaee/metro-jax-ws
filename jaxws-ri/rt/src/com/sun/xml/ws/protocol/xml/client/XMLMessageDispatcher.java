@@ -134,6 +134,7 @@ public class XMLMessageDispatcher implements MessageDispatcher {
                     messageInfo, null, xm);
                 updateMessageContext(messageInfo, handlerContext);
                 handlerResult = callHandlersOnRequest(handlerContext);
+                updateXMLMessage(handlerContext);
                 xm = handlerContext.getXMLMessage();
                 if (xm == null) {
                     xm = encoder.toXMLMessage(
@@ -609,17 +610,6 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         responseContext.put(MessageContext.HTTP_RESPONSE_HEADERS, headers);
         responseContext.put(MessageContext.HTTP_RESPONSE_CODE, con.getStatus());
 
-       /* Map responseHeaders = new HashMap();
-        for (Iterator iter =
-            context.getXMLMessage().getMimeHeaders().getAllHeaders();
-             iter.hasNext();
-            ) {
-            MimeHeader header = (MimeHeader) iter.next();
-            responseHeaders.put(header.getName(), header.getValue());
-        }
-        responseContext.put(MessageContext.HTTP_RESPONSE_HEADERS, responseHeaders);
-        responseContext.put(MessageContext.HTTP_RESPONSE_CODE, context.getXMLMessage().getStatus());
-        */
         //attachments for ResponseContext
         if (attachments != null)
            responseContext.put(MessageContext.INBOUND_MESSAGE_ATTACHMENTS, attachments);
@@ -915,15 +905,42 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         Object object = messageInfo.getData()[0];
 
         if (clazz != null && clazz.isAssignableFrom(Source.class)) {
+            //xm = new XMLMessage((Source) object, useFastInfoset);
             xm = new XMLMessage((Source) object, attachments, useFastInfoset);
         } else if (clazz != null && clazz.isAssignableFrom(DataSource.class)) {
             xm = new XMLMessage((DataSource) object, useFastInfoset);
         } else {
             xm = new XMLMessage(object, getJAXBContext(messageInfo), attachments, useFastInfoset);
+            //xm = new XMLMessage(object, getJAXBContext(messageInfo), useFastInfoset);
         }
 
         return xm;
     }
+
+    private XMLMessage updateXMLMessage(XMLHandlerContext context) {
+    // Create a new XMLMessage from existing message and OUTBOUND attachments property
+        MessageContext msgCtxt = context.getMessageContext();
+        Map<String, DataHandler> atts = (Map<String, DataHandler>)msgCtxt.get(
+                MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
+        if (atts != null) {
+            XMLMessage xmlMessage = context.getXMLMessage();
+            if (xmlMessage != null) {
+                Map<String, DataHandler> allAtts = xmlMessage.getAttachments();
+                if (allAtts != null) {
+                    allAtts.putAll(atts);
+                } else {
+                    allAtts = atts;
+                }
+                context.setXMLMessage(new XMLMessage(xmlMessage.getSource(), allAtts,
+                    xmlMessage.isFastInfoset()));
+            } else {
+                //can I make a message w/o src
+            }
+
+        }
+        return context.getXMLMessage();
+    }
+
 
     class DaemonThreadFactory implements ThreadFactory {
         public Thread newThread(Runnable r) {
