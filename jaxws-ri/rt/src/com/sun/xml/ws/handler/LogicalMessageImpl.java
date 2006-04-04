@@ -30,6 +30,8 @@ import com.sun.xml.ws.encoding.soap.internal.BodyBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
 import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import java.util.Iterator;
+import javax.xml.soap.SOAPElement;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
@@ -77,9 +79,17 @@ public class LogicalMessageImpl implements LogicalMessage {
                 if (soapMessage == null) {
                     return null;
                 } else {
-                    Node node = soapMessage.getSOAPBody().getFirstChild();
-                    if (node != null) {
-                        setSource(new DOMSource(node));
+                    Iterator it = soapMessage.getSOAPBody().getChildElements();
+                    SOAPElement elem = null;
+                    while(it.hasNext()) {
+                        Node child = (Node)it.next();
+                        if (child instanceof SOAPElement) {
+                            elem = (SOAPElement)child;
+                            break;
+                        }
+                    }
+                    if (elem != null) {
+                        setSource(new DOMSource(elem));
                     } else {
                         return null;
                     }
