@@ -21,12 +21,14 @@ package com.sun.tools.ws.wsdl.parser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.namespace.QName;
 import javax.xml.namespace.NamespaceContext;
@@ -58,26 +60,30 @@ import com.sun.tools.ws.util.xml.XmlUtil;
  */
 public class Internalizer {
     private Map<String, Document> wsdlDocuments;
+    private Map<String, Document> jaxwsBindings;
     private static final XPathFactory xpf = XPathFactory.newInstance();
     private final XPath xpath = xpf.newXPath();
     private final  LocalizableMessageFactory messageFactory = new LocalizableMessageFactory("com.sun.tools.ws.resources.wsdl");;
     private ProcessorEnvironment env;
-    public  void transform(Set<Element> JAXWSBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
-        if(JAXWSBindings == null)
+    public  void transform(Map<String, Document> jaxwsBindings, Map<String, Document> wsdlDocuments, ProcessorEnvironment env) {
+        if(jaxwsBindings == null)
             return;
         this.env = env;
         this.wsdlDocuments = wsdlDocuments;
+        this.jaxwsBindings = jaxwsBindings;
         Map targetNodes = new HashMap<Element, Node>();
 
         // identify target nodes for all <JAXWS:bindings>
-        for(Element JAXWSBinding : JAXWSBindings) {
+        for(Map.Entry<String, Document> jaxwsBinding : jaxwsBindings.entrySet()) {
+            Element e = jaxwsBinding.getValue().getDocumentElement();
             // initially, the inherited context is itself
-            buildTargetNodeMap( JAXWSBinding, JAXWSBinding, targetNodes );
+            buildTargetNodeMap( e, e, targetNodes );
         }
 
         // then move them to their respective positions.
-        for( Element JAXWSBinding : JAXWSBindings) {
-            move( JAXWSBinding, targetNodes );
+        for(Map.Entry<String, Document> jaxwsBinding : jaxwsBindings.entrySet()) {
+            Element e = jaxwsBinding.getValue().getDocumentElement();
+            move( e, targetNodes );
         }
 
     }
@@ -117,7 +123,28 @@ public class Internalizer {
             doc = wsdlDocuments.get( "file://"+systemId.substring(5) );
         }
 
+        if( doc==null && systemId.startsWith("file:") ) {
+            // on Windows, filenames are case insensitive.
+            // perform case-insensitive search for improved user experience
+            String systemPath = getPath(systemId);
+            for (String key : wsdlDocuments.keySet()) {
+                if(key.startsWith("file:") && getPath(key).equalsIgnoreCase(systemPath)) {
+                    doc = wsdlDocuments.get(key);
+                    break;
+                }
+            }
+        }
         return doc;
+    }
+
+    /**
+     * Strips off the leading 'file:///' portion from an URL.
+     */
+    private String getPath(String key) {
+        key = key.substring(5); // skip 'file:'
+        while(key.length()>0 && key.charAt(0)=='/')
+            key = key.substring(1);
+        return key;
     }
 
     /**
@@ -139,13 +166,12 @@ public class Internalizer {
                 // absolutize this URI.
                 // TODO: use the URI class
                 // TODO: honor xml:base
-                wsdlLocation = new URL(new URL(bindings.getOwnerDocument().getBaseURI()),
+                wsdlLocation = new URL(new URL(getSystemId(bindings.getOwnerDocument())),
                         wsdlLocation ).toExternalForm();
             } catch( MalformedURLException e ) {
                 wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
             }
 
-            //target = wsdlDocuments.get(wsdlLocation);
             target = get(wsdlLocation);
             if(target==null) {
                 error("internalizer.targetNotFound", new Object[]{wsdlLocation});
@@ -470,6 +496,15 @@ public class Internalizer {
 
         return child;
     }
+
+    private String getSystemId(Document doc){
+        for(Map.Entry<String, Document> e:jaxwsBindings.entrySet()){
+            if (e.getValue() == doc)
+                return e.getKey();
+        }
+        return null;
+    }
+
     protected void warn(Localizable msg) {
         env.warn(msg);
     }

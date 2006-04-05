@@ -21,11 +21,10 @@
 package com.sun.tools.ws.processor.config;
 
 
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import com.sun.tools.ws.processor.modeler.Modeler;
@@ -51,12 +50,12 @@ public class WSDLModelInfo extends ModelInfo {
         _location = s;
     }
 
-    public Set<Element> getJAXWSBindings(){
+    public Map<String, Document> getJAXWSBindings(){
         return _jaxwsBindings;
     }
 
-    public void addJAXWSBindings(Element binding){        
-        _jaxwsBindings.add(binding);
+    public void putJAXWSBindings(String systemId, Document binding){
+        _jaxwsBindings.put(systemId, binding);
     }
 
     public Set<InputSource> getJAXBBindings(){
@@ -80,7 +79,7 @@ public class WSDLModelInfo extends ModelInfo {
     private String _location;
 
     //external jaxws:bindings elements
-    private Set<Element> _jaxwsBindings = new HashSet<Element>();
+    private Map<String, Document> _jaxwsBindings = new HashMap<String, Document>();
 
     //we need an array of jaxb:binding elements, they are children of jaxws:bindings
     //and could come from an external customization file or wsdl.

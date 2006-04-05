@@ -337,11 +337,6 @@ public class WSDLParser {
         }
     }
 
-    /**
-     * @param source
-     * @param location
-     * @return
-     */
     private String getAdjustedLocation(InputSource source, String location) {
         return source.getSystemId() == null
             ? location

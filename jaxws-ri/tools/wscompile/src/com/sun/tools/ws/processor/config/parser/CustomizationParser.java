@@ -20,13 +20,11 @@
 package com.sun.tools.ws.processor.config.parser;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.EntityResolver;
 
@@ -75,14 +73,14 @@ public class CustomizationParser extends InputParser {
         //get the jaxws bindingd file and add it to the modelInfo
         Set<String> bindingFiles = (Set<String>)_options.get(ProcessorOptions.BINDING_FILES);
         for(String bindingFile : bindingFiles){
-            addBinding(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(bindingFile)));
+            addBinding(bindingFile);
         }
 
 
         for(InputSource jaxwsBinding : jaxwsBindings){
-            Element root = modelInfoParser.parse(jaxwsBinding);
-            if(root != null){
-                wsdlModelInfo.addJAXWSBindings(root);
+            Document doc = modelInfoParser.parse(jaxwsBinding);
+            if(doc != null){
+                wsdlModelInfo.putJAXWSBindings(jaxwsBinding.getSystemId(), doc);
             }
         }
 
@@ -119,7 +117,8 @@ public class CustomizationParser extends InputParser {
 
     private void addHandlerChainInfo() throws Exception{
         //setup handler chain info
-        for(Element e:wsdlModelInfo.getJAXWSBindings()){
+        for(Map.Entry<String, Document> entry:wsdlModelInfo.getJAXWSBindings().entrySet()){
+            Element e = entry.getValue().getDocumentElement();
             NodeList nl = e.getElementsByTagNameNS(
                 "http://java.sun.com/xml/ns/javaee", "handler-chains");            
             if(nl.getLength()== 0)
