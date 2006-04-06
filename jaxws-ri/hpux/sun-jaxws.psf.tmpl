@@ -1,0 +1,41 @@
+depot
+	layout_version 1.0
+vendor 
+	tag SUN
+	title SUN Microsystems
+	description "JES"
+end
+
+product
+	tag 		sun-jaxws
+	title		The Java API for XML Web Services
+	description 	"The Java API for XML Web Services 2.0"
+	copyright	"Copyright 2003 Sun Microsystems, Inc.  All rights reserved.
+Use is subject to license terms."
+	revision	@jaxws.version@
+	number		REV=@datestamp@
+	architecture	HP-UX_B.11.11_32/64
+	vendor_tag	SUN
+	machine_type	*
+	os_name 	HP-UX
+	os_release	B.11.11
+	os_version	*
+	is_locatable	true
+	directory	/
+
+	fileset
+		tag		sun-jaxws
+
+		prerequisite	sun-saaj
+		prerequisite	sun-jaxb
+		prerequisite	sun-wscl
+		prerequisite	sun-jaxp
+
+		file -m 0755 -o root -g root @bindir@/wsgen.sh /opt/sun/bin/wsgen
+		file -m 0755 -o root -g root @bindir@/wsimport.sh /opt/sun/bin/wsimport
+		file -m 0644 -o root -g root @libdir@/jaxws-api.jar /opt/sun/share/lib/jaxws-api.jar
+		file -m 0644 -o root -g root @libdir@/jaxws-rt.jar /opt/sun/share/lib/jaxws-rt.jar
+		file -m 0644 -o root -g root @libdir@/jaxws-tools.jar /opt/sun/share/lib/jaxws-tools.jar
+		file -m 0644 -o root -g root @libdir@/jsr181-api.jar /opt/sun/share/lib/jsr181-api.jar
+	end
+end

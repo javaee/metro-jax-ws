@@ -50,6 +50,12 @@
   <!-- The rpm build directory -->
   <property name="rpm.build.dir"    value="${build.home}/rpm/JAXWS"/>
 
+  <!-- The hpux build directory -->
+  <property name="hpux.build.dir"    value="${build.home}/hpux/JAXWS"/>
+
+  <!-- The hpux distribution directory -->
+  <property name="hpux.release.dir"    value="${basedir}/hpux-dist"/>
+
   <!-- The rpm distribution directory -->
   <property name="rpm.release.dir"    value="${basedir}/rpm-dist"/>
 
@@ -296,4 +302,46 @@
 
 
   </target>
+
+
+ <!-- =======================
+       HPUX FILE DISTRIBUTION 
+      ======================= -->
+  <!-- assumes the dist target has been called -->
+	<target name="create.hpux" description="Create JAX-WS HPUX package" >
+
+    <!-- copy template spec file to spec file in build dir and replace variables -->
+    <copy tofile="${hpux.build.dir}/sun-jaxws.psf" file="${basedir}/hpux/sun-jaxws.psf.tmpl" overwrite="yes"/>
+
+    <!-- replace jaxws version -->
+    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${pkg.version}">
+      <replacetoken>@jaxws.version@</replacetoken>
+    </replace>
+
+    <!-- replace date stamp... 1st specify correct format  -->
+    <tstamp>
+      <format property="pkg.datestamp" pattern="yyyy.MM.dd.hh.mm"/>
+    </tstamp>
+    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${pkg.datestamp}">
+      <replacetoken>@datestamp@</replacetoken>
+    </replace>
+
+    <!-- replace bindir, libdir  -->
+    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${basedir}/hpux">
+      <replacetoken>@bindir@</replacetoken>
+    </replace>
+    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${dist20.home}/lib">
+      <replacetoken>@libdir@</replacetoken>
+    </replace>
+
+    <!-- make output directory -->
+    <mkdir dir="${hpux.release.dir}/sun-jaxws"/>
+
+    <!--  -->
+	<exec  executable="/usr/sbin/swpackage" failonerror="true">
+      <arg line="-x follow_symlinks=true -x compression_type=gzip -x compress_cmd=/usr/contrib/bin/gzip -x uncompress_files=false -x compress_files=true -x reinstall_files=true -x package_in_place=false -x target_type=directory -x write_remote_files=true -x run_as_superuser=false -s ${hpux.build.dir}/sun-jaxws.psf @ ${hpux.release.dir}/sun-jaxws"/>
+	 </exec>
+
+   </target>
+
 </project>

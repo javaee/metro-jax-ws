@@ -635,4 +635,12 @@ major-version=${release.impl.version}
     <ant antfile="build-pkg.xml" target="create.zip" inheritrefs="true"/>
   </target>
 
+  <!-- =======================
+       HPUX DISTRIBUTION 
+       ======================= -->
+  <!-- assumes the dist target has been called -->
+  <target name="create.hpux" description="Create HPUX pkg for JAX-WS">
+    <ant antfile="build-pkg.xml" target="create.hpux" inheritrefs="true"/>
+  </target>
+
 </project>
