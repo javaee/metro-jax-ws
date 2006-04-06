@@ -276,7 +276,10 @@ public final class XMLMessage {
     protected static boolean isFastInfosetType(String type) {
         return type.toLowerCase().startsWith("application/fastinfoset");
     }
-
+    
+    /**
+     * Ideally this should be called just before writing the message
+     */
     public MimeHeaders getMimeHeaders() {
         return data.getMimeHeaders();
     }
@@ -363,6 +366,7 @@ public final class XMLMessage {
         private MimeMultipart multipart;
         private XMLSource xmlSource;
         private boolean isFastInfoset;
+        private final MimeHeaders headers = new MimeHeaders();
 
         public XMLMultiPart(final String contentType, final InputStream is, boolean isFastInfoset) {
             this.isFastInfoset = isFastInfoset;
@@ -597,7 +601,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            MimeHeaders headers = new MimeHeaders();
+            headers.removeHeader("Content-Type");
             if (dataSource != null) {
                 headers.addHeader("Content-Type", dataSource.getContentType());
             } else {
@@ -617,6 +621,7 @@ public final class XMLMessage {
 
         private Source source;
         private boolean isFastInfoset;
+        private final MimeHeaders headers = new MimeHeaders();
 
         public XMLSource(InputStream in, boolean isFastInfoset) throws Exception {
             this.source = isFastInfoset ?
@@ -788,7 +793,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            MimeHeaders headers = new MimeHeaders();
+            headers.removeHeader("Content-Type");
             headers.addHeader("Content-Type",
                 isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;               
@@ -800,8 +805,9 @@ public final class XMLMessage {
      * Data represented as a JAXB object.
      */
     public static class XMLJaxb extends DataRepresentation {
-        private Object object;
-        private JAXBContext jaxbContext;
+        private final Object object;
+        private final JAXBContext jaxbContext;
+        private final MimeHeaders headers = new MimeHeaders();
 
         public XMLJaxb(Object object, JAXBContext jaxbContext) {
             this.object = object;
@@ -863,7 +869,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            MimeHeaders headers = new MimeHeaders();
+            headers.removeHeader("Content-Type");
             headers.addHeader("Content-Type",
                 isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;
@@ -882,6 +888,7 @@ public final class XMLMessage {
         private final String ct;
         private final InputStream in;
         private final MimeMultipart multipart;
+        private final MimeHeaders headers = new MimeHeaders();
 
         public UnknownContent(String ct, InputStream in) {
             this.ct = ct;
@@ -972,7 +979,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            MimeHeaders headers = new MimeHeaders();
+            headers.removeHeader("Content-Type");
             headers.addHeader("Content-Type", ct);
             return headers;
         }
@@ -984,6 +991,7 @@ public final class XMLMessage {
      */
     private static final class XMLErr extends DataRepresentation {
         private final Exception err;
+        private final MimeHeaders headers = new MimeHeaders();
 
         XMLErr(Exception err) {
             this.err = err;
@@ -1032,7 +1040,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            MimeHeaders headers = new MimeHeaders();
+            headers.removeHeader("Contnet-Type");
             headers.addHeader("Content-Type",
                 isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;
@@ -1044,6 +1052,7 @@ public final class XMLMessage {
      * There is no content to write.
      */
     private static final class NullContent extends DataRepresentation {
+        private final MimeHeaders headers = new MimeHeaders();
 
         public Source getPayload() {
             return null;
@@ -1070,7 +1079,7 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            return new MimeHeaders();
+            return headers;
         }
     }
 }
