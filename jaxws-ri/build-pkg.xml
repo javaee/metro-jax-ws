@@ -274,18 +274,32 @@
       </fileset>
     </copy>
 
-    <!-- copy jaxws bin files into the right directory structure -->
-    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.sh" overwrite="yes">
+    <copy todir="${zip.build.dir}" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="wsgen.sh"/>
+        <include name="filelist.txt"/>
+        <include name="version"/>
       </fileset>
     </copy>
 
-    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.sh" overwrite="yes">
-      <fileset dir="${basedir}/zip">
-        <include name="wsimport.sh"/>
-      </fileset>
-    </copy>
+    <!-- replace parameters in filelist.txt  -->
+    <replace file="${zip.build.dir}/filelist.txt" value="${pkg.version}">
+      <replacetoken>@jaxws.version@</replacetoken>
+    </replace>
+
+    <!-- replace parameters in version file  -->
+    <replace file="${zip.build.dir}/version" value="${pkg.version}">
+      <replacetoken>@jaxws.version@</replacetoken>
+    </replace>
+    <!-- replace date stamp... 1st specify correct format  -->
+    <tstamp>
+      <format property="pkg.datestamp" pattern="yyyyMMdd"/>
+    </tstamp>
+    <replace file="${zip.build.dir}/version" value="${pkg.datestamp}">
+      <replacetoken>@datestamp@</replacetoken>
+    </replace>
+    <replace file="${zip.build.dir}/version" value="${rpm.release}">
+      <replacetoken>@rpm.release@</replacetoken>
+    </replace>
 
     <!-- copy jaxws specific jar files into the right directory structure -->
     <copy todir="${zip.build.dir}/jaxws/lib" overwrite="yes">
@@ -298,7 +312,7 @@
     </copy>
 
     <!-- make zip file -->
-    <zip destfile="${zip.release.dir}/JAXWS-${pkg.version}.zip" basedir="${zip.build.dir}" whenempty="fail"/>
+    <zip destfile="${zip.release.dir}/jaxws.zip" basedir="${zip.build.dir}" whenempty="fail"/>
 
 
   </target>
