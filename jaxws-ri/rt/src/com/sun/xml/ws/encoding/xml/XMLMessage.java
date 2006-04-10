@@ -75,12 +75,6 @@ public final class XMLMessage {
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
 
-    /*
-     * TODO: remove haeaders
-     * @deprecated
-     */
-    protected MimeHeaders headers;
-
     private final DataRepresentation data;
 
     /**
@@ -95,12 +89,12 @@ public final class XMLMessage {
      * message content in a transport specific stream.
      */
     public XMLMessage(MimeHeaders headers, final InputStream in) {
-        this.headers = headers;
         String ct = null;
         if (headers != null) {
             ct = getContentType(headers);
         }
         this.data = getData(ct, in);
+        // TODO should headers be set on the data?
     }
     
     private DataRepresentation getData(final String ct, final InputStream in) {
@@ -131,8 +125,7 @@ public final class XMLMessage {
         this.data = (source == null) ? new NullContent() : new XMLSource(source);
         this.useFastInfoset = useFastInfoset;
         
-        this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
 
@@ -140,8 +133,7 @@ public final class XMLMessage {
         this.data = new XMLErr(err);
         this.useFastInfoset = useFastInfoset;
         
-        this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
 
@@ -155,8 +147,7 @@ public final class XMLMessage {
 
         String contentType = (ds != null) ? ds.getContentType() : null;
         contentType =  (contentType == null) ? contentType = "text/xml": contentType;
-        this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             !useFastInfoset ? contentType
                 : contentType.replaceFirst("text/xml", "application/fastinfoset"));
 
@@ -166,8 +157,7 @@ public final class XMLMessage {
         this.data = (object == null) ? new NullContent() : new XMLJaxb(object, context);
         this.useFastInfoset = useFastInfoset;
         
-        this.headers = new MimeHeaders();
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
     
@@ -182,9 +172,9 @@ public final class XMLMessage {
                 this.data = new XMLMultiPart(source, attachments, useFastInfoset);
             }
         }
-        this.headers = new MimeHeaders();
+        
         this.useFastInfoset = useFastInfoset;
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
     
@@ -198,9 +188,9 @@ public final class XMLMessage {
                 this.data = new XMLMultiPart(JAXBTypeSerializer.serialize(object, context), attachments, useFastInfoset);
             }
         }
-        this.headers = new MimeHeaders();
+        
         this.useFastInfoset = useFastInfoset;
-        headers.addHeader("Content-Type",
+        this.data.getMimeHeaders().addHeader("Content-Type",
             useFastInfoset ? "application/fastinfoset" : "text/xml");
     }
     
@@ -217,7 +207,7 @@ public final class XMLMessage {
      * should only be called once.
      */
     public boolean acceptFastInfoset() {
-        return FastInfosetUtil.isFastInfosetAccepted(headers.getHeader("Accept"));
+        return FastInfosetUtil.isFastInfosetAccepted(getMimeHeaders().getHeader("Accept"));
     }
 
     public Source getSource() {
@@ -793,9 +783,6 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            headers.removeHeader("Content-Type");
-            headers.addHeader("Content-Type",
-                isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;               
         }
 
@@ -869,9 +856,6 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            headers.removeHeader("Content-Type");
-            headers.addHeader("Content-Type",
-                isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;
         }
 
@@ -1040,9 +1024,6 @@ public final class XMLMessage {
         }
 
         MimeHeaders getMimeHeaders() {
-            headers.removeHeader("Contnet-Type");
-            headers.addHeader("Content-Type",
-                isFastInfoset() ? "application/fastinfoset" : "text/xml");
             return headers;
         }
     }
