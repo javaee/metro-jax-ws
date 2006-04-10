@@ -201,6 +201,12 @@ public final class XMLMessage {
         return data.isFastInfoset();
     }
 
+    /**
+     * Returns true if the FI encoding should be used.
+     */
+    public boolean useFastInfoset() {
+        return useFastInfoset;
+    }
     
     /**
      * Returns true if the sender of this message accepts FI. Slow, but
