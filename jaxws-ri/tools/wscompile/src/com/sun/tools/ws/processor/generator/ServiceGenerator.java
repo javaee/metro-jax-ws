@@ -95,17 +95,6 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
         return new ServiceGenerator(model, config, properties);
     }
 
-    private JType getType(String typeName) throws IOException {
-        JType type = null;
-        try {
-            type = cm.parseType(typeName);
-            return type;
-        } catch (ClassNotFoundException e) {
-            type = cm.ref(typeName);
-        }
-        return type;
-    }    
-    
     /**
      * Generates an expression that evaluates to "new QName(...)"
      */
@@ -129,32 +118,17 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             JDefinedClass cls = getClass(className, ClassType.CLASS);
 
             cls._extends(javax.xml.ws.Service.class);
-            
-            JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, URL.class, "WSDL_LOCATION");
+            String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
+            String wsdlLocationName = serviceFieldName+"_WSDL_LOCATION";
+            JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, URL.class, wsdlLocationName);
             JClass qNameCls = cm.ref(QName.class);
             JInvocation inv;
             inv = JExpr._new(qNameCls);
             inv.arg("namespace");
             inv.arg("localpart");
-//            String serviceFieldName = intf.getSimpleName().toUpperCase();
-            String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
-            JFieldVar serviceField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
 
-            JFieldVar portField;
-            String fieldName;
-            for (Port port: service.getPorts()) {
-                if (port.isProvider()) {
-                    continue;  // No getXYZPort() for porvider based endpoint
-                }                
-                inv = JExpr._new(qNameCls);
-                inv.arg("namespace");
-                inv.arg("localpart");
-//                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();
-                fieldName = JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
-                portField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, fieldName, createQName(port.getName()));
-            }
-            
-            
+            cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
+
             JBlock staticBlock = cls.init();
             URL url = new URL(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation)));
             JVar urlVar = staticBlock.decl(cm.ref(URL.class),"url", JExpr._null());
@@ -181,9 +155,9 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             constructor.param(URL.class, "wsdlLocation");
             constructor.param(QName.class, "serviceName");
             constructor.body().directStatement("super(wsdlLocation, serviceName);");
-            
+
             constructor = cls.constructor(JMod.PUBLIC);
-            constructor.body().directStatement("super(WSDL_LOCATION, "+serviceFieldName+");");
+            constructor.body().directStatement("super("+wsdlLocationName+" ,"+serviceFieldName+");");
             
             //@WebService
             JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
@@ -209,9 +183,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
                 JBlock body = m.body();
                 StringBuffer statement = new StringBuffer("return (");
                 statement.append(retType.name());
-//                fieldName = port.getJavaInterface().getSimpleName().toUpperCase();                
-                fieldName = JAXBRIContext.mangleNameToClassName(port.getName().getLocalPart()).toUpperCase();
-                statement.append(")super.getPort("+fieldName+", ");
+                statement.append(")super.getPort(new QName(\""+port.getName().getNamespaceURI()+"\", \""+ port.getName().getLocalPart()+"\"), ");
                 statement.append(retType.name());
                 statement.append(".class);");
                 body.directStatement(statement.toString());
