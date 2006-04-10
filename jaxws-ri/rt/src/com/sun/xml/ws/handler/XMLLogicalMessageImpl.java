@@ -58,7 +58,7 @@ public class XMLLogicalMessageImpl implements LogicalMessage {
      */
     public void setPayload(Source source) {
         XMLMessage xmlMessage = ctxt.getXMLMessage();
-        xmlMessage = new XMLMessage(source, xmlMessage.getAttachments(), xmlMessage.isFastInfoset());
+        xmlMessage = new XMLMessage(source, xmlMessage.getAttachments(), xmlMessage.useFastInfoset());
         ctxt.setXMLMessage(xmlMessage);
     }
 
@@ -75,7 +75,7 @@ public class XMLLogicalMessageImpl implements LogicalMessage {
      */
     public void setPayload(Object bean, JAXBContext jaxbContext) {
         XMLMessage xmlMessage = ctxt.getXMLMessage();
-        xmlMessage = new XMLMessage(bean, jaxbContext, xmlMessage.getAttachments(), xmlMessage.isFastInfoset());
+        xmlMessage = new XMLMessage(bean, jaxbContext, xmlMessage.getAttachments(), xmlMessage.useFastInfoset());
         ctxt.setXMLMessage(xmlMessage);
     }
 
