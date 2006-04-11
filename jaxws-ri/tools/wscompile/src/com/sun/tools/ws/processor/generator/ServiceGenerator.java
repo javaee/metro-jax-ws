@@ -127,7 +127,6 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             inv.arg("namespace");
             inv.arg("localpart");
 
-            cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, QName.class, serviceFieldName, createQName(service.getName()));
 
             JBlock staticBlock = cls.init();
             URL url = new URL(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation)));
@@ -157,7 +156,7 @@ public class ServiceGenerator extends GeneratorBase implements ProcessorAction {
             constructor.body().directStatement("super(wsdlLocation, serviceName);");
 
             constructor = cls.constructor(JMod.PUBLIC);
-            constructor.body().directStatement("super("+wsdlLocationName+" ,"+serviceFieldName+");");
+            constructor.body().directStatement("super("+wsdlLocationName+", new QName(\""+service.getName().getNamespaceURI()+"\", \""+service.getName().getLocalPart()+"\"));");
             
             //@WebService
             JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
