@@ -35,6 +35,7 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.FastInfosetReflection;
 import com.sun.xml.ws.util.FastInfosetUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import java.io.BufferedInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -97,9 +98,36 @@ public final class XMLMessage {
         // TODO should headers be set on the data?
     }
     
-    private DataRepresentation getData(final String ct, final InputStream in) {
+    /**
+     * Finds if the stream has some content or not
+     *
+     * @return null if there is no data
+     *         else stream to be used
+     */
+    private InputStream hasSomeData(InputStream in) throws IOException {
+        if (in != null) {
+            if (in.available() < 1) {
+                if (!in.markSupported()) {
+                    in = new BufferedInputStream(in);
+                }
+                in.mark(1);
+                if (in.read() != -1) {
+                    in.reset();
+                } else {
+                    in = null;          // No data
+                }
+            }
+        }
+        return in;
+    }
+    
+    private DataRepresentation getData(final String ct, InputStream in) {
         DataRepresentation data;
         try {
+            in = hasSomeData(in);
+            if (in == null) {
+                return new NullContent();
+            } 
             if (ct != null) {
                 ContentType contentType = new ContentType(ct);
                 int contentTypeId = identifyContentType(contentType);
@@ -150,7 +178,6 @@ public final class XMLMessage {
         this.data.getMimeHeaders().addHeader("Content-Type",
             !useFastInfoset ? contentType
                 : contentType.replaceFirst("text/xml", "application/fastinfoset"));
-
     }
 
     public XMLMessage(Object object, JAXBContext context, boolean useFastInfoset) {
