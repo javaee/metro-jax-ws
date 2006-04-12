@@ -82,11 +82,10 @@ public class JAXBModelBuilder {
             schemaCompiler.setErrorListener(consoleErrorReporter);
             schemaCompiler.setEntityResolver(_modelInfo.getEntityResolver());
             int schemaElementCount = 1;
-            String wsdlLocation =((WSDLModelInfo)_modelInfo).getLocation();
-            wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
             for(Iterator iter = elements.iterator(); iter.hasNext();){
                 Element schemaElement = (Element)iter.next();
-                String systemId = new String(wsdlLocation + "#types?schema"+schemaElementCount++);
+                String location = schemaElement.getOwnerDocument().getDocumentURI();
+                String systemId = new String(location + "#types?schema"+schemaElementCount++);
                 schemaCompiler.parseSchema(systemId,schemaElement);
             }
 
