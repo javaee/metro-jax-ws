@@ -355,10 +355,13 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         XMLStreamReaderUtil.verifyReaderState(reader, START_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_STRING);
         XMLStreamReaderUtil.nextContent(reader);
-        String faultstring = null;
+        String faultstring = "";
+        //reader may give more than one char events so coalesc them all.
         if (reader.getEventType() == CHARACTERS) {
-            faultstring = reader.getText();
-            XMLStreamReaderUtil.next(reader);
+            while (reader.getEventType() == CHARACTERS) {
+               faultstring += reader.getText();
+               XMLStreamReaderUtil.next(reader);
+            }
         }
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_STRING);
@@ -384,12 +387,14 @@ public class SOAPXMLDecoder extends SOAPDecoder {
 
             // faultdetail
             if (elementName.equals(SOAPConstants.QNAME_SOAP_FAULT_DETAIL)) {
-                XMLStreamReaderUtil.nextContent(reader);
-                if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) == null)
-                    faultdetail = readFaultDetail(reader, messageInfo);
-                else {
-                    XMLStreamReaderUtil.skipElement(reader);
-                    XMLStreamReaderUtil.next(reader);
+                //skip <detail/>
+                if(XMLStreamReaderUtil.nextContent(reader) == START_ELEMENT){
+                    if (messageInfo.getMetaData(BindingProviderProperties.DISPATCH_CONTEXT) == null)
+                        faultdetail = readFaultDetail(reader, messageInfo);
+                    else {
+                        XMLStreamReaderUtil.skipElement(reader);
+                        XMLStreamReaderUtil.next(reader);
+                    }
                 }
                 // move from </detail> to </Fault>.
                 XMLStreamReaderUtil.nextContent(reader);
