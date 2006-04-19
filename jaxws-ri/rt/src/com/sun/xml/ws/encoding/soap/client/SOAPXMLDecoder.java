@@ -358,10 +358,10 @@ public class SOAPXMLDecoder extends SOAPDecoder {
         String faultstring = "";
         //reader may give more than one char events so coalesc them all.
         if (reader.getEventType() == CHARACTERS) {
-            while (reader.getEventType() == CHARACTERS) {
+            do  {
                faultstring += reader.getText();
                XMLStreamReaderUtil.next(reader);
-            }
+            }while(reader.getEventType() == CHARACTERS);
         }
         XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
         XMLStreamReaderUtil.verifyTag(reader, SOAPConstants.QNAME_SOAP_FAULT_STRING);
