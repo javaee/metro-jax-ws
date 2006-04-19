@@ -100,17 +100,11 @@ public class Definitions extends Entity implements Defining, Extensible {
     }
 
     public void addServiceOveride(Service s) {
-        //  _document.define(s);  //kw used for spi
         _services.add(s);
     }
 
     public void add(Import i) {
-        if (_importedNamespaces.contains(i.getNamespace())) {
-            throw new DuplicateEntityException(i, i.getNamespace());
-        }
-
         _imports.add(i);
-        // Doug 11/17/04
         _importedNamespaces.add(i.getNamespace());
     }
 
