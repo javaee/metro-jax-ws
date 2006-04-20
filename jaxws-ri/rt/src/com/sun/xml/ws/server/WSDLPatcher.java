@@ -90,21 +90,14 @@ public class WSDLPatcher {
         XMLEventWriter writer = null;
         try {
             reader = inputFactory.createXMLEventReader(in);
+            writer = outputFactory.createXMLEventWriter(out, "UTF-8");
             StartElement start = null;
             QName serviceName = null;
             QName portName = null;
             String targetNamespace = null;
             while(reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
-                if (event.isStartDocument()) {
-                    StartDocument sd = (StartDocument)event;
-                    String encoding = sd.encodingSet() 
-                        ? sd.getCharacterEncodingScheme() 
-                        : null;
-                    writer = (encoding != null)
-                        ? outputFactory.createXMLEventWriter(out, encoding)
-                        : outputFactory.createXMLEventWriter(out);
-               } else if (event.isStartElement()) {
+                if (event.isStartElement()) {
                     start = event.asStartElement();
                     QName name = start.getName();                    
                     if (name.equals(SCHEMA_INCLUDE_QNAME)) {
