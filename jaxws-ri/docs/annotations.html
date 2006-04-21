@@ -409,21 +409,43 @@ parameter to a message part or element.</p>
       </td>
       <td bgcolor="#ffffff" width="54%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Thorndale, serif"><font size="3">For RPC
-bindings, this name is the name of the <font
- face="Cumberland, monospace">wsdl:part</font> representing the
-parameter. For DOCUMENT/LITRERAL WRAPPED bindings, this name is the
-local name of the XML element representing this parameter. This
-property is not used for DOCUMENT/LITERAL BARE bindings.</font></font></font></p>
+ color="#000000"><font face="Thorndale, serif"><font size="3">Name of the parameter.
+If the operation is rpc style and
+@WebParam.partName has not been
+specified, this is name of the
+wsdl:part representing the
+parameter.
+@WebMethod.operation
+Name, if the operation is
+document style and the
+parameter style is
+BARE.
+Otherwise, the default is
+20
+If the operation is document style or
+the parameter maps to a header, this
+is the local name of the XML
+element representing the parameter.
+A name MUST be specified if the
+operation is document style, the
+parameter style is BARE, and the
+mode is OUT or INOUT.
+</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="29%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Thorndale, serif"><font size="3">Name of
-the parameter as it appears in the parameter list for DOCUMENT/LITERAL
-WRAPPED operations. For RPC/LITERAL operations, the default value will
-be &#8220;<font face="Cumberland, monospace">argX</font>&#8221; where <font
- face="Cumberland, monospace">X</font> is the parameter positions
-within the parameter list starting at position 0.</font></font></font></p>
+ color="#000000"><font face="Thorndale, serif"><font size="3">@WebMethod.operation
+Name, if the operation is
+document style and the
+parameter style is
+BARE.
+Otherwise, the default is argN, where N
+represents the index of
+the parameter in the
+method signature
+(starting at arg0).
+
+</font></font></font></p>
       </td>
     </tr>
     <tr valign="top">
@@ -433,15 +455,17 @@ within the parameter list starting at position 0.</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="54%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Times, serif"><font size="3">The XML
-namespace of the XML element for the parameter. Only used with <font
- face="Thorndale, serif">DOCUMENT/LITRERAL WRAPPED bindings.</font></font></font></font></p>
+ color="#000000"><font face="Times, serif"><font size="3">The XML namespace for the parameter.
+Only used if the operation is document style or the paramater maps to a header. If the target namespace is set to “”,
+this represents the empty namespace.
+</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="29%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Thorndale, serif"><font size="3">The <font
- face="Cumberland, monospace">targetNamespace</font> for the web
-service.</font></font></font></p>
+ color="#000000"><font face="Thorndale, serif"><font size="3">The empty namespace,
+if the operation is document style, the parameter style is WRAPPED, and the parameter does not map
+to a header.  Otherwise, the default is the targetNamespace for the Web Service.
+</font></font></font></p>
       </td>
     </tr>
     <tr valign="top">
