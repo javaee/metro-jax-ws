@@ -593,15 +593,20 @@ bindings.</font></font></p>
       </td>
       <td bgcolor="#ffffff" width="54%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Times, serif"><font size="3">The XML
-namespace of the return value. Only used with DOCUMENT bindings where
-the return value maps to an XML element.</font></font></font></p>
+ color="#000000"><font face="Times, serif"><font size="3">The XML namespace for the return
+value.
+Only used if the operation is document style or the return value maps to a header.  If the target namespace is set to “”,
+this represents the empty namespace.
+
+</font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="30%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Times, serif"><font size="3">The <font
- face="Cumberland, monospace">targetNamespace</font> for the web
-service.</font></font></font></p>
+ color="#000000"><font face="Times, serif"><font size="3">The empty namespace,
+if the operation is document style, the parameter style is WRAPPED, and the return value does not
+map to a header, Otherwise, the default is the targetNamespace for the Web Service.
+
+</font></font></font></p>
       </td>
     </tr>
     <tr>
