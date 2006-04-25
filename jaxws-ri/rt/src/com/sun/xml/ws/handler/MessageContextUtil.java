@@ -69,6 +69,10 @@ public class MessageContextUtil {
         ctxt.setScope(JAXWSProperties.HTTP_EXCHANGE, Scope.APPLICATION);
     }
     
+    public static HttpExchange getHttpExchange(MessageContext ctxt) {
+        return (HttpExchange)ctxt.get(JAXWSProperties.HTTP_EXCHANGE);
+    }
+    
     public static void setHttpRequestMethod(MessageContext ctxt, String method) {
         ctxt.put(MessageContext.HTTP_REQUEST_METHOD, method);
         ctxt.setScope(MessageContext.HTTP_REQUEST_METHOD, Scope.APPLICATION);

@@ -18,6 +18,8 @@
  * [name of copyright owner]
  */
 package com.sun.xml.ws.transport.http.server;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.xml.ws.handler.MessageContextUtil;
 import java.security.Principal;
 import com.sun.xml.ws.spi.runtime.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
@@ -40,7 +42,12 @@ public class WebServiceContextImpl implements WebServiceContext  {
     }
     
     public Principal getUserPrincipal() {
-        return null;
+        MessageContext ctxt = (MessageContext)msgContext.get();
+        if (ctxt != null) {
+            HttpExchange req = MessageContextUtil.getHttpExchange(ctxt);
+            return (req != null) ? req.getPrincipal() : null;
+        }
+        throw new IllegalStateException();
     }
 
 

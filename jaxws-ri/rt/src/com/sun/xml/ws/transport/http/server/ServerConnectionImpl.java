@@ -149,11 +149,7 @@ public class ServerConnectionImpl extends WSConnectionImpl {
     }
     
     public void close() {
-        try {
-            httpExchange.close();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-        }  
+        httpExchange.close();
     }
     
     private static class NoCloseInputStream extends InputStream {
