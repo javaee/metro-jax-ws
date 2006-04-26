@@ -19,8 +19,14 @@
  */
 package fromwsdl.server;
 
+/*
+ * Normally the web service implementation class would implement the endpointInterface class.
+ * However, it is not necessary as this sample demonstrates.  It is could to implement the
+ * endpointInteface as the compiler will catch errors in the methods signatures of the 
+ * implementation class.
+ */
 @javax.jws.WebService (endpointInterface="fromwsdl.server.AddNumbersPortType")
-public class AddNumbersImpl{
+public class AddNumbersImpl {
     
     /**
      * @param number1
