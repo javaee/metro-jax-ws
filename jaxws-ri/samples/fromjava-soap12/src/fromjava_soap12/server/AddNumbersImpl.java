@@ -20,9 +20,11 @@
 package fromjava_soap12.server;
 
 import javax.jws.WebService;
+import javax.xml.ws.BindingType;
 
 @WebService
-    public class AddNumbersImpl {
+@BindingType(value="http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
+public class AddNumbersImpl {
     
     /**
      * @param number1
