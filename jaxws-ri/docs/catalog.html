@@ -4,7 +4,7 @@
 <META http-equiv=Content-Type content="text/html; charset=ISO-8859-1">
 <META content="DocBook XSL Stylesheets V1.48" name=generator>
 <META 
-content="&#13;&#10;    $Id: catalog.html,v 1.1 2005-11-04 18:07:16 vivekp Exp $&#13;&#10;    " 
+content="&#13;&#10;    $Id: catalog.html,v 1.2 2006-04-26 18:51:02 kohlert Exp $&#13;&#10;    " 
 name=cvsinfo>
 <STYLE type=text/css>PRE.programlisting {
 	BORDER-TOP-WIDTH: 1px; PADDING-RIGHT: 4px; PADDING-LEFT: 4px; BORDER-BOTTOM-WIDTH: 1px; BORDER-BOTTOM-COLOR: #d3d3d3; MARGIN: 0em; BORDER-TOP-COLOR: #d3d3d3; PADDING-TOP: 0px; FONT-FAMILY: monospace; BACKGROUND-COLOR: #d5dee3; whitespace: pre
@@ -20,7 +20,7 @@ DIV.example P {
 <H1 class=title>XML Entity and URI Resolvers</H1>
 <H3 class=subtitle>Version 1.1</H3>
 <P><A 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#blurb.d0e72">Norman 
+href="#blurb.d0e72">Norman 
 Walsh</A>, <SPAN class=jobtitle>Staff Engineer</SPAN><BR><SPAN class=orgname>Sun 
 Microsystems, XML Technology Center</SPAN></P>
 <P class=pubdate>05 Nov 2001</P>
@@ -32,68 +32,68 @@ Microsystems, XML Technology Center</SPAN></P>
 <P><B>Table of Contents</B></P>
 <UL>
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e98">Finding 
+  href="#d0e98">Finding 
   Resources on the Net</A> 
   <UL>
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e142">Resolver 
+    href="#d0e142">Resolver 
     Classes Version 1.1</A> </LI></UL>
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e172">What's 
+  href="#d0e172">What's 
   Wrong with System Identifiers?</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e212">Naming 
+  href="#d0e212">Naming 
   Resources</A> 
   <UL>
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e229">Public 
+    href="#d0e229">Public 
     Identifiers</A> 
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e241">Uniform 
+    href="#d0e241">Uniform 
     Resource Names</A> </LI></UL>
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e263">Resolving 
+  href="#d0e263">Resolving 
   Names</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e288">Catalog 
+  href="#d0e288">Catalog 
   Files</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e312">Understanding 
+  href="#d0e312">Understanding 
   Catalog Files</A> 
   <UL>
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">OASIS 
+    href="#xmlcatalogs">OASIS 
     XML Catalogs</A> 
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#tr9401catalogs">OASIS 
+    href="#tr9401catalogs">OASIS 
     TR9401 Catalogs</A> 
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e719">XCatalogs</A> 
+    href="#d0e719">XCatalogs</A> 
 
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e724">Resolution 
+    href="#d0e724">Resolution 
     Semantics</A> </LI></UL>
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ctrlresolver">Controlling 
+  href="#ctrlresolver">Controlling 
   the Catalog Resolver</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e904">Using 
+  href="#d0e904">Using 
   Catalogs with Popular Applications</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e955">Adding 
+  href="#d0e955">Adding 
   Catalog Support to Your Applications</A> 
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e998">Catalogs 
+  href="#d0e998">Catalogs 
   In Action</A> 
   <UL>
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e1009">Using 
+    href="#d0e1009">Using 
     resolver</A> 
     <LI><A 
-    href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e1031">Using 
+    href="#d0e1031">Using 
     xparse</A> </LI></UL>
   <LI><A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e1091">May 
+  href="#d0e1091">May 
   All Your Names Resolve Successfully!</A> </LI></UL></DIV>
 <DIV class=section>
 <DIV class=titlepage>
@@ -111,7 +111,7 @@ problems for end users:</P>
 <OL type=1>
   <LI>
   <P>If they're absolute URLs, they only work when you can reach them<SUP>[<A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ftn.d0e109" 
+  href="#ftn.d0e109" 
   name=d0e109>1</A>]</SUP>. Relying on remote resources makes XML processing 
   susceptible to both planned and unplanned network downtime.</P>
   <P>The URL “http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd” isn't 
@@ -154,7 +154,7 @@ target=_top>generous license agreement</A>.</P>
 introduction of system properties in addition to the 
 <TT>CatalogManager.properties</TT> file to <A 
 title="Controlling the Catalog Resolver" 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ctrlresolver">control 
+href="#ctrlresolver">control 
 the resolver</A>.</P></DIV></DIV></DIV>
 <DIV class=section>
 <DIV class=titlepage>
@@ -220,7 +220,7 @@ natural interpretation.</P>
 address-independent name to an object: public identifiers or <A 
 href="http://www.ietf.org/rfc/rfc2141.txt" target=_top>Uniform Resource 
 Names</A> (URNs)<SUP>[<A 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ftn.d0e225" 
+href="#ftn.d0e225" 
 name=d0e225>2</A>]</SUP>.</P>
 <DIV class=section>
 <DIV class=titlepage>
@@ -459,57 +459,57 @@ BASE, CATALOG, OVERRIDE, DELEGATE, PUBLIC, and SYSTEM:</P>
   URI for subsequent relative URIs. The initial base URI is the URI of the <SPAN 
   class=emphasis><I>catalog</I></SPAN> file.</P>
   <P>In <A title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>, this functionality is provided by the closest applicable <TT 
   class=sgmltag-attribute>xml:base</TT> attribute, usually on the surrounding <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#catalog"><TT 
+  href="#catalog"><TT 
   class=sgmltag-element>catalog</TT></A> or <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#group"><TT 
+  href="#group"><TT 
   class=sgmltag-element>group</TT></A> element.</P>
   <DT><SPAN class=term>CATALOG <I><TT>cataloguri</TT></I></SPAN> 
   <DD>
   <P>This entry serves the same purpose as the <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#nextCatalog"><TT 
+  href="#nextCatalog"><TT 
   class=sgmltag-element>nextCatalog</TT></A> entry in <A 
   title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>.</P>
   <DT><SPAN class=term>OVERRIDE <I><TT>YES|NO</TT></I></SPAN> 
   <DD>
   <P>This entry enables or disables overriding of system identifiers for 
   subsequent entries in the catalog file.</P>
   <P>In <A title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>, this functionality is provided by the closest applicable <TT 
   class=sgmltag-attribute>prefer</TT> attribute on the surrounding <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#catalog"><TT 
+  href="#catalog"><TT 
   class=sgmltag-element>catalog</TT></A> or <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#group"><TT 
+  href="#group"><TT 
   class=sgmltag-element>group</TT></A> element.</P>
   <P>An override value of “yes” is equivalent to “prefer="public"”.</P>
   <DT><SPAN class=term>DELEGATE <I><TT>pubid-prefix</TT></I> 
   <I><TT>cataloguri</TT></I></SPAN> 
   <DD>
   <P>This entry serves the same purpose as the <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#delegate"><TT 
+  href="#delegate"><TT 
   class=sgmltag-element>delegate</TT></A> entry in <A title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>.</P>
   <DT><SPAN class=term>PUBLIC <I><TT>pubid</TT></I> 
   <I><TT>systemuri</TT></I></SPAN> 
   <DD>
   <P>This entry serves the same purpose as the <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#public"><TT 
+  href="#public"><TT 
   class=sgmltag-element>public</TT></A> entry in <A title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>.</P>
   <DT><SPAN class=term>SYSTEM <I><TT>sysid</TT></I> 
   <I><TT>systemuri</TT></I></SPAN> 
   <DD>
   <P>This entry serves the same purpose as the <A 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#system"><TT 
+  href="#system"><TT 
   class=sgmltag-element>system</TT></A> entry in <A title="OASIS XML Catalogs" 
-  href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#xmlcatalogs">XML 
+  href="#xmlcatalogs">XML 
   Catalogs</A>.</P></DD></DL></DIV></DIV>
 <DIV class=section>
 <DIV class=titlepage>
@@ -675,7 +675,7 @@ the SAX <TT>entityResolver</TT> interface.</P>
 <P>All you have to do is setup a <TT>com.sun.resolver.tools.CatalogResolver</TT> 
 on your parser's <TT>entityResolver</TT> hook. The code listing in <A 
 title="Example 3. Adding a CatalogResolver to Your Parser" 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ex1">Example 
+href="#ex1">Example 
 3</A> demonstrates how straightforward this is:</P>
 <DIV class=example>
 <P><A name=ex1></A><B>Example 3. Adding a CatalogResolver to Your Parser</B></P><PRE class=programlisting>import com.sun.resolver.tools.CatalogResolver;
@@ -738,7 +738,7 @@ target=_top>JAXP</A>. In the examples that follow, I've already got these files
 on my <TT>CLASSPATH</TT>.</P>
 <P>The file we'll be parsing is shown in <A 
 title="Example 6. An xparse Example File" 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#ex.example.xml">Example 
+href="#ex.example.xml">Example 
 6</A>.</P>
 <DIV class=example>
 <P><A name=ex.example.xml></A><B>Example 6. An xparse Example File</B></P><PRE class=programlisting>&lt;!DOCTYPE example PUBLIC "-//Example//DTD Example V1.0//EN"
@@ -795,7 +795,7 @@ Committee, which he chairs.</P>
 
 <DIV class=footnote>
 <P><SUP>[<A 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e109" 
+href="#d0e109" 
 name=ftn.d0e109>1</A>]</SUP> It is technically possible to use a proxy to 
 transparently cache remote resources, thus making the cached resources available 
 even when the real hosts are unreachable. In practice, this requires more 
@@ -806,7 +806,7 @@ such preferential treatment, its difficult to be sure that the resources you
 need are actually in the cache.</P></DIV>
 <DIV class=footnote>
 <P><SUP>[<A 
-href="file:///C:/Documents%20and%20Settings/Vivek/catalog.html#d0e225" 
+href="#d0e225" 
 name=ftn.d0e225>2</A>]</SUP> URIs that rely on the domain name system to 
 identify objects (in other words, all URLs) are addresses, not names, even 
 though the domain name provides a level of indirection and the illusion of a 
