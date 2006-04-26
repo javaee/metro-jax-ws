@@ -18,12 +18,12 @@
    <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
   </center>
 <hr>
-<p>Last Modified: 12/14/05</p>
+<p>Last Modified: 4/26/06</p>
 <h2>Contents</h2>
 <pre><a href="#1.%20Overview%7Coutline"><font size="3"><font
  face="Thorndale, serif">1. Overview</font></font></a>
 <a
- href="#2.%20JSR%20181%20%28Web%20Services%20Metadata%29%20Annotations%7Coutline"><font
+ href="#JSR 181"><font
  size="3"><font face="Thorndale, serif">2. JSR 181 (Web Services Metadata) Annotations</font></font></a>
     <a
  href="#2.1%20javax.jws.WebService%7Coutline"><font size="3"><font
@@ -112,7 +112,7 @@ Binding (JAXB) 2.0</i></a>, 3) <a
  size="1"><sup>TM</sup></font> API for XML Web Services (JAX-WS) 2.0</i></a>,
 4)&nbsp; <a href="http://www.jcp.org/en/jsr/detail?id=250">JSR 250: <i>Common
 Annotations for the Java<sup>TM</sup> Platform</i></a>.</p>
-<h2>2. JSR 181 (Web Services Metadata) Annotations</h2>
+<h2><a name="JSR 181"/>2. JSR 181 (Web Services Metadata) Annotations</h2>
 <p>Because JSR 181 has been written to work with JAX-RPC 1.1, we have
 made slight changes in the use and interpretation of these annotations
 to work better with JAX-WS 2.0. We are working with the 181 expert
@@ -2239,7 +2239,7 @@ release resources that it has been holding.</p>
 <pre>@WebService<br>public class HelloImpl {<br><br>&nbsp;&nbsp;&nbsp; public String echoHello(String name) {<br>        ...<br>    }<br><br>&nbsp;&nbsp;&nbsp; @PreDestroy<br>    private void release() {<br>        ...<br>    }<br>}</pre>
 <pre style="margin-left: 0.5in;"><br></pre>
 <hr>
-<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>
 <p><br>
 <br>
