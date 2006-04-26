@@ -143,6 +143,7 @@
         <echo message="server-j2se:       Builds and deploy the Endpoint API based service"/>
         <echo message="client:            Builds the client"/>
         <echo message="run:               Runs the client"/>
+        <echo message="server-j2se-stop:  Stops Endpoint API based service"/>
     </target>
 
     <target name="server" depends="setup">
@@ -169,6 +170,10 @@
             </classpath>
         </java>
 
+    </target>
+
+    <target name="server-j2se-stop" depends="setup">
+        <get src="http://localhost:9090/stop" dest="stop.status"/>
     </target>
 
 </project>
