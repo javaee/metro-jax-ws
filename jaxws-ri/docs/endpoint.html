@@ -17,7 +17,7 @@
   <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
   </center>
 <hr>
-<p>Last Modified: 12/14/05</p>
+<p>Last Modified: 4/26/06</p>
 <p>Web Service endpoints can be created and published programmatically
 using javax.xml.ws.Endpoint API. An endpoint consists of a Web Service
 Implementation object and some configuration information. The
@@ -71,7 +71,7 @@ and make sure the imports are resolvable w.r.t systemids.<br>
 For example:<br>
 <pre>&nbsp;&nbsp; // metadata processing for WSDL, schema files<br>   List &lt;File&gt; metadataFile = ...<br>   List&lt;Source&gt; metadata = new ArrayList&lt;Source&gt;();<br>   for(File file : metadataFile) {<br>       Source source = new StreamSource(new FileInputStream(file));<br>       source.setSystemId(file.toURL().toExternalForm());<br>       metadata.add(source);<br>   }<br>   endpoint.setMetadata(metadata);</pre>
 <hr>
-<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2005 Sun
+<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun
 Microsystems, Inc. All rights reserved.</font></i></a></p>
 <p><br>
 <br>
