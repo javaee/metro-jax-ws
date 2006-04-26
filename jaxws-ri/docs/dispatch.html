@@ -29,7 +29,7 @@
 
   <hr>
 
-  <p>Last Modified: 12/14/05</p>
+  <p>Last Modified: 04/26/06</p>
 
   <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.ws.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
@@ -57,17 +57,17 @@ Service service = Service.createService(URL wsdlLocation, QName serviceQName);
 
   <p>The addition of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
   <pre>
-service.addPort(QName portName, URI new URI(SOAPBinding.SOAP11HTTP_BINDING),String endpointAddress);
+service.addPort(QName portName, String SOAPBinding.SOAP11HTTP_BINDING, String endpointAddress);
 </pre>
 
 <p>SOAP 1.2 support has been implemented for <code>Dispatch</code>. This requires only one change in the programming model. The addition of the SOAP 1.2 port using the <code>Service</code> API is shown here:</p>
   <pre>
-service.addPort(QName portName, URI new URI(SOAPBinding.SOAP12HTTP_BINDING),String endpointAddress);
+service.addPort(QName portName, String SOAPBinding.SOAP12HTTP_BINDING, String endpointAddress);
 </pre>
 
 <p>XML/HTTP binding support has been implemented for <code>Dispatch</code>. The creation of the XML/HTTP port using the <code>Service</code> API is shown here:</p>
   <pre>
-service.addPort(QName portName, URI new URI(HTTPBinding.HTTP_BINDING),String endpointAddress);
+service.addPort(QName portName, String HTTPBinding.HTTP_BINDING, String endpointAddress);
 </pre>
 
   <h3>Create a <code>Dispatch&lt;T&gt;</code> instance.</h3>
@@ -149,7 +149,7 @@ try {
 </pre>
   <hr>
 
-  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2005 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
+  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
 
   <p><br>
   <br></p>
