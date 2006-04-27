@@ -848,7 +848,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
             query = result.getQuery();
             fragment = result.getFragment();
         }
-        String path = (pathInfo != null) ? endpointURI.getPath() + pathInfo : endpointURI.getPath();
+        //String path = (pathInfo != null) ? endpointURI.getPath() + pathInfo : endpointURI.getPath();
+        String path = (pathInfo != null) ? pathInfo : endpointURI.getPath();
         try {
             URI temp = new URI(null, null, path, query, fragment);
             return endpointURI.resolve(temp).toString();
