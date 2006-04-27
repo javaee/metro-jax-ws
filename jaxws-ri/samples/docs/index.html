@@ -31,6 +31,21 @@ Samples Documentation</font> </h1>
 224</a> under the <a href="http://jcp.org/">Java Community Process</a>
 (JCP). This document explains the samples that are bundled along with
 the Early Access Standards Implementation of JAX-WS 2.0.</p>
+
+The samples included with JAX-WS that is distributed on Java.net or
+as part of JWSDP, documents how to use JAX-WS in a non-Java EE 5 servlet container using a 
+proprietary deployment descriptor <code>sun-jaxws.xml</code> and servlet
+<code>com.sun.xml.ws.transport.http.servlet.WSServlet</code>.
+This means that you can these JAX-WS RI applications in any servlet container that has been
+enabled with the JAX-WS RI.  Applications that use the proprietary DD and servlet 
+will run in a JAX-WS RI enabled Java EE 5 servlet container, but 
+they will be non-portable. If you
+wish to use these JAX-WS samples in a Java EE container in a Java EE portable mannor you need to 
+modify them to use the
+standard Java EE 5 deployment descriptor; please refer to the 
+<a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a> 
+documentation/samples.  
+
 <h2><a name="1.0"></a><font color="#280099">1.0 Directory Structure</font></h2>
 <p>This section explains the directory structure of the <code>samples</code>
 directory in the bundle:</p>
