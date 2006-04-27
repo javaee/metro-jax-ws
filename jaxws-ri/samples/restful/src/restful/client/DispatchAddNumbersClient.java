@@ -35,7 +35,7 @@ public class DispatchAddNumbersClient {
     private static String endpointAddress =
         "http://localhost:8080/jaxws-restful/addnumbers";
     private static String queryString = "?num1=30&num2=20";
-    private static String pathInfo = "/num1/10/num2/20";
+    private static String pathInfo = "/jaxws-restful/addnumbers/num1/10/num2/20";
 
     public static void main(String[] args) throws Exception {
 
