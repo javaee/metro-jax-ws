@@ -5,9 +5,9 @@ Normally, data of xml type xs:base64Binary or xs:hexBinary is inlined in the SOA
 
 Enabling MTOM in JAX-WS:
 By default MTOM encoding is disabled. One can enable MTOM on client-side by setting setMTOMEnabled (true) on the binding.
-One the server-side, MTOM is enabled by setting enableMTOM=true in the deployment descriptor (sun-jaxws.xml) or using MTOM binding identifiers defined by JAX-WS specification.
-    For SOAP 1.1, use "http://schemas.xmlsoap.org/wsdl/soap/http?mtom=true" to enable MTOM or specify enableMTOM=true attribute in sun-jaxws.xml
-    For SOAP 1.2, use "http://www.w3.org/2003/05/soap/bindings/HTTP/?mtom=true" to enable MTOM or specify enableMTOM=true attribute in sun-jaxws.xml
+One the server-side, MTOM is enabled by setting enable-mtom=true in the deployment descriptor (sun-jaxws.xml) or using MTOM binding identifiers defined by JAX-WS specification.
+    For SOAP 1.1, use "http://schemas.xmlsoap.org/wsdl/soap/http?mtom=true" to enable MTOM or specify enable-mtom=true attribute in sun-jaxws.xml
+    For SOAP 1.2, use "http://www.w3.org/2003/05/soap/bindings/HTTP/?mtom=true" to enable MTOM or specify enable-mtom=true attribute in sun-jaxws.xml
 Observe the sun-jaxws.xml in this sample for usage.
 
 Mapping XML binary data to Java types:
