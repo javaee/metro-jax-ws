@@ -18,7 +18,7 @@
    <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
   </center>
 <hr>
-<p>Last Modified: 4/26/06</p>
+<p>Last Modified: 4/27/06</p>
 <h2>Contents</h2>
 <pre><a href="#1.%20Overview%7Coutline"><font size="3"><font
  face="Thorndale, serif">1. Overview</font></font></a>
@@ -1682,7 +1682,7 @@ the annotated class</font></font></font></font></p>
  face="Courier New"><font style="font-size: 9pt;" size="2">}</font></font>
 </pre>
 <h4>Example</h4>
-<pre style="margin-left: 0.48in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(AccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
+<pre style="margin-left: 0.48in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(XmlAccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
 <h3><a name="4.2 javax.xml.bind.annotation.XmlAccessorType|outline"
  id="4.2 javax.xml.bind.annotation.XmlAccessorType|outline"></a><font
  face="Thorndale, serif">4.2</font>
@@ -1716,12 +1716,12 @@ whether fields or properties are serialized by default.</p>
       <p style="font-style: normal; text-decoration: none;" align="left"><font
  color="#000000"><font face="Thorndale, serif"><font size="3">Specifies
 whether fields or properties are serialized by default. The value can
-be <font face="Cumberland, monospace">AccessType.FIELD</font> or <font
- face="Cumberland, monospace">AccessType.PROPERTY</font></font></font></font></p>
+be <font face="Cumberland, monospace">XmlAccessType.FIELD</font> or <font
+ face="Cumberland, monospace">XmlAccessType.PROPERTY</font></font></font></font></p>
       </td>
       <td bgcolor="#ffffff" width="30%">
       <p style="font-style: normal; text-decoration: none;" align="left"><font
- color="#000000"><font face="Cumberland, monospace"><font size="3">AccessType.PROPERTY</font></font></font></p>
+ color="#000000"><font face="Cumberland, monospace"><font size="3">XmlAccessType.PROPERTY</font></font></font></p>
       </td>
     </tr>
   </tbody>
@@ -1737,7 +1737,7 @@ be <font face="Cumberland, monospace">AccessType.FIELD</font> or <font
      <font
  face="Cumberland, monospace">* </font>
      <font
- face="Cumberland, monospace">* If the value is AccessType.PROPERTY, then properties are</font>
+ face="Cumberland, monospace">* If the value is XmlAccessType.PROPERTY, then properties are</font>
      <font
  face="Cumberland, monospace">* serialized by default and fields are assumed to be annotated</font>
      <font
@@ -1745,7 +1745,7 @@ be <font face="Cumberland, monospace">AccessType.FIELD</font> or <font
      <font
  face="Cumberland, monospace">*</font>
      <font
- face="Cumberland, monospace">* If the value is AccessType.FIELD, then fields are serialized by</font>
+ face="Cumberland, monospace">* If the value is XmlAccessType.FIELD, then fields are serialized by</font>
      <font
  face="Cumberland, monospace">* default and properties are assumed to be annotated with </font>
      <font
@@ -1755,12 +1755,12 @@ be <font face="Cumberland, monospace">AccessType.FIELD</font> or <font
      <font
  face="Cumberland, monospace">*/</font>
     <font
- face="Cumberland, monospace">AccessType value() default AccessType.PROPERTY;</font>
+ face="Cumberland, monospace">XmlAccessType value() default XmlAccessType.PROPERTY;</font>
 <font face="Cumberland, monospace"><font size="2">}</font></font>
 
 
 
-<font face="Cumberland, monospace"><font size="2">public enum AccessType {</font></font>
+<font face="Cumberland, monospace"><font size="2">public enum XmlAccessType {</font></font>
     <font
  face="Cumberland, monospace">/**</font>
      <font
@@ -1797,7 +1797,7 @@ be <font face="Cumberland, monospace">AccessType.FIELD</font> or <font
 <font face="Cumberland, monospace"><font size="2">}</font></font>
 </pre>
 <h4>Example</h4>
-<pre style="margin-left: 0.49in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(AccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
+<pre style="margin-left: 0.49in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(XmlAccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
 <h3><a name="4.3 javax.xml.bind.annotation.XmlType|outline"
  id="4.3 javax.xml.bind.annotation.XmlType|outline"></a><font
  face="Thorndale, serif">4.3</font> javax.xml.bind.annotation.XmlType</h3>
@@ -1954,7 +1954,7 @@ JavaBean properties are mapped.</font></font></p>
 <font face="Cumberland, monospace"><font size="2">}</font></font>
 </pre>
 <h4>Example</h4>
-<pre style="margin-left: 0.48in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(AccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
+<pre style="margin-left: 0.48in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(XmlAccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br></pre>
 <p style="margin-bottom: 0in;"><br>
 </p>
 ws3&gt;<a name="4.4 javax.xml.bind.annotation.XmlElement|outline"
@@ -2131,7 +2131,7 @@ generated by JAX-WS</font></font></font></p>
 <font face="Cumberland, monospace"><font size="2">}</font></font>
 </pre>
 <h4>Example</h4>
-<pre style="margin-left: 0.5in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(AccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br><br><br></pre>
+<pre style="margin-left: 0.5in;">@XmlRootElement(name="addNumbers",<br>    namespace="http://server.fromjava/jaxws")<br>@XmlAccessorType(XmlAccessType.FIELD)<br>public class AddNumbers {<br>    @XmlElement(namespace="", name="number1")<br>    @ParameterIndex(value=0)<br>    public int number1;<br>    @XmlElement(namespace="", name="number2")<br>    @ParameterIndex(value=1)<br>    public int number2;<br><br>    public AddNumbers(){}<br>}<br><br><br></pre>
 <h2><a name="5._JSR_250_Common_Annotations"></a>5. JSR 250 (Common
 Annotations)
 Annotations</h2>
