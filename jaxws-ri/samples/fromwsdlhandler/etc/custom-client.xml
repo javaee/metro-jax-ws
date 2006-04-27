@@ -7,13 +7,13 @@
  in compliance with the License.
  
  You can obtain a copy of the license at
- https://jwsdp.dev.java.net/CDDLv1.0.html
+ https://javaeedp.dev.java.net/CDDLv1.0.html
  See the License for the specific language governing
  permissions and limitations under the License.
  
  When distributing Covered Code, include this CDDL
  HEADER in each file and include the License file at
- https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
+ https://javaeedp.dev.java.net/CDDLv1.0.html  If applicable,
  add the following below this CDDL HEADER, with the
  fields enclosed by brackets "[]" replaced with your
  own identifying information: Portions Copyright [yyyy]
@@ -34,14 +34,14 @@
             <jaxb:package name="fromwsdlhandler.client"/>
         </jaxb:schemaBindings>
     </bindings>
-    <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
-        <jws:handler-chains>
-            <jws:handler-chain>
-                <jws:handler>
-                    <jws:handler-class>fromwsdlhandler.common.LoggingHandler</jws:handler-class>
-                </jws:handler>
-            </jws:handler-chain>
-        </jws:handler-chains>
+    <bindings node="wsdl:definitions" xmlns:javaee="http://java.sun.com/xml/ns/javaee">
+        <javaee:handler-chains>
+            <javaee:handler-chain>
+                <javaee:handler>
+                    <javaee:handler-class>fromwsdlhandler.common.LoggingHandler</javaee:handler-class>
+                </javaee:handler>
+            </javaee:handler-chain>
+        </javaee:handler-chains>
     </bindings>
 </bindings>
 
