@@ -163,6 +163,8 @@
 
         <antcall target="build-server-java"/>
 
+        <echo message="Starting endpoint ... To stop: ant server-j2se-stop"/>
+
         <java fork="true" classname="${j2se.sei}">
             <classpath>
                 <path refid="jaxws.classpath"/>
