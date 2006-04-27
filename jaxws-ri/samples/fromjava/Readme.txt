@@ -13,16 +13,25 @@ fromjava sample demonstrates the Java->WSDL programming model.
     * client/AddNumbersClient.java - client application
     * server/AddNumberImpl.java - server implementation
     * server/AddNumberException.java - server implementation
+    * server/AddWebservice.java - Publishes endpoint using Endpoint API
+    * server/EndpointStopper.java - Stops the published Endpoint API endpoint
 
 * apt ant task is run to compile AddNumbersImpl and create server
   objects used during deployment and runtime.
 
-* To run
+* To run in servlet container
     * ant clean server - runs apt to generate server side artifacts and
       does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed
       endpoint, compiles the generated artifacts and the client application
       then executes it.
+
+* To run as j2se webservice endpoint
+    * ant clean server-j2se - generates server side artifacts and does the deployment using Endpoint API
+    * ant clean client run - runs wsimport on the published wsdl by the deplyed
+      endpoint, compiles the generated artifacts and the client application
+      then executes it.
+    * ant server-j2se-stop - stops the service
 
 * Prerequisite
 
