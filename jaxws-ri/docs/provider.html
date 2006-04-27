@@ -62,13 +62,12 @@ customization. wsimport won't generate any artifacts for that port.<br>
 <pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    <span
  style="font-weight: bold;">&lt;provider&gt;true&lt;/provider&gt;</span><br>  &lt;/bindings&gt;<br></pre>
 <h2>The <code>sun-jaxws.xml</code> file</h2>
-<span style="font-family: monospace;"></span>The provider endpoint
-requires all the attributes: name, implementation, wsdl, service, port,
-url-pattern. For SOAP1.2 binding, one needs to specify binding
+<span style="font-family: monospace;"></span>The attributes of provider endpoint in sun-jaxws.xml: name, implementation, wsdl, service, port override the attributes provided through @WebServiceProvider annotation. For SOAP1.2 binding, one needs to specify binding
 attribute.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br><br><br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+If the wsdl, service, port are not specified in sun-jaxws.xml, then should be declared in the @WebServiceProvider annotation in implementation class.
 <h2>Provider and Binding</h2>
 Provider endpoint can be configured for different bindings using
 binding ids. These binding ids are defined in JAX-WS API and endpoint
@@ -105,7 +104,7 @@ end in both sun-jaxws.xml and web.xml. <br>
 <h2>Provider and Handlers<br>
 </h2>
 <span style="font-family: monospace;"></span>Handlers can be configured
-with Provider endpoints in sun-jaxws.xml descriptor. For more
+with Provider endpoints in sun-jaxws.xml descriptor or by putting @HandlerChain on the Provider implementation. For more
 information, see <a href="jaxws-war.html">handler config</a>.<br>
 <p>For example:<br>
 </p>
