@@ -3,7 +3,7 @@ mime sample demonstrates the WSDL Mime binding for specifying attachments in the
     wsiap:swaRef a schema construct defined by WS-I Attachment Profile to indicate a reference to an attachment in the message
 JAXB defines mapping of MIME types and Java types, and wsiap:swaRef. JAX-WS defines mapping of mime:conent to Java types.
 
-One can use customization to enable or disable default mime:content mapping rules by using jaxws:enableMIMEContent binding declaration.Notice that, custom-client.xml and custom-server.xml use this customization to enable/disable mime:content mapping.This sample shows also shows how one can use Swa-Ref to refer to an attachment in the message.
+One can use customization to enable or disable default mime:content mapping rules by using jaxws:enableMIMEContent binding declaration.Notice that, custom-client.xml and custom-server.xml use this customization to enable/disable mime:content mapping.This sample also shows how one can use wsiap:swaRef to refer to an attachment in the message.
 
 * It has the follwoing operations
     * echoData - enableMIMEContent is false
@@ -37,4 +37,4 @@ One can use customization to enable or disable default mime:content mapping rule
 
 * Prerequisite
 
-Refer to the Prerequisites defined in samples/docs/index.html. 
+Refer to the Prerequisites defined in samples/docs/index.html.
