@@ -410,6 +410,7 @@ major-version=${release.impl.version}
         <include name="**/*.txt" />
         <include name="**/*.jpg" />
         <include name="**/*.css"/>
+        <include name="**/*.xsd"/>
         <exclude name="**/internal/**" />
       </fileset>
       <filterset begintoken="@@" endtoken="@@">
