@@ -1,8 +1,9 @@
 This sample will build, deploy an invoke a simple Web service.
 
-This sample demonstrates the use of annotations to customize the parameter name, 
-operation name, targetNamespace, and other similar features when developing a 
-Web service when starting from Java.  
+This sample demonstrates the use of synchronous, 
+asynchronous poll and asynchronous callback invocations 
+when running a Web service client. The Web service 
+has been developed from Java.  
 
 
 2.0 Prerequisites
@@ -23,6 +24,29 @@ run 	Runs the client
 
 It is essential for the service endpoint to be deployed on Application Server before clients can be built because clients use the WSDL exposed from the service endpoint deployed in the Application Server. So please make sure that your Application Server is either running before the server target is invoked or run it after the server target is invoked. You will have to wait a few minutes for the Application Server to deploy the service endpoint correctly before building the client.
 
- 
+This sample will build, deploy an invoke a simple Web service.
+* etc - configuration files
+    * custom-client.xml client customization file
+    * build.properties, deploy-targets.xml ant script to deploy the endpoint
+      war file
+    * sun-jaxws.xml deployment descriptor for web container
+* src source files
+    * client/AddNumbersClient.java - client application
+    * server/AddNumberImpl.java - server implementation
+
+* apt ant task to compile the server code and generated JAX-WS artifacts
+
+* wsimport ant task is run to compile the generated WSDL file
+    * generates
+      SEI - AddNumbersPortType
+      service class - AddNumbersService
+
+* To run
+    * ant clean server - runs wsimport to compile AddNumbers.wsdl and generate
+      server side artifacts and does the deployment
+    * ant clean client run - runs wsimport on the published wsdl by the deplyed
+      endpoint, compiles the generated artifacts and the client application
+      then executes it.
+
 
 We appreciate your feedback, please send it to users@jax-ws.dev.java.net.
