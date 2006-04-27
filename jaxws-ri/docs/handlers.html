@@ -52,7 +52,7 @@ public class MySOAPHandler implements SOAPHandler&lt;SOAPMessageContext&gt; {
 handlers at the conclusion of a message exchange pattern. This allows handlers
 to clean up any resources that were used for the processing of a request-only
 or request/response exchange.</p>
-  
+
   <p>The <code>init()</code> and <code>destroy()</code> methods of the handler
 lifecycle no longer exist. Instead, a method may be annotated with the
   <code>@PostConstruct</code> annotation to be called after the handler is
@@ -66,10 +66,10 @@ import javax.annotation.PreDestroy;
 public class MyLogicalHandler implements LogicalHandler&lt;LogicalMessageContext&gt; {
     @PostConstruct
     public void methodA() { }
-    
+
     @PreDestroy
     public void methodB() {}
-    
+
     // other methods
 }
 </pre>
@@ -123,7 +123,7 @@ object is passed into the <code>invoke</code> method of a
   port name, or protocol pattern in their description to apply some chains
   to certain ports and protocols and not to others. For instance (note the
   wildcard character used in the service name):</p>
-  
+
   <pre>
   &lt;-- excerpt --&gt;
   &lt;handler-chains xmlns="http://java.sun.com/xml/ns/javaee"&gt;
@@ -131,12 +131,12 @@ object is passed into the <code>invoke</code> method of a
       &lt;service-name-pattern xmlns:ns1="urn:namespace"&gt;ns1:My*Service&lt;/service-name-pattern&gt;
       &lt;handler&gt;...&lt;/handler&gt;
     &lt;/handler-chain&gt;
-    
+
     &lt;handler-chain&gt;
       &lt;port-name-pattern xmlns:ns1="urn:namespace"&gt;ns1:HelloPort&lt;/port-name-pattern&gt;
       &lt;handler&gt;...&lt;/handler&gt;
     &lt;/handler-chain&gt;
-    
+
     &lt;handler-chain&gt;
       &lt;protocol-bindings&gt;##SOAP11_HTTP&lt;/protocol-bindings&gt;
       &lt;handler&gt;...&lt;/handler&gt;
@@ -147,18 +147,17 @@ object is passed into the <code>invoke</code> method of a
   <p>Handlers will appear in the final handler chain in the order that they are
   included in the customization file. However, logical handlers will be sorted
   out and called before protocol handlers during execution.</p>
-  
+
   <p>Starting from a Java class, annotations are used to describe the handler
   chain as defined by <a href="http://jcp.org/en/jsr/detail?id=181">JSR 181</a>.
   The following example uses the <code>@HandlerChain</code> annotation to refer
-  to a file describing the chain. Note that the chain name must be the
-  empty string.</p>
+  to a file describing the chain.</p>
   <pre>
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 
 @WebService
-@HandlerChain( file="handlers.xml", name="")
+@HandlerChain( file="handlers.xml")
 public class MyServiceImpl {
     // implementation of class
 }
@@ -185,7 +184,7 @@ public class MyServiceImpl {
   deployment descriptor as well. A handler chain specified here will override
   handlers in WSDL customizations or annotated classes. The schema for the
   handler section is the same as in the previous examples:</p>
-  
+
   <pre>
 &lt;endpoints ....&gt;
   &lt;endpoint ....&gt;
@@ -197,7 +196,7 @@ public class MyServiceImpl {
   &lt;/endpoint&gt;
 &lt;/endpoints&gt;
 </pre>
-  
+
   <h3>Programmatic Case</h3>
 
   <p>Handler chains may be configured on the client side at runtime by setting a
@@ -209,10 +208,10 @@ public class MyServiceImpl {
     HelloPortType myProxy = // create proxy
 
     Binding binding = myProxy.getBinding();
-    
+
     // can create new list or use existing one
     List&lt;Handler&gt; handlerList = binding.getHandlerChain();
-    
+
     handlerList.add(new MyHandler());
     binding.setHandlerChain(handlerList);
 </pre>

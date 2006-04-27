@@ -23,7 +23,7 @@ import javax.jws.HandlerChain;
 import javax.jws.WebService;
 
 @WebService
-@HandlerChain( file="handlers.xml", name="")
+@HandlerChain( file="handlers.xml")
 public class AddNumbersImpl {
     
     /**
