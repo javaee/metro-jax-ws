@@ -1,4 +1,4 @@
-mtom_soap12 sample demonstrates the use of MTOM/XOP for effciently serializing certain types of XML content.
+mtom-soap12 sample demonstrates the use of MTOM/XOP for effciently serializing certain types of XML content.
 This sample is similar to mtom sample, except that this sample uses SOAP 1.2 binding.
 
 Normally, data of xml type xs:base64Binary or xs:hexBinary is inlined in the SOAP message. With MTOM/XOP encoding, such data is encoded and transmitted as optimized packages(sending the encoded binary data as attachments and stil making it part of XML Infoset by referencing them in the message). This encoding (if the binary data is inlined or sent as attachments) is transparent to the user.
