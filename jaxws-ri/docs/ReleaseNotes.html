@@ -19,6 +19,19 @@
 
 <hr>
 <p>Last Modified: 4/26/06</p>
+The documentation/samples included with JAX-WS that is distributed on Java.net or
+as part of JWSDP, documents how to use JAX-WS in a non-Java EE 5 servlet container using a 
+proprietary deployment descriptor <code>sun-jaxws.xml</code> and servlet
+<code>com.sun.xml.ws.transport.http.servlet.WSServlet</code>.
+This means that you can run JAX-WS RI applications in any servlet container that has been
+enabled with the JAX-WS RI.  Applications that use the proprietary DD and servlet 
+will run in a JAX-WS RI enabled Java EE 5 servlet container, but 
+they will be non-portable. If you
+wish to use JAX-WS in a Java EE container in a Java EE portable mannor you need to use the
+standard Java EE 5 deployment descriptor; please refer to the 
+<a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a> 
+documentation/samples.  The majority of the documentation included with JAX-WS is 
+valid with Java EE 5 as well.
 <h2>Online Documentation</h2>
 <p>The documentation for JAX-WS @@IMPL_VERSION@@ as well as the sample applications
 will
@@ -48,17 +61,9 @@ intend to deploy Web service endpoints)</p>
  href="http://jcp.org/en/jsr/detail?id=224">Java<sup>TM</sup>for XML
 Web Services
 2.0 Specification</a>.</p>
-<h2>What's New in This Release</h2>
+<!--<h2>What's New in This Release</h2>
 <ul>
-  <li>Implemenation of JAX-WS 2.0 PFD APIs<br>
-  </li>
-  <li>
-    <p>Implementation of Java SE based Endpoints</p>
-  </li>
-  <li>
-    <p>Implementation of REST Web Services now supported with Provider and Dispatch JAX-WS 2.0 PFD APIS.</p>
-  </li>
-</ul>
+</ul> -->
 <h2>Installation Instructions</h2>
 <p>The following applies to the JAX-WS standalone bundles. If you have
 installed JAX-WS as part of the JWSDP, then installation is complete.</p>

@@ -116,6 +116,19 @@ Readers of this document should be familiar with web services <a
 <a href="http://www.w3.org/TR/2001/NOTE-wsdl-20010315">WSDL</a>.  Familiarity with 
 <a href="http://jcp.org/en/jsr/detail?id=101">JAX-RPC 1.1</a> may also be beneficial
 but is not necessary.</p>
+The documentation/samples included with JAX-WS that is distributed on Java.net or
+as part of JWSDP, documents how to use JAX-WS in a non-Java EE 5 servlet container using a 
+proprietary deployment descriptor <code>sun-jaxws.xml</code> and servlet
+<code>com.sun.xml.ws.transport.http.servlet.WSServlet</code>.
+This means that you can run JAX-WS RI applications in any servlet container that has been
+enabled with the JAX-WS RI.  Applications that use the proprietary DD and servlet 
+will run in a JAX-WS RI enabled Java EE 5 servlet container, but 
+they will be non-portable. If you
+wish to use JAX-WS in a Java EE container in a Java EE portable mannor you need to use the
+standard Java EE 5 deployment descriptor; please refer to the 
+<a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a> 
+documentation/samples.  The majority of the documentation included with JAX-WS is 
+valid with Java EE 5 as well.
 <h3><a name="mozTocId718751"
  id="1.1_Whats_new_in_JAX-RPC_2.0_Early"></a>1.1 What's new in JAX-WS
 @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@</h3>
