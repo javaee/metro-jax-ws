@@ -1,13 +1,26 @@
-Sometimes, it is convenient to refer to local resources instead of referring to resources over a network. For example, a WSDL may be accessible during client generation but not accessible when the client is run. We can address this using XML catalogs. JAX-WS runtime uses the XML catalogs for resolving Web Service document that is part of the description of a Web service, specifically WSDL and XML Schema documents. The catalog is assembled by taking into account all accessible resources whose name is META-INF/jax-ws-catalog.xml.
+Sometimes, it is convenient to refer to local resources instead of referring to 
+resources over a network. For example, a WSDL may be accessible during client 
+generation but not accessible when the client is run. We can address this using 
+XML catalogs. JAX-WS runtime uses the XML catalogs for resolving Web Service 
+document that is part of the description of a Web service, specifically WSDL 
+and XML Schema documents. The catalog is assembled by taking into account all 
+accessible resources whose name is META-INF/jax-ws-catalog.xml.
 
-catalog sample demonstrates the use of XML catalog, that can be used by the JAX-WS runtime.
-Notice that etc/jax-ws-catalog.xml is made added to the classpath, when the client is run.
+catalog sample demonstrates the use of XML catalog, that can be used by the 
+JAX-WS runtime.
+
+Notice that etc/jax-ws-catalog.xml is made added to the classpath, when the 
+client is run.
 
 * etc - configuration files
     * META_INF/jax-ws-catalog.xml
-         The catalog as shown below, makes th JAX-WS runtime to use "../AddNumbers.wsdl" when resolving "http://localhost:8080/jaxws-catalog/addnumbers?wsdl".
-         <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-             <system systemId="http://localhost:8080/jaxws-catalog/addnumbers?wsdl"
+         The catalog as shown below, makes th JAX-WS runtime to use 
+"../AddNumbers.wsdl" when resolving 
+"http://localhost:8080/jaxws-catalog/addnumbers?wsdl".
+         <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" 
+prefer="system">
+             <system 
+systemId="http://localhost:8080/jaxws-catalog/addnumbers?wsdl"
                   uri="../AddNumbers.wsdl"/>
          </catalog>
     * AddNumbers.wsdl wsdl file
@@ -35,4 +48,5 @@ Notice that etc/jax-ws-catalog.xml is made added to the classpath, when the clie
 
 * Prerequisite
 
-Refer to the Prerequisites defined in samples/docs/index.html. 
+Refer to the Prerequisites defined in samples/docs/index.html. For more 
+information on XML catalog see - docs/catalog.html.
