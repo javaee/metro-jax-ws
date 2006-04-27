@@ -1,14 +1,16 @@
-mtom sample demonstrates the use of MTOM/XOP for effiently serializing certain types of XML content.
-Normally, data of xml type xs:base64Binary or xs:hexBinary is inlined in the SOAP message. With MTOM/XOP encoding, such data is encoded and transmitted as optimized packages. This encoding is transparent to the user.
-Normally XML binary types are mapped to Java byte[]. But using xmime:expectedContentTypes attribute, one can specify the content type associated with the binary data, that can be used for static type mapping by the data binding framework(JAXB in this case).
+mtom sample demonstrates the use of MTOM/XOP for effciently serializing certain types of XML content.
+Normally, data of xml type xs:base64Binary or xs:hexBinary is inlined in the SOAP message. With MTOM/XOP encoding, such data is encoded and transmitted as optimized packages(sending the encoded binary data as attachments and stil making it part of XML Infoset by referencing them in the message). This encoding (if the binary data is inlined or sent as attachments) is transparent to the user.
 
+Enabling MTOM in JAX-WS:
 By default MTOM encoding is disabled. One can enable MTOM on client-side by setting setMTOMEnabled (true) on the binding.
 One the server-side, MTOM is enabled by setting enableMTOM=true in the deployment descriptor (sun-jaxws.xml) or using MTOM binding identifiers defined by JAX-WS specification.
-    For SOAP 1.1, use "http://schemas.xmlsoap.org/wsdl/soap/http?mtom=true" to enable MTOM or
-  specify enableMTOM=true attribute in sun-jaxws.xml
-    For SOAP 1.2, use "http://www.w3.org/2003/05/soap/bindings/HTTP/?mtom=true" to enable MTOM or
-  specify enableMTOM=true attribute in sun-jaxws.xml
+    For SOAP 1.1, use "http://schemas.xmlsoap.org/wsdl/soap/http?mtom=true" to enable MTOM or specify enableMTOM=true attribute in sun-jaxws.xml
+    For SOAP 1.2, use "http://www.w3.org/2003/05/soap/bindings/HTTP/?mtom=true" to enable MTOM or specify enableMTOM=true attribute in sun-jaxws.xml
 Observe the sun-jaxws.xml in this sample for usage.
+
+Mapping XML binary data to Java types:
+Normally XML binary types are mapped to Java byte[]. But using xmime:expectedContentTypes attribute, one can specify the content type associated with the binary data, that can be used for static type mapping by the data binding framework(JAXB in this case).
+
 
 * It has the follwoing operations
     * detail - shows mapping of xs:base64Binary with xmime:expectedContentTypes="image/jpeg" to Java type java.awt.image
