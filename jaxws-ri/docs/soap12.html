@@ -62,7 +62,32 @@ defined by JAX-WS, still the endpoint is configured to use SOAP 1.2
 binding, except that a wsdl will not be generated on the fly. 
 </P>
 <P>Alternatively, you can specify the binding through @BindingType
-annotation in the implementation class to use SOAP 1.2 binding.</P>
+annotation in the implementation class to use SOAP 1.2 binding. 
+Here is
+an example from the fromjava_soap12 sample.
+<br>
+<pre>
+@WebService
+@BindingType(value="http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
+public class AddNumbersImpl {
+    
+    /**
+     * @param number1
+     * @param number2
+     * @return The sum
+     * @throws AddNumbersException
+     *             if any of the numbers to be added is negative.
+     */
+    public int addNumbers (int number1, int number2) throws AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException ("Negative number cant be added!",
+                "Numbers: " + number1 + ", " + number2);
+        }
+        return number1 + number2;
+    }
+}
+</pre>
+</P>
 <P>The commandline <A HREF="wsgen.html">wsgen </A>and the equivalent
 ant task can be used to generate SOAP 1.1 (default) or SOAP 1.2 WSDL.
 The binding information should be passed using -wsdl:protocol switch.</P>
