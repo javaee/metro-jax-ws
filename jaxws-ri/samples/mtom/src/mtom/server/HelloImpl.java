@@ -28,11 +28,7 @@ import java.awt.Image;
 public class HelloImpl implements Hello {
     public void detail (Holder<byte[]> photo, Holder<Image> image) {
     }
-    
-    public DataHandler claimForm (DataHandler data){
-        return data;
-    }
-    
+      
     public void echoData (Holder<byte[]> data){
     }
 }

@@ -45,15 +45,19 @@ public class MtomApp {
             
             //test mtom
             testMtom ((Hello)port);
-            
-            //test swaref
-            testSwaref ((Hello)port);
+
+            //test echo
+            testEcho((Hello)port);
+
         } catch (Exception ex) {
             System.out.println ("SOAP 1.2 MtomApp FAILED!");
             ex.printStackTrace ();
         }
     }
-    
+
+    /**
+     * Demonstrates xmime:expectedContentTypes annotation
+     */
     public static void testMtom (Hello port) throws Exception{
         String name="Duke";
         Holder<byte[]> photo = new Holder<byte[]>(name.getBytes ());
@@ -64,16 +68,21 @@ public class MtomApp {
         else
             System.out.println ("SOAP 1.2 testMtom() FAILED!");
     }
-    
-    public static void testSwaref (Hello port) throws Exception{
-        DataHandler claimForm = new DataHandler (getFileAsStreamSource ("gpsXml.xml"), "text/xml");
-        DataHandler out = port.claimForm (claimForm);
-        if(AttachmentHelper.compareStreamSource (getFileAsStreamSource ("gpsXml.xml"), (StreamSource)out.getContent ()))
-            System.out.println ("SOAP 1.2 testSwaref() PASSED!");
+
+    /**
+     * Demonstrates a basic xs:base64Binary optimization
+     */
+    public static void testEcho(Hello port) throws Exception {
+        byte[] bytes = AttachmentHelper.getImageBytes(getImage("java.jpg"), "image/jpeg");
+        Holder<byte[]> image = new Holder<byte[]>(bytes);
+        port.echoData(image);
+        if (image.value != null)
+            System.out.println("SOAP 1.1 testEcho() PASSED!");
         else
-            System.out.println ("SOAP 1.2 testSwaref() FAILED!");
+            System.out.println("SOAP 1.1 testEcho() FAILED!");
     }
-//
+
+
     private static Image getImage (String imageName) throws Exception {
         String location = getDataDir () + imageName;
         return javax.imageio.ImageIO.read (new File (location));

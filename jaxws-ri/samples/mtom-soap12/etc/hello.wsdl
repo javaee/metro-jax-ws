@@ -22,8 +22,7 @@
                 <element name="image" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
             </sequence>
         </complexType>
-        <element name="claimForm" type="ref:swaRef"/>
-        <element name="claimFormResponse" type="ref:swaRef"/>
+
 		<element name="Detail" type="types:DetailType"/>
 		<element name="DetailResponse" type="types:DetailType"/>
         <element name="data" type="base64Binary"/>
@@ -48,14 +47,6 @@
         <wsdl:part name="data" element="types:DetailResponse"/>
     </wsdl:message>
 
-     <wsdl:message name="claimFormIn">
-        <wsdl:part name="data" element="types:claimForm"/>
-    </wsdl:message>
-
-    <wsdl:message name="claimFormOut">
-        <wsdl:part name="data" element="types:claimFormResponse"/>
-    </wsdl:message>
-
 	<wsdl:portType name="Hello">
         <wsdl:operation name="echoData">
 			<wsdl:input message="tns:echoDataIn"/>
@@ -66,12 +57,6 @@
 		<wsdl:operation name="Detail">
 			<wsdl:input message="tns:HelloIn"/>
 			<wsdl:output message="tns:HelloOut"/>
-		</wsdl:operation>
-
-        <!-- swaref test -->
-        <wsdl:operation name="claimForm">
-			<wsdl:input message="tns:claimFormIn"/>
-			<wsdl:output message="tns:claimFormOut"/>
 		</wsdl:operation>
 
 	</wsdl:portType>
@@ -97,16 +82,7 @@
 			<wsdl:output>
 				<soap12:body use="literal"/>
 			</wsdl:output>
-		</wsdl:operation>
-        <wsdl:operation name="claimForm">
-            <soap12:operation soapAction=""/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
+		</wsdl:operation>        
 
 	</wsdl:binding>
 
