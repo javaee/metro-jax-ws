@@ -4,18 +4,18 @@
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
   <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Provider</title>
-  <link rel="stylesheet" type="text/css" href="style/default.css"/>
+  <link rel="stylesheet" type="text/css" href="style/default.css">
   <meta name="CREATED" content="20050329;17163443">
   <meta name="CHANGED" content="20050401;8215806">
 </head>
 <body lang="en-US">
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      Provider
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
+<center>
+<h1> Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br>
+Provider </h1>
+<b>Specification Version:</b> @@SPEC_VERSION@@<br>
+<b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@
+@@IMPL_VERSION_SUFFIX@@<br>
+</center>
 <hr>
 <p>Last Modified: 4/26/06</p>
 <p>Web Service endpoints may choose to work at the XML message level
@@ -109,7 +109,7 @@ with Provider endpoints in sun-jaxws.xml descriptor. For more
 information, see <a href="jaxws-war.html">handler config</a>.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;handler-chain&gt;<br>      &lt;handler-chain-name&gt;my handler&lt;/handler-chain-name&gt;<br>      &lt;handler&gt;<br>        &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>        &lt;handler-class&gt;provider.server.MyHandler&lt;/handler-class&gt;<br>      &lt;/handler&gt;<br>    &lt;/handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;javaee:handler-chain&gt;<br>      &lt;javaee:handler-chain-name&gt;my handler&lt;/javaee:handler-chain-name&gt;<br>      &lt;javaee:handler&gt;<br>        &lt;javaee:handler-name&gt;MyHandler&lt;/javaee:handler-name&gt;<br>        &lt;javaee:handler-class&gt;provider.server.MyHandler&lt;/javaee:handler-class&gt;<br>      &lt;/javaee:handler&gt;<br>    &lt;/javaee:handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
 <pre><br></pre>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun
