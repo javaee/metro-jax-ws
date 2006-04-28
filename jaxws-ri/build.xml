@@ -504,6 +504,40 @@ major-version=${release.impl.version}
     </zip>
   </target>
 
+
+  <target name="push-to-maven-prepare" depends="main"
+    description="prepare a repository iamge for the push-to-maven target">
+    <taskdef resource="maven-repository-importer.properties">
+      <classpath>
+        <pathelement path="tools/lib/maven-repository-importer.jar" />
+      </classpath>
+    </taskdef>
+    <delete dir="build/maven-repo" /><!-- clean it -->
+    <!-- ${suffix} can be overridden to "" for posting releases -->
+    <property name="suffix" value="-SNAPSHOT" />
+    <maven-repository-importer
+        destdir="build/maven-repo" version="${release.impl.version}${suffix}">
+      <artifact
+        jar="${build.home}/lib/jaxws-api.jar"
+        pom="etc/poms/jaxws-api.pom" />
+      <artifact
+        jar="${build.home}/lib/jaxws-rt.jar"
+        pom="etc/poms/jaxws-rt.pom" />
+      <artifact
+        jar="${build.home}/lib/jaxws-tools.jar"
+        pom="etc/poms/jaxws-tools.pom" />
+      <filterset>
+        <filter token="API_VERSION" value="${release.spec.version}"/>
+      </filterset>
+    </maven-repository-importer>
+  </target>
+  
+  <target name="push-to-maven" depends="push-to-maven-prepare"
+    description="publish artifacts into the maven repository">
+    <echo>importing to CVS...</echo>
+    <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
+  </target>
+
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
       <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
@@ -516,6 +550,11 @@ major-version=${release.impl.version}
       </copy>
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
+
+  <target name="integrate-maven-repository-importer">
+    <get src="http://kohsuke.sfbay/hudson/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
+         dest="tools/lib/maven-repository-importer.jar" />
+  </target>
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
