@@ -733,18 +733,33 @@ public class RuntimeModeler {
     protected void processRpcMethod(JavaMethod javaMethod, String methodName,
                                     WebMethod webMethod, String operationName, Method method, WebService webService) {
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
-        QName reqElementName = new QName(targetNamespace, operationName);
-        QName resElementName = null;
-
         //build ordered list
         Map<Integer, Parameter> resRpcParams = new HashMap<Integer, Parameter>();
         Map<Integer, Parameter> reqRpcParams = new HashMap<Integer, Parameter>();
+
+        //Lets take the service namespace and overwrite it with the one we get it from wsdl
+        String reqNamespace = targetNamespace;
+        String respNamespace = targetNamespace;
         if(binding != null){
             binding.finalizeBinding();
+            BindingOperation op = binding.get(operationName);
+            if(op != null){
+                //it cant be null, but lets not fail and try to work with service namespce
+                if(op.getRequestNamespace() != null){
+                    reqNamespace = op.getRequestNamespace();
+                }
+
+                //it cant be null, but lets not fail and try to work with service namespce
+                if(op.getResponseNamespace() != null){
+                    respNamespace = op.getResponseNamespace();
+                }
+            }
         }
 
+        QName reqElementName = new QName(reqNamespace, operationName);
+        QName resElementName = null;
         if (!isOneway) {
-            resElementName = new QName(targetNamespace, operationName+RESPONSE);
+            resElementName = new QName(respNamespace, operationName+RESPONSE);
         }
 
         TypeReference typeRef =

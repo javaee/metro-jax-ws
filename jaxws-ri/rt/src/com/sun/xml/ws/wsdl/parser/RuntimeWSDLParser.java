@@ -39,7 +39,6 @@ import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.Closeable;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -318,12 +317,12 @@ public class RuntimeWSDLParser {
             QName name = reader.getName();
             if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
-                bindingOp.setInputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getInputParts()));
+                bindingOp.setInputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp, BindingMode.INPUT));
                 goToEnd(reader);
             }else if((SOAPConstants.QNAME_HEADER.equals(name) || SOAPConstants.QNAME_SOAP12HEADER.equals(name))){
                 parseSOAPHeaderBinding(reader, bindingOp.getInputParts());
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
-                parseMimeMultipartBinding(reader, bindingOp.getInputParts(), bindingOp.getOutputMimeTypes());
+                parseMimeMultipartBinding(reader, bindingOp, BindingMode.INPUT);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -337,12 +336,12 @@ public class RuntimeWSDLParser {
             QName name = reader.getName();
             if((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound){
                 bodyFound = true;
-                bindingOp.setOutputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getOutputParts()));
+                bindingOp.setOutputExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp, BindingMode.OUTPUT));
                 goToEnd(reader);
             }else if((SOAPConstants.QNAME_HEADER.equals(name) || SOAPConstants.QNAME_SOAP12HEADER.equals(name))){
                 parseSOAPHeaderBinding(reader, bindingOp.getOutputParts());
             }else if(MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)){
-                parseMimeMultipartBinding(reader, bindingOp.getOutputParts(), bindingOp.getOutputMimeTypes());
+                parseMimeMultipartBinding(reader, bindingOp, BindingMode.OUTPUT);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
@@ -350,11 +349,18 @@ public class RuntimeWSDLParser {
         }
     }
 
+    private static boolean parseSOAPBodyBinding(XMLStreamReader reader, BindingOperation op, BindingMode mode){
+        String namespace = reader.getAttributeValue(null, "namespace");
+        if(mode == BindingMode.INPUT){
+            op.reqNamespace = namespace;
+            return parseSOAPBodyBinding(reader, op.getInputParts());
+        }
+        //resp
+        op.respNamespace = namespace;
+        return parseSOAPBodyBinding(reader, op.getOutputParts());
+    }
+
     /**
-     *
-     * @param reader
-     * @param parts
-     * @return
      * Returns true if body has explicit parts declaration
      */
     private static boolean parseSOAPBodyBinding(XMLStreamReader reader, Map<String, ParameterBinding> parts){
@@ -388,26 +394,37 @@ public class RuntimeWSDLParser {
     }
 
 
-    private static void parseMimeMultipartBinding(XMLStreamReader reader, Map<String, ParameterBinding> parts,
-                                                  Map<String, String> mimeTypes) {
+    private enum BindingMode {INPUT, OUTPUT};
+
+    private static void parseMimeMultipartBinding(XMLStreamReader reader, BindingOperation op, BindingMode mode){
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
             if(MIMEConstants.QNAME_PART.equals(name)){
-                parseMIMEPart(reader, parts, mimeTypes);
+                parseMIMEPart(reader, op, mode);
             }else{
                 XMLStreamReaderUtil.skipElement(reader);
             }
         }
+
     }
 
-    private static void parseMIMEPart(XMLStreamReader reader, Map<String,ParameterBinding> parts,
-                                      Map<String,String> mimeTypes) {
+    private static void parseMIMEPart(XMLStreamReader reader, BindingOperation op, BindingMode mode) {
         boolean bodyFound = false;
+        Map<String,ParameterBinding> parts = null;
+        Map<String,String> mimeTypes = null;
+        if(mode == BindingMode.INPUT){
+            parts = op.getInputParts();
+            mimeTypes = op.getInputMimeTypes();
+        }else{
+            parts = op.getOutputParts();
+            mimeTypes = op.getOutputMimeTypes();
+        }
+
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
             if(SOAPConstants.QNAME_BODY.equals(name) && !bodyFound){
                 bodyFound = true;
-                parseSOAPBodyBinding(reader, parts);
+                parseSOAPBodyBinding(reader, op, mode);
                 XMLStreamReaderUtil.next(reader);
             }else if(SOAPConstants.QNAME_HEADER.equals(name)){
                 bodyFound = true;

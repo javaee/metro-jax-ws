@@ -57,6 +57,16 @@ public class Parameter {
     }
 
     /**
+     * Sometimes we need to overwrite the typeReferenc, such as during patching for rpclit
+     * @see RuntimeModel#applyParameterBinding(com.sun.xml.ws.wsdl.parser.Binding)
+     */
+
+    void setTypeReference(TypeReference type){
+        typeReference = type;
+        name = type.tagName;
+    }
+
+    /**
      * @return Returns the mode.
      */
     public Mode getMode() {

@@ -352,8 +352,14 @@ public abstract class RuntimeModel {
             List<Parameter> reqAttachParams = null;
             for(Parameter param:reqParams){
                 if(param.isWrapperStyle()){
-                    if(isRpclit)
-                        reqAttachParams = applyRpcLitParamBinding(method, (WrapperParameter)param, wsdlBinding, Mode.IN);
+                    if(isRpclit){
+                        WrapperParameter reqParam = (WrapperParameter)param;
+                        BindingOperation bo = wsdlBinding.get(method.getOperationName());
+                        if(bo != null && bo.getRequestNamespace() != null){
+                            patchRpclitNamespace(bo.getRequestNamespace(), reqParam);
+                        }
+                        reqAttachParams = applyRpcLitParamBinding(method, reqParam, wsdlBinding, Mode.IN);
+                    }
                     continue;
                 }
                 String partName = param.getPartName();
@@ -369,8 +375,14 @@ public abstract class RuntimeModel {
             List<Parameter> resParams = method.getResponseParameters();
             for(Parameter param:resParams){
                 if(param.isWrapperStyle()){
-                    if(isRpclit)
-                        resAttachParams = applyRpcLitParamBinding(method, (WrapperParameter)param, wsdlBinding, Mode.OUT);
+                    if(isRpclit){
+                        WrapperParameter respParam = (WrapperParameter)param;
+                        BindingOperation bo = wsdlBinding.get(method.getOperationName());
+                        if(bo != null && bo.getResponseNamespace() != null){
+                            patchRpclitNamespace(bo.getResponseNamespace(), respParam);
+                        }
+                        resAttachParams = applyRpcLitParamBinding(method, respParam, wsdlBinding, Mode.OUT);
+                    }
                     continue;
                 }
                 //if the parameter is not inout and its header=true then dont get binding from WSDL
@@ -398,6 +410,19 @@ public abstract class RuntimeModel {
         }
     }
 
+    /**
+     * For rpclit wrapper element inside <soapenv:Body>, the targetNamespace should be taked from
+     * the soapbind:body@namespace value. Since no annotations on SEI/impl class captures it so we
+     * need to get it from WSDL and patch it.     *
+     */
+    private void patchRpclitNamespace(String namespace, WrapperParameter param){
+        TypeReference type = param.getTypeReference();
+        TypeReference newType = new TypeReference(
+                new QName(namespace, type.tagName.getLocalPart()), type.type, type.annotations);
+
+        param.setTypeReference(newType);
+    }
+
 
 
     /**
@@ -414,6 +439,7 @@ public abstract class RuntimeModel {
         String opName = method.getOperationName();
         RpcLitPayload payload = new RpcLitPayload(wrapperParameter.getName());
         BindingOperation bo = wsdlBinding.get(opName);
+
         Map<Integer, Parameter> bodyParams = new HashMap<Integer, Parameter>();
         List<Parameter> unboundParams = new ArrayList<Parameter>();
         List<Parameter> attachParams = new ArrayList<Parameter>();

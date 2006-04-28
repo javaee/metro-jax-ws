@@ -22,6 +22,7 @@ package com.sun.xml.ws.wsdl.parser;
 import com.sun.xml.ws.model.ParameterBinding;
 import com.sun.xml.ws.model.Mode;
 
+import javax.xml.ws.Response;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ public class BindingOperation {
 
     private Map<String, Part> inParts;
     private Map<String, Part> outParts;
+
 
     /**
      *
@@ -143,4 +145,26 @@ public class BindingOperation {
         explicitOutputSOAPBodyParts = b;
     }
 
+    String reqNamespace;
+    String respNamespace;
+
+    /**
+     * For rpclit gives namespace value on soapbinding:body@namespace
+     *
+     * @return   non-null for rpclit and null for doclit
+     * @see com.sun.xml.ws.modeler.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethod, String, javax.jws.WebMethod, String, java.lang.reflect.Method, javax.jws.WebService)
+     */
+    public String getRequestNamespace(){
+        return reqNamespace;
+    }
+
+    /**
+     * For rpclit gives namespace value on soapbinding:body@namespace
+     *
+     * @return   non-null for rpclit and null for doclit
+     *      * @see com.sun.xml.ws.modeler.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethod, String, javax.jws.WebMethod, String, java.lang.reflect.Method, javax.jws.WebService)
+     */
+    public String getResponseNamespace(){
+        return respNamespace;
+    }
 }
