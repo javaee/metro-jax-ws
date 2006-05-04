@@ -63,7 +63,7 @@
 	</target>
 
     <target name="help">
-        <echo message="install:    Installs the JAX-RPC 2.0 Beta on JWSDP 1.5"/>
+        <echo message="install:    Installs the JAX-RPC 2.0 FCS on JWSDP 1.5"/>
         <echo message="            Usage: JWSDP_HOME/apache-ant/bin/ant install"/>
     </target>
 </project>

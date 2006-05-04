@@ -20,16 +20,16 @@
  [name of copyright owner]
 -->
 
-<project name="JAX-WS 2.0 Beta On Sun Java System App Server 8.1" default="help" basedir=".">
+<project name="JAX-WS 2.0 FCS On Sun Java System App Server 8.1/8.2" default="help" basedir=".">
     <property environment="env"/>
     <property name="as.home" value="${env.AS_HOME}"/>
     <property name="as.lib.home" value="${as.home}/lib"/>
     <property name="domain" value="domain1"/>
-    <property name="backup.dir" value="${as.home}/.jaxws20ea2"/>
+    <property name="backup.dir" value="${as.home}/.jaxws20fcs"/>
 
     <condition property="notInstalled">
         <not>
-            <available file="${as.home}/.jaxws20ea2"/>
+            <available file="${as.home}/.jaxws20fcs"/>
         </not>
     </condition>
 
@@ -87,7 +87,7 @@
     </target>
     
     <target name="help">
-        <echo message="install:    Installs JAX-WS 2.0 Beta on the Application Server"/>
+        <echo message="install:    Installs JAX-WS 2.0 FCS on the Application Server"/>
         <echo message="            Usage: ANT_HOME/bin/ant install"/>
     </target>
 </project>
