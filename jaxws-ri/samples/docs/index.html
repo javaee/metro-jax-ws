@@ -264,6 +264,9 @@ JAX-WS 2.0 binaries and must be used as the J2SE platform for SJSAS PE
 Application Server PE 8.2. </p>
   </li>
   <li>
+    <p style="margin-bottom: 0in;">Make sure that the Application Server is configured for port 8080 as samples hardcoded with this port info. Otherwise, you need to change samples to use the correct port. </p>
+  </li>
+  <li>
     <p style="margin-bottom: 0in;">If you have installed JAX-WS as part
 of JWSDP, make sure the Application Server was selected as the
 container when you installed JWSDP and set your PATH to use the version
@@ -278,12 +281,16 @@ JAX-WS bundle, </p>
 point to the Application Server installation directory. </p>
       </li>
       <li>
+        <p style="margin-bottom: 0in;">Set <code>JAXWS_HOME</code>
+to the JAX-WS installation directory.</p>
+      </li>
+      <li>
         <p style="margin-bottom: 0in;">Make sure that the Application
 Server is not running. </p>
       </li>
       <li>
         <p style="margin-bottom: 0in;">Invoke <code>ANT_HOME/bin/ant
-install</code> from the root directory of the JAX-WS 2.0 EA2 bundle.
+install</code> from the root directory of the JAX-WS 2.0 FCS bundle.
 This will install JAX-WS 2.0 bundle on the Application Server referred
 by <code>AS_HOME</code> environment variable.</p>
       </li>
@@ -369,6 +376,9 @@ service endpoint correctly before building the client. </p>
   <li>
     <p style="margin-bottom: 0in;"><font color="#000000">Set
 CATALINA_HOME to your Tomcat installation.</font></p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Make sure that tomcat is configured for port 8080 as samples hardcoded with this port info. Otherwise, you need to change samples to use the correct port. </p>
   </li>
   <li>
     <p style="margin-bottom: 0in;"><font color="#000000">If you have
