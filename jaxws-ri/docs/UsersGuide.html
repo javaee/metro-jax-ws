@@ -154,7 +154,7 @@ container that has been enabled with the JAX-WS RI. Applications that
 use the proprietary DD and servlet will run in a JAX-WS RI enabled
 Java EE 5 servlet container, but they will be non-portable. If you
 wish to use JAX-WS in a Java EE container in a Java EE portable
-mannor you need to use the standard Java EE 5 deployment descriptor;
+manner you need to use the standard Java EE 5 deployment descriptor;
 please refer to the <A HREF="http://java.sun.com/javaee/index.jsp">Java
 EE 5</A> or <A HREF="https://glassfish.dev.java.net/">Glassfish</A>
 documentation/samples. The majority of the documentation included
@@ -201,8 +201,8 @@ developement purposes.</font></CODE></P>
 <P><CODE><font face="Arial">JAX-WS 2.0 brings in support for optimized transmission of
 binary data as specified by <A HREF="http://www.w3.org/TR/soap12-mtom/">MTOM</A>
 (SOAP Message Transmission Optimization Mechanism)/<A HREF="http://www.w3.org/TR/xop10/">XOP
-</A>(XML Binary Optimized Packagin) and <A HREF="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef
-</A>(SOAP Attachment Refenreces specified by WS-I Attachment Profile
+</A>(XML Binary Optimized Packaing) and <A HREF="http://www.ws-i.org/Profiles/AttachmentsProfile-1.0-2004-08-24.html#Referencing_Attachments_from_the_SOAP_Envelope">swaRef
+</A>(SOAP Attachment References specified by WS-I Attachment Profile
 1.0). </font> </CODE>
 </P>
 <UL>
@@ -215,7 +215,7 @@ binary data as specified by <A HREF="http://www.w3.org/TR/soap12-mtom/">MTOM</A>
 <UL>
 	<LI><P><CODE><font face="Arial">In swaRef, an XML element of <A HREF="http://ws-i.org/profiles/basic/1.1/xsd/">wsi:swaRef</A>
 	type (defined by WS-I Attachment Profile 1.0) is send as attachment
-	and a refecrenced based on CID URL schema is put in place of the
+	and a referenced based on CID URL schema is put in place of the
 	content of the element.</font></CODE></P>
 </UL>
 <P><CODE><font face="Arial">For details on MTOM and swaRef features refer to <A HREF="mtom-swaref.html">JAX-WS
@@ -583,7 +583,7 @@ below:</font></CODE></P>
 	endpoint</font></CODE></P>
 	<LI><P><CODE><font face="Arial">implementation is used to specify the
 	endpoint implementation class</font></CODE></P>
-	<LI><P><CODE><font face="Arial">urlpatter</font><font face="Arial"> is used to URL pattern used to
+	<LI><P><CODE><font face="Arial">urlpattern</font><font face="Arial"> is used to URL pattern used to
 	access this endpoint.</font></CODE></P>
 </UL>
 <P><CODE><font face="Arial">The structure of the raw WAR file is shown below:</font></CODE></P>
@@ -746,9 +746,9 @@ endpoint in one of two ways: port and dispatch.</font></CODE></P>
 Dynamic Proxy</font></CODE></H4>
 <P><CODE><font face="Arial">In this approach client side invokes Web services via a
 dynamic proxy.&nbsp; The proxies for the Web Service are created from
-the generated Service and service endpont interfaces.&nbsp;
+the generated Service and service endpoint interfaces.&nbsp;
 Once the proxies are created. the client application can invoke
-methods on those proxies just like a standard implmentation of those
+methods on those proxies just like a standard implementation of those
 interfaces. The sections below describe this process more detail.</font></CODE></P>
 <H4><font face="Arial"><A NAME="mozTocId913387"></A><A NAME="2.2.1.1_Generate_client_artifacts"></A>
 </font>
@@ -792,7 +792,7 @@ supported. With the XML/HTTP Binding a </font><font face="Arial">javax.activatio
 can also be used. The Dispatch APIs can be used in both Message
 and </font><font face="Arial">Payloadmodes. The Dispatch API client with an
 XML/HTTP Binding can be used with REST Web Services. Please see the
-restful sample program for more infomation.</font></CODE></P>
+restful sample program for more information.</font></CODE></P>
 <P><CODE><font face="Arial">For more information on Dispatch in JAX-WS 2.0 please refer
 to <A HREF="dispatch.html">JAX-WS 2.0 Dispatch</A>.</font></CODE></P>
 <H2 style="text-align: left"><font face="Arial"><A NAME="mozTocId887457"></A><A NAME="3._Useful_Information"></A>

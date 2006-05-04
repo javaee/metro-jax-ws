@@ -25,7 +25,7 @@ API for XML Web Services<BR>Annotations
 @@SPEC_VERSION@@<BR><B>Reference Implementation (RI) Version:</B>
 @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@</P>
 <HR>
-<P>Last Modified: 4/27/06</P>
+<P>Last Modified: 5/4/06</P>
 <H2>Contents</H2>
 <PRE><A HREF="#1.%20Overview%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">1. Overview</FONT></FONT></A>
 <A HREF="#JSR 181"><FONT SIZE=3><FONT FACE="Thorndale, serif">2. JSR 181 (Web Services Metadata) Annotations</FONT></FONT></A>
@@ -1922,18 +1922,36 @@ public @interface XmlRootElement {
     String name() default &quot;##default&quot;;
 <FONT FACE="Courier New"><FONT SIZE=2 STYLE="font-size: 9pt">}</FONT></FONT></PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.48in">@XmlRootElement(name=&quot;addNumbers&quot;,
-    namespace=&quot;http://server.fromjava/jaxws&quot;)
+<PRE STYLE="margin-left: 0.48in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
+    &quot;arg0&quot;,
+    &quot;arg1&quot;
+})
 public class AddNumbers {
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number1&quot;)
-    @ParameterIndex(value=0)
-    public int number1;
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number2&quot;)
-    @ParameterIndex(value=1)
-    public int number2;
-    public AddNumbers(){}
-}</PRE><H3>
+
+    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+    private int arg0;
+    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}  
+</PRE><H3>
 <A NAME="4.2 javax.xml.bind.annotation.XmlAccessorType|outline"></A><FONT FACE="Thorndale, serif">4.2</FONT>
 javax.xml.bind.annotation.XmlAccessorType</H3>
 <P STYLE="margin-bottom: 0in">This annotation is used to specify
@@ -2025,18 +2043,36 @@ whether fields or properties are serialized by default.</P>
     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>NONE</FONT></FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.49in">@XmlRootElement(name=&quot;addNumbers&quot;,
-    namespace=&quot;http://server.fromjava/jaxws&quot;)
+<PRE STYLE="margin-left: 0.49in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
+    &quot;arg0&quot;,
+    &quot;arg1&quot;
+})
 public class AddNumbers {
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number1&quot;)
-    @ParameterIndex(value=0)
-    public int number1;
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number2&quot;)
-    @ParameterIndex(value=1)
-    public int number2;
-    public AddNumbers(){}
-}</PRE><H3>
+
+    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+    private int arg0;
+    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}  
+</PRE><H3>
 <A NAME="4.3 javax.xml.bind.annotation.XmlType|outline"></A><FONT FACE="Thorndale, serif">4.3</FONT>
 javax.xml.bind.annotation.XmlType</H3>
 <P>This annotation is used to map a value class to an XML Schema
@@ -2146,22 +2182,41 @@ represented by schema components within a schema type's content model
     <FONT FACE="Cumberland, monospace">String namespace() default &quot;##default&quot; ;</FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.48in">@XmlRootElement(name=&quot;addNumbers&quot;,
-    namespace=&quot;http://server.fromjava/jaxws&quot;)
+<PRE STYLE="margin-left: 0.48in">
+@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
+    &quot;arg0&quot;,
+    &quot;arg1&quot;
+})
 public class AddNumbers {
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number1&quot;)
-    @ParameterIndex(value=0)
-    public int number1;
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number2&quot;)
-    @ParameterIndex(value=1)
-    public int number2;
-    public AddNumbers(){}
-}</PRE><P STYLE="margin-bottom: 0in">
+
+    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+    private int arg0;
+    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}  
+</PRE><P STYLE="margin-bottom: 0in">
 <BR>
 </P>
-<P><A NAME="4.4 javax.xml.bind.annotation.XmlElement|outline"></A>ws3&gt;<FONT FACE="Thorndale, serif">4.4</FONT>
-javax.xml.bind.annotation.XmlElement 
+<P><A NAME="4.4 javax.xml.bind.annotation.XmlElement|outline"></A><h3><FONT FACE="Thorndale, serif">4.4</FONT>
+javax.xml.bind.annotation.XmlElement </h3>
 </P>
 <P><FONT FACE="Thorndale, serif"><FONT SIZE=3>This annotation is used
 to map a property contained in a class to a local element in the XML
@@ -2283,18 +2338,36 @@ Schema complex type to which the containing class is mapped.</FONT></FONT></P>
     <FONT FACE="Cumberland, monospace">static final class DEFAULT {}</FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.5in">@XmlRootElement(name=&quot;addNumbers&quot;,
-    namespace=&quot;http://server.fromjava/jaxws&quot;)
+<PRE STYLE="margin-left: 0.5in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
+    &quot;arg0&quot;,
+    &quot;arg1&quot;
+})
 public class AddNumbers {
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number1&quot;)
-    @ParameterIndex(value=0)
-    public int number1;
-    @XmlElement(namespace=&quot;&quot;, name=&quot;number2&quot;)
-    @ParameterIndex(value=1)
-    public int number2;
-    public AddNumbers(){}
-}</PRE><H2>
+
+    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+    private int arg0;
+    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+    private int arg1;
+
+    public int getArg0() {
+        return this.arg0;
+    }
+
+    public void setArg0(int arg0) {
+        this.arg0 = arg0;
+    }
+
+    public int getArg1() {
+        return this.arg1;
+    }
+
+    public void setArg1(int arg1) {
+        this.arg1 = arg1;
+    }
+}  
+</PRE><H2>
 <A NAME="5._JSR_250_Common_Annotations"></A>5. JSR 250 (Common
 Annotations) Annotations</H2>
 <P>The following annotations are being documented because JAX-WS
