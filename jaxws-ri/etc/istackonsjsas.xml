@@ -24,8 +24,14 @@
     <property environment="env"/>
     <property name="as.home" value="${env.AS_HOME}"/>
     <property name="as.lib.home" value="${as.home}/lib"/>
+    <property name="as.bin.home" value="${as.home}/bin"/>
     <property name="domain" value="domain1"/>
     <property name="backup.dir" value="${as.home}/.jaxws20fcs"/>
+    <condition property="isNotWindows">
+      <not>
+        <os family="windows" />
+      </not>
+    </condition>
 
     <condition property="notInstalled">
         <not>
@@ -36,7 +42,7 @@
     <target name="init">
         <mkdir dir="${backup.dir}"/>
     </target>
-	
+
     <target name="install">
         <echo message="Installing JAX-WS 2.0 on ${as.home} ..." />
         <copy toDir="${backup.dir}">
@@ -44,7 +50,7 @@
                 <include name="saaj-*.jar"/>
             </fileset>
         </copy>
-        
+
         <copy toDir="${as.lib.home}" overwrite="true">
             <fileset dir="lib">
                 <include name="*.jar"/>
@@ -52,21 +58,21 @@
                 <exclude name="relaxngDatatype.jar"/>
             </fileset>
         </copy>
-        
+
         <antcall target="update-classpath"/>
-			
+        <antcall target="install-tools"/>
         <echo message="... done."/>
     </target>
-    
-    <!-- Check if need to add classpath-prefix --> 
+
+    <!-- Check if need to add classpath-prefix -->
     <loadfile property="prefixLines" srcFile="${as.home}/domains/${domain}/config/domain.xml" />
 
     <condition property="prefixUndefined">
         <not>
             <contains string="${prefixLines}" substring="classpath-prefix"/>
         </not>
-    </condition>   
-    
+    </condition>
+
     <target name="create.classpath.prefix" if="prefixUndefined" >
         <echo message="Adding classpath-prefix to ${as.home}/domains/${domain}/config/domain.xml" />
         <replace file="${as.home}/domains/${domain}/config/domain.xml" >
@@ -74,9 +80,9 @@
             <replacetoken><![CDATA[server-classpath="]]></replacetoken>
         </replace>
     </target>
-    
+
     <target name="update-classpath" if="notInstalled">
-         <!-- Add classpath-prefix, if not exists --> 
+         <!-- Add classpath-prefix, if not exists -->
         <antcall target="create.classpath.prefix" />
         <!-- Add the JAX-WS 2.0 and JAXB 2.0 jars to classpath-prefix -->
         <copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
@@ -85,7 +91,27 @@
             <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/sjsxp.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-libs.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-api.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}]]></replacevalue>
         </replace>
     </target>
-    
+
+    <target name="install-tools" depends="install-on-windows, install-on-unix">
+        <echo message="Installed JAX-WS tools (wsimport, wsgen) to ${as.bin.home}"/>
+    </target>
+    <target name="install-on-unix" if="isNotWindows">
+        <copy toDir="${as.bin.home}" overwrite="true">
+            <fileset dir="bin">
+                <include name="*.sh"/>
+            </fileset>
+        </copy>
+        <chmod perm="+x" file="${as.bin.home}/wsimport.sh" />
+        <chmod perm="+x" file="${as.bin.home}/wsgen.sh" />
+    </target>
+    <target name="install-on-windows" unless="isNotWindows">
+        <copy toDir="${as.bin.home}" overwrite="true">
+			<fileset dir="bin">
+				<include name="*.bat"/>
+			</fileset>
+		</copy>
+    </target>
+
     <target name="help">
         <echo message="install:    Installs JAX-WS 2.0 FCS on the Application Server"/>
         <echo message="            Usage: ANT_HOME/bin/ant install"/>
