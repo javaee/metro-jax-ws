@@ -27,7 +27,7 @@ This means that you can run JAX-WS RI applications in any servlet container that
 enabled with the JAX-WS RI.  Applications that use the proprietary DD and servlet 
 will run in a JAX-WS RI enabled Java EE 5 servlet container, but 
 they will be non-portable. If you
-wish to use JAX-WS in a Java EE container in a Java EE portable mannor you need to use the
+wish to use JAX-WS in a Java EE container in a Java EE portable manner you need to use the
 standard Java EE 5 deployment descriptor; please refer to the 
 <a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a> 
 documentation/samples.  The majority of the documentation included with JAX-WS is 
@@ -80,15 +80,27 @@ Server.</p>
 <p>If you intend to only invoke an already existing Web service, then
 alternatively you can use the <code>wsimport</code> and <code>wsgen</code>
 scripts in the <code>bin</code> directory of the JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ bundle.</p>
+
 <h2>Current Limitations</h2>
 <ul>
+<li>
+The <code>java.util.Collection</code> classes cannot be used with rpc/literal or document/literal BARE style
+due to a limitation in JAXB.  However, they do work in the default document/literal WRAPPED style.
+</li>
+<li>
+<li>
 http.jar - The http.jar file included in this release is to be used for evaluation purposes only. 
 This jar is not redistributable.
+</li>
 </ul>
 <h2>Known Bugs/Issues</h2>
 <ul>
+<li>
+JAX-WS has a bug relating to the WS-I Basic Profile 1.1 <a href="http://www.ws-i.org/Profiles/BasicProfile-1.1-2004-08-24.html#Bindings_and_Parts">R2211</a> 
+requirement.  Currently, JAX-WS is using <code>xsi:nill="true"</code> to represent null parameters in rpc/lit mode.
+</li>
   <li>
-Although JAX-WS customizations are portable accross implementations, the names of 
+Although JAX-WS customizations are portable across implementations, the names of 
 WSDL and schema files generated are not specified.  Therefore each vendor may and
 most likely will generate different names.  Therefore, when switching between 
 implementations of JAX-WS, it may be necessary to modify your customization files

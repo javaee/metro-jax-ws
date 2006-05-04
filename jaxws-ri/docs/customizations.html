@@ -65,7 +65,7 @@ client application can enable asynchrony for a particular operation
 in a <CODE>portType</CODE> or all operations in a <CODE>portType</CODE>
 or all <CODE>portType</CODE> operations defined in the WSDL file.</P>
 <P>The JAX-RPC 1.1 specification did not define a standard
-customization archictecture. However JAX-RPC 1.x SI had limited WSDL
+customization architecture. However JAX-RPC 1.x SI had limited WSDL
 to Java customization support. It allowed a JAX-RPC 1.x application
 to:</P>
 <UL>
@@ -76,7 +76,7 @@ to:</P>
 	<LI><P>Customize handler chains.</P>
 </UL>
 <P>But these customizations were not portable and could not be used
-across other JAX-RPC implementions. JAX-WS @@IMPL_VERSION@@ RI
+across other JAX-RPC implementations. JAX-WS @@IMPL_VERSION@@ RI
 provides complete support for all the binding declarations defined by
 the specification.</P>
 <H2><A NAME="1._Declaring_customizations_"></A>1. Declaring
@@ -111,7 +111,7 @@ element must specify the location of the WSDL file as a URI in the
 value of <CODE>wsdlLocation</CODE> attribute.</P>
 <P>Its important that the <CODE>wsdlLocation</CODE> attribute on the
 root <CODE>jaxws:bindings</CODE> declaration is same as the WSDL
-location URI given to <CODE>wscompile</CODE>.</P>
+location URI given to <CODE>wsimport</CODE>.</P>
 <PRE>&lt;jaxws:bindings
     wsdlLocation=&quot;http://localhost:8080/jaxws-external-customize/addnumbers?WSDL&quot;
     jaxws:xmlns=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
@@ -153,7 +153,7 @@ specification:</P>
 	attribute. 
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">The binding declaration must not
-	have a child element whose qualified name is <CODE>jaxrpc:bindings</CODE>.
+	have a child element whose qualified name is <CODE>jaxws:bindings</CODE>.
 		</P>
 	<LI><P>A binding declaration embedded in a WSDL can only affect the
 	WSDL element it extends. 
@@ -164,7 +164,7 @@ specification:</P>
 from the <CODE>inline-customize</CODE> sample:</P>
 <PRE>&lt;wsdl:portType name=&quot;AddNumbersImpl&quot;&gt;
     &lt;!-- wsdl:portType customizations --&gt;
-    &lt;jaxws:bindings xmlns:jaxrpc=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
+    &lt;jaxws:bindings xmlns:jaxws=&quot;http://java.sun.com/xml/ns/jaxws&quot;&gt;
         &lt;!-- rename the generated SEI from AddNumbersImpl to MathUtil --&gt;
         &lt;jaxws:class name=&quot;MathUtil&quot;/&gt;
         ...
@@ -186,7 +186,7 @@ Customizations</H2>
 declarations.</P>
 <H3><A NAME="2.1_Global_bindings"></A>2.1 Global&nbsp; bindings</H3>
 <P>the global customizations are the customizations that applies to
-the enitre scope of wsdl:definition in the wsdl referenced by the roo
+the entire scope of wsdl:definition in the wsdl referenced by the roo
 jaxws:bindings@wsdlLocation.<BR><BR>Following customizations have the
 global scopes:<BR><BR>&lt;jaxws:package&nbsp;
 name=&quot;...&quot;/&gt;<BR>&lt;jaxws:enableWrapperStyle/&gt;<BR>&lt;jaxws:enableAsyncMapping/&gt;<BR><BR>These
@@ -211,7 +211,7 @@ package. To customize the default package mapping you would use a
 <CODE>jaxws:package</CODE> customization on the <CODE>wsdl:definitions</CODE>
 node or it can directly appear inside the top level bindings element.</P>
 <P>An important thing to note is that -p option on commandline
-wsimport.sh tool (pacakge attribute on wsimport ant task), overrides
+wsimport.sh tool (package attribute on wsimport ant task), overrides
 the jaxws:package customization,it also overrides the schema package
 customization specified using jaxb schema customization.</P>
 <P>For example:</P>
@@ -368,7 +368,7 @@ of the default <CODE>AddNumbersService</CODE> in this example:</P>
     &lt;/bindings&gt;</PRE><H3>
 <A NAME="2.7_Java_Method_customization"></A>2.7 Java Method
 Customization</H3>
-<P>The <CODE>jaxrpc:method</CODE> binding declaration is used to
+<P>The <CODE>jaxws:method</CODE> binding declaration is used to
 customize the generated Java method name of a service endpoint
 interface and to customize the port accessor method in the generated
 <CODE>Service</CODE> class. Refer to the external binding declaration
@@ -412,7 +412,7 @@ of the <CODE>external-customize</CODE> sample.</P>
 The above sample renames the default parameter name of the Java
 method <CODE>addNumbers</CODE> from <CODE>number1</CODE> to <CODE>num1</CODE>.</P>
 <H3><A NAME="2.9_Javadoc_customization"></A>2.9 Javadoc customization</H3>
-<P>jaxws:javadoc sutomization can be used to specify javadoc text for
+<P>jaxws:javadoc customization can be used to specify javadoc text for
 java package, class(SEI, Service or Exception class) and on the
 methods in SEI and service class. Inorder to do it,it should appear
 on the corresponding wsdl nodes.<BR><BR>For package level
@@ -453,7 +453,7 @@ using a JAXB external binding declaration file:</P>
     &lt;/jxb:bindings&gt;
 ...</PRE><P>
 The external JAXB binding declaration file can be passed to <CODE>wsimport</CODE>
-using the <CODE>-b</CODE> switch. See the JAX-WS <A HREF="jaxrpc-tools.html#wscompiletool">tools</A>
+using the <CODE>-b</CODE> switch. See the JAX-WS <A HREF="jaxws-tools.html#wscompiletool">tools</A>
 documentation for details.</P>
 <H3><A NAME="2.10_Handler_chain_customization"></A>2.11 Handler Chain
 Customization</H3>
@@ -468,7 +468,7 @@ handler chain configuration:
     xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;
     xmlns:jaxb=&quot;http://java.sun.com/xml/ns/jaxb&quot;
     xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
-    wsdlLocation=&quot;http://localhost:8080/jaxrpc-fromwsdlhandler/addnumbers?WSDL&quot;
+    wsdlLocation=&quot;http://localhost:8080/jaxws-fromwsdlhandler/addnumbers?WSDL&quot;
     xmlns:jaxws=&quot;http://java.sun.com/xml/ns/jaxws&quot;
     xmlns:javaee=<A HREF="http://java.sun.com/xml/ns/j2ee">&quot;http://java.sun.com/xml/ns/javaee&quot;</A>&gt;
     &lt;jaxws:bindings node=&quot;wsdl:definitions&quot;&gt;
@@ -482,7 +482,7 @@ handler chain configuration:
     &lt;/jaxws:bindings&gt;
 &lt;/jaxws:bindings&gt;</PRE><P STYLE="margin-bottom: 0in">
 When this customization file is passed on to wsimport tool using -b
-swith togather with the WSDL, wsimport generates all the artifacts
+switch together with the WSDL, wsimport generates all the artifacts
 togather with a handler configuration file which has everything
 inside <CODE>jaxws:bindings</CODE> element enclosing the
 <CODE>jws:handler-chain</CODE> element. It also add

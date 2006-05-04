@@ -15,7 +15,7 @@
   <center>
   <h1>
   Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      Asynchronouse Clients
+      Asynchronous Clients
   </h1>
    <b>Specification Version:</b> @@SPEC_VERSION@@<br />
    <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
@@ -28,7 +28,7 @@
 
   <h2>1. Asynchronous Invocation Using Static Stub</h2>
 
-  <p>Client application should apply <code>jaxrpc:enableAsyncMapping</code>binding declaration to the WSDL file to generate asynchronous method in the service endpoint interface. Please refer to <a href="customizations.html#2.3_Asynchrony">async customization</a> for details on how this can be applied to the WSDL file.</p>
+  <p>Client application should apply <code>jaxws:enableAsyncMapping</code>binding declaration to the WSDL file to generate asynchronous method in the service endpoint interface. Please refer to <a href="customizations.html#2.3_Asynchrony">async customization</a> for details on how this can be applied to the WSDL file.</p>
 
   <p>Lets look at the following WSDL excerpt:</p>
   <pre>
@@ -51,12 +51,12 @@
 &lt;/binding&gt;
 </pre>
 
-  <p>In order to generate a service endpoint interface with asynchronous methods the following binding declaration file will be passed to <code>wscompile</code>:</p>
+  <p>In order to generate a service endpoint interface with asynchronous methods the following binding declaration file will be passed to <code>wsimport</code>:</p>
   <pre>
 &lt;bindings
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    wsdlLocation="http://localhost:8080/jaxrpc-async/addnumbers?WSDL"
+    wsdlLocation="http://localhost:8080/jaxws-async/addnumbers?WSDL"
     xmlns="http://java.sun.com/xml/ns/jaxws"&gt;
     &lt;bindings node="wsdl:definitions"&gt;
         &lt;package name="async.client"/&gt;
