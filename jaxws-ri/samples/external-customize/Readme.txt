@@ -22,6 +22,7 @@ The endpint impleentation starts from java and a wsdl is generated dynamically. 
       and exception class - AddNumbersFault_Exception
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs apt to compile AddNumbersImpl.java and
       AddNumbersException.java, creates war file and deplys them.
 

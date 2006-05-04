@@ -36,6 +36,7 @@ fromjava-saop12 sample demonstrates the Java->WSDL programming model using SOAP 
   fail.
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs apt to generate server side artifacts and
       does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed

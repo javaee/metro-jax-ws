@@ -40,6 +40,7 @@ systemId="http://localhost:8080/jaxws-catalog/addnumbers?wsdl"
       and exception class - AddNumbersFault_Exception
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs wsimport to compile AddNumbers.wsdl and generate
       server side artifacts and does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed

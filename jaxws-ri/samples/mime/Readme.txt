@@ -44,6 +44,7 @@ wsiap:swaRef to refer to an attachment in the message.
       used for request/response.
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs wsimport to compile hello.wsdl and generate
       server side artifacts and does the deployment
 

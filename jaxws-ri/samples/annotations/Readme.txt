@@ -49,6 +49,7 @@ partName for the parameters to 'num1' and 'num2' instead of 'number1' and
 
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs wsimport to compile AddNumbers.wsdl and generate
       server side artifacts and does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed

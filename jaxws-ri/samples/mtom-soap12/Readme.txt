@@ -60,6 +60,7 @@ the data binding framework(JAXB in this case).
       used for request/response.
 
 * To run
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - runs wsimport to compile hello.wsdl and generate
       server side artifacts and does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deployed

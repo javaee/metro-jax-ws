@@ -21,6 +21,7 @@ supplychain sample demonstrates the Java->WSDL programming model. The service us
 * wsgen ant task is run to create server objects used during deployment and runtime.
 
 * To run in servlet container
+    * set JAXWS_HOME to the JAX-WS installation directory
     * ant clean server - generates server side artifacts and does the deployment
     * ant clean client run - runs wsimport on the published wsdl by the deplyed
       endpoint, compiles the generated artifacts and the client application
