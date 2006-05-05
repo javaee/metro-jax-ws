@@ -6,7 +6,6 @@ the Java->WSDL programming model.
 * etc - configuration files
     * custom-client.xml client customization file
     * custom-schema.xml client customization file for schema objects
-    * custom-server.xml server customization file
     * build.properties, deploy-targets.xml ant script to deploy the endpoint
       war file
     * sun-jaxws.xml deployment descriptor for web container
