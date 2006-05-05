@@ -592,7 +592,7 @@ major-version=${release.impl.version}
       </antcall>
       <tstamp/>
       <!-- generate the class -->
-      <installerBuilder classFile="${build.home}/JAXWS_SI_${DSTAMP}.jar"
+      <installerBuilder classFile="${build.home}/JAXWS2.0_${DSTAMP}.jar"
           licenseFile="${basedir}/license.txt"
           zipFile="${build.home}/jaxws-ri.zip" />
     </target>
