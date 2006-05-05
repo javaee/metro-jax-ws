@@ -293,7 +293,7 @@ major-version=${release.impl.version}
   <!-- for now, this gets everything built -->
   <target name="image" depends="tools-build">
     <copy todir="${build.home}">
-        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt" />
+        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
     </copy>
   </target>
 
