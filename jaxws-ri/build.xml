@@ -596,6 +596,10 @@ major-version=${release.impl.version}
       <antcall target="generate-weekly-source">
         <param name="compile.debug" value="true"/>
       </antcall>
+      <move tofile="${build.home}/jaxws${release.jar.version}.jar"
+         file="${build.home}/JAXWS2.0_${DSTAMP}.jar"/>
+      <move tofile="${build.home}/jaxws${release.jar.version}-src.jar"
+         file="${build.home}/JAXWS2.0_source_${DSTAMP}.jar"/>
     </target>
 
     <target name="generate-binary"
