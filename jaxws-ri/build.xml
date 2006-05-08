@@ -607,7 +607,7 @@ major-version=${release.impl.version}
         
     <target name="generate-weekly-source"
         depends="prepare"
-        description="generate java.net binary distribution">
+        description="generate sources for java.net binary distribution">
       <tstamp/>
             
       <!-- create the zip file contents -->
@@ -652,7 +652,7 @@ major-version=${release.impl.version}
       </zip>
           
       <!-- generate the installer -->
-      <installerBuilder classFile="${build.home}/JAXWS_SI_source_${DSTAMP}.jar"
+      <installerBuilder classFile="${build.home}/JAXWS2.0_source_${DSTAMP}.jar"
           licenseFile="${basedir}/license.txt"
           zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
       <delete dir="${source.drop.dir}"/>
