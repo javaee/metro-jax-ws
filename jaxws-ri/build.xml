@@ -415,6 +415,7 @@ major-version=${release.impl.version}
         <include name="**/*.xsd"/>
         <exclude name="**/internal/**" />
       </fileset>
+      <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
       <filterset begintoken="@@" endtoken="@@">
         <filter token="SPEC_VERSION" 
                 value="${release.spec.version}" />
