@@ -484,8 +484,10 @@ major-version=${release.impl.version}
     </copy>
 
     <!-- add a copy of the license and README files to the top level -->
-    <copy todir="${dist20.home}"
-          file="license.txt" />
+    <copy todir="${dist20.home}">
+        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
+    </copy>
+
     <copy todir="${dist20.home}"
           file="README" />
   </target>
@@ -585,6 +587,16 @@ major-version=${release.impl.version}
       </classpath>
     </taskdef>
 
+    <target name="re-build"
+        description="RE build target">
+      <antcall target="generate-binary">
+        <param name="compile.debug" value="true"/>
+      </antcall>
+      <antcall target="generate-weekly-source">
+        <param name="compile.debug" value="true"/>
+      </antcall>
+    </target>
+
     <target name="generate-binary"
         description="generate java.net binary distribution">
       <antcall target="dist.zip">
@@ -622,8 +634,11 @@ major-version=${release.impl.version}
           <exclude name="junit.jar"/>
         </fileset>
       </copy>
-      <copy file="${basedir}/license.txt"
-          todir="${source.drop.dir}/jaxws-si"/>
+      <copy todir="${source.drop.dir}/jaxws-si">
+        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
+      </copy>
+<!--      <copy file="${basedir}/license.txt"
+          todir="${source.drop.dir}/jaxws-si"/> -->
       <copy file="${basedir}/etc/src-bundle.xml"
           tofile="${source.drop.dir}/jaxws-si/build.xml"/>
       <mkdir dir="${source.drop.dir}/jaxws-si/bin"/>
