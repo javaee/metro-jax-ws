@@ -113,7 +113,7 @@ public class HttpEndpoint {
         // Takes care of @WebService, @WebServiceProvider's wsdlLocation
         String wsdlLocation = endpointInfo.getWsdlLocation();
         if (wsdlLocation != null) {
-            ClassLoader cl = getClass().getClassLoader();
+            ClassLoader cl = endpointInfo.getImplementorClass().getClassLoader();
             URL url = cl.getResource(wsdlLocation);
             if (url == null) {
                 throw new ServerRtException("cannot.load.wsdl", wsdlLocation);
@@ -126,7 +126,7 @@ public class HttpEndpoint {
                 }
                 primaryWsdl = url.toExternalForm();
                 source.setSystemId(primaryWsdl);
-                if (metadata != null) {
+                if (metadata == null) {
                     metadata = new ArrayList<Source>();
                     endpointInfo.setMetadata(metadata);
                 }
