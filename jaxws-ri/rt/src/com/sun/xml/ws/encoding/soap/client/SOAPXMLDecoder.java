@@ -465,6 +465,17 @@ public class SOAPXMLDecoder extends SOAPDecoder {
                 JAXBBridgeInfo bridgeInfo = (JAXBBridgeInfo) decoderInfo;
                 // JAXB leaves on </env:Header> or <nextHeaderElement>
                 bridgeInfo.deserialize(reader, rtCtxt.getBridgeContext());
+                
+                // skip other detail entries
+                int event = reader.getEventType();
+                if (!(event == START_ELEMENT || event == END_ELEMENT)) {
+                    XMLStreamReaderUtil.nextElementContent(reader);
+                }
+                while(reader.getEventType() == START_ELEMENT) {
+                    XMLStreamReaderUtil.skipElement(reader);
+                    XMLStreamReaderUtil.nextElementContent(reader);
+                }
+                
                 XMLStreamReaderUtil.verifyReaderState(reader, END_ELEMENT);
                 XMLStreamReaderUtil.verifyTag(reader, getFaultDetailTag());
                 return bridgeInfo;
