@@ -262,17 +262,10 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         }
 
         //setRequestHeaders
-        Map requestHeaders = (Map)
+        Map<String, List<String>> requestHeaders = (Map)
             properties.get(MessageContext.HTTP_REQUEST_HEADERS);
         //requestHeaders.
-        if ((requestHeaders != null) && (!requestHeaders.isEmpty())) {
-            Set<Map.Entry<String, String>> entrySet =
-                requestHeaders.entrySet();
-            MimeHeaders headers = xm.getMimeHeaders();
-            for (Map.Entry<String, String> entry : entrySet) {
-                headers.setHeader(entry.getKey(), entry.getValue());
-            }
-        }
+        setMimeHeaders(requestHeaders, xm);
 
         messageContext.put(BINDING_ID_PROPERTY, bindingId);
 
@@ -293,6 +286,8 @@ public class XMLMessageDispatcher implements MessageDispatcher {
 
         return messageContext;
     }
+
+
 
     protected void setConnection(MessageInfo messageInfo, Map<String, Object> context) {
         ClientTransportFactory clientTransportFactory = (ClientTransportFactory) context.get(CLIENT_TRANSPORT_FACTORY);
@@ -916,6 +911,28 @@ public class XMLMessageDispatcher implements MessageDispatcher {
         }
 
         return xm;
+    }
+
+     private void setMimeHeaders(Map<String, List<String>> requestHeaders, XMLMessage xm) {
+
+        if ((requestHeaders != null) && (!requestHeaders.isEmpty())) {
+            Set<Map.Entry<String, List<String>>> headerSet = requestHeaders.entrySet();
+            Iterator<Map.Entry<String, List<String>>> iter = headerSet.iterator();
+            while (iter.hasNext()) {
+                Map.Entry<String,List<String>> entry =iter.next();
+                MimeHeaders headers = xm.getMimeHeaders();
+                String[] values = entry.getValue().toArray(new String[entry.getValue().size()] );;
+                StringBuffer buf = new StringBuffer(250);
+                if (values.length > 0)
+                   buf.append(values[0]);
+                else break;
+                for (int i = 1; i < values.length - 1; i++){
+                    buf.append(values[i]);
+                }
+
+                headers.addHeader(entry.getKey(), buf.toString());
+            }
+        }
     }
 
     private XMLMessage updateXMLMessage(XMLHandlerContext context) {
