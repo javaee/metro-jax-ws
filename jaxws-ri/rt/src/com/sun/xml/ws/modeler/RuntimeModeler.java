@@ -538,7 +538,7 @@ public class RuntimeModeler {
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
         String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
-        if (packageName.length() == 0)
+        if (packageName == null || (packageName != null && packageName.length() == 0))
             beanPackage = JAXWS_PACKAGE_PD;
         String requestClassName = null;
         if(reqWrapper != null && reqWrapper.className().length()>0){
