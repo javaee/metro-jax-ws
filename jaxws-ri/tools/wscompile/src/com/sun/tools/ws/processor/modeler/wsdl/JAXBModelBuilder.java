@@ -3,12 +3,12 @@
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
  * in compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * https://jwsdp.dev.java.net/CDDLv1.0.html
  * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL
  * HEADER in each file and include the License file at
  * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
@@ -64,7 +64,7 @@ public class JAXBModelBuilder {
         _classNameAllocator = new ClassNameAllocatorImpl(classNameCollector);
 
         printstacktrace = Boolean.valueOf(options.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
-        consoleErrorReporter = new ConsoleErrorReporter(_env, printstacktrace);
+        consoleErrorReporter = new ConsoleErrorReporter(_env, false);
         internalBuildJAXBModel(elements);
     }
 
@@ -123,7 +123,7 @@ public class JAXBModelBuilder {
     protected void bind(){
         com.sun.tools.xjc.api.JAXBModel rawJaxbModel = schemaCompiler.bind();
         if(consoleErrorReporter.hasError()){
-            System.exit(-1);
+            throw new ModelException(consoleErrorReporter.getException());
         }
         jaxbModel = new JAXBModel(rawJaxbModel);
         jaxbModel.setGeneratedClassNames(_classNameAllocator.getJaxbGeneratedClasses());
