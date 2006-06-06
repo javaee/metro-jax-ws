@@ -20,12 +20,12 @@
 
 package com.sun.xml.ws.streaming;
 
+import com.sun.xml.ws.util.FastInfosetReflection;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
 import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -45,29 +45,6 @@ public class SourceReaderFactory {
      */
     static ThreadLocal<DOMStreamReader> domStreamReader = 
         new ThreadLocal<DOMStreamReader>();
-    
-    /**
-     * FI FastInfosetSource class.
-     */
-    static Class fastInfosetSourceClass;
-    
-    /**
-     * FI <code>StAXDocumentSerializer.setEncoding()</code> method via reflection.
-     */
-    static Method fastInfosetSource_getInputStream;
-
-    static {
-        // Use reflection to avoid static dependency with FI jar
-        try {
-            fastInfosetSourceClass =
-                Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
-            fastInfosetSource_getInputStream = 
-                fastInfosetSourceClass.getMethod("getInputStream");
-        } 
-        catch (Exception e) {
-            fastInfosetSourceClass = null;
-        }
-    }
 
     public static XMLStreamReader createSourceReader(Source source,
         boolean rejectDTDs) 
@@ -106,9 +83,9 @@ public class SourceReaderFactory {
                     }
                 }
             }
-            else if (source.getClass() == fastInfosetSourceClass) {
+            else if (FastInfosetReflection.isFastInfosetSource(source)) {
                 return XMLStreamReaderFactory.createFIStreamReader((InputStream) 
-                    fastInfosetSource_getInputStream.invoke(source));
+                    FastInfosetReflection.FastInfosetSource_getInputStream(source));
             }
             else if (source instanceof DOMSource) {
                 DOMStreamReader dsr = domStreamReader.get();

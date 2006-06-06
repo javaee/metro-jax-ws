@@ -28,7 +28,6 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.messaging.saaj.util.ByteInputStream;
 import com.sun.xml.ws.encoding.JAXWSAttachmentUnmarshaller;
-import com.sun.xml.ws.encoding.jaxb.JAXBBeanInfo;
 import com.sun.xml.ws.encoding.jaxb.JAXBBridgeInfo;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.jaxb.RpcLitPayloadSerializer;
@@ -40,7 +39,6 @@ import com.sun.xml.ws.encoding.soap.message.SOAPFaultInfo;
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.handler.HandlerChainCaller;
 import com.sun.xml.ws.handler.HandlerContext;
-import com.sun.xml.ws.handler.MessageContextUtil;
 import com.sun.xml.ws.model.soap.SOAPRuntimeModel;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -52,6 +50,7 @@ import com.sun.xml.ws.util.SOAPUtil;
 import com.sun.xml.ws.client.dispatch.DispatchContext;
 import com.sun.xml.ws.client.dispatch.impl.encoding.DispatchUtil;
 import com.sun.xml.ws.client.BindingProviderProperties;
+import com.sun.xml.ws.util.FastInfosetReflection;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.AttachmentPart;
@@ -60,17 +59,14 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.soap.SOAPFaultException;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -78,7 +74,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static javax.xml.stream.XMLStreamReader.*;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 /**
@@ -94,22 +89,6 @@ public abstract class SOAPDecoder implements Decoder {
 
     protected final static String MUST_UNDERSTAND_FAULT_MESSAGE_STRING =
         "SOAP must understand error";
-
-    /**
-     * FI <code>FastInfosetSource.getInputStream()</code> method via reflection.
-     */
-    protected static Method FastInfosetSource_getInputStream;
-
-    static {
-        // Use reflection to avoid static dependency with FI jar
-        try {
-            Class clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
-            FastInfosetSource_getInputStream = clazz.getMethod("getInputStream");
-        }
-        catch (Exception e) {
-            // Falls through
-        }
-    }
 
     /* (non-Javadoc)
      * @see com.sun.pept.encoding.Decoder#decode(com.sun.pept.ept.MessageInfo)
@@ -475,11 +454,10 @@ public abstract class SOAPDecoder implements Decoder {
                 } else {
                     logger.fine("SAAJ StreamSource doesn't have ByteInputStream " + is);
                 }
-            } else
-            if (source.getClass().getName().equals("org.jvnet.fastinfoset.FastInfosetSource"))
-            {
+            } else if (FastInfosetReflection.isFastInfosetSource(source)) {
                 try {
-                    bis = (ByteInputStream) FastInfosetSource_getInputStream.invoke(source);
+                    bis = (ByteInputStream) FastInfosetReflection.
+                            FastInfosetSource_getInputStream(source);
                 }
                 catch (Exception e) {
                     throw new XMLReaderException("fastinfoset.noImplementation");

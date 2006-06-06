@@ -37,6 +37,11 @@ import org.w3c.dom.Node;
  */
 public class FastInfosetReflection {
     /**
+     * 
+     */
+    public static ClassLoader fiClassLoader;
+    
+    /**
      * FI StAXDocumentParser constructor using reflection.
      */
     public static Constructor fiStAXDocumentParser_new;
@@ -129,7 +134,17 @@ public class FastInfosetReflection {
     static {
         // Use reflection to avoid static dependency with FI jar
         try {
-            Class clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
+            // Load the FastInfosetRuntime
+            Class clazz = Class.forName("com.sun.fastinfoset.runtime.FastInfosetRuntime");
+            Method m = clazz.getDeclaredMethod("getClassLoader", 
+                    new Class[] { ClassLoader.class });
+            // Obtain the class loader to use to load the rest of the Fast Infoset classes
+            ClassLoader cl = (ClassLoader)m.invoke(null, 
+                    new Object[] { FastInfosetReflection.class.getClassLoader() });
+
+            
+            clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser",
+                    true, cl);
             fiStAXDocumentParser_new = clazz.getConstructor();
             fiStAXDocumentParser_setInputStream =
                 clazz.getMethod("setInputStream", java.io.InputStream.class);
@@ -137,7 +152,8 @@ public class FastInfosetReflection {
                 clazz.getMethod("setStringInterning", boolean.class);
 
             clazz =
-                Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer");
+                Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer",
+                    true, cl);
             fiStAXDocumentSerializer_new = clazz.getConstructor();
             fiStAXDocumentSerializer_setOutputStream =
                 clazz.getMethod("setOutputStream", java.io.OutputStream.class);
@@ -145,26 +161,30 @@ public class FastInfosetReflection {
                 clazz.getMethod("setEncoding", String.class);
             
             clazz =
-                Class.forName("com.sun.xml.fastinfoset.dom.DOMDocumentParser");
+                Class.forName("com.sun.xml.fastinfoset.dom.DOMDocumentParser",
+                    true, cl);
             fiDOMDocumentParser_new = clazz.getConstructor();
             fiDOMDocumentParser_parse = clazz.getMethod("parse", 
                 new Class[] { org.w3c.dom.Document.class, java.io.InputStream.class });
             
-            clazz = Class.forName("com.sun.xml.fastinfoset.dom.DOMDocumentSerializer");
+            clazz = Class.forName("com.sun.xml.fastinfoset.dom.DOMDocumentSerializer",
+                    true, cl);
             fiDOMDocumentSerializer_new = clazz.getConstructor();
             fiDOMDocumentSerializer_serialize = clazz.getMethod("serialize", 
                 new Class[] { org.w3c.dom.Node.class });
             fiDOMDocumentSerializer_setOutputStream = clazz.getMethod("setOutputStream",
                 new Class[] { java.io.OutputStream.class });
             
-            fiFastInfosetSource = clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetSource");
+            fiFastInfosetSource = clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetSource",
+                    true, cl);
             fiFastInfosetSource_new = clazz.getConstructor(
                 new Class[] { java.io.InputStream.class });
             fiFastInfosetSource_getInputStream = clazz.getMethod("getInputStream");          
             fiFastInfosetSource_setInputStream = clazz.getMethod("setInputStream", 
                 new Class[] { java.io.InputStream.class });          
             
-            fiFastInfosetResult = clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetResult");
+            fiFastInfosetResult = clazz = Class.forName("org.jvnet.fastinfoset.FastInfosetResult",
+                    true, cl);
             fiFastInfosetResult_new = clazz.getConstructor(
                 new Class[] { java.io.OutputStream.class });
             fiFastInfosetResult_getOutputStream = clazz.getMethod("getOutputStream");           

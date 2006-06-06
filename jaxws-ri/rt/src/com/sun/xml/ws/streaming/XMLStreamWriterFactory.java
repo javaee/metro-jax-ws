@@ -20,6 +20,7 @@
 
 package com.sun.xml.ws.streaming;
 
+import com.sun.xml.ws.util.FastInfosetReflection;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
@@ -38,27 +39,7 @@ public class XMLStreamWriterFactory {
      * StAX input factory shared by all threads.
      */
     static XMLOutputFactory xmlOutputFactory;
-    
-    /**
-     * FI StAXDocumentSerializer constructor using reflection.
-     */
-    static Constructor fiStAXDocumentSerializer_new;
-    
-    /**
-     * FI <code>StAXDocumentSerializer.reset()</code> method via reflection.
-     */
-    static Method fiStAXDocumentSerializer_reset;
-    
-    /**
-     * FI <code>StAXDocumentSerializer.setOutputStream()</code> method via reflection.
-     */
-    static Method fiStAXDocumentSerializer_setOutputStream;
-    
-    /**
-     * FI <code>StAXDocumentSerializer.setEncoding()</code> method via reflection.
-     */
-    static Method fiStAXDocumentSerializer_setEncoding;
-    
+        
     /**
      * FI stream writer for each thread.
      */
@@ -66,21 +47,7 @@ public class XMLStreamWriterFactory {
     
     static {
         // Use StAX pluggability layer to get factory instance
-        xmlOutputFactory = XMLOutputFactory.newInstance();
-        
-        // Use reflection to avoid static dependency with FI jar
-        try {
-            Class clazz =
-                Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentSerializer");
-            fiStAXDocumentSerializer_new = clazz.getConstructor();
-            fiStAXDocumentSerializer_setOutputStream =
-                clazz.getMethod("setOutputStream", java.io.OutputStream.class);
-            fiStAXDocumentSerializer_setEncoding =
-                clazz.getMethod("setEncoding", String.class);
-        } 
-        catch (Exception e) {
-            fiStAXDocumentSerializer_new = null;
-        }
+        xmlOutputFactory = XMLOutputFactory.newInstance();        
     }
             
     // -- XML ------------------------------------------------------------
@@ -125,7 +92,7 @@ public class XMLStreamWriterFactory {
         String encoding, boolean declare)
     {
         // Check if compatible implementation of FI was found
-        if (fiStAXDocumentSerializer_new == null) {
+        if (FastInfosetReflection.fiStAXDocumentSerializer_new == null) {
             throw new XMLReaderException("fastinfoset.noImplementation");
         }
         
@@ -133,10 +100,10 @@ public class XMLStreamWriterFactory {
             Object sds = fiStreamWriter.get();
             if (sds == null) {
                 // Do not use StAX pluggable layer for FI
-                fiStreamWriter.set(sds = fiStAXDocumentSerializer_new.newInstance());
+                fiStreamWriter.set(sds = FastInfosetReflection.fiStAXDocumentSerializer_new.newInstance());
             }            
-            fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
-            fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
+            FastInfosetReflection.fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
+            FastInfosetReflection.fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
             return (XMLStreamWriter) sds;
         }  catch (Exception e) {
             throw new XMLStreamWriterException(e);
