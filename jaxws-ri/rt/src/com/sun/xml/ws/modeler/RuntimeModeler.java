@@ -359,12 +359,14 @@ public class RuntimeModeler {
             return true;
         }
         Class declClass = method.getDeclaringClass();
+        boolean declHasWebService = getPrivClassAnnotation(declClass, WebService.class) != null;
         WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null &&
-            webMethod.exclude() == false) {
+            webMethod.exclude() == false &&
+            declHasWebService) {
             return true;
         }
-        if (getPrivClassAnnotation(declClass, WebService.class) != null &&
+        if (declHasWebService &&
             !classUsesWebMethod.get(declClass)) {
             return true;
         }
