@@ -25,9 +25,6 @@
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!--Do not use Project Properties customizer when editing this file manually.-->
             <name>JAXWS-RI</name>
-            <properties>
-                <property-file>nbproject/project.properties</property-file>
-            </properties>
             <folders>
                 <source-folder>
                     <label>rt/src</label>
@@ -153,24 +150,6 @@
                     </source-file>
                 </items>
                 <context-menu>
-                    <!--
-                    <separator/>
-                    <action>
-                        <label>Debug Wscompile</label>
-                        <target>debug-wscompile</target>
-                        <property name="args">${wscompile.args}</property>
-                    </action>
-                    <action>
-                        <label>Debug WsGen</label>
-                        <target>debug-wsgen</target>
-                        <property name="args">${wsgen.args}</property>
-                    </action>
-                    <action>
-                        <label>Debug Test Client</label>
-                        <target>run-client-server-main</target>
-                        <property name="classname">${test.classname}</property>
-                    </action>
-                    -->
                     <ide-action name="build"/>
                     <ide-action name="clean"/>
                     <ide-action name="rebuild"/>
