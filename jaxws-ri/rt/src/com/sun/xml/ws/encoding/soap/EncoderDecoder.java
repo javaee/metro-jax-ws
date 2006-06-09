@@ -25,10 +25,7 @@ import com.sun.xml.ws.encoding.jaxb.RpcLitPayload;
 import com.sun.xml.ws.encoding.soap.internal.AttachmentBlock;
 import com.sun.xml.ws.encoding.soap.internal.HeaderBlock;
 import com.sun.xml.ws.encoding.soap.internal.InternalMessage;
-import com.sun.xml.ws.model.Parameter;
-import com.sun.xml.ws.model.ParameterBinding;
-import com.sun.xml.ws.model.RuntimeModel;
-import com.sun.xml.ws.model.WrapperParameter;
+import com.sun.xml.ws.model.*;
 import com.sun.xml.ws.model.soap.SOAPBinding;
 import com.sun.xml.ws.server.RuntimeContext;
 import com.sun.xml.ws.handler.HandlerContext;
@@ -41,6 +38,7 @@ import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.WebServiceException;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -283,6 +281,7 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
                 value = result;
             else
                 value = p.getHolderValue(data[p.getIndex()]);
+            checkRPCLitNullableParameter(p, value);
             RuntimeModel model = context.getModel();
             JAXBBridgeInfo bi = new JAXBBridgeInfo(model.getBridge(p.getTypeReference()), value);
             payload.addParameter(bi);
@@ -389,6 +388,14 @@ public abstract class EncoderDecoder extends EncoderDecoderBase {
         if(mimeType.equals("text/xml") || mimeType.equals("application/xml"))
             return true;
         return false;
+    }
+
+    /**
+     * Checks rpclit body parts for nullability
+     */
+    void checkRPCLitNullableParameter(Parameter param, Object value) {
+        if(value == null)
+            throw new WebServiceException("Method Parameter: "+param.getName() +" cannot be null. This is BP 1.1 R2211 violation.");
     }
 
 }
