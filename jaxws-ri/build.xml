@@ -583,6 +583,13 @@ major-version=${release.impl.version}
     </target>
 
 
+  <!-- =====================
+       J2SE renaming 
+       ===================== -->
+  <!-- assumes the dist target has been run -->
+  <target name="j2se-integration" description="J2SE integration">
+    <ant antfile="build-j2se.xml" target="j2se-integration" inheritrefs="true"/>
+  </target>
 
   <!-- =====================
        SVR4 DISTRIBUTION 

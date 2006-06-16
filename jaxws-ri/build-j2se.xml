@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the "License").  You may not use this file except
+ in compliance with the License.
+ 
+ You can obtain a copy of the license at
+ https://jwsdp.dev.java.net/CDDLv1.0.html
+ See the License for the specific language governing
+ permissions and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL
+ HEADER in each file and include the License file at
+ https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
+ add the following below this CDDL HEADER, with the
+ fields enclosed by brackets "[]" replaced with your
+ own identifying information: Portions Copyright [yyyy]
+ [name of copyright owner]
+-->
+
+
+<!-- ************  J2SE renaming ********************** -->
+
+
+<project name="JAXWS-RI-j2SE" basedir=".">
+
+  <!-- package rename task -->
+  <taskdef name="prename" classname="com.sun.wts.tools.ant.PackageRenameTask">
+    <classpath>
+      <pathelement path="lib/package-rename-task.jar" />
+    </classpath>
+  </taskdef>
+
+  <macrodef name="package-rename">
+    <attribute name="srcdir" />
+    <attribute name="destdir" />
+    <sequential>
+      <prename srcdir="@{srcdir}" destdir="@{destdir}">
+        <pattern from="com.sun.codemodel" to="com.sun.codemodel.internal" />
+        <pattern from="com.sun.xml" to="com.sun.xml.internal" />
+        <pattern from="com.sun.xsom" to="com.sun.xsom.internal" />
+        <pattern from="com.sun.txw2" to="com.sun.xsom.internal" />
+        <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+        <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset" />
+        <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" />
+      </prename>
+    </sequential>
+  </macrodef>
+
+  <target name="integrate-package-rename-task">
+    <get src="http://kohsuke.sfbay/hudson/job/package-rename-task/lastSuccessfulBuild/artifact/target/package-rename-task-1.0.jar"
+         dest="lib/package-rename-task.jar"/>
+  </target>
+
+  <target name="j2se-integration"
+          description="prepare renamed source code for J2SE integration">
+
+    <package-rename srcdir="rt/src" destdir="j2se-integration/rt/src" />
+    <package-rename srcdir="tools/wscompile/src" destdir="j2se-integration/tools/src" />
+
+  </target>
+
+</project>
