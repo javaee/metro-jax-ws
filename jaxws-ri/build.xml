@@ -288,6 +288,7 @@ major-version=${release.impl.version}
     <delete dir="${dist.home}"/>
     <ant dir="${basedir}/rt" target="clean"/>
     <ant dir="${basedir}/tools/wscompile" target="clean"/>
+    <delete dir="j2se-integration"/>
   </target>
 
   <!-- for now, this gets everything built -->
