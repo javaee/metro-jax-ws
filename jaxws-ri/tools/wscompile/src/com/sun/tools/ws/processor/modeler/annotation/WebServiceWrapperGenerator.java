@@ -1,21 +1,23 @@
 /*
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
+ * (the License).  You may not use this file except in
+ * compliance with the License.
  * 
  * You can obtain a copy of the license at
- * https://jwsdp.dev.java.net/CDDLv1.0.html
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html.
  * See the License for the specific language governing
  * permissions and limitations under the License.
  * 
  * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
- * add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your
- * own identifying information: Portions Copyright [yyyy]
- * [name of copyright owner]
+ * Header Notice in each file and include the License file
+ * at https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ * If applicable, add the following below the CDDL Header,
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems Inc. All Rights Reserved
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
@@ -49,8 +51,12 @@ import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
 
 import com.sun.tools.ws.processor.generator.GeneratorBase;
+import com.sun.tools.ws.processor.generator.GeneratorConstants;
+import com.sun.tools.ws.processor.generator.Names;
 import com.sun.tools.ws.processor.modeler.ModelerException;
 import com.sun.tools.ws.processor.util.ProcessorEnvironment;
+import com.sun.tools.ws.processor.util.GeneratedFileInfo;
+import com.sun.tools.ws.processor.util.DirectoryUtil;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wscompile.FilerCodeWriter;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
@@ -123,7 +129,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             ProcessorEnvironment env = builder.getProcessorEnvironment();
             try {
                 CodeWriter cw = new FilerCodeWriter(sourceDir, env);
-
                 if(env.verbose())
                     cw = new ProgressCodeWriter(cw, System.out);
                 cm.build(cw);
@@ -201,6 +206,12 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 reqNamespace = reqWrapper.targetNamespace();
         }
         builder.log("requestWrapper: "+requestClassName);
+///// fix for wsgen CR 6442344
+        GeneratedFileInfo gfi=new GeneratedFileInfo();
+        gfi.setFile(new File(DirectoryUtil.getOutputDirectoryFor(requestClassName, builder.getSourceDir(), builder.getProcessorEnvironment()),
+                             Names.stripQualifier(requestClassName) + GeneratorConstants.JAVA_SRC_SUFFIX));
+        builder.getProcessorEnvironment().addGeneratedFile(gfi);
+//////////
         boolean canOverwriteRequest = builder.canOverWriteClass(requestClassName);
         if (!canOverwriteRequest) {
             builder.log("Class " + requestClassName + " exists. Not overwriting.");
@@ -231,6 +242,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 builder.onError("webserviceap.method.response.wrapper.bean.name.not.unique",
                                  new Object[] {typeDecl.getQualifiedName(), method.toString()});
             }
+  ///// fix for wsgen CR 6442344
+            gfi=new GeneratedFileInfo();
+            gfi=new GeneratedFileInfo();
+            gfi.setFile(new File(DirectoryUtil.getOutputDirectoryFor(responseClassName, builder.getSourceDir(), builder.getProcessorEnvironment()),
+                                 Names.stripQualifier(responseClassName) + GeneratorConstants.JAVA_SRC_SUFFIX));
+            builder.getProcessorEnvironment().addGeneratedFile(gfi);
+////////////
         }
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
@@ -246,8 +264,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             seiContext.setResWrapperOperation(method, resWrapperInfo);
         try {
             if (!canOverwriteRequest && !canOverwriteResponse) {
-//                getWrapperMembers(reqWrapperInfo);
-//                getWrapperMembers(resWrapperInfo);
                 return false;
             }
 
@@ -274,43 +290,12 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             // class members
             writeMembers(reqCls, reqMembers);
             writeMembers(resCls, resMembers);
+
         } catch (Exception e) {
             throw new ModelerException("modeler.nestedGeneratorError",e);
         }
         return true;
     }
-
-/*    private void getWrapperMembers(WrapperInfo wrapperInfo) throws Exception {
-        if (wrapperInfo == null)
-            return;
-        TypeDeclaration type = builder.getTypeDeclaration(wrapperInfo.getWrapperName());
-        Collection<FieldDeclaration> fields = type.getFields();
-        ArrayList<MemberInfo> members = new ArrayList<MemberInfo>();
-        MemberInfo member;
-        int i=0;
-        for (FieldDeclaration field : fields) {
-            XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-            String fieldName = field.getSimpleName();
-//            String typeName = field.getType().toString();
-            String elementName = xmlElement != null ? xmlElement.name() : fieldName;
-            String namespace =  xmlElement != null ? xmlElement.namespace() : "";
-
-            String idxStr = fieldName.substring(3);
-            int index = Integer.parseInt(idxStr);
-            member = new MemberInfo(index, field.getType(),
-                                    field.getSimpleName(),
-                                    new QName(namespace, elementName));
-            int j=0;
-            while (j<members.size() && members.get(j++).getParamIndex() < index) {
-                break;
-            }
-            members.add(j, member);
-            i++;
-        }
-        for (MemberInfo member2 : members) {
-            wrapperInfo.addMember(member2);
-        }
-    }*/
     
     private void collectMembers(MethodDeclaration method, String operationName, String namespace,
                                ArrayList<MemberInfo> requestMembers,
@@ -416,7 +401,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         sortedMembers.addAll(sortedMap.values());
         return sortedMembers;
     }
-    
+        
     private void writeMembers(JDefinedClass cls, ArrayList<MemberInfo> members) throws IOException {
         if (cls == null)
             return;
