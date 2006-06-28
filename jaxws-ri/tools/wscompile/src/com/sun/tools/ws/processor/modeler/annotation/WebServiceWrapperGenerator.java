@@ -244,7 +244,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }
   ///// fix for wsgen CR 6442344
             gfi=new GeneratedFileInfo();
-            gfi=new GeneratedFileInfo();
             gfi.setFile(new File(DirectoryUtil.getOutputDirectoryFor(responseClassName, builder.getSourceDir(), builder.getProcessorEnvironment()),
                                  Names.stripQualifier(responseClassName) + GeneratorConstants.JAVA_SRC_SUFFIX));
             builder.getProcessorEnvironment().addGeneratedFile(gfi);
