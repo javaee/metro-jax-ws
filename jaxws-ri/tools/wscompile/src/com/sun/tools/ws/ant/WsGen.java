@@ -439,14 +439,14 @@ public class WsGen extends MatchingTask {
                 setupWscompileCommand();
             }
             if (fork) {
-                if (verbose) {
-                    log("command line: "+"wsimport "+cmd.toString());
+                if (verbose) {  // Fix for CR 6444561
+                    log("command line: "+"wsgen "+cmd.toString());
                 }
                 int status = run(cmd.getCommandline());
                 ok = (status == 0) ? true : false;
             } else {
-                if (verbose) {
-                    log("command line: "+"wsimport "+cmd.getJavaCommand().toString());
+                if (verbose) {       // Fix for CR 6444561
+                    log("command line: "+"wsgen "+cmd.getJavaCommand().toString());
                 }
                 logstr = new LogOutputStream(this, Project.MSG_WARN);
 
