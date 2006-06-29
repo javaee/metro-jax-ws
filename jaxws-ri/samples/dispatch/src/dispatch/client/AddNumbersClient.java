@@ -74,12 +74,12 @@ import javax.xml.transform.TransformerFactory;
 
 public class AddNumbersClient {
 
-    private static String request = "<addNumbers xmlns=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers>";
+    private static String request = "<addNumbers xmlns=\"http://duke.example\"><arg0>10</arg0><arg1>20</arg1></addNumbers>";
 
-    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><addNumbers xmlns=\"http://duke.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers></soapenv:Body></soapenv:Envelope>";
+    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><addNumbers xmlns=\"http://duke.example\"><arg0>10</arg0><arg1>20</arg1></addNumbers></soapenv:Body></soapenv:Envelope>";
 
-    private static final QName serviceQName = new QName("http://duke.org", "AddNumbersService");
-    private static final QName portQName = new QName("http://duke.org", "AddNumbersPort");
+    private static final QName serviceQName = new QName("http://duke.example", "AddNumbersService");
+    private static final QName portQName = new QName("http://duke.example", "AddNumbersPort");
     private static String endpointAddress = "http://localhost:8080/jaxws-dispatch/addnumbers";
     private static Service service;
 

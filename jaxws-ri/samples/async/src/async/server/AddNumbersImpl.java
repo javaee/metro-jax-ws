@@ -43,7 +43,7 @@ package async.server;
 
 import javax.jws.WebService;
 
-@WebService (serviceName = "AddNumbersService", targetNamespace = "http://duke.org")
+@WebService (serviceName = "AddNumbersService", targetNamespace = "http://duke.example")
 public class AddNumbersImpl {
     
     public int addNumbers (int number1, int number2) {

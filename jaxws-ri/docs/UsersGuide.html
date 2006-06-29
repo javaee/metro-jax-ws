@@ -26,7 +26,7 @@ Web Services<BR>User's Guide
 <P ALIGN=CENTER STYLE="margin-bottom: 0in"><font face="Arial"><B>Specification Version:</B>
 2.0<BR><B>Reference Implementation (RI) Version:</B> 2.0_01 fcs</font></P>
 <HR>
-<P><font face="Arial">Last modified: 5/4/2006</font></P>
+<P><font face="Arial">Last modified: 6/29/2006</font></P>
 <H2><font face="Arial"><A NAME="mozTocId114381"></A>Contents</font></H2>
 <P STYLE="margin-bottom: 0in">&nbsp;</P>
 <blockquote>
@@ -639,7 +639,7 @@ from the sample fromwsdl:</font></CODE></P>
 </font><CODE><font face="Arial">@javax.jws.WebService(</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">   name=&quot;AddNumbersPortType&quot;,</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">   serviceName=&quot;AddNumbersService&quot;,</font></CODE><font face="Arial">
-</font><CODE><font face="Arial">   targetNamespace=&quot;http://duke.org&quot;</font></CODE><font face="Arial">
+</font><CODE><font face="Arial">   targetNamespace=&quot;http://duke.example&quot;</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">)</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">@javax.jws.soap.SOAPBinding(</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">   style=javax.jws.soap.SOAPBinding.Style.DOCUMENT,</font></CODE><font face="Arial">
@@ -711,8 +711,8 @@ from the sample application </font><font face="Arial">fromwsdl</font><font face=
 </font><CODE><font face="Arial">       interface=&quot;fromwsdl.server.AddNumbersPortType&quot;</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">       implementation=&quot;fromwsdl.server.AddNumbersImpl&quot;</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">       wsdl=&quot;WEB-INF/wsdl/AddNumbers.wsdl&quot;</font></CODE><font face="Arial">
-</font><CODE><font face="Arial">       service=&quot;{http://duke.org}AddNumbersService&quot;</font></CODE><font face="Arial">
-</font><CODE><font face="Arial">       port=&quot;{http://duke.org}AddNumbersPort&quot;</font></CODE><font face="Arial">
+</font><CODE><font face="Arial">       service=&quot;{http://duke.example}AddNumbersService&quot;</font></CODE><font face="Arial">
+</font><CODE><font face="Arial">       port=&quot;{http://duke.example}AddNumbersPort&quot;</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">       url-pattern=&quot;/addnumbers&quot; /&gt;</font></CODE><font face="Arial">
 </font><CODE><font face="Arial">&lt;/endpoints&gt;</font></CODE></PRE><P>
 <CODE><font face="Arial">It defines the deployment-related configuration information for

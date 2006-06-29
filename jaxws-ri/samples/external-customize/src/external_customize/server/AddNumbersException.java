@@ -42,7 +42,7 @@
 package external_customize.server;
 
 @javax.xml.ws.WebFault (name="AddNumbersException",
-    targetNamespace="http://duke.org")
+    targetNamespace="http://duke.example")
     public class AddNumbersException extends Exception {
     String info;
     

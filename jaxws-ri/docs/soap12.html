@@ -23,7 +23,7 @@ Web Services<BR>SOAP 1.2
 @@SPEC_VERSION@@<BR><B>Reference Implementation (RI) Version:</B>
 @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@</P>
 <HR>
-<P>Last Modified: 4/26/06</P>
+<P>Last Modified: 6/29/06</P>
 <H2>Introduction</H2>
 <P>The default binding supported by JAXWS 2.0 is SOAP 1.1 over HTTP.
 With this release we have added <B>SOAP 1.2 binding over HTTP</B>
@@ -112,7 +112,7 @@ Content-Length: 178
 SOAPAction: &quot;&quot;
 &lt;soapenv:Envelope xmlns:soapenv=&quot;<FONT COLOR="#ff0000">http://www.w3.org/2003/05/soap-envelope</FONT>&quot;&gt;
  &lt;soapenv:Body&gt;
-<FONT COLOR="#000099">  &lt;addNumbers xmlns=&quot;http://duke.org&quot;&gt;</FONT>
+<FONT COLOR="#000099">  &lt;addNumbers xmlns=&quot;http://duke.example&quot;&gt;</FONT>
 <FONT COLOR="#000099">   &lt;arg0&gt;10&lt;/arg0&gt;</FONT>
 <FONT COLOR="#000099">   &lt;arg1&gt;20&lt;/arg1&gt;</FONT>
 <FONT COLOR="#000099">  &lt;/addNumbers &gt;</FONT>
@@ -132,7 +132,7 @@ SOAPAction: &quot;&quot;
                 &lt;<B>soapenv:Text</B> xml:lang=&quot;en&quot;&gt;<FONT COLOR="#330099">Negative number cant be added!</FONT>&lt;/soapenv:Text&gt;
             &lt;/soapenv:Reason&gt;
             &lt;<B>soapenv:Detail</B>&gt;
-                <FONT COLOR="#330099">&lt;AddNumbersFault xmlns=&quot;http://duke.org&quot;&gt;</FONT>
+                <FONT COLOR="#330099">&lt;AddNumbersFault xmlns=&quot;http://duke.example&quot;&gt;</FONT>
 <FONT COLOR="#330099">                    &lt;faultInfo&gt;Numbers: -10, 20&lt;/faultInfo&gt;</FONT>
 <FONT COLOR="#330099">                    &lt;message&gt;Negative number cant be added!&lt;/message&gt;</FONT>
 <FONT COLOR="#330099">                &lt;/AddNumbersFault &gt;</FONT>

@@ -17,7 +17,7 @@ Provider </h1>
 @@IMPL_VERSION_SUFFIX@@<br>
 </center>
 <hr>
-<p>Last Modified: 5/4/06</p>
+<p>Last Modified: 6/29/06</p>
 <p>Web Service endpoints may choose to work at the XML message level
 by implementing the <code>Provider</code> interface. This is achieved
 by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>
@@ -66,7 +66,7 @@ customization. wsimport won't generate any artifacts for that port.<br>
 attribute.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.example}AddNumbersService'<br>    port='{http://duke.example}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
 If the wsdl, service, port are not specified in sun-jaxws.xml, then should be declared in the @WebServiceProvider annotation in implementation class.
 <h2>Provider and Binding</h2>
 Provider endpoint can be configured for different bindings using
@@ -108,7 +108,7 @@ with Provider endpoints in sun-jaxws.xml descriptor or by putting @HandlerChain 
 information, see <a href="jaxws-war.html">handler config</a>.<br>
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.org}AddNumbersService'<br>    port='{http://duke.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;javaee:handler-chain&gt;<br>      &lt;javaee:handler-chain-name&gt;my handler&lt;/javaee:handler-chain-name&gt;<br>      &lt;javaee:handler&gt;<br>        &lt;javaee:handler-name&gt;MyHandler&lt;/javaee:handler-name&gt;<br>        &lt;javaee:handler-class&gt;provider.server.MyHandler&lt;/javaee:handler-class&gt;<br>      &lt;/javaee:handler&gt;<br>    &lt;/javaee:handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.example}AddNumbersService'<br>    port='{http://duke.example}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;javaee:handler-chain&gt;<br>      &lt;javaee:handler-chain-name&gt;my handler&lt;/javaee:handler-chain-name&gt;<br>      &lt;javaee:handler&gt;<br>        &lt;javaee:handler-name&gt;MyHandler&lt;/javaee:handler-name&gt;<br>        &lt;javaee:handler-class&gt;provider.server.MyHandler&lt;/javaee:handler-class&gt;<br>      &lt;/javaee:handler&gt;<br>    &lt;/javaee:handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
 <pre><br></pre>
 <hr>
 <p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun

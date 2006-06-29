@@ -43,7 +43,7 @@ package external_customize.server;
 
 import javax.jws.WebService;
 
-@WebService (serviceName = "AddNumbersService", targetNamespace = "http://duke.org")
+@WebService (serviceName = "AddNumbersService", targetNamespace = "http://duke.example")
 public class AddNumbersImpl {
     
     /**

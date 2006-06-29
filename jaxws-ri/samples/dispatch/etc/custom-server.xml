@@ -52,7 +52,7 @@
     <bindings node="wsdl:definitions" >
         <package name="dispatch.server"/>
     </bindings>
-    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.org']">
+    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example']">
         <jaxb:schemaBindings>
             <jaxb:package name="dispatch.server"/>
         </jaxb:schemaBindings>
