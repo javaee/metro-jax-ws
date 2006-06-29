@@ -30,7 +30,7 @@
     wsdlLocation="AddNumbers.wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws">
     <package name="inline_customize.server"/>
-    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example']">
+    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example.org']">
         <jaxb:schemaBindings>
             <jaxb:package name="inline_customize.server"/>
         </jaxb:schemaBindings>

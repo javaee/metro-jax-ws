@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+H<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
@@ -205,7 +205,7 @@ For example:</P>
 <P>By default <CODE>wscompile</CODE> generates WSDL artifacts in a
 package computed from the WSDL <CODE>targetNamespace</CODE>. For
 example, a WSDL file with the <CODE>targetNamespace</CODE>
-<CODE><FONT COLOR="#0000cc">http://duke.example</FONT></CODE> without any
+<CODE><FONT COLOR="#0000cc">http://duke.example.org</FONT></CODE> without any
 package customization will be mapped to the <CODE>org.duke</CODE>
 package. To customize the default package mapping you would use a
 <CODE>jaxws:package</CODE> customization on the <CODE>wsdl:definitions</CODE>
@@ -435,7 +435,7 @@ Customization</H3>
 customized by using standard JAXB bindings. These JAXB bindings can
 live inside the schema or as the child of a <CODE>jaxws:bindings</CODE>
 element in an external binding declaration file:</P>
-<PRE>    &lt;jaxws:bindings node=&quot;wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example']&quot;&gt;
+<PRE>    &lt;jaxws:bindings node=&quot;wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example.org']&quot;&gt;
         &lt;jaxb:schemaBindings&gt;
             &lt;jaxb:package name=&quot;fromwsdl.server&quot;/&gt;
         &lt;/jaxb:schemaBindings&gt;

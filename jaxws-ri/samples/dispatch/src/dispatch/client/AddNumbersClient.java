@@ -20,25 +20,7 @@
  * Copyright 2006 Sun Microsystems Inc. All Rights Reserved
  */
 
-/*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the "License").  You may not use this file except
- * in compliance with the License.
- * 
- * You can obtain a copy of the license at
- * https://jwsdp.dev.java.net/CDDLv1.0.html
- * See the License for the specific language governing
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL
- * HEADER in each file and include the License file at
- * https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
- * add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your
- * own identifying information: Portions Copyright [yyyy]
- * [name of copyright owner]
- */
+
 package dispatch.client;
 
 import java.io.ByteArrayOutputStream;
@@ -74,12 +56,12 @@ import javax.xml.transform.TransformerFactory;
 
 public class AddNumbersClient {
 
-    private static String request = "<addNumbers xmlns=\"http://duke.example\"><arg0>10</arg0><arg1>20</arg1></addNumbers>";
+    private static String request = "<addNumbers xmlns=\"http://duke.example.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers>";
 
-    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><addNumbers xmlns=\"http://duke.example\"><arg0>10</arg0><arg1>20</arg1></addNumbers></soapenv:Body></soapenv:Envelope>";
+    private static String smRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><addNumbers xmlns=\"http://duke.example.org\"><arg0>10</arg0><arg1>20</arg1></addNumbers></soapenv:Body></soapenv:Envelope>";
 
-    private static final QName serviceQName = new QName("http://duke.example", "AddNumbersService");
-    private static final QName portQName = new QName("http://duke.example", "AddNumbersPort");
+    private static final QName serviceQName = new QName("http://duke.example.org", "AddNumbersService");
+    private static final QName portQName = new QName("http://duke.example.org", "AddNumbersPort");
     private static String endpointAddress = "http://localhost:8080/jaxws-dispatch/addnumbers";
     private static Service service;
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" 
-    xmlns:tns="http://duke.example" 
+    xmlns:tns="http://duke.example.org" 
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
     name="AddNumbersService" 
-    targetNamespace="http://duke.example">
+    targetNamespace="http://duke.example.org">
 
   <!-- customizations with global scope below it shows the default customizations -->
   <jaxws:bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws">
@@ -12,8 +12,8 @@
   </jaxws:bindings>
 
   <types>
-      <xs:schema version="1.0" targetNamespace="http://duke.example" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-        <xs:element name="addNumbers" type="ns1:addNumbers" xmlns:ns1="http://duke.example"/>
+      <xs:schema version="1.0" targetNamespace="http://duke.example.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+        <xs:element name="addNumbers" type="ns1:addNumbers" xmlns:ns1="http://duke.example.org"/>
   
         <xs:complexType name="addNumbers">
             <xs:sequence>
@@ -22,7 +22,7 @@
             </xs:sequence>
         </xs:complexType>
 
-        <xs:element name="addNumbersResponse" type="ns2:addNumbersResponse" xmlns:ns2="http://duke.example"/>
+        <xs:element name="addNumbersResponse" type="ns2:addNumbersResponse" xmlns:ns2="http://duke.example.org"/>
 
         <xs:complexType name="addNumbersResponse">
           <xs:sequence>

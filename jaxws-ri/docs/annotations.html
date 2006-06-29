@@ -206,7 +206,7 @@ public @interface WebService {
 }</PRE><H4>
 Example 1</H4>
 <PRE STYLE="margin-left: 0.49in">@WebService(name = &quot;AddNumbers&quot;,
-            targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+            targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public class AddNumbersImpl {
     /**
      * @param number1
@@ -255,7 +255,7 @@ public class AddNumbersImpl {
 }</PRE><P STYLE="margin-bottom: 0in">
 <BR>
 </P>
-<PRE STYLE="margin-left: 0.5in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.5in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public interface AddNumbersIF extends Remote {
     public int addNumbers(int number1, int number2) throws RemoteException, AddNumbersException;
 <FONT FACE="Courier, monospace"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><P ALIGN=LEFT STYLE="margin-left: 0.79in; margin-bottom: 0in">
@@ -340,7 +340,7 @@ public @interface WebMethod {
     boolean exclude() default false;
 }</PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public interface AddNumbersIF extends Remote {
     @WebMethod(operationName=&quot;add&quot;, action=&quot;urn:addNumbers&quot;)
     public int addNumbers(int number1, int number2) throws RemoteException, AddNumbersException;
@@ -498,7 +498,7 @@ public @interface WebParam {
     String partName() default &quot;&quot;;
 }</PRE><H4>
 Example 1</H4>
-<PRE STYLE="margin-left: 0.48in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.48in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public interface AddNumbersIF extends Remote {
     @WebMethod(operationName=&quot;add&quot;, action=&quot;urn:addNumbers&quot;)
     @WebResult(name=&quot;return&quot;)
@@ -507,7 +507,7 @@ public interface AddNumbersIF extends Remote {
         @WebParam(name=&quot;num2&quot;)int number2) throws RemoteException, AddNumbersException;
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H4>
 Example 2</H4>
-<PRE STYLE="margin-left: 0.48in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.48in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public interface AddNumbersIF extends Remote {
     @WebMethod(operationName=&quot;add&quot;, action=&quot;urn:addNumbers&quot;)
     @WebResult(name=&quot;return&quot;)
@@ -614,7 +614,7 @@ public @interface WebResult {
     String partName() default &quot;&quot;;
 }</PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 public interface AddNumbersIF extends Remote {
     @WebMethod(operationName=&quot;add&quot;, action=&quot;urn:addNumbers&quot;)
     @WebResult(name=&quot;return&quot;)
@@ -819,7 +819,7 @@ public @interface SOAPBinding {
     ParameterStyle parameterStyle() default ParameterStyle.WRAPPED;
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H4>
 Example</H4>
-<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example&quot;, name=&quot;AddNumbers&quot;)
+<PRE STYLE="margin-left: 0.49in">@WebService(targetNamespace = &quot;http://duke.example.org&quot;, name=&quot;AddNumbers&quot;)
 @SOAPBinding(style=SOAPBinding.Style.RPC, use=SOAPBinding.Use.LITERAL)
 public interface AddNumbersIF extends Remote {
     @WebMethod(operationName=&quot;add&quot;, action=&quot;urn:addNumbers&quot;)
@@ -1199,7 +1199,7 @@ public class AddNumbersImpl implements Provider&lt;Source&gt; {
     private Source sendSource(int number1, int number2) {
         int sum = number1+number2;
         String body =
-            &quot;&lt;ns:addNumbersResponse xmlns:ns=\&quot;http://duke.example\&quot;&gt;&lt;return&gt;&quot;
+            &quot;&lt;ns:addNumbersResponse xmlns:ns=\&quot;http://duke.example.org\&quot;&gt;&lt;return&gt;&quot;
             +sum
             +&quot;&lt;/return&gt;&lt;/ns:addNumbersResponse&gt;&quot;;
         Source source = new StreamSource(

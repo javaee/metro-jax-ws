@@ -6,15 +6,15 @@
 
 <definitions
 	name="AddNumbers"
-	targetNamespace="http://duke.example"
-	xmlns:tns="http://duke.example"
+	targetNamespace="http://duke.example.org"
+	xmlns:tns="http://duke.example.org"
 	xmlns="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 	<types>
 		<xsd:schema
 			xmlns="http://www.w3.org/2001/XMLSchema"
-			targetNamespace="http://duke.example"
+			targetNamespace="http://duke.example.org"
 			elementFormDefault="qualified">
 
 			<complexType name="addNumbersResponse">

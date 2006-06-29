@@ -76,7 +76,7 @@ public class AddNumbersImpl implements Provider<Source> {
         int number2 = Integer.parseInt(st.nextToken());
         int sum = number1+number2;
         String body =
-            "<ns:addNumbersResponse xmlns:ns=\"http://duke.example\"><ns:return>"
+            "<ns:addNumbersResponse xmlns:ns=\"http://duke.example.org\"><ns:return>"
             +sum
             +"</ns:return></ns:addNumbersResponse>";
         Source source = new StreamSource(

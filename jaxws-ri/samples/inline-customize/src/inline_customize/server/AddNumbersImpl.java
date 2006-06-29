@@ -22,7 +22,7 @@
 
 package inline_customize.server;
 
-@javax.jws.WebService (serviceName="AddNumbersService", targetNamespace="http://duke.example", endpointInterface="inline_customize.server.MathUtil")
+@javax.jws.WebService (serviceName="AddNumbersService", targetNamespace="http://duke.example.org", endpointInterface="inline_customize.server.MathUtil")
 public class AddNumbersImpl implements MathUtil{
     
     /**

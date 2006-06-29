@@ -33,7 +33,7 @@
     <bindings node="wsdl:definitions">
         <package name="provider.client"/>
     </bindings>
-    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example']">
+    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example.org']">
         <jaxb:schemaBindings>
             <jaxb:package name="provider.client"/>
         </jaxb:schemaBindings>

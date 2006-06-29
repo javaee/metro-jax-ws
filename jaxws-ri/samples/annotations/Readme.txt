@@ -10,7 +10,7 @@ endpointInterface element pointing to the annotations.server.AddNumbersIF
 class.
 
 The annotations.server.AddNumbersIF class uses the following annotations:
-The @WebService(targetNamespace = "http://duke.example", name="AddNumbers") -
+The @WebService(targetNamespace = "http://duke.example.org", name="AddNumbers") -
 annotation sets the targetNamespace for the WSDL that will contain the
 wsdl:portType for this endpoint.  the "name" element specifies the name
 of the wsdl:portType element to be 'AddNumbers'.

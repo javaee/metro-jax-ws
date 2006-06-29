@@ -46,8 +46,8 @@ import java.util.Map;
 
 public class DispatchAddNumbersClient {
 
-    private static final QName serviceQName = new QName("http://duke.example", "AddNumbersService");
-    private static final QName portQName = new QName("http://duke.example", "AddNumbersPort");
+    private static final QName serviceQName = new QName("http://duke.example.org", "AddNumbersService");
+    private static final QName portQName = new QName("http://duke.example.org", "AddNumbersPort");
 
     private static String endpointAddress =
         "http://localhost:8080/jaxws-restful/addnumbers";
