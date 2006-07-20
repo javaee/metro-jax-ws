@@ -1,4 +1,5 @@
-fromwsdl sample demonstrates the WSDL->Java programming model.
+fromwsdl sample demonstrates the WSDL->Java programming model
+using an SSL HTTP endpoint.
 
 * It has two operations with different MEPs
     * in/out - addNumbers()
@@ -32,6 +33,11 @@ fromwsdl sample demonstrates the WSDL->Java programming model.
 
 * Prerequisites
 
+Note: sample keystore and truststore files are contained in fromwsdl_secure/etc/certs directory.
+You can try the sample with these files but it is best to generate your own using the following directions.
+
+-install of JAX-WS on tomcat5.5
+
 * Tomcat5.5
   configured with SSL HTTP Connector on port 8443  in $CATALINA_HOME/conf/server.xml
 
@@ -47,17 +53,27 @@ fromwsdl sample demonstrates the WSDL->Java programming model.
     
  Note: keystoreFile and keystorePass values
 
-* self-signed certificate keystore/truststore for client and server.
+* Create self-signed certificate keystore/truststore for client and server.
+cd $JAXWS_HOME/samples/fromwsdl_secure/etc/certs
 
-Generate a self-signed cert for tomcat server
+--Generate a self-signed cert for tomcat server
 
 keytool.exe -genkey -alias self -keyalg RSA -storepass server -keypass server -dname "cn=localhost" -keystore tomcat.keystore
+
+Note: The use of localhost indicates that client and server are running on the same machine. If the server is on a remote machine
+      the server fully qualified domain name will be used. 
  
-Now for the client export self-signed key from the server tomcat.keystore to give to the client
+--Now for the client export self-signed key from the server tomcat.keystore to give to the client
 as a certificate to import.
 
 keytool.exe -export -rfc -alias self -file tomcat.certificate -keystore tomcat.keystore -storepass server -keypass server
 
-On the client, import the tomcat.cer into a client created keystore.
+--On the client, import the tomcat.certificate into a client created keystore.
 
 keytool.exe -import -noprompt -trustcacerts -alias self -file tomcat.certificate -keystore client.keystore -storepass client
+
+Note: -keystore option creates the client.keystore file.
+
+
+The keystore and certificates will be in the certs directory. Copy the certs directory to $CATALINA_HOME.
+Note: Make sure the keystoreFile and the keystorePass are defined with the SSL HTTP/1.1 connector.
