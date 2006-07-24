@@ -207,7 +207,7 @@ public class MyServiceImpl {
     // given proxy interface HelloPortType
     HelloPortType myProxy = // create proxy
 
-    Binding binding = myProxy.getBinding();
+    Binding binding = ((BindingProvider)myProxy).getBinding();
 
     // can create new list or use existing one
     List&lt;Handler&gt; handlerList = binding.getHandlerChain();
