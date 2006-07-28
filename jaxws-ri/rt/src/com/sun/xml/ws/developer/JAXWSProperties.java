@@ -22,8 +22,10 @@
 package com.sun.xml.ws.developer;
 
 public interface JAXWSProperties {
+	// Some values are split into two strings so that package renaming for
+	// mustang doesn't alter the values. So do not combine them
     // Content negotiation property: values "none", "pessimistic" and "optimistic"
-    public static final String CONTENT_NEGOTIATION_PROPERTY = "com.sun.xml.ws.client.ContentNegotiation";
+    public static final String CONTENT_NEGOTIATION_PROPERTY = "com.sun."+ "xml.ws.client.ContentNegotiation";
     public static final String MTOM_THRESHOLOD_VALUE =  "com.sun.xml.ws.common.MtomThresholdValue";
     public static final String HTTP_EXCHANGE = "com.sun.xml.ws.http.exchange";
 }
