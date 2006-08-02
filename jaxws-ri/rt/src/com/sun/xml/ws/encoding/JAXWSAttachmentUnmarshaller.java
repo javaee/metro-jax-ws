@@ -105,11 +105,12 @@ public class JAXWSAttachmentUnmarshaller extends AttachmentUnmarshaller {
     private String decodeCid(String cid){
         if(cid.startsWith("cid:"))
             cid = cid.substring(4, cid.length());
-        try {
-            return "<"+URLDecoder.decode(cid, "UTF-8")+">";
-        } catch (UnsupportedEncodingException e) {
-            throw new WebServiceException(e);
-        }
+//        try {       // Added fix for CR 6456442
+            //return "<"+URLDecoder.decode(cid, "UTF-8")+">";
+            return "<"+cid+">";
+//        } catch (UnsupportedEncodingException e) {
+//            throw new WebServiceException(e);
+//        }
     }
 
     private Map<String, AttachmentBlock> attachments;
