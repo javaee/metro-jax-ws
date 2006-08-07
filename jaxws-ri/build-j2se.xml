@@ -61,7 +61,10 @@
 
     <package-rename srcdir="rt/src" destdir="j2se-integration/rt/src" />
     <package-rename srcdir="tools/wscompile/src" destdir="j2se-integration/tools/src" />
-
+    <prename srcdir="tools/etc" destdir="j2se-integration/tools/etc/META-INF/services">
+      <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+      <include name="com.sun.mirror.apt.AnnotationProcessorFactory" />
+    </prename>
   </target>
 
 </project>
