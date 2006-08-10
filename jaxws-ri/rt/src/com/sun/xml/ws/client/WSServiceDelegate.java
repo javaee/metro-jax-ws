@@ -96,7 +96,6 @@ public class WSServiceDelegate extends ServiceDelegate {
     protected URL wsdlLocation;
     protected ServiceContext serviceContext;
     protected Executor executor;
-    private HashSet<Object> seiProxies;
 
     /**
      * {@link CatalogResolver} to check META-INF/jax-ws-catalog.xml.
@@ -108,7 +107,6 @@ public class WSServiceDelegate extends ServiceDelegate {
     public WSServiceDelegate(ServiceContext scontext) {
         serviceContext = scontext;
         this.dispatchPorts = new HashMap();
-        seiProxies = new HashSet();
         if (serviceContext.getHandlerResolver() != null) {
             handlerResolver = serviceContext.getHandlerResolver();
         }
@@ -120,7 +118,6 @@ public class WSServiceDelegate extends ServiceDelegate {
             throw new ClientConfigurationException("service.noServiceName");
 
         this.dispatchPorts = new HashMap();
-        seiProxies = new HashSet();
 
         serviceContext = ServiceContextBuilder.build(wsdlDocumentLocation, serviceName,
             serviceClass, XmlUtil.createDefaultCatalogResolver());
@@ -172,7 +169,6 @@ public class WSServiceDelegate extends ServiceDelegate {
     public Object getPort(QName portName, Class portInterface)
         throws WebServiceException {
         Object seiProxy = createEndpointIFBaseProxy(portName, portInterface);
-        seiProxies.add(seiProxy);
         if (portName != null) {
             addPort(portName);
         }
