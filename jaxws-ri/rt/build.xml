@@ -41,6 +41,10 @@
         source="1.5">
       <classpath refid="runtime.compile.classpath"/>
     </javac>
+    <!-- Copy AnnotationProcessor factory info -->
+    <copy todir="${build.dir}/classes/META-INF/services">
+      <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*"/>
+    </copy>   
   </target>
 
   <target name="compile-mustang" depends="prepare">
