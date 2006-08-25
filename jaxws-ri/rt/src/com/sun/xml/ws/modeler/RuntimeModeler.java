@@ -973,6 +973,8 @@ public class RuntimeModeler {
             String namespace = targetNamespace;
             String name = ((Class)exception).getSimpleName();
             String beanPackage = packageName + PD_JAXWS_PACKAGE_PD;
+            if (packageName == null || (packageName != null && packageName.length() == 0))
+                beanPackage = JAXWS_PACKAGE_PD;
             String className = beanPackage+ name + BEAN;
             if (webFault != null) {
                 if (webFault.faultBean().length()>0)
