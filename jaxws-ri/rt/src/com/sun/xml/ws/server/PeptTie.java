@@ -28,6 +28,7 @@ import com.sun.xml.ws.pept.ept.MessageInfo;
 import com.sun.xml.ws.pept.presentation.MessageStruct;
 import com.sun.xml.ws.pept.presentation.Tie;
 import com.sun.xml.ws.util.MessageInfoUtil;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,7 +68,9 @@ public class PeptTie implements Tie {
         } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
             if (cause != null) {
-                if (!(cause instanceof RuntimeException) && cause instanceof Exception ) {
+                // Consider RemoteException as RuntimeException
+                if (!(cause instanceof RuntimeException) && cause instanceof Exception
+                        && !(cause instanceof RemoteException)) {
                     // Service specific exception
                     messageInfo.setResponseType(
                             MessageStruct.CHECKED_EXCEPTION_RESPONSE);
