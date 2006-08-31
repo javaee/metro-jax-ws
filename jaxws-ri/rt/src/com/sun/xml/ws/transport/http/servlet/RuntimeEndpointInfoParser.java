@@ -61,18 +61,24 @@ public class RuntimeEndpointInfoParser {
     }
 
     public List<RuntimeEndpointInfo> parse(InputStream is) {
+        XMLStreamReader reader = null;
         try {
-            XMLStreamReader reader =
-                XMLStreamReaderFactory.createXMLStreamReader(is, true);
+            reader =
+                    XMLStreamReaderFactory.createXMLStreamReader(is, true);
             XMLStreamReaderUtil.nextElementContent(reader);
             return parseEndpoints(reader);
-        } catch (XMLStreamException e) {
-            throw new ServerRtException("runtime.parser.xmlReader",e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (XMLStreamException e) {
+                    throw new ServerRtException("runtime.parser.xmlReader", e);
+                }
+            }
         }
     }
 
-    protected List<RuntimeEndpointInfo> parseEndpoints(XMLStreamReader reader)
-    throws XMLStreamException {
+    protected List<RuntimeEndpointInfo> parseEndpoints(XMLStreamReader reader) {
         if (!reader.getName().equals(QNAME_ENDPOINTS)) {
             failWithFullName("runtime.parser.invalidElement", reader);
         }
@@ -136,9 +142,6 @@ public class RuntimeEndpointInfoParser {
                 failWithLocalName("runtime.parser.invalidElement", reader);
             }
         }
-
-        reader.close();
-
         return endpoints;
     }
     

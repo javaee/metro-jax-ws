@@ -115,6 +115,7 @@ public class CustomizationParser extends InputParser {
         }else{
             warn("configuration.notBindingFile");
         }
+        reader.close();
     }
 
     private void addHandlerChainInfo() throws Exception{

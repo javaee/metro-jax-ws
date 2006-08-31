@@ -614,6 +614,7 @@ public abstract class GeneratorBase
                 "2");
             it.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             it.transform( new DOMSource(hChains), new StreamResult(p) );
+            p.close();
         } catch (Exception e) {
             throw new GeneratorException(
                     "generator.nestedGeneratorError",

@@ -110,6 +110,7 @@ public class WSServletContextListener
                 new RuntimeEndpointInfoParser(classLoader);
             InputStream is = context.getResourceAsStream(JAXWS_RI_RUNTIME);
             List<RuntimeEndpointInfo> endpoints = parser.parse(is);
+            is.close();
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, endpoints);
             
             // Create WebServiceContext

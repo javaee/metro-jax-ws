@@ -30,6 +30,7 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPMessageHandlers;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import java.io.IOException;
@@ -103,8 +104,19 @@ public class HandlerAnnotationProcessor {
         XMLStreamReader reader =
             XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
-        return HandlerChainsModel.parseHandlerFile(reader, clazz.getClassLoader(),
+        HandlerAnnotationInfo handlerAnnInfo = HandlerChainsModel.parseHandlerFile(reader, clazz.getClassLoader(),
             serviceName, portName, bindingId);
+        try {
+            reader.close();
+            iStream.close();
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+            throw new UtilException(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UtilException(e.getMessage());
+        }
+        return handlerAnnInfo;
     }
     
     public static HandlerChainsModel buildHandlerChainsModel(final Class clazz) {
@@ -119,7 +131,18 @@ public class HandlerAnnotationProcessor {
         XMLStreamReader reader =
             XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
-        return HandlerChainsModel.parseHandlerConfigFile(clazz, reader);
+        HandlerChainsModel handlerChainsModel = HandlerChainsModel.parseHandlerConfigFile(clazz, reader);
+        try {
+            reader.close();
+            iStream.close();
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+            throw new UtilException(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UtilException(e.getMessage());
+        }
+        return handlerChainsModel;
     }
     
     static Class getClass(String className) {
