@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# $Id: wsgen.sh,v 1.3 2006-06-29 23:49:00 ofung Exp $
+# $Id: wsgen.sh,v 1.4 2006-09-05 17:36:23 jitu Exp $
 #
 
 #
@@ -34,6 +34,6 @@ fi
 bin_dir=`dirname $0`
 WEBSERVICES_LIB=`cd $bin_dir/../share/lib; pwd`
 
-CLASSPATH=$JAVA_HOME/lib/tools.jar:$WEBSERVICES_LIB/activation.jar:$WEBSERVICES_LIB/../jaxb/lib/jaxb-xjc.jar:$WEBSERVICES_LIB/jaxws-tools.jar
+CLASSPATH=$JAVA_HOME/lib/tools.jar:$WEBSERVICES_LIB/activation.jar:$WEBSERVICES_LIB/../jaxb/lib/jaxb-xjc.jar:$WEBSERVICES_LIB/jaxws-tools.jar:$WEBSERVICES_LIB/../../private/share/lib/jsr250-api.jar
 
 exec $JAVA_HOME/bin/java $WSGEN_OPTS -cp "$CLASSPATH" com.sun.tools.ws.WsGen "$@"
