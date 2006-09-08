@@ -22,58 +22,41 @@
  Copyright 2006 Sun Microsystems Inc. All Rights Reserved
 -->
 
-<!--
- The contents of this file are subject to the terms
- of the Common Development and Distribution License
- (the "License").  You may not use this file except
- in compliance with the License.
- 
- You can obtain a copy of the license at
- https://jwsdp.dev.java.net/CDDLv1.0.html
- See the License for the specific language governing
- permissions and limitations under the License.
- 
- When distributing Covered Code, include this CDDL
- HEADER in each file and include the License file at
- https://jwsdp.dev.java.net/CDDLv1.0.html  If applicable,
- add the following below this CDDL HEADER, with the
- fields enclosed by brackets "[]" replaced with your
- own identifying information: Portions Copyright [yyyy]
- [name of copyright owner]
--->
-<web-app version="2.4" mlns="http://java.sun.com/xml/ns/j2ee">
-  <display-name>fromwsdl-secure</display-name>
-  <description>fromwsdl-secure</description>
-  <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
-  </listener>
-  <servlet>
-    <servlet-name>AddNumbersPort</servlet-name>
+<web-app version="2.4" mlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <description>fromwsdl-secure</description>
     <display-name>fromwsdl-secure</display-name>
-    <description>JAX-WS endpoint - fromwsdl-secure</description>
-    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AddNumbersPort</servlet-name>
-    <url-pattern>/addnumbers</url-pattern>
-  </servlet-mapping>
-  <session-config>
-    <session-timeout>60</session-timeout>
-  </session-config>
-   <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>AddNumbersService</web-resource-name>
-      <url-pattern>/addnumbers</url-pattern>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-    </web-resource-collection>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
+    <listener>
+        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+    </listener>
+    <servlet>
+        <description>JAX-WS endpoint - fromwsdl-secure</description>
+        <display-name>fromwsdl-secure</display-name>
+        <servlet-name>AddNumbersPort</servlet-name>
+        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddNumbersPort</servlet-name>
+        <url-pattern>/addnumbers</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AddNumbersService</web-resource-name>
+            <url-pattern>/addnumbers</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
     <login-config>
-    <auth-method>CLIENT-CERT</auth-method>
-    <realm-name>default</realm-name>
-  </login-config>
+        <auth-method>CLIENT-CERT</auth-method>
+        <realm-name>default</realm-name>
+    </login-config>
 </web-app>
