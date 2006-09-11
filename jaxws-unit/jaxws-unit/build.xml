@@ -1,0 +1,177 @@
+<project name="jaxws-unit" basedir="." default="run">
+
+    <property environment="env"/>
+    <property name="tomcat.home" value="${env.TOMCAT_HOME}"/>
+    <property name="as.home" value="${env.AS_HOME}"/>
+    <property name="name" value="jaxws-unit"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="lib.home" value="${basedir}/lib"/>
+    <property name="docs.home" value="${basedir}/docs"/>
+    <property name="logs.dir" value="${build.home}/junit-reports"/>
+
+    <!-- default build id -->
+    <tstamp>
+        <format property="now" pattern="MM/dd/yyyy hh:mm aa" unit="hour"/>
+    </tstamp>
+    <property name="build.id" value="${now}(${user.name})"/>
+
+    <path id="javac.classpath">
+        <fileset dir="." includes="lib/**/*.jar"/>
+    </path>
+
+    <path id="runtime.classpath">
+        <path refid="javac.classpath"/>
+        <pathelement location="build/classes"/>
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+    </path>
+
+    <target name="init">
+        <echo message="-------- ${name} ${build.id} --------"/>
+    </target>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="build"/>
+    </target>
+
+
+    <target name="integrate-ws-test-harness" depends="prepare"
+            description="integrate the last successful ws-test-harness Hudson build">
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-test-harness/lastSuccessfulBuild/artifact/build/test-harness.zip"
+             dest="${build.home}/test-harness.zip"/>
+        <unzip src="${build.home}/test-harness.zip" dest="${build.home}"/>
+        <copy todir="lib" overwrite="true">
+            <fileset dir="${build.home}/test-harness" includes="*.zip,*.jar"/>
+        </copy>
+        <copy todir="${docs.home}" overwrite="true">
+            <fileset dir="${build.home}/test-harness" includes="*.html, *.png"/>
+        </copy>
+    </target>
+
+    <target name="get-jaxws-image" unless="jaxwsdir">
+        <!-- ws need some JAX-WS to test, so let's just use the latest JAX-WS RI -->
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-21/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
+             dest="build/jaxws-ri.zip"/>
+        <unzip src="build/jaxws-ri.zip" dest="build"/>
+
+        <!-- TODO: get it from rearch branch as 21 branch needs hudson job change -->
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-rearch-2005/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
+             dest="build/jaxws-local-transport.jar"/>
+    </target>
+
+    <!-- Run tests on jaxws wspace -->
+    <target name="run-jaxws-wspace-local" if="jaxwsdir">
+        <run-tests>
+            <arguments>
+                <arg value="-cp:jaxws"/>
+                <arg path="${jaxwsdir}"/>
+            </arguments>
+        </run-tests>
+    </target>
+
+    <!-- Run tests on jaxws image -->
+    <target name="run-jaxws-image-local" unless="jaxwsdir">
+        <run-tests>
+            <arguments>
+                <arg value="-cp:jaxws-image"/>
+                <arg path="build/jaxws-ri"/>
+                <arg value="-transport"/>
+                <arg path="build/jaxws-local-transport.jar"/>
+            </arguments>
+        </run-tests>
+    </target>
+
+
+    <target name="run-jaxws-image-with-tomcat-embedded" unless="jaxwsdir">
+        <run-tests>
+            <arguments>
+                <arg value="-cp:jaxws-image"/>
+                <arg path="build/jaxws-ri"/>
+                <arg value="-tomcat-embedded"/>
+                <arg value="${tomcat.home}"/>
+            </arguments>
+        </run-tests>
+    </target>
+
+    <target name="run-jaxws-wspace-with-tomcat-embedded" if="jaxwsdir">
+        <run-tests>
+            <arguments>
+                <arg value="-cp:jaxws"/>
+                <arg path="${jaxwsdir}"/>
+                <arg value="-tomcat-embedded"/>
+                <arg value="${tomcat.home}"/>
+            </arguments>
+        </run-tests>
+    </target>
+
+    <target name="run-jaxws-local" unless="tomcat">
+        <antcall target="run-jaxws-image-local" />
+        <antcall target="run-jaxws-wspace-local"/>
+    </target>
+
+    <target name="run-jaxws-tomcat" if="tomcat">
+        <antcall target="run-jaxws-image-with-tomcat-embedded"/>
+        <antcall target="run-jaxws-wspace-with-tomcat-embedded"/>
+    </target>
+
+    <target name="run" depends="prepare">
+        <condition property="testdir" value="testcases" else="${test}">
+            <equals arg1="${test}" arg2="${test}"/>
+        </condition>
+        <antcall target="get-jaxws-image"/>
+        <antcall target="run-jaxws-local"/>
+        <antcall target="run-jaxws-tomcat"/>
+    </target>
+
+    <target name="run-with-as">
+        <!-- TODO -->
+
+    </target>
+
+    <!-- invokes Unit test-->
+    <macrodef name="run-tests">
+        <element name="arguments"/>
+        <sequential>
+            <!--
+            These are the default args that are passed to the harness which mean that
+            the tests will be using the dist image of the wsit workspace , run the tests
+            using local transport and recursively scan for all the sub dirs under testcases
+
+            Please modify these options if you wish to test the harness in different
+            modes
+            For more information on the different command line options
+            refer to docs/index.html
+            -->
+            <java jar="${lib.home}/harness.jar" fork="true">
+                <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
+                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportPipe.dump" value="${log}"/>
+
+                <arg value="-report"/>
+                <arg path="${logs.dir}"/>
+
+                <arguments/>
+
+                <!-- test data -->
+                <arg value="-r"/>
+                <arg path="${testdir}"/>
+
+
+                <arg line="${args}"/>
+
+                <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
+               <jvmarg value="-Xdebug"/-->
+            </java>
+
+            <mkdir dir="${logs.dir}/junit-reports"/>
+            <junitreport todir="${logs.dir}/junit-reports">
+                <fileset dir="${logs.dir}" includes="*.xml"/>
+                <report format="frames" todir="${logs.dir}/junit-reports"/>
+            </junitreport>
+        </sequential>
+    </macrodef>
+
+
+    <target name="clean">
+        <delete dir="${build.home}"/>
+    </target>
+
+</project>
