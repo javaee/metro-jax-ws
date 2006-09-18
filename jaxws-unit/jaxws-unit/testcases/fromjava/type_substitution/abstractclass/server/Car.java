@@ -1,5 +1,7 @@
 package fromjava.type_substitution.abstractclass.server;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 public abstract class Car implements Vehicle{
     private String model;
     private String year;
@@ -26,4 +28,14 @@ public abstract class Car implements Vehicle{
     }
 
     public abstract String getMake();
+
+    static class Adapter extends XmlAdapter<Car, Vehicle> {
+        public Vehicle unmarshal(Car v) throws Exception {
+            return v;
+        }
+
+        public Car marshal(Vehicle v) throws Exception {
+            return (Car)v;
+        }
+    }
 }
