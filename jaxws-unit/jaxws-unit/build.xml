@@ -49,12 +49,10 @@
     </target>
 
     <target name="get-jaxws-image" unless="jaxwsdir">
-        <!-- ws need some JAX-WS to test, so let's just use the latest JAX-WS RI -->
         <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-21/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
              dest="build/jaxws-ri.zip"/>
         <unzip src="build/jaxws-ri.zip" dest="build"/>
 
-        <!-- TODO: get it from rearch branch as 21 branch needs hudson job change -->
         <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-rearch-2005/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
              dest="build/jaxws-local-transport.jar"/>
     </target>
@@ -126,6 +124,8 @@
 
     </target>
 
+    <property name="skip" value="false"/>
+
     <!-- invokes Unit test-->
     <macrodef name="run-tests">
         <element name="arguments"/>
@@ -153,11 +153,10 @@
                 <arg value="-r"/>
                 <arg path="${test}"/>
 
-
                 <arg line="${args}"/>
 
-                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
-               <jvmarg value="-Xdebug"/>
+                <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
+               <jvmarg value="-Xdebug"/-->
             </java>
 
             <mkdir dir="${logs.dir}/junit-reports"/>
