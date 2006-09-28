@@ -604,7 +604,7 @@ public class WSDLParser {
             // XXX-NOTE - this is wrong; for extensibility purposes,
             // any attribute can be specified on a <part> element, so
             // we need to put an extensibility hook here
-            Util.fail("parsing.elementOrTypeRequired", partName);
+            warn("parsing.elementOrTypeRequired", partName);
         }
 
         context.pop();
