@@ -1,0 +1,11 @@
+r = carDealerPort.getSedans();
+
+assertEquals("Toyota", r.get(0).getMake());
+assertEquals("Camry", r.get(0).getModel());
+assertEquals("1998", r.get(0).getYear());
+assertEquals("white", r.get(0).getColor());
+
+assertEquals("Toyota", r.get(1).getMake());
+assertEquals("Corolla", r.get(1).getModel());
+assertEquals("1999", r.get(1).getYear());
+assertEquals("red", r.get(1).getColor());

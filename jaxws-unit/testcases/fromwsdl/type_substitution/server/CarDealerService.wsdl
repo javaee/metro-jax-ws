@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://server.type_substitution.fromjava/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://server.type_substitution.fromjava/" name="CarDealerService">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://server.type_substitution.fromjava/" schemaLocation="types.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="getSedans">
+    <part name="parameters" element="tns:getSedans"/>
+  </message>
+  <message name="getSedansResponse">
+    <part name="parameters" element="tns:getSedansResponse"/>
+  </message>
+  <portType name="CarDealer">
+    <operation name="getSedans">
+      <input message="tns:getSedans"/>
+      <output message="tns:getSedansResponse"/>
+    </operation>
+  </portType>
+  <binding name="CarDealerPortBinding" type="tns:CarDealer">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="getSedans">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="CarDealerService">
+    <port name="CarDealerPort" binding="tns:CarDealerPortBinding">
+      <soap:address location="local://C:/ws/jaxws-unit/testcases/fromjava/type_substitution/work/services/server/war?CarDealerPort"/>
+    </port>
+  </service>
+</definitions>
