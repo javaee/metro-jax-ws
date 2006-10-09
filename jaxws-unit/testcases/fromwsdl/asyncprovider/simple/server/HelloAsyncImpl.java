@@ -28,7 +28,6 @@ import javax.xml.ws.WebServiceContext;
 public class HelloAsyncImpl implements AsyncProvider<Source> {
 
     private static final JAXBContext jaxbContext = createJAXBContext();
-    private int combo;
     private int bodyIndex;
 
     public javax.xml.bind.JAXBContext getJAXBContext(){
@@ -87,18 +86,59 @@ public class HelloAsyncImpl implements AsyncProvider<Source> {
         System.out.println("**** Received in AsyncProvider Impl ******");
 		try {
 			Hello_Type hello = recvBean(source);
-			if (!hello.getExtra().equals("bar")) {
-				cbak.send(new WebServiceException("Expected=bar,got="+hello.getExtra()));
-				return;
+			String arg = hello.getArgument();
+			if (arg.equals("sync")) {
+				String extra = hello.getExtra();
+				if (extra.equals("source")) {
+					cbak.send(sendSource());
+				} else if (extra.equals("bean")) {
+					cbak.send(sendBean());
+				} else if (extra.equals("fault")) {
+					cbak.send(sendFaultSource());
+				} else {
+					throw new WebServiceException("Expected extra = (source|bean|fault), Got="+extra);
+				}
+			} else if (arg.equals("async")) {
+				new Thread(new RequestHandler(cbak, hello)).start();
+			} else {
+				throw new WebServiceException("Expected Argument = (sync|async), Got="+arg);
 			}
-			if (hello.getArgument().equals("fault")) {
-				cbak.send(sendFaultSource());
-				return;
-			}
-			cbak.send((++combo%2 == 0) ? sendSource() : sendBean());
 		} catch(Exception e) {
             throw new WebServiceException("Endpoint failed", e);
 		}
     }
+
+	private class RequestHandler implements Runnable {
+		final AsyncProviderCallback cbak;
+		final Hello_Type hello;
+
+		public RequestHandler(AsyncProviderCallback cbak, Hello_Type hello) {
+			this.cbak = cbak;
+			this.hello = hello;
+		}
+
+		public void run() {
+			try {
+				Thread.sleep(15000);
+			} catch(InterruptedException ie) {
+				cbak.sendError(new WebServiceException("Interrupted..."));
+				return;
+			}
+			try {
+				String extra = hello.getExtra();
+				if (extra.equals("source")) {
+					cbak.send(sendSource());
+				} else if (extra.equals("bean")) {
+					cbak.send(sendBean());
+				} else if (extra.equals("fault")) {
+					cbak.send(sendFaultSource());
+				} else {
+					cbak.sendError(new WebServiceException("Expected extra = (source|bean|fault), Got="+extra));
+				}
+			} catch(Exception e) {
+				cbak.sendError(new WebServiceException(e));
+			}
+		}
+	}
 
 }
