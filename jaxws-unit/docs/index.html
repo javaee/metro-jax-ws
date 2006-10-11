@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.2 2006-10-02 22:06:25 vivekp Exp $</div>      
+    <div align="right">$Id: index.html,v 1.3 2006-10-11 17:06:21 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -84,7 +84,7 @@
         </li> 
         <ol>   
           <li>
-            <a href="#Local__No_Container_">Local (No Container)</a>
+            <a href="#In_VM__No_Container_">In-VM (No Container)</a>
           </li> 
           <ol> </ol>    
           <li>
@@ -161,6 +161,10 @@
           </li> 
           <ol> </ol>  
         </ol>    
+        <li>
+          <a href="#Requiring_certain_modes">Requiring certain modes</a>
+        </li> 
+        <ol> </ol>    
         <li>
           <a href="#Resources">Resources</a>
         </li> 
@@ -318,14 +322,14 @@ work/                    (root test directory)
       </a>
     </h3>   
     <p>The harness can run tests by using a variety of transports and containers.         
-    <a name="Local__No_Container_"></a>
+    <a name="In_VM__No_Container_"></a>
     <h4>
-      <a name="Local__No_Container_">
-        <a href="#Local__No_Container_">1.4.1.</a>  Local (No Container)
+      <a name="In_VM__No_Container_">
+        <a href="#In_VM__No_Container_">1.4.1.</a>  In-VM (No Container)
       </a>
     </h4>   
-    <p>By default, the test harness uses the local transport. There's no additional option required for this mode. This is the preferred mode of testing because of its quick turn-around time. This mode also allows you to use a single debug session to debug both the client and the server side. 
-    <p>Some delivery vehicles (notably the distribution images) do not have the code needed to use the local transport. To test those, find the matching
+    <p>By default, the test harness uses the in-vm transport. There's no additional option required for this mode. This is the preferred mode of testing because of its quick turn-around time. This mode also allows you to use a single debug session to debug both the client and the server side. 
+    <p>Some delivery vehicles (notably the distribution images) do not have the code needed to use the in-vm transport. To test those, find the matching
       <tt>jaxws-local-transport.jar</tt> and use the
       <tt>-transport</tt> option to specify it.
       
@@ -599,7 +603,7 @@ bi = new Holder(new BigInteger("35.12")); // create JAX-WS holder object with Bi
       </a>
     </h4>   
     <p>To isolate the tests from the environment, and to make tests as reusable as possible, the harness creates services and port objects on behalf of the test programs. This allows the harness to configure ports correctly, so that they can talk to the right service.
-    <p>For this reason, it's important for the client program now to create port objects on its own. See the following illustration: 
+    <p>For this reason, it's important for the client program not to create port objects on its own. See the following illustration: 
       <pre class="script">
 // :-&lt; BAD EXAMPLE
 port = new HelloService().getHelloPort();
@@ -610,6 +614,7 @@ helloPort.sayHelloTo("duke");
 </pre>  
     
     <p>To find out what port variables are imported under what names, check the output from the test harness. Right before the client script executes, you should see a line like this:
+      <pre>injected services: helloService</pre> 
       <pre>injected ports: addNumbersPort</pre> 
     
     <p>The only exception to this "don't create your ports" rule is when you need
@@ -617,8 +622,7 @@ helloPort.sayHelloTo("duke");
       <span style="color:red; font-weight:bold">(not fully cooked. Feedback welcome)</span>  : 
       <pre class="script">
 // create dispatch
-svc = new HelloService();
-svc.addPort(new QName("foo","bar"), javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
+helloService.addPort(new QName("foo","bar"), javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
 </pre>  
                  
     <a name="More_on_Script_Execution_Environment"></a>
@@ -704,10 +708,40 @@ class FooBarService {
       <tt>custom-server.xml</tt> to the service top directory (to refer to WSDL file and schema files from this customization file, just use the relative path from the customization file to WSDL/schemas like
       <tt>"./foo.xsd"</tt>.
                       
+    <a name="Requiring_certain_modes"></a>
+    <h3>
+      <a name="Requiring_certain_modes">
+        <a href="#Requiring_certain_modes">2.5.</a>  Requiring certain modes
+      </a>
+    </h3>   
+    <p>A test can declare that it requires a particular kind of a transport by declaring the transport attribute. The possible values are the values you specify in the scheme portion of the endpoint address URI (The major values include "http" and "local", but open-ended as new transports are added.)
+      <pre>
+&lt;descriptor transport="http"&gt;
+  ...
+</pre> 
+    
+    <p>A test can also declare that it's applicable only to a certain verion(s) of JAX-WS/WSIT, by using the version attributes
+      <tt>@since</tt>,
+      <tt>@until</tt>, and
+      <tt>@excludeFrom</tt>.
+      <ol>
+        <li>The @since attribute indicates that a test will require the given version of the test subject or later. For example,
+          <tt>since="2.0"</tt> indicates that it will run on 2.0 FCS, 2.0 EAs, etc, but not on 1.1.
+        </li>
+        <li>The @until attribute indicates that a test can only be run against the given version of the test subject or earlier. For example
+          <tt>until="1.*"</tt> indicates that the test will run on all versions of 1.x but not on 2.0.
+        </li>
+        <li>The @excludeFrom takes a list of whitespace-separated version numbers, and it indicates that tests be excluded from these specific versions. This is used to mark known regressions and such things.</li>
+      </ol> 
+    
+    <p>Those three attributes can be combined, and they can be specified either on &lt;descript&gt; element (in which case the entire test is subject to the constraints), or on individual &lt;client&gt; element (in which case only that client test is subject to the constraints.)
+    <p>See
+      <a href="https://istack-commons.dev.java.net/source/browse/istack-commons/istack-commons/test/src/com/sun/istack/test/VersionNumber.java?only_with_tag=HEAD&amp;view=markup">this document</a> for more formal definition of what can be a valid version number, and how they are ordered.
+                 
     <a name="Resources"></a>
     <h3>
       <a name="Resources">
-        <a href="#Resources">2.5.</a>  Resources
+        <a href="#Resources">2.6.</a>  Resources
       </a>
     </h3>   
     <p>If test programs need to use image files, binary files, or other data files, they should be put in
