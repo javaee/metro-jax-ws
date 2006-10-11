@@ -1,0 +1,7 @@
+<descriptor since="2.1">
+  <description>
+    Test stateful web service behavior.
+  </description>
+  <client href ="*.bsh" />
+  <service />
+</descriptor>

@@ -1,0 +1,3 @@
+// just the basics
+a = bankServicePort.getAccount(0);
+System.out.println(a);
