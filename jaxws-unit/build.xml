@@ -53,7 +53,7 @@
              dest="build/jaxws-ri.zip"/>
         <unzip src="build/jaxws-ri.zip" dest="build"/>
 
-        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-rearch-2005/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-21/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
              dest="build/jaxws-local-transport.jar"/>
     </target>
 
