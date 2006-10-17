@@ -1,0 +1,18 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.xml.ws</groupId>
+  <artifactId>jaxws-tools</artifactId>
+  <version>@VERSION@</version>
+  <dependencies>
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <version>@API_VERSION@</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>@VERSION@</version>
+    </dependency>
+  </dependencies>
+</project>
