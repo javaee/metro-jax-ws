@@ -1,20 +1,19 @@
 package fromjava.stateful.bank;
 
-import com.sun.xml.ws.developer.ServerFeatures;
+import com.sun.xml.ws.developer.Stateful;
 import com.sun.xml.ws.developer.StatefulWebServiceManager;
 import com.sun.xml.ws.developer.StatefulWebServiceManager.Callback;
 
 import javax.jws.WebService;
-import javax.xml.ws.BindingType;
-import javax.xml.ws.Feature;
 import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.AddressingFeature;
+import javax.xml.ws.soap.Addressing;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 @WebService
-@BindingType(features={@Feature(ServerFeatures.STATEFUL),@Feature(AddressingFeature.ID)})
+@Addressing
+@Stateful
 public class Account {
     private final int id;
     private int amount;
