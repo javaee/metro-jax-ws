@@ -1,0 +1,9 @@
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+
+W3CEndpointReference epr = addNumbersPort.getW3CEPR();
+epr.writeTo(new StreamResult(System.out));
+
+r =addNumbersPort.addNumbers(10,20);
+assertEquals(30,r);
+System.out.println(r);
+
