@@ -1,4 +1,5 @@
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.transform.stream.StreamResult;
 
 W3CEndpointReference epr = addNumbersPort.getW3CEPR();
 epr.writeTo(new StreamResult(System.out));
