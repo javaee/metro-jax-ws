@@ -32,12 +32,12 @@ public class CarDealerImpl {
     }
 
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
-    public Vehicle tradeInVehicle(Vehicle oldCar){
+    public Car tradeInVehicle(Car oldCar){
         if(!(oldCar instanceof Toyota))
             throw new WebServiceException("Expected Toyota, received, "+oldCar.getClass().getName());
 
         Toyota toyota = (Toyota)oldCar;
-        if(toyota.getMake().equals("Toyota") && toyota.getModel().equals("Celica") && toyota.getYear().equals("1999") && toyota.getColor().equals("red")){
+        if(toyota.getMake().equals("Toyota") && toyota.getModel().equals("Celica") && toyota.getYear().equals("2007") && toyota.getColor().equals("red")){
             return new Toyota("Prius", "2007", "white");
         }
         throw new WebServiceException("Invalid Toyota Car");
