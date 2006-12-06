@@ -77,6 +77,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.lang.reflect.Field;
 
 import org.xml.sax.EntityResolver;
 
@@ -586,6 +589,34 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         environment.deleteGeneratedFiles();
     }
 
+    // Workaround for bug 6499165 on jax-ws,
+    // Original bug with JDK 6500594 , 6468404 when compiled with debug option,
+    private void workAroundJavacDebug() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            final Class aptMain = cl.loadClass("com.sun.tools.apt.main.Main");
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                public Void run() {
+                    try {
+                        Field forcedOpts = aptMain.getDeclaredField("forcedOpts");
+                        forcedOpts.setAccessible(true);
+                        forcedOpts.set(null, new String[]{});
+                    } catch (NoSuchFieldException e) {
+                        if(verbose)
+                            e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        if(verbose)
+                            e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+        } catch (ClassNotFoundException e) {
+            if(verbose)
+                e.printStackTrace();
+        }
+    }
+
     public void buildModel(String endpoint) {
         context = new AnnotationProcessorContext();
         webServiceAP = new WebServiceAP(this, environment, properties, context);
@@ -601,7 +632,8 @@ public class CompileTool extends ToolBase implements ProcessorNotificationListen
         args[5] = sourceDir.getAbsolutePath();
         args[6] = "-XclassesAsDecls";
         args[7] = endpoint;
-
+        // Workaround for bug 6499165: issue with javac debug option
+        workAroundJavacDebug();
         int result = com.sun.tools.apt.Main.process(this, args);
         if (result != 0) {
             environment.error(getMessage("wscompile.compilationFailed"));
