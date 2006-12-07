@@ -15,7 +15,7 @@
             xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
 			elementFormDefault="qualified"
             xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd">
-        <import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="wsi-swa.xsd"/>
+        <import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd"/>
         <complexType name="DetailType">
             <sequence>
                 <element name="Photo" type="base64Binary"/>
