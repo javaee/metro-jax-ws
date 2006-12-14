@@ -9,6 +9,5 @@ req.setValue(date);
 resp = dateTimePort.gYearMonthTest(req);
 respDate = resp.getResult();
 System.out.println("Received : "+respDate.toXMLFormat());
-result = respDate.compare(date);
 System.out.println("compare result: "+result);
-assertEquals(result == 0);
+assertTrue(respDate.getMonth() == date.getMonth() && respDate.getYear() == date.getYear());
