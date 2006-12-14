@@ -1,0 +1,14 @@
+import javax.xml.datatype.DatatypeFactory;
+
+dtf = DatatypeFactory.newInstance();
+
+date = dtf.newXMLGregorianCalendar(6,5,1,10,0,0,0,0);
+System.out.println("Sending : "+date.toXMLFormat());
+req = new GYearMonthTest();
+req.setValue(date);
+resp = dateTimePort.gYearMonthTest(req);
+respDate = resp.getResult();
+System.out.println("Received : "+respDate.toXMLFormat());
+result = respDate.compare(date);
+System.out.println("compare result: "+result);
+assertEquals(result == 0);
