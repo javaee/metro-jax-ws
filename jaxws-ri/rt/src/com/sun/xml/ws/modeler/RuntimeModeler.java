@@ -1150,8 +1150,22 @@ public class RuntimeModeler {
             }
             javaMethod.addParameter(param);
         }
+        validateDocBare(javaMethod);
         processExceptions(javaMethod, method);
     }
+
+    private void validateDocBare(JavaMethod javaMethod) {
+        int numInBodyBindings = 0;
+        for(Parameter param : javaMethod.getRequestParameters()){
+            if(param.getBinding().equals(ParameterBinding.BODY) && param.isIN()){
+                numInBodyBindings++;
+            }
+            if(numInBodyBindings > 1){
+                throw new RuntimeModelerException("not.a.valid.bare.method", portClass.getName(), javaMethod.getMethod().getName());
+            }
+        }
+    }
+
 
     private Class getAsyncReturnType(Method method, Class returnType) {
         if(Response.class.isAssignableFrom(returnType)){
