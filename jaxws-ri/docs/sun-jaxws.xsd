@@ -59,7 +59,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="handler-chain" type="javaee:handler-chainType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="handler-chains" type="javaee:handler-chainsType" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="implementation" type="xsd:string" use="required"/>
