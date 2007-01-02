@@ -960,14 +960,16 @@ public class WSDLParser {
                 /* Here we check for the use scenario */
                 Iterator itere2 = XmlUtil.getAllChildren(e2);
                 Element ee = Util.nextElement(itere2);
-                if (hSet.isEmpty()) {
-                    hSet.add(ee.getAttribute("use"));
-                } else {
-                    /* this codition will happen when the wsdl used has a mixture of
-                       literal and encoded style */
-                    if (!hSet.contains(ee.getAttribute("use"))
-                        && (ee.getAttribute("use") != "")) {
+                if(ee != null){
+                    if (hSet.isEmpty()) {
                         hSet.add(ee.getAttribute("use"));
+                    } else {
+                        /* this codition will happen when the wsdl used has a mixture of
+                           literal and encoded style */
+                        if (!hSet.contains(ee.getAttribute("use"))
+                            && (ee.getAttribute("use") != "")) {
+                            hSet.add(ee.getAttribute("use"));
+                        }
                     }
                 }
 

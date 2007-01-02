@@ -58,9 +58,10 @@ public abstract class ToolBase {
         } catch (Exception e) {
             if (e instanceof Localizable) {
                 report((Localizable) e);
-                return false;
+            } else {
+                report(getMessage(getGenericErrorMessage(), e.toString()));
             }
-            report(getMessage(getGenericErrorMessage(), e.toString()));
+            printStackTrace(e);
             return false;
         }
     }
