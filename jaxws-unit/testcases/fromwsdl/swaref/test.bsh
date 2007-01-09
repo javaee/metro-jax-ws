@@ -1,9 +1,14 @@
 import javax.activation.DataHandler;
 import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import com.sun.xml.ws.util.*;
 
 testXml = resource("test.xml");
 
-claimForm = new DataHandler(new StreamSource(testXml), "text/xml");
+data = ASCIIUtility.getBytes(new FileInputStream(testXml));
+
+claimForm = new DataHandler(new StreamSource(new ByteArrayInputStream(data)), "text/xml");
+assertNotNull(testXml);
 req = new ClaimFormTypeRequest();
 req.setRequest(claimForm);
 
@@ -12,6 +17,31 @@ resp = helloPort.claimForm(req);
 DataHandler out = resp.getResponse();
 assertNotNull(out);
 
-assertTrue(AttachmentHelper.compareStreamSource(
-  new StreamSource(testXml), out.getContent()
-));
+public static boolean compareStreamSource (StreamSource src1, StreamSource src2) throws Exception {
+        if (src1 == null) {
+            System.out.println ("compareStreamSource - src1 null!");
+            return false;
+        }
+        if (src2 == null) {
+            System.out.println ("compareStreamSource - src2 null!");
+            return false;
+        }
+
+        InputStream is1 = src1.getInputStream ();
+        if(is1 == null){
+            System.out.println ("InputStream of src1 null!");
+            return false;
+        }
+        InputStream is2 = src2.getInputStream ();
+        if(is2 == null){
+            System.out.println ("InputStream of src2 null!");
+            return false;
+        }
+
+        return Arrays.equals (ASCIIUtility.getBytes (is1), ASCIIUtility.getBytes (is2));
+}
+
+resSrc = out.getContent();
+assertNotNull(resSrc);
+
+assertTrue(compareStreamSource(new StreamSource(new ByteArrayInputStream(data)), resSrc));
