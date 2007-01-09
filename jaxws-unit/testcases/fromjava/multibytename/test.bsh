@@ -1,0 +1,3 @@
+// just the basics
+a = bankServicePort.echo(0);
+System.out.println(a);
