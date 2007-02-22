@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://server.jaxws221.bugs/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://server.jaxws221.bugs/" name="TestEndpointService">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://server.jaxws221.bugs/" schemaLocation="TestEndpointService_schema1.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="oneWayMethod">
+    <part name="oneWayMethod" element="tns:oneWayMethod"/>
+  </message>
+  <portType name="TestEndpoint">
+    <operation name="oneWayMethod" parameterOrder="oneWayMethod">
+      <input message="tns:oneWayMethod"/>
+    </operation>
+  </portType>
+  <binding name="TestEndpointPortBinding" type="tns:TestEndpoint">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="oneWayMethod">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+    </operation>
+  </binding>
+  <service name="TestEndpointService">
+    <port name="TestEndpointPort" binding="tns:TestEndpointPortBinding">
+      <soap:address location="in-vm://bugs.jaxws221.server/?TestEndpointPort"/>
+    </port>
+  </service>
+</definitions>
