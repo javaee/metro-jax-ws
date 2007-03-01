@@ -48,9 +48,15 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import java.net.URL;
 import java.util.Enumeration;
 import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
+
 import com.sun.org.apache.xml.internal.resolver.CatalogManager;
 import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
+import com.sun.istack.Nullable;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
 
 /**
  * @author WS Development Team
@@ -85,6 +91,15 @@ public class XmlUtil {
         String name,
         String nsURI) {
         Attr a = e.getAttributeNodeNS(nsURI, name);
+        if (a == null)
+            return null;
+        return a.getValue();
+    }
+
+    public static String getAttributeNSOrNull(
+        Element e,
+        QName name) {
+        Attr a = e.getAttributeNodeNS(name.getNamespaceURI(), name.getLocalPart());
         if (a == null)
             return null;
         return a.getValue();
@@ -181,11 +196,11 @@ public class XmlUtil {
             throw new IllegalStateException("Unable to create a JAXP transformer");
         }
     }
-    
+
     /*
-     * Gets an EntityResolver using XML catalog
-     */
-    public static EntityResolver createEntityResolver(URL catalogUrl) {
+    * Gets an EntityResolver using XML catalog
+    */
+    public static EntityResolver createEntityResolver(@Nullable URL catalogUrl) {
         // set up a manager
         CatalogManager manager = new CatalogManager();
         manager.setIgnoreMissingProperties(true);
@@ -203,7 +218,7 @@ public class XmlUtil {
      * Gets a default EntityResolver for catalog at META-INF/jaxws-catalog.xml
      */
     public static EntityResolver createDefaultCatalogResolver() {
-    
+
         // set up a manager
         CatalogManager manager = new CatalogManager();
         manager.setIgnoreMissingProperties(true);
@@ -228,4 +243,20 @@ public class XmlUtil {
 
         return new CatalogResolver(manager);
     }
+
+    /**
+     * {@link ErrorHandler} that always treat the error as fatal.
+     */
+    public static final ErrorHandler DRACONIAN_ERROR_HANDLER = new ErrorHandler() {
+        public void warning(SAXParseException exception) {
+        }
+
+        public void error(SAXParseException exception) throws SAXException {
+            throw exception;
+        }
+
+        public void fatalError(SAXParseException exception) throws SAXException {
+            throw exception;
+        }
+    };
 }

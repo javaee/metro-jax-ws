@@ -22,26 +22,23 @@
 
 package com.sun.tools.ws.wsdl.document.soap;
 
+import com.sun.tools.ws.wsdl.framework.*;
+import org.xml.sax.Locator;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.Extension;
-import com.sun.tools.ws.wsdl.framework.ExtensionVisitor;
-import com.sun.tools.ws.wsdl.framework.QNameAction;
 
 /**
  * A SOAP header extension.
  *
  * @author WS Development Team
  */
-public class SOAPHeader extends Extension {
+public class SOAPHeader extends ExtensionImpl {
 
-    public SOAPHeader() {
+    public SOAPHeader(Locator locator) {
+        super(locator);
         _faults = new ArrayList();
     }
 

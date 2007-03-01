@@ -22,11 +22,10 @@
 
 package com.sun.tools.ws.processor.modeler;
 
+import com.sun.tools.ws.processor.model.java.JavaSimpleType;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sun.tools.ws.processor.model.java.JavaSimpleType;
-import com.sun.xml.ws.util.VersionUtil;
 
 /**
  *

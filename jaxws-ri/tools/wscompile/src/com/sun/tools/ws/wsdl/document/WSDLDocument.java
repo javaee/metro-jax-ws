@@ -22,21 +22,14 @@
 
 package com.sun.tools.ws.wsdl.document;
 
+import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.wsdl.parser.MetadataFinder;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceValidator;
-import com.sun.tools.ws.wsdl.framework.GloballyKnown;
-import com.sun.tools.ws.wsdl.framework.Kind;
-import com.sun.tools.ws.wsdl.framework.NoSuchEntityException;
-import com.sun.tools.ws.wsdl.framework.ValidationException;
 
 /**
  * A WSDL document.
@@ -45,7 +38,8 @@ import com.sun.tools.ws.wsdl.framework.ValidationException;
  */
 public class WSDLDocument extends AbstractDocument{
 
-    public WSDLDocument() {
+    public WSDLDocument(MetadataFinder forest, ErrorReceiver errReceiver) {
+        super(forest, errReceiver);
     }
 
     public Definitions getDefinitions() {
@@ -54,14 +48,6 @@ public class WSDLDocument extends AbstractDocument{
 
     public void setDefinitions(Definitions d) {
         _definitions = d;
-    }
-
-    public Set collectAllNamespaces() {
-        Set result = super.collectAllNamespaces();
-        if (_definitions.getTargetNamespaceURI() != null) {
-            result.add(_definitions.getTargetNamespaceURI());
-        }
-        return result;
     }
 
     public QName[] getAllServiceQNames() {

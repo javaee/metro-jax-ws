@@ -22,15 +22,9 @@
 
 package com.sun.tools.ws.processor.model.java;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sun.tools.ws.processor.model.ModelException;
+
+import java.util.*;
 
 /**
  *

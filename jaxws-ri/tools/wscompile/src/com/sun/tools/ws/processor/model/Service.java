@@ -23,14 +23,10 @@
 package com.sun.tools.ws.processor.model;
 
 import com.sun.tools.ws.processor.model.java.JavaInterface;
+import com.sun.tools.ws.wsdl.framework.Entity;
 
 import javax.xml.namespace.QName;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -38,9 +34,12 @@ import java.util.Map;
  */
 public class Service extends ModelObject {
 
-    public Service() {}
+    public Service(Entity entity) {
+        super(entity);
+    }
 
-    public Service(QName name, JavaInterface javaInterface) {
+    public Service(QName name, JavaInterface javaInterface, Entity entity) {
+        super(entity);
         this.name = name;
         this.javaInterface = javaInterface;
     }

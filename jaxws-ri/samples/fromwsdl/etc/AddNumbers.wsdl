@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definitions name="AddNumbers"  targetNamespace="http://duke.org" xmlns:tns="http://duke.org"
+<definitions name="AddNumbers"  targetNamespace="http://duke.example.org" xmlns:tns="http://duke.example.org"
     xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
 	<types>
-            <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://duke.org">
+            <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://duke.example.org">
 
                 <complexType name="addNumbersResponse">
                     <sequence>

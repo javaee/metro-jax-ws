@@ -24,7 +24,7 @@ package com.sun.xml.ws.wsdl.parser;
 import javax.xml.namespace.QName;
 
 
-public interface MIMEConstants {
+interface MIMEConstants {
     // namespace URIs
     public static String NS_WSDL_MIME = "http://schemas.xmlsoap.org/wsdl/mime/";
 

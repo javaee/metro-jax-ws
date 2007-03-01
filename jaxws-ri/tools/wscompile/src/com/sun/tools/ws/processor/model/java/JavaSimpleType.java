@@ -22,8 +22,6 @@
 
 package com.sun.tools.ws.processor.model.java;
 
-import com.sun.codemodel.JType;
-import com.sun.tools.xjc.api.TypeAndAnnotation;
 import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
 
 /**

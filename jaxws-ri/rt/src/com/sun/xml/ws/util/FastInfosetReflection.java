@@ -39,11 +39,6 @@ import org.w3c.dom.Node;
  */
 public class FastInfosetReflection {
     /**
-     * 
-     */
-    public static ClassLoader fiClassLoader;
-    
-    /**
      * FI StAXDocumentParser constructor using reflection.
      */
     public static Constructor fiStAXDocumentParser_new;
@@ -136,8 +131,7 @@ public class FastInfosetReflection {
     static {
         // Use reflection to avoid static dependency with FI jar
         try {
-            Class clazz = null;
-            clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
+            Class clazz = Class.forName("com.sun.xml.fastinfoset.stax.StAXDocumentParser");
             fiStAXDocumentParser_new = clazz.getConstructor();
             fiStAXDocumentParser_setInputStream =
                 clazz.getMethod("setInputStream", java.io.InputStream.class);
@@ -234,21 +228,29 @@ public class FastInfosetReflection {
     }
     
     public static Source FastInfosetSource_new(InputStream is) 
-        throws Exception 
     {
         if (fiFastInfosetSource_new == null) {
             throw new RuntimeException("Unable to locate Fast Infoset implementation");
         }
-        return (Source) fiFastInfosetSource_new.newInstance(is);        
+        
+        try {
+            return (Source) fiFastInfosetSource_new.newInstance(is);        
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to utilize Fast Infoset implementation", e);
+        }
     }
     
     public static InputStream FastInfosetSource_getInputStream(Source source) 
-        throws Exception 
     {
         if (fiFastInfosetSource_getInputStream == null) {
             throw new RuntimeException("Unable to locate Fast Infoset implementation");
         }
-        return (InputStream) fiFastInfosetSource_getInputStream.invoke(source);
+        
+        try {
+            return (InputStream) fiFastInfosetSource_getInputStream.invoke(source);
+        } catch(Exception e) {
+            throw new RuntimeException("Unable to utilize Fast Infoset implementation", e);
+        }
     }
     
     public static void FastInfosetSource_setInputStream(Source source,

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<project>
+    <property environment="env"/>
+
+    <property name="as.home" value="${env.AS_HOME}"/>
+    <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
+    <property name="lib.sample.home" value="${basedir}/../lib"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="build.war.home" value="${build.home}/war"/>
+    <property name="build.classes.home" value="${build.home}/classes"/>
+    
+    <property name="domain" value="domain1"/>
+
+    <target name="deploy" depends="deploy-tomcat, deploy-appserver"/>
+
+    <target name="deploy-appserver" unless="tomcat">
+        <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+              todir="${as.home}/domains/${domain}/autodeploy"/>
+    </target>
+
+    <target name="deploy-tomcat" if="tomcat">
+        <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
+              todir="${env.CATALINA_HOME}/webapps"/>
+    </target>
+</project>

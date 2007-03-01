@@ -22,6 +22,7 @@
 
 package com.sun.xml.ws.util.xml;
 
+import com.sun.istack.XMLStreamReaderToContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
@@ -211,7 +212,7 @@ public class StAXSource extends SAXSource {
             throw new IllegalStateException();
         }
 
-        this.reader = new XMLStreamReaderToContentHandler(reader,repeater,eagerQuit);
+        this.reader = new XMLStreamReaderToContentHandler(reader,repeater,eagerQuit,false);
 
         super.setXMLReader(pseudoParser);
         // pass a dummy InputSource. We don't care

@@ -46,7 +46,7 @@ public class SerializationException extends JAXWSExceptionBase {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.encoding";
     }
 

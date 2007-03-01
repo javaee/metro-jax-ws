@@ -53,6 +53,11 @@ public class Localizer {
     }
 
     public String localize(Localizable l) {
+        String key = l.getKey();
+        if (key == Localizable.NOT_LOCALIZABLE) {
+            // this message is not localizable
+            return (String) l.getArguments()[0];
+        }
         String bundlename = l.getResourceBundleName();
 
         try {
@@ -92,13 +97,6 @@ public class Localizer {
             if (bundle == null) {
                 return getDefaultMessage(l);
             }
-
-            String key = l.getKey();
-            if(key==Localizable.NOT_LOCALIZABLE) {
-                // this message is not localizable
-                return (String)l.getArguments()[0];
-            }
-
 
             if (key == null)
                 key = "undefined";

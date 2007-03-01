@@ -21,12 +21,11 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.tools.ws.processor.model.AbstractType;
 
 import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.processor.model.AbstractType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Vivek Pandey

@@ -29,15 +29,19 @@ import com.sun.xml.ws.util.localization.Localizable;
  * @author WS Development Team
  */
 public class ClientTransportException extends JAXWSExceptionBase {
-    public ClientTransportException(String key, Object... args) {
-        super(key, args);
+    public ClientTransportException(Localizable msg) {
+        super(msg);
+    }
+
+    public ClientTransportException(Localizable msg, Throwable cause) {
+        super(msg, cause);
     }
 
     public ClientTransportException(Throwable throwable) {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.client";
     }
 }

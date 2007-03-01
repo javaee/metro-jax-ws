@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.http;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A HTTP address extension.
  *
  * @author WS Development Team
  */
-public class HTTPAddress extends Extension {
+public class HTTPAddress extends ExtensionImpl {
 
-    public HTTPAddress() {
+    public HTTPAddress(Locator locator) {
+        super(locator);
     }
 
     public QName getElementName() {

@@ -24,8 +24,7 @@ package com.sun.tools.ws.wsdl.framework;
 /**
  *
  * Maintains wsdl:location context. This is used with
- * ParserContext, where one each WSDL being imported its location is pushed, this will be used
- * latter to resolve relative imports of schema in SchemaParser.
+ * TWSDLParserContextImpl, where one each WSDL being imported its location is pushed.
  *
  * @author WS Development Team
  */

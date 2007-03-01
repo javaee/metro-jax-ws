@@ -1,46 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- The contents of this file are subject to the terms
- of the Common Development and Distribution License
- (the License).  You may not use this file except in
- compliance with the License.
- 
- You can obtain a copy of the license at
- https://glassfish.dev.java.net/public/CDDLv1.0.html.
- See the License for the specific language governing
- permissions and limitations under the License.
- 
- When distributing Covered Code, include this CDDL
- Header Notice in each file and include the License file
- at https://glassfish.dev.java.net/public/CDDLv1.0.html.
- If applicable, add the following below the CDDL Header,
- with the fields enclosed by brackets [] replaced by
- you own identifying information:
- "Portions Copyrighted [year] [name of copyright owner]"
- 
- Copyright 2006 Sun Microsystems Inc. All Rights Reserved
--->
-
 <project basedir="." default="help" name="restful">
 
     <import file="etc/deploy-targets.xml"/>
-
-    <property environment="env"/>
-    <property file="../../../jwsdp-shared/bin/sjsas.props"/>
-    <condition property="lib.home" value="${DOMAIN_DIR}/../lib">
-        <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-    </condition>
-    <condition property="lib.home" value="${env.JAXWS_HOME}/lib">
-        <not>
-            <available file="../../../jwsdp-shared/bin/sjsas.props"/>
-        </not>
-    </condition>
-
-    <property file="etc/build.properties"/>
-    <property name="build.home" value="${basedir}/build"/>
-    <property name="build.classes.home" value="${build.home}/classes"/>
-    <property name="build.war.home" value="${build.home}/war"/>
 
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
@@ -74,23 +35,6 @@
             includes="**/server/**,**/common/**">
             <classpath refid="jaxws.classpath"/>
         </javac>
-        <!-- apt
-                fork="true"
-                debug="${debug}"
-                verbose="${verbose}"
-                destdir="${build.classes.home}"
-                sourcedestdir="${build.classes.home}"
-                sourcepath="${basedir}/src">
-            <classpath>
-                <path refid="jaxws.classpath"/>
-                <pathelement location="${basedir}/src"/>
-            </classpath>
-            <option key="r" value="${build.home}"/>
-            <source dir="${basedir}/src">
-                <include name="**/server/*.java"/>
-                <include name="**/common/*.java"/>
-            </source>
-        </apt -->
     </target>
 
     <target name="create-war">
@@ -115,29 +59,37 @@
     </target>
 
     <target name="run-url">
-        <java fork="true" classname="${client}">
+        <java fork="true" classname="restful.client.AddNumbersClient">
             <classpath>
                 <path refid="jaxws.classpath"/>
                 <pathelement location="${build.classes.home}"/>
                 <pathelement location="${basedir}/etc"/>
             </classpath>
+            <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=${log}"/>
+        </java>
+    </target>
+
+    <target name="run-dispatch">
+        <java fork="true" classname="restful.client.DispatchAddNumbersClient">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+            <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=${log}"/>
         </java>
     </target>
 
     <target name="run">
-        <java fork="true" classname="${dispatch.client}">
-            <classpath>
-                <path refid="jaxws.classpath"/>
-                <pathelement location="${build.classes.home}"/>
-                <pathelement location="${basedir}/etc"/>
-            </classpath>
-        </java>
+<antcall description="Running Client sending GET URL request..." target="run-url"/>
+<antcall description="Running Client sending GET request using Dispatch..." target="run-dispatch"/>
     </target>
 
     <target name="help">
         <echo message="server:       Builds and deploy the service endpoint WAR"/>
         <echo message="client:       Builds the client"/>
-        <echo message="run:          Runs the Dispatch client"/>
+        <echo message="run:          Runs the Dispatch and proxy client"/>
+        <echo message="run-dispatch: Runs the Dispatch client"/>
         <echo message="run-url:      Runs the stub/proxy client"/>
     </target>
 
@@ -151,5 +103,4 @@
 
         <antcall target="deploy"/>
     </target>
-
 </project>

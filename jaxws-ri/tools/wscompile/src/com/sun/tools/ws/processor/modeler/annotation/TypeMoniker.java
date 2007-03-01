@@ -21,9 +21,8 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.tools.ws.processor.modeler.annotation.*;
+import com.sun.mirror.type.TypeMirror;
 
 /**
  *

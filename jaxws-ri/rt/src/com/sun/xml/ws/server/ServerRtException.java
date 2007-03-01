@@ -41,10 +41,7 @@ public class ServerRtException extends JAXWSExceptionBase {
         super("server.rt.err", arg);
     }
 
-    /* (non-Javadoc)
-     * @see JAXWSExceptionBase#getResourceBundleName()
-     */
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.server";
     }
 

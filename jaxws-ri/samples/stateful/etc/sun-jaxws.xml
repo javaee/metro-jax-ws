@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
+    <endpoint
+        name='bookstore'
+        implementation='stateful.server.BookStore'
+        url-pattern='/bookstore'/>
+    <endpoint
+        name='book'
+        implementation='stateful.server.Book'
+        url-pattern='/book'/>
+</endpoints>

@@ -60,6 +60,8 @@ public interface SOAPConstants {
         new QName(NS_WSDL_SOAP, "headerfault");
     public static final QName QNAME_OPERATION =
         new QName(NS_WSDL_SOAP, "operation");
+    public static final QName QNAME_SOAP12OPERATION =
+        new QName(NS_WSDL_SOAP12, "operation"); 
     public static final QName QNAME_MUSTUNDERSTAND =
         new QName(URI_ENVELOPE, "mustUnderstand");
 

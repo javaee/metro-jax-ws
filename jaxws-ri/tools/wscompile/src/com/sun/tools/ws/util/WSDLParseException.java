@@ -23,7 +23,6 @@
 package com.sun.tools.ws.util;
 
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.Localizable;
 
 /**
   * @author WS Development Team
@@ -38,7 +37,7 @@ public class WSDLParseException extends JAXWSExceptionBase {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.util";
     }
 }

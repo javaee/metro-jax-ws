@@ -31,6 +31,7 @@ import javax.xml.namespace.QName;
  */
 public interface WSDLConstants {
     // namespace URIs
+    public static final String PREFIX_NS_WSDL = "wsdl";
     public static final String NS_XMLNS = "http://www.w3.org/2001/XMLSchema";
     public static final String NS_WSDL = "http://schemas.xmlsoap.org/wsdl/";
     public static final String NS_SOAP11_HTTP_BINDING = "http://schemas.xmlsoap.org/soap/http";

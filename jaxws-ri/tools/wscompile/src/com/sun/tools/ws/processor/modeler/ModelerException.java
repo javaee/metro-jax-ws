@@ -47,7 +47,7 @@ public class ModelerException extends ProcessorException {
         super("modeler.nestedModelError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.modeler";
     }
 

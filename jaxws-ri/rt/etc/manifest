@@ -6,6 +6,6 @@ Implementation-Version: 2.0
 Implementation-Vendor: Sun Microsystems Inc
 Implementation-Vendor-Id: com.sun
 Extension-Name: com.sun.xml.ws
-Class-Path: jaxws-api.jar jsr181-api.jar jsr250-api.jar saaj-api.jar saaj-impl.jar jsr173_api.jar sjsxp.jar resolver.jar ../jaxb2/lib/jaxb-api.jar ../jaxb/lib/jaxb-api.jar jaxb-api.jar ../jaxb2/lib/jaxb-impl.jar ../jaxb/lib/jaxb-impl.jar jaxb-impl.jar 
+Class-Path: jaxws-api.jar jsr181-api.jar jsr250-api.jar saaj-api.jar saaj-impl.jar jsr173_api.jar sjsxp.jar resolver.jar jaxb-api.jar jaxb-impl.jar activation.jar stax-ex.jar streambuffer.jar stax-utils.jar
 
 

@@ -21,15 +21,13 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.xml.namespace.QName;
-
 import com.sun.tools.xjc.api.Mapping;
 import com.sun.tools.xjc.api.Property;
 import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.codemodel.JType;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kohsuke Kawaguchi, Vivek Pandey

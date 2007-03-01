@@ -21,18 +21,12 @@
  */
 package com.sun.tools.ws.wsdl.document.jaxws;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.w3c.dom.Element;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
-
-import org.w3c.dom.Element;
-
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
+import java.util.*;
 
 
 /**
@@ -41,13 +35,13 @@ import com.sun.tools.ws.wsdl.framework.Extension;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class JAXWSBinding extends Extension implements Extensible {
+public class JAXWSBinding extends ExtensionImpl {
 
     /**
      *
      */
-    public JAXWSBinding(){
-        super();
+    public JAXWSBinding(Locator locator){
+        super(locator);
         jaxbBindings = new HashSet<Element>();
         // TODO Auto-generated constructor stub
     }
@@ -68,19 +62,23 @@ public class JAXWSBinding extends Extension implements Extensible {
         // TODO Auto-generated method stub
         return JAXWSBindingsConstants.JAXWS_BINDINGS;
     }
+    
+    public QName getWSDLElementName() {
+        return getElementName();
+    }
 
     /* (non-Javadoc)
-     * @see Extensible#addExtension(Extension)
-     */
-    public void addExtension(Extension e) {
+    * @see TWSDLExtensible#addExtension(ExtensionImpl)
+    */
+    public void addExtension(ExtensionImpl e) {
         // TODO Auto-generated method stub
 
     }
 
     /* (non-Javadoc)
-     * @see Extensible#extensions()
+     * @see TWSDLExtensible#extensions()
      */
-    public Iterator extensions() {
+    public Iterable<ExtensionImpl> extensions() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -330,6 +328,6 @@ public class JAXWSBinding extends Extension implements Extensible {
     // portType className
     private CustomName className;
 
-    //portType Operation
+    //portType WSDLOperation
     private CustomName methodName;
 }

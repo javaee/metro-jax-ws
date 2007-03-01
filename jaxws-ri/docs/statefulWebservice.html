@@ -1,0 +1,96 @@
+<html>
+<head caption="Stateful Web Service with JAX-WS RI">
+	<link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body><content>
+
+<section title="Introduction">
+	<p>
+		The JAX-WS RI has a vendor extension that allows developers to bring back object state to the web service world. Normally, the JAX-WS RI only creates one instance of a service class, and have it serve all incoming requests concurrently. This makes it essentially impossible to use instance fields of the service class for any meaningful purpose.
+	</p><p>
+		Because of this, people end up coding like C, in anti-OO fashion. Either that or you end up with writing boiler-plate code to dispatch a request to the right instance of your real domain object.
+	</p><p>
+		The stateful web service support in the JAX-WS RI resolves this problem by having the JAX-WS RI maintain multiple instances of a service. By using <a href="wsaddressing.html">WS-Addressing</a> behind the scene, it provides a standard-based on-the-wire protocol and easy-to-use programming model.
+	</p>
+</section>
+<section title="Usage">
+	<p>
+		Application service implementation classes (or providers) who'd like to use the stateful web service support must declare <tt>@Stateful</tt> annotation on a class. It should also have a <b>public static</b> method/field that takes <tt>StatefulWebServiceManager</tt>.
+	</p>
+<pre>
+@Stateful @WebService @Addressing
+class BankAccount {
+    protected final int id;
+    private int balance;
+    
+    Account(int id) { this.id = id; }
+    
+    @WebMethod
+    public synchronized void deposit(int amount) { balance+=amount; }
+
+    // either via a public static field
+    <font color=red>
+    public static StatefulWebServiceManager&lt;BankAccount> manager;
+    </font>
+    // ... or  via a public static method (the method name could be anything)
+    <font color=red>
+    public static void setManager(StatefulWebServiceManager&lt;BankAccount> manager) {
+       ...
+    }
+    </font>
+}
+</pre>
+
+<p>
+After your service is deployed but before you receive a first request,
+the resource injection occurs on the field or the method.
+
+<p>
+A stateful web service class does not need to have a default constructor.
+In fact, most of the time you want to define a constructor that takes
+some arguments, so that each instance carries certain state (as illustrated
+in the above example.)
+
+<p>
+Each instance of a stateful web service class is identified by an unique
+EndpointReference. Your application creates an instance of
+a class, then you'll have the JAX-WS RI assign this unique EPR for the
+instance as follows:
+
+<pre>
+@WebService
+class Bank { // this is ordinary stateless service
+    @WebMethod
+    public synchronized W3CEndpointReference login(int accountId, int pin) {
+        if(!checkPin(pin))
+            throw new AuthenticationFailedException("invalid pin");
+        BankAccount acc = new BankAccount(accountId);
+        return BankAccount.manager.export(acc);
+    }
+}
+</pre>
+
+<p>
+Typically you then pass this EPR to remote systems. When they send
+messages to this EPR, the JAX-WS RI makes sure that the particular exported
+instance associated with that EPR will receive a service invocation.
+
+</section>
+<section title="Things To Consider">
+<p>
+When you no longer need to tie an instance to the EPR,
+use {@link #unexport(Object)} so that the object can be GC-ed
+(or else you'll leak memory.) You may choose to do so explicitly,
+or you can rely on the time out by using {@link #setTimeout(long, Callback)}.
+ *
+<p>
+{@link StatefulWebServiceManager} is thread-safe. It can be safely
+invoked from multiple threads concurrently.
+
+
+</section>
+
+</content>
+</body>
+</html>

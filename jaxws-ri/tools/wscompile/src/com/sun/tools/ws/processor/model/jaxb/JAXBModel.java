@@ -21,18 +21,12 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import com.sun.tools.xjc.api.*;
+import com.sun.tools.xjc.api.J2SJAXBModel;
+import com.sun.tools.xjc.api.Mapping;
+import com.sun.tools.xjc.api.S2JJAXBModel;
 
 import javax.xml.namespace.QName;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.sun.codemodel.JType;
+import java.util.*;
 
 /**
  * Root of the JAXB Model.

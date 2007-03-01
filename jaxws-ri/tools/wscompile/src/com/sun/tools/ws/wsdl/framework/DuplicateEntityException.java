@@ -49,7 +49,7 @@ public class DuplicateEntityException extends ValidationException {
                 entity.getElementName().getLocalPart(), name);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.wsdl";
     }
 }

@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.soap;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A SOAP body extension.
  *
  * @author WS Development Team
  */
-public class SOAPBody extends Extension {
+public class SOAPBody extends ExtensionImpl {
 
-    public SOAPBody() {
+    public SOAPBody(Locator locator) {
+        super(locator);
     }
 
     public QName getElementName() {

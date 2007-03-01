@@ -47,7 +47,7 @@ public class HandlerException extends JAXWSExceptionBase {
         super("handler.nestedError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.handler";
     }
 }

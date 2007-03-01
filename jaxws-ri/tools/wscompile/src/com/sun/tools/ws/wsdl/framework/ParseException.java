@@ -36,11 +36,15 @@ public class ParseException extends JAXWSExceptionBase {
         super(key, args);
     }
 
+    public ParseException(Localizable message){
+        super("localized.error", message);
+    }
+
     public ParseException(Throwable throwable) {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.wsdl";
     }
 }

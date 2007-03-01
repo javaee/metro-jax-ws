@@ -1,4 +1,3 @@
-
 This sample demonstrates the use of Dispatch and the types of
 invocations that a JAXB Dispatch client, a SOPAMessage Dispatch 
 client and a Source Dispatch client can invoke. The service is 
@@ -6,7 +5,6 @@ generated from processing the wsdl file AddNumbers.wsdl.
 The JAXB Dispatch client uses the JAXB Elements that are generated 
 for the client. A more typical usage of a Dispatch client is that 
 whose invocation parameter is a Source.
-
 
 This sample will build, deploy an invoke a simple Web service.
 * etc - configuration files
@@ -37,3 +35,5 @@ This sample will build, deploy an invoke a simple Web service.
 * Prerequisite
 
 Refer to the Prerequisites defined in samples/docs/index.html. 
+
+We appreciate your feedback, please send it to users@jax-ws.dev.java.net.

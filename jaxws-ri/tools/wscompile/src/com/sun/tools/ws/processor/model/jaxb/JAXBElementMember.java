@@ -21,9 +21,10 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
+import com.sun.tools.ws.processor.model.java.JavaStructureMember;
+
 import javax.xml.namespace.QName;
 
-import com.sun.tools.ws.processor.model.java.JavaStructureMember;
 /**
  * @author Kathy Walsh, Vivek Pandey
  *

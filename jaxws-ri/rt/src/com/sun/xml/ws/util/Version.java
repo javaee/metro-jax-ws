@@ -57,7 +57,10 @@ public final class Version {
             props.load(is);
         } catch (IOException e) {
             // ignore even if the property was not found. we'll treat everything as unknown
+        } catch (Exception e) {
+            //ignore even if property not found
         }
+
         return new Version(
             props.getProperty("build-id"),
             props.getProperty("build-version"),
@@ -67,5 +70,9 @@ public final class Version {
     private String fixNull(String v) {
         if(v==null) return "unknown";
         return v;
+    }
+
+    public String toString() {
+        return BUILD_VERSION;
     }
 }

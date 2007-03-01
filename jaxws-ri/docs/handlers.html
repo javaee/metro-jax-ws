@@ -1,28 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Handler Framework</title>
-  <link rel="stylesheet" type="text/css" href="style/default.css"/>
-  <meta name="CREATED" content="20050401;13114464">
-  <meta name="CHANGED" content="20050401;13120495">
+<head caption="Handler">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
 
-<body lang="en-US" bgcolor="#FFFFFF" dir="ltr">
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      Handler Framework
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
-  <hr>
-
-  <p>Last Modified: 5/4/06</p>
-
+<body>
+  
   <h2>Handler Types</h2>
 
   <p>JAX-WS 2.0 defines a <code>Handler</code> interface, with subinterfaces <code>LogicalHandler</code> and <code>SOAPHandler</code>. The <code>Handler</code> interface contains <code>handleMessage(C context)</code> and <code>handleFault(C context)</code> methods, where <code>C</code> extends <code>MessageContext</code>. A property in the <code>MessageContext</code> object is used to determine if the message is inbound or outbound. <code>SOAPHandler</code> objects have access to the full soap message including headers. Logical handlers are independent of protocol and have access to the payload of the message.</p>
@@ -249,8 +231,5 @@ public class MyResolver implements HandlerResolver {
   <h2>Handler Samples</h2>
 
   <p>The <code>fromjavahandler</code> and <code>fromwsdlhandler</code> samples set a <code>SOAPHandler</code> on the client and server. This handler simply outputs the contents of the SOAP message and can be used to see the requests and responses being passed back and forth. See the sample documentation for information on running the samples.</p>
-  <hr>
-
-  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>

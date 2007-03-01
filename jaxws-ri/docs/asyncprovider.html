@@ -1,0 +1,41 @@
+<html>
+<head caption="AsyncProvider">
+  <link rel="stylesheet" type="text/css" href="style/default.css">
+</head>
+
+<body>
+
+<p>Web Service endpoints may choose to work at the XML message level by
+implementing the <code>Provider</code> interface. The related
+information about&nbsp;<code>Provider</code> endpoints is documented
+in&nbsp;<a href="provider.html">provider</a> page. However&nbsp; <code>Provider
+</code>endpoints are synchronous i.e. they receive XML requests and
+they return XML responses synchronously in invoke() method. If the
+endpoint wants to spawn a thread to process the request, it would block
+the jax-ws runtime thread and has to manage all the low details
+synchronizing the threads when the response is available. Also blocking
+a thread doesn't really scale well especially when the underlying
+transport is capable of handling asynchronous request and responses. RI
+provides an implemention specific solution to this problem by
+introducing&nbsp; <code>AsyncProvider. </code>This is similar to <code></code><code>Provider
+</code>endpoints but the difference is that the endpoint
+implementations have to implement <code>AsyncProvider </code>interface.</p>
+<h2><code>AsyncProvider Example</code><code></code></h2>
+<p>The following example shows an <code>AsyncProvider</code> example
+that accesses the payload of the request.<br>
+</p>
+<p>For example:</p>
+<pre><code>
+@WebServiceProvider 
+public class AsyncProviderImpl implements AsyncProvider&lt;Source&gt; {     
+    public void invoke(Source source, AsyncProviderCallback cbak, WebServiceContext ctxt) {...}
+}</code></pre>
+<h2><code>AsyncProvider</code> sample</h2>
+See a&nbsp; <a href="../samples/asyncprovider">sample</a> that
+illustrates <code></code><code>AsyncProvider </code>endpoints.<br>
+<br>
+<pre><br></pre>
+<br>
+
+</body>
+</html>

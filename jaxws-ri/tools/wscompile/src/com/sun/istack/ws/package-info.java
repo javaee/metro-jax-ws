@@ -23,7 +23,7 @@
 /**
  *
  * <P>This document describes the {@link com.sun.mirror.apt.AnnotationProcessor AnnotationProcessor}
- * included with JAX-WS 2.0.
+ * included with JAX-WS 2.0.1.
  *
  * <p>The {@link com.sun.istack.ws.AnnotationProcessorFactoryImpl AnnoatationnProcessorFactoryImpl} class
  * tells the <a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>

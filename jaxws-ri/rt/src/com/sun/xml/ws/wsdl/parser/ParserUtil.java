@@ -36,11 +36,21 @@ import javax.xml.stream.XMLStreamReader;
 
 
 /**
+ *
+ * TODO: made public just for now
  * @author WS Development Team
  */
 public class ParserUtil {
     public static String getAttribute(XMLStreamReader reader, String name) {
         return reader.getAttributeValue(null, name);
+    }
+
+    public static String getAttribute(XMLStreamReader reader, String nsUri, String name) {
+        return reader.getAttributeValue(nsUri, name);
+    }
+
+    public static String getAttribute(XMLStreamReader reader, QName name) {
+        return reader.getAttributeValue(name.getNamespaceURI(), name.getLocalPart());
     }
 
     public static void verifyTag(XMLReader reader, QName name) {

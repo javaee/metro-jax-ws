@@ -21,30 +21,38 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import javax.xml.namespace.QName;
-
+import com.sun.istack.NotNull;
+import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.type.TypeMirror;
+
+import javax.xml.namespace.QName;
+import java.lang.annotation.Annotation;
 
 /**
  *
  * @author  WS Development Team
  */
-public class MemberInfo implements Comparable<MemberInfo> {
-    int paramIndex;
-    TypeMirror paramType;
-    String paramName;
-    QName elementName;
+public final class MemberInfo implements Comparable<MemberInfo> {
+    private final TypeMirror paramType;
+    private final String paramName;
+    private final QName elementName;
+    private final Annotation[] jaxbAnnotations;
+    /**
+     * Use this to look up annotations on this parameter/return type.
+     */
+    private final Declaration decl;
 
-    public MemberInfo(int paramIndex, TypeMirror paramType, String paramName,
-        QName elementName) {
-        this.paramIndex = paramIndex;
+    public MemberInfo(TypeMirror paramType, String paramName, QName elementName, @NotNull Declaration decl, Annotation... jaxbAnnotations) {
         this.paramType = paramType;
         this.paramName = paramName;
         this.elementName = elementName;
+        this.decl = decl;
+        this.jaxbAnnotations = jaxbAnnotations;
     }
 
-    public int getParamIndex() {
-        return paramIndex;
+
+    public Annotation[] getJaxbAnnotations() {
+        return jaxbAnnotations;
     }
 
     public TypeMirror getParamType() {
@@ -58,7 +66,11 @@ public class MemberInfo implements Comparable<MemberInfo> {
     public QName getElementName() {
         return elementName;
     }
-    
+
+    public @NotNull Declaration getDecl() {
+        return decl;
+    }
+
     public int compareTo(MemberInfo member) {
         return paramName.compareTo(member.paramName);
     }

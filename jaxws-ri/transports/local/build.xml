@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the License).  You may not use this file except in
+ compliance with the License.
+ 
+ You can obtain a copy of the license at
+ https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ See the License for the specific language governing
+ permissions and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL
+ Header Notice in each file and include the License file
+ at https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ If applicable, add the following below the CDDL Header,
+ with the fields enclosed by brackets [] replaced by
+ you own identifying information:
+ "Portions Copyrighted [year] [name of copyright owner]"
+ 
+ Copyright 2006 Sun Microsystems Inc. All Rights Reserved
+-->
+
+
+<project name="JAXWS-RI local transport" default="compile" basedir=".">
+
+  <property file="../../project.properties"/>
+
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+    <javac srcdir="src"
+        destdir="${basedir}/build/classes"
+        debug="${compile.debug}"
+        deprecation="${compile.deprecation}"
+        optimize="${compile.optimize}"
+        source="1.5">
+      <classpath>
+        <fileset dir="../../lib" includes="*.jar" />
+        <pathelement path="../../rt/build/classes" />
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="jar" depends="compile">
+    <jar file="build/jaxws-local-transport.jar">
+      <manifest>
+        <attribute name="Build-Id" value="${build.id}" />
+        <attribute name="Build-Version" value="${build.version}" />
+        <attribute name="Major-Version" value="${release.impl.version}" />
+      </manifest>
+      <fileset dir="build/classes" />
+      <fileset dir="src" includes="META-INF/**/*" />
+    </jar>
+  </target>
+  
+  <target name="src-zip">
+    <zip file="build/jaxws-local-transport-src.zip">
+      <fileset dir="src" />
+    </zip>
+  </target>
+
+  <target name="dist" depends="jar, src-zip" />
+  
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+</project> 

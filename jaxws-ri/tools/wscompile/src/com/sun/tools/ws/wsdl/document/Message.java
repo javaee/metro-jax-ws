@@ -22,20 +22,14 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.resources.WsdlMessages;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.Defining;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.GlobalEntity;
-import com.sun.tools.ws.wsdl.framework.Kind;
-import com.sun.tools.ws.wsdl.framework.ValidationException;
+import java.util.*;
 
 /**
  * Entity corresponding to the "message" WSDL element.
@@ -44,17 +38,18 @@ import com.sun.tools.ws.wsdl.framework.ValidationException;
  */
 public class Message extends GlobalEntity {
 
-    public Message(Defining defining) {
-        super(defining);
+    public Message(Defining defining, Locator locator, ErrorReceiver errReceiver) {
+        super(defining, locator, errReceiver);
         _parts = new ArrayList<MessagePart>();
         _partsByName = new HashMap<String, MessagePart>();
     }
 
     public void add(MessagePart part) {
-        if (_partsByName.get(part.getName()) != null)
-            throw new ValidationException(
-                "validation.duplicateName",
-                part.getName());
+        if (_partsByName.get(part.getName()) != null){
+            errorReceiver.error(part.getLocator(), WsdlMessages.VALIDATION_DUPLICATE_PART_NAME(getName(), part.getName()));
+            throw new AbortException();
+        }
+
         _partsByName.put(part.getName(), part);
         _parts.add(part);
     }
@@ -109,7 +104,8 @@ public class Message extends GlobalEntity {
 
     public void validateThis() {
         if (getName() == null) {
-            failValidation("validation.missingRequiredAttribute", "name");
+            errorReceiver.error(getLocator(), WsdlMessages.VALIDATION_MISSING_REQUIRED_ATTRIBUTE("name", "wsdl:message"));
+            throw new AbortException();
         }
     }
 

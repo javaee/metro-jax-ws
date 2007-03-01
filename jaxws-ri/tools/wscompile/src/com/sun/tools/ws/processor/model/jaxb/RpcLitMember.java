@@ -21,9 +21,9 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.processor.model.AbstractType;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author Vivek Pandey

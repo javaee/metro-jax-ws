@@ -1,7 +1,7 @@
 @echo off  
 
 REM
-REM $Id: build.bat,v 1.5 2006-06-29 23:48:55 ofung Exp $
+REM $Id: build.bat,v 1.6 2007-03-01 01:23:23 jitu Exp $
 REM
 REM This script is optional and for convenience only.
 

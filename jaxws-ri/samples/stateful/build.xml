@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="help" name="stateful">
+
+    <import file="etc/deploy-targets.xml"/>
+    <path id="jaxws.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+        <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
+        <pathelement location="etc/servlet.jar"/>
+        <fileset dir="${lib.home}">
+            <include name="*.jar"/>
+            <exclude name="j2ee.jar"/>
+        </fileset>
+    </path>
+
+  <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
+      <classpath refid="jaxws.classpath"/>
+  </taskdef>
+  
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+        <classpath refid="jaxws.classpath"/>
+    </taskdef>
+
+    <target name="setup">
+        <mkdir dir="${build.home}"/>
+        <mkdir dir="${build.classes.home}"/>
+        <mkdir dir="${build.war.home}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.home}" includeEmptyDirs="true"/>
+    </target>
+
+    <target name="build-server-java" depends="setup">
+        <apt
+                fork="true"
+                debug="true"
+                verbose="${verbose}"
+                destdir="${build.classes.home}"
+                sourcedestdir="${build.classes.home}"
+                sourcepath="${basedir}/src">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${basedir}/src"/>
+            </classpath>
+            <option key="r" value="${build.home}"/>
+            <source dir="${basedir}/src">
+                <include name="**/server/*.java"/>
+                <include name="**/common/*.java"/>
+            </source>
+        </apt>
+        <!-- copy handlers descriptor file -->
+        <copy todir="${build.classes.home}">
+            <fileset dir="${basedir}/src">
+                <include name="**/server/**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="create-war">
+        <war warfile="${build.war.home}/jaxws-${ant.project.name}.war" webxml="etc/web.xml">
+            <webinf dir="${basedir}/etc" includes="sun-jaxws.xml"/>
+            <zipfileset
+                    dir="${basedir}/etc"
+                    includes="*.wsdl, *.xsd"
+                    prefix="WEB-INF/wsdl"/>
+            <classes dir="${build.classes.home}"/>
+        </war>
+    </target>
+
+  <target name="generate-client" depends="setup">
+      <wsimport
+              debug="true"
+              verbose="${verbose}"
+              keep="true"
+              destdir="${build.classes.home}"
+              package="stateful.client"
+              wsdl="http://localhost:8080/jaxws-stateful/book?wsdl">
+      </wsimport>
+      <wsimport
+              debug="true"
+              verbose="${verbose}"
+              keep="true"
+              destdir="${build.classes.home}"
+              package="stateful.client"
+              wsdl="http://localhost:8080/jaxws-stateful/bookstore?wsdl">
+      </wsimport>
+  </target>
+
+    <target name="client" depends="generate-client">
+        <javac
+                fork="true"
+                srcdir="${basedir}/src"
+                destdir="${build.classes.home}"
+                includes="**/client/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run">
+        <java fork="true" classname="stateful.client.Main">
+            <classpath>
+                <path refid="jaxws.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+            <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=${log}"/>
+        </java>
+    </target>
+
+    <target name="help">
+        <echo message="server:       Builds and deploy the service endpoint WAR"/>
+        <echo message="client:       Builds the client"/>
+        <echo message="run:          Runs the client"/>
+    </target>
+
+    <target name="server" depends="setup">
+
+        <antcall target="clean"/>
+
+        <antcall target="build-server-java"/>
+
+        <antcall target="create-war"/>
+
+        <antcall target="deploy"/>
+    </target>
+    <!-- If you are running behind firewall, you would need to provide the proxy info.
+         Uncomment the line below and put your proxy server and the port number. 
+    -->
+    <!--setproxy proxyhost="your-proxy-server" proxyport="8080"/-->
+</project>

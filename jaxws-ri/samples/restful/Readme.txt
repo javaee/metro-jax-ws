@@ -26,3 +26,5 @@ is not published in this case.
 * Prerequisite
 
 Refer to the Prerequisites defined in samples/docs/index.html. 
+
+We appreciate your feedback, please send it to users@jax-ws.dev.java.net.

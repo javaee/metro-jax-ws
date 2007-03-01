@@ -1,31 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
-	<TITLE>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Annotations</TITLE>
-	<META NAME="GENERATOR" CONTENT="StarSuite 8  (Win32)">
-	<META NAME="CREATED" CONTENT="20050329;10243973">
-	<META NAME="CHANGEDBY" CONTENT="Rama Pulavarthi">
-	<META NAME="CHANGED" CONTENT="20060427;12592170">
-	<STYLE>
-	<!--
-		H1 { color: #000099; font-family: sans-serif; text-align: center }
-		H2 { color: #000099; font-family: sans-serif; text-align: center }
-		H3 { color: #000099; font-family: sans-serif; text-align: left }
-		H4 { color: #000099; font-family: sans-serif; text-align: left }
-		CODE { font-family: "Courier", monospace }
-	-->
-	</STYLE>
-</HEAD>
-<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
-<H1 ALIGN=CENTER><A NAME="1. Overview|outline"></A>Java<FONT SIZE=1><SUP>TM</SUP></FONT>
-API for XML Web Services<BR>Annotations 
-</H1>
-<P ALIGN=CENTER STYLE="margin-bottom: 0in"><B>Specification Version:</B>
-@@SPEC_VERSION@@<BR><B>Reference Implementation (RI) Version:</B>
-@@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@</P>
-<HR>
-<P>Last Modified: 6/29/06</P>
+<html>
+
+<head caption="Annotations">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
 <H2>Contents</H2>
 <PRE><A HREF="#1.%20Overview%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">1. Overview</FONT></FONT></A>
 <A HREF="#JSR 181"><FONT SIZE=3><FONT FACE="Thorndale, serif">2. JSR 181 (Web Services Metadata) Annotations</FONT></FONT></A>
@@ -46,29 +25,47 @@ API for XML Web Services<BR>Annotations
     <A HREF="#3.7%20javax.xml.ws.WebServiceClient%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">3.7 javax.xml.ws.WebServiceClient</FONT></FONT></A>
     <A HREF="#3.8%20javax.xml.ws.WebServiceProvider%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">3.8 javax.xml.ws.WebServiceProvider</FONT></FONT></A>
     <A HREF="#3.9%20javax.xml.ws.WebServiceRef%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">3.9 javax.xml.ws.WebServiceRef</FONT></FONT></A>
+    <A HREF="#3.12%20javax.xml.ws.Action%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">3.10 javax.xml.ws.Action</FONT></FONT></A>
+    <A HREF="#3.13%20javax.xml.ws.FaultAction%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">3.11 javax.xml.ws.FaultAction</FONT></FONT></A>
 <A HREF="#4.%20JSR%20222%20%28JAXB%29%20Annotations%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">4. JSR 222 (JAXB) Annotations</FONT></FONT></A>
     <A HREF="#4.1%20javax.xml.bind.annotation.XmlRootElement%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">4.1 javax.xml.bind.annotation.XmlRootElement </FONT></FONT></A>
     <A HREF="#4.2%20javax.xml.bind.annotation.XmlAccessorType%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">4.2 javax.xml.bind.annotation.XmlAccessorType</FONT></FONT></A>
     <A HREF="#4.3%20javax.xml.bind.annotation.XmlType%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">4.3 javax.xml.bind.annotation.XmlType</FONT></FONT></A>
     <A HREF="#4.4%20javax.xml.bind.annotation.XmlElement%7Coutline"><FONT SIZE=3><FONT FACE="Thorndale, serif">4.4 javax.xml.bind.annotation.XmlElement</FONT></FONT></A>
+    <a href="#4.5_javax.xml.bind.annotation.XmlSeeAlso__"><FONT SIZE=3><FONT FACE="Thorndale, serif">4.5 javax.xml.bind.annotation.XmlSeeAlso</FONT></FONT></a>
 <A HREF="#5._JSR_250_Common_Annotations"><FONT SIZE=3><FONT FACE="Thorndale, serif">5. JSR 250 (Common Annotations) Annotations</FONT></FONT></A>
     <A HREF="#5.1_javax.annotation.Resource"><FONT SIZE=3><FONT FACE="Thorndale, serif">5.1 javax.annotation.Resource</FONT></FONT></A>
     <A HREF="#5.2_javax.annotation.PostConstruct"><FONT SIZE=3><FONT FACE="Thorndale, serif">5.2 javax.annotation.PostConstruct</FONT></FONT></A>
     <A HREF="#5.3_javax.annotation.PreDestroy"><FONT SIZE=3><FONT FACE="Thorndale, serif">5.3 javax.annotation.PreDestroy</FONT></FONT></A></PRE><H2>
 1. Overview</H2>
 <P STYLE="margin-bottom: 0in">Annotations play a critical role in
-JAX-WS @@SPEC_VERSION@@. First, annotations are used in mapping Java
+JAX-WS ${SPEC_VERSION}. First, annotations are used in mapping Java
 to WSDL and schema. Second, annotations are used a runtime to control
 how the JAX-WS runtime processes and responds to web service
 invocations. Currently the annotations utilized by JAXR-WS 2.0 are
-defined in separate JSRs: 1) <A HREF="http://www.jcp.org/en/jsr/detail?id=181">JSR
-181: <I>Web Services Metadata for the Java<FONT SIZE=1><SUP>TM</SUP></FONT>
-Platform</I></A>, 2) <A HREF="http://www.jcp.org/en/jsr/detail?id=222">JSR
-222: <I>Java<FONT SIZE=1><SUP>TM</SUP></FONT> Architecture for XML
-Binding (JAXB) 2.0</I></A>, 3) <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JSR
-224: <I>Java<FONT SIZE=1><SUP>TM</SUP></FONT> API for XML Web
-Services (JAX-WS) 2.0</I></A>, 4)&nbsp; <A HREF="http://www.jcp.org/en/jsr/detail?id=250">JSR
-250: <I>Common Annotations for the Java<SUP>TM</SUP> Platform</I></A>.</P>
+defined in separate JSRs: </P>
+<ul>
+	<li>
+	<P STYLE="margin-bottom: 0in">
+	<A HREF="http://www.jcp.org/en/jsr/detail?id=181">JSR
+181: Web Services Metadata for the Java<FONT SIZE=1><SUP>TM</SUP></FONT>
+Platform</A></P></li>
+	<li>
+	<P STYLE="margin-bottom: 0in">
+	<A HREF="http://www.jcp.org/en/jsr/detail?id=222">JSR
+222: Java<FONT SIZE=1><SUP>TM</SUP></FONT> Architecture for XML
+Binding (JAXB) 2.1</I></A></P></li>
+	<li>
+	<P STYLE="margin-bottom: 0in">
+	<A HREF="http://www.jcp.org/en/jsr/detail?id=224">JSR
+224: Java<FONT SIZE=1><SUP>TM</SUP></FONT> API for XML Web
+Services (JAX-WS) 2.0 and 2.1 </A></P></li>
+	<li>
+	<P STYLE="margin-bottom: 0in">
+	<A HREF="http://www.jcp.org/en/jsr/detail?id=250">JSR
+250: Common Annotations for the Java<SUP>TM</SUP> Platform</A>.</P></li>
+</ul>
+
 <H2><A NAME="JSR 181"></A>2. JSR 181 (Web Services Metadata)
 Annotations</H2>
 <P>Because JSR 181 has been written to work with JAX-RPC 1.1, we have
@@ -173,7 +170,7 @@ specification.</FONT></FONT></SPAN></P>
 			<CODE>wsdl:portName</CODE></FONT></FONT></SPAN></P>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT>The <CODE>WebService.name</CODE> + &quot;Port&quot; 
+			<P ALIGN=LEFT>The <CODE>WebService.name</CODE> + &quot;Port&quot;
 			</P>
 		</TD>
 	</TR>
@@ -183,7 +180,7 @@ specification.</FONT></FONT></SPAN></P>
 		</TD>
 		<TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Not
-			currently used by JAX-WS @@IMPL_VERSION@@</FONT></FONT></FONT></P>
+			currently used by JAX-WS ${IMPL_VERSION}</FONT></FONT></FONT></P>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
@@ -228,7 +225,7 @@ public class AddNumbersImpl {
 <P>If you are familiar with JAX-RPC 1.1, you will notice that the
 <FONT FACE="Cumberland, monospace">AddNumbersImpl</FONT>
 implementation class does not implement a service endpoint interface.
-In JAX-WS @@SPEC_VERSION@@ a service endpoint interface is no longer
+In JAX-WS ${SPEC_VERSION} a service endpoint interface is no longer
 required. If a service endpoint interfaces is desired, then the
 @WebService annotation on the endpoint implementation is modified to
 specify the endpoint interface and the actual service endpoint
@@ -336,7 +333,7 @@ specification.</FONT></FONT></SPAN></P>
 @Target({METHOD})
 public @interface WebMethod {
     String operationName() default &quot;&quot;;
-    String action() default &quot;&quot;; 
+    String action() default &quot;&quot;;
     boolean exclude() default false;
 }</PRE><H4>
 Example</H4>
@@ -485,7 +482,7 @@ parameter to a message part or element.</P>
 <PRE STYLE="margin-left: 0.5in">@Retention(value=RetentionPolicy.RUNTIME)
 @Target({PARAMETER})
 public @interface WebParam {
-    
+
     public enum Mode {
         IN,
         OUT,
@@ -607,7 +604,7 @@ return value to a WSDL part or XML element.</P>
 <PRE STYLE="margin-left: 0.49in">@Retention(value=RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface WebResult {
-    
+
     String name() default &quot;return&quot;;
     String targetNamespace() default &quot;&quot;;
     boolean header() default false;
@@ -728,7 +725,7 @@ endpoint implementation or service endpoint interface. This
 annotation lets the developer choose between document/literal
 wrapped, document/literal bare, rpc/literal and rpc/encoded endpoints
 with the default being document/literal wrapped. JAX-WS
-@@SPEC_VERSION@@ does not support rpc/encoded. The main difference
+${SPEC_VERSION} does not support rpc/encoded. The main difference
 between document/literal bare and document/literal wrapped is that
 methods on a document/literal wrapped endpoint can have multiple
 parameters bound to the body of a SOAP message, while a
@@ -773,7 +770,7 @@ of the implied wrapper element around the invocation body.</P>
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Defines
 			the encoding used for messages used in web service. Can only be
 			<FONT FACE="Cumberland, monospace">LITERAL</FONT> for JAX-WS
-			@@SPEC_VERSION@@</FONT></FONT></FONT></P>
+			${SPEC_VERSION}</FONT></FONT></FONT></P>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>LITERAL</FONT></FONT></FONT></P>
@@ -836,11 +833,12 @@ directly as some of them are generated by JAX-WS tools but they will
 be presented here to avoid confusion.</P>
 <H3><A NAME="3.1 javax.xml.ws.BindingType|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.1
 javax.xml.ws.BindingType</FONT></FONT></H3>
-<P>The <CODE>BindingType</CODE> annotation is used to specify the
-binding to use for a web service endpoint implementation class. 
+<P>The <code>BindingType</code> annotation is used to specify the
+    binding to use for a web service endpoint implementation class.
+    As well as specify additional features that may be enabled.
 </P>
 <P>This annotation may be overriden programmatically or via
-deployment descriptors, depending on the platform in use. 
+deployment descriptors, depending on the platform in use.
 </P>
 <TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
@@ -874,19 +872,21 @@ deployment descriptors, depending on the platform in use.
 <FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>@see javax.xml.ws.soap.SOAPBinding#SOAP12HTTP_BINDING</FONT></FONT></FONT>
 <FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>@see javax.xml.ws.http.HTTPBinding#HTTP_BINDING</FONT></FONT></FONT></PRE>
 		</TD>
-		<TD WIDTH=30% VALIGN=BOTTOM BGCOLOR="#ffffff">
-			<P ALIGN=RIGHT><FONT FACE="Cumberland, monospace">SOAP 1.1 / HTTP</FONT></P>
+		<TD WIDTH=30% VALIGN=TOP BGCOLOR="#ffffff">
+			<P ALIGN=LEFT><FONT FACE="Cumberland, monospace">SOAP 1.1 / HTTP</FONT></P>
 		</TD>
 	</TR>
-</TABLE>
+    </TABLE>
 <H4>Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">@Target(ElementType.TYPE)@Retention(RetentionPolicy.RUNTIME)
+<PRE STYLE="margin-left: 0.49in">@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface BindingType {
-    /**
+     /**
       * A binding identifier (a URI).
       * If not specified, the default is the SOAP 1.1 / HTTP binding.
-      *
-      * See the <CODE>SOAPBinding</CODE> and <CODE>HTTPBinding</CODE>
+      * <p>
+      * See the <code>SOAPBinding</code> and <code>HTTPBinding</code>
       * for the definition of the standard binding identifiers.
       *
       * @see javax.xml.ws.Binding
@@ -894,162 +894,131 @@ public @interface BindingType {
       * @see javax.xml.ws.soap.SOAPBinding#SOAP12HTTP_BINDING
       * @see javax.xml.ws.http.HTTPBinding#HTTP_BINDING
       */
-     String value() default &quot;&quot; ;
+     String value() default "" ;
+
+     /**
+      * An array of Features to enable/disable on the specified binding.
+      * If not specified, features will be enabled/disabled based
+      * on their own rules. Refer to the documentation of the feature
+      * to determine when it will be automatically enabled.
+      * <p>
+      * See the <code>SOAPBinding</code>
+      * for the definition of the standard feature identifiers.
+      *
+      * @see javax.xml.ws.RespectBindingFeature
+      * @see javax.xml.ws.soap.AddressingFeature
+      * @see javax.xml.ws.soap.MTOMFeature
+      *
+      * @since JAX-WS 2.1
+      */
+     Feature[] features() default {};
+}
+</PRE>
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H4>
-Example</H4>
-<P>Given the web service defined by:</P>
-<PRE STYLE="margin-left: 0.5in">@WebService
+Example</H4><P>Example 1: Given the web service defined by</P><PRE STYLE="margin-left: 0.5in">@WebService
 @BindingType(value=&quot;http://www.w3.org/2003/05/soap/bindings/HTTP/&quot;)
 public class AddNumbersImpl {
-    /**
-     * @param number1
-     * @param number2
-     * @return The sum
-     * @throws AddNumbersException
-     *             if any of the numbers to be added is negative.
-     */
-     public int addNumbers(int number1, int number2) throws AddNumbersException {
-         if (number1 &lt; 0 || number2 &lt; 0) {
-            throw new AddNumbersException(&quot;Negative number cant be added!&quot;,
-                                          &quot;Numbers: &quot; + number1 + &quot;, &quot; + number2);
-        }
-        return number1 + number2;
-     }
-<FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><P>
-The deployed endpoint would use the SOAP1.2 over HTTP binding.</P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<H3><A NAME="3.2 javax.xml.ws.RequestWrapper|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.2
-javax.xml.ws.RequestWrapper</FONT></FONT></H3>
-<P>This annotation annotates methods in the Service Endpoint
-Interface with the request wrapper bean to be used at runtime.</P>
-<P>When starting from Java this annotation is used resolve
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * @param number1
+&nbsp;&nbsp;&nbsp;&nbsp; * @param number2
+&nbsp;&nbsp;&nbsp;&nbsp; * @return The sum
+&nbsp;&nbsp;&nbsp;&nbsp; * @throws AddNumbersException
+&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if any of the numbers to be added is negative.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2) throws AddNumbersException {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (number1 &lt; 0 || number2 &lt; 0) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new AddNumbersException(&quot;Negative number cant be added!&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;Numbers: &quot; + number1 + &quot;, &quot; + number2);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp; }
+</PRE><P>
+The deployed endpoint would use the SOAP1.2 over HTTP binding.&nbsp;<BR></P><H3><A NAME="3.2 javax.xml.ws.RequestWrapper|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.2
+javax.xml.ws.RequestWrapper</FONT></FONT></H3><P>This annotation annotates methods in the Service Endpoint
+Interface with the request wrapper bean to be used at runtime.</P><P>When starting from Java this annotation is used resolve
 overloading conflicts in document literal mode. Only the className is
-required in this case.</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+required in this case.</P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>localName</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>localName</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Specifies
 			the localName of the XML Schema element representing this request
-			wrapper. </FONT></FONT></FONT>
-			</P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P><FONT FACE="Cumberland, monospace"><CODE>operationName</CODE>
-			as defined by <CODE>javax.jws.WebMethod</CODE></FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			wrapper. </FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P><FONT FACE="Cumberland, monospace"><CODE>operationName</CODE> as defined by <CODE>javax.jws.WebMethod</CODE></FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>namespace
-			of the request wrapper element</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P><FONT FACE="Cumberland, monospace">the <CODE>targetNamespace</CODE>
-			of the SEI</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			of the request wrapper element</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P><FONT FACE="Cumberland, monospace">the <CODE>targetNamespace</CODE> of the SEI</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>className</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>className</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>The
-			name of the Class representing the request wrapper</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			name of the Class representing the request wrapper</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P><BR>
 			</P>
 		</TD>
 	</TR>
 </TABLE>
-<H4>Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Target(ElementType.METHOD)
+<H4>Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestWrapper {
-  /**
-   *  Elements local name.
-  **/
-  public String localName() default &quot;&quot;;
-  /**
-   *  Elements namespace name.
-  **/
-  public String targetNamespace() default &quot;&quot;;
-  /**
-   *  Request wrapper bean name.
-  **/
-  public String className() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements local name.
+&nbsp; **/
+&nbsp; public String localName() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements namespace name.
+&nbsp; **/
+&nbsp; public String targetNamespace() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Request wrapper bean name.
+&nbsp; **/
+&nbsp; public String className() default &quot;&quot;;
 }
- </PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.49in">public interface AddNumbersImpl {
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns int
-     * @throws AddNumbersException_Exception
-     */
-    @WebMethod
-    @WebResult(targetNamespace = &quot;&quot;)
-    @RequestWrapper(localName = &quot;addNumbers&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbers&quot;)
-    @ResponseWrapper(localName = &quot;addNumbersResponse&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbersResponse&quot;)
-    public int addNumbers(
-        @WebParam(name = &quot;arg0&quot;, targetNamespace = &quot;&quot;)
-        int arg0,
-        @WebParam(name = &quot;arg1&quot;, targetNamespace = &quot;&quot;)
-        int arg1)
-        throws AddNumbersException_Exception;
+</PRE><H4>
+Example</H4><PRE STYLE="margin-left: 0.49in">public interface AddNumbersImpl {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * @param arg1
+&nbsp;&nbsp;&nbsp;&nbsp; * @param arg0
+&nbsp;&nbsp;&nbsp;&nbsp; * @return
+&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp; returns int
+&nbsp;&nbsp;&nbsp;&nbsp; * @throws AddNumbersException_Exception
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; @WebMethod
+&nbsp;&nbsp;&nbsp; @WebResult(targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; @RequestWrapper(localName = &quot;addNumbers&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbers&quot;)
+&nbsp;&nbsp;&nbsp; @ResponseWrapper(localName = &quot;addNumbersResponse&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbersResponse&quot;)
+&nbsp;&nbsp;&nbsp; public int addNumbers(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @WebParam(name = &quot;arg0&quot;, targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int arg0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @WebParam(name = &quot;arg1&quot;, targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int arg1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws AddNumbersException_Exception;
 }
 </PRE><H3>
 <A NAME="3.3 javax.xml.ws.ResponseWrapper|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.3
-javax.xml.ws.ResponseWrapper</FONT></FONT></H3>
-<P>This annotation annotates methods in the Service Endpoint
-Interface with the response wrapper bean to be used at runtime.</P>
-<P>When starting from Java this annotation is used resolve
+javax.xml.ws.ResponseWrapper</FONT></FONT></H3><P>This annotation annotates methods in the Service Endpoint
+Interface with the response wrapper bean to be used at runtime.</P><P>When starting from Java this annotation is used resolve
 overloading conflicts in document literal mode. Only the className is
-required in this case.</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+required in this case.</P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>localName</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>localName</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Specifies
 			the localName of the XML Schema element representing this request
 			wrapper. </FONT></FONT></FONT>
@@ -1057,257 +1026,193 @@ required in this case.</P>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
 			<P><FONT FACE="Cumberland, monospace"><CODE>operationName</CODE>
-			as defined by <CODE>javax.jws.WebMethod</CODE></FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			as defined by <CODE>javax.jws.WebMethod</CODE></FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>namespace
-			of the request wrapper element</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			of the request wrapper element</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P><FONT FACE="Cumberland, monospace">the <CODE>targetNamespace</CODE>
-			of the SEI</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			of the SEI</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>className</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>className</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>The
-			name of the Class representing the request wrapper</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			name of the Class representing the request wrapper</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P><BR>
 			</P>
 		</TD>
 	</TR>
 </TABLE>
-<H4>Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Target(ElementType.METHOD)
+<H4>Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResponseWrapper {
-  /**
-   *  Elements local name.
-  **/
-  public String localName() default &quot;&quot;;
-  /**
-   *  Elements namespace name.
-  **/
-  public String targetNamespace() default &quot;&quot;;
-  /**
-   *  Request wrapper bean name.
-  **/
-  public String className() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements local name.
+&nbsp; **/
+&nbsp; public String localName() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements namespace name.
+&nbsp; **/
+&nbsp; public String targetNamespace() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Request wrapper bean name.
+&nbsp; **/
+&nbsp; public String className() default &quot;&quot;;
 }
- </PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.49in">public interface AddNumbersImpl {
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns int
-     * @throws AddNumbersException_Exception
-     */
-    @WebMethod
-    @WebResult(targetNamespace = &quot;&quot;)
-    @RequestWrapper(localName = &quot;addNumbers&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbers&quot;)
-    @ResponseWrapper(localName = &quot;addNumbersResponse&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbersResponse&quot;)
-    public int addNumbers(
-        @WebParam(name = &quot;arg0&quot;, targetNamespace = &quot;&quot;)
-        int arg0,
-        @WebParam(name = &quot;arg1&quot;, targetNamespace = &quot;&quot;)
-        int arg1)
-        throws AddNumbersException_Exception;
+</PRE><H4>
+Example</H4><PRE STYLE="margin-left: 0.49in">public interface AddNumbersImpl {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * @param arg1
+&nbsp;&nbsp;&nbsp;&nbsp; * @param arg0
+&nbsp;&nbsp;&nbsp;&nbsp; * @return
+&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp; returns int
+&nbsp;&nbsp;&nbsp;&nbsp; * @throws AddNumbersException_Exception
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; @WebMethod
+&nbsp;&nbsp;&nbsp; @WebResult(targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; @RequestWrapper(localName = &quot;addNumbers&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbers&quot;)
+&nbsp;&nbsp;&nbsp; @ResponseWrapper(localName = &quot;addNumbersResponse&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, className = &quot;fromjava.client.AddNumbersResponse&quot;)
+&nbsp;&nbsp;&nbsp; public int addNumbers(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @WebParam(name = &quot;arg0&quot;, targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int arg0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @WebParam(name = &quot;arg1&quot;, targetNamespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int arg1)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws AddNumbersException_Exception;
 }
 </PRE><H3>
-<A NAME="3.4 javax.xml.ws.ServiceMode|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.4
-javax.xml.ws.ServiceMode</FONT></FONT></H3>
-<P>This annotation allows the <A HREF="provider.html"><FONT FACE="Cumberland, monospace">Provider</FONT></A>
-de<FONT FACE="Thorndale, serif">veloper to <FONT SIZE=2>to indicate
+<A NAME="3.4 javax.xml.ws.ServiceMode|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.4 javax.xml.ws.ServiceMode</FONT></FONT></H3><P>This annotation allows the <A HREF="provider.html"><FONT FACE="Cumberland, monospace">Provider</FONT></A> de<FONT FACE="Thorndale, serif">veloper to <FONT SIZE=2>to indicate
 whether a Provider implementation wishes to work with entire protocol
-messages or just with protocol message payloads.</FONT></FONT></P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+messages or just with protocol message payloads.</FONT></FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Convey
 			whether the Provider endpoint wants to access then entire message
-			(<FONT FACE="Cumberland, monospace">MESSAGE</FONT>) or just the
-			payload(<FONT FACE="Cumberland, monospace">PAYLOAD</FONT>)</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P><FONT FACE="Cumberland, monospace">PAYLOAD</FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4>Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Retention(RetentionPolicy.RUNTIME)
+			(<FONT FACE="Cumberland, monospace">MESSAGE</FONT>) or just the payload(<FONT FACE="Cumberland, monospace">PAYLOAD</FONT>)</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P><FONT FACE="Cumberland, monospace">PAYLOAD</FONT></P></TD></TR></TABLE><H4>Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Target({ElementType.TYPE})@Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface ServiceMode {
-  /**
-   * Service mode. PAYLOAD indicates that the Provider implementation
-   * wishes to work with protocol message payloads only. MESSAGE indicates
-   * that the Provider implementation wishes to work with entire protocol
-   * messages.
-  **/
-  public Service.Mode value() default Service.Mode.PAYLOAD;
+&nbsp; /**
+&nbsp;&nbsp; * Service mode. PAYLOAD indicates that the Provider implementation
+&nbsp;&nbsp; * wishes to work with protocol message payloads only. MESSAGE indicates
+&nbsp;&nbsp; * that the Provider implementation wishes to work with entire protocol
+&nbsp;&nbsp; * messages.
+&nbsp; **/
+&nbsp; public Service.Mode value() default Service.Mode.PAYLOAD;
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.49in">@ServiceMode(value=Service.Mode.PAYLOAD)
+Example</H4><PRE STYLE="margin-left: 0.49in">@ServiceMode(value=Service.Mode.PAYLOAD)
 public class AddNumbersImpl implements Provider&lt;Source&gt; {
-    public Source invoke(Source source)
-        throws RemoteException {
-        try {
-            DOMResult dom = new DOMResult();
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
-            trans.transform(source, dom);
-            Node node = dom.getNode();
-            Node root = node.getFirstChild();
-            Node first = root.getFirstChild();
-            int number1 = Integer.decode(first.getFirstChild().getNodeValue());
-            Node second = first.getNextSibling();
-            int number2 = Integer.decode(second.getFirstChild().getNodeValue());
-            return sendSource(number1, number2);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw new RemoteException(&quot;Error in provider endpoint&quot;);
-        }
-    }
-    private Source sendSource(int number1, int number2) {
-        int sum = number1+number2;
-        String body =
-            &quot;&lt;ns:addNumbersResponse xmlns:ns=\&quot;http://duke.example.org\&quot;&gt;&lt;return&gt;&quot;
-            +sum
-            +&quot;&lt;/return&gt;&lt;/ns:addNumbersResponse&gt;&quot;;
-        Source source = new StreamSource(
-            new ByteArrayInputStream(body.getBytes()));
-        return source;
-    }
+&nbsp;&nbsp;&nbsp; public Source invoke(Source source)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws RemoteException {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DOMResult dom = new DOMResult();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transformer trans = TransformerFactory.newInstance().newTransformer();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trans.transform(source, dom);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node node = dom.getNode();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node root = node.getFirstChild();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node first = root.getFirstChild();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int number1 = Integer.decode(first.getFirstChild().getNodeValue());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node second = first.getNextSibling();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int number2 = Integer.decode(second.getFirstChild().getNodeValue());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return sendSource(number1, number2);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch(Exception e) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.printStackTrace();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new RemoteException(&quot;Error in provider endpoint&quot;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; private Source sendSource(int number1, int number2) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int sum = number1+number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String body =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&lt;ns:addNumbersResponse xmlns:ns=\&quot;http://duke.example.org\&quot;&gt;&lt;return&gt;&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +sum
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&quot;&lt;/return&gt;&lt;/ns:addNumbersResponse&gt;&quot;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source source = new StreamSource(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new ByteArrayInputStream(body.getBytes()));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return source;
+&nbsp;&nbsp;&nbsp; }
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H3>
 <A NAME="3.5 javax.xml.ws.WebEndpoint|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.5
-javax.xml.ws.WebEndpoint</FONT></FONT></H3>
-<P><FONT FACE="Thorndale, serif">Used to annotate the <CODE>get<EM>PortName</EM>()</CODE>
-methods of a generated service interface. </FONT>
-</P>
-<P><FONT FACE="Thorndale, serif">The information specified in this
-annotation is sufficient to uniquely identify a <CODE>wsdl:port</CODE>
-element inside a <CODE>wsdl:service</CODE>. The latter is determined
+javax.xml.ws.WebEndpoint</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">Used to annotate the <CODE>get<EM>PortName</EM>()</CODE> methods of a generated service interface. </FONT></P><P><FONT FACE="Thorndale, serif">The information specified in this
+annotation is sufficient to uniquely identify a <CODE>wsdl:port</CODE> element inside a <CODE>wsdl:service</CODE>. The latter is determined
 based on the value of the <CODE>WebServiceClient</CODE> annotation on
-the generated service interface itself. </FONT>
-</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+the generated service interface itself. </FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
 			the local name of the XML element representing the corresponding
-			port in the WSDL.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">/** 
- *  Used to annotate the <CODE>get<EM>PortName</EM>()</CODE>
- *  methods of a generated service interface.
+			port in the WSDL.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">/**
+ *&nbsp; Used to annotate the <CODE>get<EM>PortName</EM>()</CODE>
+ *&nbsp; methods of a generated service interface.
  *
- *  
+ *
 The information specified in this annotation is sufficient
- *  to uniquely identify a <CODE>wsdl:port</CODE> element
- *  inside a <CODE>wsdl:service</CODE>. The latter is
- *  determined based on the value of the <CODE>WebServiceClient</CODE>
- *  annotation on the generated service interface itself.
+ *&nbsp; to uniquely identify a <CODE>wsdl:port</CODE> element
+ *&nbsp; inside a <CODE>wsdl:service</CODE>. The latter is
+ *&nbsp; determined based on the value of the <CODE>WebServiceClient</CODE>
+ *&nbsp; annotation on the generated service interface itself.
  *
- *  @since JAX-WS 2.0
+ *&nbsp; @since JAX-WS 2.0
  *
- *  @see javax.xml.ws.WebServiceClient
+ *&nbsp; @see javax.xml.ws.WebServiceClient
 **/
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebEndpoint {
-  /**
-   *  The local name of the endpoint.
-  **/
-  String name() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; The local name of the endpoint.
+&nbsp; **/
+&nbsp; String name() default &quot;&quot;;
 }
 </PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.5in">@WebServiceClient(name = &quot;AddNumbersImplService&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, wsdlLocation = &quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;)
+Example</H4><PRE STYLE="margin-left: 0.5in">@WebServiceClient(name = &quot;AddNumbersImplService&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, wsdlLocation = &quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;)
 public class AddNumbersImplService
-    extends Service
+&nbsp;&nbsp;&nbsp; extends Service
 {
-    private final static URL WSDL_LOCATION;
-    private final static QName ADDNUMBERSIMPLSERVICE = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplService&quot;);
-    private final static QName ADDNUMBERSIMPLPORT = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplPort&quot;);
-    static {
-        URL url = null;
-        try {
-            url = new URL(&quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        WSDL_LOCATION = url;
-    }
-    public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
-        super(wsdlLocation, serviceName);
-    }
-    public AddNumbersImplService() {
-        super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
-    }
-    /**
-     * 
-     * @return
-     *     returns AddNumbersImpl
-     */
-    @WebEndpoint(name = &quot;AddNumbersImplPort&quot;)
-    public AddNumbersImpl getAddNumbersImplPort() {
-        return (AddNumbersImpl)super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
-    }
+&nbsp;&nbsp;&nbsp; private final static URL WSDL_LOCATION;
+&nbsp;&nbsp;&nbsp; private final static QName ADDNUMBERSIMPLSERVICE = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplService&quot;);
+&nbsp;&nbsp;&nbsp; private final static QName ADDNUMBERSIMPLPORT = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplPort&quot;);
+&nbsp;&nbsp;&nbsp; static {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; URL url = null;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url = new URL(&quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch (MalformedURLException e) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.printStackTrace();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WSDL_LOCATION = url;
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(wsdlLocation, serviceName);
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public AddNumbersImplService() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * @return
+&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp; returns AddNumbersImpl
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; @WebEndpoint(name = &quot;AddNumbersImplPort&quot;)
+&nbsp;&nbsp;&nbsp; public AddNumbersImpl getAddNumbersImplPort() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return (AddNumbersImpl)super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
+&nbsp;&nbsp;&nbsp; }
 }</PRE><H3>
-<A NAME="3.6 javax.xml.ws.WebFault|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.6
-javax.xml.ws.WebFault</FONT></FONT></H3>
-<P><FONT FACE="Thorndale, serif">This annotation is generated by the
+<A NAME="3.6 javax.xml.ws.WebFault|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.6 javax.xml.ws.WebFault</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">This annotation is generated by the
 JAX-WS tools into service specific exception classes generated from a
 WSDL to customize to the local and namespace name of the fault
 element and the name of the fault bean and to mark the service
@@ -1318,307 +1223,204 @@ is because these exceptions will already have a fault bean generated
 for them. The name of this fault bean is not the same name as on
 generated from a Java service specific exception class. For more
 information on this topic, please refer to section 3.6 <SPAN STYLE="text-decoration: none"><FONT FACE="Times, serif"><FONT COLOR="#000000">of
-the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A>
-<SPAN STYLE="text-decoration: none">specification.</SPAN></FONT></FONT></SPAN></FONT></P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A> <SPAN STYLE="text-decoration: none">specification.</SPAN></FONT></FONT></SPAN></FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
 			the local name of the XML element representing the corresponding
-			fault in the WSDL.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			fault in the WSDL.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Defines
 			the namespace of the XML element <FONT FACE="Thorndale, serif">representing
-			the corresponding fault in the WSDL.</FONT></FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			the corresponding fault in the WSDL.</FONT></FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>faultBean</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>faultBean</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>The
 			qualified name of the Java class that represents the detail of the
-			fault message.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">/** 
- * Used to annotate service specific exception classes to customize 
+			fault message.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">/**
+ * Used to annotate service specific exception classes to customize
  * to the local and namespace name of the fault element and the name
  * of the fault bean.
  *
- *  @since JAX-WS 2.0
+ *&nbsp; @since JAX-WS 2.0
 **/
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebFault {
-  /**
-   *  Elements local name.
-  **/
-  public String name() default &quot;&quot;;
-  /**
-   *  Elements namespace name.
-  **/
-  public String targetNamespace() default &quot;&quot;;
-  /**
-   *  Fault bean name.
-  **/
-  public String faultBean() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements local name.
+&nbsp; **/
+&nbsp; public String name() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Elements namespace name.
+&nbsp; **/
+&nbsp; public String targetNamespace() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; Fault bean name.
+&nbsp; **/
+&nbsp; public String faultBean() default &quot;&quot;;
 }</PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.5in">@javax.xml.ws.WebFault(name=&quot;AddNumbersException&quot;,
-    targetNamespace=&quot;http://server.fromjava/jaxws&quot;)
+Example</H4><PRE STYLE="margin-left: 0.5in">@javax.xml.ws.WebFault(name=&quot;AddNumbersException&quot;,
+&nbsp;&nbsp;&nbsp; targetNamespace=&quot;http://server.fromjava/jaxws&quot;)
 public class AddNumbersException_Exception extends Exception {
-    private fromjava.client.AddNumbersException faultInfo;
-    public AddNumbersException_Exception(String message, fromjava.client.AddNumbersException faultInfo) {
-        super(message);
-        this.faultInfo = faultInfo;
-    }
-    public AddNumbersException_Exception(String message, fromjava.client.AddNumbersException faultInfo,
-                                         Throwable cause) {
-        super(message, cause);
-        this.faultInfo = faultInfo;
-    }
-    public fromjava.client.AddNumbersException getFaultInfo() {
-        return faultInfo;
-    }
+&nbsp;&nbsp;&nbsp; private fromjava.client.AddNumbersException faultInfo;
+&nbsp;&nbsp;&nbsp; public AddNumbersException_Exception(String message, fromjava.client.AddNumbersException faultInfo) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(message);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.faultInfo = faultInfo;
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public AddNumbersException_Exception(String message, fromjava.client.AddNumbersException faultInfo,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Throwable cause) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(message, cause);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.faultInfo = faultInfo;
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public fromjava.client.AddNumbersException getFaultInfo() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return faultInfo;
+&nbsp;&nbsp;&nbsp; }
 <FONT FACE="Courier New"><FONT SIZE=2><SPAN LANG="en-US">}</SPAN></FONT></FONT></PRE><H3>
 <A NAME="3.7 javax.xml.ws.WebServiceClient|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.7
-javax.xml.ws.WebServiceClient</FONT></FONT></H3>
-<P><FONT FACE="Thorndale, serif">The information specified in this
-annotation is sufficient to uniquely identify a <CODE>wsdl:service</CODE>
-element inside a WSDL document. This <CODE>wsdl:service</CODE>
-element represents the Web service for which the generated service
-interface provides a client view.</FONT></P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+javax.xml.ws.WebServiceClient</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">The information specified in this
+annotation is sufficient to uniquely identify a <CODE>wsdl:service</CODE> element inside a WSDL document. This <CODE>wsdl:service</CODE> element represents the Web service for which the generated service
+interface provides a client view.</FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Thorndale, serif"><FONT COLOR="#000000">Defines
-			the local name of the <CODE>wsdl:serviceName</CODE> in the WSDL.</FONT></FONT></SPAN></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			the local name of the <CODE>wsdl:serviceName</CODE> in the WSDL.</FONT></FONT></SPAN></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Thorndale, serif"><FONT COLOR="#000000">Defines
-			the namespace for the <CODE>wsdl:serviceName</CODE> in the WSDL.</FONT></FONT></SPAN></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			the namespace for the <CODE>wsdl:serviceName</CODE> in the WSDL.</FONT></FONT></SPAN></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Specifies
-			the location of the WSDL that defines this service.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">/** 
- *  Used to annotate a generated service interface.
+			the location of the WSDL that defines this service.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">/**
+ *&nbsp; Used to annotate a generated service interface.
  *
- *  
+ *
 The information specified in this annotation is sufficient
- *  to uniquely identify a <CODE>wsdl:service</CODE>
- *  element inside a WSDL document. This <CODE>wsdl:service</CODE>
- *  element represents the Web service for which the generated
- *  service interface provides a client view.
+ *&nbsp; to uniquely identify a <CODE>wsdl:service</CODE>
+ *&nbsp; element inside a WSDL document. This <CODE>wsdl:service</CODE>
+ *&nbsp; element represents the Web service for which the generated
+ *&nbsp; service interface provides a client view.
  *
- *  @since JAX-WS 2.0
+ *&nbsp; @since JAX-WS 2.0
 **/
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebServiceClient {
-  /**
-   *  The local name of the Web service.
-  **/
-  String name() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; The local name of the Web service.
+&nbsp; **/
+&nbsp; String name() default &quot;&quot;;
 
-  /**
-   *  The namespace for the Web service.
-  **/
-  String targetNamespace() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; The namespace for the Web service.
+&nbsp; **/
+&nbsp; String targetNamespace() default &quot;&quot;;
 
-  /**
-   *  The location of the WSDL document for the service (a URL).
-  **/
-  String wsdlLocation() default &quot;&quot;;
+&nbsp; /**
+&nbsp;&nbsp; *&nbsp; The location of the WSDL document for the service (a URL).
+&nbsp; **/
+&nbsp; String wsdlLocation() default &quot;&quot;;
 }</PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.5in">@WebServiceClient(name = &quot;AddNumbersImplService&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, wsdlLocation = &quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;)
+Example</H4><PRE STYLE="margin-left: 0.5in">@WebServiceClient(name = &quot;AddNumbersImplService&quot;, targetNamespace = &quot;http://server.fromjava/&quot;, wsdlLocation = &quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;)
 public class AddNumbersImplService
-    extends Service
+&nbsp;&nbsp;&nbsp; extends Service
 {
-    private final static URL WSDL_LOCATION;
-    private final static QName ADDNUMBERSIMPLSERVICE = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplService&quot;);
-    private final static QName ADDNUMBERSIMPLPORT = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplPort&quot;);
-    static {
-        URL url = null;
-        try {
-            url = new URL(&quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        WSDL_LOCATION = url;
-    }
-    public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
-        super(wsdlLocation, serviceName);
-    }
-    public AddNumbersImplService() {
-        super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
-    }
-    /**
-     * 
-     * @return
-     *     returns AddNumbersImpl
-     */
-    @WebEndpoint(name = &quot;AddNumbersImplPort&quot;)
-    public AddNumbersImpl getAddNumbersImplPort() {
-        return (AddNumbersImpl)super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
-    }
+&nbsp;&nbsp;&nbsp; private final static URL WSDL_LOCATION;
+&nbsp;&nbsp;&nbsp; private final static QName ADDNUMBERSIMPLSERVICE = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplService&quot;);
+&nbsp;&nbsp;&nbsp; private final static QName ADDNUMBERSIMPLPORT = new QName(&quot;http://server.fromjava/&quot;, &quot;AddNumbersImplPort&quot;);
+&nbsp;&nbsp;&nbsp; static {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; URL url = null;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url = new URL(&quot;http://localhost:8080/jaxws-fromjava/addnumbers?wsdl&quot;);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch (MalformedURLException e) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.printStackTrace();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WSDL_LOCATION = url;
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public AddNumbersImplService(URL wsdlLocation, QName serviceName) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(wsdlLocation, serviceName);
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; public AddNumbersImplService() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(WSDL_LOCATION, ADDNUMBERSIMPLSERVICE);
+&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * @return
+&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp; returns AddNumbersImpl
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; @WebEndpoint(name = &quot;AddNumbersImplPort&quot;)
+&nbsp;&nbsp;&nbsp; public AddNumbersImpl getAddNumbersImplPort() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return (AddNumbersImpl)super.getPort(ADDNUMBERSIMPLPORT, AddNumbersImpl.class);
+&nbsp;&nbsp;&nbsp; }
 }</PRE><H3>
-<A NAME="3.8 javax.xml.ws.WebServiceProvider|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.8
-javax.xml.ws.WebServiceProvider</FONT></FONT></H3>
-<P><FONT FACE="Thorndale, serif">Annotation used to annotate a
-Provider implementation class.</FONT></P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+<A NAME="3.8 javax.xml.ws.WebServiceProvider|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.8 javax.xml.ws.WebServiceProvider</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">Annotation used to annotate a
+Provider implementation class.</FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>targetNamespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>The
 			XML namespace of the the WSDL and some of the XML elements
 			generated from this web service. Most of the XML elements will be
-			in the namespace according to the JAXB mapping rules.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			in the namespace according to the JAXB mapping rules.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Times, serif"><FONT COLOR="#000000">The
 			namespace mapped from the package name containing the web service
 			according to section 3.2 of the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS
-			2.0</A> specification.</FONT></FONT></SPAN></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			2.0</A> specification.</FONT></FONT></SPAN></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>serviceName</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>serviceName</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT SIZE=3><FONT FACE="Times, serif">The
-			Service name of the web service:</FONT> <FONT FACE="Cumberland, monospace">wsdl:service</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			Service name of the web service:</FONT> <FONT FACE="Cumberland, monospace">wsdl:service</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>The
-			unqualified name of the Java class or interface + &ldquo;<FONT FACE="Cumberland, monospace">Service</FONT>&rdquo;</FONT></FONT></FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			unqualified name of the Java class or interface + &ldquo;<FONT FACE="Cumberland, monospace">Service</FONT>&rdquo;</FONT></FONT></FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>portName</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Times, serif"><FONT COLOR="#000000">The
-			<CODE>wsdl:portName</CODE></FONT></FONT></SPAN></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>portName</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Times, serif"><FONT COLOR="#000000">The <CODE>wsdl:portName</CODE></FONT></FONT></SPAN></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Location
-			of the WSDL description for the service </FONT></FONT></FONT>
-			</P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			of the WSDL description for the service </FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 </TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">/**
+<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">/**
  * Used to annotate a Provider implementation class.
  *
  * @since JAX-WS 2.0
@@ -1627,336 +1429,501 @@ Provider implementation class.</FONT></P>
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebServiceProvider {
-    /**
-     * Location of the WSDL description for the service.
-     */
-    String wsdlLocation() default &quot;&quot;;    
-    
-    /**
-     * Service name.
-     */
-    String serviceName() default &quot;&quot;;
-    
-    /**
-     * Target namespace for the service
-     */
-    String targetNamespace() default &quot;&quot;;
-    /**
-     * Port name.
-     */
-    String portName() default &quot;&quot;;
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Location of the WSDL description for the service.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String wsdlLocation() default &quot;&quot;;
+
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Service name.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String serviceName() default &quot;&quot;;
+
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Target namespace for the service
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String targetNamespace() default &quot;&quot;;
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Port name.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String portName() default &quot;&quot;;
 }</PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.5in">@ServiceMode(value=Service.Mode.PAYLOAD)
+Example</H4><PRE STYLE="margin-left: 0.5in">@ServiceMode(value=Service.Mode.PAYLOAD)
 @WebServiceProvider(wsdlLocation=&quot;WEB-INF/wsdl/AddNumbers.wsdl&quot;)
 public class AddNumbersImpl implements Provider {
-    public Source invoke(Source source) {
-        try {
-            DOMResult dom = new DOMResult();
-            Transformer trans = TransformerFactory.newInstance().newTransformer();
-            trans.transform(source, dom);
-            Node node = dom.getNode();
-            Node root = node.getFirstChild();
-            Node first = root.getFirstChild();
-            int number1 = Integer.decode(first.getFirstChild().getNodeValue());
-            Node second = first.getNextSibling();
-            int number2 = Integer.decode(second.getFirstChild().getNodeValue());
-            return sendSource(number1, number2);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(&quot;Error in provider endpoint&quot;, e);
-        }
-    }
-    
-    private Source sendSource(int number1, int number2) {
-        int sum = number1+number2;
-        String body =
-            &quot;&quot;
-            +sum
-            +&quot;&quot;;
-        Source source = new StreamSource(
-            new ByteArrayInputStream(body.getBytes()));
-        return source;
-    }    
+&nbsp;&nbsp;&nbsp; public Source invoke(Source source) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DOMResult dom = new DOMResult();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transformer trans = TransformerFactory.newInstance().newTransformer();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trans.transform(source, dom);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node node = dom.getNode();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node root = node.getFirstChild();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node first = root.getFirstChild();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int number1 = Integer.decode(first.getFirstChild().getNodeValue());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Node second = first.getNextSibling();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int number2 = Integer.decode(second.getFirstChild().getNodeValue());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return sendSource(number1, number2);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch(Exception e) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e.printStackTrace();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new RuntimeException(&quot;Error in provider endpoint&quot;, e);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp; private Source sendSource(int number1, int number2) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int sum = number1+number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; String body =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +sum
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&quot;&quot;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source source = new StreamSource(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; new ByteArrayInputStream(body.getBytes()));
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return source;
+&nbsp;&nbsp;&nbsp; }
 }</PRE><H3>
-<A NAME="3.9 javax.xml.ws.WebServiceRef|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.9
-javax.xml.ws.WebServiceRef</FONT></FONT></H3>
-<P><FONT FACE="Thorndale, serif">The <CODE>WebServiceRef</CODE>
-annotation is used to define a reference to a web service and
+<A NAME="3.9 javax.xml.ws.WebServiceRef|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.9 javax.xml.ws.WebServiceRef</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">The <CODE>WebServiceRef</CODE> annotation is used to define a reference to a web service and
 (optionally) an injection target for it. Web service references are
-resources in the Java EE 5 sense. </FONT>
-</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+resources in the Java EE 5 sense. </FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>The
 			JNDI name of the resource. For field annotations, the default is
 			the field name. For method annotations, the default is the
 			JavaBeans property name corresponding to the method. For class
-			annotations, there is no default and this must be specified.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			annotations, there is no default and this must be specified.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>type</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>type</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT SIZE=3>The
 			Java type of the resource. For field annotations, the default is
 			the type of the field. For method annotations, the default is the
 			type of the JavaBeans property. For class annotations, there is no
-			default and this must be specified.</FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			default and this must be specified.</FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>mappedName</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>mappedName</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>A
-			product specific name that this resource should be mapped to.</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			product specific name that this resource should be mapped to.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><SPAN STYLE="text-decoration: none"><FONT FACE="Times, serif"><FONT COLOR="#000000">The
 			service class, always a type extending <CODE>javax.xml.ws.Service</CODE>.
 			This element must be specified whenever the type of the reference
-			is a service endpoint interface. </FONT></FONT></SPAN>
-			</P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			is a service endpoint interface. </FONT></FONT></SPAN></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>wsdlLocation</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Location
-			of the WSDL description for the service </FONT></FONT></FONT>
-			</P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			of the WSDL description for the service </FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 </TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">/**
- *  The <CODE>WebServiceRef</CODE> annotation is used to
- *  define a reference to a web service and
- *  (optionally) an injection target for it.
+<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">/**
+ *&nbsp; The <CODE>WebServiceRef</CODE> annotation is used to
+ *&nbsp; define a reference to a web service and
+ *&nbsp; (optionally) an injection target for it.
  *
- *  Web service references are resources in the Java EE 5 sense.
- * 
- *  @see javax.annotation.Resource
+ *&nbsp; Web service references are resources in the Java EE 5 sense.
  *
- *  @since JAX-WS 2.0
+ *&nbsp; @see javax.annotation.Resource
+ *
+ *&nbsp; @since JAX-WS 2.0
  *
 **/
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebServiceRef {
-     /**
-      * The JNDI name of the resource.  For field annotations,
-      * the default is the field name.  For method annotations,
-      * the default is the JavaBeans property name corresponding
-      * to the method.  For class annotations, there is no default
-      * and this must be specified.
-      */
-     String name() default &quot;&quot;;
-     /**
-      * The Java type of the resource.  For field annotations,
-      * the default is the type of the field.  For method annotations,
-      * the default is the type of the JavaBeans property.
-      * For class annotations, there is no default and this must be
-      * specified.
-      */
-     Class type() default Object.class ;
-     /**
-      * A product specific name that this resource should be mapped to.
-      * The name of this resource, as defined by the <CODE>name</CODE>
-      * element or defaulted, is a name that is local to the application
-      * component using the resource.  (It's a name in the JNDI
-      * <CODE>java:comp/env</CODE> namespace.)  Many application servers
-      * provide a way to map these local names to names of resources
-      * known to the application server.  This mapped name is often a
-      * <I>global</I> JNDI name, but may be a name of any form. 
+&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The JNDI name of the resource.&nbsp; For field annotations,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the default is the field name.&nbsp; For method annotations,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the default is the JavaBeans property name corresponding
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * to the method.&nbsp; For class annotations, there is no default
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * and this must be specified.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; String name() default &quot;&quot;;
+&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The Java type of the resource.&nbsp; For field annotations,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the default is the type of the field.&nbsp; For method annotations,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * the default is the type of the JavaBeans property.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * For class annotations, there is no default and this must be
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * specified.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; Class type() default Object.class ;
+&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * A product specific name that this resource should be mapped to.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The name of this resource, as defined by the <CODE>name</CODE>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * element or defaulted, is a name that is local to the application
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * component using the resource.&nbsp; (It's a name in the JNDI
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * <CODE>java:comp/env</CODE> namespace.)&nbsp; Many application servers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * provide a way to map these local names to names of resources
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * known to the application server.&nbsp; This mapped name is often a
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * <I>global</I> JNDI name, but may be a name of any form.
 
-      *
-      * Application servers are not required to support any particular
-      * form or type of mapped name, nor the ability to use mapped names.
-      * The mapped name is product-dependent and often installation-dependent.
-      * No use of a mapped name is portable.
-      */
-     String mappedName() default &quot;&quot;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * Application servers are not required to support any particular
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * form or type of mapped name, nor the ability to use mapped names.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The mapped name is product-dependent and often installation-dependent.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * No use of a mapped name is portable.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; String mappedName() default &quot;&quot;;
 
-     /**
-      * The service class, always a type extending
-      * <CODE>javax.xml.ws.Service</CODE>. This element must be specified
-      * whenever the type of the reference is a service endpoint interface.
-      */
-     Class value() default Object.class ;
-     /**
-      * A URL pointing to the WSDL document for the web service.
-      * If not specified, the WSDL location specified by annotations
-      * on the resource type is used instead.
-      */
-     String wsdlLocation() default &quot;&quot;;
-}</PRE><H2>
-<A NAME="4. JSR 222 (JAXB) Annotations|outline"></A>4. JSR 222 (JAXB)
-Annotations</H2>
-<P>The following JAXB annotations are being documented because JAX-WS
-generates them when generating wrapper beans and exception beans
-according to the JAX-WS 2.0 spec. Please refer to sections 3.5.2.1
-and 3.6 <SPAN STYLE="text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif">of
-the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A>
-specification for more information on these beans. For more
-information on these and other JAXB annotations please refer to the</FONT>
-<FONT FACE="Thorndale, serif"><A HREF="http://www.jcp.org/en/jsr/detail?id=222">JAXB
-2.0 specification</A>.</FONT></FONT></SPAN></P>
-<H3><A NAME="4.1 javax.xml.bind.annotation.XmlRootElement|outline"></A>
-<FONT FACE="Thorndale, serif">4.1</FONT>
-javax.xml.bind.annotation.XmlRootElement</H3>
-<P>This annotation is used to map a top level class to a global
-element in the XML schema used by the WSDL of the web service.</P>
+&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * The service class, always a type extending
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * <CODE>javax.xml.ws.Service</CODE>. This element must be specified
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * whenever the type of the reference is a service endpoint interface.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; Class value() default Object.class ;
+&nbsp;&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * A URL pointing to the WSDL document for the web service.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * If not specified, the WSDL location specified by annotations
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; * on the resource type is used instead.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp;&nbsp; String wsdlLocation() default &quot;&quot;;
+}</PRE><H3>
+<A NAME="3.12 javax.xml.ws.Action|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.12
+javax.xml.ws.Action</FONT></FONT></H3><P><FONT FACE="Thorndale, serif">The <code>Action</code> annotation allows explicit association of <code>Action</code> message addressing property with <code>input</code>, <code>output</code>, and <code>fault</code> messages of the mapped WSDL operation. <p>
+ This annotation can be specified on each method of a service endpoint interface
+ or implementation. For such a method, the mapped operation in the generated WSDL
+ contains explicit <code>wsaw:Action</code> attribute on the WSDL <code>input</code>, <code>output</code> and <code>fault</code> messages of the WSDL <code>operation</code> based upon which attributes of the <code>Action</code> annotation have been specified. <p></FONT></P>
 <TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>input</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>
+			Explicit value of <code>Action</code> message addressing property for the <code>input</code> message of the operation. If the value is "", then no <code>wsaw:Action</code> is generated.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
+		<TD WIDTH=16% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>ouput</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>
+			Explicit value of <code>Action</code> message addressing property for the <code>output</code> message of the operation. If the value is "", then no <code>wsaw:Action</code> is generated. </FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR><TR VALIGN=TOP>
+		<TD WIDTH=16% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>fault</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>
+	Explicit value of <code>Action</code> message addressing property for the <code>fault</code> message(s) of the operation. Each exception that is mapped to a fault and requires explicit <code>Action</code> message addressing property, need to be specified as a value in this property
+     using FaultAction annotation.</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">{}</FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Action {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Explicit value of <code>Action</code> message addressing property for the <code>input</code>
+&nbsp;&nbsp;&nbsp;&nbsp; * message of the operation. If the value is "", then no <code>wsaw:Action</code>
+&nbsp;&nbsp;&nbsp;&nbsp; * is generated.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String input() default "";
+
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Explicit value of <code>Action</code> message addressing property for the <code>output</code>
+&nbsp;&nbsp;&nbsp;&nbsp; * message of the operation. If the value is "", then no <code>wsaw:Action</code>
+&nbsp;&nbsp;&nbsp;&nbsp; * is generated.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String output() default "";
+
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Explicit value of <code>Action</code> message addressing property for the <code>fault</code>
+&nbsp;&nbsp;&nbsp;&nbsp; * message(s) of the operation. Each exception that is mapped to a fault and requires explicit
+&nbsp;&nbsp;&nbsp;&nbsp; * <code>Action</code> message addressing property, need to be specified as a value in this property
+&nbsp;&nbsp;&nbsp;&nbsp; * using <a href="FaultAction.html">FaultAction</a> annotation.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; FaultAction[] fault() default { };
+}
+</PRE><H4>
+Example</H4><P>
+ <p>
+  Example 1: Specify explicit values for <code>Action</code> message addressing property
+  for <code>input</code> and <code>output</code> messages. <pre>
+&nbsp; &#64;javax.jws.WebService
+&nbsp; public class AddNumbersImpl {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.Action(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input="http://example.com/inputAction",
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output="http://example.com/outputAction")
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp; }
+&nbsp;</pre><p>The generated WSDL looks like: </p><pre>
+&nbsp;&nbsp;&nbsp; &lt;definitions targetNamespace=&quot;http://example.com/numbers&quot; ...&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType name=&quot;AddNumbersPortType&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;operation name=&quot;AddNumbers&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input message=&quot;tns:AddNumbersInput&quot; name=&quot;Parameters&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/inputAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;output message=&quot;tns:AddNumbersOutput&quot; name=&quot;Result&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/outputAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/operation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; &lt;definitions&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </pre><p>
+  Example 2: Specify explicit value for <code>Action</code> message addressing property
+  for only the <code>input</code> message. The default values are used for the <code>output</code> message. <pre>
+&nbsp; &#64;javax.jws.WebService
+&nbsp; public class AddNumbersImpl {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.Action(input=&quot;http://example.com/inputAction&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp; }
+&nbsp;&nbsp;
+The generated WSDL looks like: </pre><pre>
+&nbsp;&nbsp;&nbsp; &lt;definitions targetNamespace=&quot;http://example.com/numbers&quot; ...&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType name=&quot;AddNumbersPortType&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;operation name=&quot;AddNumbers&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input message=&quot;tns:AddNumbersInput&quot; name=&quot;Parameters&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/inputAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;output message=&quot;tns:AddNumbersOutput&quot; name=&quot;Result&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/operation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; &lt;definitions&gt;
+&nbsp;
+It is legitimate to specify an explicit value for <code>Action</code> message addressing property for <code>output</code> message only. In this case, a default value of <code>wsaw:Action</code> is used
+&nbsp; for the <code>input</code> message. </pre><p>
+  Example 3: See @FaultAction for an example of
+  how to specify an explicit value for <code>Action</code> message addressing property for the <code>fault</code> message.
+
+  @see FaultAction</P><H3>
+<A NAME="3.13 javax.xml.ws.FaultAction|outline"></A><FONT FACE="Thorndale, serif"><FONT SIZE=4>3.13 javax.xml.ws.FaultAction </FONT></FONT></H3><P><FONT FACE="Thorndale, serif">The <code>FaultAction</code> annotation is used inside an
+ Action annotation to allow an explicit association of <code>Action</code> message
+ addressing property with the <code>fault</code> messages of the WSDL operation mapped from
+ the exception class. <p>
+ The <code>fault</code> message in the generated WSDL operation mapped for <code>className</code> class contains explicit <code>wsaw:Action</code> attribute.</p></FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+	<COL WIDTH=42*>
+	<COL WIDTH=139*>
+	<COL WIDTH=76*>
+	<TR VALIGN=TOP>
+		<TH WIDTH=16% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
+		<TD WIDTH=16% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>className</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>
+			Name of the exception class</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">there is no default and is required.</FONT></P></TD></TR><TR VALIGN=TOP>
+		<TD WIDTH=16% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>
+			Value of <code>Action</code> message addressing property for the exception </FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#000000">&ldquo;&rdquo;</FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface FaultAction {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Name of the exception class
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; Class className();
+
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Value of <code>Action</code> message addressing property for the exception
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String value() default "";
+}
+</PRE><H4>
+Example</H4><P>
+  Example 1: Specify explicit values for <code>Action</code> message addressing
+  property for the <code>input</code>, <code>output</code> and <code>fault</code> message
+  if the Java method throws only one service specific exception. <pre>
+&nbsp; &#64;javax.jws.WebService
+&nbsp; public class AddNumbersImpl {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.Action(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input=&quot;http://example.com/inputAction&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output=&quot;http://example.com/outputAction&quot;,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fault = {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.FaultAction(className=AddNumbersException.class, value=&quot;http://example.com/faultAction&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; })
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws AddNumbersException {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp; }
+&nbsp;</pre>The generated WSDL looks like: <pre>
+&nbsp;&nbsp;&nbsp; &lt;definitions targetNamespace=&quot;http://example.com/numbers&quot; ...&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType name=&quot;AddNumbersPortType&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;operation name=&quot;AddNumbers&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input message=&quot;tns:AddNumbersInput&quot; name=&quot;Parameters&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/inputAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;output message=&quot;tns:AddNumbersOutput&quot; name=&quot;Result&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/outputAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;fault message=&quot;tns:AddNumbersException&quot; name=&quot;AddNumbersException&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsaw:Action=&quot;http://example.com/faultAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/operation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; &lt;definitions&gt;
+&nbsp;</pre><p>
+  Example 2: Here is an example that shows how to specify explicit values for <code>Action</code> message addressing property if the Java method throws only one service specific exception,
+  without specifying the values for <code>input</code> and <code>output</code> messages. <pre>
+&nbsp; &#64;javax.jws.WebService
+&nbsp; public class AddNumbersImpl {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.Action(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fault = {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.FaultAction(className=AddNumbersException.class, value=&quot;http://example.com/faultAction&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; })
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws AddNumbersException {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp; }</pre>The generated WSDL looks like: <pre>
+&nbsp;&nbsp;&nbsp; &lt;definitions targetNamespace=&quot;http://example.com/numbers&quot; ...&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType name=&quot;AddNumbersPortType&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;operation name=&quot;AddNumbers&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input message=&quot;tns:AddNumbersInput&quot; name=&quot;Parameters&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;output message=&quot;tns:AddNumbersOutput&quot; name=&quot;Result&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;fault message=&quot;tns:addNumbersFault&quot; name=&quot;InvalidNumbers&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsa:Action=&quot;http://example.com/addnumbers/fault&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/operation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; &lt;definitions&gt;
+&nbsp;</pre><p>
+  Example 3: Here is an example that shows how to specify explicit values for <code>Action</code> message addressing property if the Java method throws more than one service specific exception. <pre>
+&nbsp; &#64;javax.jws.WebService
+&nbsp; public class AddNumbersImpl {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.Action(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fault = {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.FaultAction(className=AddNumbersException.class, value=&quot;http://example.com/addFaultAction&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#64;javax.xml.ws.FaultAction(className=TooBigNumbersException.class, value=&quot;http://example.com/toobigFaultAction&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; })
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int addNumbers(int number1, int number2)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throws AddNumbersException, TooBigNumbersException {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return number1 + number2;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp; }
+&nbsp;</pre>The generated WSDL looks like: <pre>
+&nbsp;&nbsp;&nbsp; &lt;definitions targetNamespace=&quot;http://example.com/numbers&quot; ...&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType name=&quot;AddNumbersPortType&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;operation name=&quot;AddNumbers&quot;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;input message=&quot;tns:AddNumbersInput&quot; name=&quot;Parameters&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;output message=&quot;tns:AddNumbersOutput&quot; name=&quot;Result&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;fault message=&quot;tns:addNumbersFault&quot; name=&quot;AddNumbersException&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsa:Action=&quot;http://example.com/addnumbers/fault&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;fault message=&quot;tns:tooBigNumbersFault&quot; name=&quot;TooBigNumbersException&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wsa:Action=&quot;http://example.com/toobigFaultAction&quot;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/operation&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;portType&gt;
+&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; &lt;definitions&gt;
+&nbsp;</pre><H2>
+<A NAME="4. JSR 222 (JAXB) Annotations|outline"></A>4. JSR 222 (JAXB)
+Annotations</H2><P>The following JAXB annotations are being documented because JAX-WS
+generates them when generating wrapper beans and exception beans
+according to the JAX-WS 2.0 spec. Please refer to sections 3.5.2.1
+and 3.6 <SPAN STYLE="text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif">of
+the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A> specification for more information on these beans. For more
+information on these and other JAXB annotations please refer to the</FONT> <FONT FACE="Thorndale, serif"><A HREF="http://www.jcp.org/en/jsr/detail?id=222">JAXB 2.0 specification</A>.</FONT></FONT></SPAN></P><H3><A NAME="4.1 javax.xml.bind.annotation.XmlRootElement|outline"></A>
+<FONT FACE="Thorndale, serif">4.1</FONT> javax.xml.bind.annotation.XmlRootElement</H3><P>This annotation is used to map a top level class to a global
+element in the XML schema used by the WSDL of the web service.</P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+	<COL WIDTH=42*>
+	<COL WIDTH=139*>
+	<COL WIDTH=76*>
+	<TR VALIGN=TOP>
+		<TH WIDTH=16% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
+		<TD WIDTH=16% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
-			the local name of the XML element representing the annotated class</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			the local name of the XML element representing the annotated class</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<PRE STYLE="font-style: normal; text-align: left; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot; &ndash; <FONT FACE="Thorndale, serif">the name is derived from the class </FONT></FONT></FONT></FONT>
-      </PRE>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+
+</PRE></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Defines
-			the namespace of the XML element <FONT FACE="Thorndale, serif">representing
-			the annotated class</FONT></FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<PRE STYLE="font-style: normal; text-align: left; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot; &ndash; <FONT FACE="Thorndale, serif">the namespace is derived from the package of the class </FONT></FONT></FONT></FONT>
-      </PRE>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in">@Retention(RUNTIME)
+			the namespace of the XML element representing the annotated class</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot; &ndash; <FONT FACE="Thorndale, serif">the namespace is derived from the package of the class </FONT></FONT></FONT></FONT>
+</TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in">@Retention(RUNTIME)
 @Target({TYPE})
 public @interface XmlRootElement {
-    /**
-     * namespace name of the XML element.
-     *
-     * If the value is &quot;##default&quot;, then the XML namespace name is derived
-     * from the package of the class ( {@link XmlSchema} ). If the
-     * package is unnamed, then the XML namespace is the default empty
-     * namespace.
-     */
-    String namespace() default &quot;##default&quot;;
-    /**
-     * local name of the XML element.
-     *
-     * If the value is &quot;##default&quot;, then the name is derived from the
-     * class name.
-     *
-     */
-    String name() default &quot;##default&quot;;
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * namespace name of the XML element.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * If the value is &quot;##default&quot;, then the XML namespace name is derived
+&nbsp;&nbsp;&nbsp;&nbsp; * from the package of the class ( {@link XmlSchema} ). If the
+&nbsp;&nbsp;&nbsp;&nbsp; * package is unnamed, then the XML namespace is the default empty
+&nbsp;&nbsp;&nbsp;&nbsp; * namespace.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String namespace() default &quot;##default&quot;;
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * local name of the XML element.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * If the value is &quot;##default&quot;, then the name is derived from the
+&nbsp;&nbsp;&nbsp;&nbsp; * class name.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String name() default &quot;##default&quot;;
 <FONT FACE="Courier New"><FONT SIZE=2 STYLE="font-size: 9pt">}</FONT></FONT></PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.48in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
+Example</H4><PRE STYLE="margin-left: 0.48in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
-    &quot;arg0&quot;,
-    &quot;arg1&quot;
+&nbsp;&nbsp;&nbsp; &quot;arg0&quot;,
+&nbsp;&nbsp;&nbsp; &quot;arg1&quot;
 })
 public class AddNumbers {
 
-    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
-    private int arg0;
-    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
-    private int arg1;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg0;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg1;
 
-    public int getArg0() {
-        return this.arg0;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg0() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg0(int arg0) {
-        this.arg0 = arg0;
-    }
+&nbsp;&nbsp;&nbsp; public void setArg0(int arg0) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg0 = arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public int getArg1() {
-        return this.arg1;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg1() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg1;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
-    }
-}  
+&nbsp;&nbsp;&nbsp; public void setArg1(int arg1) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg1 = arg1;
+&nbsp;&nbsp;&nbsp; }
+}
 </PRE><H3>
-<A NAME="4.2 javax.xml.bind.annotation.XmlAccessorType|outline"></A><FONT FACE="Thorndale, serif">4.2</FONT>
-javax.xml.bind.annotation.XmlAccessorType</H3>
-<P STYLE="margin-bottom: 0in">This annotation is used to specify
-whether fields or properties are serialized by default.</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<A NAME="4.2 javax.xml.bind.annotation.XmlAccessorType|outline"></A><FONT FACE="Thorndale, serif">4.2</FONT> javax.xml.bind.annotation.XmlAccessorType</H3><P STYLE="margin-bottom: 0in">This annotation is used to specify
+whether fields or properties are serialized by default.</P><P STYLE="margin-bottom: 0in"><BR>
 </P>
 <TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
@@ -1964,536 +1931,517 @@ whether fields or properties are serialized by default.</P>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Specifies
 			whether fields or properties are serialized by default. The value
-			can be <FONT FACE="Cumberland, monospace">XmlAccessType.FIELD</FONT>
-			or <FONT FACE="Cumberland, monospace">XmlAccessType.PROPERTY or </FONT>
-			<FONT FACE="Cumberland, monospace">XmlAccessType.PUBLIC_MEMBER or </FONT>
-			<FONT FACE="Cumberland, monospace">XmlAccessType.NONE</FONT></FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>XmlAccessType.PROPERTY</FONT></FONT></FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.49in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Inherited @Retention(RUNTIME) @Target({PACKAGE, TYPE})</FONT></FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>public @interface XmlAccessorType {</FONT></FONT>
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Specifies whether fields or properties are serialized. </FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">* If the value is XmlAccessType.PROPERTY, then properties are</FONT>
-     <FONT FACE="Cumberland, monospace">* serialized by default and fields are assumed to be annotated</FONT>
-     <FONT FACE="Cumberland, monospace">* with {@link XmlTransient}.</FONT>
-     <FONT FACE="Cumberland, monospace">*</FONT>
-     <FONT FACE="Cumberland, monospace">* If the value is XmlAccessType.FIELD, then fields are serialized by</FONT>
-     <FONT FACE="Cumberland, monospace">* default and properties are assumed to be annotated with </FONT>
-     <FONT FACE="Cumberland, monospace">* with {@link XmlTransient}.</FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">XmlAccessType value() default XmlAccessType.PROPERTY;</FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT>
+			can be <FONT FACE="Cumberland, monospace">XmlAccessType.FIELD</FONT> or <FONT FACE="Cumberland, monospace">XmlAccessType.PROPERTY or </FONT><FONT FACE="Cumberland, monospace">XmlAccessType.PUBLIC_MEMBER or </FONT><FONT FACE="Cumberland, monospace">XmlAccessType.NONE</FONT></FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>XmlAccessType.PROPERTY</FONT></FONT></FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.49in"><FONT FACE="Cumberland, monospace">@Inherited @Retention(RUNTIME) @Target({PACKAGE, TYPE})
+public @interface XmlAccessorType {
 
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Specifies whether fields or properties are serialized.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * @see XmlAccessType
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; XmlAccessType value() default XmlAccessType.PUBLIC_MEMBER;
+}
+/**
+ * Used by XmlAccessorType to control serialization of fields or
+ * properties.
+ *
+ */
 
-
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>public enum XmlAccessType {</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>/**</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Every getter/setter pair in a JAXB-bound class will be automatically</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* bound to XML, unless annotated by {@link XmlTransient}.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Fields are bound to XML only when they are explicitly annotated</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* by some of the JAXB annotations.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*/</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>PROPERTY,</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>/**</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Every non static, non transient field in a JAXB-bound class will be automatically</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* bound to XML, unless annotated by {@link XmlTransient}.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Getter/setter pairs are bound to XML only when they are explicitly annotated</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* by some of the JAXB annotations.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*/</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>FIELD,</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>/**</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Every public getter/setter pair and every public field will be</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* automatically bound to XML, unless annotated by {@link XmlTransient}.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* Fields or getter/setter pairs that are private, protected, or </FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* defaulted to package-only access are bound to XML only when they are</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* explicitly annotated by the appropriate JAXB annotations.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*/</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>PUBLIC_MEMBER,</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>/**</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* None of the fields or properties is bound to XML unless they</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>* are specifically  annotated with some of the JAXB annotations.</FONT></FONT>
-     <FONT FACE="Cumberland, monospace"><FONT SIZE=2>*/</FONT></FONT>
-    <FONT FACE="Cumberland, monospace"><FONT SIZE=2>NONE</FONT></FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.49in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
+public enum XmlAccessType {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Every getter/setter pair in a JAXB-bound class will be automatically
+&nbsp;&nbsp;&nbsp;&nbsp; * bound to XML, unless annotated by {@link XmlTransient}.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * Fields are bound to XML only when they are explicitly annotated
+&nbsp;&nbsp;&nbsp;&nbsp; * by some of the JAXB annotations.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; PROPERTY,
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Every non static, non transient field in a JAXB-bound class will be automatically
+&nbsp;&nbsp;&nbsp;&nbsp; * bound to XML, unless annotated by {@link XmlTransient}.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * Getter/setter pairs are bound to XML only when they are explicitly annotated
+&nbsp;&nbsp;&nbsp;&nbsp; * by some of the JAXB annotations.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; FIELD,
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Every public getter/setter pair and every public field will be
+&nbsp;&nbsp;&nbsp;&nbsp; * automatically bound to XML, unless annotated by {@link XmlTransient}.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * Fields or getter/setter pairs that are private, protected, or
+&nbsp;&nbsp;&nbsp;&nbsp; * defaulted to package-only access are bound to XML only when they are
+&nbsp;&nbsp;&nbsp;&nbsp; * explicitly annotated by the appropriate JAXB annotations.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; PUBLIC_MEMBER,
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * None of the fields or properties is bound to XML unless they
+&nbsp;&nbsp;&nbsp;&nbsp; * are specifically&nbsp; annotated with some of the JAXB annotations.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; NONE
+}
+&nbsp;
+  </FONT></PRE><H4>
+Example</H4><PRE STYLE="margin-left: 0.49in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
-    &quot;arg0&quot;,
-    &quot;arg1&quot;
+&nbsp;&nbsp;&nbsp; &quot;arg0&quot;,
+&nbsp;&nbsp;&nbsp; &quot;arg1&quot;
 })
 public class AddNumbers {
 
-    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
-    private int arg0;
-    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
-    private int arg1;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg0;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg1;
 
-    public int getArg0() {
-        return this.arg0;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg0() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg0(int arg0) {
-        this.arg0 = arg0;
-    }
+&nbsp;&nbsp;&nbsp; public void setArg0(int arg0) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg0 = arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public int getArg1() {
-        return this.arg1;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg1() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg1;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
-    }
-}  
+&nbsp;&nbsp;&nbsp; public void setArg1(int arg1) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg1 = arg1;
+&nbsp;&nbsp;&nbsp; }
+}
 </PRE><H3>
-<A NAME="4.3 javax.xml.bind.annotation.XmlType|outline"></A><FONT FACE="Thorndale, serif">4.3</FONT>
-javax.xml.bind.annotation.XmlType</H3>
-<P>This annotation is used to map a value class to an XML Schema
+<A NAME="4.3 javax.xml.bind.annotation.XmlType|outline"></A><FONT FACE="Thorndale, serif">4.3</FONT> javax.xml.bind.annotation.XmlType</H3><P>This annotation is used to map a value class to an XML Schema
 type. A value class is a data container for values represented by
 properties and fields. A schema type is a data container for values
 represented by schema components within a schema type's content model
-(e.g. Model groups, attributes etc).</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+(e.g. Model groups, attributes etc).</P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
-			the local name of the XML type representing this class in the XML
-			schema used by the WSDL of the web service</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<PRE STYLE="font-style: normal; text-align: left; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot;</FONT></FONT></FONT>
-      </PRE>
+			the local name of the XML type representing this class in the XML schema used by the WSDL of the web service</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot;</FONT></FONT></FONT>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Defines
 			the namespace <FONT FACE="Thorndale, serif">of the XML type
 			representing this class in the XML schema used by the WSDL of the
-			web service</FONT></FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<PRE STYLE="font-style: normal; text-align: left; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot;</FONT></FONT></FONT>
-      </PRE>
+			web service</FONT></FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&quot;</FONT></FONT></FONT>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>propOrder</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>propOrder</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P STYLE="margin-left: 0.02in; margin-bottom: 0in"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
 			a list of names of JavaBean properties in the class. Each name in
 			the list is the name of a Java identifier of the JavaBean
 			property. The order in which JavaBean properties are listed is the
 			order of XML Schema elements to which the JavaBean properties are
-			mapped.</FONT></FONT></P>
-			<PRE STYLE="margin-left: 0.02in"><FONT FACE="Thorndale, serif"><FONT SIZE=3>All of the JavaBean properties being mapped must be listed (i.e. if a JavaBean property mapping is prevented by @XmlTransient, then it does not have to be listed). Otherwise, it is an error.</FONT></FONT>
+			mapped.</FONT></FONT></P><FONT FACE="Thorndale, serif"><FONT SIZE=3>All of the JavaBean properties being mapped must be listed (i.e. if a JavaBean property mapping is prevented by @XmlTransient, then it does not have to be listed). Otherwise, it is an error.</FONT></FONT>
 
 <FONT SIZE=3><FONT FACE="Thorndale, serif">By default, the JavaBean properties are ordered using a<SPAN STYLE="text-decoration: none"><FONT COLOR="#000000"> default order specified in the <A HREF="http://www.jcp.org/en/jsr/detail?id=222">JAXB 2.0 specification</A>.</FONT></SPAN></FONT></FONT>
-      </PRE>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>{&ldquo;&rdquo;}</FONT></FONT></FONT></P>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.5in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Retention(RUNTIME) @Target({TYPE})</FONT></FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>public @interface XmlType {</FONT></FONT>
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Name of the XML Schema type which the class is mapped.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">String name() default &quot;##default&quot; ;</FONT>
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>{&ldquo;&rdquo;}</FONT></FONT></FONT></P></TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.5in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Retention(RUNTIME) @Target({TYPE})
+public @interface XmlType {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Name of the XML Schema type which the class is mapped.
+&nbsp;&nbsp;&nbsp;&nbsp; */
+&nbsp;&nbsp;&nbsp; String name() default "##default" ;
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Specifies the order for XML Schema elements when class is</FONT>
-     <FONT FACE="Cumberland, monospace">* mapped to a XML Schema complex type.</FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">* Refer to the table for how the propOrder affects the</FONT>
-     <FONT FACE="Cumberland, monospace">* mapping of class </FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">*     The propOrder is a list of names of JavaBean properties in</FONT>
-     <FONT FACE="Cumberland, monospace">*     the class. Each name in the list is the name of a Java</FONT>
-     <FONT FACE="Cumberland, monospace">*     identifier of the JavaBean property. The order in which</FONT>
-     <FONT FACE="Cumberland, monospace">*     JavaBean properties are listed is the order of XML Schema</FONT>
-     <FONT FACE="Cumberland, monospace">*     elements to which the JavaBean properties are mapped. </FONT>
-     <FONT FACE="Cumberland, monospace">*     All of the JavaBean properties being mapped must be</FONT>
-     <FONT FACE="Cumberland, monospace">*     listed (i.e. if a JavaBean property mapping is prevented</FONT>
-     <FONT FACE="Cumberland, monospace">*     by @XmlTransient, then it does not have to be</FONT>
-     <FONT FACE="Cumberland, monospace">*     listed). Otherwise, it is an error.</FONT>
-     <FONT FACE="Cumberland, monospace">*     By default, the JavaBean properties are ordered using a</FONT>
-     <FONT FACE="Cumberland, monospace">*     default order specified in the JAXB 2.0 specification.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">String[] propOrder() default {&quot;&quot;};</FONT>
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Specifies the order for XML Schema elements when class is
+&nbsp;&nbsp;&nbsp;&nbsp; * mapped to a XML Schema complex type.
+&nbsp;&nbsp;&nbsp;&nbsp; *
+&nbsp;&nbsp;&nbsp;&nbsp; * <p> Refer to the table for how the propOrder affects the
+     * mapping of class </p>
+     *
+     * <p> The propOrder is a list of names of JavaBean properties in
+     *     the class. Each name in the list is the name of a Java
+     *     identifier of the JavaBean property. The order in which
+     *     JavaBean properties are listed is the order of XML Schema
+     *     elements to which the JavaBean properties are mapped. </p>
+     * <p> All of the JavaBean properties being mapped to XML Schema elements
+     *     must be listed.
+     * <p> A JavaBean property or field listed in propOrder must not
+     *     be transient or annotated with <tt>@XmlTransient</tt>.
+     * <p> The default ordering of JavaBean properties is determined
+     *     by @{@link XmlAccessorOrder}.
+     */
+    String[] propOrder() default {""};
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Name of the target namespace of the XML Schema type. By</FONT>
-     <FONT FACE="Cumberland, monospace">* default, this is the target namespace to which the package</FONT>
-     <FONT FACE="Cumberland, monospace">* containing the class is mapped.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">String namespace() default &quot;##default&quot; ;</FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.48in">
+    /**
+     * Name of the target namespace of the XML Schema type. By
+     * default, this is the target namespace to which the package
+     * containing the class is mapped.
+     */
+    String namespace() default "##default" ;
+
+    /**
+     * Class containing a no-arg factory method for creating an
+     * instance of this class. The default is this class.
+     *
+     * <p>If <tt>factoryClass</tt> is DEFAULT.class and
+     * <tt>factoryMethod</tt> is "", then there is no static factory
+     * method.
+     *
+     * <p>If <tt>factoryClass</tt> is DEFAULT.class and
+     * <tt>factoryMethod</tt> is not "", then
+     * <tt>factoryMethod</tt> is the name of a static factory method
+     * in this class.
+     *
+     * <p>If <tt>factoryClass</tt> is not DEFAULT.class, then
+     * <tt>factoryMethod</tt> must not be "" and must be the name of
+     * a static factory method specified in <tt>factoryClass</tt>.
+     */
+    Class factoryClass() default DEFAULT.class;
+
+    /**
+     * Used in {@link XmlType#factoryClass()} to
+     * signal that either factory mehod is not used or
+     * that it's in the class with this {@link XmlType} itself.
+     */
+    static final class DEFAULT {}
+
+    /**
+     * Name of a no-arg factory method in the class specified in
+     * <tt>factoryClass</tt> factoryClass().
+     *
+     */
+    String factoryMethod() default "";
+}
+
+  </FONT></FONT></PRE><H4>
+Example</H4><PRE STYLE="margin-left: 0.48in">
 @XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
-    &quot;arg0&quot;,
-    &quot;arg1&quot;
+&nbsp;&nbsp;&nbsp; &quot;arg0&quot;,
+&nbsp;&nbsp;&nbsp; &quot;arg1&quot;
 })
 public class AddNumbers {
 
-    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
-    private int arg0;
-    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
-    private int arg1;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg0;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg1;
 
-    public int getArg0() {
-        return this.arg0;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg0() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg0(int arg0) {
-        this.arg0 = arg0;
-    }
+&nbsp;&nbsp;&nbsp; public void setArg0(int arg0) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg0 = arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public int getArg1() {
-        return this.arg1;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg1() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg1;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
-    }
-}  
-</PRE><P STYLE="margin-bottom: 0in">
-<BR>
-</P>
-<P><A NAME="4.4 javax.xml.bind.annotation.XmlElement|outline"></A><h3><FONT FACE="Thorndale, serif">4.4</FONT>
-javax.xml.bind.annotation.XmlElement </h3>
-</P>
-<P><FONT FACE="Thorndale, serif"><FONT SIZE=3>This annotation is used
+&nbsp;&nbsp;&nbsp; public void setArg1(int arg1) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg1 = arg1;
+&nbsp;&nbsp;&nbsp; }
+}
+<BR></PRE><P><A NAME="4.4 javax.xml.bind.annotation.XmlElement|outline"></A><h3><FONT FACE="Thorndale, serif">4.4</FONT> javax.xml.bind.annotation.XmlElement </h3></P><P><FONT FACE="Thorndale, serif"><FONT SIZE=3>This annotation is used
 to map a property contained in a class to a local element in the XML
-Schema complex type to which the containing class is mapped.</FONT></FONT></P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+Schema complex type to which the containing class is mapped.</FONT></FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>name</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Defines
-			the local name of the XML element representing the property of a
-			JavaBean</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT SIZE=3><FONT FACE="Cumberland, monospace">&quot;##default&rdquo;</FONT>
-			<FONT FACE="Thorndale, serif">- the element name is derived from
-			the JavaBean property name.</FONT></FONT></FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			the local name of the XML element representing the property of a JavaBean</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT SIZE=3><FONT FACE="Cumberland, monospace">&quot;##default&rdquo;</FONT> <FONT FACE="Thorndale, serif">- the element name is derived from
+			the JavaBean property name.</FONT></FONT></FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>namespace</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>Defines
 			the namespace <FONT FACE="Thorndale, serif">of the XML element
-			representing the property of a JavaBean</FONT></FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&rdquo;
-			<FONT FACE="Thorndale, serif">- the namespace of the containing
-			class</FONT></FONT></FONT></FONT></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
+			representing the property of a JavaBean</FONT></FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Cumberland, monospace"><FONT SIZE=3>&quot;##default&rdquo; <FONT FACE="Thorndale, serif">- the namespace of the containing
+			class</FONT></FONT></FONT></FONT></P></TD></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>nillable</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>nillable</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Not
-			generated by JAX-WS</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			generated by JAX-WS</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 	<TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>type</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT>Not generated by JAX-WS</P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>type</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT>Not generated by JAX-WS</P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT><BR>
 			</P>
 		</TD>
 	</TR>
 </TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE STYLE="margin-left: 0.48in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Retention(RUNTIME) @Target({FIELD, METHOD})</FONT></FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>public @interface XmlElement {</FONT></FONT>
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">*</FONT>
-     <FONT FACE="Cumberland, monospace">* Name of the XML Schema element. </FONT>
-     <FONT FACE="Cumberland, monospace">* If the value is &quot;##default&quot;, then element name is derived from the</FONT>
-     <FONT FACE="Cumberland, monospace">* JavaBean property name. </FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">String name() default &quot;##default&quot;;</FONT>
+<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.48in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Retention(RUNTIME) @Target({FIELD, METHOD})
+public @interface XmlElement {
+&nbsp;&nbsp;&nbsp; /**
+&nbsp;&nbsp;&nbsp;&nbsp; * Name of the XML Schema element.
+&nbsp;&nbsp;&nbsp;&nbsp; * <p> If the value is "##default", then element name is derived from the
+     * JavaBean property name.
+     */
+    String name() default "##default";
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Customize the element declaration to be nillable. </FONT>
-     <FONT FACE="Cumberland, monospace">* If nillable() is true, then the JavaBean property is</FONT>
-     <FONT FACE="Cumberland, monospace">* mapped to a XML Schema nillable element declaration. </FONT>
-     <FONT FACE="Cumberland, monospace">* If nillable() is false and the JavaBean property type is a</FONT>
-     <FONT FACE="Cumberland, monospace">* collection type, then the JavaBean property is mapped to</FONT>
-     <FONT FACE="Cumberland, monospace">* repeating occurrence. </FONT>
-     <FONT FACE="Cumberland, monospace">* Otherwise, the JavaBean property is mapped to an an </FONT>
-     <FONT FACE="Cumberland, monospace">* XML Schema element declaration with occurrence range of 0..1.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">boolean nillable() default false;</FONT>
+    /**
+     * Customize the element declaration to be nillable.
+     * <p>If nillable() is true, then the JavaBean property is
+     * mapped to a XML Schema nillable element declaration.
+     */
+    boolean nillable() default false;
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Specifies the XML target namespace of the XML Schema</FONT>
-     <FONT FACE="Cumberland, monospace">* element. The namespace must be a valid namespace URI.</FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">* It the value is &quot;##default&quot;, then the namespace is the</FONT>
-     <FONT FACE="Cumberland, monospace">* namespace of the containing class.</FONT>
-     <FONT FACE="Cumberland, monospace">* </FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">String namespace() default &quot;##default&quot; ;</FONT>
+    /**
+     * Customize the element declaration to be required.
+     * <p>If required() is true, then Javabean property is mapped to
+     * an XML schema element declaration with minOccurs="1".
+     * maxOccurs is "1" for a single valued property and "unbounded"
+     * for a multivalued property.
+     * <p>If required() is false, then the Javabean property is mapped
+     * to XML Schema element declaration with minOccurs="0".
+     * maxOccurs is "1" for a single valued property and "unbounded"
+     * for a multivalued property.
+     */
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* The Java class being referenced.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">Class type() default DEFAULT.class;</FONT>
+    boolean required() default false;
 
-    <FONT FACE="Cumberland, monospace">/**</FONT>
-     <FONT FACE="Cumberland, monospace">* Used in {@link XmlElement#type()} to</FONT>
-     <FONT FACE="Cumberland, monospace">* signal that the type be inferred from the signature</FONT>
-     <FONT FACE="Cumberland, monospace">* of the property.</FONT>
-     <FONT FACE="Cumberland, monospace">*/</FONT>
-    <FONT FACE="Cumberland, monospace">static final class DEFAULT {}</FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
-Example</H4>
-<PRE STYLE="margin-left: 0.5in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
+    /**
+     * XML target namespace of the XML Schema element.
+     * <p>
+     * If the value is "##default", then the namespace is determined
+     * as follows:
+     * <ol>
+     *  <li>
+     *  If the enclosing package has {@link XmlSchema} annotation,
+     *  and its {@link XmlSchema#elementFormDefault() elementFormDefault}
+     *  is {@link XmlNsForm#QUALIFIED QUALIFIED}, then the namespace of
+     *  the enclosing class.
+     *
+     *  <li>
+     *  Otherwise "" (which produces unqualified element in the default
+     *  namespace.
+     * </ol>
+     */
+    String namespace() default "##default";
+
+    /**
+     * Default value of this element.
+     *
+     * <p>
+     * The '\u0000' value specified as a default of this annotation element
+     * is used as a poor-man's substitute for null to allow implementations
+     * to recognize the 'no default value' state.
+     */
+    String defaultValue() default "\u0000";
+
+    /**
+     * The Java class being referenced.
+     */
+    Class type() default DEFAULT.class;
+
+    /**
+     * Used in {@link XmlElement#type()} to
+     * signal that the type be inferred from the signature
+     * of the property.
+     */
+    static final class DEFAULT {}
+}</FONT></FONT></PRE><H4>
+Example</H4><PRE STYLE="margin-left: 0.5in">@XmlRootElement(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = &quot;addNumbers&quot;, namespace = &quot;http://server.fromjava/&quot;, propOrder = {
-    &quot;arg0&quot;,
-    &quot;arg1&quot;
+&nbsp;&nbsp;&nbsp; &quot;arg0&quot;,
+&nbsp;&nbsp;&nbsp; &quot;arg1&quot;
 })
 public class AddNumbers {
 
-    @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
-    private int arg0;
-    @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
-    private int arg1;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg0&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg0;
+&nbsp;&nbsp;&nbsp; @XmlElement(name = &quot;arg1&quot;, namespace = &quot;&quot;)
+&nbsp;&nbsp;&nbsp; private int arg1;
 
-    public int getArg0() {
-        return this.arg0;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg0() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg0(int arg0) {
-        this.arg0 = arg0;
-    }
+&nbsp;&nbsp;&nbsp; public void setArg0(int arg0) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg0 = arg0;
+&nbsp;&nbsp;&nbsp; }
 
-    public int getArg1() {
-        return this.arg1;
-    }
+&nbsp;&nbsp;&nbsp; public int getArg1() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.arg1;
+&nbsp;&nbsp;&nbsp; }
 
-    public void setArg1(int arg1) {
-        this.arg1 = arg1;
-    }
-}  
-</PRE><H2>
+&nbsp;&nbsp;&nbsp; public void setArg1(int arg1) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.arg1 = arg1;
+&nbsp;&nbsp;&nbsp; }
+}</PRE><A NAME="4.5 javax.xml.bind.annotation.XmlSeeAlso|outline"></A><h3><a name="4.5_javax.xml.bind.annotation.XmlSeeAlso__">4.5 javax.xml.bind.annotation.XmlSeeAlso </a></h3></P><P><FONT FACE="Thorndale, serif"><FONT SIZE=3>Instructs JAXB to also bind other classes when binding this class. </FONT></FONT></P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+      <COL WIDTH=42*>
+      <COL WIDTH=139*>
+      <COL WIDTH=76*>
+      <TR VALIGN=TOP>
+          <TH WIDTH=16% BGCOLOR="#000000">
+              <P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+              <P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+              <P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
+          <TD WIDTH=16% BGCOLOR="#ffffff">
+              <P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>value</FONT></FONT></FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
+              <P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>
+              Other classes that JAXB can use when binding this class</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+              <P STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT SIZE=3><FONT FACE="Cumberland, monospace">{}</FONT>
+              </FONT></FONT></P>
+          </TD>
+      </TR>
+  </TABLE>
+  <H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE STYLE="margin-left: 0.48in"><FONT FACE="Cumberland, monospace"><FONT SIZE=2>/**
+&nbsp;&nbsp; * Instructs JAXB to also bind other classes when binding this class.
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * Java makes it impractical/impossible to list all sub-classes of
+&nbsp;&nbsp; * a given class. This often gets in a way of JAXB users, as it JAXB
+&nbsp;&nbsp; * cannot automatically list up the classes that need to be known
+&nbsp;&nbsp; * to {@link JAXBContext}.
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * For example, with the following class definitions:
+&nbsp;&nbsp; *
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * class Animal {}
+&nbsp;&nbsp; * class Dog extends Animal {}
+&nbsp;&nbsp; * class Cat extends Animal {}
+&nbsp;&nbsp; *
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * The user would be required to create {@link JAXBContext} as
+&nbsp;&nbsp; * <tt>JAXBContext.newInstance(Dog.class,Cat.class)</tt>
+&nbsp;&nbsp; * (<tt>Animal</tt> will be automatically picked up since <tt>Dog</tt>
+&nbsp;&nbsp; * and <tt>Cat</tt> refers to it.)
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * {@link XmlSeeAlso} annotation would allow you to write:
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * &#64;XmlSeeAlso({Dog.class,Cat.class})
+&nbsp;&nbsp; * class Animal {}
+&nbsp;&nbsp; * class Dog extends Animal {}
+&nbsp;&nbsp; * class Cat extends Animal {}
+&nbsp;&nbsp; *
+&nbsp;&nbsp; *
+&nbsp;&nbsp; * This would allow you to do <tt>JAXBContext.newInstance(Animal.class)</tt>.
+&nbsp;&nbsp; * By the help of this annotation, JAXB implementations will be able to
+&nbsp;&nbsp; * correctly bind <tt>Dog</tt> and <tt>Cat</tt>.
+&nbsp;&nbsp; *
+&nbsp;&nbsp; */
+&nbsp; @Target({ElementType.TYPE})
+&nbsp; @Retention(RUNTIME)
+&nbsp; public @interface XmlSeeAlso {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class[] value();p;&nbsp; Class[] value();
+&nbsp; }</FONT></FONT></PRE><H2>
+  
 <A NAME="5._JSR_250_Common_Annotations"></A>5. JSR 250 (Common
-Annotations) Annotations</H2>
-<P>The following annotations are being documented because JAX-WS
+Annotations) Annotations</H2><FONT FACE="Times, serif"><P>The following annotations are being documented because JAX-WS
 endpoints use them for resource injection, and as lifecycle methods.
-Please refer to sections 5.2.1 and 5.3 <SPAN STYLE="text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif">of
-the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A>
-specification for resource injection, and lifecycle management. For
+Please refer to sections 5.2.1 and 5.3 <SPAN STYLE="text-decoration: none"><FONT COLOR="#000000">of
+the <A HREF="http://www.jcp.org/en/jsr/detail?id=224">JAX-WS 2.0</A> specification for resource injection, and lifecycle management. For
 more information on these and other common annotations please refer
-to the</FONT> </FONT></SPAN><A HREF="http://www.jcp.org/en/jsr/detail?id=250">JSR
-250: <I>Common Annotations for the Java<SUP>TM</SUP> Platform</I></A>.</P>
-<H3><A NAME="4.1 javax.xml.bind.annotation.XmlRootElement|outline1"></A><A NAME="5.1_javax.annotation.Resource"></A>
-<FONT FACE="Thorndale, serif">5.1</FONT> javax.annotation.Resource</H3>
-<P>This annotation is used to mark a WebServiceContext resource that
-is needed by a web service. It is applied to a field or a method for
-JAX-WS endpoints. The container will inject an instance of the
-WebServiceContext resource into the endpoint implementation when it
-is initialized.</P>
-<TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
+to the</FONT> </FONT></SPAN><A HREF="http://www.jcp.org/en/jsr/detail?id=250">JSR 250: <I>Common Annotations for the Java<SUP>TM</SUP> Platform</I></A>.</P><H3><A NAME="4.1 javax.xml.bind.annotation.XmlRootElement|outline1"></A><A NAME="5.1_javax.annotation.Resource"></A>
+<FONT FACE="Thorndale, serif">5.1</FONT> javax.annotation.Resource</H3><P>This annotation is used to mark a WebServiceContext resource that
+is needed by a web service. It is applied to a field or a method for JAX-WS endpoints. The container will inject an instance of the WebServiceContext resource into the endpoint implementation when it
+is initialized.</P><TABLE WIDTH=100% BORDER=1 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=42*>
 	<COL WIDTH=139*>
 	<COL WIDTH=76*>
 	<TR VALIGN=TOP>
 		<TH WIDTH=16% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=54% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P>
-		</TH>
-		<TH WIDTH=30% BGCOLOR="#000000">
-			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P>
-		</TH>
-	</TR>
-	<TR VALIGN=TOP>
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Property</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=54% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Description</B></I></FONT></FONT></FONT></P></TH><TH WIDTH=30% BGCOLOR="#000000">
+			<P ALIGN=LEFT STYLE="text-decoration: none"><FONT COLOR="#ffffff"><FONT FACE="Times, serif"><FONT SIZE=3><I><B>Default</B></I></FONT></FONT></FONT></P></TH></TR><TR VALIGN=TOP>
 		<TD WIDTH=16% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT FACE="times, serif">type</FONT></P>
-		</TD>
-		<TD WIDTH=54% BGCOLOR="#ffffff">
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT FACE="times, serif">type</FONT></P></TD><TD WIDTH=54% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Thorndale, serif"><FONT SIZE=3>Java
-			type of the resource</FONT></FONT></FONT></P>
-		</TD>
-		<TD WIDTH=30% BGCOLOR="#ffffff">
-			<PRE STYLE="font-style: normal; text-align: left; text-decoration: none">For field annotations,
- the default is the type of the field.  For method annotations,
+			type of the resource</FONT></FONT></FONT></P></TD><TD WIDTH=30% BGCOLOR="#ffffff">
+			For field annotations,
+ the default is the type of the field.&nbsp; For method annotations,
  the default is the type of the JavaBeans property.
-      </PRE>
-		</TD>
-	</TR>
-</TABLE>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE>@Target({TYPE, FIELD, METHOD})
+</TD></TR></TABLE><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE>@Target({TYPE, FIELD, METHOD})
 @Retention(RUNTIME)
 public @interface Resource {
-    ...
+&nbsp;&nbsp;&nbsp; ...
  /**
-     * The Java type of the resource. For field annotations,
-     * the default is the type of the field. For method annotations,
-     * the default is the type of the JavaBeans property.
-     * For class annotations, there is no default and this must be
-     * specified.
-     */
+&nbsp;&nbsp;&nbsp;&nbsp; * The Java type of the resource. For field annotations,
+&nbsp;&nbsp;&nbsp;&nbsp; * the default is the type of the field. For method annotations,
+&nbsp;&nbsp;&nbsp;&nbsp; * the default is the type of the JavaBeans property.
+&nbsp;&nbsp;&nbsp;&nbsp; * For class annotations, there is no default and this must be
+&nbsp;&nbsp;&nbsp;&nbsp; * specified.
+&nbsp;&nbsp;&nbsp;&nbsp; */
  Class type() default java.lang.Object.class;
 }</PRE><H4>
-Example</H4>
-<PRE>@WebService
+Example</H4><PRE>@WebService
 public class HelloImpl {
  @Resource
-    private WebServiceContext context;
+&nbsp;&nbsp;&nbsp; private WebServiceContext context;
  public String echoHello(String name) {
-      ...
-    }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; }
 }</PRE><H3>
-<A NAME="4.2 javax.xml.bind.annotation.XmlAccessorType|outline1"></A><A NAME="5.2_javax.annotation.PostConstruct"></A>
-<FONT FACE="Thorndale, serif">5.2</FONT>
-javax.annotation.PostConstruct</H3>
-<P STYLE="margin-bottom: 0in">This annotation is used on a method
+<A NAME="5.2_javax.annotation.PostConstruct"></A>
+<FONT FACE="Thorndale, serif">5.2</FONT> javax.annotation.PostConstruct</H3><P STYLE="margin-bottom: 0in">This annotation is used on a method
 that needs to be executed after dependency injection is done to
 perform any initialization. This method MUST be invoked before the
-class is put into service.</P>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Documented</FONT></FONT>
+class is put into service.</P><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE><FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Documented</FONT></FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Retention (RUNTIME)</FONT></FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>@Target(METHOD)</FONT></FONT>
 <FONT FACE="Cumberland, monospace"><FONT SIZE=2>public @interface PostConstruct {</FONT></FONT>
-<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}</FONT></FONT></PRE><H4>
-Example</H4>
-<PRE>@WebService
+<FONT FACE="Cumberland, monospace"><FONT SIZE=2>}ONT></FONT></PRE><H4>
+Example</H4><PRE>@WebService
 public class HelloImpl {
  @PostConstruct
-    private void init() {
-        ...
-    }
+&nbsp;&nbsp;&nbsp; private void init() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; }
  public String echoHello(String name) {
-        ...
-    }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; }
 }</PRE><P>
-<BR><BR>
 </P>
-<H3><A NAME="4.3 javax.xml.bind.annotation.XmlType|outline1"></A><A NAME="5.3_javax.annotation.PreDestroy"></A>
-<FONT FACE="Thorndale, serif">5.3</FONT> javax.annotation.PreDestroy</H3>
-<P>The PreDestroy annotation is used on methods as a callback
+<H3><A NAME="5.3_javax.annotation.PreDestroy"></A>
+<FONT FACE="Thorndale, serif">5.3</FONT> javax.annotation.PreDestroy</H3><P>The PreDestroy annotation is used on methods as a callback
 notification to signal that the instance is in the process of being
 removed by the container. The method annotated with PreDestroy is
-typically used to release resources that it has been holding.</P>
-<H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4>
-<PRE><FONT SIZE=2>@Documented</FONT>
+typically used to release resources that it has been holding.</P><H4 STYLE="margin-left: 0.49in">Annotation Type Definition</H4><PRE><FONT SIZE=2>@Documented</FONT>
 <FONT SIZE=2>@Retention(value=RUNTIME)</FONT>
 <FONT SIZE=2>@Target(value=METHOD)</FONT>
 public @interface PreDestory {
 }</PRE><H4>
-Example</H4>
-<PRE>@WebService
+Example</H4><PRE>@WebService
 public class HelloImpl {
  public String echoHello(String name) {
-        ...
-    }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; }
  @PreDestroy
-    private void release() {
-        ...
-    }
-}</PRE>
-<HR>
-<P><A HREF="Copyright.html"><I><FONT SIZE=2>Copyright &copy; 2006 Sun
-Microsystems, Inc. All rights reserved.</FONT></I></A></P>
-<P><BR><BR>
-</P>
-<P><BR><BR>
-</P>
-</BODY>
-</HTML>
+&nbsp;&nbsp;&nbsp; private void release() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...
+&nbsp;&nbsp;&nbsp; }
+}</PRE></body></html>

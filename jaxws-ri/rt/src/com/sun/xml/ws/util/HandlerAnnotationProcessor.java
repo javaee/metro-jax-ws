@@ -21,16 +21,19 @@
  */
 package com.sun.xml.ws.util;
 
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.AsyncProvider;
+import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.handler.HandlerChainsModel;
-import com.sun.xml.ws.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPMessageHandlers;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import java.io.IOException;
@@ -50,9 +53,7 @@ import java.util.logging.Logger;
  * So this class is used for all handler xml information. The
  * two public entry points are
  * {@link HandlerAnnotationProcessor#buildHandlerInfo}, called
- * when you have an annotated class that points to a file, and
- * {@link HandlerAnnotationProcessor#parseHandlerFile}, called
- * when the file reader already exists.
+ * when you have an annotated class that points to a file.
  *
  * <p>The methods in the class are static so that it may called
  * from the runtime statically.
@@ -65,11 +66,10 @@ public class HandlerAnnotationProcessor {
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".util");
-    
+
     /**
      * <p>This method is called by
-     * {@link com.sun.xml.ws.client.ServiceContextBuilder} and
-     * {@link com.sun.xml.ws.server.RuntimeEndpointInfo} when
+     * {@link EndpointFactory} when
      * they have an annotated class.
      *
      * <p>If there is no handler chain annotation on the class,
@@ -81,31 +81,31 @@ public class HandlerAnnotationProcessor {
      * handlers and roles. Will return null if the class passed
      * in has no handler chain annotation.
      */
-    public static HandlerAnnotationInfo buildHandlerInfo(Class clazz,
-        QName serviceName, QName portName, String bindingId) {
-        
+    public static HandlerAnnotationInfo buildHandlerInfo(
+        Class<?> clazz, QName serviceName, QName portName, WSBinding binding) {
+
 //        clazz = checkClass(clazz);
         HandlerChain handlerChain =
-            (HandlerChain) clazz.getAnnotation(HandlerChain.class);
+            clazz.getAnnotation(HandlerChain.class);
         if (handlerChain == null) {
             clazz = getSEI(clazz);
             if (clazz != null)
             handlerChain =
-                (HandlerChain) clazz.getAnnotation(HandlerChain.class);  
+                clazz.getAnnotation(HandlerChain.class);
             if (handlerChain == null)
                 return null;
         }
-        
+
         if (clazz.getAnnotation(SOAPMessageHandlers.class) != null) {
             throw new UtilException(
                 "util.handler.cannot.combine.soapmessagehandlers");
         }
         InputStream iStream = getFileAsStream(clazz, handlerChain);
         XMLStreamReader reader =
-            XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
+            XMLStreamReaderFactory.create(null,iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
         HandlerAnnotationInfo handlerAnnInfo = HandlerChainsModel.parseHandlerFile(reader, clazz.getClassLoader(),
-            serviceName, portName, bindingId);
+            serviceName, portName, binding);
         try {
             reader.close();
             iStream.close();
@@ -118,18 +118,18 @@ public class HandlerAnnotationProcessor {
         }
         return handlerAnnInfo;
     }
-    
-    public static HandlerChainsModel buildHandlerChainsModel(final Class clazz) {
+
+    public static HandlerChainsModel buildHandlerChainsModel(final Class<?> clazz) {
         if(clazz == null) {
             return null;
         }
         HandlerChain handlerChain =
-            (HandlerChain) clazz.getAnnotation(HandlerChain.class);
+            clazz.getAnnotation(HandlerChain.class);
         if(handlerChain == null)
             return null;
         InputStream iStream = getFileAsStream(clazz, handlerChain);
         XMLStreamReader reader =
-            XMLStreamReaderFactory.createXMLStreamReader(iStream, true);
+            XMLStreamReaderFactory.create(null,iStream, true);
         XMLStreamReaderUtil.nextElementContent(reader);
         HandlerChainsModel handlerChainsModel = HandlerChainsModel.parseHandlerConfigFile(clazz, reader);
         try {
@@ -144,19 +144,19 @@ public class HandlerAnnotationProcessor {
         }
         return handlerChainsModel;
     }
-    
+
     static Class getClass(String className) {
         try {
             return Thread.currentThread().getContextClassLoader().loadClass(
                 className);
         } catch (ClassNotFoundException e) {
             throw new UtilException("util.handler.class.not.found",
-                new Object[] {className});
+                className);
         }
     }
-    
-    static Class getSEI(Class clazz) {
-        if (Provider.class.isAssignableFrom(clazz)) {
+
+    static Class getSEI(Class<?> clazz) {
+        if (Provider.class.isAssignableFrom(clazz) || AsyncProvider.class.isAssignableFrom(clazz)) {
             //No SEI for Provider Implementation
             return null;
         }
@@ -166,25 +166,24 @@ public class HandlerAnnotationProcessor {
         }
         if (!clazz.isAnnotationPresent(WebService.class)) {
             throw new UtilException("util.handler.no.webservice.annotation",
-                new Object[] {clazz.getCanonicalName()});
+                clazz.getCanonicalName());
         }
-        
-        WebService webService =
-            (WebService) clazz.getAnnotation(WebService.class);
+
+        WebService webService = clazz.getAnnotation(WebService.class);
 
         String ei = webService.endpointInterface();
         if (ei.length() > 0) {
             clazz = getClass(webService.endpointInterface());
             if (!clazz.isAnnotationPresent(WebService.class)) {
                 throw new UtilException("util.handler.endpoint.interface.no.webservice",
-                                    new Object[] {webService.endpointInterface()});
+                    webService.endpointInterface());
             }
             return clazz;
         }
         return null;
     }
-   
-    static InputStream getFileAsStream(Class clazz, HandlerChain chain) {
+
+   static InputStream getFileAsStream(Class clazz, HandlerChain chain) {
         URL url = clazz.getResource(chain.file());
         if (url == null) {
             url = Thread.currentThread().getContextClassLoader().
@@ -199,15 +198,13 @@ public class HandlerAnnotationProcessor {
         }
         if (url == null) {
             throw new UtilException("util.failed.to.find.handlerchain.file",
-                new Object[] {clazz.getName(), chain.file()});
+                clazz.getName(), chain.file());
         }
         try {
             return url.openStream();
         } catch (IOException e) {
             throw new UtilException("util.failed.to.parse.handlerchain.file",
-                new Object[] {clazz.getName(), chain.file()});
+                clazz.getName(), chain.file());
         }
     }
-
-    
 }

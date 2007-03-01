@@ -21,11 +21,10 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import javax.xml.namespace.QName;
-
 import com.sun.tools.xjc.api.Property;
 
-import com.sun.codemodel.JType;
+import javax.xml.namespace.QName;
+
 /**
  * @author Kohsuke Kawaguchi
  */

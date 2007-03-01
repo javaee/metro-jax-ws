@@ -22,13 +22,14 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
 import com.sun.tools.ws.wsdl.framework.Kind;
 import com.sun.tools.ws.wsdl.framework.QNameAction;
-import com.sun.xml.ws.model.Mode;
+import org.xml.sax.Locator;
+
+import javax.jws.WebParam.Mode;
+import javax.xml.namespace.QName;
 
 /**
  * Entity corresponding to a WSDL message part.
@@ -44,7 +45,8 @@ public class MessagePart extends Entity {
     public static final int WSDL_MIME_BINDING = 5;
     public static final int PART_NOT_BOUNDED = -1;
 
-    public MessagePart() {
+    public MessagePart(Locator locator) {
+        super(locator);
     }
 
     public String getName() {
@@ -101,11 +103,8 @@ public class MessagePart extends Entity {
     }
 
     public void validateThis() {
-//        if (_descriptorKind == null || _descriptor == null) {
-//            failValidation("validation.missingRequiredProperty", "descriptor");
-//        }else
         if(_descriptor != null && _descriptor.getLocalPart().equals("")){
-            failValidation("validation.invalidElement", _descriptor.toString());               
+            failValidation("validation.invalidElement", _descriptor.toString());
         }
     }
 

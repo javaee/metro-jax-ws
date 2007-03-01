@@ -21,14 +21,18 @@
  */
 package com.sun.tools.ws.processor.model;
 
+import com.sun.tools.ws.wsdl.framework.Entity;
+
 import javax.xml.namespace.QName;
 
 public class HeaderFault extends Fault {
 
-    public HeaderFault() {}
+    public HeaderFault(Entity entity) {
+        super(entity);
+    }
 
-    public HeaderFault(String name) {
-        super(name);
+    public HeaderFault(String name, Entity entity) {
+        super(name, entity);
     }
 
     public QName getMessage() {

@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.soap;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A SOAP fault extension.
  *
  * @author WS Development Team
  */
-public class SOAPFault extends Extension {
+public class SOAPFault extends ExtensionImpl {
 
-    public SOAPFault() {
+    public SOAPFault(Locator locator) {
+        super(locator);
         _use = SOAPUse.LITERAL;
     }
 

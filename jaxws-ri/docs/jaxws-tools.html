@@ -1,34 +1,15 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Tools</title>
-  <link rel="stylesheet" type="text/css" href="style/default.css"/>
-  <meta name="CREATED" content="20050329;10375410">
-  <meta name="CHANGED" content="20050401;8213207">
+<head caption="Tools">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
-<body dir="ltr" lang="en-US">
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      Tools
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
-<hr>
-<p>Last Modified: 4/26/06</p>
-<h1><a class="mozTocH1" name="mozTocId951109"></a>Contents</h1>
+<body>
+
+<h2>Contents</h2>
 <ol id="mozToc">
-<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
-  <li><a href="#mozTocId951109">Contents</a>
-    <ol>
-      <li><a href="#mozTocId531996">apt</a></li>
-      <li><a href="#mozTocId497292">wsimport</a></li>
-      <li><a href="#mozTocId18364">wsgen</a></li>
-      <li><a href="#mozTocId344067">How do I pick a tool?</a></li>
-    </ol>
-  </li>
+  <li><a href="#mozTocId531996">apt</a></li>
+  <li><a href="#mozTocId497292">wsimport</a></li>
+  <li><a href="#mozTocId18364">wsgen</a></li>
+  <li><a href="#mozTocId344067">How do I pick a tool?</a></li>
 </ol>
 <h2><a class="mozTocH2" name="mozTocId531996"></a><a name="apttool"
  id="apttool"></a><code>apt</code></h2>
@@ -48,7 +29,7 @@ tool</a>.<br>
 <h2><a class="mozTocH2" name="mozTocId497292"></a><a
  name="wscompiletool" id="wscompiletool"></a>wsimport</h2>
 <p>The <code>wsimport</code> tool generates JAX-WS portable
-artifacts&nbsp; used in JAX-WS clients and
+artifacts  used in JAX-WS clients and
 services. The tool reads a WSDL and
 generates all the required artifacts for web service development,
 deployment, and invocation.<br>
@@ -63,7 +44,18 @@ tool</a>.<br>
 endpoint implementation class and generates all of the portable
 artifacts for a JAX-WS web service..</p>
 <p>For more information on this tool please see: <a href="wsgen.html">wsgen
-tool</a>.<br>
+tool</a>.</p>
+<h3><a name="running_on_jdk6"></a>Running on JDK6</h3>
+<ul>
+	<li>Copy $JAXWS_HOME/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	directory </li>
+	<li>Copy $JAXWS_HOME/lib/jaxb-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	directory</li>
+</ul>
+<p>For details see
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/standards/">Endorsed 
+Directory Mechanism</a>. Above, JAXWS_HOME points to the root directory of the 
+extracted JAXWS RI bundle. JDK6_HOME points to JDK 6 installation directory.<br>
 </p>
 <h2><a class="mozTocH2" name="mozTocId344067"></a><a name="how" id="how"></a>How
 do I pick a tool?</h2>
@@ -115,8 +107,5 @@ artifacts.</li>
     </ol>
   </li>
 </ol>
-<hr>
-<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
-2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>

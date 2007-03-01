@@ -22,12 +22,14 @@
 
 package com.sun.tools.ws.wsdl.framework;
 
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+
 /**
  * A visitor working on extension entities.
  *
  * @author WS Development Team
  */
 public interface ExtensionVisitor {
-    public void preVisit(Extension extension) throws Exception;
-    public void postVisit(Extension extension) throws Exception;
+    public void preVisit(TWSDLExtension extension) throws Exception;
+    public void postVisit(TWSDLExtension extension) throws Exception;
 }

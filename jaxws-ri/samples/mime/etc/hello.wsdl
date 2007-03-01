@@ -15,15 +15,29 @@
             xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
 			elementFormDefault="qualified"
             xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd">
-        <import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="wsi-swa.xsd"/>
+        <import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd"/>
         <complexType name="DetailType">
             <sequence>
                 <element name="name" type="string"/>
                 <element name="address" type="string"/>
             </sequence>
         </complexType>
-        <element name="claimForm" type="ref:swaRef"/>
-        <element name="claimFormResponse" type="ref:swaRef"/>
+
+        <complexType name="claimFormTypeRequest">
+            <sequence>
+                <element name="request" type="ref:swaRef"/>
+            </sequence>
+        </complexType>
+
+        <complexType name="claimFormTypeResponse">
+            <sequence>
+                <element name="response" type="ref:swaRef"/>
+            </sequence>
+        </complexType>
+
+        <element name="claimFormRequest"  type="types:claimFormTypeRequest"/>
+
+        <element name="claimFormResponse" type="types:claimFormTypeResponse"/>
 		<element name="Detail" type="types:DetailType"/>
 		<element name="DetailResponse" type="types:DetailType"/>
         <element name="body" type="string"/>
@@ -59,7 +73,7 @@
     </wsdl:message>
 
      <wsdl:message name="claimFormIn">
-        <wsdl:part name="data" element="types:claimForm"/>
+        <wsdl:part name="data" element="types:claimFormRequest"/>
     </wsdl:message>
 
     <wsdl:message name="claimFormOut">

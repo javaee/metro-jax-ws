@@ -21,10 +21,10 @@
  */
 package com.sun.tools.ws.processor.modeler.wsdl;
 
+import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 
 /**
  * @author Vivek Pandey

@@ -46,7 +46,7 @@ public class UtilException extends JAXWSExceptionBase {
         super("nestedUtilError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.util";
     }
 

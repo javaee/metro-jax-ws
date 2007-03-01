@@ -22,6 +22,8 @@
 
 package com.sun.tools.ws.wsdl.framework;
 
+import org.xml.sax.Locator;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -31,4 +33,5 @@ import javax.xml.namespace.QName;
  */
 public interface Elemental {
     public QName getElementName();
+    public Locator getLocator();
 }

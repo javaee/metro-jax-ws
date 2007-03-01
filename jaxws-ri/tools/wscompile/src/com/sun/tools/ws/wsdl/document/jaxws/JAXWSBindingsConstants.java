@@ -22,9 +22,9 @@
 
 package com.sun.tools.ws.wsdl.document.jaxws;
 
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.wsdl.parser.Constants;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author Vivek Pandey
@@ -34,6 +34,7 @@ public interface JAXWSBindingsConstants {
 
     public static String NS_JAXWS_BINDINGS = "http://java.sun.com/xml/ns/jaxws";
     public static String NS_JAXB_BINDINGS = "http://java.sun.com/xml/ns/jaxb";
+    public static String NS_XJC_BINDINGS = "http://java.sun.com/xml/ns/jaxb/xjc";
 
     /**
      * jaxws:bindings schema component
@@ -117,7 +118,7 @@ public interface JAXWSBindingsConstants {
     public static QName CLASS = new QName(NS_JAXWS_BINDINGS, "class");
 
     /*
-     * PortType Operation
+     * PortType WSDLOperation
      *
      * <jaxws:method name="xs:string">?
      *   <jaxws:javadoc>xs:string</jaxws:javadoc>?
@@ -156,7 +157,7 @@ public interface JAXWSBindingsConstants {
      */
 
     /*
-     * BindingOperation
+     * WSDLBoundOperation
      *
      * <jaxws:enableAdditionalSOAPHeaderMapping>
      *  xs:boolean
@@ -184,7 +185,7 @@ public interface JAXWSBindingsConstants {
      * jaxb:bindgs QName
      */
     public static QName JAXB_BINDINGS = new QName(NS_JAXB_BINDINGS, "bindings");
-    public static String JAXB_BINDING_VERSION = "1.0";
+    public static String JAXB_BINDING_VERSION = "2.0";
     public static QName XSD_APPINFO = new QName(Constants.NS_XSD, "appinfo");
     public static QName XSD_ANNOTATION = new QName(Constants.NS_XSD, "annotation");
 }

@@ -22,21 +22,27 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.resources.WsdlMessages;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
-import com.sun.tools.ws.wsdl.framework.QNameAction;
+import javax.xml.namespace.QName;
 
 /**
  * Entity corresponding to the "input" child element of a port type operation.
  *
  * @author WS Development Team
  */
-public class Input extends Entity {
+public class Input extends Entity implements TWSDLExtensible {
 
-    public Input() {
+    public Input(Locator locator, ErrorReceiver errReceiver) {
+        super(locator);
+        this.errorReceiver = errReceiver;
+        _helper = new ExtensibilityHelper();
     }
 
     public String getName() {
@@ -91,11 +97,51 @@ public class Input extends Entity {
 
     public void validateThis() {
         if (_message == null) {
-            failValidation("validation.missingRequiredAttribute", "message");
+            errorReceiver.error(getLocator(), WsdlMessages.VALIDATION_MISSING_REQUIRED_ATTRIBUTE("name", "wsdl:message"));
+            throw new AbortException();            
         }
     }
 
     private Documentation _documentation;
     private String _name;
     private QName _message;
+    private String _action;
+    private ExtensibilityHelper _helper;
+    private TWSDLExtensible parent;
+
+    public void addExtension(TWSDLExtension e) {
+        _helper.addExtension(e);
+    }
+
+    public QName getWSDLElementName() {
+        return getElementName();
+    }
+
+    public TWSDLExtensible getParent() {
+        return parent;
+    }
+
+    public void setParent(TWSDLExtensible parent) {
+        this.parent = parent;
+    }
+
+    public String getNamespaceURI() {
+        return getElementName().getNamespaceURI();
+    }
+
+    public String getNameValue() {
+        return null;
+    }
+
+    public Iterable<? extends TWSDLExtension> extensions() {
+        return _helper.extensions();
+    }
+
+    public String getAction() {
+        return _action;
+    }
+
+    public void setAction(String _action) {
+        this._action = _action;
+    }
 }

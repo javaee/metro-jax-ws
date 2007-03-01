@@ -22,31 +22,23 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+import com.sun.tools.ws.wsdl.framework.*;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Defining;
-import com.sun.tools.ws.wsdl.framework.DuplicateEntityException;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.ExtensibilityHelper;
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
+import java.util.*;
 
 /**
  * Entity corresponding to the "definitions" WSDL element.
  *
  * @author WS Development Team
  */
-public class Definitions extends Entity implements Defining, Extensible {
+public class Definitions extends Entity implements Defining, TWSDLExtensible {
 
-    public Definitions(AbstractDocument document) {
+    public Definitions(AbstractDocument document, Locator locator) {
+        super(locator);
         _document = document;
         _bindings = new ArrayList();
         _imports = new ArrayList();
@@ -130,7 +122,15 @@ public class Definitions extends Entity implements Defining, Extensible {
         return _services.iterator();
     }
 
-    public QName getElementName() {
+    public String getNameValue() {
+        return getName();
+    }
+
+    public String getNamespaceURI() {
+        return getTargetNamespaceURI();
+    }
+
+    public QName getWSDLElementName() {
         return WSDLConstants.QNAME_DEFINITIONS;
     }
 
@@ -142,12 +142,19 @@ public class Definitions extends Entity implements Defining, Extensible {
         _documentation = d;
     }
 
-    public void addExtension(Extension e) {
+    public void addExtension(TWSDLExtension e) {
         _helper.addExtension(e);
     }
 
-    public Iterator extensions() {
+    public Iterable<TWSDLExtension> extensions() {
         return _helper.extensions();
+    }
+
+    /**
+     * wsdl:definition is the root hence no parent so return null.
+     */
+    public TWSDLExtensible getParent() {
+        return null;
     }
 
     public void withAllSubEntitiesDo(EntityAction action) {
@@ -215,4 +222,8 @@ public class Definitions extends Entity implements Defining, Extensible {
     private List<Service> _services;
     private List _imports;
     private Set _importedNamespaces;
+
+    public QName getElementName() {
+        return getWSDLElementName();
+    }
 }

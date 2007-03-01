@@ -41,7 +41,7 @@ public class SenderException extends JAXWSExceptionBase {
         super("sender.nestedError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.sender";
     }
 }

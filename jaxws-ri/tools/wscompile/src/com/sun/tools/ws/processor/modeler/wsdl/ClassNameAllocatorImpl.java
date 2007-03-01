@@ -21,13 +21,11 @@
  */
 package com.sun.tools.ws.processor.modeler.wsdl;
 
-import com.sun.tools.xjc.api.ClassNameAllocator;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
+import com.sun.tools.xjc.api.ClassNameAllocator;
 
-import java.util.Set;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey

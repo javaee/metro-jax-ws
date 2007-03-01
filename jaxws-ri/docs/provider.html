@@ -1,120 +1,149 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Provider</title>
-  <link rel="stylesheet" type="text/css" href="style/default.css">
-  <meta name="CREATED" content="20050329;17163443">
-  <meta name="CHANGED" content="20050401;8215806">
+<head caption="Provider">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
+
 <body lang="en-US">
-<center>
-<h1> Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br>
-Provider </h1>
-<b>Specification Version:</b> @@SPEC_VERSION@@<br>
-<b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@
-@@IMPL_VERSION_SUFFIX@@<br>
-</center>
-<hr>
-<p>Last Modified: 6/29/06</p>
+
 <p>Web Service endpoints may choose to work at the XML message level
-by implementing the <code>Provider</code> interface. This is achieved
-by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>
-or <code>Provider&lt;DataSource&gt;</code>.
-The endpoint accesses the message or message payload using this
-low-level, generic API. All the Provider endpoints must have <code>@WebServiceProvider
+    by implementing the <code>Provider</code> interface. This is achieved
+    by implementing either <code>Provider&lt;Source&gt;</code> or <code>Provider&lt;SOAPMessage&gt;</code>
+    or <code>Provider&lt;DataSource&gt;</code>.
+    The endpoint accesses the message or message payload using this
+    low-level, generic API. All the Provider endpoints must have <code>@WebServiceProvider
 </code>annotation. The <code>@ServiceMode</code> annotation is
-used to convey whether the endpoint wants to access the message (<code>Service.Mode.MESSAGE</code>)
-or payload (<code>Service.Mode.PAYLOAD</code>). If there is no <code>@ServiceMode</code>
-annotation on the endpoint, payload is the default value. The endpoint
-communicates with handlers using <code>WebServiceContext<span
- style="font-family: sans-serif;"> resource like any other normal
+    used to convey whether the endpoint wants to access the message (<code>Service.Mode.MESSAGE</code>)
+    or payload (<code>Service.Mode.PAYLOAD</code>). If there is no <code>@ServiceMode</code>
+    annotation on the endpoint, payload is the default value. The endpoint
+    communicates with handlers using <code>WebServiceContext<span
+        style="font-family: sans-serif;"> resource like any other normal
 endpoint</span></code>. All the provider endpoints start from a
-WSDL file and <code>&lt;provider&gt;</code> WSDL customization can be
-used to mark a port as a provider.</p>
+    WSDL file and <code>&lt;provider&gt;</code> WSDL customization can be
+    used to mark a port as a provider.</p>
+
 <h2><code>Provider&lt;Source&gt;</code> and <code>PAYLOAD</code></h2>
+
 <p>An endpoint can access only the payload of a request using <code>Service.Mode.PAYLOAD</code>
-in the<code> @ServiceMode</code> annotation. This is the default
-behaviour, if the annotation is missing.</p>
+    in the<code> @ServiceMode</code> annotation. This is the default
+    behaviour, if the annotation is missing.</p>
+
 <p>For example:</p>
-<pre>  @WebServiceProvider<br>  public class ProviderImpl implements Provider&lt;Source&gt; {<br>      public Source invoke(Source source, Map&lt;String, Object&gt; context) {<br>          // do request processing<br>          Source response = ...;<br>          return response;<br>      }<br>  }<br></pre>
+<pre> @WebServiceProvider<br> public class ProviderImpl implements Provider&lt;Source&gt; {<br> public Source
+    invoke(Source source) {<br> // do request processing<br> Source response = ...;
+    <br> return response;<br> }<br> }<br></pre>
+
 <h2><code>Provider&lt;SOAPMessage&gt;</code> and <code>MESSAGE</code></h2>
+
 <p>An endpoint can access an entire SOAP request as a <code>SOAPMessage</code>.
-<code>Service.Mode.MESSAGE</code> in the <code>@ServiceMode</code>
-annotation is used to convey the intent.</p>
+    <code>Service.Mode.MESSAGE</code> in the <code>@ServiceMode</code>
+    annotation is used to convey the intent.</p>
+
 <p>For example:</p>
-<pre>  <br>  @WebServiceProvider  <br>  @ServiceMode(value=Service.Mode.MESSAGE)<br>  public class ProviderImpl implements Provider&lt;SOAPMessage&gt; {<br>      public SOAPMessage invoke(SOAPMessage msg) {<br>          // do request processing<br>          SOAPMessage response = ...;<br>          return response;<br>      }<br>  }<br></pre>
+<pre><br> @WebServiceProvider  <br> @ServiceMode(value=Service.Mode.MESSAGE)<br> public class ProviderImpl implements
+    Provider&lt;SOAPMessage&gt; {<br> public SOAPMessage invoke(SOAPMessage msg) {<br> // do request processing<br>
+    SOAPMessage response = ...;<br> return response;<br> }<br> }<br></pre>
+
 <h2><code>Provider&lt;Source&gt;</code> and <code>MESSAGE</code></h2>
+
 <p>An endpoint can access a request as a <code>Source</code>. If the
-request is a <code>SOAPMessage</code>, only the <code>SOAPPart</code>
-(no attachments) of the message is passed as <code>Source</code> to
-the <code>invoke</code> method. If the returned response is null, it
-is considered a one way MEP.</p>
+    request is a <code>SOAPMessage</code>, only the <code>SOAPPart</code>
+    (no attachments) of the message is passed as <code>Source</code> to
+    the <code>invoke</code> method. If the returned response is null, it
+    is considered a one way MEP.</p>
+
 <p>For example:</p>
-<pre>  @ServiceMode(value=Service.Mode.MESSAGE)<br>  public class ProviderImpl implements Provider&lt;Source&gt; {<br>      public Source invoke(Source source) {<br><br>          // do request processing using source<br>          // return null to indicate oneway<br>          return null;<br>      }<br>  }<br></pre>
+<pre> @ServiceMode(value=Service.Mode.MESSAGE)<br> public class ProviderImpl implements Provider&lt;Source&gt; {<br>
+    public Source invoke(Source source) {<br><br> // do request processing using source<br> // return null to indicate
+    oneway<br> return null;<br> }<br> }<br></pre>
+
 <h2>WSDL Customization</h2>
+
 <p>The provider endpoint starts with a WSDL file. A port can be
-customized to a provider endpoint using the <code>&lt;provider&gt;</code>
-customization. wsimport won't generate any artifacts for that port.<br>
+    customized to a provider endpoint using the <code>&lt;provider&gt;</code>
+    customization. wsimport won't generate any artifacts for that port.<br>
 </p>
+
 <p>For example:</p>
-<pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br>  &lt;bindings<br>  ...<br>    wsdlLocation="AddNumbers.wsdl"<br>    xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br>    &lt;bindings node="wsdl:definitions" &gt;<br>    &lt;package name="provider.server"/&gt;<br>    <span
- style="font-weight: bold;">&lt;provider&gt;true&lt;/provider&gt;</span><br>  &lt;/bindings&gt;<br></pre>
+<pre>  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;<br> &lt;bindings<br> ...<br>
+    wsdlLocaption="AddNumbers.wsdl"<br> xmlns="http://java.sun.com/xml/ns/jaxws"&gt;<br> &lt;bindings
+    node="wsdl:definitions" &gt;<br> &lt;package name="provider.server"/&gt;<br>    <span
+        style="font-weight: bold;">&lt;provider&gt;true&lt;/provider&gt;</span><br> &lt;/bindings&gt;<br></pre>
+
 <h2>The <code>sun-jaxws.xml</code> file</h2>
-<span style="font-family: monospace;"></span>The attributes of provider endpoint in sun-jaxws.xml: name, implementation, wsdl, service, port override the attributes provided through @WebServiceProvider annotation. For SOAP1.2 binding, one needs to specify binding
+<span style="font-family: monospace;"></span>The attributes of provider endpoint in sun-jaxws.xml: name, implementation,
+wsdl, service, port override the attributes provided through @WebServiceProvider annotation. For SOAP1.2 binding, one
+needs to specify binding
 attribute.<br>
+
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.example.org}AddNumbersService'<br>    port='{http://duke.example.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
-If the wsdl, service, port are not specified in sun-jaxws.xml, then should be declared in the @WebServiceProvider annotation in implementation class.
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+    version='2.0'&gt;<br> &lt;endpoint<br> name='AddNumbers'<br> implementation='provider.server.AddNumbersImpl'<br>
+    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br> service='{http://duke.example.org}AddNumbersService'<br>
+    port='{http://duke.example.org}AddNumbersPort'<br> url-pattern='/addnumbers'/&gt;<br>&lt;/endpoints&gt;<br></pre>
+If the wsdl, service, port are not specified in sun-jaxws.xml, then should be declared in the @WebServiceProvider
+annotation in implementation class.
 <h2>Provider and Binding</h2>
 Provider endpoint can be configured for different bindings using
 binding ids. These binding ids are defined in JAX-WS API and endpoint
 can be configured by specifying @BindingType annotation or using
-binding attribute in sun-jaxws.xml.&nbsp; sun-jaxws.xml overwrites
+binding attribute in sun-jaxws.xml. sun-jaxws.xml overwrites
 binding defined by @BindingType annotation. If the binding is not
 specified using @BindingType or in sun-jaxws.xml, the default binding
 is SOAP1.1/HTTP.<br>
+
 <p>For example: To specify XML/HTTP binding using @BindingType
-annotation<br>
+    annotation<br>
 </p>
-<pre>  @ServiceMode(value=Service.Mode.MESSAGE)<br>  @BindingType(value=HTTPBinding.HTTP_BINDING)<br>  public class ProviderImpl implements Provider&lt;Source&gt; {<br>      public Source invoke(Source source, Map&lt;String) {<br>          ...<br>      }<br>  }<br><br></pre>
+<pre> @ServiceMode(value=Service.Mode.MESSAGE)<br> @BindingType(value=HTTPBinding.HTTP_BINDING)<br> public class
+    ProviderImpl implements Provider&lt;Source&gt; {<br> public Source invoke(Source source) {<br> ...
+    <br> }<br> }<br><br></pre>
+
 <p>For example: To specify XML/HTTP binding in sun-jaxws.xml<br>
 </p>
-<pre><br>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    ...<br>    binding="http://www.w3.org/2004/08/wsdl/http"<br>  /&gt;<br>&lt;/endpoints&gt;<br></pre>
+<pre><br>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints
+    xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br> &lt;endpoint<br> ...<br>
+    binding="http://www.w3.org/2004/08/wsdl/http"<br> /&gt;<br>&lt;/endpoints&gt;<br></pre>
+
 <h2>RESTful Provider endpoints<br>
 </h2>
 RESTful Web Services can be built using XML/HTTP binding based Provider
 endpoints. In this case, even HTTP GET requests are passed to the
 endpoint. Endpoint can get necessary HTTP request query string and path
-information using&nbsp; standard MessageContext.QUERY_STRING and
+information using standard MessageContext.QUERY_STRING and
 MessageContext.PATH_INFO. For more details on endpoint implementation,
 see the <a
- href="../samples/restful/src/restful/server/AddNumbersImpl.java">restful</a>
+        href="../samples/restful/src/restful/server/AddNumbersImpl.java">restful</a>
 sample. If the endpoint expects GET requests to contain extra path
 after the endpoint address, then url-pattern should have "/*" at the
 end in both sun-jaxws.xml and web.xml. <br>
-<p>For example:&nbsp; sun-jaxws.xml<br>
+
+<p>For example: sun-jaxws.xml<br>
 </p>
-<pre><br>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br>  &lt;endpoint<br>    ...<br>    binding="http://www.w3.org/2004/08/wsdl/http"<br>    url-pattern="/addnumbers/*"<br>  /&gt;<br>&lt;/endpoints&gt;<br><br></pre>
-<p>For example:&nbsp; web.xml<br>
+<pre><br>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints
+    xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'&gt;<br> &lt;endpoint<br> ...<br>
+    binding="http://www.w3.org/2004/08/wsdl/http"<br> url-pattern="/addnumbers/*"<br> /&gt;<br>&lt;/endpoints&gt;<br>
+    <br></pre>
+
+<p>For example: web.xml<br>
 </p>
-<pre>&lt;web-app&gt;<br>  ...<br>  &lt;servlet-mapping&gt;<br>    &lt;servlet-name&gt;provider&lt;/servlet-name&gt;<br>    &lt;url-pattern&gt;/addnumbers/*&lt;/url-pattern&gt;<br>  &lt;/servlet-mapping&gt;<br>  ...<br>&lt;/web-app&gt;<br></pre>
+<pre>&lt;web-app&gt;<br> ...<br> &lt;servlet-mapping&gt;<br> &lt;servlet-name&gt;provider&lt;/servlet-name&gt;<br> &lt;url-pattern&gt;/addnumbers/*&lt;/url-pattern&gt;
+    <br> &lt;/servlet-mapping&gt;<br> ...<br>&lt;/web-app&gt;<br></pre>
+
 <h2>Provider and Handlers<br>
 </h2>
 <span style="font-family: monospace;"></span>Handlers can be configured
 with Provider endpoints in sun-jaxws.xml descriptor or by putting @HandlerChain on the Provider implementation. For more
 information, see <a href="jaxws-war.html">handler config</a>.<br>
+
 <p>For example:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'&gt;<br>  &lt;endpoint<br>    name='AddNumbers'<br>    implementation='provider.server.AddNumbersImpl'<br>    wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>    service='{http://duke.example.org}AddNumbersService'<br>    port='{http://duke.example.org}AddNumbersPort'<br>    url-pattern='/addnumbers'/&gt;<br>    &lt;javaee:handler-chain&gt;<br>      &lt;javaee:handler-chain-name&gt;my handler&lt;/javaee:handler-chain-name&gt;<br>      &lt;javaee:handler&gt;<br>        &lt;javaee:handler-name&gt;MyHandler&lt;/javaee:handler-name&gt;<br>        &lt;javaee:handler-class&gt;provider.server.MyHandler&lt;/javaee:handler-class&gt;<br>      &lt;/javaee:handler&gt;<br>    &lt;/javaee:handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
-<pre><br></pre>
-<hr>
-<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun
-Microsystems, Inc. All rights reserved.</font></i></a></p>
-<p><br>
-<br>
-</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+    xmlns:javaee="http://java.sun.com/xml/ns/javaee" version='2.0'&gt;<br> &lt;endpoint<br> name='AddNumbers'<br>
+    implementation='provider.server.AddNumbersImpl'<br> wsdl='WEB-INF/wsdl/AddNumbers.wsdl'<br>
+    service='{http://duke.example.org}AddNumbersService'<br> port='{http://duke.example.org}AddNumbersPort'<br>
+    url-pattern='/addnumbers'/&gt;<br> &lt;javaee:handler-chain&gt;<br> &lt;javaee:handler-chain-name&gt;my handler&lt;/javaee:handler-chain-name&gt;
+    <br> &lt;javaee:handler&gt;<br> &lt;javaee:handler-name&gt;MyHandler&lt;/javaee:handler-name&gt;<br> &lt;javaee:handler-class&gt;provider.server.MyHandler&lt;/javaee:handler-class&gt;
+    <br> &lt;/javaee:handler&gt;<br> &lt;/javaee:handler-chain&gt;<br>&lt;/endpoints&gt;</pre>
 </body>
 </html>

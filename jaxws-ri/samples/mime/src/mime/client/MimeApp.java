@@ -1,29 +1,3 @@
-/*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at
- * https://glassfish.dev.java.net/public/CDDLv1.0.html.
- * See the License for the specific language governing
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at https://glassfish.dev.java.net/public/CDDLv1.0.html.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems Inc. All Rights Reserved
- */
-
-/**
- * $Id: MimeApp.java,v 1.7 2006-06-29 22:30:03 ofung Exp $
- */
-
 package mime.client;
 
 import javax.xml.ws.Holder;
@@ -34,10 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.awt.*;
 import java.util.Arrays;
-import java.lang.reflect.Proxy;
-
-import com.sun.xml.ws.client.EndpointIFBase;
-import com.sun.xml.ws.transport.http.client.HttpClientTransportFactory;
 
 public class MimeApp {
     public static void main (String[] args){
@@ -59,7 +29,6 @@ public class MimeApp {
             //test swaref
             testSwaref ((Hello)port);
         } catch (Exception ex) {
-            System.out.println ("MimeApp FAILED!");
             ex.printStackTrace ();
         }
     }
@@ -90,6 +59,7 @@ public class MimeApp {
         req.setName("XYZ corp");
         req.setAddress("1234 Some street");
         Source resp = port.detail(req);
+
         if(AttachmentHelper.compareStreamSource(new StreamSource(new ByteArrayInputStream(sampleXML.getBytes())), (StreamSource)resp))
             System.out.println ("testDetail() PASSED!");
         else
@@ -98,8 +68,11 @@ public class MimeApp {
 
     private static void testSwaref (Hello port) throws Exception{
         DataHandler claimForm = new DataHandler (new StreamSource(new ByteArrayInputStream(sampleXML.getBytes())), "text/xml");
-        DataHandler out = port.claimForm (claimForm);
-        if(AttachmentHelper.compareStreamSource (new StreamSource(new ByteArrayInputStream(sampleXML.getBytes())), (StreamSource)out.getContent ()))
+        ClaimFormTypeRequest req = new ClaimFormTypeRequest();
+        req.setRequest(claimForm);
+        ClaimFormTypeResponse resp = port.claimForm (req);
+        DataHandler out = resp.getResponse();
+        if(out != null && AttachmentHelper.compareStreamSource (new StreamSource(new ByteArrayInputStream(sampleXML.getBytes())), (StreamSource)out.getContent ()))
             System.out.println ("testSwaref() PASSED!");
         else
             System.out.println ("testSwaref() FAILED!");

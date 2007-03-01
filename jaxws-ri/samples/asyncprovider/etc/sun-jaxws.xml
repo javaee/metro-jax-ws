@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<endpoints
+    xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime"
+    version="2.0">
+
+    <endpoint
+        name="asyncprovider"
+        implementation="asyncprovider.server.HelloAsyncImpl"
+        wsdl="WEB-INF/wsdl/hello_literal.wsdl"
+        service="{urn:test}Hello"
+        port="{urn:test}HelloAsyncPort"
+        url-pattern="/hello" />
+
+</endpoints>

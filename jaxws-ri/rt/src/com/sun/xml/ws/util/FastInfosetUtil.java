@@ -22,31 +22,28 @@
 
 package com.sun.xml.ws.util;
 
+import com.sun.xml.ws.streaming.XMLReaderException;
+import com.sun.xml.ws.streaming.XMLStreamReaderException;
+import com.sun.xml.ws.streaming.XMLStreamWriterException;
+import com.sun.xml.ws.util.xml.XmlUtil;
+import org.xml.sax.InputSource;
+
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.List;
 import java.util.StringTokenizer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPException;
-
-import com.sun.xml.ws.pept.ept.MessageInfo;
-import com.sun.xml.messaging.saaj.soap.MessageImpl;
-import com.sun.xml.ws.util.xml.XmlUtil;
-
-import static com.sun.xml.ws.developer.JAXWSProperties.CONTENT_NEGOTIATION_PROPERTY;
 
 public class FastInfosetUtil {
     
     public static boolean isFastInfosetAccepted(String[] accepts) {
-        if (accepts != null) {
-            for (String accept : accepts) {
-                if (isFastInfosetAccepted(accept)) {
-                    return true;
-                }
+        for (String accept : accepts) {
+            if (isFastInfosetAccepted(accept)) {
+                return true;
             }
-        }
+        }        
         return false;
     }
 
@@ -87,14 +84,58 @@ public class FastInfosetUtil {
             // Ignore
         }
     }
-    
-    public static void ensureCorrectEncoding(MessageInfo messageInfo, 
-        SOAPMessage message) 
-    {
-        String conneg = (String) messageInfo.getMetaData(CONTENT_NEGOTIATION_PROPERTY);
-        if (conneg == "optimistic") {
-            ((MessageImpl) message).setIsFastInfoset(true);
+
+    public static XMLStreamReader createFIStreamReader(InputSource source) {
+        return createFIStreamReader(source.getByteStream());
+    }
+
+    /**
+     * Returns the FI parser allocated for this thread.
+     */
+    public static XMLStreamReader createFIStreamReader(InputStream in) {
+        // Check if compatible implementation of FI was found
+        if (FastInfosetReflection.fiStAXDocumentParser_new == null) {
+            throw new XMLReaderException("fastinfoset.noImplementation");
+        }
+
+        try {
+            // Do not use StAX pluggable layer for FI
+            Object sdp = FastInfosetReflection.fiStAXDocumentParser_new.newInstance();
+            FastInfosetReflection.fiStAXDocumentParser_setStringInterning.invoke(sdp, Boolean.TRUE);
+            FastInfosetReflection.fiStAXDocumentParser_setInputStream.invoke(sdp, in);
+            return (XMLStreamReader) sdp;
+        } catch (Exception e) {
+            throw new XMLStreamReaderException(e);
         }
     }
+
+    // -- Fast Infoset ---------------------------------------------------
+
+    public static XMLStreamWriter createFIStreamWriter(OutputStream out) {
+        return createFIStreamWriter(out, "UTF-8");
+    }
+
+    public static XMLStreamWriter createFIStreamWriter(OutputStream out, String encoding) {
+        return createFIStreamWriter(out, encoding, true);
+    }
+
+    public static XMLStreamWriter createFIStreamWriter(OutputStream out,
+        String encoding, boolean declare)
+    {
+        // Check if compatible implementation of FI was found
+        if (FastInfosetReflection.fiStAXDocumentSerializer_new == null) {
+            throw new XMLReaderException("fastinfoset.noImplementation");
+        }
+
+        try {
+            Object sds = FastInfosetReflection.fiStAXDocumentSerializer_new.newInstance();
+            FastInfosetReflection.fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
+            FastInfosetReflection.fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
+            return (XMLStreamWriter) sds;
+        }  catch (Exception e) {
+            throw new XMLStreamWriterException(e);
+        }
+    }
+
 
 }

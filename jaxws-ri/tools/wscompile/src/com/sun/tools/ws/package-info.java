@@ -21,8 +21,8 @@
  */
 
 /**
- * <h1>JAX-WS 2.0 Tools</h1>
- * This document describes the tools included with JAX-WS 2.0. 
+ * <h1>JAX-WS 2.0.1 Tools</h1>
+ * This document describes the tools included with JAX-WS 2.0.1. 
  *
  * {@DotDiagram
      digraph G {
@@ -50,9 +50,8 @@
        "WsImport ANT Task" -> wsimport -> CompileTool;
        
        CompileTool -> APT -> WSAP -> WebServiceAP;
-       CompileTool -> Processor;
-       CompileTool -> Modeler;
-       CompileTool -> ProcessorActions;
+       CompileTool -> Processor -> Modeler;
+       Processor -> ProcessorActions;
        CompileTool -> WebServiceAP;
  
        Modeler -> WSDLModeler;
@@ -67,11 +66,11 @@
  *  <dt>{@link com.sun.tools.ws.ant.Apt Apt}
  *  <dd>An ANT task to invoke <a href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/share/apt.html">APT</a>.
 
- *  <dt>{@link com.sun.tools.ws.ant.WsGen WsGen}
+ *  <dt>{@link com.sun.tools.ws.ant.WsGen2 WsGen}
  *  <dd>
  *    An ANT task to invoke {@link com.sun.tools.ws.WsGen WsGen}
  
- *  <dt>{@link com.sun.tools.ws.ant.WsImport WsImport}
+ *  <dt>{@link com.sun.tools.ws.ant.WsImport2 WsImport}
  *  <dd>
  *    An ANT task to invoke {@link com.sun.tools.ws.WsImport WsImport}
  * 
@@ -88,29 +87,17 @@
  *  <dd>Tool to process a compiled javax.jws.WebService annotated class and to generate the necessary classes to make 
  *  it a Web service.  
  
- *  <dt>{@link com.sun.tools.ws.ant.WsImport WsImport}
+ *  <dt>{@link com.sun.tools.ws.ant.WsImport2 WsImport}
  *  <dd>
  *    Tool to import a WSDL and to generate an SEI (a javax.jws.WebService) interface that can be either implemented 
  *    on the server to build a web service, or can be used on the client to invoke the web service.
  *  </d1>
  * <h2>Implementation Classes</h2>
  *  <d1>
-      <dt>{@link com.sun.tools.ws.wscompile.CompileTool CompileTool}
- *    <dd> This is the main implementation class for both WsGen and WsImport. 
- * 
- * 
- * <dt>{@link com.sun.tools.ws.processor.Processor Processor}
- *    <dd>This abstract class is used to process a particular {@link com.sun.tools.ws.processor.config.Configuration
- *    Configuration} to build a {@link com.sun.tools.ws.processor.model Model} and to run
- *   {@link com.sun.tools.ws.processor.ProcessorAction ProcessorActions} on that model.
-
  *    <dt>{@link com.sun.tools.ws.processor.model.Model Model}
  *    <dd>The model is used to represent the entire Web Service.  The JAX-WS ProcessorActions can process
  *    this Model to generate Java artifacts such as the service interface.
  *
-      <dt>{@link com.sun.tools.ws.processor.ProcessorAction ProcessorActions}
- *    <dd>A ProcessorAction is used to perform some operation on a Model object such as
- *    generating a Java source file.
  *
  *    <dt>{@link com.sun.tools.ws.processor.modeler.Modeler Modeler}
  *    <dd>A Modeler is used to create a Model of a Web Service from a particular Web 
@@ -125,7 +112,7 @@
  *    javax.xml.ws.* annotations. This class is used either by the WsGen (CompileTool) tool or 
  *    idirectly via the {@link com.sun.istack.ws.WSAP WSAP} when invoked by APT.
  *
- *    <dt>{@link com.sun.istack.ws.WSAP WSAP}
+ *    <dt>{@link com.sun.istack.ws.AnnotationProcessorFactoryImpl WSAP}
  *    <dd>This is the entry point for the WebServiceAP when APT is invoked on a SEI
  *    annotated with the javax.jws.WebService annotation.
  *   </d1>

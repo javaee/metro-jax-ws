@@ -22,10 +22,10 @@
 
 package com.sun.tools.ws.processor.util;
 
-import java.io.File;
-
 import com.sun.tools.ws.processor.generator.GeneratorException;
 import com.sun.tools.ws.util.ClassNameInfo;
+
+import java.io.File;
 
 /**
  * Util provides static utility methods used by other wscompile classes.
@@ -34,8 +34,7 @@ import com.sun.tools.ws.util.ClassNameInfo;
  */
 public class DirectoryUtil  {
 
-    public static File getOutputDirectoryFor(String theClass,
-        File rootDir, ProcessorEnvironment env) throws GeneratorException {
+    public static File getOutputDirectoryFor(String theClass, File rootDir) throws GeneratorException {
 
         File outputDir = null;
         String qualifiedClassName = theClass;
@@ -55,7 +54,7 @@ public class DirectoryUtil  {
                 outputDir = new File(rootDir, packagePath);
 
                 // Make sure the directory exists...
-                ensureDirectory(outputDir,env);
+                ensureDirectory(outputDir);
             } else {
 
                 // Default package, so use root as output dir...
@@ -78,7 +77,7 @@ public class DirectoryUtil  {
                 outputDir = new File(workingDir, packagePath);
 
                 // Make sure the directory exists...
-                ensureDirectory(outputDir,env);
+                ensureDirectory(outputDir);
             }
         }
 
@@ -86,7 +85,7 @@ public class DirectoryUtil  {
         return outputDir;
     }
 
-    private static void ensureDirectory(File dir, ProcessorEnvironment env)
+    private static void ensureDirectory(File dir)
         throws GeneratorException {
 
         if (!dir.exists()) {

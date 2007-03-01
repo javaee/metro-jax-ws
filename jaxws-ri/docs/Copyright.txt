@@ -1,0 +1,17 @@
+Copyright Information 
+
+© 2006 Sun Microsystems, Inc. All rights reserved. 
+SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms. 
+
+This document is protected by copyright. No part of this document may be reproduced in any form by any means without prior written authorization of Sun and its licensors, if any. 
+
+The information described in this document may be protected by one or more U.S. patents, foreign patents, or pending applications. 
+
+TRADEMARKS 
+
+Sun, Sun Microsystems, the Sun Logo, Solaris, Java, JavaServer Pages, JavaBeans, Enterprise JavaBeans, Java Naming and Directory Interface, EJB, J2EE, and J2SE are trademarks or registered trademarks of Sun Microsystems, Inc in the U.S. and other countries. 
+
+RESTRICTED RIGHTS LEGEND: Use, duplication, or disclosure by the U.S. Government is subject to restrictions of FAR 52.227-14(g)(2)(6/87) and FAR 52.227-19(6/87), or DFAR 252.227-7015(b)(6/95) and DFAR 227.7202-3(a). 
+
+DOCUMENTATION IS PROVIDED "AS IS" AND ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE DISCLAIMED, EXCEPT TO THE EXTENT THAT SUCH DISCLAIMERS ARE HELD TO BE LEGALLY INVALID. 
+

@@ -22,16 +22,15 @@
 
 package com.sun.tools.ws.wsdl.parser;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
 import com.sun.tools.ws.wsdl.document.schema.SchemaKinds;
 import com.sun.tools.ws.wsdl.document.soap.SOAPConstants;
 import com.sun.tools.ws.wsdl.framework.EntityReferenceValidator;
 import com.sun.tools.ws.wsdl.framework.Kind;
+
+import javax.xml.namespace.QName;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An interface implemented by a class that is capable of validating

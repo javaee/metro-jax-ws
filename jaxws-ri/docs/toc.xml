@@ -1,0 +1,84 @@
+<toc name="JAX-WS RI">
+  <!-- this portion is executed as the banner -->
+  <banner>
+    Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
+      (JAX-WS)
+  </banner>
+  <!-- this portion is excuted as the footer -->
+  <footer>
+    $Revision: 1.2 $<br/>      $Date: 2007-03-01 01:23:28 $<br/>
+    <a href="Copyright.html">Copyright&#169; 2006 Sun Microsystems, Inc. All rights reserved.</a>
+  </footer>
+    
+  <chapter name="JAXWS 2.1">
+    <document name="Overview"
+              url="index.html"/>
+    <document name="Release Notes"
+              url="ReleaseNotes.html"/>
+    <document name="Changelog"
+              url="changelog.html"/>
+  </chapter>
+
+    <chapter name="Users Guide">
+        <document name="Overview"
+                  url="UsersGuide.html"/>
+        <document name="Provider"
+                  url="provider.html"/>
+        <document name="AsyncProvider"
+                  url="asyncprovider.html"/>                  
+        <document name="Dispatch"
+                  url="dispatch.html"/>
+        <document name="Asynchronous Client"
+                  url="asynch.html"/>
+        <document name="Handler"
+                  url="handlers.html"/>
+        <document name="MTOM and Swaref"
+                  url="mtom-swaref.html"/>
+        <document name="SOAP 1.2"
+                  url="soap12.html"/>
+        <document name="WSDL Customization"
+                  url="customizations.html"/>
+        <document name="Annotations"
+                  url="annotations.html"/>
+        <document name="WS-Addressing"
+                  url="wsaddressing.html"/>
+        <document name="Stateful Webservice"
+                  url="statefulWebservice.html"/>
+        <document name="Catalog"
+              url="catalog-support.html"/>
+        <document name="Interoperability"
+              url="interop.html"/>
+    </chapter>
+
+
+  <chapter name="Tools">
+    <document name="Overview"
+              url="jaxws-tools.html"/>
+    <document name="Wsimport"
+              url="wsimport.html"/>
+    <document name="Wsimport Ant Task"
+              url="wsimportant.html"/>
+    <document name="Wsgen"
+              url="wsgen.html"/>
+    <document name="Wsgen Ant Task"
+              url="wsgenant.html"/>
+    <document name="Apt"
+              url="apt.html"/>
+  </chapter>
+   <chapter name="JAXWS RI Extensions">
+      <document name="Extensions"
+                url="ri-features.html"/>
+   </chapter>
+
+    <chapter name="Samples">
+      <document name="Samples"
+                url="samples.html"/>
+    </chapter>
+
+    <chapter name="JAXWS Community">
+        <document name="Overview" url="community.html"/>
+        <document name="Java.net Homepage" url="https://jax-ws.dev.java.net/"/>
+        <document name="Mailing List" url="https://jax-ws.dev.java.net/servlets/ProjectMailingListList"/>
+        <document name="FAQ" url="https://jax-ws.dev.java.net/faq/index.html"/>
+    </chapter>
+</toc>

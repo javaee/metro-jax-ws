@@ -21,14 +21,14 @@
  */
 package com.sun.tools.ws.processor.model;
 
-import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.processor.model.jaxb.JAXBType;
-import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
-import com.sun.tools.ws.processor.model.java.JavaType;
-import com.sun.tools.ws.processor.model.java.JavaSimpleType;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
+import com.sun.tools.ws.processor.model.java.JavaSimpleType;
+import com.sun.tools.ws.processor.model.java.JavaType;
+import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
+import com.sun.tools.ws.wsdl.framework.Entity;
+
+import javax.xml.namespace.QName;
 
 
 /**
@@ -41,24 +41,24 @@ public class AsyncOperation extends Operation {
     /**
      *
      */
-    public AsyncOperation() {
-        super();
+    public AsyncOperation(Entity entity) {
+        super(entity);
         // TODO Auto-generated constructor stub
     }
 
     /**
      * @param operation
      */
-    public AsyncOperation(Operation operation) {
-        super(operation);
+    public AsyncOperation(Operation operation, Entity entity) {
+        super(operation, entity);
         this.operation = operation;
     }
 
     /**
      * @param name
      */
-    public AsyncOperation(QName name) {
-        super(name);
+    public AsyncOperation(QName name, Entity entity) {
+        super(name, entity);
         // TODO Auto-generated constructor stub
     }
 

@@ -21,112 +21,14 @@
  */
 
 /**
- * <h1>JAX-WS 2.0 Server Runtime</h1>
+ * <h1>JAX-WS 2.0.1 Server Runtime</h1>
  * <P>This document describes the architecture of server side 
- * JAX-WS 2.0 runtime. </p>
+ * JAX-WS 2.0.1 runtime. </p>
  *
- * <h3>JAX-WS 2.0 Server Runtime Sequence Diagram</h3>
- * {@SequenceDiagram
-      pobject(U,"user");
-      object(A,"WSConnection");
-      object(B,"Tie");
-      object(E,"MessageDispatcher");
-      object(F,"EPTFactoryFactoryBase");
-      object(G,"Endpoint");
-      step();
+ * <h3>JAX-WS 2.0.1 Server Runtime Sequence Diagram</h3>
 
-      message(U,A,"invoke Web Service");
-      active(A);
-      message(A,A,"getRuntimeEndpointInfo");
-      active(A);
-      step();
-      inactive(A);
-
-      message(A,B,"handle");
-      active(B);
-#      inactive(A);
-
-      message(B,B,"createMessageInfo");
-      active(B);
-      step();
-      inactive(B);
-
-      message(B,B,"createRuntimeContext");
-      active(B);
-      step();
-      inactive(B);
-
-      message(B,F,"getEPTFactory");
-      active(F);
-      step();
-      inactive(F);
-        
-      message(B,B,"getMessageDispatcher");
-      active(B);
-      step();
-      inactive(B);
-
-      message(B,E,"receive");
-      active(E);
-      inactive(B);
-#      complete(B);
-
-      message(E,E,"mustUnderstand");
-      active(E);
-      step();
-      inactive(E);
-
-      message(E,E,"createSOAPMessage");
-      active(E);
-      step();
-      inactive(E);
+  * <img src='../../../../../jaxws/basic-server.seq.png'>
  
-      message(E,E,"invokeHandlers");
-      active(E);
-      step();
-      inactive(E);
- 
-      message(E,E,"createInternalMessage");
-      active(E);
-      step();
-      inactive(E);
-
-      message(E,G,"invoke endpoint");
-      active(G);
-#      step();
-      rmessage(G,E,"response");
-#      complete(G);
-      inactive(G);
-
-      message(E,E,"createInternalMessage");
-      active(E);
-      step();
-      inactive(E);
-
-      message(E,E,"createSOAPMessage");
-      active(E);
-      step();
-      inactive(E);
-
-      message(E,E,"invokeHandlers");
-      active(E);
-      step();
-      inactive(E);
-
-#      active(A);
-      rmessage(E,A,"response");
-#      complete(E);
-#inactive(E);
-
-      active(A);
-#      complete(E);
-inactive(E);
-#      rmessage(A,U,"response");
-#      complete(E);
-#      complete(A);
-      complete(A);  
- * }
- *
  *
  *
  * <H3>Message Flow</H3>
@@ -134,18 +36,18 @@ inactive(E);
  * {@link com.sun.xml.ws.transport.http.servlet.WSServletDelegate WSServletDelegate}
  * or the {@link com.sun.xml.ws.transport.http.server.ServerConnectionImpl ServerConnectionImpl}.
  * Both of these classes find the appropriate {@link com.sun.xml.ws.server.RuntimeEndpointInfo RuntimeEndpointInfo}
- * and invokes the {@link com.sun.xml.ws.server.Tie#handle(com.sun.xml.ws.spi.runtime.WSConnection, 
+ * and invokes the {@link com.sun.xml.ws.server.Tie#handle(com.sun.xml.ws.api.server.WSConnection,
  * com.sun.xml.ws.spi.runtime.RuntimeEndpointInfo) Tie.handle}
  * method. This method first creates a {@link com.sun.pept.ept.MessageInfo MessageInfo}
  * used to gather inforrmation about the message to be received. A
  * {@link com.sun.xml.ws.server.RuntimeContext RuntimeContext}
- * is then created with the MessageInfo and the {@link com.sun.xml.ws.model.RuntimeModel RuntimeModel}
+ * is then created with the MessageInfo and the {@link com.sun.xml.ws.api.model.SEIModel RuntimeModel}
  * retrieved from the RuntimeEndpointInfo. The RuntimeContext is then
  * stored in the MessageInfo. The {@link com.sun.pept.ept.EPTFactory EPTFactory}
  * is retrieved from the {@link com.sun.xml.ws.server.EPTFactoryFactoryBase EPTFactoryFactoryBase}
  * and also placed in the MessagInfo. A {@link com.sun.pept.protocol.MessageDispatcher MessageDispatcher}
  * is then created and the receive method is invoked. There will be two
- * types of MessageDispatchers for JAX-WS 2.0 FCS, SOAPMessageDispatcher
+ * types of MessageDispatchers for JAX-WS 2.0.1, SOAPMessageDispatcher
  * (one for client and one for the server) and an XMLMessageDispatcher
  * (one for the client and one for the server).</P>
  * <P>The MessageDispatcher.receive method orchestrates the receiving of

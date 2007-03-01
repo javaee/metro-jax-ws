@@ -22,26 +22,22 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import java.util.Iterator;
+import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+import com.sun.tools.ws.wsdl.framework.*;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
-import com.sun.tools.ws.wsdl.framework.ExtensibilityHelper;
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
-import com.sun.tools.ws.wsdl.framework.QNameAction;
 
 /**
  * Entity corresponding to the "fault" child element of a port type operation.
  *
  * @author WS Development Team
  */
-public class Fault extends Entity implements Extensible{
+public class Fault extends Entity implements TWSDLExtensible {
 
-    public Fault() {
+    public Fault(Locator locator) {
+        super(locator);
         _helper = new ExtensibilityHelper();
     }
 
@@ -107,20 +103,52 @@ public class Fault extends Entity implements Extensible{
     private Documentation _documentation;
     private String _name;
     private QName _message;
+    private String _action;
     private ExtensibilityHelper _helper;
 
+    public String getNameValue() {
+        return getName();
+    }
+
+    public String getNamespaceURI() {
+        return parent.getNamespaceURI();
+    }
+
+    public QName getWSDLElementName() {
+        return getElementName();
+    }
+
     /* (non-Javadoc)
-     * @see Extensible#addExtension(Extension)
-     */
-    public void addExtension(Extension e) {
+    * @see TWSDLExtensible#addExtension(ExtensionImpl)
+    */
+    public void addExtension(TWSDLExtension e) {
         _helper.addExtension(e);
 
     }
 
     /* (non-Javadoc)
-     * @see Extensible#extensions()
+     * @see TWSDLExtensible#extensions()
      */
-    public Iterator extensions() {
+    public Iterable<TWSDLExtension> extensions() {
         return _helper.extensions();
+    }
+
+    public TWSDLExtensible getParent() {
+        return parent;
+    }
+
+
+    public void setParent(TWSDLExtensible parent) {
+        this.parent = parent;
+    }
+
+    private TWSDLExtensible parent;
+
+    public String getAction() {
+        return _action;
+    }
+
+    public void setAction(String _action) {
+        this._action = _action;
     }
 }

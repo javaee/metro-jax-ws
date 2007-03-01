@@ -22,7 +22,10 @@
 
 package com.sun.xml.ws.handler;
 
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
 import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.UtilException;
@@ -33,10 +36,12 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.PortInfo;
-import javax.xml.ws.http.HTTPBinding;
-import javax.xml.ws.soap.SOAPBinding;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 
@@ -44,26 +49,26 @@ public class HandlerChainsModel {
     private static final Logger logger = Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".util");
     
-    protected Class annotatedClass;
-    protected List<HandlerChainType> handlerChains;
-    protected String id;
+    private Class annotatedClass;
+    private List<HandlerChainType> handlerChains;
+    private String id;
     /** Creates a new instance of HandlerChains */
-    public HandlerChainsModel(Class annotatedClass) {
+    private HandlerChainsModel(Class annotatedClass) {
         this.annotatedClass = annotatedClass;
     }
     
-    public List<HandlerChainType> getHandlerChain() {
+    private List<HandlerChainType> getHandlerChain() {
         if (handlerChains == null) {
             handlerChains = new ArrayList<HandlerChainType>();
         }
         return handlerChains;
     }
     
-    public java.lang.String getId() {
+    public String getId() {
         return id;
     }
     
-    public void setId(java.lang.String value) {
+    public void setId(String value) {
         this.id = value;
     }
     /**
@@ -74,11 +79,11 @@ public class HandlerChainsModel {
         HandlerChainsModel handlerModel = new HandlerChainsModel(annotatedClass);
         List<HandlerChainType> hChains = handlerModel.getHandlerChain();
         XMLStreamReaderUtil.nextElementContent(reader);
-        
+
         while (reader.getName().equals(QNAME_HANDLER_CHAIN)) {
             HandlerChainType hChain = new HandlerChainType();
             XMLStreamReaderUtil.nextElementContent(reader);
-            
+
             if (reader.getName().equals(QNAME_CHAIN_PORT_PATTERN)) {
                 QName portNamePattern = XMLStreamReaderUtil.getElementQName(reader);
                 hChain.setPortNamePattern(portNamePattern);
@@ -101,80 +106,84 @@ public class HandlerChainsModel {
             // process all <handler> elements
             while (reader.getName().equals(QNAME_HANDLER)) {
                 HandlerType handler = new HandlerType();
-                
+
                 XMLStreamReaderUtil.nextContent(reader);
                 if (reader.getName().equals(QNAME_HANDLER_NAME)) {
                     String handlerName =
-                            XMLStreamReaderUtil.getElementText(reader);
+                            XMLStreamReaderUtil.getElementText(reader).trim();
                     handler.setHandlerName(handlerName);
                     XMLStreamReaderUtil.nextContent(reader);
                 }
-                
+
                 // handler class
                 ensureProperName(reader, QNAME_HANDLER_CLASS);
                 String handlerClass =
-                        XMLStreamReaderUtil.getElementText(reader);
+                        XMLStreamReaderUtil.getElementText(reader).trim();
                 handler.setHandlerClass(handlerClass);
                 XMLStreamReaderUtil.nextContent(reader);
-                
+
                 // init params (ignored)
                 while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
                     skipInitParamElement(reader);
                 }
-                
+
                 // headers (ignored)
                 while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
                     skipTextElement(reader);
                 }
-                
+
                 // roles (not stored per handler)
                 while (reader.getName().equals(QNAME_HANDLER_ROLE)) {
                     List<String> soapRoles = handler.getSoapRoles();
                     soapRoles.add(XMLStreamReaderUtil.getElementText(reader));
                     XMLStreamReaderUtil.nextContent(reader);
                 }
-                
+
                 handlers.add(handler);
-                
+
                 // move past </handler>
                 ensureProperName(reader, QNAME_HANDLER);
                 XMLStreamReaderUtil.nextContent(reader);
             }
-            
+
             // move past </handler-chain>
             ensureProperName(reader, QNAME_HANDLER_CHAIN);
             hChains.add(hChain);
             XMLStreamReaderUtil.nextContent(reader);
         }
-        
+
         return handlerModel;
     }
-    
+
     /**
      * <p>This method is called internally by HandlerAnnotationProcessor,
      * and by
-     * {@link com.sun.xml.ws.transport.http.servlet.RuntimeEndpointInfoParser}
+     * {@link com.sun.xml.ws.transport.http.DeploymentDescriptorParser}
      * directly when it reaches the handler chains element in the
      * descriptor file it is parsing.
-     *
+     * @param reader should be on <handler-chains> element
      * @return A HandlerAnnotationInfo object that stores the
      * handlers and roles.
      */
+
+
+
     public static HandlerAnnotationInfo parseHandlerFile(XMLStreamReader reader,
             ClassLoader classLoader, QName serviceName, QName portName,
-            String bindingId) {
+            WSBinding wsbinding) {
         ensureProperName(reader,QNAME_HANDLER_CHAINS);
+        String bindingId = wsbinding.getBindingId().toString();
         HandlerAnnotationInfo info = new HandlerAnnotationInfo();
-        
+
         XMLStreamReaderUtil.nextElementContent(reader);
-        
+
         List<Handler> handlerChain = new ArrayList<Handler>();
         Set<String> roles = new HashSet<String>();
-        
+
         while (reader.getName().equals(QNAME_HANDLER_CHAIN)) {
-            
+
             XMLStreamReaderUtil.nextElementContent(reader);
-            
+
             if (reader.getName().equals(QNAME_CHAIN_PORT_PATTERN)) {
                 if (portName == null) {
                     logger.warning("handler chain sepcified for port " +
@@ -198,17 +207,18 @@ public class HandlerChainsModel {
                 List<String> bindingList = new ArrayList<String>();
                 while(stk.hasMoreTokens()) {
                     String tokenOrURI = stk.nextToken();
-                    String binding = tokenBindingMap.get(tokenOrURI);
-                    if(binding == null) {
-                        //Unknown binding or Unknown token, Put it as it is
-                        binding = tokenOrURI;
-                    }
+                    /*
+                    Convert short-form tokens to API's binding ids
+                    Unknown token, Put it as it is
+                    */
+                    tokenOrURI = DeploymentDescriptorParser.getBindingIdForToken(tokenOrURI);
+                    String binding = BindingID.parse(tokenOrURI).toString();
                     bindingList.add(binding);
                 }
                 if(bindingList.contains(bindingId)){
                     skipThisChain = false;
                 }
-                
+
                 if (skipThisChain) {
                     skipChain(reader);
                     continue;
@@ -228,44 +238,44 @@ public class HandlerChainsModel {
                 }
                 XMLStreamReaderUtil.nextElementContent(reader);
             }
-            
+
             // process all <handler> elements
             while (reader.getName().equals(QNAME_HANDLER)) {
-                Handler handler = null;
-                
+                Handler handler;
+
                 XMLStreamReaderUtil.nextContent(reader);
                 if (reader.getName().equals(QNAME_HANDLER_NAME)) {
                     skipTextElement(reader);
                 }
-                
+
                 // handler class
                 ensureProperName(reader, QNAME_HANDLER_CLASS);
                 try {
                     handler = (Handler) loadClass(classLoader,
-                            XMLStreamReaderUtil.getElementText(reader)).newInstance();
+                            XMLStreamReaderUtil.getElementText(reader).trim()).newInstance();
                 } catch (InstantiationException ie){
                     throw new RuntimeException(ie);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
                 XMLStreamReaderUtil.nextContent(reader);
-                
+
                 // init params (ignored)
                 while (reader.getName().equals(QNAME_HANDLER_PARAM)) {
                     skipInitParamElement(reader);
                 }
-                
+
                 // headers (ignored)
                 while (reader.getName().equals(QNAME_HANDLER_HEADER)) {
                     skipTextElement(reader);
                 }
-                
+
                 // roles (not stored per handler)
                 while (reader.getName().equals(QNAME_HANDLER_ROLE)) {
                     roles.add(XMLStreamReaderUtil.getElementText(reader));
                     XMLStreamReaderUtil.nextContent(reader);
                 }
-                
+
                 // call @PostConstruct method on handler if present
                 for (Method method : handler.getClass().getMethods()) {
                     if (method.getAnnotation(PostConstruct.class) == null) {
@@ -278,30 +288,30 @@ public class HandlerChainsModel {
                         throw new RuntimeException(e);
                     }
                 }
-                
+
                 handlerChain.add(handler);
-                
+
                 // move past </handler>
                 ensureProperName(reader, QNAME_HANDLER);
                 XMLStreamReaderUtil.nextContent(reader);
             }
-            
+
             // move past </handler-chain>
             ensureProperName(reader, QNAME_HANDLER_CHAIN);
             XMLStreamReaderUtil.nextContent(reader);
         }
-        
+
         info.setHandlers(handlerChain);
         info.setRoles(roles);
         return info;
     }
-    
+
     public HandlerAnnotationInfo getHandlersForPortInfo(PortInfo info){
-        
+
         HandlerAnnotationInfo handlerInfo = new HandlerAnnotationInfo();
         List<Handler> handlerClassList = new ArrayList<Handler>();
         Set<String> roles = new HashSet<String>();
-        
+
         for(HandlerChainType hchain : handlerChains) {
             boolean hchainMatched = false;
             if((!hchain.isConstraintSet()) ||
@@ -309,7 +319,7 @@ public class HandlerChainsModel {
                     JAXWSUtils.matchQNames(info.getPortName(), hchain.getPortNamePattern()) ||
                     hchain.getProtocolBindings().contains(info.getBindingID()) ){
                 hchainMatched = true;
-                
+
             }
             if(hchainMatched) {
                 for(HandlerType handler : hchain.getHandlers()) {
@@ -323,20 +333,20 @@ public class HandlerChainsModel {
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    
+
                     roles.addAll(handler.getSoapRoles());
                 }
-                
+
             }
         }
-        
+
         handlerInfo.setHandlers(handlerClassList);
         handlerInfo.setRoles(roles);
         return handlerInfo;
-        
+
     }
-    
-    static Class loadClass(ClassLoader loader, String name) {
+
+    private static Class loadClass(ClassLoader loader, String name) {
         try {
             return Class.forName(name, true, loader);
         } catch (ClassNotFoundException e) {
@@ -345,8 +355,8 @@ public class HandlerChainsModel {
                     name);
         }
     }
-    
-    static void callHandlerPostConstruct(Object handlerClass) {
+
+    private static void callHandlerPostConstruct(Object handlerClass) {
         // call @PostConstruct method on handler if present
         for (Method method : handlerClass.getClass().getMethods()) {
             if (method.getAnnotation(PostConstruct.class) == null) {
@@ -360,21 +370,21 @@ public class HandlerChainsModel {
             }
         }
     }
-    
-    static void skipChain(XMLStreamReader reader) {
+
+    private static void skipChain(XMLStreamReader reader) {
         while (XMLStreamReaderUtil.nextContent(reader) !=
                 XMLStreamConstants.END_ELEMENT ||
                 !reader.getName().equals(QNAME_HANDLER_CHAIN)) {}
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
-    static void skipTextElement(XMLStreamReader reader) {
+
+    private static void skipTextElement(XMLStreamReader reader) {
         XMLStreamReaderUtil.nextContent(reader);
         XMLStreamReaderUtil.nextElementContent(reader);
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
-    static void skipInitParamElement(XMLStreamReader reader) {
+
+    private static void skipInitParamElement(XMLStreamReader reader) {
         int state;
         do {
             state = XMLStreamReaderUtil.nextContent(reader);
@@ -382,36 +392,35 @@ public class HandlerChainsModel {
                 !reader.getName().equals(QNAME_HANDLER_PARAM));
         XMLStreamReaderUtil.nextElementContent(reader);
     }
-    
-    static void ensureProperName(XMLStreamReader reader,
+
+    private static void ensureProperName(XMLStreamReader reader,
             QName expectedName) {
-        
+
         if (!reader.getName().equals(expectedName)) {
             failWithLocalName("util.parser.wrong.element", reader,
                     expectedName.getLocalPart());
         }
     }
-    
+
     static void ensureProperName(XMLStreamReader reader, String expectedName) {
         if (!reader.getLocalName().equals(expectedName)) {
             failWithLocalName("util.parser.wrong.element", reader,
                     expectedName);
         }
     }
-    
-    static void failWithLocalName(String key,
+
+    private static void failWithLocalName(String key,
             XMLStreamReader reader, String arg) {
         throw new UtilException(key,
-                new Object[] {
             Integer.toString(reader.getLocation().getLineNumber()),
             reader.getLocalName(),
-            arg });
+            arg );
     }
-    
+
     public static final String PROTOCOL_SOAP11_TOKEN = "##SOAP11_HTTP";
     public static final String PROTOCOL_SOAP12_TOKEN = "##SOAP12_HTTP";
     public static final String PROTOCOL_XML_TOKEN = "##XML_HTTP";
-    
+
     public static final String NS_109 =
             "http://java.sun.com/xml/ns/javaee";
     public static final QName QNAME_CHAIN_PORT_PATTERN =
@@ -440,78 +449,69 @@ public class HandlerChainsModel {
             new QName(NS_109, "soap-header");
     public static final QName QNAME_HANDLER_ROLE =
             new QName(NS_109, "soap-role");
-    protected static final Map<String,String> tokenBindingMap;
-    //Populate the token map
-    static {
-        tokenBindingMap = new HashMap<String,String>();
-        tokenBindingMap.put("##SOAP11_HTTP",SOAPBinding.SOAP11HTTP_BINDING);
-        tokenBindingMap.put("##SOAP11_HTTP_MTOM",SOAPBinding.SOAP11HTTP_MTOM_BINDING);
-        tokenBindingMap.put("##SOAP12_HTTP",SOAPBinding.SOAP12HTTP_BINDING);
-        tokenBindingMap.put("##SOAP12_HTTP_MTOM",SOAPBinding.SOAP12HTTP_MTOM_BINDING);
-        tokenBindingMap.put("##XML_HTTP",HTTPBinding.HTTP_BINDING);
-    }
-    
+
     static class HandlerChainType {
         //constraints
-        protected QName serviceNamePattern;
-        protected QName portNamePattern;
-        protected List<String> protocolBindings;
-        
+        QName serviceNamePattern;
+        QName portNamePattern;
+        List<String> protocolBindings;
+
         // This flag is set if one of the above constraint is set on handler chain
-        protected boolean constraintSet = false;
-        
-        protected List<HandlerType> handlers;
-        protected String id;
-        
-        
+        boolean constraintSet = false;
+
+        List<HandlerType> handlers;
+        String id;
+
+
         /** Creates a new instance of HandlerChain */
         public HandlerChainType() {
             protocolBindings = new ArrayList<String>();
         }
-        
+
         public void setServiceNamePattern(QName value) {
             this.serviceNamePattern = value;
             constraintSet = true;
         }
-        
+
         public QName getServiceNamePattern() {
             return serviceNamePattern;
         }
-        
+
         public void setPortNamePattern(QName value) {
             this.portNamePattern = value;
             constraintSet = true;
         }
-        
+
         public QName getPortNamePattern() {
             return portNamePattern;
         }
-        
+
         public List<java.lang.String> getProtocolBindings() {
             return this.protocolBindings;
         }
-        
-        public void addProtocolBinding(String tokenorURI){
-            String binding = tokenBindingMap.get(tokenorURI);
-            if(binding == null) {
-                //Unknown binding or Unknown token, Put it as it is
-                binding = tokenorURI;
-            }
+
+        public void addProtocolBinding(String tokenOrURI){
+            /*
+            Convert short-form tokens to API's binding ids
+            Unknown token, Put it as it is
+            */
+            tokenOrURI = DeploymentDescriptorParser.getBindingIdForToken(tokenOrURI);
+            String binding = BindingID.parse(tokenOrURI).toString();
             protocolBindings.add(binding);
             constraintSet = true;
         }
-        
+
         public boolean isConstraintSet() {
             return constraintSet || !protocolBindings.isEmpty();
         }
         public java.lang.String getId() {
             return id;
         }
-        
+
         public void setId(java.lang.String value) {
             this.id = value;
         }
-        
+
         public List<HandlerType> getHandlers() {
             if (handlers == null) {
                 handlers = new ArrayList<HandlerType>();
@@ -519,42 +519,42 @@ public class HandlerChainsModel {
             return this.handlers;
         }
     }
-    
+
     static class HandlerType {
-        protected String handlerName;
-        protected String handlerClass;
-        protected List<String> soapRoles;
-        
-        protected java.lang.String id;
-        
+        String handlerName;
+        String handlerClass;
+        List<String> soapRoles;
+
+        java.lang.String id;
+
         /** Creates a new instance of HandlerComponent */
         public HandlerType() {
         }
-        
+
         public String getHandlerName() {
             return handlerName;
         }
-        
+
         public void setHandlerName(String value) {
             this.handlerName = value;
         }
-        
+
         public String getHandlerClass() {
             return handlerClass;
         }
-        
+
         public void setHandlerClass(String value) {
             this.handlerClass = value;
         }
-        
+
         public java.lang.String getId() {
             return id;
         }
-        
+
         public void setId(java.lang.String value) {
             this.id = value;
         }
-        
+
         public List<String> getSoapRoles() {
             if (soapRoles == null) {
                 soapRoles = new ArrayList<String>();

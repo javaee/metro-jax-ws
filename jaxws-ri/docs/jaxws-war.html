@@ -1,26 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- WAR File</title>
+<head caption="WAR File Packaging">
   <link rel="stylesheet" type="text/css" href="style/default.css"/>
-  <meta name="CREATED" content="20050329;10375410">
-  <meta name="CHANGED" content="20050401;8213207">
 </head>
-<body dir="ltr" lang="en-US">
-<span style="font-weight: bold;"></span>
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      WAR File
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
-<hr style="width: 100%; height: 2px;">Last modified: 4/26/06
+
+<body>
+
 <h4>The WAR Contents<br>
 </h4>
-<p>Typically, one creates the&nbsp; WAR file with a GUI development
+<p>Typically, one creates the  WAR file with a GUI development
 tool or with the <code>ant</code> <code>war</code> task from the
 generated artifacts from <code>wsimport, </code><code>wsgen, or </code><code>apt</code>
 tools.</p>
@@ -32,7 +19,7 @@ File</h4>
 <p>The <code>&lt;endpoints&gt;</code> element contain one or more <code>&lt;endpoint&gt;</code>
 elements. Each endpoint represents a port in the WSDL and it contains
 all information about implementation class, servlet url-pattern,
-binding, WSDL, service, port QNames.&nbsp; The following shows a <code>sun-jaxws.xml</code>
+binding, WSDL, service, port QNames.  The following shows a <code>sun-jaxws.xml</code>
 file for a simple <code>HelloWorld</code> service. sun-jaxws.xml is
 the schema instance of <a href="sun-jaxws.xsd">sun-jaxws.xsd</a>.<br>
 </p>
@@ -145,7 +132,7 @@ true or false. Default is false.<br>
   </li>
   <li>endpoint can have a optional handler-chain element</li>
 </ul>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints ..."&gt;<br>  &lt;endpoint ...<code>&gt;<br></code>&nbsp;&nbsp;&nbsp; &lt;handler-chain&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-chain-name&gt;somename&lt;/handler-chain-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;handler-class&gt;hello.MyHandler&lt;/handler-class&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/handler&gt;<br>&nbsp;&nbsp;&nbsp; &lt;/handler-chain&gt;<br><code>  &lt;/endpoint&gt;<br>&lt;/endpoints&gt;</code></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;endpoints ..."&gt;<br>  &lt;endpoint ...<code>&gt;<br></code>    &lt;handler-chain&gt;<br>      &lt;handler-chain-name&gt;somename&lt;/handler-chain-name&gt;<br>      &lt;handler&gt;<br>        &lt;handler-name&gt;MyHandler&lt;/handler-name&gt;<br>        &lt;handler-class&gt;hello.MyHandler&lt;/handler-class&gt;<br>      &lt;/handler&gt;<br>    &lt;/handler-chain&gt;<br><code>  &lt;/endpoint&gt;<br>&lt;/endpoints&gt;</code></pre>
 <h4>The<span style="font-family: monospace;"> </span><code>web.xml</code>
 File</h4>
 <p>The following shows a <code>web.xml</code> file for a simple <code>HelloWorld</code>
@@ -171,8 +158,5 @@ for Provider based endpoints and can be specified in @WebServiceProvider annotat
 </ul>
 <p><br>
 </p>
-<hr>
-<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
-2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>

@@ -33,7 +33,6 @@
   <property name="rpm.version" value="2.0"/>
   <property name="version" value="${pkg.version}-INTERNAL"/>
   <property name="rpm.release" value="1"/>
-  <property name="zip.release" value="1"/>
 
   <!-- The package name -->
   <property name="pkg.jaxws"    value="SUNWjaxws"/>
@@ -52,12 +51,6 @@
 
   <!-- The rpm build directory -->
   <property name="rpm.build.dir"    value="${build.home}/rpm/JAXWS"/>
-
-  <!-- The hpux build directory -->
-  <property name="hpux.build.dir"    value="${build.home}/hpux/JAXWS"/>
-
-  <!-- The hpux distribution directory -->
-  <property name="hpux.release.dir"    value="${basedir}/hpux-dist"/>
 
   <!-- The rpm distribution directory -->
   <property name="rpm.release.dir"    value="${basedir}/rpm-dist"/>
@@ -115,15 +108,19 @@
         <include name="prototype*"/>
         <include name="depend"/>
         <include name="copyright"/>
+        <include name="i.jwsenv"/>
       </fileset>
     </copy>
 
     <!-- copy jaxws bin files into the right directory structure -->
-    <copy file="${basedir}/pkg/${pkg.jaxws}/wsgen.sh" tofile="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/bin/wsgen" overwrite="yes"/>
-    <copy file="${basedir}/pkg/${pkg.jaxws}/wsimport.sh" tofile="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/bin/wsimport" overwrite="yes"/>
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib/install/templates" overwrite="yes">
+      <fileset dir="${basedir}/pkg/${pkg.jaxws}">
+        <include name="*.template"/>
+      </fileset>
+    </copy>
 
     <!-- copy jaxws specific jar files into the right directory structure -->
-    <copy todir="${pkg.build.dir}/${pkg.jaxws}/SUNWjax/share/lib" overwrite="yes">
+    <copy todir="${pkg.build.dir}/${pkg.jaxws}/usr/share/lib" overwrite="yes">
       <fileset dir="${dist20.home}/lib">
         <include name="jaxws-api.jar"/>
         <include name="jaxws-rt.jar"/>
@@ -277,27 +274,18 @@
       </fileset>
     </copy>
 
-    <copy todir="${zip.build.dir}" overwrite="yes">
+    <!-- copy jaxws bin files into the right directory structure -->
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsgen.sh" overwrite="yes">
       <fileset dir="${basedir}/zip">
-        <include name="filelist.txt"/>
-        <include name="version"/>
+        <include name="wsgen.sh"/>
       </fileset>
     </copy>
 
-    <!-- replace parameters in version file  -->
-    <replace file="${zip.build.dir}/version" value="${pkg.version}">
-      <replacetoken>@jaxws.version@</replacetoken>
-    </replace>
-    <!-- replace date stamp... 1st specify correct format  -->
-    <tstamp>
-      <format property="pkg.datestamp" pattern="yyyyMMdd"/>
-    </tstamp>
-    <replace file="${zip.build.dir}/version" value="${pkg.datestamp}">
-      <replacetoken>@datestamp@</replacetoken>
-    </replace>
-    <replace file="${zip.build.dir}/version" value="${zip.release}">
-      <replacetoken>@zip.release@</replacetoken>
-    </replace>
+    <copy tofile="${zip.build.dir}/jaxws/bin/wsimport.sh" overwrite="yes">
+      <fileset dir="${basedir}/zip">
+        <include name="wsimport.sh"/>
+      </fileset>
+    </copy>
 
     <!-- copy jaxws specific jar files into the right directory structure -->
     <copy todir="${zip.build.dir}/jaxws/lib" overwrite="yes">
@@ -310,50 +298,8 @@
     </copy>
 
     <!-- make zip file -->
-    <zip destfile="${zip.release.dir}/jaxws.zip" basedir="${zip.build.dir}" whenempty="fail"/>
+    <zip destfile="${zip.release.dir}/JAXWS-${pkg.version}.zip" basedir="${zip.build.dir}" whenempty="fail"/>
 
 
   </target>
-
-
- <!-- =======================
-       HPUX FILE DISTRIBUTION 
-      ======================= -->
-  <!-- assumes the dist target has been called -->
-	<target name="create.hpux" description="Create JAX-WS HPUX package" >
-
-    <!-- copy template spec file to spec file in build dir and replace variables -->
-    <copy tofile="${hpux.build.dir}/sun-jaxws.psf" file="${basedir}/hpux/sun-jaxws.psf.tmpl" overwrite="yes"/>
-
-    <!-- replace jaxws version -->
-    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${pkg.version}">
-      <replacetoken>@jaxws.version@</replacetoken>
-    </replace>
-
-    <!-- replace date stamp... 1st specify correct format  -->
-    <tstamp>
-      <format property="pkg.datestamp" pattern="yyyy.MM.dd.hh.mm"/>
-    </tstamp>
-    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${pkg.datestamp}">
-      <replacetoken>@datestamp@</replacetoken>
-    </replace>
-
-    <!-- replace bindir, libdir  -->
-    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${basedir}/hpux">
-      <replacetoken>@bindir@</replacetoken>
-    </replace>
-    <replace file="${hpux.build.dir}/sun-jaxws.psf" value="${dist20.home}/lib">
-      <replacetoken>@libdir@</replacetoken>
-    </replace>
-
-    <!-- make output directory -->
-    <mkdir dir="${hpux.release.dir}/sun-jaxws"/>
-
-    <!--  -->
-	<exec  executable="/usr/sbin/swpackage" failonerror="true">
-      <arg line="-x follow_symlinks=true -x compression_type=gzip -x compress_cmd=/usr/contrib/bin/gzip -x uncompress_files=false -x compress_files=true -x reinstall_files=true -x package_in_place=false -x target_type=directory -x write_remote_files=true -x run_as_superuser=false -s ${hpux.build.dir}/sun-jaxws.psf @ ${hpux.release.dir}/sun-jaxws"/>
-	 </exec>
-
-   </target>
-
 </project>

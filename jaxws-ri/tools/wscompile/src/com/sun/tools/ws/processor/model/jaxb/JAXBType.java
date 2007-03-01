@@ -23,8 +23,6 @@ package com.sun.tools.ws.processor.model.jaxb;
 
 import com.sun.tools.ws.processor.model.AbstractType;
 import com.sun.tools.ws.processor.model.java.JavaType;
-import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.codemodel.JType;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;

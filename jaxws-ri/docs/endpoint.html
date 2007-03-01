@@ -1,23 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Endpoint</title>
+<head caption="Endpoint API">
   <link rel="stylesheet" type="text/css" href="style/default.css"/>
-  <meta name="CREATED" content="20050329;17163443">
-  <meta name="CHANGED" content="20050401;8215806">
 </head>
-<body lang="en-US">
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      J2SE Endpoints
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
-<hr>
-<p>Last Modified: 5/4/06</p>
+
+<body>
 <p>Web Service endpoints can be created and published programmatically
 using javax.xml.ws.Endpoint API. An endpoint consists of a Web Service
 Implementation object and some configuration information. The
@@ -25,7 +11,7 @@ implementation hosts the web service endpoint using a light weight http
 server and clients can access the
 web service as if the endpoint is deployed in a J2EE container. This
 means that there is no need to have any J2EE servlet or EJB container
-to host the endpoint.&nbsp; The Endpoint API provides a way to
+to host the endpoint.  The Endpoint API provides a way to
 configure the endpoint with the necessary binding, metadata(WSDL and
 schema documents), handlers etc.<br>
 </p>
@@ -69,12 +55,7 @@ metadata facility. When a Source object is created, set systemid always
 and make sure the imports are resolvable w.r.t systemids.<br>
 <br>
 For example:<br>
-<pre>&nbsp;&nbsp; // metadata processing for WSDL, schema files<br>   List &lt;File&gt; metadataFile = ...<br>   List&lt;Source&gt; metadata = new ArrayList&lt;Source&gt;();<br>   for(File file : metadataFile) {<br>       Source source = new StreamSource(new FileInputStream(file));<br>       source.setSystemId(file.toURL().toExternalForm());<br>       metadata.add(source);<br>   }<br>   endpoint.setMetadata(metadata);</pre>
-<hr>
-<p><a href="Copyright.html"><i><font size="2">Copyright &#169; 2006 Sun
-Microsystems, Inc. All rights reserved.</font></i></a></p>
-<p><br>
-<br>
-</p>
+<pre>   // metadata processing for WSDL, schema files<br>   List &lt;File&gt; metadataFile = ...<br>   List&lt;Source&gt; metadata = new ArrayList&lt;Source&gt;();<br>   for(File file : metadataFile) {<br>       Source source = new StreamSource(new FileInputStream(file));<br>       source.setSystemId(file.toURL().toExternalForm());<br>       metadata.add(source);<br>   }<br>   endpoint.setMetadata(metadata);</pre>
+
 </body>
 </html>

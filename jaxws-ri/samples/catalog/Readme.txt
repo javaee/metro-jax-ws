@@ -9,7 +9,7 @@ accessible resources whose name is META-INF/jax-ws-catalog.xml.
 catalog sample demonstrates the use of XML catalog, that can be used by the 
 JAX-WS runtime.
 
-Notice that etc/jax-ws-catalog.xml is made added to the classpath, when the 
+Notice that etc/jax-ws-catalog.xml is made available to the classpath, when the
 client is run.
 
 * etc - configuration files
@@ -51,3 +51,5 @@ systemId="http://localhost:8080/jaxws-catalog/addnumbers?wsdl"
 
 Refer to the Prerequisites defined in samples/docs/index.html. For more 
 information on XML catalog see - docs/catalog.html.
+
+We appreciate your feedback, please send it to users@jax-ws.dev.java.net.

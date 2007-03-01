@@ -48,7 +48,7 @@ You can try the sample with these files but it is best to generate your own usin
                enableLookups="false" disableUploadTimeout="true"
                acceptCount="100" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" 
-               keystoreFile=%CATALINA_HOME%/certs/tomcat.keystore" 
+               keystoreFile="certs/tomcat.keystore" 
                keystorePass="server" />
     
  Note: keystoreFile and keystorePass values

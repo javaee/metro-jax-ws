@@ -47,7 +47,7 @@ public class ModelException extends ProcessorException {
         super("model.nestedModelError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.model";
     }
 }

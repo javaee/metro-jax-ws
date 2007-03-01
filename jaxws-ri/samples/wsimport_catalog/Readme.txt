@@ -13,3 +13,5 @@ wsdlcatalog.xml.
 To run this sample, just type ant, the default target 'runclient' runs wsimport 
 - it generates the artifacts in the build directory of this sample and compiles 
 and then it runs WsimportCatalogTester.
+
+We appreciate your feedback, please send it to users@jax-ws.dev.java.net.

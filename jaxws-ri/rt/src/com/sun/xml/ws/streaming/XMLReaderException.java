@@ -48,7 +48,7 @@ public class XMLReaderException extends JAXWSExceptionBase {
         super("xmlreader.nestedError", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.streaming";
     }
 }

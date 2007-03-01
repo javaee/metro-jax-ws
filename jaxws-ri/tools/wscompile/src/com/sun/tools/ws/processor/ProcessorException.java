@@ -23,7 +23,6 @@
 package com.sun.tools.ws.processor;
 
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * ProcessorException represents an exception that occurred while processing
@@ -39,11 +38,15 @@ public class ProcessorException extends JAXWSExceptionBase {
         super(key, args);
     }
 
+    public ProcessorException(String msg){
+        super(msg);        
+    }
+
     public ProcessorException(Throwable throwable) {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.processor";
     }
 }

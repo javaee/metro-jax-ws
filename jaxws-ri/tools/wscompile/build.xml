@@ -32,8 +32,21 @@
     <mkdir dir="${build.dir}/classes/META-INF/services"/>
   </target>
 
-  <target name="compile" depends="prepare">
-    <javac srcdir="src"
+  <target name="generate-code" depends="prepare"
+          description="run all the code generators">
+    <taskdef name="resgen" classname="com.sun.tools.resourcegen.ResourceGenTask">
+      <classpath>
+        <path refid="runtime.compile.classpath" />
+        <pathelement path="../../tools/resourcegen/build/resourcegen.jar" />
+      </classpath>
+    </taskdef>
+    <resgen destdir="build/gen-src">
+      <resource dir="src" includes="com/sun/tools/ws/resources/*.properties" />
+    </resgen>
+  </target>
+
+  <target name="compile" depends="generate-code">
+    <javac srcdir="src:build/gen-src"
         destdir="${basedir}/build/classes"
         debug="${compile.debug}"
         deprecation="${compile.deprecation}"
@@ -43,8 +56,8 @@
     </javac>
 
     <!-- Copy AnnotationProcessor factory info -->
-        <copy todir="${build.dir}/classes/META-INF/services">
-        <fileset dir="${basedir}/../etc/" includes="com.sun.*"/>
+    <copy todir="${build.dir}/classes/META-INF/services">
+      <fileset dir="${basedir}/../etc/" includes="com.sun.*"/>
     </copy> 
   </target>
 

@@ -21,9 +21,9 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.codemodel.JType;
 import com.sun.codemodel.JAnnotatable;
+import com.sun.codemodel.JType;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
 
 /**
  * Holds JAXB JType and TypeAndAnnotation. This provides abstration over

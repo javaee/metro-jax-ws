@@ -6,4 +6,4 @@ Implementation-Version: 2.0
 Implementation-Vendor: Sun Microsystems Inc
 Implementation-Vendor-Id: com.sun
 Extension-Name: com.sun.tools.ws
-Class-Path: ../jaxb2/lib/jaxb-xjc.jar ../jaxb/lib/jaxb-xjc.jar jaxb-xjc.jar jaxws-rt.jar relaxngDatatype.jar
+Class-Path: jaxws-rt.jar jaxb-xjc.jar relaxngDatatype.jar

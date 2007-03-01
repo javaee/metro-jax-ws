@@ -1,36 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Dispatch</title>
-  <link rel="stylesheet" type="text/css" href="style/default.css"/>
-  <meta name="CREATED" content="20050329;17163443">
-  <meta name="CHANGED" content="20050403;19140562">
-<style type="text/css">
-
-        <!--
-@page { size: 8.5in 11in }
--->
-
-</style>
+<head caption="Dispatch">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
 
-<body lang="en-US" dir="ltr">
-  <center>
-  <h1>  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      Dispatch
-  </h1>
-  <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-  <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
-
-  <hr>
-
-  <p>Last Modified: 04/26/06</p>
-
+<body>
+  
   <p>Web service client applications may choose to work at the XML message level by using the <code>Dispatch&lt;T&gt;</code> APIs. The <code>javax.xml.ws.Dispatch&lt;T&gt;</code> interface provides support for the dynamic invocation of service endpoint operations.</p>
 
   <p>Four Message Exchange Protocols(MEP) are supported: request-response, one way, asynchronous polling, and callback. Each of these invocation MEPs are required with JAXB data bound <code>java.lang.Object</code>, <code>javax.xml.transform.Source</code>,  <code>javax.xml.soap.SOAPMessage</code> and <code>javax.activation.DataSource</code> object requests.</p>
@@ -53,7 +27,7 @@ Service service = Service.createService(URL wsdlLocation, QName serviceQName);
   <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service has an <code>addPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch&lt;T&gt;</code> instances.</p>
   <p>If the <code>Service</code> has been created with WSDL binding information the the port need not be added as the <code>Dispatch&lt;T&gt;</code> instance will be created specific for the binding information provided in the supplied WSDL file.</p>
 
-  <p>Developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint address parameters of this method. The JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ implementation supports three <code>Binding</code> URI's, that of the SOAP 1.1, the SOAP 1.2 and XML/HTTP Binding. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents. For the XML/HTTP binding please see chapter 11 of the JAX-WS 2.0 PFD Specification.</p>
+  <p>Developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint address parameters of this method. The JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} implementation supports three <code>Binding</code> URI's, that of the SOAP 1.1, the SOAP 1.2 and XML/HTTP Binding. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents. For the XML/HTTP binding please see chapter 11 of the JAX-WS 2.0 PFD Specification.</p>
 
   <p>The addition of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
   <pre>
@@ -147,11 +121,5 @@ try {
         System.out.println("Operation invocation interrupted");
 }
 </pre>
-  <hr>
-
-  <p><a href="Copyright.html"><i><font size="2">Copyright &copy; 2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
-
-  <p><br>
-  <br></p>
 </body>
 </html>

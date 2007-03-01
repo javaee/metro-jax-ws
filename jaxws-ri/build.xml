@@ -53,11 +53,9 @@
   <property file="build.properties"/>                <!-- Component local   -->
   <property file="../build.properties"/>             <!-- Commons local     -->  
   <property file="project.properties"/>
-
   <property name="build.id" value="${now}(${user.name})" />
   <property name="build.version" value="${Name} ${release.impl.version}-${build.id}-${release.impl.version.suffix}" />
   <echo message="The build id is: ${build.version}" />
-
 
   <path id="runtime.compile.classpath">
     <fileset dir="${lib.home}">
@@ -80,29 +78,34 @@
   <target name="prepare" depends="init">
     <mkdir dir="${build.home}"/>
     <mkdir dir="${build.home}/lib"/>
-    <mkdir dir="${build.home}/bin"/>  
-    <mkdir dir="${build.home}/samples"/>  
+    <mkdir dir="${build.home}/bin"/>
+    <mkdir dir="${build.home}/samples"/>
   </target>
-
+  
   <target name="runtime-compile" depends="prepare">
-    <ant dir="${basedir}/rt"
-        target="compile"
-        inheritrefs="true"/>
+    <ant dir="${basedir}/rt"      target="compile" inheritrefs="true"/>
+    <ant dir="${basedir}/rt-fi"   target="compile" inheritrefs="true"/>
+    <ant dir="${basedir}/servlet" target="compile" inheritrefs="true"/>
   </target>
 
   <target name="runtime-compile-mustang" depends="prepare">
     <ant dir="${basedir}/rt"
         target="compile-mustang"
         inheritrefs="true"/>
+    <ant dir="${basedir}/rt-fi"
+        target="compile-mustang"
+        inheritrefs="true"/>
   </target>
 
-  <path id="spi-path">
+  <path id="all-source-path">
      <pathelement path="${basedir}/rt/src"/>
+     <pathelement path="${basedir}/rt-fi/src"/>
+     <pathelement path="${basedir}/servlet/src"/>
      <pathelement path="${basedir}/tools/wscompile/src"/>
   </path>
   <target name="javadocs-spi" depends="image">
     <javadoc packagenames="com.sun.xml.ws.spi.runtime.*, com.sun.tools.ws.spi.*"
-         sourcepathref="spi-path"
+         sourcepathref="all-source-path"
          destdir="${build.home}/javadocs/spi"
          author="false"
          version="false"
@@ -116,7 +119,7 @@
 
   <target name="javadocs" depends="image">
     <javadoc packagenames=".,com.sun.xml.ws.*,com.sun.pept.*,javax.xml.ws.*,javax.xml.soap.*,javax.xml.bind.*,com.sun.tools.ws.*"
-         sourcepath="${basedir}/rt/src:${basedir}/tools/wscompile/src"
+         sourcepathref="all-source-path"
          destdir="${build.home}/javadocs/"
          author="false"
          version="false"
@@ -153,8 +156,17 @@ major-version=${release.impl.version}
 
     <target name="architecture-document" depends="prepare"
             description="generate architecture documents (which is just a glorified javadoc)">
-<!--      <ant dir="tools/taglets" target="compile" />  -->
       <mkdir dir="${build.home}/javadoc" />
+      <taskdef name="sequence-diagram" classname="com.sun.xml.bind.taglets.SequenceDiagramTask">
+        <classpath>
+          <pathelement path="${basedir}/tools/lib/taglets.jar" />
+        </classpath>
+      </taskdef>
+      <sequence-diagram
+        src="${basedir}/javadoc"
+        dest="${build.home}/javadoc"
+        includes="**/*.seq" />
+
       <javadoc
             destdir="${build.home}/javadoc"
             use="true"
@@ -163,46 +175,51 @@ major-version=${release.impl.version}
             windowtitle="JAX-WS RI"
             doctitle="JAX-WS RI"
             access="package">
-        <doclet name="com.sun.xml.bind.taglets.CustomHtmlDoclet"
-                path="${basedir}/tools/lib/taglets.jar">
-        </doclet>
-        <arg value="-quiet"/>
 
-        <packageset dir="${basedir}/javadoc"/>
-        <group title="Root Architecture Document" packages="jaxws" />
+      <doclet name="com.sun.xml.bind.taglets.CustomHtmlDoclet"
+        path="${basedir}/tools/lib/taglets.jar">
+      </doclet>
 
-        <packageset dir="${basedir}/rt/src"/>
-        <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
+    <!--doclet name="wrappertaglet.WrapperTaglet" path="${basedir}/tools/lib/wrappertaglet.jar:${build.home}/lib/UmlGraph-4.4.jar:${basedir}/tools/lib/taglets.jar">
+		<param name="-inferrel"/>
+		<param name="-inferdep"/>
+		<param name="-hide" value="java.*"/>
+		<param name="-collpackages" value="java.util.*"/>
+		<param name="-qualify"/>
+		<param name="-postfixpackage"/>
+		<param name="-nodefontsize" value="9"/>
+		<param name="-nodefontpackagesize" value="7"/>
+	</doclet-->
+      <packageset dir="${basedir}/javadoc"/>
+      <group title="Root Architecture Document" packages="jaxws" />
 
-        <packageset dir="${basedir}/tools/wscompile/src"/>
-        <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
-   
-        <!--        <packageset dir="${runtime.src}"/>
-        <packageset dir="${runtime-api.src}"/>
-        <packageset dir="${schemagen.src}"/>
-        <group title="Runtime API for JAX-WS" packages="com.sun.xml.bind.api" />
-        <group title="Runtime" packages="com.sun.xml.bind*" />
+      <packageset dir="${basedir}/rt/src"/>
+      <group title="Runtime" packages="com.sun.xml.ws.*,com.sun.pept.*" />
 
-        <packageset dir="${xjc.src}"/>
-        <group title="XJC API for JAX-WS" packages="com.sun.tools.xjc.api" />
-        <group title="XJC" packages="com.sun.tools.xjc*:com.sun.tools.jxc*" />
--->
-        <link href="https://jaxb.dev.java.net/nonav/jaxb20-pr/api/"
-          offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"   />
-<!--        <link href="http://java.sun.com/webservices/docs/1.6/api/"
-          offline="true" packagelistloc="${basedir}/tools/javadoc-link/saaj"   />          -->
-        <link href="http://java.sun.com/j2se/1.5.0/docs/api/"
-          offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"  />
-        <link href="https://jaxb-architecture-document.dev.java.net/nonav/doc/"
-          offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-ri"  />
+      <packageset dir="${basedir}/servlet/src"/>
+      <group title="Runtime" packages="com.sun.xml.ws.*" />
 
-        <classpath refid="tools.compile.classpath"/>
-<!--        <classpath>
-          <fileset dir="${build.home}/../lib" includes="**/*.jar" />
-        </classpath>-->
-      </javadoc>
+      <packageset dir="${basedir}/transports/local/src"/>
+      <group title="Runtime" packages="com.sun.xml.ws.transport.local.*" />
+          
+      <packageset dir="${basedir}/tools/wscompile/src"/>
+      <group title="Tools" packages="com.sun.tools.ws.*,com.sun.istack.*" />
+
+      <link href="https://jaxb.dev.java.net/nonav/jaxb20-pr/api/"
+        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-api"   />
+      <link href="http://java.sun.com/j2se/1.5.0/docs/api/"
+        offline="true" packagelistloc="${basedir}/tools/javadoc-link/j2se5.0"  />
+      <link href="https://jaxb-architecture-document.dev.java.net/nonav/doc/"
+        offline="true" packagelistloc="${basedir}/tools/javadoc-link/jaxb-ri"  />
+
+      <classpath refid="tools.compile.classpath"/>
+    </javadoc>
     </target>
 
+  <target name="generate-code" description="Just run the code generators. Designed to be invoked from IDE while developing the RI">
+    <ant dir="${basedir}/rt"              target="generate-code" inheritrefs="true"/>
+    <ant dir="${basedir}/tools/wscompile" target="generate-code" inheritrefs="true"/>
+  </target>
 
   <target name="runtime-build" depends="runtime-compile">
     <!-- Copy resource files etc -->
@@ -221,6 +238,9 @@ major-version=${release.impl.version}
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
+      <fileset dir="${basedir}/rt-fi/build/classes"/>
+      <fileset dir="${basedir}/servlet/build/classes"/>
+      <fileset dir="${basedir}/rt/src" includes="**/*.xml" />
     </jar>
   </target>
 
@@ -242,6 +262,7 @@ major-version=${release.impl.version}
     <jar jarfile="${build.home}/lib/jaxws-rt.jar"
         manifest="${basedir}/rt/build/manifest">
       <fileset dir="${basedir}/rt/build/classes"/>
+      <fileset dir="${basedir}/rt-fi/build/classes"/>
     </jar>
   </target>
 
@@ -270,7 +291,7 @@ major-version=${release.impl.version}
     <copy    todir="${build.home}/lib">
       <fileset dir="${lib.home}/" 
                includes="**/*.jar" 
-               excludes="ant.jar, ant-junit.jar, ant-launcher.jar, ant-nodeps.jar, ant-trax.jar, junit.jar, servlet.jar"/>
+               excludes="ant.jar, ant-junit.jar, ant-launcher.jar, ant-nodeps.jar, ant-trax.jar, junit.jar, htmlmacro.jar, commons-jelly-tags-jsl-1.0.jar"/>
     </copy>
 
     <!-- Copying the manifest -->
@@ -282,6 +303,8 @@ major-version=${release.impl.version}
     <jar jarfile="${build.home}/lib/jaxws-tools.jar"
         manifest="${basedir}/tools/wscompile/build/manifest">
       <fileset dir="${basedir}/tools/wscompile/build/classes"/>
+      <!-- sneaky but it's easy because this is just one class -->
+      <fileset dir="${basedir}/tools/resourcegen/build/classes"/>
     </jar>
   </target>
 
@@ -289,45 +312,57 @@ major-version=${release.impl.version}
     <delete dir="${build.home}"/>
     <delete dir="${dist.home}"/>
     <ant dir="${basedir}/rt" target="clean"/>
+    <ant dir="${basedir}/rt-fi" target="clean"/>
     <ant dir="${basedir}/tools/wscompile" target="clean"/>
-    <delete dir="j2se-integration"/>
+    <ant dir="${basedir}/servlet" target="clean"/>
+    <ant dir="${basedir}/transports/local" target="clean"/>
   </target>
 
   <!-- for now, this gets everything built -->
   <target name="image" depends="tools-build">
+    <ant dir="transports/local" target="dist" inheritrefs="true" />
+    <!-- should I copy local transport jar to the build.home?  -->
+
     <copy todir="${build.home}">
-        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
+        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt" />
     </copy>
   </target>
 
-  <target name="main" depends="image"/>
+  <target name="main" depends="image" description="build everything into the build directory"/>
   
-  <target name="docs" depends="prepare" >
-    <copy todir="${build.home}/docs">
-      <fileset dir="${docs.home}">
-        <include name="**/*.html" />
-        <include name="**/*.txt" />
-        <include name="**/*.jpg" />
-        <include name="**/*.css"/>
-        <include name="**/*.xsd"/>
-        <exclude name="**/internal/**" />
-      </fileset>
-      <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
-      <filterset begintoken="@@" endtoken="@@">
-        <filter token="SPEC_VERSION" 
-                value="${release.spec.version}" />
-        <filter token="IMPL_VERSION"
-                value="${release.impl.version}"/>
-        <filter token="IMPL_VERSION_SUFFIX"
-                value="${release.impl.version.suffix}"/>
-        <!--filter token="@@JWSDP_VERSION@@"
-                value="${jwsdp.impl.version}"/>
-        <filter token="@@JWSDP_ROOTDIR@@" 
-                value="${jwsdp.root.directory}"/-->
-      </filterset>
-    </copy>
-  </target>
-    
+
+  <target name="docs" depends="prepare">
+      <copy todir="${build.home}/docs">
+          <fileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt" />
+          <fileset dir="docs" includes="sun-jaxws.xsd" />
+          <filterset begintoken="@@" endtoken="@@">
+            <filter token="SPEC_VERSION"
+                    value="${release.spec.version}" />
+            <filter token="IMPL_VERSION"
+                    value="${release.impl.version}"/>
+            <filter token="IMPL_VERSION_SUFFIX"
+                    value="${release.impl.version.suffix}"/>
+          </filterset>
+      </copy>
+      <copy todir="${build.home}/docs">
+          <fileset dir="${docs.home}" includes="style/*, Copyright.txt" />
+      </copy>
+
+      <taskdef name="htmlmacro" classname="com.sun.wts.tools.htmlmacro.HtmlMacroTask">
+          <classpath>
+            <fileset dir="${lib.home}" />
+          </classpath>
+      </taskdef>
+      <htmlmacro  destdir="${build.home}/docs">
+      <documents dir="${docs.home}" includes="*.html *.xsd" excludes="sun-jaxws.xsd"/>
+      <tags dir="${docs.home}/tags" includes="**/*.tag" />
+      <property key="SPEC_VERSION" value="${release.spec.version}"/>
+      <property key="IMPL_VERSION" value="${release.impl.version}"/>
+      <property key="IMPL_VERSION_SUFFIX" value="${release.impl.version.suffix}"/>
+      </htmlmacro>
+    </target>
+
+
   <target name="dist" depends="image, docs">
     <mkdir dir="${dist.home}"/>
     <mkdir dir="${dist20.home}"/>
@@ -336,7 +371,16 @@ major-version=${release.impl.version}
     <mkdir dir="${dist20.home}/docs"/>
     <mkdir dir="${dist20.home}/samples"/>
 
-    <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackonsjsas.xml"/>
+    <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackonsjsas.xml">
+        <filterset begintoken="@@" endtoken="@@">
+          <filter token="SPEC_VERSION"
+                  value="${release.spec.version}" />
+          <filter token="IMPL_VERSION"
+                  value="${release.impl.version}"/>
+          <filter token="IMPL_VERSION_SUFFIX"
+                  value="${release.impl.version.suffix}"/>
+        </filterset>
+    </copy>
     <copy    todir="${dist20.home}/bin">
       <fileset dir="${build.home}/bin"
           includes="wsimport.*, wsgen.*"/>
@@ -346,15 +390,14 @@ major-version=${release.impl.version}
     <chmod perm="+x" file="${dist20.home}/bin/wsgen.sh"/>
 
     <copy    todir="${dist20.home}/lib">
-	<fileset
-		dir="${build.home}/lib"
-		includes="*.jar"/>    	
+      <fileset dir="${build.home}/lib" includes="*.jar"/>
     </copy>
     	
     <copy    todir="${dist20.home}/docs">
       <fileset dir="${build.home}/docs"/>
     </copy>
-  	<copy    todir="${dist20.home}/samples">
+
+    <copy    todir="${dist20.home}/samples">
       <fileset dir="samples" includes="**/common_resources/**"/>
     </copy>
   	<copy todir="${dist20.home}/samples">
@@ -366,10 +409,6 @@ major-version=${release.impl.version}
                   value="${release.impl.version}"/>
           <filter token="IMPL_VERSION_SUFFIX"
                   value="${release.impl.version.suffix}"/>
-          <!--filter token="@@JWSDP_VERSION@@"
-                  value="${jwsdp.impl.version}"/>
-          <filter token="@@JWSDP_ROOTDIR@@" 
-                  value="${jwsdp.root.directory}"/-->
         </filterset>
 	</copy>
 
@@ -377,13 +416,13 @@ major-version=${release.impl.version}
         <fileset dir="lib" includes="servlet.jar"/>
     </copy>
 
-      <copy todir="${dist20.home}">
+     <copy todir="${dist20.home}">
   	<fileset dir="${build.home}" includes="*.txt"/>
     </copy>
 
     <!-- add a copy of the license and README files to the top level -->
     <copy todir="${dist20.home}">
-        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
+        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt" />
     </copy>
 
     <copy todir="${dist20.home}"
@@ -397,18 +436,35 @@ major-version=${release.impl.version}
     </zip>
   </target>
 
-  <target name="src.zip" description="create source zip bundles of the JAX-WS RI">
-    <zip file="${build.home}/jaxws-rt.src.zip">
+  <target name="dist-zip-with-src" depends="src.zip, dist.zip"/>
+
+  <target name="src.zip" description="create source zip bundles of the JAX-WS RI" depends="dist">
+    <zip file="${dist20.home}/lib/jaxws-rt.src.zip">
       <fileset dir="${basedir}/rt/src" />
+      <fileset dir="${basedir}/rt-fi/src" />
+      <fileset dir="${basedir}/servlet/src"/>
+      <fileset dir="${basedir}/transports/local/src"/>
+      <fileset dir="${basedir}/rt/build/gen-src/"/>
     </zip>
-    <zip file="${build.home}/jaxws-tools.src.zip">
+    <zip file="${dist20.home}/lib/jaxws-tools.src.zip">
       <fileset dir="${basedir}/tools/wscompile/src" />
+      <fileset dir="${basedir}/tools/wscompile/build/gen-src/"/>
+    </zip>
+    <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
+      <fileset dir="${basedir}/lib" includes="*src.zip" />
     </zip>
   </target>
 
+    <target name="libs.src.zip">
+        <zip file="${build.home}/jaxws-libs.src.zip">
+            <fileset dir="${basedir}/lib" includes="*.zip"/>
+        </zip>
+    </target>
 
-  <target name="push-to-maven-prepare" depends="main"
-    description="prepare a repository iamge for the push-to-maven target">
+    <target name="hudson" depends="clean, dist.zip, src.zip, libs.src.zip, javadocs" />
+
+    <target name="push-to-maven-prepare"
+    description="prepare a repository image for the push-to-maven target">
     <taskdef resource="maven-repository-importer.properties">
       <classpath>
         <pathelement path="tools/lib/maven-repository-importer.jar" />
@@ -416,33 +472,55 @@ major-version=${release.impl.version}
     </taskdef>
     <delete dir="build/maven-repo" /><!-- clean it -->
     <!-- ${suffix} can be overridden to "" for posting releases -->
-    <property name="suffix" value="-SNAPSHOT" />
+    <!-- ${suffix} can be overridden to "" for posting releases -->
+      <!--
+        when building jars for Maven, we want to put suffix
+        (sometimes with version like '-2.0.beta1', with date '-20051208', or with '-SNAPSHOT')
+        this property lets you do that.
+      -->
+    <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
     <maven-repository-importer
-        destdir="build/maven-repo" version="${release.impl.version}${suffix}">
+        destdir="build/maven-repo" version="${jar.suffix}">
       <artifact
-        jar="${build.home}/lib/jaxws-api.jar"
-        pom="etc/poms/jaxws-api.pom" />
+        jar="${dist20.home}/lib/jaxws-api.jar"
+        pom="etc/poms/jaxws-api.pom"
+        srczip="lib/jaxws-api-src.zip" />
       <artifact
-        jar="${build.home}/lib/jaxws-rt.jar"
-        pom="etc/poms/jaxws-rt.pom" />
+        jar="${dist20.home}/lib/jaxws-rt.jar"
+        pom="etc/poms/jaxws-rt.pom"
+        srczip="${dist20.home}/lib/jaxws-rt.src.zip" />
       <artifact
-        jar="${build.home}/lib/jaxws-tools.jar"
-        pom="etc/poms/jaxws-tools.pom" />
+        jar="${dist20.home}/lib/jaxws-tools.jar"
+        pom="etc/poms/jaxws-tools.pom"
+        srczip="${dist20.home}/lib/jaxws-tools.src.zip" />
+      <artifact
+        jar="lib/jsr181-api.jar"
+        pom="etc/poms/jsr181.pom"
+        srczip="lib/jsr181-api.src.zip" />
       <filterset>
         <filter token="API_VERSION" value="${release.spec.version}"/>
+        <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
       </filterset>
     </maven-repository-importer>
   </target>
-  
+
   <target name="push-to-maven" depends="push-to-maven-prepare"
     description="publish artifacts into the maven repository">
     <echo>importing to CVS...</echo>
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
+  <target name="push-snapshot-to-maven" depends="dist"
+      description="publish snapshot jars into the maven repository">
+      <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
+      <antcall target="push-to-maven" />
+  </target>
+
+
+  
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.1/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -464,29 +542,66 @@ major-version=${release.impl.version}
          dest="lib/saaj-impl.jar" />
     <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
          dest="lib/saaj-impl.src.zip" />
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/dist/lib/saaj-api.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
          dest="lib/saaj-api.jar" />
-<!--
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/saaj-api/build/saaj-api-src.zip"
+    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
          dest="lib/saaj-api-src.zip" />
--->
   </target>
+
+  <target name="integrate-xmlstreambuffer-hudson" depends="prepare"
+          description="integrate the last successful XmlStreamBuffer Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/package/streambuffer.src.zip"
+         dest="lib/streambuffer.src.zip" />
+    <get src="http://kohsuke.sfbay/hudson/job/xmlstreambuffer/lastSuccessfulBuild/artifact/xmlstreambuffer/streambuffer/dist/streambuffer.jar"
+         dest="lib/streambuffer.jar" />
+  </target>
+  
+  <target name="integrate-stax-ex-hudson" depends="prepare"
+          description="integrate the last successful stax-ex Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex.jar"
+         dest="lib/stax-ex.jar" />
+    <get src="http://kohsuke.sfbay/hudson/job/stax-ex/lastSuccessfulBuild/artifact/stax-ex/stax-ex/target/stax-ex-src.zip"
+         dest="lib/stax-ex-src.zip" />
+  </target>
+
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/dist/sjsxp-1_0/sjsxp.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/zephyr/dist/sjsxp-src-1_0.zip"
+    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
-  
+
+  <target name="integrate-jaxws21-api-hudson" depends="prepare"
+          description="integrate the last successful jaxws 2.1 API from Hudson build">
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+         dest="lib/jaxws-api.jar" />
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+         dest="lib/jaxws-api-src.zip" />
+  </target>
+
   <target name="integrate-FastInfoset-hudson" depends="prepare"
-          description="integrate the last successful FastInfoset Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/fi/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
+          description="integrate the last successful FastInfoset 1.2 Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.jar"
          dest="lib/FastInfoset.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/fi/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
+    <get src="http://kohsuke.sfbay/hudson/job/fi-1.2/lastSuccessfulBuild/artifact/fi/FastInfoset/dist/FastInfoset.src.zip"
          dest="lib/FastInfoset.src.zip" />
   </target>
+
+    <target name="integrate-htmlmacro-hudson" depends="prepare"
+             description="integrate the last successful htmlmacro Hudson build">
+       <get src="http://kohsuke.sfbay.sun.com/hudson/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
+            dest="${lib.home}/htmlmacro.zip" />
+       <mkdir dir="${lib.home}/htmlmacro" />
+       <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>
+       <copy todir="lib" overwrite="true">
+         <fileset dir="${lib.home}/htmlmacro/" includes="*.zip,*.jar"/>
+       </copy>
+        <delete dir="${lib.home}/htmlmacro" />
+        <delete file="${lib.home}/htmlmacro.zip"/>
+     </target>
+
 
     <taskdef name="installerBuilder"
         classname="com.sun.tools.xjc.installer.builder.BuilderTask">
@@ -504,9 +619,9 @@ major-version=${release.impl.version}
         <param name="compile.debug" value="true"/>
       </antcall>
       <move tofile="${build.home}/jaxws${release.jar.version}.jar"
-         file="${build.home}/JAXWS2.0_${DSTAMP}.jar"/>
+         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"/>
       <move tofile="${build.home}/jaxws${release.jar.version}-src.jar"
-         file="${build.home}/JAXWS2.0_source_${DSTAMP}.jar"/>
+         file="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"/>
     </target>
 
     <target name="generate-binary"
@@ -516,8 +631,8 @@ major-version=${release.impl.version}
       </antcall>
       <tstamp/>
       <!-- generate the class -->
-      <installerBuilder classFile="${build.home}/JAXWS2.0_${DSTAMP}.jar"
-          licenseFile="${basedir}/license.txt"
+      <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"
+          licenseFile="${basedir}/CDDL-1.0-license.txt"
           zipFile="${build.home}/jaxws-ri.zip" />
     </target>
     
@@ -528,71 +643,82 @@ major-version=${release.impl.version}
       </antcall>
       <delete file="${build.home}/jaxws-ri.zip" />
     </target>
-        
+
+
+    <patternset id="src-includes"
+                description="This pattern set defines which files will be in/excluded in the src bundle">
+        <include name="**/*.java"/>
+        <include name="**/*.properties"/>
+    </patternset>
+
     <target name="generate-weekly-source"
-        depends="prepare"
+        depends="dist"
         description="generate sources for java.net binary distribution">
       <tstamp/>
             
       <!-- create the zip file contents -->
       <property name="source.drop.dir" value="${build.home}/source-bundle"/>
+      <property name="source.dist.dir.name" value="jaxws-ri-${DSTAMP}"/>
+      <property name="src.installer.tmp" value="${build.home}/src-tmp" />
       <delete dir="${source.drop.dir}"/>
       <mkdir dir="${source.drop.dir}"/>
-      <mkdir dir="${source.drop.dir}/jaxws-si/lib"/>
-      <copy todir="${source.drop.dir}/jaxws-si/lib">
-        <fileset dir="${basedir}/lib">
-          <include name="*.jar"/>
-          <exclude name="ant*.*"/>
-          <exclude name="junit.jar"/>
-        </fileset>
-      </copy>
-      <copy todir="${source.drop.dir}/jaxws-si">
-        <fileset dir="." includes="JAXWSv2.0.THIRDPARTYLICENSEREADME.txt, license.txt, distributionREADME_WMforJava2.0.txt" />
-      </copy>
-<!--      <copy file="${basedir}/license.txt"
-          todir="${source.drop.dir}/jaxws-si"/> -->
-      <copy file="${basedir}/etc/src-bundle.xml"
-          tofile="${source.drop.dir}/jaxws-si/build.xml"/>
-      <mkdir dir="${source.drop.dir}/jaxws-si/bin"/>
-      <copy todir="${source.drop.dir}/jaxws-si/bin">
-        <fileset dir="${basedir}/tools/bin">
-          <include name="*.sh"/>
-          <include name="*.bat"/>
-        </fileset>
-      </copy>
-      <mkdir dir="${source.drop.dir}/jaxws-si/src"/>
-      <copy todir="${source.drop.dir}/jaxws-si/src">
-        <fileset dir="${basedir}">
-          <include name="rt/**/*.java"/>
-          <include name="rt/**/*.properties"/>
-          <include name="tools/**/*.java"/>
-          <include name="tools/**/*.properties"/>
-        </fileset>
-      </copy>
-      <zip destfile="${source.drop.dir}/jaxws-src.zip">
-        <zipfileset dir="${source.drop.dir}"/>
-      </zip>
+      <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
+
+        <zip destfile="${source.drop.dir}/jaxws-src.zip" duplicate="fail" whenempty="fail">
+            <zipfileset dir="rt/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+            <zipfileset dir="rt/build/gen-src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+
+            <zipfileset dir="tools/wscompile/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+            <zipfileset dir="tools/wscompile/build/gen-src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+            <zipfileset dir="servlet/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+            <zipfileset dir="transports/local/src" prefix="${source.dist.dir.name}/src" defaultexcludes="true">
+                <patternset refid="src-includes"/>
+            </zipfileset>
+            <zipfileset dir="${basedir}/etc" includes="src-bundle.xml"
+                        fullpath="${source.dist.dir.name}/build.xml"/>
+
+            <!-- additional jar files -->
+            <zipfileset dir="${basedir}/build/lib" includes="*.jar" excludes="ant*.* junit.jar" prefix="${source.dist.dir.name}/lib"/>
+            <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
+
+            <!-- license files -->
+            <zipfileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt"
+                        prefix="${source.dist.dir.name}"/>
+
+        </zip>
+
+        <!-- test the generated source bundle -->
+        <delete dir="${src.installer.tmp}" failonerror="false" />
+        <mkdir dir="${src.installer.tmp}" />
+        <unzip dest="${src.installer.tmp}" src="${source.drop.dir}/jaxws-src.zip"/>
+        <ant dir="${src.installer.tmp}/${source.dist.dir.name}" inheritAll="false" inheritRefs="false"/>
+
+        <!-- delete the srctmp dir -->
+        <delete dir="${src.installer.tmp}"/>
+
       <!-- 1.X version opens to a zip file, so wrap our zip
           in another one to send to installer -->
       <zip destfile="${source.drop.dir}/jaxws-src-installer.zip">
         <zipfileset file="${source.drop.dir}/jaxws-src.zip"/>
       </zip>
-          
+
       <!-- generate the installer -->
-      <installerBuilder classFile="${build.home}/JAXWS2.0_source_${DSTAMP}.jar"
-          licenseFile="${basedir}/license.txt"
+      <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
+          licenseFile="${basedir}/CDDL-1.0-license.txt"
           zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
       <delete dir="${source.drop.dir}"/>
     </target>
 
-
-  <!-- =====================
-       J2SE renaming 
-       ===================== -->
-  <!-- assumes the dist target has been run -->
-  <target name="j2se-integration" description="J2SE integration">
-    <ant antfile="build-j2se.xml" target="j2se-integration" inheritrefs="true"/>
-  </target>
 
   <!-- =====================
        SVR4 DISTRIBUTION 
@@ -610,7 +736,7 @@ major-version=${release.impl.version}
     <ant antfile="build-pkg.xml" target="create.rpm" inheritrefs="true"/>
   </target>
 
-  <!-- =======================
+  <!-- =====================
        ZIP FILE DISTRIBUTION 
        ======================= -->
   <!-- assumes the dist target has been called -->

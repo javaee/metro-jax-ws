@@ -22,10 +22,11 @@
 
 package com.sun.tools.ws.wsdl.framework;
 
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * A helper class for extensible entities.
@@ -37,48 +38,36 @@ public class ExtensibilityHelper {
     public ExtensibilityHelper() {
     }
 
-    public void addExtension(Extension e) {
+    public void addExtension(TWSDLExtension e) {
         if (_extensions == null) {
             _extensions = new ArrayList();
         }
         _extensions.add(e);
     }
 
-    public Iterator extensions() {
+    public Iterable<TWSDLExtension> extensions() {
         if (_extensions == null) {
-            return new Iterator() {
-                public boolean hasNext() {
-                    return false;
-                }
-
-                public Object next() {
-                    throw new NoSuchElementException();
-                }
-
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-            };
+            return new ArrayList<TWSDLExtension>();
         } else {
-            return _extensions.iterator();
+            return _extensions;
         }
     }
 
     public void withAllSubEntitiesDo(EntityAction action) {
-        if (_extensions != null) {
-            for (Iterator iter = _extensions.iterator(); iter.hasNext();) {
-                action.perform((Entity) iter.next());
-            }
-        }
+//        if (_extensions != null) {
+//            for (Iterator iter = _extensions.iterator(); iter.hasNext();) {
+//                action.perform((Entity) iter.next());
+//            }
+//        }
     }
 
     public void accept(ExtensionVisitor visitor) throws Exception {
         if (_extensions != null) {
             for (Iterator iter = _extensions.iterator(); iter.hasNext();) {
-                ((Extension) iter.next()).accept(visitor);
+                ((ExtensionImpl) iter.next()).accept(visitor);
             }
         }
     }
 
-    private List _extensions;
+    private List<TWSDLExtension> _extensions;
 }

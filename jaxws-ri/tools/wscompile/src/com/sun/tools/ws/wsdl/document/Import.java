@@ -22,9 +22,10 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.wsdl.framework.Entity;
+import org.xml.sax.Locator;
+
+import javax.xml.namespace.QName;
 
 /**
  * Entity corresponding to the "import" WSDL element.
@@ -33,7 +34,8 @@ import com.sun.tools.ws.wsdl.framework.Entity;
  */
 public class Import extends Entity{
 
-    public Import() {
+    public Import(Locator locator) {
+        super(locator);
     }
 
     public String getNamespace() {

@@ -22,14 +22,15 @@
 package com.sun.tools.ws.processor.modeler.annotation;
 
 
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.*;
-import com.sun.mirror.util.Types;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ArrayType;
+import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.PrimitiveType;
+import com.sun.mirror.type.TypeMirror;
 
-import java.util.Collection;
 import java.util.ArrayList;
-import com.sun.tools.ws.processor.modeler.annotation.*;
+import java.util.Collection;
 
 /**
  *

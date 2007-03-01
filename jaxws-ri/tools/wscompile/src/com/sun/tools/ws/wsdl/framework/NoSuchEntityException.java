@@ -41,7 +41,7 @@ public class NoSuchEntityException extends ValidationException {
         super("entity.notFoundByID", id);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.wsdl";
     }
 }

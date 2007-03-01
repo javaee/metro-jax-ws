@@ -1,0 +1,2 @@
+com.sun.xml.ws.transport.local.LocalTransportFactory
+com.sun.xml.ws.transport.local.InVmTransportFactory

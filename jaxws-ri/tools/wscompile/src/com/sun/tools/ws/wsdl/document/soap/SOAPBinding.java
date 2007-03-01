@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.soap;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A SOAP binding extension.
  *
  * @author WS Development Team
  */
-public class SOAPBinding extends Extension {
+public class SOAPBinding extends ExtensionImpl {
 
-    public SOAPBinding() {
+    public SOAPBinding(Locator locator) {
+        super(locator);
         _style = SOAPStyle.DOCUMENT;
     }
 

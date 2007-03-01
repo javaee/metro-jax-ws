@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.mime;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A MIME content extension.
  *
  * @author WS Development Team
  */
-public class MIMEContent extends Extension {
+public class MIMEContent extends ExtensionImpl {
 
-    public MIMEContent() {
+    public MIMEContent(Locator locator) {
+        super(locator);
     }
 
     public QName getElementName() {

@@ -1,50 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-<!--
- The contents of this file are subject to the terms
- of the Common Development and Distribution License
- (the License).  You may not use this file except in
- compliance with the License.
- 
- You can obtain a copy of the license at
- https://glassfish.dev.java.net/public/CDDLv1.0.html.
- See the License for the specific language governing
- permissions and limitations under the License.
- 
- When distributing Covered Code, include this CDDL
- Header Notice in each file and include the License file
- at https://glassfish.dev.java.net/public/CDDLv1.0.html.
- If applicable, add the following below the CDDL Header,
- with the fields enclosed by brackets [] replaced by
- you own identifying information:
- "Portions Copyrighted [year] [name of copyright owner]"
- 
- Copyright 2006 Sun Microsystems Inc. All Rights Reserved
--->
-
-
 <bindings 
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxws-fromwsdlhandler/addnumbers?wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws">    
-    <bindings node="wsdl:definitions">
-        <package name="fromwsdlhandler.client"/>
-    </bindings>
-    <bindings node="wsdl:definitions/wsdl:types/xsd:schema[@targetNamespace='http://duke.example.org']">
-        <jaxb:schemaBindings>
-            <jaxb:package name="fromwsdlhandler.client"/>
-        </jaxb:schemaBindings>
-    </bindings>
-    <bindings node="wsdl:definitions" xmlns:javaee="http://java.sun.com/xml/ns/javaee">
-        <javaee:handler-chains>
-            <javaee:handler-chain>
-                <javaee:handler>
-                    <javaee:handler-class>fromwsdlhandler.common.LoggingHandler</javaee:handler-class>
-                </javaee:handler>
-            </javaee:handler-chain>
-        </javaee:handler-chains>
+    <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
+        <jws:handler-chains>
+            <jws:handler-chain>
+                <jws:handler>
+                    <jws:handler-class>fromwsdlhandler.common.LoggingHandler</jws:handler-class>
+                </jws:handler>
+            </jws:handler-chain>
+        </jws:handler-chains>
     </bindings>
 </bindings>
 

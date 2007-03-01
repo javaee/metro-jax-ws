@@ -177,7 +177,9 @@ public class Headers implements Map<String,List<String>> {
     }
 
     public void putAll(Map<? extends String,? extends List<String>> t)  {
-        map.putAll (t);
+        for(Map.Entry<? extends String, ? extends List<String>> entry : t.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
     }
 
     public void clear() {
@@ -202,9 +204,5 @@ public class Headers implements Map<String,List<String>> {
 
     public int hashCode() {
         return map.hashCode();
-    }
-    
-    public String toString() {
-        return map.toString();
     }
 }

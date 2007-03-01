@@ -21,18 +21,11 @@
  */
 package com.sun.tools.ws.processor.model.jaxb;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
 import com.sun.tools.ws.processor.model.ModelException;
 import com.sun.tools.ws.processor.model.java.JavaStructureType;
+
+import javax.xml.namespace.QName;
+import java.util.*;
 
 /**
  * Top-level binding between JAXB generated Java type

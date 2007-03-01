@@ -22,16 +22,28 @@
 
 package com.sun.tools.ws.processor.generator;
 
-import com.sun.codemodel.*;
-import com.sun.tools.ws.processor.config.Configuration;
+import com.sun.codemodel.ClassType;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JDocComment;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldRef;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 import com.sun.tools.ws.processor.model.Fault;
 import com.sun.tools.ws.processor.model.Model;
-import com.sun.xml.ws.encoding.soap.SOAPVersion;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import com.sun.tools.ws.wscompile.WsimportOptions;
 
 import javax.xml.ws.WebFault;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  *
@@ -40,39 +52,25 @@ import java.util.Properties;
 public class CustomExceptionGenerator extends GeneratorBase {
     private Map<String, JClass> faults = new HashMap<String, JClass>();
 
-    public CustomExceptionGenerator() {
+    public static void generate(Model model,
+        WsimportOptions options,
+        ErrorReceiver receiver){
+        CustomExceptionGenerator exceptionGen = new CustomExceptionGenerator(model, options, receiver);
+        exceptionGen.doGeneration();        
     }
-
-    public GeneratorBase getGenerator(
+    private CustomExceptionGenerator(
         Model model,
-        Configuration config,
-        Properties properties) {
-        return new CustomExceptionGenerator(model, config, properties);
+        WsimportOptions options,
+        ErrorReceiver receiver) {
+        super(model, options, receiver);
     }
 
-    public GeneratorBase getGenerator(
-        Model model,
-        Configuration config,
-        Properties properties,
-        SOAPVersion ver) {
-        return new CustomExceptionGenerator(model, config, properties);
+    public GeneratorBase getGenerator(Model model, WsimportOptions options, ErrorReceiver receiver) {
+        return new CustomExceptionGenerator(model, options, receiver);
     }
 
-    protected CustomExceptionGenerator(
-        Model model,
-        Configuration config,
-        Properties properties) {
-        super(model, config, properties);
-    }
-
-    protected void preVisitModel(Model model) throws Exception {
-    }
-
-    protected void postVisitModel(Model model) throws Exception {
-        faults = null;
-    }
-
-    protected void preVisitFault(Fault fault) throws Exception {
+    @Override
+    public void visit(Fault fault) throws Exception {
         if (isRegistered(fault))
             return;
         registerFault(fault);
@@ -90,13 +88,13 @@ public class CustomExceptionGenerator extends GeneratorBase {
          try {
             write(fault);
             faults.put(fault.getJavaException().getName(), fault.getExceptionClass()); 
-        } catch (Exception e) {
+        } catch (JClassAlreadyExistsException e) {
             throw new GeneratorException("generator.nestedGeneratorError",e);
         }
     }
 
-    private void write(Fault fault) throws Exception{
-        String className = env.getNames().customExceptionClassName(fault);
+    private void write(Fault fault) throws JClassAlreadyExistsException {
+        String className = Names.customExceptionClassName(fault);
 
         JDefinedClass cls = cm._class(className, ClassType.CLASS);
         JDocComment comment = cls.javadoc();

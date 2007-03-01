@@ -1,0 +1,95 @@
+#
+# Sequence Diagram for the most basic server case
+#
+# a message that came through HTTP will eventually
+# cause a method to be invoked on the endpoint instance
+#
+
+# graph properties
+boxht = 0.8;
+
+# Define the objects
+pobject(A,"Actor");
+object(T,":Acceptor");
+object(D,":Decoder");
+object(E,":Encoder");
+pobject(M);
+object(C1,"c1:Pipe");
+object(C2,"c2:Pipe");
+object(I,"epInvoker:" "Pipe");
+object(F,":TargetFinder");
+object(U,"ep");
+pobject(DUMMY2);
+
+step();
+
+# Message sequences
+message(A,T,"HTTP");
+active(T);
+	message(T,D,"decode(response)");
+	active(D);
+		cmessage(D,M,"msg1:" "StreamMessage","");
+		rmessage(D,T,"msg1");
+	inactive(D);
+	
+	message(T,C1,"process(msg1)");
+	active(C1);
+		message(C1,C2,"process(msg1)");
+		active(C2);
+			message(C2,I,"process(msg1)");
+			active(I);
+				step();
+				message(I,I,"determine operation");
+				
+				step();
+				message(I,M,"readAsJAXB()");
+				active(M);
+					step();
+					message(M,M,"call JAXB");
+					rmessage(M,I,"JAXB bean");
+				inactive(M);
+				
+				step();
+				message(I,I,"param unpacking");
+				
+				message(I,F,"findTarget");
+				active(F);
+					rmessage(F,I,"ep");
+				inactive(F);
+				
+				message(I,U,"stockQuote(\"SUNW\")");
+				active(U);
+					rmessage(U,I,"4.10");
+				inactive(U);
+				
+				step();
+				cmessage(I,M,"msg2:" "JAXBMessage");
+				
+				rmessage(I,C2,"msg2");
+			inactive(I);
+			rmessage(C2,C1,"msg2");
+		inactive(C2);
+		rmessage(C1,T,"msg2");
+	inactive(C1);
+	
+	message(T,E,"encode(msg2,socket)");
+	active(E);
+		message(E,M,"writeTo(...)");
+		active(M);
+			step();
+			message(M,M,"JAXB" "marshalling");
+		inactive(M);
+	inactive(E);
+	
+	rmessage(T,A,"HTTP");
+inactive(T);
+
+step();
+complete(T);
+complete(D);
+complete(E);
+complete(C1);
+complete(C2);
+complete(I);
+complete(F);
+complete(U);

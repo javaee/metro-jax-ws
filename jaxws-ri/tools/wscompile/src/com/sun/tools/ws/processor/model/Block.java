@@ -21,6 +21,10 @@
  */
 package com.sun.tools.ws.processor.model;
 
+
+import com.sun.tools.ws.wsdl.framework.Entity;
+import com.sun.tools.ws.wsdl.document.*;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -34,23 +38,14 @@ public class Block extends ModelObject {
     public static final int HEADER = 2;
     public static final int ATTACHMENT = 3;
 
-    public Block() {}
-
-    public Block(QName name) {
-        this.name = name;
-    }
-
-    public Block(QName name, AbstractType type) {
+    public Block(QName name, AbstractType type, Entity entity) {
+        super(entity);
         this.name = name;
         this.type = type;
     }
 
     public QName getName() {
         return name;
-    }
-
-    public void setName(QName n) {
-        name = n;
     }
 
     public AbstractType getType() {
@@ -73,16 +68,7 @@ public class Block extends ModelObject {
         visitor.visit(this);
     }
 
-    private QName name;
+    private final QName name;
     private AbstractType type;
     private int location;
-
-    /**
-     * @return true if the block is unbound
-     */
-    public boolean isUnbound() {
-        if(location == UNBOUND)
-            return true;
-        return false;
-    }
 }

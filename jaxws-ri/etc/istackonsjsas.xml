@@ -5,12 +5,12 @@
  of the Common Development and Distribution License
  (the License).  You may not use this file except in
  compliance with the License.
- 
+
  You can obtain a copy of the license at
  https://glassfish.dev.java.net/public/CDDLv1.0.html.
  See the License for the specific language governing
  permissions and limitations under the License.
- 
+
  When distributing Covered Code, include this CDDL
  Header Notice in each file and include the License file
  at https://glassfish.dev.java.net/public/CDDLv1.0.html.
@@ -18,17 +18,18 @@
  with the fields enclosed by brackets [] replaced by
  you own identifying information:
  "Portions Copyrighted [year] [name of copyright owner]"
- 
+
  Copyright 2006 Sun Microsystems Inc. All Rights Reserved
 -->
 
-<project name="JAX-WS 2.0 FCS On Sun Java System App Server 8.1/8.2" default="help" basedir=".">
+<project name="JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI On Sun Java System App Server 8.1/8.2/9.0/9.0 U1, GF v1, GF v2 M1, M2" default="help" basedir=".">
     <property environment="env"/>
     <property name="as.home" value="${env.AS_HOME}"/>
     <property name="as.lib.home" value="${as.home}/lib"/>
+    <property name="as.lib.endorsed.dir" value="${as.home}/lib/endorsed"/>
     <property name="as.bin.home" value="${as.home}/bin"/>
     <property name="domain" value="domain1"/>
-    <property name="backup.dir" value="${as.home}/.jaxws20fcs"/>
+    <property name="backup.dir" value="${as.home}/.jaxws21"/>
     <condition property="isNotWindows">
       <not>
         <os family="windows" />
@@ -37,16 +38,18 @@
 
     <condition property="notInstalled">
         <not>
-            <available file="${as.home}/.jaxws20fcs"/>
+            <available file="${as.home}/.jaxws21/${domain}-domain.xml"/>
         </not>
     </condition>
-
-    <target name="init">
+            
+   <target name="init">
         <mkdir dir="${backup.dir}"/>
+        <mkdir dir="${backup.dir}/bin"/>
+        <mkdir dir="${as.lib.endorsed.dir}"/>
     </target>
 
-    <target name="install">
-        <echo message="Installing JAX-WS 2.0 on ${as.home} ..." />
+    <target name="install-AS8.X" depends="init">
+        <echo message="Installing JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on ${as.home} ..." />
         <copy toDir="${backup.dir}">
             <fileset dir="${as.lib.home}">
                 <include name="saaj-*.jar"/>
@@ -56,13 +59,41 @@
         <copy toDir="${as.lib.home}" overwrite="true">
             <fileset dir="lib">
                 <include name="*.jar"/>
+                <exclude name="*api*.jar"/>
                 <exclude name="activation.jar"/>
                 <exclude name="relaxngDatatype.jar"/>
             </fileset>
         </copy>
 
-        <antcall target="update-classpath"/>
+        <copy toDir="${as.lib.endorsed.dir}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <antcall target="update-classpath-8.X"/>
         <antcall target="install-tools"/>
+        <echo message="... done."/>
+    </target>
+
+    <target name="install" depends="init">
+        <echo message="Installing JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on ${as.home} ..." />
+
+        <copy toDir="${as.lib.home}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*.jar"/>
+                <exclude name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy toDir="${as.lib.endorsed.dir}" overwrite="true">
+            <fileset dir="lib">
+                <include name="*api*.jar"/>
+            </fileset>
+        </copy>
+
+        <antcall target="update-classpath"/>
+        <antcall target="update-tools"/>
         <echo message="... done."/>
     </target>
 
@@ -75,27 +106,48 @@
         </not>
     </condition>
 
+    <target name="create.classpath.prefix-8.X" if="prefixUndefined" >
+        <echo message="Adding classpath-prefix to ${as.home}/domains/${domain}/config/domain.xml" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[server-classpath="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="" server-classpath="]]></replacevalue>
+        </replace>
+    </target>
+
     <target name="create.classpath.prefix" if="prefixUndefined" >
         <echo message="Adding classpath-prefix to ${as.home}/domains/${domain}/config/domain.xml" />
         <replace file="${as.home}/domains/${domain}/config/domain.xml" >
-            <replacevalue><![CDATA[classpath-prefix="" server-classpath="]]></replacevalue>
-            <replacetoken><![CDATA[server-classpath="]]></replacetoken>
+            <replacetoken><![CDATA[system-classpath="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="" system-classpath="]]></replacevalue>
+        </replace>
+    </target>
+
+    <target name="update-classpath-8.X" if="notInstalled">
+
+        <!-- Add the JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ and dependent jars to classpath-prefix -->
+        <copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
+        <!-- Add classpath-prefix, if not exists -->
+        <antcall target="create.classpath.prefix-8.X" />
+        <replace file="${as.home}/domains/${domain}/config/domain.xml" >
+            <replacetoken><![CDATA[classpath-prefix="]]></replacetoken>
+            <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/sjsxp.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/resolver.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/streambuffer.jar${path.separator}${com.sun.aas.installRoot}/lib/stax-ex.jar${path.separator}${com.sun.aas.installRoot}/lib/FastInfoset.jar${path.separator}]]></replacevalue>
         </replace>
     </target>
 
     <target name="update-classpath" if="notInstalled">
-         <!-- Add classpath-prefix, if not exists -->
-        <antcall target="create.classpath.prefix" />
-        <!-- Add the JAX-WS 2.0 and JAXB 2.0 jars to classpath-prefix -->
+
+        <!-- Add the JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ and dependent jars to classpath-prefix -->
         <copy file="${as.home}/domains/${domain}/config/domain.xml" tofile="${backup.dir}/${domain}-domain.xml"/>
+        <!-- Add classpath-prefix, if not exists -->
+        <antcall target="create.classpath.prefix" />
         <replace file="${as.home}/domains/${domain}/config/domain.xml" >
             <replacetoken><![CDATA[classpath-prefix="]]></replacetoken>
-            <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/sjsxp.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-api.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-libs.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-api.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}]]></replacevalue>
+            <replacevalue><![CDATA[classpath-prefix="${com.sun.aas.installRoot}/lib/sjsxp.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-rt.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxws-tools.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/resolver.jar${path.separator}${com.sun.aas.installRoot}/lib/jaxb-xjc.jar${path.separator}${com.sun.aas.installRoot}/lib/saaj-impl.jar${path.separator}${com.sun.aas.installRoot}/lib/streambuffer.jar${path.separator}${com.sun.aas.installRoot}/lib/stax-ex.jar${path.separator}${com.sun.aas.installRoot}/lib/FastInfoset.jar${path.separator}]]></replacevalue>
         </replace>
     </target>
 
     <target name="install-tools" depends="install-on-windows, install-on-unix">
-        <echo message="Installed JAX-WS tools (wsimport, wsgen) to ${as.bin.home}"/>
+        <echo message="Installed JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI tools (wsimport, wsgen) to ${as.bin.home}"/>
     </target>
     <target name="install-on-unix" if="isNotWindows">
         <copy toDir="${as.bin.home}" overwrite="true">
@@ -108,14 +160,55 @@
     </target>
     <target name="install-on-windows" unless="isNotWindows">
         <copy toDir="${as.bin.home}" overwrite="true">
-			<fileset dir="bin">
-				<include name="*.bat"/>
-			</fileset>
-		</copy>
+	    <fileset dir="bin">
+		<include name="*.bat"/>
+	    </fileset>
+	</copy>
+    </target>
+
+    <target name="update-tools" depends="update-on-windows, update-on-unix">
+        <echo message="Updated JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI tools (wsimport, wsgen) in ${as.bin.home}"/>
+    </target>
+    <target name="update-on-unix" if="isNotWindows">
+        <copy toDir="${backup.dir}/bin">
+            <fileset dir="${as.bin.home}">
+                <include name="wsgen"/>
+                <include name="wsimport"/>
+            </fileset>
+        </copy>
+	<chmod dir="${backup.dir}/bin" perm="775" includes="*"/>
+	<replace file="${as.bin.home}/wsimport" >
+	    <replacetoken><![CDATA[CLASSPATH="]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH="$AS_WEBSERVICES_LIB"/jaxws-tools.jar:"]]></replacevalue>
+	</replace>
+	<replace file="${as.bin.home}/wsgen" >
+	    <replacetoken><![CDATA[CLASSPATH="]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH="$AS_WEBSERVICES_LIB"/jaxws-tools.jar:"]]></replacevalue>
+	</replace>
+        <chmod perm="775" file="${as.bin.home}/wsimport" />
+        <chmod perm="775" file="${as.bin.home}/wsgen" />
+    </target>
+    <target name="update-on-windows" unless="isNotWindows">
+        <copy toDir="${backup.dir}/bin">
+            <fileset dir="${as.bin.home}">
+                <include name="wsgen.bat"/>
+                <include name="wsimport.bat"/>
+            </fileset>
+        </copy>
+	<replace file="${as.bin.home}/wsimport.bat" >
+	    <replacetoken><![CDATA[CLASSPATH=]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH=%AS_WEBSERVICES_LIB%\jaxws-tools.jar;]]></replacevalue>
+	</replace>
+	<replace file="${as.bin.home}/wsgen.bat" >
+	    <replacetoken><![CDATA[CLASSPATH=]]></replacetoken>
+	    <replacevalue><![CDATA[CLASSPATH=%AS_WEBSERVICES_LIB%\jaxws-tools.jar;]]></replacevalue>
+	</replace>
     </target>
 
     <target name="help">
-        <echo message="install:    Installs JAX-WS 2.0 FCS on the Application Server"/>
-        <echo message="            Usage: ANT_HOME/bin/ant install"/>
+        <echo message="Installs JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ RI on the Application Server (Glassfish v1, v2 and Sun One AS 9.x)"/>
+        <echo message=""/>
+        <echo message="Usage: $ANT_HOME/bin/ant install"/>
     </target>
+
 </project>

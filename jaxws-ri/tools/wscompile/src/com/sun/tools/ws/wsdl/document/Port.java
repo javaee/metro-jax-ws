@@ -22,30 +22,25 @@
 
 package com.sun.tools.ws.wsdl.document;
 
-import java.util.Iterator;
+import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.resources.WsdlMessages;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Defining;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
-import com.sun.tools.ws.wsdl.framework.ExtensibilityHelper;
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
-import com.sun.tools.ws.wsdl.framework.GlobalEntity;
-import com.sun.tools.ws.wsdl.framework.Kind;
-import com.sun.tools.ws.wsdl.framework.QNameAction;
 
 /**
  * Entity corresponding to the "port" WSDL element.
  *
  * @author WS Development Team
  */
-public class Port extends GlobalEntity implements Extensible {
+public class Port extends GlobalEntity implements TWSDLExtensible {
 
-    public Port(Defining defining) {
-        super(defining);
+    public Port(Defining defining, Locator locator, ErrorReceiver errReceiver) {
+        super(defining, locator, errReceiver);
         _helper = new ExtensibilityHelper();
     }
 
@@ -66,14 +61,27 @@ public class Port extends GlobalEntity implements Extensible {
     }
 
     public Binding resolveBinding(AbstractDocument document) {
-        return (Binding) document.find(Kinds.BINDING, _binding);
+        try{
+            return (Binding) document.find(Kinds.BINDING, _binding);
+        } catch (NoSuchEntityException e) {
+            errorReceiver.error(getLocator(), WsdlMessages.ENTITY_NOT_FOUND_BINDING(_binding, new QName(getNamespaceURI(), getName())));
+            throw new AbortException();
+        }
     }
 
     public Kind getKind() {
         return Kinds.PORT;
     }
 
-    public QName getElementName() {
+    public String getNameValue() {
+        return getName();
+    }
+
+    public String getNamespaceURI() {
+        return getDefining().getTargetNamespaceURI();
+    }
+
+    public QName getWSDLElementName() {
         return WSDLConstants.QNAME_PORT;
     }
 
@@ -115,12 +123,20 @@ public class Port extends GlobalEntity implements Extensible {
         }
     }
 
-    public void addExtension(Extension e) {
+    public void addExtension(TWSDLExtension e) {
         _helper.addExtension(e);
     }
 
-    public Iterator extensions() {
+    public Iterable<TWSDLExtension> extensions() {
         return _helper.extensions();
+    }
+
+    public TWSDLExtensible getParent() {
+        return parent;
+    }
+
+    public void setParent(TWSDLExtensible parent) {
+        this.parent = parent;
     }
 
     public void withAllSubEntitiesDo(EntityAction action) {
@@ -131,4 +147,10 @@ public class Port extends GlobalEntity implements Extensible {
     private Documentation _documentation;
     private Service _service;
     private QName _binding;
+
+    public QName getElementName() {
+        return getWSDLElementName();
+    }
+
+    private TWSDLExtensible parent;
 }

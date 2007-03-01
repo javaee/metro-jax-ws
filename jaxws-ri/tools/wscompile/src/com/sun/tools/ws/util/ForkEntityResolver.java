@@ -22,11 +22,11 @@
 
 package com.sun.tools.ws.util;
 
-import java.io.IOException;
-
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 /**
  * {@link EntityResolver} that delegates to two {@link EntityResolver}s.

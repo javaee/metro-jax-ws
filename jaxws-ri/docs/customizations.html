@@ -1,59 +1,61 @@
-H<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
-	<TITLE>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- Customizations</TITLE>
-	<META NAME="GENERATOR" CONTENT="StarSuite 8  (Win32)">
-	<META NAME="CREATED" CONTENT="20050329;10262698">
-	<META NAME="CHANGEDBY" CONTENT="Rama Pulavarthi">
-	<META NAME="CHANGED" CONTENT="20060426;21013584">
-	<STYLE>
-	<!--
-		H1 { color: #000099; font-family: sans-serif; text-align: center }
-		H2 { color: #000099; font-family: sans-serif; text-align: center }
-		H3 { color: #000099; font-family: sans-serif; text-align: left }
-		H4 { color: #000099; font-family: sans-serif; text-align: left }
-		CODE { font-family: "Courier", monospace }
-	-->
-	</STYLE>
-</HEAD>
-<BODY LANG="en-US" BGCOLOR="#ffffff" DIR="LTR">
-<H1 ALIGN=CENTER>Java<FONT SIZE=1><SUP>TM</SUP></FONT> API for XML
-Web Services<BR>Customizations 
-</H1>
-<P ALIGN=CENTER STYLE="margin-bottom: 0in"><B>Specification Version:</B>
-@@SPEC_VERSION@@<BR><B>Reference Implementation (RI) Version:</B>
-@@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@</P>
-<HR>
-<p>Last Modified: 6/29/2006<br>
+<html>
+
+<head caption="WSDL Customization">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+
 <H2>Contents</H2>
-<P><A HREF="#1._Declaring_customizations_">1. Declaring
-Customizations</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#1.1_External_binding_declaration">1.1
-External Binding Declaration</A><BR>&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;
-<A HREF="#1.1.1_Root_binding_element">1.1.1 Root Binding
-Element</A><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#1.1.2_Child_binding_elements">1.1.2
-Child Binding Elements</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#1.2_Embedded_binding_declarations">1.2
-Embedded Binding Declarations</A><BR><A HREF="#2._Standard_customizations">2.
-Standard Customizations</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.1_Global_bindings">2.1
-Global Customizations</A><BR>&nbsp; &nbsp; <A HREF="#2.1_Package_customization">2.2
-Package Customization</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.2_Wrapper_Style">2.3
-Wrapper Style</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.3_Asynchrony">2.4
-Asynchrony</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.5_Provider_interface">2.5
-The Provider Interface</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.6_Class_Customization">2.6
-Class Customization</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.6.1_SEI_class">2.6.1
-The Service Endpoint Interface Class</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.6.2_Exception_class">2.6.2
-The Exception Class</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.6.3_Service_class_">2.6.3
-The Service Class</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.7_Java_Method_customization">2.7
-Java Method Customization</A><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<A HREF="#2.7.1_SEI_method">2.7.1 Service Endpoint Interface
-Methods</A><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#2.7.2_Port_accessor_Method_in_Service">2.7.2
-Port Accessor Methods in the Service Class</A><BR>&nbsp;&nbsp;&nbsp;
-<A HREF="#2.8_Java_parameter_customization">2.8 Java Parameter
-Customization</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.9_Javadoc_customization">2.9
-Javadoc Customization</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.9_XML_schema_customization">2.10
-XML Schema Customization</A><BR>&nbsp;&nbsp;&nbsp; <A HREF="#2.10_Handler_chain_customization">2.11
-Handler Chain Customization</A></P>
-<P>The JAX-WS 2.0 specification defines standard XML-based
+
+<div>
+	<A HREF="#1._Declaring_customizations_">1. Declaring Customizations</A>
+</div>
+
+<div style="margin-left:1em">
+	<A HREF="#1.1_External_binding_declaration">1.1 External Binding Declaration</A>
+</div>
+
+<div style="margin-left:2em">
+	<A HREF="#1.1.1_Root_binding_element">1.1.1 Root Binding Element</A><br/>
+	<A HREF="#1.1.2_Child_binding_elements">1.1.2 Child Binding Elements</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#1.2_Embedded_binding_declarations">1.2 Embedded Binding Declarations</A>
+</div>
+<div>
+	<A HREF="#2._Standard_customizations">2. Standard Customizations</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#2.1_Global_bindings">2.1 Global Customizations</A><br/>
+	<A HREF="#2.1_Package_customization">2.2 Package Customization</A><br/>
+	<A HREF="#2.2_Wrapper_Style">2.3 Wrapper Style</A><br/>
+	<A HREF="#2.3_Asynchrony">2.4 Asynchrony</A><br/>
+	<A HREF="#2.5_Provider_interface">2.5 The Provider Interface</A><br/>
+	<A HREF="#2.6_Class_Customization">2.6 Class Customization</A>
+</div>
+<div style="margin-left:2em">
+	<A HREF="#2.6.1_SEI_class">2.6.1 The Service Endpoint Interface Class</A><br/>
+	<A HREF="#2.6.2_Exception_class">2.6.2 The Exception Class</A><br/>
+	<A HREF="#2.6.3_Service_class_">2.6.3 The Service Class</A>
+</div>
+
+<div style="margin-left:1em">
+	<A HREF="#2.7_Java_Method_customization">2.7 Java Method Customization</A>
+</div>
+<div style="margin-left:2em">
+	<A HREF="#2.7.1_SEI_method">2.7.1 Service Endpoint Interface Methods</A><br/>
+	<A HREF="#2.7.2_Port_accessor_Method_in_Service">2.7.2 Port Accessor Methods in the Service Class</A>
+</div>
+<div style="margin-left:1em">
+	<A HREF="#2.8_Java_parameter_customization">2.8 Java Parameter Customization</A><br/>
+	<A HREF="#2.9_Javadoc_customization">2.9 Javadoc Customization</A><br/>
+	<A HREF="#2.9_XML_schema_customization">2.10 XML Schema Customization</A><br/>
+	<A HREF="#2.10_Handler_chain_customization">2.11 Handler Chain Customization</A>
+</div>
+
+<p>
+The JAX-WS 2.0 specification defines standard XML-based
 customization for WSDL to Java mapping and to control certain
 features. These customizations, or <I>binding declarations</I>, can
 customize almost all WSDL components that can be mapped to Java, such
@@ -76,7 +78,7 @@ to:</P>
 	<LI><P>Customize handler chains.</P>
 </UL>
 <P>But these customizations were not portable and could not be used
-across other JAX-RPC implementations. JAX-WS @@IMPL_VERSION@@ RI
+across other JAX-RPC implementations. JAX-WS ${IMPL_VERSION} RI
 provides complete support for all the binding declarations defined by
 the specification.</P>
 <H2><A NAME="1._Declaring_customizations_"></A>1. Declaring
@@ -146,17 +148,17 @@ specification:</P>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">An embedded binding declaration is
 	specified by using the <CODE>jaxws:bindings</CODE> element as a WSDL
-	extension. 
+	extension.
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">When a <CODE>jaxws:bindings</CODE>
 	element is used as a WSDL extension, it must not have a node
-	attribute. 
+	attribute.
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">The binding declaration must not
 	have a child element whose qualified name is <CODE>jaxws:bindings</CODE>.
 		</P>
 	<LI><P>A binding declaration embedded in a WSDL can only affect the
-	WSDL element it extends. 
+	WSDL element it extends.
 	</P>
 </UL>
 <P>Here's an example of embedded binding declarations in the WSDL
@@ -184,14 +186,14 @@ instead of <CODE>AddNumberImpl</CODE>.</P>
 Customizations</H2>
 <P>This section provides the details of all the possible WSDL binding
 declarations.</P>
-<H3><A NAME="2.1_Global_bindings"></A>2.1 Global&nbsp; bindings</H3>
+<H3><A NAME="2.1_Global_bindings"></A>2.1 Global bindings</H3>
 <P>the global customizations are the customizations that applies to
 the entire scope of wsdl:definition in the wsdl referenced by the roo
 jaxws:bindings@wsdlLocation.<BR><BR>Following customizations have the
-global scopes:<BR><BR>&lt;jaxws:package&nbsp;
+global scopes:<BR><BR>&lt;jaxws:package
 name=&quot;...&quot;/&gt;<BR>&lt;jaxws:enableWrapperStyle/&gt;<BR>&lt;jaxws:enableAsyncMapping/&gt;<BR><BR>These
 can appear as direct child of the <A HREF="#1.1.1_Root_binding_element">root
-binding</A> declarations in the external customization&nbsp; file.
+binding</A> declarations in the external customization file.
 For example:</P>
 <PRE>&lt;bindings
     xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
@@ -246,13 +248,13 @@ on the following target nodes:</P>
 	<LI><P STYLE="margin-bottom: 0in"></P>
 	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:definitions</CODE>:
 	global scope, applies to all the <CODE>wsdl:operations</CODE> of all
-	<CODE>wsdl:portType</CODE> attributes 
+	<CODE>wsdl:portType</CODE> attributes
 	</P>
 	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:portType</CODE> applies
 	to all the <CODE>wsdl:operations</CODE> in the <CODE>portType</CODE>
 		</P>
 	<LI><P><CODE>wsdl:operation</CODE> applies to only this
-	<CODE>wsdl:operation</CODE> 
+	<CODE>wsdl:operation</CODE>
 	</P>
 </UL>
 <P>For example:</P>
@@ -285,13 +287,13 @@ declaration described above in section 2.2.</P>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:definitions</CODE> or
 	toplevel bindings element: global scope, applies to all the
-	<CODE>wsdl:operations</CODE> of all <CODE>wsdl:portType</CODE> 
+	<CODE>wsdl:operations</CODE> of all <CODE>wsdl:portType</CODE>
 	</P>
 	<LI><P STYLE="margin-bottom: 0in"><CODE>wsdl:portType</CODE>:
 	applies to all the <CODE>wsdl:operations</CODE> in the <CODE>portType</CODE>
 		</P>
 	<LI><P><CODE>wsdl:operation</CODE>: applies to only this
-	<CODE>wsdl:operation</CODE> 
+	<CODE>wsdl:operation</CODE>
 	</P>
 </UL>
 <P>Example :</P>
@@ -416,11 +418,11 @@ method <CODE>addNumbers</CODE> from <CODE>number1</CODE> to <CODE>num1</CODE>.</
 java package, class(SEI, Service or Exception class) and on the
 methods in SEI and service class. Inorder to do it,it should appear
 on the corresponding wsdl nodes.<BR><BR>For package level
-javadoc:<BR><BR>&lt;jaxws:package name=&quot;xs:string&quot;&gt;?<BR>&nbsp;&nbsp;&nbsp;
+javadoc:<BR><BR>&lt;jaxws:package name=&quot;xs:string&quot;&gt;?<BR>
 &lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:package&gt;<BR><BR>For
-class level javadoc:<BR><BR>&lt;jaxws:class name=&quot;xs:string&quot;&gt;?<BR>&nbsp;&nbsp;&nbsp;
+class level javadoc:<BR><BR>&lt;jaxws:class name=&quot;xs:string&quot;&gt;?<BR>
 &lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:class&gt;<BR><BR>For
-method level javadoc:<BR><BR>&lt;jaxws:method name=&quot;xs:string&quot;&gt;?<BR>&nbsp;&nbsp;&nbsp;
+method level javadoc:<BR><BR>&lt;jaxws:method name=&quot;xs:string&quot;&gt;?<BR>
 &lt;jaxws:javadoc&gt;xs:string&lt;/jaxws:javadoc&gt;?<BR>&lt;/jaxws:method&gt;<BR><BR>For
 specific samples on javadoc customization for class, refer <A HREF="#2.6.1_SEI_class">SEI</A>,
 <A HREF="#2.6.2_Exception_class">exception </A>and <A HREF="#2.6.3_Service_class_">service
@@ -489,10 +491,5 @@ inside <CODE>jaxws:bindings</CODE> element enclosing the
 @javax.jws.HandlerChain annotation in the generated SEI class. JAXWS
 runtime uses the @HandlerChain annotation from the SEI to find the
 handlers that has to be added into the handle chain.</P>
-<HR>
-<P><A HREF="Copyright.html"><I><FONT SIZE=2>Copyright &copy; 2005 Sun
-Microsystems, Inc. All rights reserved.</FONT></I></A></P>
-<P><BR><BR>
-</P>
-</BODY>
-</HTML>
+</body>
+</html>

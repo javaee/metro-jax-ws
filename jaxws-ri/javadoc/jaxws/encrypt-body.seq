@@ -1,0 +1,107 @@
+#
+# Sequence Diagram for the best case XWSS scenario.
+#
+# the whole body is assumed to be encrypted
+#
+
+# graph properties
+boxht = 0.8;
+
+# Define the objects
+pobject(A,"Actor");
+object(P,"proxy");
+pobject(M1);
+object(JAXB,":JAXB");
+object(S,":EncryptionPipe");
+pobject(ME);
+object(T,"transport:" "Pipe");
+pobject(M3);
+pobject(SERVER);
+
+step();
+
+# Message sequences
+message(A,P,"stockQuote(\"Sun\")");
+active(P);
+	cmessage(P,M1,"msg1:" "JAXBMessage"," ");
+	
+	message(P,S,"process(msg1)");
+	active(S);
+		cmessage(S,ME,"msg2:" "EncryptedMessage");
+		message(S,ME,"<init>(msg1)");
+		active(ME);
+			message(ME,ME,"wrap msg1 into msg2");
+		inactive(ME);
+		
+		# no header in XML encryption, right?
+		# message(S,ME,"add enc header");
+		# active(ME);
+		#	step();
+		# inactive(ME);
+		
+		message(S,T,"process(msg2)");
+		active(T);
+			step();
+			
+			# from transport to send a request...
+			message(T,ME,"writeTo(...)");
+			active(ME);
+				message(ME,M1,"writeTo(...)");
+				active(M1);
+					message(M1,JAXB,"marshal");
+					active(JAXB);
+						message(JAXB,ME,"XML infoset");
+						active(ME);
+							message(ME,T,"encrypted infoset");
+							message(JAXB,ME,"XML infoset");
+							message(ME,T,"encrypted infoset");
+							message(JAXB,ME,"XML infoset");
+							message(ME,T,"encrypted infoset");
+						inactive(ME);
+					inactive(JAXB);
+				inactive(M1);
+			inactive(ME);
+			
+			message(T,T,"send and receive");
+			cmessage(T,M3,"msg3:" "StreamMessage");
+			rmessage(T,S,"msg3");
+		inactive(T);
+		
+		step();
+		cmessage(S,ME,"msg4:" "DecryptedMessage");
+		message(S,ME,"<init>(msg3)");
+		active(ME);
+			message(ME,ME,"wrap msg3 into msg4");
+		inactive(ME);
+		
+		rmessage(S,P,"msg4");
+	inactive(S);
+	
+	message(P,ME,"readAsJAXB()");
+	active(ME);
+		message(ME,JAXB,"start unmarshalling");
+		active(JAXB);
+			message(ME,M3,"writeTo(...)");
+			active(M3);
+				message(M3,ME,"XML infoset");
+				active(ME);
+					message(ME,JAXB,"decrypted infoset");
+					message(M3,ME,"XML infoset");
+					message(ME,JAXB,"decrypted infoset");
+					message(M3,ME,"XML infoset");
+					message(ME,JAXB,"decrypted infoset");
+				inactive(ME);
+			inactive(M3);
+			rmessage(JAXB,ME,"4.10");
+		inactive(JAXB);
+		rmessage(ME,P,"4.10");
+	inactive(ME);
+	
+	rmessage(P,A,"4.10");
+inactive(P);
+
+step();
+complete(JAXB);
+complete(P);
+complete(S);
+complete(T);

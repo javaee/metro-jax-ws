@@ -23,7 +23,6 @@
 package com.sun.tools.ws.processor.generator;
 
 import com.sun.tools.ws.processor.ProcessorException;
-import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  *
@@ -39,7 +38,7 @@ public class GeneratorException extends ProcessorException {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.generator";
     }
 }

@@ -10,21 +10,14 @@ encoding (if the binary data is inlined or sent as attachments) is transparent
 to the user.
 
 Enabling MTOM in JAX-WS:
-By default MTOM encoding is disabled. One can enable MTOM on client-side by 
-setting setMTOMEnabled (true) on the javax.xml.ws.SOAPBinding.
+By default MTOM encoding is disabled. One can enable MTOM on client-side by
+passing javax.xml.ws.MTOMFeature while creating the proxy.
+See javax.xml.ws.Service#getPort(Class<T> serviceEndpointInterface,WebServiceFeature... features)
+for more information on enabling/disabling Web Service features.
+Similarly, one can pass MTOMFeature while creating Dispatch client to enable MTOM.
 
-One the server-side, MTOM is enabled by setting enable-mtom=true in the 
-deployment descriptor (sun-jaxws.xml) or using MTOM binding identifiers defined 
-by JAX-WS specification.
-
-    * For SOAP 1.1, use "http://schemas.xmlsoap.org/wsdl/soap/http?mtom=true" 
-      to enable MTOM or specify enable-mtom=true attribute in sun-jaxws.xml
-
-    * For SOAP 1.2, use 
-      "http://www.w3.org/2003/05/soap/bindings/HTTP/?mtom=true" to enable MTOM 
-      or specify enable-mtom=true attribute in sun-jaxws.xml
-
-Observe the sun-jaxws.xml in this sample for usage.
+One the server-side, MTOM is enabled by using @javax.xml.ws.soap.MTOM on
+the endpoint implementation class.
 
 Mapping XML binary data to Java types:
 Normally XML binary types are mapped to Java byte[]. But using 
@@ -71,3 +64,4 @@ the data binding framework(JAXB in this case).
 
 Refer to the Prerequisites defined in samples/docs/index.html. 
 
+We appreciate your feedback, please send it to users@jax-ws.dev.java.net.

@@ -1,0 +1,27 @@
+<html>
+
+<head caption="Catalog Support">
+    <meta http-equiv="Content-Language" content="en-us">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body>
+
+<h2>Catalog Support</h2>
+<p>Often times, such as for performance reason or your application specific 
+needs, you have a need where you want to resolve the WSDL/Schema documents 
+resolved from the copy of it you have either bundled with your client or server 
+or just to resolve it not from where a WSDL/schema imports points to but rather 
+from where you want it to be picked up.</p>
+<h3>A Sample catalog file</h3>
+<h4>jax-ws-catalog.xml<code><br>
+</h4>
+<p>&lt;catalog xmlns=&quot;urn:oasis:names:tc:entity:xmlns:xml:catalog&quot;
+prefer=&quot;<b>system</b>&quot;&gt;<br>
+&nbsp;&nbsp;&nbsp;
+&lt;<b>system</b> <b>systemId</b>=&quot;<a href="http://foo.org/hello?wsdl">http://foo.org/hello?wsdl</a>&quot;
+<b>uri</b>=&quot;HelloService.wsdl&quot;/&gt;<br>
+&lt;/catalog&gt;</p>
+</code>
+</pre>
+<h4>Location of the catalog file</h4><ul><li>For wsimport command-line or ant task<ul><li>use -catalog option to pass the catalog file. The name of the catalog file does not matter for wsimport tool but for consistency you may like to call it jax-ws-catalog.xml</li><li>Use &lt;wsimport catalog=&quot;''&gt; or &lt;xmlcatalog ../.&gt; with wsimport ant task</li></ul></li><li>Client Runtime<ul><li>META-INF/jax-ws-catalog.xml picked up from classpath</li></ul></li><li>Lightweight HTTP server (j2se) based endpoints<ul><li>META-INF/jax-ws-catalog.xml picked up from classpath</li></ul></li><li>Servlet based endpoints or JSR 109 based Web Module<ul><li>WEB-INF/jax-ws-catalog.xml</li></ul></li><li>JSR 109 based EJB Modules<ul><li>META-INF/jax-ws-catalog.xml</li></ul></li></ul><p>For details on XML catalog see <a href="catalog.html">here</a>.</p></body></html>

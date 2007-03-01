@@ -22,9 +22,9 @@
 
 package com.sun.tools.ws.wsdl.document.soap;
 
-import javax.xml.namespace.QName;
-
 import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+
+import javax.xml.namespace.QName;
 
 /**
  * Interface defining SOAP-related constants.

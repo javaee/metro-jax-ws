@@ -30,6 +30,6 @@ import javax.xml.namespace.QName;
  * @author WS Development Team
  */
 public interface ParserListener {
-    public void ignoringExtension(QName name, QName parent);
+    public void ignoringExtension(Entity entity, QName name, QName parent);
     public void doneParsingEntity(QName element, Entity entity);
 }

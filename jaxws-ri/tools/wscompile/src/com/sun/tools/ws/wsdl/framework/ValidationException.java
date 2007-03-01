@@ -23,7 +23,6 @@
 package com.sun.tools.ws.wsdl.framework;
 
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.Localizable;
 
 /**
  * An exception signalling that validation of an entity failed.
@@ -40,7 +39,7 @@ public class ValidationException extends JAXWSExceptionBase {
         super(throwable);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.tools.ws.resources.wsdl";
     }
 }

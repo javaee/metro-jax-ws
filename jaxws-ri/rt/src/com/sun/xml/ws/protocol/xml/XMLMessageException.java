@@ -42,7 +42,7 @@ public class XMLMessageException extends JAXWSExceptionBase {
         super("server.rt.err", arg);
     }
 
-    public String getResourceBundleName() {
+    public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.xmlmessage";
     }
 

@@ -1,29 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=us-ascii">
-  <title>JAX-WS @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ -- APT</title>
-  <meta name="CREATED" content="20050329;10375410">
-  <meta name="CHANGED" content="20050401;8213207">
-  <link rel="stylesheet" type="text/css" href="style/default.css"/>
-</head>
-<body dir="ltr" lang="en-US">
-<center>
-<h1><a class="mozTocH1" name="mozTocId872588"></a>
-  Java<sup><font size="-2">TM</font></sup> API for XML Web Services<br />
-      APT
-</h1>
-   <b>Specification Version:</b> @@SPEC_VERSION@@<br />
-   <b>Reference Implementation (RI) Version:</b> @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@<br />
-  </center>
 
-<hr>
-<p>Last Modified: 4/26/06</p>
-<br>
-<p></p>
-<h1><a class="mozTocH1" name="mozTocId642262"></a><code>apt<br>
-</code></h1>
+<head caption="APT">
+    <link rel="stylesheet" type="text/css" href="style/default.css"/>
+</head>
+
+<body dir="ltr" lang="en-US">
+
+<h2>Apt</h2>
 <p>The <code>apt</code> tool provides a facility for programmatically
 processing the annotations added to Java by <a
  href="http://www.jcp.org/en/jsr/detail?id=175">JSR 175</a>, <i>Metadata
@@ -32,14 +15,16 @@ Language</i>. In brief, JSR 175 allows programmers to declare new kinds
 of structured modifiers that can be associated with program elements,
 fields, methods, classes, etc.</p>
 <p>The <code>apt</code> tool generates the portable artifacts used in
-JAX-WS services. <br>
+JAX-WS services.
+</p>
+<p><b>To run on JDK 6 follow these <a href="jaxws-tools.html#running_on_jdk6">
+instructions</a>.</b><br>
 </p>
 <h3><a class="mozTocH3" name="mozTocId798307"></a>Command-line<br>
 </h3>
 <h3><a class="mozTocH3" name="mozTocId408933"></a>Syntax</h3>
 <pre>apt &lt;apt and javac options&gt; &lt;source files&gt;<br></pre>
 <p>The following table lists the <code>apt</code> options.</p>
-<p align="center">Table 1-1 apt Options</p>
 <table border="1" cellpadding="2" cellspacing="3" width="847">
   <col width="220"> <col width="608"> <tbody>
     <tr>
@@ -52,7 +37,7 @@ JAX-WS services. <br>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-classpath &lt;path&gt;</code></p>
+      <p align="left"><b><code>-classpath &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Specifies where to find user class files and
@@ -61,7 +46,7 @@ annotation processor factories</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-cp &lt;path&gt;</code></p>
+      <p align="left"><b><code>-cp &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Same as <code>-classpath &lt;path&gt;</code></p>
@@ -69,7 +54,7 @@ annotation processor factories</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-d &lt;path&gt;</code></p>
+      <p align="left"><b><code>-d &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Specifies where to place processor and <code>javac</code>
@@ -78,7 +63,7 @@ generated class files</p>
     </tr>
     <tr>
       <td width="220">
-      <p><code>-s &lt;path&gt;</code></p>
+      <p><b><code>-s &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p>Specifies where to place processor generated source files</p>
@@ -86,7 +71,7 @@ generated class files</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-source &lt;release&gt;</code></p>
+      <p align="left"><b><code>-source &lt;release&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Provide source compatibility with the specified
@@ -95,7 +80,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p><code>-version</code></p>
+      <p><b><code>-version</code></b></p>
       </td>
       <td width="608">
       <p>Version information</p>
@@ -103,7 +88,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-help</code></p>
+      <p align="left"><b><code>-help</code></b></p>
       </td>
       <td width="608">
       <p align="left">Print a synopsis of standard options; use <code>javac
@@ -112,7 +97,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-X</code></p>
+      <p align="left"><b><code>-X</code></b></p>
       </td>
       <td width="608">
       <p align="left">Print a synopsis of non-standard options</p>
@@ -120,7 +105,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-J&lt;flag&gt;</code></p>
+      <p align="left"><b><code>-J&lt;flag&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Pass &lt;flag&gt; directly to the runtime system</p>
@@ -128,7 +113,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-A[key[=value]]</code></p>
+      <p align="left"><b><code>-A[key[=value]]</code></b></p>
       </td>
       <td width="608">
       <p align="left">Options to pass to annotation processors</p>
@@ -136,7 +121,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>nocompile</code></p>
+      <p align="left"><b><code>nocompile</code></b></p>
       </td>
       <td width="608">
       <p align="left">Do not compile source files to class files</p>
@@ -144,7 +129,7 @@ release</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-print</code></p>
+      <p align="left"><b><code>-print</code></b></p>
       </td>
       <td width="608">
       <p align="left">Print out a textual representation of the
@@ -153,7 +138,7 @@ specified types</p>
     </tr>
     <tr>
       <td width="220">
-      <p><code>-factorypath &lt;path&gt;</code></p>
+      <p><b><code>-factorypath &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p>Specify where to find annotation processor factories</p>
@@ -161,7 +146,7 @@ specified types</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-factory &lt;class&gt;</code></p>
+      <p align="left"><b><code>-factory &lt;class&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Name of <code>AnnotationProcessorFactory</code>
@@ -170,7 +155,7 @@ to use; bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-g</code></p>
+      <p align="left"><b><code>-g</code></b></p>
       </td>
       <td width="608">
       <p align="left">Generate all debugging info</p>
@@ -178,7 +163,7 @@ to use; bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-g:none</code></p>
+      <p align="left"><b><code>-g:none</code></b></p>
       </td>
       <td width="608">
       <p align="left">Generate no debugging info</p>
@@ -186,7 +171,7 @@ to use; bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-g:{lines,vars,source}</code></p>
+      <p align="left"><b><code>-g:{lines,vars,source}</code></b></p>
       </td>
       <td width="608">
       <p align="left">Generate only some debugging info</p>
@@ -194,7 +179,7 @@ to use; bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-nowarn</code></p>
+      <p align="left"><b><code>-nowarn</code></b></p>
       </td>
       <td width="608">
       <p align="left">Generate no warnings</p>
@@ -202,7 +187,7 @@ to use; bypasses default discovery process</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-verbose</code></p>
+      <p align="left"><b><code>-verbose</code></b></p>
       </td>
       <td width="608">
       <p align="left">Output messages about what <code>apt</code> and <code>javac</code>
@@ -211,7 +196,7 @@ are doing</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-deprecation</code></p>
+      <p align="left"><b><code>-deprecation</code></b></p>
       </td>
       <td width="608">
       <p align="left">Output source locations where deprecated APIs are
@@ -220,7 +205,7 @@ used</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-sourcepath &lt;path&gt;</code></p>
+      <p align="left"><b><code>-sourcepath &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Specify where to find input source files</p>
@@ -228,7 +213,7 @@ used</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-bootclasspath &lt;path&gt;</code></p>
+      <p align="left"><b><code>-bootclasspath &lt;path&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Override location of bootstrap class files</p>
@@ -236,7 +221,7 @@ used</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-endorseddirs &lt;dirs&gt;</code></p>
+      <p align="left"><b><code>-endorseddirs &lt;dirs&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Override location of endorsed standards path</p>
@@ -244,7 +229,7 @@ used</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-encoding &lt;encoding&gt;</code></p>
+      <p align="left"><b><code>-encoding &lt;encoding&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Specify character encoding used by source files</p>
@@ -252,7 +237,7 @@ used</p>
     </tr>
     <tr>
       <td width="220">
-      <p align="left"><code>-target &lt;release&gt;</code></p>
+      <p align="left"><b><code>-target &lt;release&gt;</code></b></p>
       </td>
       <td width="608">
       <p align="left">Generate class files for a specific virtual
@@ -271,38 +256,39 @@ endpoint implementation class.</p>
 documentation <a
  href="http://java.sun.com/j2se/1.5.0/docs/guide/apt/index.html">here</a>.</p>
 <h2></h2>
-<h2><a name="apttask" id="apttask"></a>Ant task<br>
+<h2><a name="apttask"></a>Ant task<br>
 </h2>
 <p>An Ant task for the <code>apt</code> tool is provided with JAX-WS
-@@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ . The attributes and elements supported by the Ant task are
+${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} . The attributes and elements supported by the Ant task are
 listed below:</p>
-<pre>&lt;apt<br>    
-  verbose="true|false"<br>    
-  classpath="classpath"<br>    
-  destdir="directory for generated class files"<br>    
-  sourcedestdir="directory for generated source files"<br>    
-  nocompile="true|false"<br>    
-  print="true|false"<br>    
-  factorypath="&lt;path&gt;"<br>    
-  factory="name of AnnotationProcessorFactory to use"<br>    
-  xlistannotationtypes="true|false"<br>    
-  xlistdeclarations="true|false"<br>    
-  xprintaptrounds="true|false"<br>    
-  xprintfactoryinfo="true|false"<br>    
-  xclassesasdecls="true|false"<br>    
-  debug="true|false"<br>    
-  debuglevel="lines|vars|source"<br>    
-  nowarn="true|false"<br>    
-  deprecation="true|false"<br>    
-  bootclasspath="&lt;path&gt;"<br>    
-  extdirs="&lt;path&gt;"<br>    
-  endorseddirs="&lt;path&gt;"<br>    
-  sourcepath="&lt;path&gt;"<br>    
-  encoding="specify character encoding used by source files"<br>    
-  target="generate class files for specific virtual machine version"&gt;<br>    
+<pre>&lt;apt
+  verbose="true|false"
+  classpath="classpath"
+  destdir="directory for generated class files"
+  sourcedestdir="directory for generated source files"
+  nocompile="true|false"
+  print="true|false"
+  factorypath="&lt;path&gt;"
+  factory="name of AnnotationProcessorFactory to use"
+  xlistannotationtypes="true|false"
+  xlistdeclarations="true|false"
+  xprintaptrounds="true|false"
+  xprintfactoryinfo="true|false"
+  xclassesasdecls="true|false"
+  debug="true|false"
+  debuglevel="lines|vars|source"
+  nowarn="true|false"
+  deprecaption="true|false"
+  bootclasspath="&lt;path&gt;"
+  extdirs="&lt;path&gt;"
+  endorseddirs="&lt;path&gt;"
+  sourcepath="&lt;path&gt;"
+  encoding="specify character encoding used by source files"
+  target="generate class files for specific virtual machine version"&gt;
   &lt;option key="keyname" value="keyvalue"/&gt;
-  &lt;source ... &gt; ... &lt;/source&gt;<br>    
-  &lt;classpath ... &gt; ... &lt;/classpath&gt;<br>&lt;/apt&gt;<br>
+  &lt;source ... &gt; ... &lt;/source&gt;
+  &lt;classpath ... &gt; ... &lt;/classpath&gt;
+&lt;/apt&gt;
 </pre>
 <table border="0" cellpadding="2" cellspacing="2" width="90%">
   <tbody>
@@ -317,18 +303,6 @@ listed below:</p>
       <p>Command line</p>
       </td>
     </tr>
-<!--    <tr valign="top">
-      <td width="15%">
-      <p><code>fork</code></p>
-      </td>
-      <td width="70%">
-      <p>Forks the <code>apt</code> process into another virtual
-machine</p>
-      </td>
-      <td width="15%">
-      <p>n/a</p>
-      </td>
-    </tr>-->
     <tr>
       <td width="20%">
       <p><code>verbose</code></p>
@@ -655,8 +629,5 @@ rounds. The classpath is a reference to a <a
 <code>jaxws.classpath</code>, defined elsewhere in the build
 environment. This will also fork off the <code>apt</code> process
 using the default <code>java</code> executable.</p>
-<hr>
-<p><a href="../dist/docs/Copyright.html"><i><font size="2">Copyright &#169;
-2006 Sun Microsystems, Inc. All rights reserved.</font></i></a></p>
 </body>
 </html>

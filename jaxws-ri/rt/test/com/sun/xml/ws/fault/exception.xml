@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:exception xmlns:ns2="http://jax-ws.dev.java.net/" class="java.lang.Exception">
+  <message>java.lang.NullPointerException</message>
+  <ns2:stackTrace>
+    <ns2:frame class="com.sun.xml.ws.fault.ExceptionBeanTest" file="ExceptionBeanTest.java" line="21" method="test1"/>
+    <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="native"
+               method="invoke0"/>
+    <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="39"
+               method="invoke"/>
+    <ns2:frame class="sun.reflect.DelegatingMethodAccessorImpl" file="DelegatingMethodAccessorImpl.java" line="25"
+               method="invoke"/>
+    <ns2:frame class="java.lang.reflect.Method" file="Method.java" line="585" method="invoke"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="154" method="runTest"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="127" method="runBare"/>
+    <ns2:frame class="junit.framework.TestResult$1" file="TestResult.java" line="106" method="protect"/>
+    <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="124" method="runProtected"/>
+    <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="109" method="run"/>
+    <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="118" method="run"/>
+    <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="208" method="runTest"/>
+    <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="203" method="run"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="116" method="doRun"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="172" method="start"/>
+    <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="138" method="main"/>
+  </ns2:stackTrace>
+  <ns2:cause class="java.lang.NullPointerException">
+    <ns2:stackTrace>
+      <ns2:frame class="com.sun.xml.ws.fault.ExceptionBeanTest" file="ExceptionBeanTest.java" line="18" method="test1"/>
+      <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="native"
+                 method="invoke0"/>
+      <ns2:frame class="sun.reflect.NativeMethodAccessorImpl" file="NativeMethodAccessorImpl.java" line="39"
+                 method="invoke"/>
+      <ns2:frame class="sun.reflect.DelegatingMethodAccessorImpl" file="DelegatingMethodAccessorImpl.java" line="25"
+                 method="invoke"/>
+      <ns2:frame class="java.lang.reflect.Method" file="Method.java" line="585" method="invoke"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="154" method="runTest"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="127" method="runBare"/>
+      <ns2:frame class="junit.framework.TestResult$1" file="TestResult.java" line="106" method="protect"/>
+      <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="124" method="runProtected"/>
+      <ns2:frame class="junit.framework.TestResult" file="TestResult.java" line="109" method="run"/>
+      <ns2:frame class="junit.framework.TestCase" file="TestCase.java" line="118" method="run"/>
+      <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="208" method="runTest"/>
+      <ns2:frame class="junit.framework.TestSuite" file="TestSuite.java" line="203" method="run"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="116" method="doRun"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="172" method="start"/>
+      <ns2:frame class="junit.textui.TestRunner" file="TestRunner.java" line="138" method="main"/>
+    </ns2:stackTrace>
+  </ns2:cause>
+</ns2:exception>

@@ -22,33 +22,28 @@
 
 package com.sun.tools.ws.wsdl.document;
 
+import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
+import com.sun.tools.ws.api.wsdl.TWSDLExtension;
+import com.sun.tools.ws.wsdl.framework.*;
+import com.sun.tools.ws.resources.WsdlMessages;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import org.xml.sax.Locator;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.wsdl.framework.AbstractDocument;
-import com.sun.tools.ws.wsdl.framework.Defining;
-import com.sun.tools.ws.wsdl.framework.Entity;
-import com.sun.tools.ws.wsdl.framework.EntityAction;
-import com.sun.tools.ws.wsdl.framework.EntityReferenceAction;
-import com.sun.tools.ws.wsdl.framework.ExtensibilityHelper;
-import com.sun.tools.ws.wsdl.framework.Extensible;
-import com.sun.tools.ws.wsdl.framework.Extension;
-import com.sun.tools.ws.wsdl.framework.GlobalEntity;
-import com.sun.tools.ws.wsdl.framework.Kind;
-import com.sun.tools.ws.wsdl.framework.QNameAction;
 
 /**
  * Entity corresponding to the "binding" WSDL element.
  *
  * @author WS Development Team
  */
-public class Binding extends GlobalEntity implements Extensible {
+public class Binding extends GlobalEntity implements TWSDLExtensible {
 
-    public Binding(Defining defining) {
-        super(defining);
+    public Binding(Defining defining, Locator locator, ErrorReceiver receiver) {
+        super(defining, locator, receiver);
         _operations = new ArrayList();
         _helper = new ExtensibilityHelper();
     }
@@ -70,7 +65,12 @@ public class Binding extends GlobalEntity implements Extensible {
     }
 
     public PortType resolvePortType(AbstractDocument document) {
-        return (PortType) document.find(Kinds.PORT_TYPE, _portType);
+        try {
+            return (PortType) document.find(Kinds.PORT_TYPE, _portType);
+        } catch (NoSuchEntityException e) {
+            errorReceiver.error(getLocator(), WsdlMessages.ENTITY_NOT_FOUND_PORT_TYPE(_portType, new QName(getNamespaceURI(), getName())));
+            throw new AbortException();
+        }
     }
 
     public Kind getKind() {
@@ -130,16 +130,38 @@ public class Binding extends GlobalEntity implements Extensible {
         }
     }
 
-    public void addExtension(Extension e) {
+    public String getNameValue() {
+        return getName();
+    }
+
+    public String getNamespaceURI() {
+        return getDefining().getTargetNamespaceURI();
+    }
+
+    public QName getWSDLElementName() {
+        return getElementName();
+    }
+
+    public void addExtension(TWSDLExtension e) {
         _helper.addExtension(e);
     }
 
-    public Iterator extensions() {
+    public Iterable<TWSDLExtension> extensions() {
         return _helper.extensions();
+    }
+
+    public TWSDLExtensible getParent() {
+        return parent;
     }
 
     private ExtensibilityHelper _helper;
     private Documentation _documentation;
     private QName _portType;
     private List _operations;
+
+    public void setParent(TWSDLExtensible parent) {
+        this.parent = parent;
+    }
+
+    private TWSDLExtensible parent;
 }

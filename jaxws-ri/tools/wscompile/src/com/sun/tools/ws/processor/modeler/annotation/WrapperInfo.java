@@ -21,10 +21,8 @@
  */
 package com.sun.tools.ws.processor.modeler.annotation;
 
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
-import com.sun.tools.ws.processor.modeler.annotation.*;
 
 /**
  *

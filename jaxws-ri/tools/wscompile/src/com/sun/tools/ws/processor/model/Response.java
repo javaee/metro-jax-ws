@@ -22,6 +22,9 @@
 
 package com.sun.tools.ws.processor.model;
 
+import com.sun.tools.ws.wsdl.framework.Entity;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,7 +35,9 @@ import java.util.Map;
  */
 public class Response extends Message {
 
-    public Response() {}
+    public Response(com.sun.tools.ws.wsdl.document.Message entity, ErrorReceiver receiver) {
+        super(entity, receiver);
+    }
 
     public void addFaultBlock(Block b) {
         if (_faultBlocks.containsKey(b.getName())) {

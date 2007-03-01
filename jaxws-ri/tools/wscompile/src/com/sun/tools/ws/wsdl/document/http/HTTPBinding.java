@@ -22,18 +22,20 @@
 
 package com.sun.tools.ws.wsdl.document.http;
 
-import javax.xml.namespace.QName;
+import com.sun.tools.ws.wsdl.framework.ExtensionImpl;
+import org.xml.sax.Locator;
 
-import com.sun.tools.ws.wsdl.framework.Extension;
+import javax.xml.namespace.QName;
 
 /**
  * A HTTP binding extension.
  *
  * @author WS Development Team
  */
-public class HTTPBinding extends Extension {
+public class HTTPBinding extends ExtensionImpl {
 
-    public HTTPBinding() {
+    public HTTPBinding(Locator locator) {
+        super(locator);
     }
 
     public QName getElementName() {

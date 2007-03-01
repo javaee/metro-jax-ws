@@ -21,16 +21,16 @@
  */
 package com.sun.tools.ws.processor.model;
 
+import com.sun.codemodel.JClass;
+import com.sun.tools.ws.processor.generator.GeneratorUtil;
+import com.sun.tools.ws.processor.model.java.JavaException;
+import com.sun.tools.ws.wsdl.framework.Entity;
+
+import javax.xml.namespace.QName;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.xml.namespace.QName;
-
-import com.sun.tools.ws.processor.generator.GeneratorUtil;
-import com.sun.tools.ws.processor.model.java.JavaException;
-import com.sun.codemodel.JClass;
 
 /**
  *
@@ -38,9 +38,12 @@ import com.sun.codemodel.JClass;
  */
 public class Fault extends ModelObject {
 
-    public Fault() {}
+    public Fault(Entity entity) {
+        super(entity);
+    }
 
-    public Fault(String name) {
+    public Fault(String name, Entity entity) {
+        super(entity);
         this.name = name;
         parentFault = null;
     }
@@ -77,37 +80,11 @@ public class Fault extends ModelObject {
         return parentFault;
     }
 
-    public void setParentFault(Fault parentFault) {
-        if (this.parentFault != null &&
-            parentFault != null &&
-            !this.parentFault.equals(parentFault)) {
-
-            throw new ModelException("model.parent.fault.already.set",
-                new Object[] {
-                    getName(),
-                    this.parentFault.getName(),
-                    parentFault.getName()
-            });
-        }
-        this.parentFault = parentFault;
-    }
-
-    public void addSubfault(Fault fault) {
-        subfaults.add(fault);
-        fault.setParentFault(this);
-    }
-
     public Iterator getSubfaults() {
         if (subfaults.size() == 0) {
             return null;
         }
         return subfaults.iterator();
-    }
-
-    public Iterator getSortedSubfaults() {
-        Set sortedFaults = new TreeSet(new GeneratorUtil.FaultComparator());
-        sortedFaults.addAll(subfaults);
-        return sortedFaults.iterator();
     }
 
     /* serialization */
@@ -184,4 +161,14 @@ public class Fault extends ModelObject {
     private QName elementName = null;
     private String javaMemberName = null;
     private JClass exceptionClass;
+
+    public String getWsdlFaultName() {
+        return wsdlFaultName;
+    }
+
+    public void setWsdlFaultName(String wsdlFaultName) {
+        this.wsdlFaultName = wsdlFaultName;
+    }
+
+    private String wsdlFaultName;
 }

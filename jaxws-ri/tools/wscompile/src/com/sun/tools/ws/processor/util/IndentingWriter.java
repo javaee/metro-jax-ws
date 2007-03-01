@@ -22,14 +22,14 @@
 
 package com.sun.tools.ws.processor.util;
 
+import com.sun.tools.ws.processor.generator.GeneratorException;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
-
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.text.MessageFormat;
-import com.sun.tools.ws.processor.generator.GeneratorException;
 
 /**
  *

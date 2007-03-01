@@ -3,12 +3,12 @@
  * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html.
  * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL
  * Header Notice in each file and include the License file
  * at https://glassfish.dev.java.net/public/CDDLv1.0.html.
@@ -16,58 +16,50 @@
  * with the fields enclosed by brackets [] replaced by
  * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems Inc. All Rights Reserved
  */
 package com.sun.tools.ws.processor.modeler.wsdl;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
-
-import com.sun.tools.xjc.api.ErrorListener;
-import com.sun.tools.xjc.api.SchemaCompiler;
-import com.sun.tools.xjc.api.XJC;
-import com.sun.tools.xjc.api.TypeAndAnnotation;
-import com.sun.tools.ws.processor.ProcessorOptions;
-import com.sun.tools.ws.processor.config.ModelInfo;
-import com.sun.tools.ws.processor.config.WSDLModelInfo;
 import com.sun.tools.ws.processor.model.ModelException;
 import com.sun.tools.ws.processor.model.java.JavaSimpleType;
 import com.sun.tools.ws.processor.model.java.JavaType;
 import com.sun.tools.ws.processor.model.jaxb.JAXBMapping;
 import com.sun.tools.ws.processor.model.jaxb.JAXBModel;
 import com.sun.tools.ws.processor.model.jaxb.JAXBType;
-import com.sun.tools.ws.processor.modeler.JavaSimpleTypeCreator;
 import com.sun.tools.ws.processor.util.ClassNameCollector;
-import com.sun.tools.ws.processor.util.ProcessorEnvironment;
-import com.sun.xml.ws.util.JAXWSUtils;
-import com.sun.xml.ws.util.localization.LocalizableMessageFactory;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.wscompile.ErrorReceiver;
+import com.sun.tools.ws.wscompile.WsimportOptions;
+import com.sun.tools.ws.wsdl.parser.DOMForestScanner;
+import com.sun.tools.ws.wsdl.parser.MetadataFinder;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.SchemaCompiler;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.helpers.LocatorImpl;
+
+import javax.xml.namespace.QName;
 
 /**
- * @author Kathy Walsh, Vivek Pandey
+ * @author  Vivek Pandey
  *
  * Uses JAXB XJC apis to build JAXBModel and resolves xml to java type mapping from JAXBModel
  */
 public class JAXBModelBuilder {
-    public JAXBModelBuilder(ModelInfo modelInfo,
-                            Properties options, ClassNameCollector classNameCollector, List elements) {
-        _messageFactory =
-            new LocalizableMessageFactory("com.sun.tools.ws.resources.model");
-        _modelInfo = modelInfo;
-        _env = (ProcessorEnvironment) modelInfo.getParent().getEnvironment();
-        _classNameAllocator = new ClassNameAllocatorImpl(classNameCollector);
 
-        printstacktrace = Boolean.valueOf(options.getProperty(ProcessorOptions.PRINT_STACK_TRACE_PROPERTY));
-        consoleErrorReporter = new ConsoleErrorReporter(_env, false);
-        internalBuildJAXBModel(elements);
+    private final ErrorReceiver errReceiver;
+    private final WsimportOptions options;
+    private final MetadataFinder forest;
+
+    public JAXBModelBuilder(WsimportOptions options, ClassNameCollector classNameCollector, MetadataFinder finder, ErrorReceiver errReceiver) {
+        this._classNameAllocator = new ClassNameAllocatorImpl(classNameCollector);
+        this.errReceiver = errReceiver;
+        this.options = options;
+        this.forest = finder;
+
+        internalBuildJAXBModel();
     }
 
     /**
@@ -77,22 +69,26 @@ public class JAXBModelBuilder {
      * @see com.sun.tools.ws.processor.modeler.Modeler#buildModel()
      */
 
-    private void internalBuildJAXBModel(List elements){
+    private void internalBuildJAXBModel(){
         try {
-            schemaCompiler = XJC.createSchemaCompiler();
+            schemaCompiler =  options.getSchemaCompiler();
+            schemaCompiler.resetSchema();
+            schemaCompiler.setEntityResolver(options.entityResolver);
             schemaCompiler.setClassNameAllocator(_classNameAllocator);
-            schemaCompiler.setErrorListener(consoleErrorReporter);
-            schemaCompiler.setEntityResolver(_modelInfo.getEntityResolver());
+            schemaCompiler.setErrorListener(errReceiver);
             int schemaElementCount = 1;
-            for(Iterator iter = elements.iterator(); iter.hasNext();){
-                Element schemaElement = (Element)iter.next();
-                String location = schemaElement.getOwnerDocument().getDocumentURI();
-                String systemId = new String(location + "#types?schema"+schemaElementCount++);
-                schemaCompiler.parseSchema(systemId,schemaElement);
+
+            for (Element element : forest.getInlinedSchemaElement()) {
+                String location = element.getOwnerDocument().getDocumentURI();
+                String systemId = location + "#types?schema" + schemaElementCount++;
+                if(forest.isMexMetadata)
+                    schemaCompiler.parseSchema(systemId,element);
+                else
+                    new DOMForestScanner(forest).scan(element,schemaCompiler.getParserHandler(systemId));
             }
 
             //feed external jaxb:bindings file
-            Set<InputSource> externalBindings = ((WSDLModelInfo)_modelInfo).getJAXBBindings();
+            InputSource[] externalBindings = options.getSchemaBindings();
             if(externalBindings != null){
                 for(InputSource jaxbBinding : externalBindings){
                     schemaCompiler.parseSchema(jaxbBinding);
@@ -106,27 +102,25 @@ public class JAXBModelBuilder {
     public JAXBType  getJAXBType(QName qname){
         JAXBMapping mapping = jaxbModel.get(qname);
         if (mapping == null){
-            fail("model.schema.elementNotFound", new Object[]{qname});
+            return null;
         }
-
         JavaType javaType = new JavaSimpleType(mapping.getType());
-        JAXBType type =  new JAXBType(qname, javaType, mapping, jaxbModel);
-        return type;
+        return new JAXBType(qname, javaType, mapping, jaxbModel);
     }
 
     public TypeAndAnnotation getElementTypeAndAnn(QName qname){
         JAXBMapping mapping = jaxbModel.get(qname);
         if (mapping == null){
-            fail("model.schema.elementNotFound", new Object[]{qname});
+            return null;
         }
         return mapping.getType().getTypeAnn();
     }
 
     protected void bind(){
-        com.sun.tools.xjc.api.JAXBModel rawJaxbModel = schemaCompiler.bind();
-        if(consoleErrorReporter.hasError()){
-            throw new ModelException(consoleErrorReporter.getException());
-        }
+        S2JJAXBModel rawJaxbModel = schemaCompiler.bind();
+        if(rawJaxbModel == null)
+            throw new AbortException();
+        options.setCodeModel(rawJaxbModel.generateCode(null, errReceiver));
         jaxbModel = new JAXBModel(rawJaxbModel);
         jaxbModel.setGeneratedClassNames(_classNameAllocator.getJaxbGeneratedClasses());
     }
@@ -135,32 +129,13 @@ public class JAXBModelBuilder {
         return schemaCompiler;
     }
 
-    protected void fail(String key, Object[] arg) {
-        throw new ModelException(key, arg);
-    }
-
-    protected void error(String key, Object[] args){
-        _env.error(_messageFactory.getMessage(key, args));
-    }
-
-    protected void warn(String key, Object[] args) {
-        _env.warn(_messageFactory.getMessage(key, args));
-    }
-
-    protected void inform(String key, Object[] args) {
-        _env.info(_messageFactory.getMessage(key, args));
-    }
-
     public JAXBModel getJAXBModel(){
         return jaxbModel;
     }
 
     private JAXBModel jaxbModel;
     private SchemaCompiler schemaCompiler;
-    private final LocalizableMessageFactory _messageFactory;
-    private final ModelInfo _modelInfo;
-    private final ProcessorEnvironment _env;
-    private final boolean printstacktrace;
     private final ClassNameAllocatorImpl _classNameAllocator;
-    private final ConsoleErrorReporter consoleErrorReporter;
+    protected static final LocatorImpl NULL_LOCATOR = new LocatorImpl();
+
 }
