@@ -21,26 +21,8 @@
  */
 package com.sun.xml.ws.transport.local;
 
-import com.sun.xml.ws.transport.http.WSHTTPConnection;
-import com.sun.xml.ws.api.server.WebServiceContextDelegate;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
-
-import javax.xml.ws.handler.MessageContext;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.net.URI;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.Principal;
-
 /**
- *
+ * Called when the connection is closed.
  * @author Jitendra Kotamraju
  */
 interface ClosedCallback {
