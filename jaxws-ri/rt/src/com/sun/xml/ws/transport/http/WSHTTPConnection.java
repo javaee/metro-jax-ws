@@ -131,6 +131,15 @@ public abstract class WSHTTPConnection extends PropertySet {
     public abstract int getStatus();
 
     /**
+     * Gets the HTTP method of this request.
+     *
+     * @return
+     *      For example "GET" or "POST".
+     * @since 2.1.2
+     */
+    public abstract @NotNull String getMethod();
+
+    /**
      * Transport's underlying input stream.
      *
      * <p>

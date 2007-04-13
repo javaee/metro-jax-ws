@@ -33,7 +33,11 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 import javax.xml.ws.handler.MessageContext;
-import java.io.*;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -105,6 +109,11 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     @Property(MessageContext.HTTP_RESPONSE_CODE)
     public int getStatus() {
         return status;
+    }
+
+    @Override
+    public @NotNull String getMethod() {
+        return httpExchange.getRequestMethod();
     }
 
     public @NotNull InputStream getInput() {
