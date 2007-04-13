@@ -134,16 +134,6 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         super.handle(connection);
     }
 
-    /**
-     * Version of {@link #publishWSDL(WSHTTPConnection, String, String)}
-     * that takes convenient parameters for servlet.
-     */
-    public void publishWSDL(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        WSHTTPConnection con = new ServletConnectionImpl(this,context,request,response);
-        super.publishWSDL(con,con.getBaseAddress(),request.getQueryString());
-    }
-
-
     public String toString() {
         return super.toString()+"[name="+name+']';
     }
