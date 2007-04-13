@@ -27,6 +27,8 @@
 
   <property file="../../project.properties"/>
 
+  <import file="../../build-taskdefs.xml" />
+
   <target name="compile">
     <mkdir dir="build/classes"/>
     <javac srcdir="src"
@@ -65,4 +67,40 @@
   <target name="clean">
     <delete dir="build"/>
   </target>
+  
+  <target name="push-to-maven-prepare"
+    description="prepare a repository image for the push-to-maven target">
+    <taskdef resource="maven-repository-importer.properties">
+      <classpath>
+        <pathelement path="../../tools/lib/maven-repository-importer.jar" />
+      </classpath>
+    </taskdef>
+    <delete dir="build/maven-repo" /><!-- clean it -->
+    <!-- ${suffix} can be overridden to "" for posting releases -->
+    <!-- ${suffix} can be overridden to "" for posting releases -->
+      <!--
+        when building jars for Maven, we want to put suffix
+        (sometimes with version like '-2.0.beta1', with date '-20051208', or with '-SNAPSHOT')
+        this property lets you do that.
+      -->
+    <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
+    <maven-repository-importer
+        destdir="build/maven-repo" version="${jar.suffix}">
+      <artifact
+        jar="build/jaxws-local-transport.jar"
+        pom="jaxws-local-transport.pom"
+        srczip="build/jaxws-local-transport-src.zip" />
+      <filterset>
+        <filter token="JAXWS_VERSION" value="${release.impl.version}"/>
+      </filterset>
+    </maven-repository-importer>
+  </target>
+
+  <target name="push-to-maven" depends="push-to-maven-prepare"
+    description="publish artifacts into the maven repository">
+    <echo>importing to CVS...</echo>
+    <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo"
+                cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
+  </target>
+  
 </project> 
