@@ -44,7 +44,7 @@ public final class WSServlet extends HttpServlet {
         delegate = (WSServletDelegate) servletConfig.getServletContext().getAttribute(JAXWS_RI_RUNTIME_INFO);
     }
 
-    protected void doPost( HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost( HttpServletRequest request, HttpServletResponse response) throws ServletException {
         if (delegate != null) {
             delegate.doPost(request,response,getServletContext());
         }

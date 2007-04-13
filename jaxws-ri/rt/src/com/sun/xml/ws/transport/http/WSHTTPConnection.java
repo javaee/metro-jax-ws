@@ -220,6 +220,13 @@ public abstract class WSHTTPConnection extends PropertySet {
     public abstract @Nullable String getPathInfo();
 
     /**
+     * Gets the absolute URL up to the context path.
+     * @return
+     *      String like "http://myhost/myapp"
+     */
+    public abstract @NotNull String getBaseAddress();
+
+    /**
      * Whether connection is HTTPS or not
      *
      * @return if the received request is on HTTPS, return true

@@ -33,7 +33,9 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.server.AbstractServerAsyncTransport;
 import com.sun.xml.ws.api.server.Adapter;
+import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.DocumentAddressResolver;
+import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.ServiceDefinition;
@@ -45,7 +47,9 @@ import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 
+import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.http.HTTPBinding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -170,6 +174,22 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @throws IOException when I/O errors happen
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
+        if(connection.getMethod().equals("GET")) {
+            String query = connection.getQueryString();
+            if (isMetadataQuery(query)) {
+                // Sends published WSDL and schema documents
+                publishWSDL(connection);
+                return;
+            }
+            Binding binding = getEndpoint().getBinding();
+            if (!(binding instanceof HTTPBinding)) {
+                // Writes HTML page with all the endpoint descriptions
+                writeWebServicesHtmlPage(connection);
+                return;
+            }
+        }
+
+        // normal request handling
         HttpToolkit tk = pool.take();
         try {
             tk.handle(connection);
@@ -411,24 +431,18 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * in response to the GET requests to URLs like "?wsdl" or "?xsd=2".
      *
      * @param con
-     *      The connection to which the data will be sent. Must not be null.
-     * @param baseAddress
-     *      The requested base URL (such as "http://myhost:2045/foo/bar").
-     *      Used to reference other resoures. Must not be null.
-     * @param queryString
-     *      The query string given by the client (which indicates
-     *      what document to serve.) Can be null (but it causes an 404 not found.)
+     *      The connection to which the data will be sent.
      *
      * @throws IOException when I/O errors happen
      */
-    public void publishWSDL(WSHTTPConnection con, final String baseAddress, String queryString) throws IOException {
+    public void publishWSDL(@NotNull WSHTTPConnection con) throws IOException {
         // Workaround for a bug in http server. Read and close InputStream
         // TODO remove once the bug is fixed in http server
         InputStream in = con.getInput();
         while(in.read() != -1);
         in.close();
 
-        SDDocument doc = wsdls.get(queryString);
+        SDDocument doc = wsdls.get(con.getQueryString());
         if (doc == null) {
             writeNotFoundErrorPage(con,"Invalid Request");
             return;
@@ -439,7 +453,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
         OutputStream os = con.getProtocol().contains("1.1") ? con.getOutput() : new Http10OutputStream(con);
 
-        final PortAddressResolver portAddressResolver = owner.createPortAddressResolver(baseAddress);
+        final PortAddressResolver portAddressResolver = owner.createPortAddressResolver(con.getBaseAddress());
         final String address = portAddressResolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
         assert address != null;
         DocumentAddressResolver resolver = new DocumentAddressResolver() {
@@ -523,20 +537,94 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     }
 
     /**
+     * Generates the listing of all services.
+     */
+    private void writeWebServicesHtmlPage(WSHTTPConnection con) throws IOException {
+        if (!publishStatusPage) return;
+
+        // TODO: resurrect the ability to localize according to the current request.
+
+        // standard browsable page
+        con.setStatus(WSHTTPConnection.OK);
+        con.setResponseHeaders(
+            Collections.singletonMap("Content-Type",Collections.singletonList("text/html;charset=UTF-8")));
+
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(con.getOutput(),"UTF-8"));
+        out.println("<html>");
+        out.println("<head><title>");
+        // out.println("Web Services");
+        out.println(WsservletMessages.SERVLET_HTML_TITLE());
+        out.println("</title></head>");
+        out.println("<body>");
+        // out.println("<h1>Web Services</h1>");
+        out.println(WsservletMessages.SERVLET_HTML_TITLE_2());
+
+        // what endpoints do we have in this system?
+        Module module = getEndpoint().getContainer().getSPI(Module.class);
+        List<BoundEndpoint> endpoints = Collections.emptyList();
+        if(module!=null) {
+            endpoints = module.getBoundEndpoints();
+        }
+
+        if (endpoints.isEmpty()) {
+            // out.println("<p>No JAX-WS context information available.</p>");
+            out.println(WsservletMessages.SERVLET_HTML_NO_INFO_AVAILABLE());
+        } else {
+            out.println("<table width='100%' border='1'>");
+            out.println("<tr>");
+            out.println("<td>");
+            // out.println("WSDLPort Name");
+            out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_PORT_NAME());
+            out.println("</td>");
+            out.println("<td>");
+            // out.println("Status");
+            out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_STATUS());
+            out.println("</td>");
+            out.println("<td>");
+            // out.println("Information");
+            out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_INFORMATION());
+            out.println("</td>");
+            out.println("</tr>");
+
+            for (BoundEndpoint a : endpoints) {
+                String endpointAddress = a.getAddress().toString();
+                out.println("<tr>");
+                out.println("<td>" + a + "</td>");
+                out.println("<td>");
+                out.println(WsservletMessages.SERVLET_HTML_STATUS_ACTIVE());
+                out.println("</td>");
+                out.println("<td>");
+                out.println(WsservletMessages.SERVLET_HTML_INFORMATION_TABLE(
+                            endpointAddress,
+                            a.getEndpoint().getPortName(),
+                            a.getEndpoint().getImplementationClass().getName()
+                        ));
+                out.println("</td>");
+                out.println("</tr>");
+            }
+            out.println("</table>");
+        }
+        out.println("</body>");
+        out.println("</html>");
+    }
+
+    /**
      * Dumps what goes across HTTP transport.
      */
-    public static boolean dump;
+    public static boolean dump = false;
+
+    public static boolean publishStatusPage = true;
 
     static {
-        boolean b;
         try {
-            b = Boolean.getBoolean(HttpAdapter.class.getName()+".dump");
+            dump = Boolean.getBoolean(HttpAdapter.class.getName()+".dump");
         } catch( Throwable t ) {
-            b = false;
         }
-        dump = b;
+        try {
+            publishStatusPage = Boolean.getBoolean(HttpAdapter.class.getName()+".publishStatusPage");
+        } catch( Throwable t ) {
+        }
     }
 
     private static final Logger LOGGER = Logger.getLogger(HttpAdapter.class.getName());
-
 }

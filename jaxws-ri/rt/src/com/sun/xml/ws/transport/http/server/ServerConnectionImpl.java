@@ -208,6 +208,11 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         return null;
     }
 
+    @Override @NotNull
+    public String getBaseAddress() {
+        return httpExchange.getRequestURI().resolve(httpExchange.getHttpContext().getPath()).toString();
+    }
+
     @Override
     public String getProtocol() {
         return httpExchange.getProtocol();

@@ -128,6 +128,11 @@ final class LocalConnectionImpl extends WSHTTPConnection implements WebServiceCo
         return null;   // not really supported
     }
 
+    @Override @NotNull
+    public String getBaseAddress() {
+        return null;    // not really supported
+    }
+
     @Property(MessageContext.HTTP_RESPONSE_CODE)
     public int getStatus () {
         return statusCode;

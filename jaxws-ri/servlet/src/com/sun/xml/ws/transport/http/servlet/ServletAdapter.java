@@ -140,23 +140,12 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
      */
     public void publishWSDL(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
         WSHTTPConnection con = new ServletConnectionImpl(this,context,request,response);
-        super.publishWSDL(con,getBaseAddress(request),request.getQueryString());
+        super.publishWSDL(con,con.getBaseAddress(),request.getQueryString());
     }
 
-    /**
-     * Computes the base URL of the given request.
-     */
-    static String getBaseAddress(HttpServletRequest request) {
-        StringBuilder addrBuf = new StringBuilder();
-        addrBuf.append(request.getScheme());
-        addrBuf.append("://");
-        addrBuf.append(request.getServerName());
-        addrBuf.append(':');
-        addrBuf.append(request.getServerPort());
-        addrBuf.append(request.getContextPath());
-        //addrBuf.append(getValidPath());
 
-        return addrBuf.toString();
+    public String toString() {
+        return super.toString()+"[name="+name+']';
     }
 
     private static final Logger LOGGER = Logger.getLogger(ServletAdapter.class.getName());

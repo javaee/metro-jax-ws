@@ -166,8 +166,7 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     }
 
     public @NotNull String getEPRAddress(Packet p, WSEndpoint endpoint) {
-        String baseAddress = ServletAdapter.getBaseAddress(request);
-        PortAddressResolver resolver = adapter.owner.createPortAddressResolver(baseAddress);
+        PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress());
         String address = resolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
         if(address==null)
             throw new WebServiceException(WsservletMessages.SERVLET_NO_ADDRESS_AVAILABLE(endpoint.getPortName()));
@@ -209,6 +208,18 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     @Property(MessageContext.PATH_INFO)
     public @NotNull String getPathInfo() {
         return request.getPathInfo();
+    }
+
+    public @NotNull String getBaseAddress() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(request.getScheme());
+        buf.append("://");
+        buf.append(request.getServerName());
+        buf.append(':');
+        buf.append(request.getServerPort());
+        buf.append(request.getContextPath());
+
+        return buf.toString();
     }
 
     @Property(MessageContext.SERVLET_CONTEXT)
