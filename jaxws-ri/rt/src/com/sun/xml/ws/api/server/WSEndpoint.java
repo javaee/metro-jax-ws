@@ -29,6 +29,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Engine;
 import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
@@ -339,6 +340,19 @@ public abstract class WSEndpoint<T> {
      */
     public abstract @Nullable ServiceDefinition getServiceDefinition();
 
+    /**
+     * Gets the {@link com.sun.xml.ws.api.model.SEIModel} that represents the relationship
+     * between WSDL and Java SEI.
+     *
+     * <p>
+     * This method returns a non-null value if and only if this
+     * endpoint is ultimately serving an application through an SEI.
+     *
+     * @return
+     *      maybe null. See above for more discussion.
+     *      Always the same value.
+     */
+    public abstract @Nullable SEIModel getSEIModel();
 
 
     /**
