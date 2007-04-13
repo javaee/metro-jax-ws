@@ -74,10 +74,12 @@ public class WSDLModeler extends WSDLModelerBase {
     private final Map<QName, QName> uniqueBodyBlocks = new HashMap<QName, QName>();
     private final QName VOID_BODYBLOCK = new QName("");
     private ClassNameCollector classNameCollector;
+    private final String explicitDefaultPackage;
 
     public WSDLModeler(WsimportOptions options, ErrorReceiver receiver) {
         super(options, receiver);
         this.classNameCollector = new ClassNameCollector();
+        this.explicitDefaultPackage = options.defaultPackage;
     }
 
 
@@ -86,15 +88,6 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     private JAXBModelBuilder jaxbModelBuilder;
-
-//    /**
-//     * @param modelInfo
-//     * @param options
-//     */
-//    public WSDLModeler(WSDLModelInfo modelInfo, Properties options, ErrorReceiver receiver) {
-//        super(modelInfo, options, receiver);
-//        this.classNameCollector = new ClassNameCollector();
-//    }
 
     public Model buildModel() {
         try {
@@ -120,10 +113,9 @@ public class WSDLModeler extends WSDLModelerBase {
             if (document == null || document.getDefinitions() == null)
                 return null;
 
-            //reset the errors reported earlier
-            errReceiver.reset();
             document.validateLocally();
             forest = parser.getDOMForest();
+
             Model model = internalBuildModel(document);
             if(model == null || errReceiver.hadError())
                 return null;                    
@@ -136,6 +128,7 @@ public class WSDLModeler extends WSDLModelerBase {
             }
             // do another pass, this time with conflict resolution enabled
             model = internalBuildModel(document);
+            
             classNameCollector.process(model);
             if (classNameCollector.getConflictingClassNames().isEmpty()) {
                 // we're done
@@ -175,6 +168,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
     private Model internalBuildModel(WSDLDocument document) {
         numPasses++;
+
         //build the jaxbModel to be used latter
         buildJAXBModel(document);
 
@@ -535,6 +529,10 @@ public class WSDLModeler extends WSDLModelerBase {
             response = new Response(null, errReceiver);
         }
 
+        //set the style based on heuristic that message has either all parts defined
+        // using type(RPC) or element(DOCUMENT)       
+        setNonSoapStyle(inputMessage, outputMessage);
+
         // Process parameterOrder and get the parameterList
         List<MessagePart> parameterList = getParameterOrder();
 
@@ -587,6 +585,36 @@ public class WSDLModeler extends WSDLModelerBase {
             warning(portType, "Can not generate Async methods for non-soap binding!");
         }
         return info.operation;
+    }
+
+    /**
+     * This method is added to fix one of the use case for j2ee se folks, so that we determine
+     * for non_soap wsdl what could be the style - rpc or document based on parts in the message.
+     *
+     * We assume that the message parts could have either all of them with type attribute (RPC)
+     * or element (DOCUMENT)
+     * 
+     * Shall this check if parts are mixed and throw error message?
+     */
+    private void setNonSoapStyle(Message inputMessage, Message outputMessage) {
+        SOAPStyle style = SOAPStyle.DOCUMENT;
+        for(MessagePart part:inputMessage.getParts()){
+            if(part.getDescriptorKind() == SchemaKinds.XSD_TYPE)
+                style = SOAPStyle.RPC;
+            else
+                style = SOAPStyle.DOCUMENT;
+        }
+
+        //check the outputMessage parts
+        if(outputMessage != null){
+            for(MessagePart part:outputMessage.getParts()){
+                if(part.getDescriptorKind() == SchemaKinds.XSD_TYPE)
+                    style = SOAPStyle.RPC;
+                else
+                    style = SOAPStyle.DOCUMENT;
+            }
+        }
+        info.modelPort.setStyle(style);
     }
 
     /* (non-Javadoc)
@@ -818,16 +846,16 @@ public class WSDLModeler extends WSDLModelerBase {
     }
 
     private boolean validateParameterName(List<Parameter> params) {
+        if (options.isExtensionMode())
+            return true;
+
         Message msg = getInputMessage();
         for (Parameter param : params) {
             if (param.isOUT())
                 continue;
             if (param.getCustomName() != null) {
                 if (Names.isJavaReservedWord(param.getCustomName())) {
-                    if (options.isExtensionMode())
-                        warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
-                    else
-                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
+                    error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
                     return false;
                 }
                 return true;
@@ -835,19 +863,13 @@ public class WSDLModeler extends WSDLModelerBase {
             //process doclit wrapper style
             if (param.isEmbedded() && !(param.getBlock().getType() instanceof RpcLitStructure)) {
                 if (Names.isJavaReservedWord(param.getName())) {
-                    if (options.isExtensionMode())
-                        warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
-                    else
-                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
+                    error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
                     return false;
                 }
             } else {
                 //non-wrapper style and rpclit
                 if (Names.isJavaReservedWord(param.getName())) {
-                    if (options.isExtensionMode())
-                        warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
-                    else
-                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
+                    error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
                     return false;
                 }
             }
@@ -861,10 +883,7 @@ public class WSDLModeler extends WSDLModelerBase {
                     continue;
                 if (param.getCustomName() != null) {
                     if (Names.isJavaReservedWord(param.getCustomName())) {
-                        if (options.isExtensionMode())
-                            warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
-                        else
-                            error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
+                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_CUSTOM_NAME(info.operation.getName(), param.getCustomName()));
                         return false;
                     }
                     return true;
@@ -874,10 +893,7 @@ public class WSDLModeler extends WSDLModelerBase {
                     if (param.isReturn())
                         continue;
                     if (!param.getName().equals("return") && Names.isJavaReservedWord(param.getName())) {
-                        if (options.isExtensionMode())
-                            warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
-                        else
-                            error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
+                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_WRAPPER_STYLE(info.operation.getName(), param.getName(), param.getBlock().getName()));
                         return false;
                     }
                 } else {
@@ -886,10 +902,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
                     //non-wrapper style and rpclit
                     if (Names.isJavaReservedWord(param.getName())) {
-                        if (options.isExtensionMode())
-                            warning(param.getEntity(), ModelerMessages.WSDLMODELER_WARNING_IGNORING_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
-                        else
-                            error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
+                        error(param.getEntity(), ModelerMessages.WSDLMODELER_INVALID_OPERATION_JAVA_RESERVED_WORD_NOT_ALLOWED_NON_WRAPPER_STYLE(info.operation.getName(), msg.getName(), param.getName()));
                         return false;
                     }
                 }
@@ -2145,7 +2158,8 @@ public class WSDLModeler extends WSDLModelerBase {
         //set the java package where wsdl artifacts will be generated
         //if user provided package name  using -p switch (or package property on wsimport ant task)
         //ignore the package customization in the wsdl and schema bidnings
-        if (options.defaultPackage != null) {
+        //formce the -p option only in the first pass
+        if (explicitDefaultPackage != null) {
             jaxbModelBuilder.getJAXBSchemaCompiler().forcePackageName(options.defaultPackage);
         } else {
             options.defaultPackage = getJavaPackage();

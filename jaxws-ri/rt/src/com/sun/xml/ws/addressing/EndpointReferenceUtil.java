@@ -105,7 +105,9 @@ public class EndpointReferenceUtil {
                 }
                 writer.writeEndElement();
             }
-
+            // Supress writing ServiceName and EndpointName in W3CEPR,
+            // Until the ns for those metadata elements is resolved.
+            /*
             //Write Interface info
             if (msEpr.portTypeName != null) {
                 writeW3CMetadata(writer);
@@ -143,6 +145,7 @@ public class EndpointReferenceUtil {
                     writer.writeCharacters(msEpr.serviceName.name.getLocalPart());
                 writer.writeEndElement();
             }
+            */
             //TODO: revisit this
             Element wsdlElement = null;
             //Check for wsdl in extension elements

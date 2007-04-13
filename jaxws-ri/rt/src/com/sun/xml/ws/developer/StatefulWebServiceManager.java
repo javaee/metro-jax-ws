@@ -119,6 +119,28 @@ public interface StatefulWebServiceManager<T> {
      * Exports an object.
      *
      * <p>
+     * This method works like {@link #export(Object)} except that
+     * you can obtain the EPR in your choice of addressing version,
+     * by passing in the suitable <tt>epr</tt> parameter.
+     *
+     * @param epr
+     *      Either {@link W3CEndpointReference} or {@link MemberSubmissionEndpointReference}.
+     *      If other types are specified, this method throws an {@link WebServiceException}.
+     * @param o
+     *      The object to be exported, whose identity be referenced by the returned EPR.
+     * @param recipe
+     *      The additional data to be put into EPR. Can be null.
+     * @return
+     *      {@link EndpointReference}-subclass that identifies this exported
+     *      object.
+     * @since 2.1.1
+     */
+    @NotNull <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o, @Nullable EPRRecipe recipe );
+
+    /**
+     * Exports an object.
+     *
+     * <p>
      * JAX-WS RI assigns an unique EPR to the exported object,
      * and from now on, messages that are sent to this EPR will
      * be routed to the given object.
@@ -175,6 +197,15 @@ public interface StatefulWebServiceManager<T> {
      */
     @NotNull <EPR extends EndpointReference> EPR export(Class<EPR> eprType, @NotNull Packet currentRequest, T o);
 
+    /**
+     * The same as {@link #export(Class, Packet, Object)} except
+     * that it takes {@link EPRRecipe}.
+     *
+     * @param recipe
+     *      See {@link #export(Class, Object, EPRRecipe)}.
+     */
+    @NotNull <EPR extends EndpointReference> EPR export(Class<EPR> eprType, @NotNull Packet currentRequest, T o, EPRRecipe recipe);
+    
     /**
      * Exports an object.
      *

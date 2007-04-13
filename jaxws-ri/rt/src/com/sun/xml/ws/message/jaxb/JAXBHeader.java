@@ -30,6 +30,7 @@ import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.message.AbstractHeaderImpl;
 import com.sun.xml.ws.message.RootElementSniffer;
+import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -158,19 +159,14 @@ public final class JAXBHeader extends AbstractHeaderImpl {
 
     public void writeTo(XMLStreamWriter sw) throws XMLStreamException {
         try {
-            // If writing to Zephyr, get output stream and use JAXB UTF-8 writer
-            if (sw instanceof Map) {
-                OutputStream os = (OutputStream) ((Map) sw).get("sjsxp-outputstream");
-                if (os != null) {
-                    sw.writeCharacters("");        // Force completion of open elems
-                    bridge.marshal(jaxbObject, os, sw.getNamespaceContext());
-                    return;
-                }
+            // Get output stream and use JAXB UTF-8 writer
+            OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
+            if (os != null) {
+                bridge.marshal(jaxbObject, os, sw.getNamespaceContext());
+            } else {
+                bridge.marshal(jaxbObject,sw);
             }
-
-            bridge.marshal(jaxbObject,sw);
-        }
-        catch (JAXBException e) {
+        } catch (JAXBException e) {
             throw new XMLStreamException2(e);
         }
     }

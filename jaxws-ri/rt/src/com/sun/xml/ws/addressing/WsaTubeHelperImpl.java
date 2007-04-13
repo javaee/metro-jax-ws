@@ -30,6 +30,7 @@ import javax.xml.ws.WebServiceException;
 
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import org.w3c.dom.Element;
 
 /**
@@ -47,8 +48,8 @@ public class WsaTubeHelperImpl extends WsaTubeHelper {
         }
     }
 
-    public WsaTubeHelperImpl(WSDLPort wsdlPort, WSBinding binding) {
-        super(binding,wsdlPort);
+    public WsaTubeHelperImpl(WSDLPort wsdlPort, SEIModel seiModel, WSBinding binding) {
+        super(binding,seiModel,wsdlPort);
         try {
             unmarshaller = jc.createUnmarshaller();
             marshaller = jc.createMarshaller();

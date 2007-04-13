@@ -25,7 +25,6 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.encoding.SOAPBindingCodec;
 
 /**
  * Factory methods for some of the {@link Codec} implementations.
@@ -61,8 +60,8 @@ public abstract class Codecs {
      * @param xmlEnvelopeCodec SOAP envelope codec
      * @return non null codec to parse entire SOAP message(including MIME parts)
      */
-    public static @NotNull Codec createSOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlEnvelopeCodec) {
-        return new SOAPBindingCodec(binding, xmlEnvelopeCodec);
+    public static @NotNull SOAPBindingCodec createSOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlEnvelopeCodec) {
+        return new com.sun.xml.ws.encoding.SOAPBindingCodec(binding, xmlEnvelopeCodec);
     }
 
     /**

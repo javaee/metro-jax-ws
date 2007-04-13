@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -63,13 +64,17 @@ public final class InVmServer {
      *      where services are loaded from.
      */
     public InVmServer(@NotNull String id, File explodedWarDir) throws IOException {
+        this(id,LocalTransportFactory.parseEndpoints(explodedWarDir.getPath()));
+    }
+
+    public InVmServer(@NotNull String id, List<WSEndpoint> endpoints) throws IOException {
         synchronized(servers) {
             if(servers.containsKey(id))
                 throw new IllegalArgumentException("InVmServer with id="+id+" is already running");
             servers.put(id,new WeakReference<InVmServer>(this));
         }
         this.id = id;
-        this.endpoints = LocalTransportFactory.parseEndpoints(explodedWarDir.getPath());
+        this.endpoints = new ArrayList<WSEndpoint>(endpoints);
     }
 
     public InVmServer(File explodedWarDir) throws IOException {

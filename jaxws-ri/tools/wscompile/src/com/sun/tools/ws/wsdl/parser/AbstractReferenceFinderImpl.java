@@ -78,7 +78,6 @@ public abstract class AbstractReferenceFinderImpl extends XMLFilterImpl {
             // then parse this schema as well,
             // but don't mark this document as a root.
             parent.parse(ref,false);
-            parent.addExternalReferences(ref);
         } catch( URISyntaxException e ) {
             SAXParseException spe = new SAXParseException2(
                     WsdlMessages.ABSTRACT_REFERENCE_FINDER_IMPL_UNABLE_TO_PARSE(relativeRef,e.getMessage()),

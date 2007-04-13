@@ -100,7 +100,7 @@ public final class WsaServerTube extends WsaTube {
             SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
             if (request.getMessage().isOneWay(wsdlPort)) {
-                request.createServerResponse(null, wsdlPort, binding);
+                request.createServerResponse(null, wsdlPort, null, binding);
                 return doInvoke(next, request);
             }
 
@@ -110,7 +110,7 @@ public final class WsaServerTube extends WsaTube {
                 m.getHeaders().add(s11FaultDetailHeader);
             }
 
-            Packet response = request.createServerResponse(m, wsdlPort, binding);
+            Packet response = request.createServerResponse(m, wsdlPort, null, binding);
             return doReturnWith(response);
         }
         String messageId = hl.getMessageID(addressingVersion, soapVersion);

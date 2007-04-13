@@ -22,9 +22,13 @@
 
 package com.sun.xml.ws.streaming;
 
+import com.sun.istack.Nullable;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
+import java.util.Map;
+import java.io.OutputStream;
 
 /**
  * <p>XMLStreamWriterUtil provides some utility methods intended to be used
@@ -37,8 +41,39 @@ public class XMLStreamWriterUtil {
     private XMLStreamWriterUtil() {
     }
 
+    /**
+     * Gives the underlying stream for XMLStreamWriter. It closes any start elements, and returns the stream so
+     * that JAXB can write infoset directly to the stream.
+     *
+     * @param writer XMLStreamWriter for which stream is required
+     * @return  underlying OutputStream, null if writer doesn't provide a way to get it
+     * @throws XMLStreamException if any of writer operations throw the exception
+     */
+    public static @Nullable OutputStream getOutputStream(XMLStreamWriter writer) throws XMLStreamException {
+        // SJSXP
+        if (writer instanceof Map) {
+            Object obj = ((Map) writer).get("sjsxp-outputstream");
+            if (obj != null) {
+                writer.writeCharacters("");  // Force completion of open elems
+                return (OutputStream)obj;
+            }
+        }
+        // woodstox
+        try {
+            Object obj = writer.getProperty("com.ctc.wstx.outputUnderlyingStream");
+            if (obj != null) {
+                writer.writeCharacters("");  // Force completion of open elems
+                writer.flush();
+                return (OutputStream)obj;
+            }
+        } catch(IllegalArgumentException ie) {
+            // nothing to do here
+        }
+        return null;
+    }
 
-    public static String encodeQName(XMLStreamWriter writer, QName qname, 
+
+    public static String encodeQName(XMLStreamWriter writer, QName qname,
         PrefixFactory prefixFactory) 
     {
         // NOTE: Here it is assumed that we do not serialize using default

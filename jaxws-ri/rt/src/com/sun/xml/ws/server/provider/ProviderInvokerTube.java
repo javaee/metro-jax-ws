@@ -48,7 +48,7 @@ public abstract class ProviderInvokerTube<T> extends InvokerTube<Provider<T>> {
 
         ProviderEndpointModel<T> model = new ProviderEndpointModel<T>(implType, binding);
         ProviderArgumentsBuilder<?> argsBuilder = ProviderArgumentsBuilder.create(model, binding);
-        return model.isAsync() ? new AsyncProviderInvokerTube(invoker, argsBuilder)
+        return model.isAsync ? new AsyncProviderInvokerTube(invoker, argsBuilder)
             : new SyncProviderInvokerTube(invoker, argsBuilder);
     }
 }

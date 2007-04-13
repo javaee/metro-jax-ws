@@ -188,12 +188,17 @@ public class W3CAddressingWSDLParserExtension extends WSDLParserExtension {
         for (WSDLOperationImpl o : porttype.getOperations()) {
             // TODO: this may be performance intensive. Alternatively default action
             // TODO: can be calculated when the operation is actually invoked.
+            WSDLBoundOperationImpl wboi = binding.get(o.getName());
+
+            if (wboi == null) {
+                //If this operation is unbound set the action to default
+                o.getInput().setAction(defaultInputAction(o));
+                continue;
+            }
+                String soapAction = wboi.getSOAPAction();
             if (o.getInput().getAction() == null || o.getInput().getAction().equals("")) {
                 // explicit wsaw:Action is not specified
-                WSDLBoundOperationImpl wboi = binding.get(o.getName());
-                if (wboi == null)
-                    throw new WebServiceException(AddressingMessages.WSDL_BOUND_OPERATION_NOT_FOUND(o.getName()));
-                String soapAction = wboi.getSOAPAction();
+
                 if (soapAction != null && !soapAction.equals("")) {
                     // if soapAction is non-empty, use that
                     o.getInput().setAction(soapAction);

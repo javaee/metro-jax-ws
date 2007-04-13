@@ -47,14 +47,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.*;
 import javax.xml.ws.spi.Provider;
 import javax.xml.ws.spi.ServiceDelegate;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.List;
-import java.awt.*;
 
 /**
  * The entry point to the JAX-WS RI from the JAX-WS API.
@@ -157,7 +156,7 @@ public class ProviderImpl extends Provider {
                 EntityResolver er = XmlUtil.createDefaultCatalogResolver();
 
                 URL wsdlLoc = new URL(wsdlDocumentLocation);
-                WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(wsdlLoc, null, er,
+                WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(wsdlLoc, new StreamSource(wsdlLoc.toExternalForm()), er,
                         false, ServiceFinder.find(WSDLParserExtension.class).toArray());
                 if (serviceName != null) {
                     WSDLService wsdlService = wsdlDoc.getService(serviceName);
@@ -175,9 +174,11 @@ public class ProviderImpl extends Provider {
                 throw new IllegalStateException(ProviderApiMessages.ERROR_WSDL(wsdlDocumentLocation),e);
             }
         }
+        // Supress writing ServiceName and EndpointName in W3C EPR,
+        // Until the ns for those metadata elements is resolved.
         return new WSEndpointReference(
             AddressingVersion.fromSpecClass(W3CEndpointReference.class),
-            address, serviceName, portName, null, metadata, wsdlDocumentLocation, referenceParameters).toSpec(W3CEndpointReference.class);
+            address, null /*serviceName*/, null /*portName*/, null, metadata, null /*wsdlDocumentLocation*/, referenceParameters).toSpec(W3CEndpointReference.class);
     }
 
     private static JAXBContext getEPRJaxbContext() {

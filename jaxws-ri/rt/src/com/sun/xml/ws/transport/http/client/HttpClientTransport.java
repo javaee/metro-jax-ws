@@ -69,7 +69,6 @@ final class HttpClientTransport {
             // Nothing much can be done. Intentionally left empty
         }
     }
-    private static final int CHUNK_SIZE = 4096;
     private static String LAST_ENDPOINT = "";
     private static boolean redirect = true;
     private static final int START_REDIRECT_COUNT = 3;
@@ -86,16 +85,14 @@ final class HttpClientTransport {
     private Packet context = null;
     private CookieJar cookieJar = null;
     private boolean isFailure = false;
-    private final boolean streaming;
+    private final Integer chunkSize;
 
 
     public HttpClientTransport(@NotNull Packet packet, @NotNull Map<String,List<String>> reqHeaders) {
         endpoint = packet.endpointAddress;
         context = packet;
         this.reqHeaders = reqHeaders;
-
-        Boolean streamingProp = (Boolean)context.invocationProperties.get(JAXWSProperties.HTTP_CLIENT_STREAMING);
-        streaming = (streamingProp != null) && streamingProp;
+        chunkSize = (Integer)context.invocationProperties.get(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE);
     }
 
     /**
@@ -108,8 +105,8 @@ final class HttpClientTransport {
             // for "GET" request no need to get outputStream
             if (requiresOutputStream()) {
                 outputStream = httpConnection.getOutputStream();
-                if (streaming) {
-                    outputStream = new WSChunkedOuputStream(outputStream);
+                if (chunkSize != null) {
+                    outputStream = new WSChunkedOuputStream(outputStream, chunkSize);
                 }
                 List<String> contentEncoding = reqHeaders.get("Content-Encoding");
                 // TODO need to find out correct encoding based on q value - RFC 2616
@@ -338,8 +335,9 @@ final class HttpClientTransport {
             httpConnection.setReadTimeout(reqTimeout);
         }
 
-        if (streaming) {
-            httpConnection.setChunkedStreamingMode(CHUNK_SIZE);
+        Integer chunkSize = (Integer)context.invocationProperties.get(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE);
+        if (chunkSize != null) {
+            httpConnection.setChunkedStreamingMode(chunkSize);
         }
 
         // set the properties on HttpURLConnection
@@ -413,9 +411,11 @@ final class HttpClientTransport {
      */
     private static final class WSChunkedOuputStream extends OutputStream {
         final OutputStream actual;
+        final int chunkSize;
 
-        WSChunkedOuputStream(OutputStream actual) {
+        WSChunkedOuputStream(OutputStream actual, int chunkSize) {
             this.actual = actual;
+            this.chunkSize = chunkSize;
         }
 
         @Override
@@ -423,8 +423,8 @@ final class HttpClientTransport {
             int sent = 0;
             while(sent < len) {
                 int chunk = len-sent;
-                if (chunk > CHUNK_SIZE) {
-                    chunk = CHUNK_SIZE;
+                if (chunk > chunkSize) {
+                    chunk = chunkSize;
                 }
                 actual.write(b, off, chunk);
                 off += chunk;

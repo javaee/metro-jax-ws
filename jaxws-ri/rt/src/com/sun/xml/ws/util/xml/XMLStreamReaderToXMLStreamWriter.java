@@ -62,8 +62,11 @@ public class XMLStreamReaderToXMLStreamWriter {
         int event = in.getEventType();
         if(event == XMLStreamConstants.START_DOCUMENT) {
             // nextTag doesn't correctly handle DTDs
-            while( !in.isStartElement() )
+            while( !in.isStartElement() ) {
                 event = in.next();
+                if (event == XMLStreamConstants.COMMENT)
+                    handleComment();
+            }
         }
 
 

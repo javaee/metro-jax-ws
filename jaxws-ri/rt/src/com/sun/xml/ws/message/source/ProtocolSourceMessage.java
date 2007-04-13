@@ -24,10 +24,11 @@ package com.sun.xml.ws.message.source;
 
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.pipe.Codecs;
+import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.encoding.StreamSOAPCodec;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -56,7 +57,7 @@ public class ProtocolSourceMessage extends Message {
 
     public ProtocolSourceMessage(Source source, SOAPVersion soapVersion) {
         XMLStreamReader reader = SourceReaderFactory.createSourceReader(source, true);
-        StreamSOAPCodec codec = StreamSOAPCodec.create(soapVersion);
+        com.sun.xml.ws.api.pipe.StreamSOAPCodec codec = Codecs.createSOAPEnvelopeXmlCodec(soapVersion);
         sm = codec.decode(reader);
     }
 

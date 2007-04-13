@@ -35,6 +35,7 @@ import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -48,6 +49,7 @@ import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.model.JavaMethodImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -623,15 +625,25 @@ public final class Packet extends DistributedPropertySet {
      * @param binding The response Binding. Cannot be null.
      * @return response packet
      */
-    public Packet createServerResponse(@Nullable Message responseMessage, @Nullable WSDLPort wsdlPort, @NotNull WSBinding binding) {
+    public Packet createServerResponse(@Nullable Message responseMessage, @Nullable WSDLPort wsdlPort, @Nullable SEIModel seiModel, @NotNull WSBinding binding) {
         Packet r = createClientResponse(responseMessage);
 
+        AddressingVersion av = binding.getAddressingVersion();
+        // populate WS-A headers only if WS-A is enabled
+        if (av == null)
+            return r;
+        //populate WS-A headers only if the request has addressing headers
+        String inputAction = this.getMessage().getHeaders().getAction(av, binding.getSOAPVersion());
+        if (inputAction == null) {
+            return r;
+        }
         // if one-way, then dont populate any WS-A headers
         if (message == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
             return r;
 
         // otherwise populate WS-Addressing headers
-        return populateAddressingHeaders(binding, r, wsdlPort);
+        return populateAddressingHeaders(binding, r, wsdlPort,seiModel);
+
     }
 
     /**
@@ -653,10 +665,19 @@ public final class Packet extends DistributedPropertySet {
     public Packet createServerResponse(@Nullable Message responseMessage, @NotNull AddressingVersion addressingVersion, @NotNull SOAPVersion soapVersion, @NotNull String action) {
         Packet responsePacket = createClientResponse(responseMessage);
 
+        // populate WS-A headers only if WS-A is enabled
+        if (addressingVersion == null)
+            return responsePacket;
+        //populate WS-A headers only if the request has addressing headers
+        String inputAction = this.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        if (inputAction == null) {
+            return responsePacket;
+        }
+
         return populateAddressingHeaders(responsePacket,
-                                         addressingVersion,
-                                         soapVersion,
-                                         action);
+                addressingVersion,
+                soapVersion,
+                action);
     }
 
     private Packet populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action) {
@@ -712,13 +733,13 @@ public final class Packet extends DistributedPropertySet {
         return responsePacket;
     }
 
-    private Packet populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort) {
+    private Packet populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
         AddressingVersion addressingVersion = binding.getAddressingVersion();
 
         if (addressingVersion == null)
             return responsePacket;
 
-        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, binding);
+        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort,seiModel, binding);
         String action = responsePacket.message.isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);

@@ -30,6 +30,8 @@ import com.sun.tools.ws.processor.model.java.JavaInterface;
 import com.sun.tools.ws.processor.model.java.JavaStructureMember;
 import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.istack.Nullable;
+import com.sun.istack.NotNull;
 
 import javax.xml.namespace.QName;
 import java.util.HashMap;
@@ -86,6 +88,13 @@ public class Names implements GeneratorConstants{
 
     public static boolean isJavaReservedWord(String name) {
         return reservedWords.get(name) != null;
+    }
+
+    /**
+     * See if its a java keyword name, if so then mangle the name
+     */
+    public static @NotNull String getJavaReserverVarialbeName(@NotNull String name){
+        return (reservedWords.get(name) == null)?name:reservedWords.get(name);
     }
 
     /* here we check on wether return values datatype is

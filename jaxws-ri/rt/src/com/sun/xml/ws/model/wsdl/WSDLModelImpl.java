@@ -56,8 +56,8 @@ public final class WSDLModelImpl extends AbstractExtensibleImpl implements WSDLM
         = Collections.<QName,WSDLBoundPortType>unmodifiableMap(bindings);
 
 
-    public WSDLModelImpl(URL systemId) {
-        super(systemId.toExternalForm(),-1);
+    public WSDLModelImpl(@NotNull String systemId) {
+        super(systemId,-1);
     }
 
     /**

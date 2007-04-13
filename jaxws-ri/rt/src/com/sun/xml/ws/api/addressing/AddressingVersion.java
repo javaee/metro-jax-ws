@@ -31,6 +31,7 @@ import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import com.sun.xml.ws.message.stream.OutboundStreamHeader;
@@ -65,14 +66,18 @@ public enum AddressingVersion {
                     new QName("http://www.w3.org/2005/08/addressing","Metadata"),
                     "ReferenceParameters",
                     null )) {
+
+        /* package */  String getActionMismatchLocalName() {
+            return "ActionMismatch";
+        }
         @Override
         public boolean isReferenceParameter(String localName) {
             return localName.equals("ReferenceParameters");
         }
 
         @Override
-        public WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, WSBinding binding) {
-            return new com.sun.xml.ws.addressing.WsaTubeHelperImpl(wsdlPort, binding);
+        public WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, SEIModel seiModel, WSBinding binding) {
+            return new com.sun.xml.ws.addressing.WsaTubeHelperImpl(wsdlPort, seiModel, binding);
         }
 
         @Override
@@ -142,14 +147,17 @@ public enum AddressingVersion {
                     MemberSubmissionAddressingConstants.MEX_METADATA,
                     "ReferenceParameters",
                     "ReferenceProperties")) {
+        /* package */  String getActionMismatchLocalName() {
+            return "InvalidMessageInformationHeader";
+        }
         @Override
         public boolean isReferenceParameter(String localName) {
             return localName.equals("ReferenceParameters") || localName.equals("ReferenceProperties");
         }
 
         @Override
-        public WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, WSBinding binding) {
-            return new com.sun.xml.ws.addressing.v200408.WsaTubeHelperImpl(wsdlPort, binding);
+        public WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, SEIModel seiModel, WSBinding binding) {
+            return new com.sun.xml.ws.addressing.v200408.WsaTubeHelperImpl(wsdlPort, seiModel, binding);
         }
 
         @Override
@@ -286,6 +294,11 @@ public enum AddressingVersion {
     /**
      * Represents the QName of the fault code when Action is not supported at this endpoint.
      */
+    public final QName actionMismatchTag;
+
+    /**
+     * Represents the QName of the fault code when Action is not supported at this endpoint.
+     */
     public final QName actionNotSupportedTag;
 
     /**
@@ -386,6 +399,7 @@ public enum AddressingVersion {
         relatesToTag = new QName(nsUri,"RelatesTo");
 
         mapRequiredTag = new QName(nsUri,getMapRequiredLocalName());
+        actionMismatchTag = new QName(nsUri,getActionMismatchLocalName());
         actionNotSupportedTag = new QName(nsUri,"ActionNotSupported");
         actionNotSupportedText = "The \"%s\" cannot be processed at the receiver";
         invalidMapTag = new QName(nsUri,getInvalidMapLocalName());
@@ -411,6 +425,13 @@ public enum AddressingVersion {
         }
         this.eprType = eprType;
     }
+
+    /**
+     * Gets the local name of the fault when a header representing a WS-Addressing Action is not same as SOAPAction
+     *
+     * @return local name
+     */
+    /* package */ abstract String getActionMismatchLocalName();
 
     /**
      * Returns {@link AddressingVersion} whose {@link #nsUri} equals to
@@ -499,7 +520,7 @@ public enum AddressingVersion {
      *
      * @return WS-A version specific helper
      */
-    public abstract WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, WSBinding binding);
+    public abstract WsaTubeHelper getWsaHelper(WSDLPort wsdlPort, SEIModel seiModel, WSBinding binding);
 
     /**
      * Gets the none URI value associated with this WS-Addressing version.

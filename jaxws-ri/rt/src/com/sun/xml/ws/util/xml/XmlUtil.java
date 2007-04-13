@@ -22,41 +22,37 @@
 
 package com.sun.xml.ws.util.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-
+import com.sun.istack.Nullable;
+import com.sun.org.apache.xml.internal.resolver.CatalogManager;
+import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
+import com.sun.xml.ws.server.ServerRtException;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-
-import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.util.ByteArrayBuffer;
-
-import java.net.URL;
-import java.util.Enumeration;
-import javax.xml.ws.WebServiceException;
-import javax.xml.namespace.QName;
-
-import com.sun.org.apache.xml.internal.resolver.CatalogManager;
-import com.sun.org.apache.xml.internal.resolver.tools.CatalogResolver;
-import com.sun.istack.Nullable;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import javax.xml.namespace.QName;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @author WS Development Team
@@ -189,6 +185,9 @@ public class XmlUtil {
 
     static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
+    /**
+     * Creates a new identity transformer.
+     */
     public static Transformer newTransformer() {
         try {
             return transformerFactory.newTransformer();

@@ -71,7 +71,26 @@ public final class Invoker {
                         System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_20_API(Which.which(Service.class)));
                     return -1;
                 }
+                //find and load tools.jar
+                List<URL> urls = new ArrayList<URL>();
+                findToolsJar(cl, urls);
+
+                if(urls.size() > 0){
+                    List<String> mask = new ArrayList<String>(Arrays.asList(maskedPackages));
+
+                    // first create a protected area so that we load JAXB/WS 2.1 API
+                    // and everything that depends on them inside
+                    cl = new MaskingClassLoader(cl,mask);
+
+                    // then this classloader loads the API and tools.jar
+                    cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), cl);
+
+                    // finally load the rest of the RI. The actual class files are loaded from ancestors
+                    cl = new ParallelWorldClassLoader(cl,"");
+                }
+
             }
+            
             Thread.currentThread().setContextClassLoader(cl);
 
             Class compileTool = cl.loadClass(mainClass);
@@ -84,7 +103,9 @@ public final class Invoker {
             System.err.println(e.getMessage());
         } catch (InvocationTargetException e) {
             throw e.getCause();
-        } finally {
+        } catch(ClassNotFoundException e){
+            throw e;
+        }finally {
             Thread.currentThread().setContextClassLoader(oldcc);
         }
 
@@ -155,6 +176,12 @@ public final class Invoker {
             urls.add(ParallelWorldClassLoader.toJarUrl(res));
         }
 
+        findToolsJar(cl, urls);
+
+        return urls.toArray(new URL[urls.size()]);
+    }
+
+    private static void findToolsJar(ClassLoader cl, List<URL> urls) throws ToolsJarNotFoundException, MalformedURLException {
         try {
             Class.forName("com.sun.tools.javac.Main",false,cl);
             Class.forName("com.sun.tools.apt.Main",false,cl);
@@ -172,8 +199,6 @@ public final class Invoker {
             }
             urls.add(toolsJar.toURL());
         }
-
-        return urls.toArray(new URL[urls.size()]);
     }
 
     /**

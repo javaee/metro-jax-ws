@@ -26,7 +26,6 @@ import com.sun.xml.ws.api.server.SDDocumentSource;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
@@ -68,8 +67,8 @@ public interface XMLEntityResolver {
          */
         public Parser(SDDocumentSource doc) throws IOException, XMLStreamException {
             this.systemId = doc.getSystemId();
-            this.parser = doc.read(xif);
+            this.parser = doc.read();
         }
-        private static final XMLInputFactory xif = XMLInputFactory.newInstance();
+
     }
 }

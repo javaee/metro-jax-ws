@@ -236,6 +236,7 @@ public class FastInfosetCodec implements Codec {
     /* package */ static StAXDocumentParser createNewStreamReaderRecyclable(InputStream in, boolean retainState) {
         StAXDocumentParser parser = new FastInfosetStreamReaderRecyclable(in);
         parser.setStringInterning(true);
+        parser.setForceStreamClose(true);
         if (retainState) {
             /**
              * Create a parser vocabulary external to the parser.

@@ -120,9 +120,9 @@ public class WsimportOptions extends Options {
             try {
                 if (entityResolver == null) {
                     if (catalog != null && catalog.length() > 0)
-                        entityResolver = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(catalog));
+                        entityResolver = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(JAXWSUtils.absolutize(Util.escapeSpace(catalog))));
                 } else if (catalog != null && catalog.length() > 0) {
-                    EntityResolver er = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(catalog));
+                    EntityResolver er = XmlUtil.createEntityResolver(JAXWSUtils.getFileOrURL(JAXWSUtils.absolutize(Util.escapeSpace(catalog))));
                     entityResolver = new ForkEntityResolver(er, entityResolver);
                 }
             } catch (IOException e) {

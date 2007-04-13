@@ -56,22 +56,12 @@ final class StreamSOAP11Codec extends StreamSOAPCodec {
         return new StreamHeader11(reader, mark);
     }
 
-    /** BP 1.1 R1109 requires SOAPAction too be a quoted value **/
     public static final ContentTypeImpl defaultContentType =
-            new ContentTypeImpl(SOAP11_CONTENT_TYPE, "\"\"");
+            new ContentTypeImpl(SOAP11_CONTENT_TYPE, "");
 
     @Override
     protected ContentType getContentType(String soapAction) {
-        // TODO: set Accept header
-
-        if (soapAction == null || soapAction.length() == 0) {
-            return defaultContentType;
-        } else {
-            //surround soapAction by double quotes for BP R1109
-            if(soapAction.charAt(0) != '"' && soapAction.charAt(soapAction.length() -1) != '"')
-                soapAction = "\"" + soapAction + "\"";
-            return new ContentTypeImpl(SOAP11_CONTENT_TYPE, soapAction);
-        }
+        return new ContentTypeImpl(SOAP11_CONTENT_TYPE, soapAction);
     }
 
     protected List<String> getExpectedContentTypes() {

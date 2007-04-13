@@ -36,6 +36,7 @@ import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.RootElementSniffer;
 import com.sun.xml.ws.message.stream.StreamMessage;
+import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -108,7 +109,9 @@ public final class JAXBMessage extends AbstractMessageImpl {
 
             Marshaller m = context.createMarshaller();
             AttachmentSetImpl attachments = new AttachmentSetImpl();
-            m.setAttachmentMarshaller(new AttachmentMarshallerImpl(attachments));
+            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachments);
+            m.setAttachmentMarshaller(am);
+            am.cleanup();
             m.marshal(jaxbObject,xsb.createFromXMLStreamWriter());
 
             // any way to reuse this XMLStreamBuffer in StreamMessage?
@@ -147,7 +150,9 @@ public final class JAXBMessage extends AbstractMessageImpl {
             MutableXMLStreamBuffer xsb = new MutableXMLStreamBuffer();
 
             AttachmentSetImpl attachments = new AttachmentSetImpl();
-            bridge.marshal(jaxbObject,xsb.createFromXMLStreamWriter(),new AttachmentMarshallerImpl(attachments));
+            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachments);
+            bridge.marshal(jaxbObject,xsb.createFromXMLStreamWriter(), am);
+            am.cleanup();
 
             // any way to reuse this XMLStreamBuffer in StreamMessage?
             return new StreamMessage(null,attachments,xsb.readAsXMLStreamReader(),soapVer);
@@ -271,7 +276,9 @@ public final class JAXBMessage extends AbstractMessageImpl {
         try {
             if(fragment)
                 contentHandler = new FragmentContentHandler(contentHandler);
-            bridge.marshal(jaxbObject,contentHandler,new AttachmentMarshallerImpl(attachmentSet));
+            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachmentSet);
+            bridge.marshal(jaxbObject,contentHandler, am);
+            am.cleanup();
         } catch (JAXBException e) {
             // this is really more helpful but spec compliance
             // errorHandler.fatalError(new SAXParseException(e.getMessage(),NULL_LOCATOR,e));
@@ -282,21 +289,16 @@ public final class JAXBMessage extends AbstractMessageImpl {
 
     public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
         try {
-            // If writing to Zephyr, get output stream and use JAXB UTF-8 writer
             AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachmentSet);
-
-            if (sw instanceof Map) {
-                OutputStream os = (OutputStream) ((Map) sw).get("sjsxp-outputstream");
-                if (os != null) {
-                    sw.writeCharacters("");        // Force completion of open elems
-                    bridge.marshal(jaxbObject, os, sw.getNamespaceContext(),am);
-                    return;
-                }
+            // Get output stream and use JAXB UTF-8 writer
+            OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
+            if (os != null) {
+                bridge.marshal(jaxbObject, os, sw.getNamespaceContext(),am);
+            } else {
+                bridge.marshal(jaxbObject,sw,am);   
             }
-
-            bridge.marshal(jaxbObject,sw,am);
-        }
-        catch (JAXBException e) {
+            am.cleanup();
+        } catch (JAXBException e) {
             // bug 6449684, spec 4.3.4
             throw new WebServiceException(e);
         }

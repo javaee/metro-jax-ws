@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  *
  * @author WS Development Team
  */
-final class WSServletDelegate {
+public final class WSServletDelegate {
 
     /**
      * All {@link ServletAdapter}s that are deployed in the current web appliation.

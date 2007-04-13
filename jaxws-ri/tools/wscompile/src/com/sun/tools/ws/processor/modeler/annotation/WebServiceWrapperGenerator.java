@@ -38,6 +38,8 @@ import com.sun.tools.ws.wscompile.FilerCodeWriter;
 import com.sun.tools.ws.wscompile.WsgenOptions;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.bind.api.impl.NameConverter;
 
 import javax.jws.*;
 import javax.xml.bind.annotation.*;
@@ -255,11 +257,17 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         WebResult webResult = method.getAnnotation(WebResult.class);
         List<Annotation> jaxbRespAnnotations = collectJAXBAnnotations(method);
         String responseElementName = RETURN;
+        String responseName = RETURN_VALUE;
         String responseNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
         boolean isResultHeader = false;
         if (webResult != null) {
             if (webResult.name().length() > 0) {
                 responseElementName = webResult.name();
+                responseName = JAXBRIContext.mangleNameToVariableName(webResult.name());
+                
+                //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
+                //care of mangling java identifiers
+                responseName = Names.getJavaReserverVarialbeName(responseName);
             }
             responseNamespace = webResult.targetNamespace().length() > 1 ?
                 webResult.targetNamespace() :
@@ -271,17 +279,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         WebParam webParam;
         TypeMirror paramType;
         String paramName;
+
         String paramNamespace;
         TypeMirror holderType;
         int paramIndex = -1;
-//        System.out.println("method: "+method.toString());
-//        System.out.println("returnType: "+ method.getReturnType());
-
-//        TypeMirror typeMirror = apEnv.getTypeUtils().getErasure(method.getReturnType());
         TypeMirror typeMirror = getSafeType(method.getReturnType());
 
         if (!(method.getReturnType() instanceof VoidType) && !isResultHeader) {
-            responseMembers.add(new MemberInfo(typeMirror, RETURN_VALUE,
+            responseMembers.add(new MemberInfo(typeMirror, responseName,
                 new QName(responseNamespace, responseElementName), method, jaxbRespAnnotations.toArray(new Annotation[jaxbRespAnnotations.size()])));
         }
 
@@ -289,10 +294,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             List<Annotation> jaxbAnnotation = collectJAXBAnnotations(param);
             WebParam.Mode mode = null;
             paramIndex++;
-//            System.out.println("param.getType(): "+param.getType());
             holderType = builder.getHolderValueType(param.getType());
             webParam = param.getAnnotation(WebParam.class);
-//            typeMirror = apEnv.getTypeUtils().getErasure(param.getType());            
             typeMirror =  getSafeType(param.getType());
             paramType = typeMirror;
             paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
@@ -310,7 +313,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (webParam.targetNamespace().length() > 0)
                     paramNamespace = webParam.targetNamespace();
             }
-            MemberInfo memInfo = new MemberInfo(paramType, paramName,
+
+            String propertyName = JAXBRIContext.mangleNameToVariableName(paramName);
+            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
+            //care of mangling java identifiers
+            propertyName = Names.getJavaReserverVarialbeName(propertyName);
+
+            MemberInfo memInfo = new MemberInfo(paramType, propertyName,
                 new QName(paramNamespace, paramName), param, jaxbAnnotation.toArray(new Annotation[jaxbAnnotation.size()]));
             if (holderType != null) {
                 if (mode == null || mode.equals(WebParam.Mode.INOUT)) {
@@ -579,17 +588,18 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
         if (cls == null)
             return;
-        String capPropName = StringUtils.capitalize(paramName);
+
+        String accessorName =JAXBRIContext.mangleNameToPropertyName(paramName);
         String getterPrefix = paramType.equals("boolean") || paramType.equals("java.lang.Boolean") ? "is" : "get";
         JType propType = getType(paramType);
-        JMethod m = cls.method(JMod.PUBLIC, propType, getterPrefix+capPropName);
+        JMethod m = cls.method(JMod.PUBLIC, propType, getterPrefix+ accessorName);
         JDocComment methodDoc = m.javadoc();
         JCommentPart ret = methodDoc.addReturn();
         ret.add("returns "+propType.name());
         JBlock body = m.body();
         body._return( JExpr._this().ref(paramName) );
 
-        m = cls.method(JMod.PUBLIC, cm.VOID, "set"+capPropName);
+        m = cls.method(JMod.PUBLIC, cm.VOID, "set"+accessorName);
         JVar param = m.param(propType, paramName);
         methodDoc = m.javadoc();
         JCommentPart part = methodDoc.addParam(paramName);

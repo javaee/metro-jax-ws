@@ -220,11 +220,10 @@ public class WSServiceDelegate extends WSService {
      * @param wsdlDocumentLocation
      *      Either this or <tt>wsdl</tt> parameter must be given.
      *      Null location means the system won't be able to resolve relative references in the WSDL,
-     *      So think twice before passing in null.
      */
-    private WSDLModelImpl parseWSDL(URL wsdlDocumentLocation, Source wsdl) {
+    private WSDLModelImpl parseWSDL(URL wsdlDocumentLocation, Source wsdlSource) {
         try {
-            return RuntimeWSDLParser.parse(wsdlDocumentLocation, wsdl, createDefaultCatalogResolver(),
+            return RuntimeWSDLParser.parse(wsdlDocumentLocation, wsdlSource, createDefaultCatalogResolver(),
                 true, ServiceFinder.find(WSDLParserExtension.class).toArray());
         } catch (IOException e) {
             throw new WebServiceException(e);

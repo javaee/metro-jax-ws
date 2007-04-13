@@ -32,6 +32,7 @@ import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.istack.NotNull;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.Action;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +44,8 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public final class JavaMethodImpl implements JavaMethod {
-
+    private String inputAction;
+    private String outputAction;
     private final List<CheckedExceptionImpl> exceptions = new ArrayList<CheckedExceptionImpl>();
     private final Method method;
     /*package*/ final List<ParameterImpl> requestParams = new ArrayList<ParameterImpl>();
@@ -67,6 +69,11 @@ public final class JavaMethodImpl implements JavaMethod {
         this.owner = owner;
         this.method = method;
         this.seiMethod = seiMethod;
+        Action action = method.getAnnotation(Action.class);
+        if(action != null) {
+            inputAction = action.input();
+            outputAction = action.output();
+        }
     }
 
     public SEIModel getOwner() {
@@ -257,6 +264,15 @@ public final class JavaMethodImpl implements JavaMethod {
     public List<CheckedExceptionImpl> getCheckedExceptions(){
         return Collections.unmodifiableList(exceptions);
     }
+
+    public String getInputAction() {
+        return inputAction;
+    }
+
+    public String getOutputAction() {
+        return outputAction;
+    }
+
     /**
      * @param detailType
      * @return Gets the CheckedException corresponding to detailType. Returns

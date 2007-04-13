@@ -637,7 +637,8 @@ public final class HeaderList extends ArrayList<Header> {
             throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
 
         AddressingVersion addressingVersion = binding.getAddressingVersion();
-        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, binding);
+        //seiModel is passed as null as it is not needed.
+        WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, null, binding);
 
         // wsa:Action
         String action = wsaHelper.getEffectiveInputAction(packet);

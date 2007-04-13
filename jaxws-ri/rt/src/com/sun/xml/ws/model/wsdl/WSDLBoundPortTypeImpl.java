@@ -28,6 +28,8 @@ import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
 import com.sun.xml.ws.util.QNameMap;
+import com.sun.xml.ws.util.exception.LocatableWebServiceException;
+import com.sun.xml.ws.resources.ClientMessages;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding;
@@ -193,7 +195,10 @@ public final class WSDLBoundPortTypeImpl extends AbstractFeaturedObjectImpl impl
 
     void freeze() {
         portType = owner.getPortType(portTypeName);
-        // TODO: error check for portType==null. that's an error in WSDL that needs to be reported
+        if(portType == null){
+            throw new LocatableWebServiceException(
+                    ClientMessages.UNDEFINED_PORT_TYPE(portTypeName), getLocation());
+        }
         portType.freeze();
 
         for (WSDLBoundOperationImpl op : bindingOperations.values()) {

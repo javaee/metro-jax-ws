@@ -23,6 +23,7 @@
 package com.sun.xml.ws.fault;
 
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -101,7 +102,14 @@ class SOAP11Fault extends SOAPFaultBuilder {
         this.faultstring = reason;
         this.faultactor = actor;
         if (detailObject != null) {
-            detail = new DetailType(detailObject);
+            if(detailObject.getNamespaceURI().equals("") && detailObject.getLocalName().equals("detail")){
+                detail = new DetailType();
+                for(Element detailEntry : DOMUtil.getChildElements(detailObject)){
+                    detail.getDetails().add(detailEntry);
+                }
+            }else{
+                detail = new DetailType(detailObject);
+            }
         }
     }
 

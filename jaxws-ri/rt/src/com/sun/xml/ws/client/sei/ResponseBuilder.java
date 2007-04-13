@@ -92,7 +92,8 @@ abstract class ResponseBuilder {
     static final class None extends ResponseBuilder {
         private None(){
         }
-        public Object readResponse(Message msg, Object[] args) {
+        public Object readResponse(Message msg, Object[] args) {           
+            msg.consume();
             return null;
         }
     }

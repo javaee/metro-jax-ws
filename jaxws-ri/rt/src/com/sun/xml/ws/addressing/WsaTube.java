@@ -101,9 +101,10 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
     protected WsaTubeHelper getTubeHelper() {
         if(binding.isFeatureEnabled(AddressingFeature.class)) {
-            return new WsaTubeHelperImpl(wsdlPort, binding);
+            return new WsaTubeHelperImpl(wsdlPort, null, binding);
         } else if(binding.isFeatureEnabled(MemberSubmissionAddressingFeature.class)) {
-            return new com.sun.xml.ws.addressing.v200408.WsaTubeHelperImpl(wsdlPort, binding);
+            //seiModel is null as it is not needed.
+            return new com.sun.xml.ws.addressing.v200408.WsaTubeHelperImpl(wsdlPort, null, binding);
         } else {
             // Addressing is not enabled, WsaTube should not be included in the pipeline
             throw new WebServiceException(AddressingMessages.ADDRESSING_NOT_ENABLED(this.getClass().getSimpleName()));
@@ -134,7 +135,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         if (soapFault != null) {
             // WS-A fault processing for one-way methods
             if (packet.getMessage().isOneWay(wsdlPort)) {
-                return packet.createServerResponse(null, wsdlPort, binding);
+                return packet.createServerResponse(null, wsdlPort, null, binding);
             }
 
             Message m = Messages.create(soapFault);
@@ -142,7 +143,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
                 m.getHeaders().add(s11FaultDetailHeader);
             }
 
-            Packet response = packet.createServerResponse(m, wsdlPort, binding);
+            Packet response = packet.createServerResponse(m, wsdlPort, null,  binding);
             return response;
         }
 
@@ -198,7 +199,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             // no WS-A headers are found
             if (addressingRequired)
                 // if WS-A is required, then throw an exception looking for wsa:Action header
-                throw new InvalidMapException(addressingVersion.actionTag, addressingVersion.invalidCardinalityTag);
+                throw new MapRequiredException(addressingVersion.actionTag);
             else
                 // else no need to process
                 return;
@@ -317,6 +318,15 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         return packet.getMessage().getOperation(wsdlPort);
     }
 
+    protected void validateSOAPAction(Packet packet) {
+        String gotA = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        if (gotA == null)
+            throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());
+        if(packet.soapAction != null && !packet.soapAction.equals("\"\"") && !packet.soapAction.equals("\""+gotA+"\"")) {
+            throw new InvalidMapException(addressingVersion.actionTag, addressingVersion.actionMismatchTag);
+        }
+    }
+
     protected abstract void validateAction(Packet packet);
     protected void checkMandatoryHeaders(
         Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageId, boolean foundRelatesTo) {
@@ -324,9 +334,10 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         // no need to check for for non-application messages
         if (wbo == null)
             return;
-        
+
         // if no wsa:Action header is found
         if (!foundAction)
             throw new MapRequiredException(addressingVersion.actionTag);
+        validateSOAPAction(packet);
     }
 }

@@ -125,7 +125,10 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                         buf.writeTo(out);
                     }
                 } else {
-                    codec.encode(request, con.getOutput());
+                    OutputStream os = con.getOutput();
+                    if (os != null) {
+                        codec.encode(request, os);
+                    }
                 }
             }
 
@@ -166,19 +169,10 @@ public class HttpTransportPipe extends AbstractTubeImpl {
      * BindingProvider properties take precedence.
      */
     private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction, Packet packet) {
-        Boolean useAction = (Boolean) packet.invocationProperties.get(BindingProvider.SOAPACTION_USE_PROPERTY);
-        String sAction = null;
-        boolean use = (useAction != null) ? useAction.booleanValue() : false;
-
-        if (use) {
-            //TODO check if it needs to be quoted
-            sAction = packet.soapAction;
-        }
-        //request Property soapAction overrides wsdl
-        if (sAction != null)
-            reqHeaders.put("SOAPAction", Collections.singletonList(sAction));
-        else if (soapAction != null)
+        if (soapAction != null)
             reqHeaders.put("SOAPAction", Collections.singletonList(soapAction));
+        else
+            reqHeaders.put("SOAPAction", Collections.singletonList("\"\""));
     }
 
     public void preDestroy() {

@@ -308,13 +308,11 @@ public abstract class DispatchImpl<T> extends Stub implements Dispatch<T> {
         final String path = (pathInfo != null) ? pathInfo : endpointURI.getPath();
         try {
             final URI temp = new URI(null, null, path, query, fragment);
-            return URLDecoder.decode(endpointURI.resolve(temp).toURL().toExternalForm(), "UTF-8");
+            return endpointURI.resolve(temp).toURL().toExternalForm();
         } catch (URISyntaxException e) {
             throw new WebServiceException(DispatchMessages.INVALID_URI_PATH_QUERY(path ,query));
         } catch (MalformedURLException e) {
             throw new WebServiceException(DispatchMessages.INVALID_URI_RESOLUTION(path));
-        } catch (UnsupportedEncodingException e) {
-            throw new WebServiceException(DispatchMessages.INVALID_URI_DECODE());
         }
     }
 

@@ -21,17 +21,19 @@
  */
 package com.sun.xml.ws.api.pipe;
 
+import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.server.EndpointAwareCodec;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Encodes a {@link Message} (its XML infoset and attachments) to a sequence of bytes.
@@ -56,9 +58,10 @@ import java.nio.channels.ReadableByteChannel;
  *
  *
  * <p>
- * {@link WSBinding} determines the {@link Codec}. See {@link WSBinding#createCodec()}.
+ * {@link BindingID} determines the {@link Codec}. See {@link BindingID#createEncoder(WSBinding)}.
  *
  * @author Kohsuke Kawaguchi
+ * @see EndpointAwareCodec
  */
 public interface Codec {
 

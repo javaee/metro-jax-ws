@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
+import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.client.ContentNegotiation;
 import com.sun.xml.ws.resources.ServerMessages;
@@ -57,7 +58,7 @@ import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 /**
- * SOAP binding {@link Codec} that can handle MTOM, SwA, and SOAP messages 
+ * SOAP binding {@link Codec} that can handle MTOM, SwA, and SOAP messages
  * encoded using XML or Fast Infoset.
  *
  * <p>
@@ -65,22 +66,22 @@ import com.sun.xml.ws.transport.http.WSHTTPConnection;
  * and from configuration and {@link Message} contents (for encoding)
  *
  * <p>
- * TODO: Split this Codec into two, one that supports FI and one that does not. 
- * Then further split the FI Codec into two, one for client and one for 
+ * TODO: Split this Codec into two, one that supports FI and one that does not.
+ * Then further split the FI Codec into two, one for client and one for
  * server. This will simplify the logic and make it easier to understand/maintain.
  *
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class SOAPBindingCodec extends MimeCodec {
+public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pipe.SOAPBindingCodec {
     /**
      * Base HTTP Accept request-header.
      */
     private static final String BASE_ACCEPT_VALUE =
-        "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
-
+            "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2";
+    
     /**
-     * True if Fast Infoset functionality has been 
+     * True if Fast Infoset functionality has been
      * configured to be disabled, or the Fast Infoset
      * runtime is not available.
      */
@@ -94,7 +95,7 @@ public class SOAPBindingCodec extends MimeCodec {
     /**
      * True if the content negotiation property should
      * be ignored by the client. This will be used in
-     * the case of Fast Infoset being configured to be 
+     * the case of Fast Infoset being configured to be
      * disabled or automatically selected.
      */
     private boolean ignoreContentNegotiationProperty;
@@ -136,12 +137,16 @@ public class SOAPBindingCodec extends MimeCodec {
      */
     private final String connegXmlAccept;
     
+    public StreamSOAPCodec getXMLCodec() {
+        return xmlSoapCodec;
+    }
+    
     private class AcceptContentType implements ContentType {
         private ContentType _c;
         private String _accept;
         
         public AcceptContentType set(Packet p, ContentType c) {
-            if (p.contentNegotiation != ContentNegotiation.none) {
+            if (!ignoreContentNegotiationProperty && p.contentNegotiation != ContentNegotiation.none) {
                 _accept = connegXmlAccept;
             } else {
                 _accept = xmlAccept;
@@ -164,9 +169,9 @@ public class SOAPBindingCodec extends MimeCodec {
     }
     
     private AcceptContentType _adaptingContentType = new AcceptContentType();
-
+    
     public SOAPBindingCodec(WSBinding binding) {
-        this(binding, com.sun.xml.ws.encoding.StreamSOAPCodec.create(binding.getSOAPVersion()));
+        this(binding, Codecs.createSOAPEnvelopeXmlCodec(binding.getSOAPVersion()));
     }
     
     public SOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlSoapCodec) {
@@ -179,18 +184,18 @@ public class SOAPBindingCodec extends MimeCodec {
         
         xmlSwaCodec = new SwACodec(version, xmlSoapCodec);
         
-        xmlAccept = xmlSoapCodec.getMimeType() + ", " + 
-                xmlMtomCodec.getMimeType() + ", " + 
+        String clientAcceptedContentTypes = xmlSoapCodec.getMimeType() + ", " +
+                xmlMtomCodec.getMimeType() + ", " +
                 BASE_ACCEPT_VALUE;
-
+        
         WebServiceFeature fi = binding.getFeature(FastInfosetFeature.class);
         isFastInfosetDisabled = (fi != null && !fi.isEnabled());
         if (!isFastInfosetDisabled) {
-            fiSoapCodec = getFICodec(version);
+            fiSoapCodec = getFICodec(xmlSoapCodec, version);
             if (fiSoapCodec != null) {
                 fiMimeType = fiSoapCodec.getMimeType();
                 fiSwaCodec = new SwACodec(version, fiSoapCodec);
-                connegXmlAccept = fiMimeType + ", " + xmlAccept;
+                connegXmlAccept = fiMimeType + ", " + clientAcceptedContentTypes;
                 
                 /**
                  * This feature will only be present on the client side.
@@ -199,25 +204,36 @@ public class SOAPBindingCodec extends MimeCodec {
                  * explicitly supports Fast Infoset.
                  */
                 WebServiceFeature select = binding.getFeature(SelectOptimalEncodingFeature.class);
-                if (select != null && select.isEnabled()) {
-                    useFastInfosetForEncoding = true;
+                if (select != null) { // if the client FI feature is set - ignore negotiation property
                     ignoreContentNegotiationProperty = true;
+                    if (select.isEnabled()) {
+                        // If the client's FI encoding feature is enabled, and server's is not disabled
+                        if (fi != null) {  // if server's FI feature also enabled
+                            useFastInfosetForEncoding = true;
+                        }
+                        
+                        clientAcceptedContentTypes = connegXmlAccept;
+                    } else {  // If client FI feature is disabled
+                        isFastInfosetDisabled = true;
+                    }
                 }
             } else {
                 // Fast Infoset could not be loaded by the runtime
                 isFastInfosetDisabled = true;
                 fiSwaCodec = null;
                 fiMimeType = "";
-                connegXmlAccept = xmlAccept;
+                connegXmlAccept = clientAcceptedContentTypes;
                 ignoreContentNegotiationProperty = true;
             }
         } else {
             // Fast Infoset is explicitly not supported by the service
             fiSoapCodec = fiSwaCodec = null;
             fiMimeType = "";
-            connegXmlAccept = xmlAccept;
+            connegXmlAccept = clientAcceptedContentTypes;
             ignoreContentNegotiationProperty = true;
         }
+        
+        xmlAccept = clientAcceptedContentTypes;
         
         this.binding = (SOAPBindingImpl)binding;
     }
@@ -243,7 +259,7 @@ public class SOAPBindingCodec extends MimeCodec {
         if (contentType == null) {
             throw new UnsupportedMediaException();
         }
-
+        
         /**
          * Reset the encoding state when on the server side for each
          * decode/encode step.
@@ -255,19 +271,19 @@ public class SOAPBindingCodec extends MimeCodec {
             // parse the multipart portion and then decide whether it's MTOM or SwA
             super.decode(in, contentType, packet);
         else if(isFastInfoset(contentType)) {
-            if (packet.contentNegotiation == ContentNegotiation.none)
+            if (!ignoreContentNegotiationProperty && packet.contentNegotiation == ContentNegotiation.none)
                 throw noFastInfosetForDecoding();
             
             useFastInfosetForEncoding = true;
             fiSoapCodec.decode(in, contentType, packet);
         } else
             xmlSoapCodec.decode(in, contentType, packet);
-
+        
         if (!useFastInfosetForEncoding) {
             useFastInfosetForEncoding = isFastInfosetAcceptable(packet.acceptableMimeTypes);
         }
     }
-
+    
     public void decode(ReadableByteChannel in, String contentType, Packet packet) {
         if (contentType == null) {
             throw new UnsupportedMediaException();
@@ -289,7 +305,7 @@ public class SOAPBindingCodec extends MimeCodec {
             fiSoapCodec.decode(in, contentType, packet);
         } else
             xmlSoapCodec.decode(in, contentType, packet);
-
+        
 //        checkDuplicateKnownHeaders(packet);
         if (!useFastInfosetForEncoding) {
             useFastInfosetForEncoding = isFastInfosetAcceptable(packet.acceptableMimeTypes);
@@ -299,7 +315,7 @@ public class SOAPBindingCodec extends MimeCodec {
     public SOAPBindingCodec copy() {
         return new SOAPBindingCodec(binding, (StreamSOAPCodec)xmlSoapCodec.copy());
     }
-
+    
     @Override
     protected void decode(MimeMultipartParser mpp, Packet packet) throws IOException {
         // is this SwA or XOP?
@@ -310,7 +326,7 @@ public class SOAPBindingCodec extends MimeCodec {
         else if (isFastInfoset(rootContentType)) {
             if (packet.contentNegotiation == ContentNegotiation.none)
                 throw noFastInfosetForDecoding();
-                
+            
             useFastInfosetForEncoding = true;
             fiSwaCodec.decode(mpp,packet);
         } else if (isXml(rootContentType))
@@ -341,10 +357,10 @@ public class SOAPBindingCodec extends MimeCodec {
     }
     
     private boolean compareStrings(String a, String b) {
-        return a.length() >= b.length() && 
+        return a.length() >= b.length() &&
                 b.equalsIgnoreCase(
-                    a.substring(0,
-                        b.length()));
+                a.substring(0,
+                b.length()));
     }
     
     private boolean isFastInfosetAcceptable(String accept) {
@@ -356,7 +372,7 @@ public class SOAPBindingCodec extends MimeCodec {
             if (token.equalsIgnoreCase(fiMimeType)) {
                 return true;
             }
-        }        
+        }
         return false;
     }
     
@@ -388,8 +404,8 @@ public class SOAPBindingCodec extends MimeCodec {
                 return fiSoapCodec;
             else
                 return fiSwaCodec;
-        } 
-                
+        }
+        
         if(binding.isFeatureEnabled(MTOMFeature.class))
             return xmlMtomCodec;
         
@@ -401,17 +417,17 @@ public class SOAPBindingCodec extends MimeCodec {
     }
     
     private RuntimeException noFastInfosetForDecoding() {
-        return new RuntimeException(StreamingMessages.FASTINFOSET_DECODING_NOT_ACCEPTED());    
+        return new RuntimeException(StreamingMessages.FASTINFOSET_DECODING_NOT_ACCEPTED());
     }
     
     /**
      * Obtain an FI SOAP codec instance using reflection.
      */
-    private static Codec getFICodec(SOAPVersion version) {
+    private static Codec getFICodec(StreamSOAPCodec soapCodec, SOAPVersion version) {
         try {
             Class c = Class.forName("com.sun.xml.ws.encoding.fastinfoset.FastInfosetStreamSOAPCodec");
-            Method m = c.getMethod("create", SOAPVersion.class);
-            return (Codec)m.invoke(null, version);
+            Method m = c.getMethod("create", StreamSOAPCodec.class, SOAPVersion.class);
+            return (Codec)m.invoke(null, soapCodec, version);
         } catch (Exception e) {
             // TODO Log that FI cannot be loaded
             return null;

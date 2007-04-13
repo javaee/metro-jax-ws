@@ -174,18 +174,11 @@ final class LocalTransportTube extends AbstractTubeImpl {
      * BindingProvider properties take precedence.
      */
     private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction, Packet packet) {
-        Boolean useAction = (Boolean) packet.invocationProperties.get(BindingProvider.SOAPACTION_USE_PROPERTY);
-        String sAction = null;
-        boolean use = (useAction != null) ? useAction.booleanValue() : false;
-        if (use) {
-            //TODO check if it needs to be quoted
-            sAction = packet.soapAction;
-        }
         //request Property soapAction overrides wsdl
-        if (sAction != null)
-            reqHeaders.put("SOAPAction", Collections.singletonList(sAction));
-        else if (soapAction != null)
+        if (soapAction != null)
             reqHeaders.put("SOAPAction", Collections.singletonList(soapAction));
+        else
+            reqHeaders.put("SOAPAction", Collections.singletonList("\"\""));
     }
 
     private void checkFIConnegIntegrity(ContentNegotiation conneg,

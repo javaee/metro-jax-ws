@@ -30,12 +30,14 @@ import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.encoding.StreamSOAPCodec;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.DOMMessage;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.ProblemActionHeader;
+import com.sun.xml.ws.message.stream.PayloadStreamReaderMessage;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.message.source.PayloadSourceMessage;
@@ -139,6 +141,22 @@ public abstract class Messages {
     }
 
     /**
+     * Creates a {@link Message} using {@link XMLStreamReader} as payload.
+     *
+     * @param payload
+     *      XMLStreamReader payload is {@link Message}'s payload
+     *      Must not be null. Once this method is invoked, the created
+     *      {@link Message} will own the {@link XMLStreamReader}, so it shall
+     *      never be touched directly.
+     *
+     * @param ver
+     *      The SOAP version of the message. Must not be null.
+     */
+    public static Message createUsingPayload(XMLStreamReader payload, SOAPVersion ver) {
+        return new PayloadStreamReaderMessage(payload, ver);
+    }
+
+    /**
      * Creates a {@link Message} from an {@link Element} that represents
      * a payload.
      *
@@ -225,7 +243,7 @@ public abstract class Messages {
 
         SOAPVersion ver = SOAPVersion.fromNsUri(reader.getNamespaceURI());
 
-        return StreamSOAPCodec.create(ver).decode(reader);
+        return Codecs.createSOAPEnvelopeXmlCodec(ver).decode(reader);
     }
 
     /**

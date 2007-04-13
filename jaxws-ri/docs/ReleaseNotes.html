@@ -23,15 +23,14 @@ end users and middleware developers. </p>
 						<a href="wsimport.html">comman line tool</a>,
 						<a href="wsimportant.html">ant task</a> 
 						and
-						<a href="http://mojo.codehaus.org/jaxws-maven-plugin/index.html">
+						<a href="https://jax-ws-commons.dev.java.net/jaxws-maven-plugin/">
 						Maven2 plugin</a></li>
 					</ul></li>
 					<li>Java to WSDL generator<ul>
 						<li>Wsgen
 						<a href="wsgen.html">command line tool</a>,<a href="wsgenant.html"> ant Task</a>&nbsp; 
 						and
-						<a href="http://mojo.codehaus.org/jaxws-maven-plugin/index.html">
-						Maven2 plugin</a></li>
+						<a href="https://jax-ws-commons.dev.java.net/jaxws-maven-plugin/">Maven2 plugin</a></li>
 					</ul></li>
 					<li>Integrated with
 					<a href="http://www.netbeans.info/downloads/dev.php">NetBeans&nbsp; 
@@ -41,7 +40,7 @@ end users and middleware developers. </p>
 	<ul>
 		<li>Web Services Addressing 1.0 - Core </li>
 		<li>Web Services Addressing 1.0 - SOAP Binding </li>
-		<li>Web Services Addressing 1.0 - WSDL Binding </li>
+		<li>Web Services Addressing 1.0 - WSDL Binding (RI specific support) </li>
 		<li>WS-Addressing&nbsp; - Member Submission</li>
 		<li>SOAP 1.1 and 1.2</li>
 		<li>REST and XML/HTTP</li>
@@ -88,7 +87,7 @@ end users and middleware developers. </p>
 		<a href="https://open-jbi-components.dev.java.net/">Open JBI component</a></li>
 	</ul>
 	</li>
-	<li>Data binding - <a href="https://jaxb.dev.java.net/2.1.2/">JAXB 2.1.2 RI</a> 
+	<li>Data binding - <a href="https://jaxb.dev.java.net/2.1.2/">JAXB 2.1.3 RI</a> 
 	</li>
 	<li>Server Side Asynchrony -
 	<a href="https://jax-ws.dev.java.net/nonav/21/docs/asyncprovider.html">
@@ -174,7 +173,8 @@ valid with Java EE 5 as well.
     </li>
     <li>
         <p>Tested to work with 
-		<a href="https://glassfish.dev.java.net/downloads/v2-b33.html">Glassfish v2 Milestone4</a> and Apache Tomcat 5.x</p>
+		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
+		Promoted Build v2 41a (Beta 2 Candidate 2)</a> and Apache Tomcat 5.x</p>
     </li>
 </ul>
 </section>
@@ -184,7 +184,16 @@ valid with Java EE 5 as well.
 
 <ul>
 	<li>Extract JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} bundle </li>
-	<li>Install on Glassfish or Sun One Application Server 9.0 Update 1<ul>
+	<li>Install on Glassfish v2<ul>
+	<li>Glassfish v2 Beta2 Candidate2 has JAX-WS RI integrated and is pretty 
+	close to JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} so you do not need to 
+	do anything. If you still want to use the JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} 
+	overriding the one with Glassfish v2 follow the instructions for installing 
+	it on top of Sun One Application Server 9.0 Update 2</li>
+</ul>
+
+	</li>
+	<li>Install on Sun One Application Server 9.0 Update 2<ul>
 		<li>Set AS_HOME to the installation directory of Glassfish</li>
 		<li>cd to the root directory of the extracted JAXWS RI bundle</li>
 		<li>Set JAXWS_HOME to the root directory of the extracted JAXWS RI bundle</li>

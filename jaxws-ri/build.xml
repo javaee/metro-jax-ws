@@ -229,7 +229,7 @@ major-version=${release.impl.version}
       </fileset>
     </copy>
 
-    <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/version.properties" />
+    <versionProp file="${basedir}/rt/build/classes/com/sun/xml/ws/util/version.properties" />
 
     <!-- Copying the manifest -->
     <copy file="${basedir}/rt/etc/manifest" todir="${basedir}/rt/build"/>
@@ -538,13 +538,13 @@ major-version=${release.impl.version}
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/dist/lib/saaj-impl.jar"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/dist/lib/saaj-impl.jar"
          dest="lib/saaj-impl.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
          dest="lib/saaj-impl.src.zip" />
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
          dest="lib/saaj-api.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
          dest="lib/saaj-api-src.zip" />
   </target>
 
@@ -567,17 +567,17 @@ major-version=${release.impl.version}
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
   <target name="integrate-jaxws21-api-hudson" depends="prepare"
           description="integrate the last successful jaxws 2.1 API from Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-revised-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-revised-2.1/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 

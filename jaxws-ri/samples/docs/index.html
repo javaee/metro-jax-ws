@@ -25,7 +25,8 @@ standard Java EE 5 deployment descriptor; please refer to the
 documentation/samples.
 
 <p>All these samples are tested to run on 
-		<a href="https://glassfish.dev.java.net/downloads/v2-b33.html">Glassfish v2 M4</a> build 
+		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
+Promoted Build v2 41a (Beta 2 Candidate 2)</a> build 
 and on Apache Tomcat 5.x.</p>
 
 <h2 style="text-align: left"><a name="1.0"></a><font color="#000000">1.0 Directory Structure</font></h2>
@@ -272,7 +273,8 @@ and on Apache Tomcat 5.x.</p>
     </li>
     <li>
         <p style="margin-bottom: 0in;">Download
-		<a href="https://glassfish.dev.java.net/downloads/v2-b33.html">Glassfish v2 M4</a> and install it.</p>
+		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
+		Promoted Build v2 41a (Beta 2 Candidate 2)</a> and install it.</p>
     </li>
     <li>
 	<p style="margin-bottom: 0in;">Make sure that the Application Server is configured for port 8080 
@@ -281,9 +283,10 @@ and on Apache Tomcat 5.x.</p>
 	</p></li>
 	<li>
 	<p style="margin-bottom: 0in;">
-	<a href="https://glassfish.dev.java.net/downloads/v2-b33.html">Glassfish v2 M4</a> 
-	integrates JAXWS ${IMPL_VERSION} RI. The bits in Glassfish v2 M4 is pretty 
-	close to JAXWS 2.1 RI so you may just start using it and skip 
+	<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
+	Promoted Build v2 41a (Beta 2 Candidate 2)</a> 
+	integrates JAXWS ${IMPL_VERSION} RI. The bits in Glassfish v2 is pretty 
+	close to JAXWS 2.1.1 RC1 RI so you may just start using it and skip 
 	step 5 below unless you want to use the latest JAXWS RI. 
 	</p></li>
 	<li>
@@ -299,9 +302,8 @@ and on Apache Tomcat 5.x.</p>
                     to the JAX-WS installation directory.</p></li>
 		<li>
 		<p style="margin-bottom: 0in;">'cd $JAXWS_HOME' then invoke 'ant 
-		install'. This will add jaxws 2.1 jars in the classpath-prefix before 
-		the jaxws-update.jar (jaxws 2.0.1) in domain.xml. This is required so 
-		that Glassfish picks-up JAXWS 2.1 jar.</p></li>
+		install'. This will add jaxws 2.1.1 RC1 jars in the classpath-prefix in domain.xml. This is required so 
+		that Glassfish picks-up JAXWS 2.1.1 RC1 jar.</p></li>
 	</ol></li>
 </ol>
 

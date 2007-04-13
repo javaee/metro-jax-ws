@@ -363,7 +363,7 @@ public class SeiGenerator extends GeneratorBase{
         if (param.isINOUT()){
             paramAnno.param("mode", javax.jws.WebParam.Mode.INOUT);
         }else if ((res != null) && (isMessageParam(param, res) || isHeaderParam(param, res) || isAttachmentParam(param, res) ||
-                isUnboundParam(param,res))){
+                isUnboundParam(param,res) || param.isOUT())){
             paramAnno.param("mode", javax.jws.WebParam.Mode.OUT);
         }
 

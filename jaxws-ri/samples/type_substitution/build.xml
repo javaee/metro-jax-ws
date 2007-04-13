@@ -74,7 +74,7 @@
                 keep="true"
                 destdir="${build.classes.home}"
                 package="type_substitution.client"
-                wsdl="http://localhost:9090/jaxws-type_substitution/cardealer?wsdl">
+                wsdl="http://localhost:8080/jaxws-type_substitution/cardealer?wsdl">
         </wsimport>
     </target>
 

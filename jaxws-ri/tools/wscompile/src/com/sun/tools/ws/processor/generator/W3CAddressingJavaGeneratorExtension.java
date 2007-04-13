@@ -18,7 +18,7 @@
  [name of copyright owner]
 */
 /*
- $Id: W3CAddressingJavaGeneratorExtension.java,v 1.2 2007-03-01 01:28:08 jitu Exp $
+ $Id: W3CAddressingJavaGeneratorExtension.java,v 1.3 2007-04-13 00:32:41 jitu Exp $
 
  Copyright (c) 2006 Sun Microsystems, Inc.
  All rights reserved.

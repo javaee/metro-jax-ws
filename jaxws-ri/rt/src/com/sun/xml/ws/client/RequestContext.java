@@ -228,6 +228,7 @@ public final class RequestContext extends PropertySet {
     private RequestContext(RequestContext that) {
         others = new HashMap<String,Object>(that.others);
         endpointAddress = that.endpointAddress;
+        soapAction = that.soapAction;
         contentNegotiation = that.contentNegotiation;
         // this is fragile, but it works faster
     }

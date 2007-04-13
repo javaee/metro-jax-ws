@@ -33,7 +33,10 @@ import com.sun.xml.ws.api.model.wsdl.WSDLFault;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
+import com.sun.xml.ws.model.JavaMethodImpl;
+import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
 import org.w3c.dom.Element;
@@ -55,20 +58,63 @@ import java.util.Map;
  */
 public abstract class WsaTubeHelper {
 
-    public WsaTubeHelper(WSBinding binding, WSDLPort wsdlPort) {
+    public WsaTubeHelper(WSBinding binding, SEIModel seiModel, WSDLPort wsdlPort) {
         this.binding = binding;
         this.wsdlPort = wsdlPort;
+        this.seiModel = seiModel;
         this.soapVer = binding.getSOAPVersion();
         this.addVer = binding.getAddressingVersion();
 
     }
 
     public String getFaultAction(Packet requestPacket, Packet responsePacket) {
-        String action = addVer.getDefaultFaultAction();
+        String action = null;
+        if(seiModel != null) {
+            action = getFaultActionFromSEIModel(requestPacket,responsePacket);
+        }
+        if(action != null)
+            return action;
+        else
+            action = addVer.getDefaultFaultAction();
         if (wsdlPort == null)
             return action;
         WSDLBoundOperation wbo = requestPacket.getMessage().getOperation(wsdlPort);
         return getFaultAction(wbo,responsePacket);
+    }
+
+    String getFaultActionFromSEIModel(Packet requestPacket, Packet responsePacket) {
+        String action = null;
+        if (seiModel == null || wsdlPort == null)
+            return action;
+
+        try {
+            SOAPMessage sm = responsePacket.getMessage().copy().readAsSOAPMessage();
+            if (sm == null)
+                return action;
+
+            if (sm.getSOAPBody() == null)
+                return action;
+
+            if (sm.getSOAPBody().getFault() == null)
+                return action;
+
+            Detail detail = sm.getSOAPBody().getFault().getDetail();
+            if (detail == null)
+                return action;
+
+            String ns = detail.getFirstChild().getNamespaceURI();
+            String name = detail.getFirstChild().getLocalName();
+            JavaMethodImpl jm = (JavaMethodImpl) requestPacket.getMessage().getMethod(seiModel);
+            for (CheckedExceptionImpl ce : jm.getCheckedExceptions()) {
+                if (ce.getDetailType().tagName.getLocalPart().equals(name) &&
+                        ce.getDetailType().tagName.getNamespaceURI().equals(ns)) {
+                    return ce.getFaultAction();
+                }
+            }
+            return action;
+        } catch (SOAPException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     String getFaultAction(@Nullable WSDLBoundOperation wbo, Packet responsePacket) {
@@ -135,16 +181,16 @@ public abstract class WsaTubeHelper {
      * @return input Action
      */
     public String getEffectiveInputAction(Packet packet) {
+        //non-default SOAPAction beomes wsa:action
+        if(packet.soapAction != null && !packet.soapAction.equals(""))
+                return packet.soapAction;
         String action = null;
 
         if (wsdlPort != null) {
             WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
             if (wbo != null) {
                 WSDLOperation op = wbo.getOperation();
-                if(((WSDLOperationImpl) op).getInput().isDefaultAction()&& (packet.soapAction != null && !packet.soapAction.equals("")))
-                    action = packet.soapAction;
-                else
-                    action = op.getInput().getAction();
+                action = op.getInput().getAction();
             } else
                 action = packet.soapAction;
         } else {
@@ -186,6 +232,12 @@ public abstract class WsaTubeHelper {
 
     public String getOutputAction(Packet packet) {
         String action = AddressingVersion.UNSET_OUTPUT_ACTION;
+        if(seiModel!= null) {
+            JavaMethodImpl jm = (JavaMethodImpl) packet.getMessage().getMethod(seiModel);
+            if(jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
+                return jm.getOutputAction();
+            }
+        }
         if (wsdlPort != null) {
             WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
             return getOutputAction(wbo);
@@ -267,7 +319,7 @@ public abstract class WsaTubeHelper {
 
     protected Unmarshaller unmarshaller;
     protected Marshaller marshaller;
-
+    protected SEIModel seiModel;
     protected WSDLPort wsdlPort;
     protected WSBinding binding;
     protected final SOAPVersion soapVer;

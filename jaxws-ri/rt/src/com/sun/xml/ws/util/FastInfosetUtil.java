@@ -24,70 +24,11 @@ package com.sun.xml.ws.util;
 
 import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.streaming.XMLStreamReaderException;
-import com.sun.xml.ws.streaming.XMLStreamWriterException;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import org.xml.sax.InputSource;
 
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stream.StreamSource;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.StringTokenizer;
 
 public class FastInfosetUtil {
-    
-    public static boolean isFastInfosetAccepted(String[] accepts) {
-        for (String accept : accepts) {
-            if (isFastInfosetAccepted(accept)) {
-                return true;
-            }
-        }        
-        return false;
-    }
-
-    public static boolean isFastInfosetAccepted(String accept) {
-        StringTokenizer st = new StringTokenizer(accept, ",");
-        while (st.hasMoreTokens()) {
-            final String token = st.nextToken().trim();
-            if (token.equalsIgnoreCase("application/fastinfoset")) {
-                return true;
-            }
-        }        
-        return false;
-    }
-    
-    public static String getFastInfosetFromAccept(List<String> accepts) {
-        for (String accept : accepts) {
-            StringTokenizer st = new StringTokenizer(accept, ",");
-            while (st.hasMoreTokens()) {
-                final String token = st.nextToken().trim();
-                if (token.equalsIgnoreCase("application/fastinfoset")) {
-                    return "application/fastinfoset";
-                }
-                if (token.equalsIgnoreCase("application/soap+fastinfoset")) {
-                    return "application/soap+fastinfoset";
-                }
-            }       
-        }
-        return null;        
-    }
-    
-    public static void transcodeXMLStringToFI(String xml, OutputStream out) {
-        try {
-            XmlUtil.newTransformer().transform(
-                new StreamSource(new java.io.StringReader(xml)),
-                FastInfosetReflection.FastInfosetResult_new(out));
-        }
-        catch (Exception e) {
-            // Ignore
-        }
-    }
-
-    public static XMLStreamReader createFIStreamReader(InputSource source) {
-        return createFIStreamReader(source.getByteStream());
-    }
 
     /**
      * Returns the FI parser allocated for this thread.
@@ -108,34 +49,5 @@ public class FastInfosetUtil {
             throw new XMLStreamReaderException(e);
         }
     }
-
-    // -- Fast Infoset ---------------------------------------------------
-
-    public static XMLStreamWriter createFIStreamWriter(OutputStream out) {
-        return createFIStreamWriter(out, "UTF-8");
-    }
-
-    public static XMLStreamWriter createFIStreamWriter(OutputStream out, String encoding) {
-        return createFIStreamWriter(out, encoding, true);
-    }
-
-    public static XMLStreamWriter createFIStreamWriter(OutputStream out,
-        String encoding, boolean declare)
-    {
-        // Check if compatible implementation of FI was found
-        if (FastInfosetReflection.fiStAXDocumentSerializer_new == null) {
-            throw new XMLReaderException("fastinfoset.noImplementation");
-        }
-
-        try {
-            Object sds = FastInfosetReflection.fiStAXDocumentSerializer_new.newInstance();
-            FastInfosetReflection.fiStAXDocumentSerializer_setOutputStream.invoke(sds, out);
-            FastInfosetReflection.fiStAXDocumentSerializer_setEncoding.invoke(sds, encoding);
-            return (XMLStreamWriter) sds;
-        }  catch (Exception e) {
-            throw new XMLStreamWriterException(e);
-        }
-    }
-
 
 }

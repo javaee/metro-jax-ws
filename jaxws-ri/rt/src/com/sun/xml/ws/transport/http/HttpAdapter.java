@@ -191,6 +191,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         String ct = con.getRequestHeader("Content-Type");
         InputStream in = con.getInput();
         Packet packet = new Packet();
+        packet.soapAction = con.getRequestHeader("SOAPAction");
         packet.wasTransportSecure = con.isSecure();
         packet.acceptableMimeTypes = con.getRequestHeader("Accept");
         packet.addSatellite(con);

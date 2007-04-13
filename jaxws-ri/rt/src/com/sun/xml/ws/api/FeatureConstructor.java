@@ -1,14 +1,19 @@
 package com.sun.xml.ws.api;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.annotation.Documented;
+import com.sun.xml.ws.developer.MemberSubmissionAddressing;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
+import com.sun.xml.ws.developer.Stateful;
+import com.sun.xml.ws.developer.StatefulFeature;
+
+import javax.xml.ws.WebServiceFeature;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
  * <p>
- * This annotation should be used on a constructor of classes extending {@link javax.xml.ws.WebServiceFeature} other than
+ * This annotation should be used on a constructor of classes extending {@link WebServiceFeature} other than
  * Spec defined features, to help JAX-WS runtime recognize feature extensions.
  * </p>
  * <p>
@@ -17,11 +22,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * with @FeatureConstructor whose value captures the annotaion attribute names for the corresponding parameters.
  * </p>
  * For example,
- * @see com.sun.xml.ws.developer.MemberSubmissionAddressingFeature
- * @see com.sun.xml.ws.developer.MemberSubmissionAddressing
+ * @see MemberSubmissionAddressingFeature
+ * @see MemberSubmissionAddressing
  *
- * @see com.sun.xml.ws.developer.Stateful
- * @see com.sun.xml.ws.developer.StatefulFeature
+ * @see Stateful
+ * @see StatefulFeature
  *
  * @author Rama Pulavarthi
  */

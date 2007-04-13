@@ -24,6 +24,7 @@ package com.sun.xml.ws.encoding.fastinfoset;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.encoding.ContentTypeImpl;
 import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.ws.message.stream.StreamHeader11;
@@ -38,8 +39,8 @@ import javax.xml.stream.XMLStreamReader;
  * @author Paul.Sandoz@Sun.Com
  */
 final class FastInfosetStreamSOAP11Codec extends FastInfosetStreamSOAPCodec {
-    /*package*/ FastInfosetStreamSOAP11Codec(boolean retainState) {
-        super(SOAPVersion.SOAP_11, retainState,
+    /*package*/ FastInfosetStreamSOAP11Codec(StreamSOAPCodec soapCodec, boolean retainState) {
+        super(soapCodec, SOAPVersion.SOAP_11, retainState,
                 (retainState) ? FastInfosetMIMETypes.STATEFUL_SOAP_11 : FastInfosetMIMETypes.SOAP_11);
     }
 

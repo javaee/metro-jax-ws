@@ -43,14 +43,15 @@ import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.TubelineAssembler;
 import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.EndpointAwareCodec;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
+import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
-import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -121,7 +122,15 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
         ServerTubeAssemblerContext context = new ServerPipeAssemblerContext(seiModel, port, this, terminalTube, isSynchronous);
         this.masterTubeline = assembler.createServer(context);
-        this.masterCodec = context.getCodec();
+
+        Codec c = context.getCodec();
+        if(c instanceof EndpointAwareCodec) {
+            // create a copy to avoid sharing the codec between multiple endpoints 
+            c = c.copy();
+            ((EndpointAwareCodec)c).setEndpoint(this);
+        }
+        this.masterCodec = c;
+
         tubePool = new TubePool(masterTubeline);
         terminalTube.setEndpoint(this);
         engine = new Engine(toString());
@@ -191,7 +200,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                 // TODO XML/HTTP binding
                 Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
                         soapVersion, null, error);
-                Packet response = request.createServerResponse(faultMsg, request.endpoint.getPort(),
+                Packet response = request.createServerResponse(faultMsg, request.endpoint.getPort(), null,
                         request.endpoint.getBinding());
                 if (callback!=null) {
                     callback.onCompletion(response);
@@ -222,7 +231,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                     re.printStackTrace();
                     Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
                             soapVersion, null, re);
-                    response = request.createServerResponse(faultMsg, request.endpoint.getPort(), request.endpoint.getBinding());
+                    response = request.createServerResponse(faultMsg, request.endpoint.getPort(), null, request.endpoint.getBinding());
                 }
                 return response;
             }
@@ -267,9 +276,18 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         if(referenceParameters != null) {
             refParams = Arrays.asList(referenceParameters);
         }
-        return new WSEndpointReference(
-            AddressingVersion.fromSpecClass(clazz),
-            address, serviceName, portName, portType, null, wsdlAddress, refParams).toSpec(clazz);
+        AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
+        if (av == AddressingVersion.W3C) {
+            // Supress writing ServiceName and EndpointName in W3C EPR,
+            // Until the ns for those metadata elements is resolved.
+            return new WSEndpointReference(
+                    AddressingVersion.W3C,
+                    address,null /*serviceName*/,null /*portName*/, null /*portType*/, null, null /*wsdlAddress*/, refParams).toSpec(clazz);
+        } else {
+            return new WSEndpointReference(
+                    AddressingVersion.MEMBER,
+                    address, serviceName, portName, portType, null, wsdlAddress, refParams).toSpec(clazz);
+        }
     }
 
     public @NotNull QName getPortName() {

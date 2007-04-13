@@ -93,8 +93,12 @@ final class SyncMethodHandler extends MethodHandler {
         for(CheckedExceptionImpl ce : method.getCheckedExceptions()){
             checkedExceptions.put(ce.getBridge().getTypeReference().tagName, ce);
         }
-
-        this.soapAction = method.getBinding().getSOAPAction();
+        //If a non-"" soapAction is specified, wsa:action the SOAPAction
+        if(method.getInputAction() != null && !method.getBinding().getSOAPAction().equals("") ) {
+            this.soapAction = method.getInputAction();
+        } else {
+            this.soapAction = method.getBinding().getSOAPAction();
+        }
         this.javaMethod = method;
 
         {// prepare objects for creating messages

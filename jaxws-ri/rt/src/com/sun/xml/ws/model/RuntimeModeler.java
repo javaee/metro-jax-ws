@@ -48,12 +48,7 @@ import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.Response;
-import javax.xml.ws.ResponseWrapper;
-import javax.xml.ws.WebFault;
+import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -930,6 +925,10 @@ public class RuntimeModeler {
      * @param method the <code>method</code> from which to find the exceptions to model
      */
     protected void processExceptions(JavaMethodImpl javaMethod, Method method) {
+        Action actionAnn = method.getAnnotation(Action.class);
+        FaultAction[] faultActions = {};
+        if(actionAnn != null)
+            faultActions = actionAnn.fault();
         for (Class<?> exception : method.getExceptionTypes()) {
             if (REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception))
                 continue;
@@ -965,6 +964,12 @@ public class RuntimeModeler {
             CheckedExceptionImpl checkedException =
                 new CheckedExceptionImpl(javaMethod, exception, typeRef, exceptionType);
             checkedException.setMessageName(exception.getSimpleName());
+            for(FaultAction fa: faultActions) {
+                if(fa.className().equals(exception) && !fa.value().equals("")) {
+                    checkedException.setFaultAction(fa.value());
+                    break;
+                }
+            }            
             javaMethod.addException(checkedException);
         }
     }

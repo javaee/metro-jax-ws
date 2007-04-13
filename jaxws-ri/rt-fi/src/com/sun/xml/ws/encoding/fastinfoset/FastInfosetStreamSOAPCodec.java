@@ -27,8 +27,7 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
-import com.sun.xml.ws.encoding.StreamSOAPCodec;
+import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.message.stream.StreamHeader;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.encoding.ContentTypeImpl;
@@ -65,14 +64,15 @@ public abstract class FastInfosetStreamSOAPCodec implements Codec {
     
     protected final ContentType _defaultContentType;
     
-    /* package */ FastInfosetStreamSOAPCodec(SOAPVersion soapVersion, boolean retainState, String mimeType) {
-        _soapCodec = StreamSOAPCodec.create(soapVersion);
+    /* package */ FastInfosetStreamSOAPCodec(StreamSOAPCodec soapCodec, SOAPVersion soapVersion, boolean retainState, String mimeType) {
+//        _soapCodec = StreamSOAPCodec.create(soapVersion);
+        _soapCodec = soapCodec;
         _retainState = retainState;
         _defaultContentType = new ContentTypeImpl(mimeType);
     }
     
     /* package */ FastInfosetStreamSOAPCodec(FastInfosetStreamSOAPCodec that) {
-        this._soapCodec = that._soapCodec.copy();
+        this._soapCodec = (StreamSOAPCodec) that._soapCodec.copy();
         this._retainState = that._retainState;
         this._defaultContentType = that._defaultContentType;
     }
@@ -146,8 +146,8 @@ public abstract class FastInfosetStreamSOAPCodec implements Codec {
      * @param version the SOAP version of the codec.
      * @return a new {@link FastInfosetStreamSOAPCodec} instance.
      */
-    public static FastInfosetStreamSOAPCodec create(SOAPVersion version) {
-        return create(version, false);
+    public static FastInfosetStreamSOAPCodec create(StreamSOAPCodec soapCodec, SOAPVersion version) {
+        return create(soapCodec, version, false);
     }
     
     /**
@@ -158,16 +158,16 @@ public abstract class FastInfosetStreamSOAPCodec implements Codec {
      *        vocabulary tables for multiple encode/decode invocations.
      * @return a new {@link FastInfosetStreamSOAPCodec} instance.
      */
-    public static FastInfosetStreamSOAPCodec create(SOAPVersion version,
-            boolean retainState) {
+    public static FastInfosetStreamSOAPCodec create(StreamSOAPCodec soapCodec,
+            SOAPVersion version, boolean retainState) {
         if(version==null)
             // this decoder is for SOAP, not for XML/HTTP
             throw new IllegalArgumentException();
         switch(version) {
             case SOAP_11:
-                return new FastInfosetStreamSOAP11Codec(retainState);
+                return new FastInfosetStreamSOAP11Codec(soapCodec, retainState);
             case SOAP_12:
-                return new FastInfosetStreamSOAP12Codec(retainState);
+                return new FastInfosetStreamSOAP12Codec(soapCodec, retainState);
             default:
                 throw new AssertionError();
         }

@@ -40,14 +40,26 @@ public final class ContentTypeImpl implements ContentType {
     
     public ContentTypeImpl(String contentType, String soapAction) {
         this.contentType = contentType;
-        this.soapAction = soapAction;
+        this.soapAction = getQuotedSOAPAction(soapAction);
         this.accept = null;
     }
     
     public ContentTypeImpl(String contentType, String soapAction, String accept) {
         this.contentType = contentType;
-        this.soapAction = soapAction;
         this.accept = accept;
+        this.soapAction = getQuotedSOAPAction(soapAction);
+    }
+
+    /** BP 1.1 R1109 requires SOAPAction too be a quoted value **/
+    private String getQuotedSOAPAction(String soapAction){
+        if(soapAction == null || soapAction.length() == 0){
+            return "\"\"";
+        }else if(soapAction.charAt(0) != '"' && soapAction.charAt(soapAction.length() -1) != '"'){
+            //surround soapAction by double quotes for BP R1109
+            return "\"" + soapAction + "\"";
+        }else{
+            return soapAction;
+        }
     }
 
     public String getContentType() {

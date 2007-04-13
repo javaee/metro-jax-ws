@@ -21,10 +21,17 @@ import java.util.UUID;
  * @see JAXBMessage
  */
 final class AttachmentMarshallerImpl extends AttachmentMarshaller {
-    private final AttachmentSetImpl attachments;
+    private AttachmentSetImpl attachments;
 
     public AttachmentMarshallerImpl(AttachmentSetImpl attachemnts) {
         this.attachments = attachemnts;
+    }
+
+    /**
+     * Release a reference to user objects to avoid keeping it in memory.
+     */
+    void cleanup() {
+        attachments = null;
     }
 
     public String addMtomAttachment(DataHandler data, String elementNamespace, String elementLocalName) {

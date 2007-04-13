@@ -21,9 +21,11 @@
  */
 package com.sun.xml.ws.server.provider;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.server.AsyncProvider;
+import com.sun.xml.ws.resources.ServerMessages;
 
 import javax.activation.DataSource;
 import javax.xml.soap.SOAPMessage;
@@ -31,6 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.ws.Provider;
 import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPBinding;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -41,85 +44,69 @@ import java.lang.reflect.Type;
  * about Provider endpoint. It proccess annotations to find about Service.Mode
  * It also finds about parameterized type(e.g. Source, SOAPMessage, DataSource)
  * of endpoint class.
- * 
+ *
+ * @author Jitendra Kotamraju
+ * @author Kohsuke Kawaguchi
  */
 final class ProviderEndpointModel<T> {
-    
-    private final boolean isSource;
-    private final Service.Mode mode;
-    private final boolean isAsync;
+    /**
+     * True if this is {@link AsyncProvider}.
+     */
+    final boolean isAsync;
+
+    /**
+     * In which mode does this provider operate?
+     */
+    @NotNull final Service.Mode mode;
+    /**
+     * T of {@link Provider}&lt;T>.
+     */
+    @NotNull final Class datatype;
+    /**
+     * User class that extends {@link Provider}.
+     */
+    @NotNull final Class implClass;
 
     ProviderEndpointModel(Class<T> implementorClass, WSBinding binding) {
         assert implementorClass != null;
         assert binding != null;
 
+        implClass = implementorClass;
         mode = getServiceMode(implementorClass);
         Class otherClass = (binding instanceof SOAPBinding)
             ? SOAPMessage.class : DataSource.class;
         isAsync = AsyncProvider.class.isAssignableFrom(implementorClass);
-        isSource = isSource(isAsync ? AsyncProvider.class : Provider.class,
-                implementorClass, otherClass);
 
-        if (mode == Service.Mode.PAYLOAD && !isSource) {
+
+        Class<? extends Object> baseType = isAsync ? AsyncProvider.class : Provider.class;
+        Type baseParam = JAXBRIContext.getBaseType(implementorClass, baseType);
+        if (baseParam==null)
+            throw new WebServiceException(ServerMessages.NOT_IMPLEMENT_PROVIDER(implementorClass.getName()));
+        if (!(baseParam instanceof ParameterizedType))
+            throw new WebServiceException(ServerMessages.PROVIDER_NOT_PARAMETERIZED(implementorClass.getName()));
+
+        ParameterizedType pt = (ParameterizedType)baseParam;
+        Type[] types = pt.getActualTypeArguments();
+        if(!(types[0] instanceof Class))
+            throw new WebServiceException(ServerMessages.PROVIDER_INVALID_PARAMETER_TYPE(implementorClass.getName(),types[0]));
+        datatype = (Class)types[0];
+
+        if (mode == Service.Mode.PAYLOAD && datatype!=Source.class) {
             // Illegal to have PAYLOAD && SOAPMessage
             // Illegal to have PAYLOAD && DataSource
             throw new IllegalArgumentException(
                 "Illeagal combination - Mode.PAYLOAD and Provider<"+otherClass.getName()+">");
         }
     }
-    
-    public boolean isSource() {
-        return isSource;
-    }
 
-    public boolean isAsync() {
-        return isAsync;
-    }
-    
-    public Service.Mode getServiceMode() {
-        return mode;
-    }
-    
     /**
      * Is it PAYLOAD or MESSAGE ??
+     *
+     * @param c endpoint class
+     * @return Service.Mode.PAYLOAD or Service.Mode.MESSAGE
      */
     private static Service.Mode getServiceMode(Class<?> c) {
         ServiceMode mode = c.getAnnotation(ServiceMode.class);
-        if (mode == null) {
-            return Service.Mode.PAYLOAD;
-        }
-        return mode.value();
+        return (mode == null) ? Service.Mode.PAYLOAD : mode.value();
     }
-
-    /**
-     * Is it Provider&lt;Source> ? Finds whether the parameterized type is
-     * Source.class or not.
-     *
-     * @param provider Provider.class or AsyncProvider.class
-     * @param c provider endpoint class
-     * @param otherClass Typically SOAPMessage.class or DataSource.class
-     * @return true if c's parameterized type is Source
-     *         false otherwise
-     * @throws IllegalArgumentException if it is not
-     *         Provider&lt;Source> or Provider&lt;otherClass>
-     *
-     */
-    private static boolean isSource(Class provider, Class c, Class otherClass) {
-        Type base = JAXBRIContext.getBaseType(c, provider);
-        assert base != null;
-        if (base instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType)base;
-            Type[] types = pt.getActualTypeArguments();
-            if (types[0] instanceof Class && Source.class.isAssignableFrom((Class)types[0])) {
-                return true;
-            }
-            if (types[0] instanceof Class && otherClass.isAssignableFrom((Class)types[0])) {
-                return false;
-            }
-        }
-        throw new IllegalArgumentException(
-            "Endpoint should implement Provider<"+Source.class.getName()+
-                "> or Provider<"+otherClass.getName()+">");
-    }
-
 }

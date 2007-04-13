@@ -1,5 +1,6 @@
 package com.sun.xml.ws.server;
 
+import com.sun.istack.FragmentContentHandler;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBufferSource;
@@ -11,15 +12,21 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
+import com.sun.xml.ws.developer.EPRRecipe;
 import com.sun.xml.ws.developer.StatefulWebServiceManager;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.spi.ProviderImpl;
+import com.sun.xml.ws.util.xml.ContentHandlerToXMLStreamWriter;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceContext;
@@ -30,6 +37,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -199,7 +207,11 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @NotNull
     public <EPR extends EndpointReference>EPR export(Class<EPR> epr, T o) {
-        return export(epr, InvokerTube.getCurrentPacket(), o);
+        return export(epr,o,null);
+    }
+
+    public <EPR extends EndpointReference> EPR export(Class<EPR> epr, T o, EPRRecipe recipe) {
+        return export(epr, InvokerTube.getCurrentPacket(), o, recipe);
     }
 
     @NotNull
@@ -214,24 +226,33 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o) {
-        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest,owner), o);
+        return export(adrsVer,currentRequest,o,null);
+    }
+
+    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o, EPRRecipe recipe) {
+        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest,owner), o, recipe);
     }
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o) {
+        return export(adrsVer,endpointAddress,o,null);
+    }
+
+    @NotNull
+    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o, EPRRecipe recipe) {
         if(endpointAddress==null)
             throw new IllegalArgumentException("No address available");
 
         String key = reverseInstances.get(o);
 
-        if(key!=null) return createEPR(key, adrsVer, endpointAddress);
+        if(key!=null) return createEPR(key, adrsVer, endpointAddress, recipe);
 
         // not exported yet.
         synchronized(this) {
             // double check now in the synchronization block to
             // really make sure that we can export.
             key = reverseInstances.get(o);
-            if(key!=null) return createEPR(key, adrsVer, endpointAddress);
+            if(key!=null) return createEPR(key, adrsVer, endpointAddress, recipe);
 
             if(o!=null)
                 prepare(o);
@@ -243,13 +264,13 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                 instance.restartTimer();
         }
 
-        return createEPR(key, adrsVer, endpointAddress);
+        return createEPR(key, adrsVer, endpointAddress, recipe);
     }
 
     /**
      * Creates an EPR that has the right key.
      */
-    private <EPR extends EndpointReference> EPR createEPR(String key, Class<EPR> eprClass, String address) {
+    private <EPR extends EndpointReference> EPR createEPR(String key, Class<EPR> eprClass, String address, EPRRecipe recipe) {
         AddressingVersion adrsVer = AddressingVersion.fromSpecClass(eprClass);
 
         try {
@@ -258,14 +279,37 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             w.writeStartDocument();
             w.writeStartElement("wsa","EndpointReference", adrsVer.nsUri);
             w.writeNamespace("wsa",adrsVer.nsUri);
+
             w.writeStartElement("wsa","Address",adrsVer.nsUri);
             w.writeCharacters(address);
             w.writeEndElement();
+
             w.writeStartElement("wsa","ReferenceParameters",adrsVer.nsUri);
             w.writeStartElement(COOKIE_TAG.getPrefix(), COOKIE_TAG.getLocalPart(), COOKIE_TAG.getNamespaceURI());
             w.writeCharacters(key);
             w.writeEndElement();
+            if(recipe!=null) {
+                for (Header h : recipe.getReferenceParameters())
+                    h.writeTo(w);
+            }
             w.writeEndElement();
+
+            if(recipe!=null) {
+                List<Source> metadata = recipe.getMetadata();
+                if(!metadata.isEmpty()) {
+                    w.writeStartElement("wsa","Metadata",adrsVer.nsUri);
+                    Transformer t = XmlUtil.newTransformer();
+                    for (Source s : metadata)
+                        try {
+                            t.transform(s,
+                                new SAXResult(new FragmentContentHandler(new ContentHandlerToXMLStreamWriter(w))));
+                        } catch (TransformerException e) {
+                            throw new IllegalArgumentException("Unable to write EPR metadata "+s,e);
+                        }
+                    w.writeEndElement();
+                }
+            }
+
             w.writeEndElement();
             w.writeEndDocument();
 

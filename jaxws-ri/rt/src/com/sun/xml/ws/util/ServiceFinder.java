@@ -22,8 +22,8 @@
 
 package com.sun.xml.ws.util;
 
-import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -317,6 +317,7 @@ public final class ServiceFinder<T> implements Iterable<T> {
         Iterator<String> pending = null;
         Set<String> returned = new TreeSet<String>();
         String nextName = null;
+        URL currentConfig = null;
 
         private LazyIterator(Class<T> service, ClassLoader loader) {
             this.service = service;
@@ -342,7 +343,8 @@ public final class ServiceFinder<T> implements Iterable<T> {
                 if (!configs.hasMoreElements()) {
                     return false;
                 }
-                pending = parse(service, configs.nextElement(), returned);
+                currentConfig = configs.nextElement();
+                pending = parse(service, currentConfig, returned);
             }
             nextName = pending.next();
             return true;
@@ -358,11 +360,10 @@ public final class ServiceFinder<T> implements Iterable<T> {
                 return service.cast(Class.forName(cn, true, loader).newInstance());
             } catch (ClassNotFoundException x) {
                 fail(service,
-                    "Provider " + cn + " not found");
+                    "Provider " + cn + " is specified in "+currentConfig+" but not found");
             } catch (Exception x) {
                 fail(service,
-                    "Provider " + cn + " could not be instantiated: " + x,
-                    x);
+                    "Provider " + cn + " is specified in "+currentConfig+"but could not be instantiated: " + x, x);
             }
             return null;    /* This cannot happen */
         }

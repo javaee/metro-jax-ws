@@ -18,7 +18,7 @@
  [name of copyright owner]
 */
 /*
- $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.2 2007-03-01 01:26:40 jitu Exp $
+ $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.3 2007-04-13 00:32:40 jitu Exp $
 
  Copyright (c) 2006 Sun Microsystems, Inc.
  All rights reserved.
@@ -115,8 +115,11 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
         if (!enabled)
             return;
         UsingAddressing ua = binding._element(AddressingVersion.W3C.wsdlExtensionTag, UsingAddressing.class);
+        /*
+        Do not generate wsdl:required=true
         if(required) {
             ua.required(true);
         }
+        */
     }
 }

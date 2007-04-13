@@ -47,6 +47,7 @@ public final class CheckedExceptionImpl implements CheckedException {
     private final ExceptionType exceptionType;
     private final JavaMethodImpl javaMethod;
     private String messageName;
+    private String faultAction;
 
     /**
      * @param jm {@link JavaMethodImpl} that throws this exception
@@ -103,5 +104,13 @@ public final class CheckedExceptionImpl implements CheckedException {
     
     public void setMessageName(String messageName) {
         this.messageName = messageName;
+    }
+
+    public String getFaultAction() {
+        return faultAction;
+    }
+
+    public void setFaultAction(String faultAction) {
+        this.faultAction = faultAction;
     }
 }

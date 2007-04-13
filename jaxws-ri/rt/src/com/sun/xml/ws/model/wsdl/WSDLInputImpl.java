@@ -37,7 +37,7 @@ public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLI
     private WSDLOperationImpl operation;
     private WSDLMessageImpl message;
     private String action;
-    private boolean defaultAction;
+    private boolean defaultAction = true;
 
     public WSDLInputImpl(XMLStreamReader xsr,String name, QName messageName, WSDLOperationImpl operation) {
         super(xsr);

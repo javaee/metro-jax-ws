@@ -23,25 +23,15 @@
 package com.sun.xml.ws.server.sei;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Messages;
-import com.sun.xml.ws.fault.SOAPFaultBuilder;
-import com.sun.xml.ws.message.ProblemActionHeader;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 
-import javax.xml.namespace.QName;
-import javax.xml.soap.Detail;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.WebServiceException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,9 +60,15 @@ final class ActionBasedDispatcher implements EndpointMethodDispatcher {
 
         for( JavaMethodImpl m : model.getJavaMethods() ) {
             EndpointMethodHandler handler = new EndpointMethodHandler(invokerTube,m,binding);
-            String action = m.getOperation().getOperation().getInput().getAction();
-            if (action != null)
+            String action = m.getInputAction();
+            //first look at annotations and then in wsdlmodel
+            if(action != null && !action.equals("")) {
                 actionMethodHandlers.put(action, handler);
+            } else {
+                action = m.getOperation().getOperation().getInput().getAction();
+                if (action != null)
+                    actionMethodHandlers.put(action, handler);
+            }    
         }
     }
 
