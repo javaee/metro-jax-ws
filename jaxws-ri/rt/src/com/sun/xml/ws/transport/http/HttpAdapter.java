@@ -95,6 +95,12 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     public final HttpAdapterList<? extends HttpAdapter> owner;
 
     /**
+     * Servlet URL pattern with which this {@link HttpAdapter} is associated.
+     */
+    public final String urlPattern;
+
+
+    /**
      * Creates a lone {@link HttpAdapter} that does not know of any other
      * {@link HttpAdapter}s.
      *
@@ -108,9 +114,10 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return new DummyList().createAdapter("","",endpoint);
     }
 
-    protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner) {
+    protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner, String urlPattern) {
         super(endpoint);
         this.owner = owner;
+        this.urlPattern = urlPattern;
 
         // fill in WSDL map
         ServiceDefinition sdef = this.endpoint.getServiceDefinition();
