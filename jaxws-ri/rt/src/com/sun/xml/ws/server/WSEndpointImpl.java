@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.pipe.TubelineAssembler;
 import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.EndpointAwareCodec;
+import com.sun.xml.ws.api.server.EndpointComponent;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
@@ -60,7 +61,9 @@ import javax.xml.ws.EndpointReference;
 import javax.xml.ws.handler.Handler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +100,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
     private final Class<T> implementationClass;
     private final @Nullable WSDLProperties wsdlProperties;
+    private final Set<EndpointComponent> componentRegistry = new LinkedHashSet<EndpointComponent>();
 
     WSEndpointImpl(@NotNull QName serviceName, @NotNull QName portName, WSBinding binding,
                    Container container, SEIModel seiModel, WSDLPort port,
@@ -262,6 +266,10 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
     public ServiceDefinitionImpl getServiceDefinition() {
         return serviceDef;
+    }
+
+    public Set<EndpointComponent> getComponentRegistry() {
+        return componentRegistry;
     }
 
     private static final Logger logger = Logger.getLogger(
