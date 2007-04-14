@@ -4,6 +4,8 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.EndpointComponent;
 import com.sun.xml.ws.api.server.WSEndpoint;
 
+import java.io.IOException;
+
 /**
  * Intercepts GET HTTP requests to process the requests.
  *
@@ -26,5 +28,5 @@ public abstract class HttpMetadataPublisher {
      * @return
      *      true if the request is processed. If false is returned the default processing kicks in.
      */
-    public abstract boolean handleMetadataRequest(@NotNull WSHTTPConnection connection);
+    public abstract boolean handleMetadataRequest(@NotNull WSHTTPConnection connection) throws IOException;
 }
