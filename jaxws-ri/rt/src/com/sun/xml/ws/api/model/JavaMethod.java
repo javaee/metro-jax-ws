@@ -26,6 +26,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.model.soap.SOAPBinding;
 
+import javax.xml.namespace.QName;
 import java.lang.reflect.Method;
 
 /**
@@ -62,7 +63,15 @@ public interface JavaMethod {
      * @return Returns the java {@link Method}
      */
     @NotNull Method getMethod();
-    
+
+    /**
+     * Gets the payload tag name of this operation.
+     *
+     * @return
+     *      null if this operation doesn't have any parameter bound to the body.
+     */
+    @Nullable QName getPayloadName();
+
     /**
      * This should be used if you want to access annotations on WebMethod
      * Returns the SEI method if there is one.

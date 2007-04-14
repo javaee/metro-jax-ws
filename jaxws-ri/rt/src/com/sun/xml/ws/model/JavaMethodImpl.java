@@ -21,6 +21,7 @@
  */
 package com.sun.xml.ws.model;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.MEP;
@@ -29,7 +30,6 @@ import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.model.soap.SOAPBindingImpl;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
-import com.sun.istack.NotNull;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Action;
@@ -88,7 +88,7 @@ public final class JavaMethodImpl implements JavaMethod {
     public Method getMethod() {
         return method;
     }
-    
+
     /**
      * @see {@link JavaMethod}
      *

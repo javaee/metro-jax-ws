@@ -32,8 +32,6 @@ import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.QNameMap;
 
-import javax.xml.namespace.QName;
-
 /**
  * An {@link com.sun.xml.ws.server.sei.EndpointMethodDispatcher} that uses
  * SOAP payload first child's QName as the key for dispatching.
@@ -55,9 +53,7 @@ final class PayloadQNameBasedDispatcher implements EndpointMethodDispatcher {
         this.binding = binding;
         methodHandlers = new QNameMap<EndpointMethodHandler>();
         for( JavaMethodImpl m : model.getJavaMethods() ) {
-            EndpointMethodHandler handler = new EndpointMethodHandler(invokerTube,m,binding);
-            QName payloadName = model.getQNameForJM(m);     // TODO need a new method on JavaMethodImpl
-            methodHandlers.put(payloadName.getNamespaceURI(), payloadName.getLocalPart(), handler);
+            methodHandlers.put(m.getPayloadName(), new EndpointMethodHandler(invokerTube,m,binding));
         }
     }
 

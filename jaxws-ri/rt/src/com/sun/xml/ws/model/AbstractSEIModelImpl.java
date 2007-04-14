@@ -25,6 +25,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
@@ -45,7 +46,12 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * model of the web service.  Used by the runtime marshall/unmarshall
@@ -219,7 +225,10 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     /**
      * @return the <code>QName</code> associated with the
-     * JavaMethod jm
+     * JavaMethod jm.
+     *
+     * @deprecated
+     *      Use {@link JavaMethod#getPayloadName()}.
      */
     public QName getQNameForJM(JavaMethodImpl jm) {
         for (QName key : nameToJM.keySet()) {
@@ -477,6 +486,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     private QName portName;
     private QName portTypeName;
     private Map<Method,JavaMethodImpl> methodToJM = new HashMap<Method, JavaMethodImpl>();
+    /**
+     * Payload QName to the method that handles it.
+     */
     private Map<QName,JavaMethodImpl> nameToJM = new HashMap<QName, JavaMethodImpl>();
     private List<JavaMethodImpl> javaMethods = new ArrayList<JavaMethodImpl>();
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
