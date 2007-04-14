@@ -114,6 +114,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return new DummyList().createAdapter("","",endpoint);
     }
 
+    /**
+     * @deprecated
+     *      remove as soon as we can update the test util.
+     */
+    protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner) {
+        this(endpoint,owner,null);
+    }
+
     protected HttpAdapter(WSEndpoint endpoint, HttpAdapterList<? extends HttpAdapter> owner, String urlPattern) {
         super(endpoint);
         this.owner = owner;
@@ -529,7 +537,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
     private static final class DummyList extends HttpAdapterList<HttpAdapter> {
         @Override
         protected HttpAdapter createHttpAdapter(String name, String urlPattern, WSEndpoint<?> endpoint) {
-            return new HttpAdapter(endpoint, this);
+            return new HttpAdapter(endpoint,this,urlPattern);
         }
     }
 

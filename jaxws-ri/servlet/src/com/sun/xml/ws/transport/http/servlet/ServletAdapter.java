@@ -56,16 +56,11 @@ import java.util.logging.Logger;
  */
 public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     final String name;
-    /**
-     * Servlet URL pattern with which this {@link HttpAdapter} is associated.
-     */
-    final String urlPattern;
 
 
     protected ServletAdapter(String name, String urlPattern, WSEndpoint endpoint, ServletAdapterList owner) {
-        super(endpoint, owner);
+        super(endpoint, owner, urlPattern);
         this.name = name;
-        this.urlPattern = urlPattern;
         // registers itself with the container
         Module module = endpoint.getContainer().getSPI(Module.class);
         if(module==null)
