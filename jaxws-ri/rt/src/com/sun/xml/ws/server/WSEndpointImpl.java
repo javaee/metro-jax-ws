@@ -157,18 +157,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return port;
     }
 
-    /**
-     * Gets the {@link SEIModel} that represents the relationship
-     * between WSDL and Java SEI.
-     *
-     * <p>
-     * This method returns a non-null value if and only if this
-     * endpoint is ultimately serving an application through an SEI.
-     *
-     * @return
-     *      maybe null. See above for more discussion.
-     *      Always the same value.
-     */
+    @Override
     public @Nullable SEIModel getSEIModel() {
         return seiModel;
     }
