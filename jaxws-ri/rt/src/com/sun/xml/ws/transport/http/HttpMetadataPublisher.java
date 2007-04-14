@@ -23,10 +23,12 @@ public abstract class HttpMetadataPublisher {
      * (which is a convention for metadata requests, such as '?wsdl' or '?xsd=...'),
      * then this method is invoked to allow components to intercept the request.
      *
+     * @param adapter
+     *      Adapter that accepted the connection.
      * @param connection
      *      Represents the current connection.
      * @return
      *      true if the request is processed. If false is returned the default processing kicks in.
      */
-    public abstract boolean handleMetadataRequest(@NotNull WSHTTPConnection connection) throws IOException;
+    public abstract boolean handleMetadataRequest(@NotNull HttpAdapter adapter, @NotNull WSHTTPConnection connection) throws IOException;
 }

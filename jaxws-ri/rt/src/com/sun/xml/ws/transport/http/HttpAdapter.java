@@ -195,7 +195,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 // metadata query. let the interceptor run 
                 for( EndpointComponent c : endpoint.getComponentRegistry() ) {
                     HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
-                    if(spi!=null && spi.handleMetadataRequest(connection))
+                    if(spi!=null && spi.handleMetadataRequest(this,connection))
                         return; // handled
                 }
 
