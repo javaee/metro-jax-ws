@@ -35,6 +35,7 @@ import com.sun.xml.ws.api.server.AbstractServerAsyncTransport;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.DocumentAddressResolver;
+import com.sun.xml.ws.api.server.EndpointComponent;
 import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.SDDocument;
@@ -175,11 +176,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
         if(connection.getMethod().equals("GET")) {
-            String query = connection.getQueryString();
-            if (isMetadataQuery(query)) {
-                // Sends published WSDL and schema documents
-                publishWSDL(connection);
-                return;
+            if(connection.getQueryString()!=null) {
+                // metadata query. let the interceptor run 
+                for( EndpointComponent c : endpoint.getComponentRegistry() ) {
+                    HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
+                    if(spi!=null && spi.handleMetadataRequest(connection))
+                        return; // handled
+                }
+
+                if (isMetadataQuery(connection.getQueryString())) {
+                    // Sends published WSDL and schema documents
+                    publishWSDL(connection);
+                    return;
+                }
             }
             Binding binding = getEndpoint().getBinding();
             if (!(binding instanceof HTTPBinding)) {
