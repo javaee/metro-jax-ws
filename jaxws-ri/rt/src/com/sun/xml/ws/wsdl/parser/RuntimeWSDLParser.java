@@ -438,6 +438,7 @@ public class RuntimeWSDLParser {
 
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
             QName name = reader.getName();
+            String style = null;
             if (WSDLConstants.QNAME_INPUT.equals(name)) {
                 parseInputBinding(reader, bindingOp);
             } else if (WSDLConstants.QNAME_OUTPUT.equals(name)) {
@@ -446,19 +447,7 @@ public class RuntimeWSDLParser {
                 parseFaultBinding(reader, bindingOp);
             } else if (SOAPConstants.QNAME_OPERATION.equals(name) ||
                     SOAPConstants.QNAME_SOAP12OPERATION.equals(name)) {
-                String style = reader.getAttributeValue(null, "style");
-                /**
-                 *  If style attribute is present set it otherwise set the style as defined
-                 *  on the <soap:binding> element
-                 */
-                if (style != null) {
-                    if (style.equals("rpc"))
-                        bindingOp.setStyle(Style.RPC);
-                    else
-                        bindingOp.setStyle(Style.DOCUMENT);
-                } else {
-                    bindingOp.setStyle(binding.getStyle());
-                }
+                style = reader.getAttributeValue(null, "style");
                 String soapAction = reader.getAttributeValue(null, "soapAction");
 
                 if (soapAction != null)
@@ -468,6 +457,18 @@ public class RuntimeWSDLParser {
             } else {
                 extensionFacade.bindingOperationElements(bindingOp, reader);
             }
+            /**
+             *  If style attribute is present set it otherwise set the style as defined
+             *  on the <soap:binding> element
+             */
+            if (style != null) {
+                if (style.equals("rpc"))
+                    bindingOp.setStyle(Style.RPC);
+                else
+                    bindingOp.setStyle(Style.DOCUMENT);
+            } else {
+                bindingOp.setStyle(binding.getStyle());
+            }            
         }
     }
 
