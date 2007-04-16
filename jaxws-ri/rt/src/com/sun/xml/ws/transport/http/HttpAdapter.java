@@ -645,7 +645,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         } catch( Throwable t ) {
         }
         try {
-            publishStatusPage = Boolean.getBoolean(HttpAdapter.class.getName()+".publishStatusPage");
+            publishStatusPage = System.getProperty(HttpAdapter.class.getName()+".publishStatusPage").equals("true");
         } catch( Throwable t ) {
         }
     }
