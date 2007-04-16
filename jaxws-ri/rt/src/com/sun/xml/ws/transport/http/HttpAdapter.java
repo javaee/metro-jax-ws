@@ -167,6 +167,18 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
     }
 
+    /**
+     * Returns the "/abc/def/ghi" portion if
+     * the URL pattern is "/abc/def/ghi/*".
+     */
+    public String getValidPath() {
+        if (urlPattern.endsWith("/*")) {
+            return urlPattern.substring(0, urlPattern.length() - 2);
+        } else {
+            return urlPattern;
+        }
+    }
+    
     protected HttpToolkit createToolkit() {
         return new HttpToolkit();
     }
@@ -611,7 +623,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             out.println("</tr>");
 
             for (BoundEndpoint a : endpoints) {
-                String endpointAddress = a.getAddress().toString();
+                String endpointAddress = con.getBaseAddress()+getValidPath();
                 out.println("<tr>");
                 out.println("<td>" + a + "</td>");
                 out.println("<td>");
