@@ -22,6 +22,8 @@
 
 package com.sun.xml.ws.transport.http.servlet;
 
+import com.sun.istack.Nullable;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,12 +38,22 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author WS Development Team
  */
-public final class WSServlet extends HttpServlet {
+public class WSServlet extends HttpServlet {
+    private WSServletDelegate delegate = null;
 
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
+        delegate = getDelegate(servletConfig);
+    }
 
-        delegate = (WSServletDelegate) servletConfig.getServletContext().getAttribute(JAXWS_RI_RUNTIME_INFO);
+    /**
+     * Gets the {@link WSServletDelegate} that we will be forwarding the requests to.
+     *
+     * @return
+     *      null if the deployment have failed and we don't have the delegate.
+     */
+    protected @Nullable WSServletDelegate getDelegate(ServletConfig servletConfig) {
+        return (WSServletDelegate) servletConfig.getServletContext().getAttribute(JAXWS_RI_RUNTIME_INFO);
     }
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -70,8 +82,6 @@ public final class WSServlet extends HttpServlet {
             delegate.doDelete(request,response,getServletContext());
         }
     }
-
-    private WSServletDelegate delegate = null;
 
     /**
      * {@link WSServletDelegate}.

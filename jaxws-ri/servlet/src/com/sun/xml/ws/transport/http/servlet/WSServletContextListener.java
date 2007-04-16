@@ -23,9 +23,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.HttpAdapter;
@@ -37,7 +35,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.xml.ws.WebServiceException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +45,9 @@ import java.util.logging.Logger;
  * {@link HttpAdapter}s for all deployed endpoints.
  *
  * <p>
- * This code is the entry point at the server side.
+ * This code is the entry point at the server side in the servlet deployment.
+ * The user application writes this in their <tt>web.xml</tt> so that we can
+ * start when the container starts the webapp.
  *
  * @author WS Development Team
  */
@@ -56,7 +55,6 @@ public final class WSServletContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
     private WSServletDelegate delegate;
-
 
     public void attributeAdded(ServletContextAttributeEvent event) {
     }
@@ -86,17 +84,16 @@ public final class WSServletContextListener
         if (classLoader == null) {
             classLoader = getClass().getClassLoader();
         }
-        ServletContainer container = new ServletContainer(context);
         try {
             // Parse the descriptor file and build endpoint infos
             DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
-                classLoader,new ServletResourceLoader(context), container, new ServletAdapterList());
+                classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList());
             URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
             if(sunJaxWsXml==null)
                 throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
             List<ServletAdapter> adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
 
-            delegate = new WSServletDelegate(adapters,context);
+            delegate = createDelegate(adapters, context);
 
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
             
@@ -107,37 +104,21 @@ public final class WSServletContextListener
             throw new WSServletException("listener.parsingFailed", e);
         }
     }
-    
+
     /**
-     * Provides access to {@link ServletContext} via {@link Container}. Pipes
-     * can get ServletContext from Container and use it to load some resources. 
+     * Creates {@link Container} implementation that hosts the JAX-WS endpoint.
      */
-    private static class ServletContainer extends Container {
-        private final ServletContext servletContext;
-
-        private final Module module = new Module() {
-            private final List<BoundEndpoint> endpoints = new ArrayList<BoundEndpoint>();
-
-            public @NotNull List<BoundEndpoint> getBoundEndpoints() {
-                return endpoints;
-            }
-        };
-        
-        ServletContainer(ServletContext servletContext) {
-            this.servletContext = servletContext;
-        }
-        
-        public <T> T getSPI(Class<T> spiType) {
-            if (spiType == ServletContext.class) {
-                return (T)servletContext;
-            }
-            if (spiType == Module.class) {
-                return spiType.cast(module);
-            }
-            return null;
-        }
+    protected @NotNull Container createContainer(ServletContext context) {
+        return new ServletContainer(context);
     }
-    
+
+    /**
+     * Creates {@link WSServletDelegate} that does the real work.
+     */
+    protected @NotNull WSServletDelegate createDelegate(List<ServletAdapter> adapters, ServletContext context) {
+        return new WSServletDelegate(adapters,context);
+    }
+
     private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
 
     private static final Logger logger =

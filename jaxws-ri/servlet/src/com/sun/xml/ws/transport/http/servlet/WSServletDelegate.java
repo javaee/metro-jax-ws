@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  *
  * @author WS Development Team
  */
-public final class WSServletDelegate {
+public class WSServletDelegate {
 
     /**
      * All {@link ServletAdapter}s that are deployed in the current web appliation.
@@ -198,7 +198,7 @@ public final class WSServletDelegate {
     }
 
 
-    protected void writeNotFoundErrorPage(
+    private void writeNotFoundErrorPage(
         Localizer localizer,
         HttpServletResponse response,
         String message)
@@ -214,12 +214,6 @@ public final class WSServletDelegate {
         out.println(WsservletMessages.SERVLET_HTML_NOT_FOUND(message));
         out.println("</body>");
         out.println("</html>");
-    }
-
-
-
-    protected void warnMissingContextInformation() {
-        logger.warning(WsservletMessages.SERVLET_WARNING_MISSING_CONTEXT_INFORMATION());
     }
 
     protected static MimeHeaders getHeaders(HttpServletRequest req) {
@@ -283,37 +277,6 @@ public final class WSServletDelegate {
 
         return result;
     }
-
-    protected boolean checkContentType(MimeHeaders headers) {
-
-        String[] contentTypes = headers.getHeader("Content-Type");
-        if ((contentTypes != null) && (contentTypes.length >= 1)) {
-            if (contentTypes[0].indexOf("text/xml") != -1) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean checkContentLength(MimeHeaders headers) {
-        String[] contentLength = headers.getHeader("Content-Length");
-        if ((contentLength != null) && (contentLength.length > 0)) {
-            int length = Integer.parseInt(contentLength[0]);
-            if (length > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    boolean checkForContent(MimeHeaders headers) {
-        if (checkContentType(headers)) {
-            if (checkContentLength(headers))
-                return true;
-        }
-        return false;
-    }
-
 
     protected Localizer getLocalizerFor(ServletRequest request) {
         Locale locale = request.getLocale();
