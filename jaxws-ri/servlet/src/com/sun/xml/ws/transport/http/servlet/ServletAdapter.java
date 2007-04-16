@@ -97,18 +97,6 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     }
 
     /**
-     * Returns the "/abc/def/ghi" portion if
-     * the URL pattern is "/abc/def/ghi/*".
-     */
-    public String getValidPath() {
-        if (urlPattern.endsWith("/*")) {
-            return urlPattern.substring(0, urlPattern.length() - 2);
-        } else {
-            return urlPattern;
-        }
-    }
-
-    /**
      * Convenient method to return a port name from {@link WSEndpoint}.
      *
      * @return
