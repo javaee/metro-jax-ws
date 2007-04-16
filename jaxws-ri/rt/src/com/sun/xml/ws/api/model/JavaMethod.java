@@ -64,13 +64,6 @@ public interface JavaMethod {
      */
     @NotNull Method getMethod();
 
-    /**
-     * Gets the payload tag name of this operation.
-     *
-     * @return
-     *      null if this operation doesn't have any parameter bound to the body.
-     */
-    @Nullable QName getPayloadName();
 
     /**
      * This should be used if you want to access annotations on WebMethod
@@ -124,5 +117,21 @@ public interface JavaMethod {
      * @see com.sun.xml.ws.api.model.MEP#isOneWay()
      */
     @Nullable String getResponseMessageName();
+
+    /**
+     * Gives soap:Body's first child's name for request message.
+     *
+     * @return
+     *      null if this operation doesn't have any request parameter bound to the body.
+     */
+    @Nullable QName getRequestPayloadName();
+
+    /**
+     * Gives soap:Body's first child's name for response message.
+     *
+     * @return
+     *      null if this operation doesn't have any response parameter bound to the body.
+     */
+    @Nullable QName getResponsePayloadName();
 
 }

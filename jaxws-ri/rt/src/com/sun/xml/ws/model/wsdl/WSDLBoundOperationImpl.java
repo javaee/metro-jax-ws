@@ -321,6 +321,65 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return null;
     }
 
+    public @Nullable QName getReqPayloadName() {
+        if (emptyRequestPayload)
+            return null;
+
+        if (requestPayloadName != null)
+            return requestPayloadName;
+
+        if(style.equals(Style.RPC)){
+            String ns = getRequestNamespace() != null ? getRequestNamespace() : name.getNamespaceURI();
+            requestPayloadName = new QName(ns, name.getLocalPart());
+            return requestPayloadName;
+        }else{
+            QName inMsgName = operation.getInput().getMessage().getName();
+            WSDLMessageImpl message = messages.get(inMsgName);
+            for(WSDLPartImpl part:message.parts()){
+                ParameterBinding binding = getInputBinding(part.getName());
+                if(binding.isBody()){
+                    requestPayloadName = part.getDescriptor().name();
+                    return requestPayloadName;
+                }
+            }
+
+            //Its empty payload
+            emptyRequestPayload = true;
+        }
+        //empty body
+        return null;
+    }
+
+    public @Nullable QName getResPayloadName() {
+        if (emptyResponsePayload)
+            return null;
+
+        if (responsePayloadName != null)
+            return responsePayloadName;
+
+        if(style.equals(Style.RPC)){
+            String ns = getResponseNamespace() != null ? getResponseNamespace() : name.getNamespaceURI();
+            responsePayloadName = new QName(ns, name.getLocalPart()+"Response");
+            return responsePayloadName;
+        }else{
+            QName outMsgName = operation.getOutput().getMessage().getName();
+            WSDLMessageImpl message = messages.get(outMsgName);
+            for(WSDLPartImpl part:message.parts()){
+                ParameterBinding binding = getOutputBinding(part.getName());
+                if(binding.isBody()){
+                    responsePayloadName = part.getDescriptor().name();
+                    return responsePayloadName;
+                }
+            }
+
+            //Its empty payload
+            emptyResponsePayload = true;
+        }
+        //empty body
+        return null;
+    }
+
+
     private String reqNamespace;
     private String respNamespace;
 
@@ -358,7 +417,11 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     }
 
     private QName payloadName;
+    private QName requestPayloadName;
+    private QName responsePayloadName;
     private boolean emptyPayload;
+    private boolean emptyRequestPayload;
+    private boolean emptyResponsePayload;
     private Map<QName, WSDLMessageImpl> messages;
 
     void freeze(WSDLModelImpl parent) {
