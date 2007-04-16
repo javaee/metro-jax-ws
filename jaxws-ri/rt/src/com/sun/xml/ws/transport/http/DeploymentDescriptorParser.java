@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * Parses {@code sun-jaxws.xml} into {@link WSEndpoint}.
  *
  * <p>
- * Since {@code sun-jaxws.xml} captures more information that what {@link WSEndpoint}
+ * Since {@code sun-jaxws.xml} captures more information than what {@link WSEndpoint}
  * represents (in particular URL pattern and name), this class
  * takes a parameterization 'A' so that the user of this parser can choose to
  * create another type that wraps {@link WSEndpoint}.
