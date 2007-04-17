@@ -26,15 +26,31 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLDescriptorKind;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.wsdl.parser.*;
+import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.api.wsdl.parser.MetaDataResolver;
+import com.sun.xml.ws.api.wsdl.parser.MetadataResolverFactory;
+import com.sun.xml.ws.api.wsdl.parser.ServiceDescriptor;
+import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
+import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
-import com.sun.xml.ws.model.wsdl.*;
+import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
+import com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl;
+import com.sun.xml.ws.model.wsdl.WSDLFaultImpl;
+import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
+import com.sun.xml.ws.model.wsdl.WSDLMessageImpl;
+import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
+import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
+import com.sun.xml.ws.model.wsdl.WSDLOutputImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPartDescriptorImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPartImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPortTypeImpl;
+import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.resources.WsdlmodelMessages;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -57,7 +73,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -125,6 +145,10 @@ public class RuntimeWSDLParser {
         wsdlParser.wsdlDoc.freeze();
         wsdlParser.extensionFacade.finished(wsdlParser.context);
         wsdlParser.extensionFacade.postFinished(wsdlParser.context);
+
+        if(wsdlParser.wsdlDoc.getServices().isEmpty())
+            throw new WebServiceException(ClientMessages.WSDL_CONTAINS_NO_SERVICE(wsdlLoc));
+
         return wsdlParser.wsdlDoc;
     }
 
