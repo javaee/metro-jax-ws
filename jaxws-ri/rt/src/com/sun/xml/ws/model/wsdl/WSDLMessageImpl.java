@@ -52,7 +52,7 @@ public final class WSDLMessageImpl extends AbstractExtensibleImpl implements WSD
         parts.add(part);
     }
 
-    Iterable<WSDLPartImpl> parts(){
+    public Iterable<WSDLPartImpl> parts(){
         return parts;
     }
 }
