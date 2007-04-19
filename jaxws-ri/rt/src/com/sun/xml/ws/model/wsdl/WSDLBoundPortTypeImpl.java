@@ -27,9 +27,9 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
+import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.QNameMap;
 import com.sun.xml.ws.util.exception.LocatableWebServiceException;
-import com.sun.xml.ws.resources.ClientMessages;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding;
@@ -206,9 +206,7 @@ public final class WSDLBoundPortTypeImpl extends AbstractFeaturedObjectImpl impl
         }
 
         freezePayloadMap();
-        if(style == Style.RPC){
-            owner.finalizeRpcLitBinding(this);
-        }
+        owner.finalizeRpcLitBinding(this);
     }
 
     private void freezePayloadMap() {
