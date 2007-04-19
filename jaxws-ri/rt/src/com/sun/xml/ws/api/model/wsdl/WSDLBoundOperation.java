@@ -24,9 +24,11 @@ package com.sun.xml.ws.api.model.wsdl;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.model.ParameterBinding;
 
+import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Abstracts wsdl:binding/wsdl:operation. It can be used to determine the parts and their binding.
@@ -58,7 +60,28 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
      *
      * @return Anonymous value of the operation
      */
-    public ANONYMOUS getAnonymous();
-    
+    ANONYMOUS getAnonymous();
+
     enum ANONYMOUS { optional, required, prohibited }
+
+    /**
+     * Gets {@link WSDLPart} for the given wsdl:input or wsdl:output part
+     *
+     * @return null if no part is found
+     */
+    @Nullable WSDLPart getPart(@NotNull String partName, @NotNull Mode mode);
+
+    /**
+     * Map of wsdl:input part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
+    @NotNull Map<String,ParameterBinding> getInputParts();
+
+    /**
+     * Map of wsdl:output part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
+    @NotNull Map<String,ParameterBinding> getOutputParts();
 }

@@ -97,14 +97,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         this.soapAction = soapAction!=null?soapAction:"";
     }
 
-    /**
-     * Gets {@link com.sun.xml.ws.api.model.wsdl.WSDLPart} for the given wsdl:input or wsdl:output part
-     *
-     * @param partName must be non-null
-     * @param mode     must be non-null
-     * @return null if no part is found
-     */
-    public WSDLPartImpl getPart(String partName, Mode mode){
+    public WSDLPartImpl getPart(String partName, Mode mode) {
         if(mode==Mode.IN){
             return inParts.get(partName);
         }else if(mode==Mode.OUT){
@@ -120,20 +113,10 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
             outParts.put(part.getName(), part);
     }
 
-    /**
-     * Map of wsdl:input part name and the binding as {@link ParameterBinding}
-     *
-     * @return empty Map if there is no parts
-     */
     public Map<String, ParameterBinding> getInputParts() {
         return inputParts;
     }
 
-    /**
-     * Map of wsdl:output part name and the binding as {@link ParameterBinding}
-     *
-     * @return empty Map if there is no parts
-     */
     public Map<String, ParameterBinding> getOutputParts() {
         return outputParts;
     }
