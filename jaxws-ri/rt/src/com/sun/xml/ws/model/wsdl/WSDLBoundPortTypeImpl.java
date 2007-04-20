@@ -49,7 +49,6 @@ public final class WSDLBoundPortTypeImpl extends AbstractFeaturedObjectImpl impl
     private WSDLPortTypeImpl portType;
     private BindingID bindingId;
     private final @NotNull WSDLModelImpl owner;
-    private boolean finalized = false;
     private final QNameMap<WSDLBoundOperationImpl> bindingOperations = new QNameMap<WSDLBoundOperationImpl>();
 
     /**
