@@ -203,20 +203,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
         if(connection.getMethod().equals("GET")) {
-            if(connection.getQueryString()!=null) {
-                // metadata query. let the interceptor run 
-                for( EndpointComponent c : endpoint.getComponentRegistry() ) {
-                    HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
-                    if(spi!=null && spi.handleMetadataRequest(this,connection))
-                        return; // handled
-                }
-
-                if (isMetadataQuery(connection.getQueryString())) {
-                    // Sends published WSDL and schema documents
-                    publishWSDL(connection);
-                    return;
-                }
+            // metadata query. let the interceptor run
+            for( EndpointComponent c : endpoint.getComponentRegistry() ) {
+                HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
+                if(spi!=null && spi.handleMetadataRequest(this,connection))
+                    return; // handled
             }
+
+            if (isMetadataQuery(connection.getQueryString())) {
+                // Sends published WSDL and schema documents as the default action.
+                publishWSDL(connection);
+                return;
+            }
+
             Binding binding = getEndpoint().getBinding();
             if (!(binding instanceof HTTPBinding)) {
                 // Writes HTML page with all the endpoint descriptions
