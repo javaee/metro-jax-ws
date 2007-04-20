@@ -79,4 +79,14 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
      * Gets all outbound {@link WSDLPart} by its {@link WSDLPart#getName() name}.
      */
     @NotNull Map<String,WSDLPart> getOutParts();
+
+    /**
+     * Gets the payload QName of the request message.
+     *
+     * <p>
+     * It's possible for an operation to define no body part, in which case
+     * this method returns null. 
+     */
+    @Nullable QName getReqPayloadName();
+
 }
