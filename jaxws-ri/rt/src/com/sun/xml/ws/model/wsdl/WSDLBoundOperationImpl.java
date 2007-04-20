@@ -25,11 +25,13 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLPart;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,10 +115,20 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
             outParts.put(part.getName(), part);
     }
 
+    /**
+     * Map of wsdl:input part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
     public Map<String, ParameterBinding> getInputParts() {
         return inputParts;
     }
 
+    /**
+     * Map of wsdl:output part name and the binding as {@link ParameterBinding}
+     *
+     * @return empty Map if there is no parts
+     */
     public Map<String, ParameterBinding> getOutputParts() {
         return outputParts;
     }
@@ -128,6 +140,15 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      */
     public Map<String, ParameterBinding> getFaultParts() {
         return faultParts;
+    }
+
+    // TODO: what's the difference between this and inputParts/outputParts?
+    public Map<String,WSDLPart> getInParts() {
+        return Collections.<String,WSDLPart>unmodifiableMap(inParts);
+    }
+
+    public Map<String,WSDLPart> getOutParts() {
+        return Collections.<String,WSDLPart>unmodifiableMap(outParts);
     }
 
     /**

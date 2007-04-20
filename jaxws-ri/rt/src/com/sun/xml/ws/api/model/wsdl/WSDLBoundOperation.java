@@ -24,7 +24,6 @@ package com.sun.xml.ws.api.model.wsdl;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.model.ParameterBinding;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
@@ -72,16 +71,12 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
     @Nullable WSDLPart getPart(@NotNull String partName, @NotNull Mode mode);
 
     /**
-     * Map of wsdl:input part name and the binding as {@link ParameterBinding}
-     *
-     * @return empty Map if there is no parts
+     * Gets all inbound {@link WSDLPart} by its {@link WSDLPart#getName() name}.
      */
-    @NotNull Map<String,ParameterBinding> getInputParts();
+    @NotNull Map<String,WSDLPart> getInParts();
 
     /**
-     * Map of wsdl:output part name and the binding as {@link ParameterBinding}
-     *
-     * @return empty Map if there is no parts
+     * Gets all outbound {@link WSDLPart} by its {@link WSDLPart#getName() name}.
      */
-    @NotNull Map<String,ParameterBinding> getOutputParts();
+    @NotNull Map<String,WSDLPart> getOutParts();
 }
