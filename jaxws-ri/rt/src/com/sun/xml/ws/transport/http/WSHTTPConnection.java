@@ -137,7 +137,9 @@ public abstract class WSHTTPConnection extends PropertySet {
      *      For example "GET" or "POST".
      * @since 2.1.2
      */
-    public abstract @NotNull String getMethod();
+    public @NotNull String getMethod() {
+        return "POST";
+    }
 
     /**
      * Transport's underlying input stream.
