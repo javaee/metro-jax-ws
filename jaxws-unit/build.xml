@@ -9,6 +9,7 @@
     <property name="docs.home" value="${basedir}/docs"/>
     <property name="logs.dir" value="${build.home}/junit-reports"/>
     <property name="test" value="testcases"/>
+    <property name="jaxws-hudson-project" value="jaxws-ri-21"/>
 
     <!-- default build id -->
     <tstamp>
@@ -49,11 +50,11 @@
     </target>
 
     <target name="get-jaxws-image" unless="jaxwsdir">
-        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-21/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/build/jaxws-ri.zip"
              dest="build/jaxws-ri.zip"/>
         <unzip src="build/jaxws-ri.zip" dest="build"/>
 
-        <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxws-ri-21/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
              dest="build/jaxws-local-transport.jar"/>
     </target>
 
@@ -143,7 +144,7 @@
             -->
             <java jar="${lib.home}/harness.jar" fork="true">
                 <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
-                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportPipe.dump" value="${log}"/>
+                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="true"/>
 
                 <arg value="-report"/>
                 <arg path="${logs.dir}"/>
