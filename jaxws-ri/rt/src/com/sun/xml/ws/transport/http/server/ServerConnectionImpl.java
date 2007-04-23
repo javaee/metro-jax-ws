@@ -111,11 +111,6 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         return status;
     }
 
-    @Override
-    public @NotNull String getMethod() {
-        return httpExchange.getRequestMethod();
-    }
-
     public @NotNull InputStream getInput() {
         // Light weight http server's InputStream.close() throws exception if
         // all the bytes are not read. Work around until it is fixed.

@@ -131,17 +131,6 @@ public abstract class WSHTTPConnection extends PropertySet {
     public abstract int getStatus();
 
     /**
-     * Gets the HTTP method of this request.
-     *
-     * @return
-     *      For example "GET" or "POST".
-     * @since 2.1.2
-     */
-    public @NotNull String getMethod() {
-        return "POST";
-    }
-
-    /**
      * Transport's underlying input stream.
      *
      * <p>
@@ -225,8 +214,11 @@ public abstract class WSHTTPConnection extends PropertySet {
      * Gets the absolute URL up to the context path.
      * @return
      *      String like "http://myhost/myapp"
+     * @since 2.1.2
      */
-    public abstract @NotNull String getBaseAddress();
+    public @NotNull String getBaseAddress() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Whether connection is HTTPS or not

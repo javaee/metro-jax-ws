@@ -138,10 +138,6 @@ final class LocalConnectionImpl extends WSHTTPConnection implements WebServiceCo
         return statusCode;
     }
 
-    public @NotNull String getMethod() {
-        return "POST";
-    }
-
     public void setStatus (int statusCode) {
         this.statusCode = statusCode;
     }

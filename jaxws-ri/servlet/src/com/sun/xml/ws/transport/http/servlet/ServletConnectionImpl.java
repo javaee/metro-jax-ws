@@ -133,11 +133,6 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     }
 
     @Override
-    public @NotNull String getMethod() {
-        return request.getMethod();
-    }
-
-    @Override
     public void setContentTypeResponseHeader(@NotNull String value) {
         response.setContentType(value);
     }

@@ -202,7 +202,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @throws IOException when I/O errors happen
      */
     public void handle(@NotNull WSHTTPConnection connection) throws IOException {
-        if(connection.getMethod().equals("GET")) {
+        if(connection.getRequestMethod().equals("GET")) {
             // metadata query. let the interceptor run
             for( EndpointComponent c : endpoint.getComponentRegistry() ) {
                 HttpMetadataPublisher spi = c.getSPI(HttpMetadataPublisher.class);
