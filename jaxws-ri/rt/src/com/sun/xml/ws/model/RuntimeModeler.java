@@ -413,8 +413,17 @@ public class RuntimeModeler {
      */
     protected void processMethod(Method method, WebService webService) {
         int mods = method.getModifiers();
-        if (!Modifier.isPublic(mods) || Modifier.isStatic(mods))
+        if (!Modifier.isPublic(mods) || Modifier.isStatic(mods)) {
+            if(method.getAnnotation(WebMethod.class)!=null) {
+                // if the user put @WebMethod on these non-qualifying method,
+                // it's an error
+                if(Modifier.isStatic(mods))
+                    throw new RuntimeModelerException(ModelerMessages.localizableRUNTIME_MODELER_WEBMETHOD_MUST_BE_NONSTATIC(method));
+                else
+                    throw new RuntimeModelerException(ModelerMessages.localizableRUNTIME_MODELER_WEBMETHOD_MUST_BE_PUBLIC(method));
+            }
             return;
+        }
 
         WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
         if (webMethod != null && webMethod.exclude())
