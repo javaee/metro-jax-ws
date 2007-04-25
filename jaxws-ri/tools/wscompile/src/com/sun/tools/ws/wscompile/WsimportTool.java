@@ -170,7 +170,7 @@ public class WsimportTool {
             }
 
             if (!options.nocompile){
-                if(!compileGeneratedClasses(receiver)){
+                if(!compileGeneratedClasses(receiver, listener)){
                     listener.message(WscompileMessages.WSCOMPILE_COMPILATION_FAILED());
                     return false;
                 }
@@ -197,7 +197,7 @@ public class WsimportTool {
         this.options.entityResolver = resolver;
     }
 
-    protected boolean compileGeneratedClasses(ErrorReceiver receiver){
+    protected boolean compileGeneratedClasses(ErrorReceiver receiver, WsimportListener listener){
         List<String> sourceFiles = new ArrayList<String>();
 
         for (File f : options.getGeneratedFiles()) {
@@ -222,6 +222,15 @@ public class WsimportTool {
             }
             for (int i = 0; i < sourceFiles.size(); ++i) {
                 args[baseIndex + i] = sourceFiles.get(i);
+            }
+            
+            listener.message(WscompileMessages.WSIMPORT_COMPILING_CODE());
+            if(options.verbose){
+                StringBuffer argstr = new StringBuffer();
+                for(String arg:args){
+                    argstr.append(arg).append(" ");                    
+                }
+                listener.message("javac "+ argstr.toString());
             }
 
             return JavaCompilerHelper.compile(args, out, receiver);
