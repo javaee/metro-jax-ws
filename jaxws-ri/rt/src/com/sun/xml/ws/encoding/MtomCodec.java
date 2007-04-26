@@ -76,6 +76,7 @@ public class MtomCodec extends MimeCodec {
 
     // encoding related parameters
     private String boundary;
+    private String rootId;
     private final String soapXopContentType;
     private String messageContentType;
     private final MTOMFeature mtomFeature;
@@ -95,7 +96,8 @@ public class MtomCodec extends MimeCodec {
     }
 
     private void createConteTypeHeader(){
-        boundary = "uuid:" + UUID.randomUUID().toString();
+        rootId = UUID.randomUUID().toString();
+        boundary = "uuid:" + rootId;
         String boundaryParameter = "boundary=\"" + boundary +"\"";
         messageContentType = MULTIPART_RELATED_MIME_TYPE + 
                 ";type=\"" + XOP_XML_MIME_TYPE + "\";" + 
@@ -134,6 +136,7 @@ public class MtomCodec extends MimeCodec {
         if(packet.getMessage() != null){
             try {
                 OutputUtil.writeln("--"+boundary, out);
+                OutputUtil.writeln("Content-Id: " + "<rootpart*"+rootId+"@example.jaxws.sun.com>", out);
                 OutputUtil.writeln("Content-Type: "+ soapXopContentType,  out);
                 OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
                 OutputUtil.writeln(out);
@@ -182,11 +185,11 @@ public class MtomCodec extends MimeCodec {
     }
 
     private void writeMimeHeaders(String contentType, String contentId, OutputStream out) throws IOException {
-        OutputUtil.writeln("Content-Type: " + contentType, out);
         String cid = contentId;
         if(cid != null && cid.length() >0 && cid.charAt(0) != '<')
             cid = '<' + cid + '>';
         OutputUtil.writeln("Content-Id: " + cid, out);
+        OutputUtil.writeln("Content-Type: " + contentType, out);
         OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
         OutputUtil.writeln(out);
     }
