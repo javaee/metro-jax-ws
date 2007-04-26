@@ -22,12 +22,13 @@
 package com.sun.xml.ws.developer;
 
 import com.sun.xml.ws.api.message.HeaderList;
+import com.sun.xml.ws.api.server.WSEndpoint;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.WebServiceContext;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.HostnameVerifier;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceContext;
 import java.net.HttpURLConnection;
 
 public interface JAXWSProperties {
@@ -96,4 +97,20 @@ public interface JAXWSProperties {
      * <b>THIS PROPERTY IS EXPERIMENTAL AND IS SUBJECT TO CHANGE WITHOUT NOTICE IN FUTURE.</b>
      */
     public static final String INBOUND_HEADER_LIST_PROPERTY = "com.sun.xml.ws.api.message.HeaderList";
+
+    /**
+     * Access the {@link WSEndpoint} object that delivered the request.
+     *
+     * <p>
+     * {@link WSEndpoint} is the root of the objects that are together
+     * responsible for delivering requests to the application SEI object.
+     * One can look up this {@link WSEndpoint} from {@link WebServiceContext},
+     * and from there access many parts of the JAX-WS RI runtime.
+     *
+     * <p>
+     * <b>THIS PROPERTY IS EXPERIMENTAL AND IS SUBJECT TO CHANGE WITHOUT NOTICE IN FUTURE.</b>
+     *
+     * @since 2.1.2
+     */
+    public static final String WSENDPOINT = "com.sun.xml.ws.api.server.WSEndpoint";
 }

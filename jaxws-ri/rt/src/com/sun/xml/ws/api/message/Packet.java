@@ -33,9 +33,9 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
@@ -49,7 +49,6 @@ import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.model.JavaMethodImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -402,6 +401,7 @@ public final class Packet extends DistributedPropertySet {
      * <p>
      * This property is set if and only if this is on the server side.
      */
+    @Property(JAXWSProperties.WSENDPOINT)
     public WSEndpoint endpoint;
 
     /**
