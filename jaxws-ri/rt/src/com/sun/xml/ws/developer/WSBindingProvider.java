@@ -74,4 +74,21 @@ public interface WSBindingProvider extends BindingProvider {
     void setOutboundHeaders(Object... headers);
 
     List<Header> getInboundHeaders();
+
+    /**
+     * Sets the endpoint address for all the invocations that happen
+     * from {@link BindingProvider}. Instead of doing the following
+     *
+     * <p>
+     * ((BindingProvider)proxy).getRequestContext().put(
+     *      BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "...")
+     * <p>
+     * you could do this:
+     * 
+     * <p>
+     * ((WSBindingProvider)proxy).setAddress("...");
+     *
+     * @param address Address of the service
+     */
+    void setAddress(String address);
 }

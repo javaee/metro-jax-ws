@@ -400,4 +400,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         return Collections.unmodifiableList((HeaderList)
             responseContext.get(JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY));
     }
+
+    public final void setAddress(String address) {
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
+    }
 }
