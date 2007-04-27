@@ -76,7 +76,7 @@ public final class DataHandlerAttachment implements Attachment {
     }
 
     public void writeTo(OutputStream os) throws IOException {
-        os.write(asByteArray());
+        dh.writeTo(os);
     }
 
     public void writeTo(SOAPMessage saaj) throws SOAPException {
