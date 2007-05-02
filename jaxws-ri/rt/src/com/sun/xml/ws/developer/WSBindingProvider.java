@@ -10,6 +10,7 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.Service.Mode;
 import java.util.List;
+import java.io.Closeable;
 
 /**
  * {@link BindingProvider} with JAX-WS RI's extension methods.
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Jitendra Kotamraju
  * @since 2.1EA3
  */
-public interface WSBindingProvider extends BindingProvider {
+public interface WSBindingProvider extends BindingProvider, Closeable {
     /**
      * Sets the out-bound headers to be added to messages sent from
      * this {@link BindingProvider}.

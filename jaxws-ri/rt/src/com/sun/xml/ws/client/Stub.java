@@ -24,7 +24,6 @@ package com.sun.xml.ws.client;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.Closeable;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
@@ -67,7 +66,7 @@ import java.util.concurrent.Executor;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Stub implements WSBindingProvider, ResponseContextReceiver, Closeable {
+public abstract class Stub implements WSBindingProvider, ResponseContextReceiver  {
 
     /**
      * Reuse pipelines as it's expensive to create.
