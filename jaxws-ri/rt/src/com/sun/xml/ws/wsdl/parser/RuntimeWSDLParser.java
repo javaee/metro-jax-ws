@@ -188,16 +188,15 @@ public class RuntimeWSDLParser {
             List<? extends Source> wsdls = serviceDescriptor.getWSDLs();
             wsdlParser = new RuntimeWSDLParser(wsdlLoc.toExternalForm(), new MexEntityResolver(wsdls), isClientSide, extensions);
 
-            //now parse the first WSDL in the list
-            if(wsdls.size() > 0){
-                String systemId = wsdls.get(0).getSystemId();
+            for(Source src: wsdls ) {
+                String systemId = src.getSystemId();
                 Parser parser = wsdlParser.resolver.resolveEntity(null, systemId);
                 wsdlParser.parseWSDL(parser, false);
             }
         }
         //Incase that mex is not present or it couldn't get the metadata, try by appending ?wsdl and give
         // it a last shot else fail
-        if (mdResolver == null && (wsdlLoc.getProtocol().equals("http") || wsdlLoc.getProtocol().equals("https")) && (wsdlLoc.getQuery() == null)) {
+        if ((mdResolver == null || serviceDescriptor == null) && (wsdlLoc.getProtocol().equals("http") || wsdlLoc.getProtocol().equals("https")) && (wsdlLoc.getQuery() == null)) {
             String urlString = wsdlLoc.toExternalForm();
             urlString += "?wsdl";
             wsdlLoc = new URL(urlString);
