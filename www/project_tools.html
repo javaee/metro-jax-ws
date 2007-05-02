@@ -1,73 +1,13 @@
 </dd>
-<script id="eraser">
-  // hide all default navigation bars
-  
-  // get to the block
-  var dd = document.getElementById("eraser").previousSibling;
-  for( n=dd; n!=null; n=n.previousSibling ) {
-    if(n.nodeType==1) { // if element
-      if(n.tagName=="DD") { // kill all the link items
-        n.style.display = "none";
-      }
-      if(n.tagName=="DT") { // change the title
-        n.innerHTML = "JAXWS project";
-      }
-    }
-  }
-  
-  // delete the "get involved" block
-  for( n=dd.parentNode.previousSibling; n!=null; n=n.previousSibling ) {
-    if(n.nodeType==1) { // if element
-      if(n.tagName=="DL") {
-        n.style.display = "none";
-      }
-    }
-  }
+<script>document.getElementById("main").parentNode.style.display="none";</script>
+<dd id=menubar>
+<ul>
+</ul>
+<script>
+var info = {
+	title: "JAX-WS",
+	logo: "/images/javaxml-duke.gif"
+}
 </script>
-
-
-
-<dd>
-  <ul>
-    <li>
-      <a href="/servlets/ProjectHome">Project home</a>
-    <li>
-      <a href="/servlets/ProjectMemberList">Membership</a>
-
-  </ul>
-<dd>
-  <ul>
-    <li>
-      <a href="/servlets/ProjectNewsList">Announcements</a>
-    <li>
-      <a href="http://forums.java.net/jive/forum.jspa?forumID=46&start=0">Discussion forums</a>
-    <li>
-
-      <a href="/servlets/ProjectMailingListList">Mailing lists</a>
-  </ul>
-<dd>
-  <ul>
-    <li>
-      <a href="http://jax-ws.dev.java.net/servlets/ProjectDocumentList">Downloads</a>
-    <li>
-      <a href="http://fisheye.cenqua.com/java.net/viewrep/jax-ws-sources">CVS Repository</a>
-
-  </ul>
-<dd>
-  <ul>
-    <li>
-      <a href="http://jax-ws.dev.java.net/servlets/ProjectIssues">Issue tracker</a>
-    <li>
-      <form name="ProjectIssuesForm" method="get" action="http://jax-ws.dev.java.net/issues/show_bug.cgi">
-        <input type="submit" value="Go to" /> # <input name="id" size="3" />
-
-      </form>
-  </ul>
-<dd>
-  <ul>
-    <li>
-      <a href="https://jax-ws.dev.java.net/faq/index.html">FAQ</a>
-    <li>
-      <a href="http://wiki.java.net/bin/view/Javawsxml/Jax-wsSI">Wiki</a>
-
-  </ul>
+<script src="https://glassfish-theme.dev.java.net/zone-ws.js"></script>
+<script src="https://glassfish-theme.dev.java.net/theme.js"></script>
