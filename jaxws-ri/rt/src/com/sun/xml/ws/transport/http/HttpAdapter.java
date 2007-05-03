@@ -641,6 +641,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
         out.println("</body>");
         out.println("</html>");
+        out.close();
     }
 
     /**
