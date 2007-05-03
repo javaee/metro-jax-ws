@@ -117,6 +117,16 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
         super.handle(connection);
     }
 
+    /**
+     *
+     * @deprecated
+     *      Use {@link #handle(ServletContext, HttpServletRequest, HttpServletResponse)}
+     */
+    public void publishWSDL(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        WSHTTPConnection connection = new ServletConnectionImpl(this,context,request,response);
+        super.handle(connection);
+    }
+
     public String toString() {
         return super.toString()+"[name="+name+']';
     }
