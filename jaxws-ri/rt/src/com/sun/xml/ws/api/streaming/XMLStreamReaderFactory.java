@@ -33,7 +33,17 @@ public abstract class XMLStreamReaderFactory {
     private static volatile @NotNull XMLStreamReaderFactory theInstance;
 
     static {
-        XMLInputFactory xif = XMLInputFactory.newInstance();
+        XMLInputFactory xif = null;
+        if (Boolean.getBoolean(XMLStreamReaderFactory.class.getName()+".woodstox")) {
+            try {
+                xif = (XMLInputFactory)Class.forName("com.ctc.wstx.stax.WstxInputFactory").newInstance();
+            } catch (Exception e) {
+                // Ignore and fallback to default XMLInputFactory
+            }
+        }
+        if (xif == null) {
+            xif = XMLInputFactory.newInstance();
+        }
         xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
 
         XMLStreamReaderFactory f=null;
