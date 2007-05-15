@@ -94,8 +94,8 @@ public final class WsaServerTube extends WsaTube {
 
         HeaderList hl = request.getMessage().getHeaders();
         try {
-        replyTo = hl.getReplyTo(addressingVersion, soapVersion);
-        faultTo = hl.getFaultTo(addressingVersion, soapVersion);
+            replyTo = hl.getReplyTo(addressingVersion, soapVersion);
+            faultTo = hl.getFaultTo(addressingVersion, soapVersion);
         } catch (InvalidMapException e) {
             SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
