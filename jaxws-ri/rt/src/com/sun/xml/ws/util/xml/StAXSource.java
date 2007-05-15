@@ -99,7 +99,14 @@ public class StAXSource extends SAXSource {
         }
 
         public void setFeature(String name, boolean value) throws SAXNotRecognizedException {
-            throw new SAXNotRecognizedException(name);
+            // Should support these two features according to XMLReader javadoc.
+            if (name.equals("http://xml.org/sax/features/namespaces") && value) {
+                // Ignore for now
+            } else if (name.equals("http://xml.org/sax/features/namespace-prefixes") && !value) {
+                // Ignore for now
+            } else {
+                throw new SAXNotRecognizedException(name);
+            }
         }
 
         public Object getProperty(String name) throws SAXNotRecognizedException {
