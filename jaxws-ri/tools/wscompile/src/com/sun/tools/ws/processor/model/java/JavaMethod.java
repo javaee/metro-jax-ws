@@ -24,6 +24,7 @@ package com.sun.tools.ws.processor.model.java;
 
 import com.sun.tools.ws.resources.ModelMessages;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
+import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.processor.model.Parameter;
 
 import java.util.ArrayList;
@@ -39,12 +40,14 @@ public class JavaMethod {
     private final String name;
     private final List<JavaParameter> parameters = new ArrayList<JavaParameter>();
     private final List<String> exceptions = new ArrayList<String>();
+    private final WsimportOptions options;
     private JavaType returnType;
 
-    public JavaMethod(String name, ErrorReceiver receiver) {
+    public JavaMethod(String name, WsimportOptions options, ErrorReceiver receiver) {
         this.name = name;
         this.returnType = null;
         this.errorReceiver = receiver;
+        this.options = options;
     }
 
     public String getName() {
@@ -80,10 +83,14 @@ public class JavaMethod {
     public void addParameter(JavaParameter param) {
         // verify that this member does not already exist
         if (hasParameter(param.getName())) {
-            errorReceiver.error(param.getParameter().getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), param.getParameter().getEntityName()));
-            Parameter duplicParam = getParameter(param.getName());
-            errorReceiver.error(duplicParam.getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), duplicParam.getEntityName()));
-            return;
+            if(options.isExtensionMode()){
+                param.setName(getUniqueName(param.getName()));
+            }else{
+                errorReceiver.error(param.getParameter().getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), param.getParameter().getEntityName()));
+                Parameter duplicParam = getParameter(param.getName());
+                errorReceiver.error(duplicParam.getLocator(), ModelMessages.MODEL_PARAMETER_NOTUNIQUE(param.getName(), duplicParam.getEntityName()));
+                return;
+            }
         }
         parameters.add(param);
     }
@@ -102,5 +109,13 @@ public class JavaMethod {
     /** TODO: NB uses it, remove it once we expose it thru some API **/
     public Iterator<String> getExceptions() {
         return exceptions.iterator();
+    }
+
+    private String getUniqueName(String param){
+        int parmNum = 0;
+        while(hasParameter(param)){
+            param = param + Integer.toString(parmNum++);
+        }
+        return param;
     }
 }

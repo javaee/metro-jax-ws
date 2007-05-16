@@ -2268,7 +2268,7 @@ public class WSDLModeler extends WSDLModelerBase {
     private void createJavaMethodForAsyncOperation(Port port, Operation operation,
                                                    JavaInterface intf) {
         String candidateName = getJavaNameForOperation(operation);
-        JavaMethod method = new JavaMethod(candidateName, errReceiver);
+        JavaMethod method = new JavaMethod(candidateName, options, errReceiver);
         Request request = operation.getRequest();
         Iterator requestBodyBlocks = request.getBodyBlocks();
         Block requestBlock =
@@ -2335,7 +2335,7 @@ public class WSDLModeler extends WSDLModelerBase {
             return;
         }
         String candidateName = getJavaNameForOperation(operation);
-        JavaMethod method = new JavaMethod(candidateName, errReceiver);
+        JavaMethod method = new JavaMethod(candidateName, options, errReceiver);
         Request request = operation.getRequest();
         Parameter returnParam = (Parameter) operation.getProperty(WSDL_RESULT_PARAMETER);
         if (returnParam != null) {
