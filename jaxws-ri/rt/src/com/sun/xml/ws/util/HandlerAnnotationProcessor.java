@@ -27,6 +27,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.handler.HandlerChainsModel;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.istack.NotNull;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -81,7 +82,7 @@ public class HandlerAnnotationProcessor {
      * handlers and roles. Will return null if the class passed
      * in has no handler chain annotation.
      */
-    public static HandlerAnnotationInfo buildHandlerInfo(
+    public static HandlerAnnotationInfo buildHandlerInfo(@NotNull
         Class<?> clazz, QName serviceName, QName portName, WSBinding binding) {
 
 //        clazz = checkClass(clazz);
