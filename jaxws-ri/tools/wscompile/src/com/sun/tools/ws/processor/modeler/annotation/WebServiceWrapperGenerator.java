@@ -124,8 +124,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         boolean beanGenerated = false;
         for (ReferenceType thrownType : method.getThrownTypes()) {
             ClassDeclaration typeDecl = ((ClassType)thrownType).getDeclaration();
-            if (typeDecl == null)
+            if (typeDecl == null){
                 builder.onError(WebserviceapMessages.WEBSERVICEAP_COULD_NOT_FIND_TYPEDECL(thrownType.toString(), context.getRound()));
+                return false;
+            }
             boolean tmp = generateExceptionBean(typeDecl, beanPackage);
             beanGenerated = beanGenerated || tmp;
         }
