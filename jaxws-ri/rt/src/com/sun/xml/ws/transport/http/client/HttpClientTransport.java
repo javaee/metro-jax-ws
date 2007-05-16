@@ -30,6 +30,7 @@ import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
 
@@ -344,6 +345,7 @@ final class HttpClientTransport {
         for (Map.Entry<String, List<String>> entry : reqHeaders.entrySet()) {
             httpConnection.addRequestProperty(entry.getKey(), entry.getValue().get(0));
         }
+        httpConnection.addRequestProperty("User-Agent", RuntimeVersion.VERSION.toString());
     }
 
     public boolean isSecure() {
