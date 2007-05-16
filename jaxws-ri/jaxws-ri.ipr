@@ -190,6 +190,32 @@
     <option name="FILTER_INFO" value="true" />
     <option name="CUSTOM_FILTER" />
   </component>
+  <component name="MavenBuildProjectComponent">
+    <option name="mavenExecutable" value="" />
+    <option name="Settings File" value="C:\Users\vivekp\.m2\settings.xml" />
+    <option name="mavenCommandLineParams" value="" />
+    <option name="vmOptions" value="" />
+    <option name="useMavenEmbedder" value="false" />
+    <option name="useFilter" value="false" />
+    <option name="Batch Mode" value="false" />
+    <option name="Check Plugin Updates" value="false" />
+    <option name="Debug" value="false" />
+    <option name="Errors" value="false" />
+    <option name="Fail At End" value="false" />
+    <option name="Fail Fast" value="false" />
+    <option name="Fail Never" value="false" />
+    <option name="Lax Checksums" value="false" />
+    <option name="No Plugin Registry" value="false" />
+    <option name="No Plugin Updates" value="false" />
+    <option name="Non Recursive" value="false" />
+    <option name="Offline" value="false" />
+    <option name="Reactor" value="false" />
+    <option name="Strict Checksums" value="false" />
+    <option name="Update Plugins" value="false" />
+    <option name="Update Snapshots" value="false" />
+    <option name="Skip Tests" value="false" />
+    <pom-list />
+  </component>
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -315,11 +341,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/javadoc/javadoc.iml" filepath="$PROJECT_DIR$/javadoc/javadoc.iml" />
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../jaxws-unit/jaxws-unit.iml" filepath="$PROJECT_DIR$/../jaxws-unit/jaxws-unit.iml" />
       <module fileurl="file://$PROJECT_DIR$/transports/local/local.iml" filepath="$PROJECT_DIR$/transports/local/local.iml" group="transports" />
       <module fileurl="file://$PROJECT_DIR$/tools/resourcegen/resourcegen.iml" filepath="$PROJECT_DIR$/tools/resourcegen/resourcegen.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt/rt.iml" filepath="$PROJECT_DIR$/rt/rt.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt-fi/rt-fi.iml" filepath="$PROJECT_DIR$/rt-fi/rt-fi.iml" />
-      <module fileurl="file://$PROJECT_DIR$/samples/samples.iml" filepath="$PROJECT_DIR$/samples/samples.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/samples.iml" filepath="$PROJECT_DIR$/samples/samples.iml" />
       <module fileurl="file://$PROJECT_DIR$/servlet/servlet.iml" filepath="$PROJECT_DIR$/servlet/servlet.iml" group="transports" />
       <module fileurl="file://$PROJECT_DIR$/../test-rearch/test/test.iml" filepath="$PROJECT_DIR$/../test-rearch/test/test.iml" />
@@ -339,6 +365,7 @@
   </component>
   <component name="StarteamVcsAdapter" />
   <component name="VssVcs" />
+  <component name="WebServicesPlugin" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
     <option name="USER_DEFINED_CONFIGS">
       <value>

@@ -138,7 +138,7 @@ public abstract class ErrorReceiver  implements ErrorHandler, ErrorListener {
           return ModelMessages.CONSOLE_ERROR_REPORTER_LINE_X_OF_Y(line==-1?"?":Integer.toString( line ),
               getShortName( e.getSystemId()));
       } else {
-          return ModelMessages.CONSOLE_ERROR_REPORTER_UNKNOWN_LOCATION();
+          return ""; //for unkown location just return empty string
       }
   }
 

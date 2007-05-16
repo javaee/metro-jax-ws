@@ -20,10 +20,10 @@
 
 package com.sun.tools.ws.wsdl.parser;
 
+import com.sun.istack.NotNull;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
-import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.xjc.reader.internalizer.LocatorTable;
 import com.sun.xml.bind.marshaller.DataWriter;
 import org.w3c.dom.Document;
@@ -49,12 +49,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Vivek Pandey
@@ -127,10 +122,9 @@ public class DOMForest {
         return inlinedSchemaElements;
     }
 
-    public Document parse(InputSource source, boolean root) throws SAXException {
+    public @NotNull Document parse(InputSource source, boolean root) throws SAXException, IOException {
         if (source.getSystemId() == null)
             throw new IllegalArgumentException();
-
         return parse(source.getSystemId(), source, root);
     }
 
@@ -141,7 +135,7 @@ public class DOMForest {
      *
      * @return the parsed DOM document object.
      */
-    public Document parse(String systemId, boolean root) throws SAXException, IOException {
+    public Document parse(String systemId, boolean root) throws SAXException, IOException{
 
         systemId = normalizeSystemId(systemId);
 
@@ -172,13 +166,11 @@ public class DOMForest {
      *
      * @return null if there was a parse error. otherwise non-null.
      */
-    public Document parse(String systemId, InputSource inputSource, boolean root) throws SAXException {
+    public @NotNull Document parse(String systemId, InputSource inputSource, boolean root) throws SAXException, IOException{
         Document dom = documentBuilder.newDocument();
 
         systemId = normalizeSystemId(systemId);
 
-        boolean retryMex = false;
-        Exception exception = null;
         // put into the map before growing a tree, to
         // prevent recursive reference from causing infinite loop.
         core.put(systemId, dom);
@@ -204,18 +196,10 @@ public class DOMForest {
                 inlinedSchemaElements.add((Element) schemas.item(i));
             }
         } catch (ParserConfigurationException e) {
-            exception = e;
-        } catch (IOException e) {
-            exception = e;
-        } catch (SAXException e) {
-            exception = e;
+            errorReceiver.error(e);
+            throw new SAXException(e.getMessage());
         }
 
-        if (exception != null) {
-            errorReceiver.error(WscompileMessages.WSIMPORT_NO_WSDL(systemId), exception);
-            core.remove(systemId);
-            rootDocuments.remove(systemId);
-        }
         return dom;
     }
 

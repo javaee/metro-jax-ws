@@ -20,6 +20,9 @@
 
 package com.sun.tools.ws.wsdl.parser;
 
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
@@ -31,24 +34,23 @@ import com.sun.xml.ws.api.wsdl.parser.MetadataResolverFactory;
 import com.sun.xml.ws.api.wsdl.parser.ServiceDescriptor;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.istack.Nullable;
-import com.sun.istack.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.LocatorImpl;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
-import java.io.IOException;
 
 /**
  * @author Vivek Pandey
@@ -65,36 +67,47 @@ public final class MetadataFinder extends DOMForest{
 
     }
 
-    public void parseWSDL() throws SAXException, IOException {
+    public void parseWSDL(){
         // parse source grammars
         for (InputSource value : options.getWSDLs()) {
             String systemID = value.getSystemId();
             errorReceiver.pollAbort();
 
+            Document dom ;
+            Element doc = null;
+
+            try {
             //if there is entity resolver use it
             if (options.entityResolver != null)
                 value = options.entityResolver.resolveEntity(null, systemID);
             if (value == null)
                 value = new InputSource(systemID);
+                dom = parse(value, true);
 
+                doc = dom.getDocumentElement();
+                if (doc == null) {
+                    continue;
+                }
+                //if its not a WSDL document, retry with MEX
+                if (doc.getNamespaceURI() == null || !doc.getNamespaceURI().equals(WSDLConstants.NS_WSDL) || !doc.getLocalName().equals("definitions")) {
+                    throw new SAXParseException(WsdlMessages.INVALID_WSDL(systemID,
+                        com.sun.xml.ws.wsdl.parser.WSDLConstants.QNAME_DEFINITIONS, doc.getNodeName(), locatorTable.getStartLocation(doc).getLineNumber()), locatorTable.getStartLocation(doc));
+                }
+            } catch(FileNotFoundException e){
+                errorReceiver.error(WsdlMessages.FILE_NOT_FOUND(systemID), e);
+                return;
+            } catch (IOException e) {
+                doc = getFromMetadataResolver(systemID, e);
+            } catch (SAXParseException e) {
+                doc = getFromMetadataResolver(systemID, e);
+            } catch (SAXException e) {
+                doc = getFromMetadataResolver(systemID, e);
+            }
 
-            Document dom = parse(value, true);
-            if (dom == null)
-                continue;
-            Element doc = dom.getDocumentElement();
             if (doc == null) {
                 continue;
             }
-            //if its not a WSDL document, retry with MEX
-            if (doc.getNamespaceURI() == null || !doc.getNamespaceURI().equals(WSDLConstants.NS_WSDL) || !doc.getLocalName().equals("definitions")) {
-                core.remove(systemID);
-                rootDocuments.remove(systemID);
-                errorReceiver.warning(locatorTable.getStartLocation(doc), WsdlMessages.INVALID_WSDL_WITH_DOOC(systemID, "{" + fixNull(doc.getNamespaceURI()) + "}" + doc.getLocalName()));
-                dom = getFromMetadataResolver(systemID);
-                if(dom == null)
-                    continue;
-                doc = dom.getDocumentElement();
-            }
+
             NodeList schemas = doc.getElementsByTagNameNS(SchemaConstants.NS_XSD, "schema");
             for (int i = 0; i < schemas.getLength(); i++) {
                 if(!inlinedSchemaElements.contains(schemas.item(i)))
@@ -130,7 +143,7 @@ public final class MetadataFinder extends DOMForest{
             Document doc = get(location);
             if(doc!=null){
                 Element definition = doc.getDocumentElement();
-                if(definition == null)
+                if(definition == null || definition.getLocalName() == null || definition.getNamespaceURI() == null)
                     continue;
                 if(definition.getNamespaceURI().equals(WSDLConstants.NS_WSDL) && definition.getLocalName().equals("definitions")){
                     rootWsdls.add(location);
@@ -163,10 +176,9 @@ public final class MetadataFinder extends DOMForest{
     * This behavior should only happen when trying a
     * mex request first.
     */
-    private Document getFromMetadataResolver(String systemId) {
-
+    private @Nullable Element getFromMetadataResolver(String systemId, Exception ex) {
         //try MEX
-        MetaDataResolver resolver = null;
+        MetaDataResolver resolver;
         ServiceDescriptor serviceDescriptor = null;
         for (MetadataResolverFactory resolverFactory : ServiceFinder.find(MetadataResolverFactory.class)) {
             resolver = resolverFactory.metadataResolver(options.entityResolver);
@@ -181,14 +193,15 @@ public final class MetadataFinder extends DOMForest{
         }
 
         if (serviceDescriptor != null) {
+            errorReceiver.warning(new SAXParseException(WsdlMessages.TRY_WITH_MEX(ex.getMessage()), null, ex));
             return parseMetadata(systemId, serviceDescriptor);
         } else {
-            errorReceiver.error(new LocatorImpl(), WsdlMessages.PARSING_UNABLE_TO_GET_METADATA(systemId));
+            errorReceiver.error(null, WsdlMessages.PARSING_UNABLE_TO_GET_METADATA(ex.getMessage(), WscompileMessages.WSIMPORT_NO_WSDL(systemId)), ex);
         }
         return null;
     }
 
-    private Document parseMetadata(String systemId, ServiceDescriptor serviceDescriptor) {
+    private Element parseMetadata(@NotNull String systemId, @NotNull ServiceDescriptor serviceDescriptor) {
         List<? extends Source> mexWsdls = serviceDescriptor.getWSDLs();
         List<? extends Source> mexSchemas = serviceDescriptor.getSchemas();
         Document root = null;
@@ -240,6 +253,6 @@ public final class MetadataFinder extends DOMForest{
             //TODO:handle SAXSource
             //TODO:handler StreamSource
         }
-        return root;
+        return root.getDocumentElement();
     }
 }
