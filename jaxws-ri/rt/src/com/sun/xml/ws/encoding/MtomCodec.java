@@ -536,6 +536,7 @@ public class MtomCodec extends MimeCodec {
             if (xopReferencePresent) {
                 String text =  base64AttData.toString();
                 textLength = text.length();
+                return text;
             }
             return reader.getText();
         }
