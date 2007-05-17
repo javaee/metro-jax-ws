@@ -207,6 +207,7 @@ public class WebServiceAP implements AnnotationProcessor, ModelBuilder, WebServi
     public void onError(String message) {
         if (messager != null) {
             messager.printError(message);
+            throw new AbortException();
         } else {
             throw new ModelerException(message);
         }

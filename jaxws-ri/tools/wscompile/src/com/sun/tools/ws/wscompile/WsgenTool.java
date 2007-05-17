@@ -111,6 +111,8 @@ public class WsgenTool implements AnnotationProcessorFactory {
             }
             usage(e.getOptions());
             return false;
+        }catch(AbortException e){
+            //error might have been reported
         }finally{
             if(!options.keep){
                 options.removeGeneratedFiles();
