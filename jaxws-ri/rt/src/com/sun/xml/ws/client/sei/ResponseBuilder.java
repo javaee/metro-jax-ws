@@ -226,7 +226,7 @@ abstract class ResponseBuilder {
             } else if(isXMLMimeType(param.getBinding().getMimeType())) {
                 return new JAXBBuilder(param, setter);
             } else {
-                throw new UnsupportedOperationException("Attachment is not mapped");
+                throw new UnsupportedOperationException("Unexpected Attachment type ="+type);
             }
         }
         
