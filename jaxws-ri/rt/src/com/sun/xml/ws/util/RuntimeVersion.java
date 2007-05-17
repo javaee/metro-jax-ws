@@ -22,6 +22,8 @@
 
 package com.sun.xml.ws.util;
 
+import com.sun.xml.ws.util.RuntimeVersionMBean;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -29,8 +31,9 @@ import java.io.IOException;
  * Obtains the version number of the JAX-WS runtime.
  *
  * @author Kohsuke Kawaguchi
+ * @author Jitendra Kotamraju
  */
-public abstract class RuntimeVersion {
+public final class RuntimeVersion implements RuntimeVersionMBean {
 
     public static final Version VERSION;
 
@@ -51,6 +54,11 @@ public abstract class RuntimeVersion {
         VERSION = version == null ? Version.create(null) : version;
     }
 
-    private RuntimeVersion() {}    // no instanciation please
+    /**
+     * Get JAX-WS version
+     */
+    public String getVersion() {
+        return VERSION.toString();
+    }
     
 }
