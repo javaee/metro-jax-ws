@@ -115,9 +115,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
             throw new UnsupportedMediaException(contentType, expectedContentTypes);
         }
-        // TODO: we should definitely let Decode owns one XMLStreamReader instance
-        // instead of going to this generic factory
-        XMLStreamReader reader = new TidyXMLStreamReader(XMLStreamReaderFactory.create(null, in, true), in);
+        String charset = new ContentTypeImpl(contentType).getCharSet();
+        XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
+        reader =  new TidyXMLStreamReader(reader, in);
         packet.setMessage(decode(reader));
     }
 

@@ -10,8 +10,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -101,6 +103,12 @@ public abstract class XMLStreamReaderFactory {
         return get().doCreate(systemId,in,rejectDTDs);
     }
 
+    public static XMLStreamReader create(@Nullable String systemId, InputStream in, @Nullable String encoding, boolean rejectDTDs) {
+        return (encoding == null)
+                ? create(systemId, in, rejectDTDs)
+                : get().doCreate(systemId,in,encoding,rejectDTDs);
+    }
+
     public static XMLStreamReader create(@Nullable String systemId, Reader reader, boolean rejectDTDs) {
         return get().doCreate(systemId,reader,rejectDTDs);
     }
@@ -135,7 +143,17 @@ public abstract class XMLStreamReaderFactory {
     // implementations
 
     public abstract XMLStreamReader doCreate(String systemId, InputStream in, boolean rejectDTDs);
-    
+
+    private XMLStreamReader doCreate(String systemId, InputStream in, @NotNull String encoding, boolean rejectDTDs) {
+        Reader reader;
+        try {
+            reader = new InputStreamReader(in, encoding);
+        } catch(UnsupportedEncodingException ue) {
+            throw new XMLReaderException("stax.cantCreate", ue);
+        }
+        return doCreate(systemId, reader, rejectDTDs);
+    }
+
     public abstract XMLStreamReader doCreate(String systemId, Reader reader, boolean rejectDTDs);
 
     public abstract void doRecycle(XMLStreamReader r);

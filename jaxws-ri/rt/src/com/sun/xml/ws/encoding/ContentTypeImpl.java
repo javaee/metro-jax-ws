@@ -22,32 +22,47 @@
 
 package com.sun.xml.ws.encoding;
 
+import com.sun.istack.Nullable;
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.pipe.ContentType;
 
 /**
  * @author Vivek Pandey
  */
 public final class ContentTypeImpl implements ContentType {
-    private final String contentType;
-    private final String soapAction;
-    private final String accept;
+    private final @NotNull String contentType;
+    private final @NotNull String soapAction;
+    private final @Nullable String accept;
+    private final @Nullable String charset;
 
     public ContentTypeImpl(String contentType) {
-        this.contentType = contentType;
-        this.soapAction = null;
-        this.accept = null;
+        this(contentType, null, null);
     }
     
-    public ContentTypeImpl(String contentType, String soapAction) {
-        this.contentType = contentType;
-        this.soapAction = getQuotedSOAPAction(soapAction);
-        this.accept = null;
+    public ContentTypeImpl(String contentType, @Nullable String soapAction) {
+        this(contentType, soapAction, null);
     }
     
-    public ContentTypeImpl(String contentType, String soapAction, String accept) {
+    public ContentTypeImpl(String contentType, @Nullable String soapAction, @Nullable String accept) {
         this.contentType = contentType;
         this.accept = accept;
         this.soapAction = getQuotedSOAPAction(soapAction);
+        String tmpCharset = null;
+        try {
+            tmpCharset = new com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType(contentType).getParameter("charset");
+        } catch(Exception e) {
+            //Ignore the parsing exception.
+        }
+        charset = tmpCharset;
+    }
+
+    /**
+     * Returns the character set encoding.
+     *
+     * @return returns the character set encoding.
+     */
+    public @Nullable String getCharSet() {
+        return charset;
     }
 
     /** BP 1.1 R1109 requires SOAPAction too be a quoted value **/
