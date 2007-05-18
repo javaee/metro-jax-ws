@@ -581,8 +581,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
         // standard browsable page
         con.setStatus(WSHTTPConnection.OK);
-        con.setResponseHeaders(
-            Collections.singletonMap("Content-Type",Collections.singletonList("text/html;charset=\"utf-8\"")));
+        con.setContentTypeResponseHeader("text/html; charset=\"utf-8\"");
 
         PrintWriter out = new PrintWriter(new OutputStreamWriter(con.getOutput(),"UTF-8"));
         out.println("<html>");
