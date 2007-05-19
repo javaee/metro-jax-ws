@@ -383,6 +383,9 @@ public abstract class WSDLModelerBase implements Modeler {
     protected String getRequestNamespaceURI(SOAPBody body) {
         String namespaceURI = body.getNamespace();
         if (namespaceURI == null) {
+            if(options.isExtensionMode()){
+                return info.modelPort.getName().getNamespaceURI();
+            }
             // the WSDL document is invalid
             // at least, that's my interpretation of section 3.5 of the WSDL 1.1 spec!
             error(body, ModelerMessages.WSDLMODELER_INVALID_BINDING_OPERATION_INPUT_SOAP_BODY_MISSING_NAMESPACE(info.bindingOperation.getName()));
@@ -393,6 +396,9 @@ public abstract class WSDLModelerBase implements Modeler {
     protected String getResponseNamespaceURI(SOAPBody body) {
         String namespaceURI = body.getNamespace();
         if (namespaceURI == null) {
+            if(options.isExtensionMode()){
+                return info.modelPort.getName().getNamespaceURI();
+            }
             // the WSDL document is invalid
             // at least, that's my interpretation of section 3.5 of the WSDL 1.1 spec!
             error(body, ModelerMessages.WSDLMODELER_INVALID_BINDING_OPERATION_OUTPUT_SOAP_BODY_MISSING_NAMESPACE(info.bindingOperation.getName()));

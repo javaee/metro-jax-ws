@@ -394,7 +394,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      * @see com.sun.xml.ws.model.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethodImpl, String, javax.jws.WebMethod, String, java.lang.reflect.Method, javax.jws.WebService)
      */
     public String getRequestNamespace(){
-        return reqNamespace;
+        return (reqNamespace != null)?reqNamespace:name.getNamespaceURI();
     }
 
     public void setRequestNamespace(String ns){
@@ -409,7 +409,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
      *      * @see com.sun.xml.ws.modeler.RuntimeModeler#processRpcMethod(com.sun.xml.ws.model.JavaMethod, String, javax.jws.WebMethod, String, java.lang.reflect.Method, javax.jws.WebService)
      */
     public String getResponseNamespace(){
-        return respNamespace;
+        return (respNamespace!=null)?respNamespace:name.getNamespaceURI();
     }
 
     public void setResponseNamespace(String ns){
