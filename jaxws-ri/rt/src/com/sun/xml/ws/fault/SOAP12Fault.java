@@ -161,7 +161,18 @@ class SOAP12Fault extends SOAPFaultBuilder {
 
      protected Throwable getProtocolException() {
         try {
-            SOAPFault fault = SOAPVersion.SOAP_12.saajSoapFactory.createFault(reason.texts().get(0).getText(), (code != null)? code.getValue():null);
+            SOAPFault fault = SOAPVersion.SOAP_12.saajSoapFactory.createFault();;
+            if(reason != null){
+                for(TextType tt : reason.texts()){
+                    fault.setFaultString(tt.getText());
+                }
+            }
+
+            if(code != null){
+                fault.setFaultCode(code.getValue());
+                fillFaultSubCodes(fault, code.getSubcode());
+            }
+
             if(detail != null && detail.getDetail(0) != null){
                 javax.xml.soap.Detail detail = fault.addDetail();
                 for(Node obj: this.detail.getDetails()){
@@ -169,8 +180,6 @@ class SOAP12Fault extends SOAPFaultBuilder {
                     detail.appendChild(n);
                 }
             }
-            if(code != null)
-                fillFaultSubCodes(fault, code.getSubcode());
 
             return new SOAPFaultException(fault);
         } catch (SOAPException e) {
