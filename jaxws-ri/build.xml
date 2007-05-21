@@ -290,9 +290,11 @@ major-version=${release.impl.version}
     
     <copy    todir="${build.home}/lib">
       <fileset dir="${lib.home}/" 
-               includes="**/*.jar" 
-               excludes="ant.jar, ant-junit.jar, ant-launcher.jar, ant-nodeps.jar, ant-trax.jar, junit.jar, htmlmacro.jar, commons-jelly-tags-jsl-1.0.jar"/>
+               includes="FastInfoset.jar, activation.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxb-xjc.jar, jaxws-api.jar, jaxws-rt.jar, jaxws-tools.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, stax-ex.jar, streambuffer.jar"/>
     </copy>
+
+    <antcall target="copy-sjsxp-libs"/>
+    <antcall target="copy-woodstox-libs"/>
 
     <!-- Copying the manifest -->
     <copy file="${basedir}/tools/etc/manifest" todir="${basedir}/tools/wscompile/build"/>
@@ -308,6 +310,19 @@ major-version=${release.impl.version}
     </jar>
   </target>
 
+ <target name="copy-woodstox-libs" description="Copies woodstox.jar into distribution jars" if="woodstox">
+     <copy    todir="${build.home}/lib">
+       <fileset dir="${lib.home}/"
+                includes="woodstox.jar"/>
+     </copy>
+ </target>
+
+ <target name="copy-sjsxp-libs" description="Copies woodstox.jar into distribution jars" unless="woodstox">
+     <copy    todir="${build.home}/lib">
+       <fileset dir="${lib.home}/"
+                includes="sjsxp.jar"/>
+     </copy>
+ </target>
   <target name="clean">
     <delete dir="${build.home}"/>
     <delete dir="${dist.home}"/>

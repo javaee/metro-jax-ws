@@ -675,4 +675,16 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+%% The following software may be included in this product:  Woodstox. Use of any of this software is governed by the terms of the license below: 
+This copy of Woodstox XML processor is licensed under the
+Apache (Software) License, version 2.0 ("the License").
+See the License for details about distribution rights, and the
+specific rights regarding derivate works.
 
+You may obtain a copy of the License at:
+
+http://www.apache.org/licenses/
+
+A copy is also included in the downloadable source code package
+containing Woodstox, in file "ASL2.0", under the same directory
+as this file.
