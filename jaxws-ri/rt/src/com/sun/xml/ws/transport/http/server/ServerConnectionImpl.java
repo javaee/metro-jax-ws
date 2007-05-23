@@ -33,7 +33,6 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 import javax.xml.ws.handler.MessageContext;
-import java.io.FilterInputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,9 +81,8 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         for(Map.Entry <String, List<String>> entry : headers.entrySet()) {
             String name = entry.getKey();
             List<String> values = entry.getValue();
-            if (name.equalsIgnoreCase("Content-Length") || name.equalsIgnoreCase("Content-Type")) {
-                continue;  // ignore headers that interfere with our correct operations
-            } else {
+            // ignore headers that interfere with our correct operations
+            if (!name.equalsIgnoreCase("Content-Length") && !name.equalsIgnoreCase("Content-Type")) {
                 r.put(name,new ArrayList<String>(values));
             }
         }
@@ -112,15 +110,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     }
 
     public @NotNull InputStream getInput() {
-        // Light weight http server's InputStream.close() throws exception if
-        // all the bytes are not read. Work around until it is fixed.
-        return new FilterInputStream(httpExchange.getRequestBody()) {
-            @Override
-            public void close() throws IOException {
-                while (read() != -1);
-                super.close();
-            }
-        };
+        return httpExchange.getRequestBody();
     }
 
     public @NotNull OutputStream getOutput() throws IOException {
@@ -205,7 +195,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
 
     @Override @NotNull
     public String getBaseAddress() {
-        return httpExchange.getRequestURI().resolve(httpExchange.getHttpContext().getPath()).toString();
+        return WSHttpHandler.getRequestAddress(httpExchange);
     }
 
     @Override

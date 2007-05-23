@@ -471,12 +471,6 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @throws IOException when I/O errors happen
      */
     public void publishWSDL(@NotNull WSHTTPConnection con) throws IOException {
-        // Workaround for a bug in http server. Read and close InputStream
-        // TODO remove once the bug is fixed in http server
-        InputStream in = con.getInput();
-        while(in.read() != -1);
-        in.close();
-
         SDDocument doc = wsdls.get(con.getQueryString());
         if (doc == null) {
             writeNotFoundErrorPage(con,"Invalid Request");
