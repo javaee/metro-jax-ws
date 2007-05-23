@@ -573,7 +573,7 @@ abstract class EndpointArgumentsBuilder {
             XMLStreamReader reader = msg.readPayload();
             if (!reader.getName().equals(wrapperName))
                 throw new WebServiceException( // TODO: i18n
-                    "Unexpected response element "+reader.getName()+" expected: "+wrapperName);
+                    "Unexpected request element "+reader.getName()+" expected: "+wrapperName);
             reader.nextTag();
 
             while(reader.getEventType()==XMLStreamReader.START_ELEMENT) {
