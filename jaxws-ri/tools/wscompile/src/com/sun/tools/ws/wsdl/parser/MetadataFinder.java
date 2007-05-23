@@ -226,8 +226,8 @@ public final class MetadataFinder extends DOMForest{
                     }
                 }
                 NodeList nl = doc.getDocumentElement().getElementsByTagNameNS(WSDLConstants.NS_WSDL, "import");
-                if (nl.getLength() > 0) {
-                    Element imp = (Element) nl.item(0);
+                for(int i = 0; i < nl.getLength(); i++){
+                    Element imp = (Element) nl.item(i);
                     String loc = imp.getAttribute("location");
                     if (loc != null) {
                         if (!externalReferences.contains(loc))
