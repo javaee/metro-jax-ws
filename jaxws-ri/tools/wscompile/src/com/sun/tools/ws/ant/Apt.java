@@ -238,7 +238,7 @@ public class Apt extends Task {
         forkCmd.setClassname("com.sun.tools.apt.Main");
         if (null != getJvmargs()) {
             for (Jvmarg jvmarg : jvmargs) {
-                forkCmd.createVmArgument().setLine("-J" + jvmarg.getValue());
+                forkCmd.createVmArgument().setLine(jvmarg.getValue());
             }
         }
         
