@@ -206,6 +206,10 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     }
 
     public @NotNull String getBaseAddress() {
+        return getBaseAddress(request);
+    }
+
+    static @NotNull String getBaseAddress(HttpServletRequest request) {
         StringBuilder buf = new StringBuilder();
         buf.append(request.getScheme());
         buf.append("://");

@@ -87,7 +87,11 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
             // this is really a bug in the container implementation
             throw new WebServiceException("Container "+endpoint.getContainer()+" doesn't support "+WebModule.class);
 
-        String adrs = webModule.getContextPath() + getValidPath();
+        return getAddress(webModule.getContextPath());
+    }
+
+    public @NotNull URI getAddress(String baseAddress) {
+        String adrs = baseAddress+getValidPath();
         try {
             return new URI(adrs);
         } catch (URISyntaxException e) {

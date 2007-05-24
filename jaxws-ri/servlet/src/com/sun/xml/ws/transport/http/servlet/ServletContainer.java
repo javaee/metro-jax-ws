@@ -3,9 +3,9 @@ package com.sun.xml.ws.transport.http.servlet;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.Module;
 
 import javax.servlet.ServletContext;
+import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +16,16 @@ import java.util.List;
 class ServletContainer extends Container {
     private final ServletContext servletContext;
 
-    private final Module module = new Module() {
+    private final ServletModule module = new ServletModule() {
         private final List<BoundEndpoint> endpoints = new ArrayList<BoundEndpoint>();
 
-        public @NotNull
-        List<BoundEndpoint> getBoundEndpoints() {
+        public @NotNull List<BoundEndpoint> getBoundEndpoints() {
             return endpoints;
+        }
+
+        public @NotNull String getContextPath() {
+            // Cannot compute this since we don't know about hostname and port etc
+            throw new WebServiceException("Container "+ServletContainer.class.getName()+" doesn't support getContextPath()");
         }
     };
 
@@ -31,9 +35,9 @@ class ServletContainer extends Container {
 
     public <T> T getSPI(Class<T> spiType) {
         if (spiType == ServletContext.class) {
-            return (T)servletContext;
+            return spiType.cast(servletContext);
         }
-        if (spiType == Module.class) {
+        if (ServletModule.class.isAssignableFrom(spiType)) {
             return spiType.cast(module);
         }
         return null;
