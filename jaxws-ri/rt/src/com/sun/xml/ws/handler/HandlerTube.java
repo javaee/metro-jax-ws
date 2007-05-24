@@ -197,7 +197,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
               otherwise use this value as an approximation, since this carries
               the appliation's intention --- whether it was invokeOneway vs invoke,etc.
              */
-            return (packet.expectReply != null && packet.expectReply);
+            return !(packet.expectReply != null && packet.expectReply);
         }
     }
 
