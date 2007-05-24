@@ -39,8 +39,10 @@ import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceFeature;
 import java.io.IOException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 
 
 /**
@@ -57,84 +59,83 @@ public class ServiceGenerator extends GeneratorBase{
         super(model, options, receiver);
     }
 
-    private JInvocation createURL(URL url) {
-        return JExpr._new(cm.ref(URL.class)).arg(url.toExternalForm());
-    }
-
     @Override
     public void visit(Service service) {
-        try {
-            JavaInterface intf = service.getJavaInterface();
-            String className = Names.customJavaTypeClassName(intf);
-            if (donotOverride && GeneratorUtil.classExists(options, className)) {
-                log("Class " + className + " exists. Not overriding.");
-                return;
+        JavaInterface intf = service.getJavaInterface();
+        String className = Names.customJavaTypeClassName(intf);
+        if (donotOverride && GeneratorUtil.classExists(options, className)) {
+            log("Class " + className + " exists. Not overriding.");
+            return;
+        }
+
+        JDefinedClass cls = getClass(className, ClassType.CLASS);
+
+        cls._extends(javax.xml.ws.Service.class);
+        String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
+        String wsdlLocationName = serviceFieldName+"_WSDL_LOCATION";
+        JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, URL.class, wsdlLocationName);
+
+
+        cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, Logger.class, "logger", cm.ref(Logger.class).staticInvoke("getLogger").arg(JExpr.dotclass(cm.ref(className)).invoke("getName")));
+
+        JClass qNameCls = cm.ref(QName.class);
+        JInvocation inv;
+        inv = JExpr._new(qNameCls);
+        inv.arg("namespace");
+        inv.arg("localpart");
+
+
+        JBlock staticBlock = cls.init();
+        JVar urlVar = staticBlock.decl(cm.ref(URL.class),"url", JExpr._null());
+        JTryBlock tryBlock = staticBlock._try();
+        JVar baseUrl = tryBlock.body().decl(cm.ref(URL.class),"baseUrl");
+        tryBlock.body().assign(baseUrl, JExpr.dotclass(cm.ref(className)).invoke("getResource").arg("."));
+        tryBlock.body().assign(urlVar, JExpr._new(cm.ref(URL.class)).arg(baseUrl).arg(wsdlLocation));
+        JCatchBlock catchBlock = tryBlock._catch(cm.ref(MalformedURLException.class));
+        catchBlock.param("e");
+        catchBlock.body().directStatement("logger.warning(\"Failed to create URL for the wsdl Location: "+wsdlLocation+"\");");
+        catchBlock.body().directStatement("logger.warning(e.getMessage());");
+
+        staticBlock.assign(urlField, urlVar);
+
+        //write class comment - JAXWS warning
+        JDocComment comment = cls.javadoc();
+
+        if(service.getJavaDoc() != null){
+            comment.add(service.getJavaDoc());
+            comment.add("\n\n");
+        }
+
+        for (String doc : getJAXWSClassComment()) {
+            comment.add(doc);
+        }
+
+        JMethod constructor = cls.constructor(JMod.PUBLIC);
+        constructor.param(URL.class, "wsdlLocation");
+        constructor.param(QName.class, "serviceName");
+        constructor.body().directStatement("super(wsdlLocation, serviceName);");
+
+        constructor = cls.constructor(JMod.PUBLIC);
+        constructor.body().directStatement("super("+wsdlLocationName+", new QName(\""+service.getName().getNamespaceURI()+"\", \""+service.getName().getLocalPart()+"\"));");
+
+        //@WebService
+        JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
+        writeWebServiceClientAnnotation(service, webServiceClientAnn);
+
+        //@HandlerChain
+        writeHandlerConfig(Names.customJavaTypeClassName(service.getJavaInterface()), cls, options);
+
+        for (Port port: service.getPorts()) {
+            if (port.isProvider()) {
+                continue;  // No getXYZPort() for porvider based endpoint
             }
 
-            JDefinedClass cls = getClass(className, ClassType.CLASS);
+            //write getXyzPort()
+            writeDefaultGetPort(port, cls);
 
-            cls._extends(javax.xml.ws.Service.class);
-            String serviceFieldName = JAXBRIContext.mangleNameToClassName(service.getName().getLocalPart()).toUpperCase();
-            String wsdlLocationName = serviceFieldName+"_WSDL_LOCATION";
-            JFieldVar urlField = cls.field(JMod.PRIVATE|JMod.STATIC|JMod.FINAL, URL.class, wsdlLocationName);
-            JClass qNameCls = cm.ref(QName.class);
-            JInvocation inv;
-            inv = JExpr._new(qNameCls);
-            inv.arg("namespace");
-            inv.arg("localpart");
-
-
-            JBlock staticBlock = cls.init();
-            URL url = new URL(JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation)));
-            JVar urlVar = staticBlock.decl(cm.ref(URL.class),"url", JExpr._null());
-            JTryBlock tryBlock = staticBlock._try();
-            tryBlock.body().assign(urlVar, createURL(url)); 
-            JCatchBlock catchBlock = tryBlock._catch(cm.ref(MalformedURLException.class));
-            catchBlock.param("e");
-            catchBlock.body().directStatement("e.printStackTrace();");
-            staticBlock.assign(urlField, urlVar);
-          
-            //write class comment - JAXWS warning
-            JDocComment comment = cls.javadoc();
-
-            if(service.getJavaDoc() != null){
-                comment.add(service.getJavaDoc());
-                comment.add("\n\n");
-            }
-
-            for (String doc : getJAXWSClassComment()) {
-                comment.add(doc);
-            }
-
-            JMethod constructor = cls.constructor(JMod.PUBLIC);
-            constructor.param(URL.class, "wsdlLocation");
-            constructor.param(QName.class, "serviceName");
-            constructor.body().directStatement("super(wsdlLocation, serviceName);");
-            
-            constructor = cls.constructor(JMod.PUBLIC);
-            constructor.body().directStatement("super("+wsdlLocationName+", new QName(\""+service.getName().getNamespaceURI()+"\", \""+service.getName().getLocalPart()+"\"));");
-            
-            //@WebService
-            JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
-            writeWebServiceClientAnnotation(service, webServiceClientAnn);
-
-            //@HandlerChain
-            writeHandlerConfig(Names.customJavaTypeClassName(service.getJavaInterface()), cls, options);
-
-            for (Port port: service.getPorts()) {
-                if (port.isProvider()) {
-                    continue;  // No getXYZPort() for porvider based endpoint
-                }
-
-                //write getXyzPort()
-                writeDefaultGetPort(port, cls);
-
-                //write getXyzPort(WebServicesFeature...)
-                if(options.target.isLaterThan(Options.Target.V2_1))
-                    writeGetPort(port, cls);
-            }
-        } catch (IOException e) {
-            receiver.error(e);
+            //write getXyzPort(WebServicesFeature...)
+            if(options.target.isLaterThan(Options.Target.V2_1))
+                writeGetPort(port, cls);
         }
     }
 
@@ -152,9 +153,8 @@ public class ServiceGenerator extends GeneratorBase{
         ret.add("returns "+retType.name());
         m.varParam(WebServiceFeature.class, "features");
         JBlock body = m.body();
-        StringBuffer statement = new StringBuffer("return (");
-        statement.append(retType.name());
-        statement.append(")super.getPort(new QName(\"").append(port.getName().getNamespaceURI()).append("\", \"").append(port.getName().getLocalPart()).append("\"), ");
+        StringBuffer statement = new StringBuffer("return ");
+        statement.append("super.getPort(new QName(\"").append(port.getName().getNamespaceURI()).append("\", \"").append(port.getName().getLocalPart()).append("\"), ");
         statement.append(retType.name());
         statement.append(".class, features);");
         body.directStatement(statement.toString());
@@ -171,9 +171,8 @@ public class ServiceGenerator extends GeneratorBase{
         JCommentPart ret = methodDoc.addReturn();
         ret.add("returns "+retType.name());
         JBlock body = m.body();
-        StringBuffer statement = new StringBuffer("return (");
-        statement.append(retType.name());
-        statement.append(")super.getPort(new QName(\"").append(port.getName().getNamespaceURI()).append("\", \"").append(port.getName().getLocalPart()).append("\"), ");
+        StringBuffer statement = new StringBuffer("return ");
+        statement.append("super.getPort(new QName(\"").append(port.getName().getNamespaceURI()).append("\", \"").append(port.getName().getLocalPart()).append("\"), ");
         statement.append(retType.name());
         statement.append(".class);");
         body.directStatement(statement.toString());

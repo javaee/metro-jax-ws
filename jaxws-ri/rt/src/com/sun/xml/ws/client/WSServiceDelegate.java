@@ -54,6 +54,7 @@ import com.sun.xml.ws.resources.DispatchMessages;
 import com.sun.xml.ws.resources.ProviderApiMessages;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.util.JAXWSUtils;
 import static com.sun.xml.ws.util.xml.XmlUtil.createDefaultCatalogResolver;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import org.xml.sax.SAXException;
@@ -182,6 +183,19 @@ public class WSServiceDelegate extends WSService {
         this.serviceInterceptor = interceptor;
 
 
+        //if wsdl is null, try and get it from the WebServiceClient.wsdlLocation
+        if(wsdl == null){
+            if(serviceClass != Service.class){
+                WebServiceClient wsClient = AccessController.doPrivileged(new PrivilegedAction<WebServiceClient>() {
+                        public WebServiceClient run() {
+                            return serviceClass.getAnnotation(WebServiceClient.class);
+                        }
+                    });
+                String wsdlLocation = wsClient.wsdlLocation();
+                wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
+                wsdl = new StreamSource(wsdlLocation);
+            }
+        }
         WSDLServiceImpl service=null;
         if (wsdl != null) {
             try {
