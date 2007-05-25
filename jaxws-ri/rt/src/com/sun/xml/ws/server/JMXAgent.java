@@ -8,6 +8,7 @@ package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.util.RuntimeVersionMBean;
 import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.transport.http.HttpDump;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
@@ -31,8 +32,11 @@ public class JMXAgent {
     public void init() throws Exception {    
         RuntimeVersionMBean mbean = new RuntimeVersion();
         ObjectName mbeanName = new ObjectName("com.sun.xml.ws.util:type=RuntimeVersion");
-        //Register the Version MBean
         getMBeanServer().registerMBean(mbean, mbeanName);
+
+        HttpDump dump = new HttpDump();
+        ObjectName dumpName = new ObjectName("com.sun.xml.ws.transport.http:type=HttpDump");
+        getMBeanServer().registerMBean(dump, dumpName);
     }
     
     /**
