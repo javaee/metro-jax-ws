@@ -348,7 +348,11 @@ public final class StreamMessage extends AbstractMessageImpl {
                     String nsUri = reader.getNamespaceURI();
                     if(name.equals("Body") && nsUri.equals(soapVersion.nsUri) || (reader.getEventType() == XMLStreamConstants.END_DOCUMENT))
                         break;
-                    c.create(reader);                    
+                    c.create(reader);
+                    // Skip whitespaces in between payload and </Body> or between elements
+                    if (reader.isWhiteSpace()) {
+                        XMLStreamReaderUtil.nextElementContent(reader);
+                    }
                 }
                 XMLStreamReaderFactory.recycle(reader);
 
