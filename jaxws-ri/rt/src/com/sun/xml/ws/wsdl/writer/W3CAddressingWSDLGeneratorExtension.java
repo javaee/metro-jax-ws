@@ -18,7 +18,7 @@
  [name of copyright owner]
 */
 /*
- $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.3 2007-04-13 00:32:40 jitu Exp $
+ $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.4 2007-05-25 00:35:09 ramapulavarthi Exp $
 
  Copyright (c) 2006 Sun Microsystems, Inc.
  All rights reserved.
@@ -26,20 +26,19 @@
 
 package com.sun.xml.ws.wsdl.writer;
 
-import javax.xml.ws.Action;
-import javax.xml.ws.FaultAction;
-import javax.xml.ws.soap.AddressingFeature;
-
-import com.sun.istack.NotNull;
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.model.CheckedException;
 import com.sun.xml.ws.api.model.JavaMethod;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
+import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
+
+import javax.xml.ws.Action;
+import javax.xml.ws.FaultAction;
+import javax.xml.ws.soap.AddressingFeature;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author Arun Gupta
@@ -68,7 +67,36 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
         Action a = method.getSEIMethod().getAnnotation(Action.class);
         if (a != null && !a.input().equals("")) {
             addAttribute(input, a.input());
+        } else {
+            if (method.getBinding().getSOAPAction().equals("")) {
+                //hack: generate default action for interop with .Net3.0 when soapAction is non-empty
+                String defaultAction = getDefaultAction(method);
+                addAttribute(input, defaultAction);
+            }
         }
+    }
+
+    protected static final String getDefaultAction(JavaMethod method) {
+        String tns = method.getOwner().getTargetNamespace();
+        String delim = "/";
+        // TODO: is this the correct way to find the separator ?
+        try {
+            URI uri = new URI(tns);
+            if(uri.getScheme().equalsIgnoreCase("urn"))
+                delim = ":";
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }        
+        if (tns.endsWith(delim))
+            tns = tns.substring(0, tns.length() - 1);
+        //this assumes that fromjava case there won't be input name.
+        // if there is input name in future, then here name=inputName
+        //else use operation name as follows.
+        String name = (method.getMEP().isOneWay())?method.getOperationName():method.getOperationName()+"Request";
+
+        return new StringBuilder(tns).append(delim).append(
+                method.getOwner().getPortTypeName().getLocalPart()).append(
+                delim).append(name).toString();
     }
 
     @Override
