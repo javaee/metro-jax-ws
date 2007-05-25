@@ -59,6 +59,18 @@ public class WsImport2 extends MatchingTask {
     /** Additional command line arguments for XJC. The equivalent of the -B option. */
     private final Commandline xjcCmdLine = new Commandline();
 
+    /** Enable/disable debug messages - stack trace **/
+    private boolean xdebug = false;
+
+
+    public boolean isXdebug() {
+        return xdebug;
+    }
+
+    public void setXdebug(boolean xdebug) {
+        this.xdebug = xdebug;
+    }
+
     /** Gets the base directory to output generated class. **/
     public File getDestdir() {
         return this.destDir;
@@ -457,6 +469,10 @@ public class WsImport2 extends MatchingTask {
         // g option
         if (getDebug()) {
             cmd.createArgument().setValue("-g");
+        }
+
+        if(isXdebug()){
+            cmd.createArgument().setValue("-Xdebug");
         }
 
         // keep option
