@@ -37,7 +37,7 @@ class ServletContainer extends Container {
         if (spiType == ServletContext.class) {
             return spiType.cast(servletContext);
         }
-        if (ServletModule.class.isAssignableFrom(spiType)) {
+        if (spiType.isAssignableFrom(ServletModule.class)) {
             return spiType.cast(module);
         }
         return null;
