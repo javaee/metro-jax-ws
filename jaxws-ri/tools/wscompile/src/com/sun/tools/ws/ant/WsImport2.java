@@ -426,7 +426,9 @@ public class WsImport2 extends MatchingTask {
     }
     
     public void addConfiguredBinding( FileSet fs ) {
-        DirectoryScanner ds = fs.getDirectoryScanner(project);
+
+        DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+
         String[] includedFiles = ds.getIncludedFiles();
         File baseDir = ds.getBasedir();
         for (String includedFile : includedFiles) {
@@ -524,7 +526,7 @@ public class WsImport2 extends MatchingTask {
 
         if(getBinding() != null){
             cmd.createArgument().setValue("-b");
-            cmd.createArgument().setFile(new File (getBinding()));
+            cmd.createArgument().setValue(getBinding());
         }
 
         for( String a : xjcCmdLine.getArguments() ) {
