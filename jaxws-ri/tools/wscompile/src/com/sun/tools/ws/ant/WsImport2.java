@@ -426,9 +426,7 @@ public class WsImport2 extends MatchingTask {
     }
     
     public void addConfiguredBinding( FileSet fs ) {
-
         DirectoryScanner ds = fs.getDirectoryScanner(getProject());
-
         String[] includedFiles = ds.getIncludedFiles();
         File baseDir = ds.getBasedir();
         for (String includedFile : includedFiles) {
