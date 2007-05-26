@@ -18,7 +18,7 @@
  [name of copyright owner]
 */
 /*
- $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.4 2007-05-25 00:35:09 ramapulavarthi Exp $
+ $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.5 2007-05-26 00:29:58 ramapulavarthi Exp $
 
  Copyright (c) 2006 Sun Microsystems, Inc.
  All rights reserved.
@@ -39,9 +39,11 @@ import javax.xml.ws.FaultAction;
 import javax.xml.ws.soap.AddressingFeature;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 /**
  * @author Arun Gupta
+ * @author Rama Pulavarthi
  */
 public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension {
     private boolean enabled;
@@ -85,7 +87,7 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
             if(uri.getScheme().equalsIgnoreCase("urn"))
                 delim = ":";
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            LOGGER.warning("TargetNamespace of WebService is not a valid URI");
         }        
         if (tns.endsWith(delim))
             tns = tns.substring(0, tns.length() - 1);
@@ -150,4 +152,5 @@ public class W3CAddressingWSDLGeneratorExtension extends WSDLGeneratorExtension 
         }
         */
     }
+     private static final Logger LOGGER = Logger.getLogger(W3CAddressingWSDLGeneratorExtension.class.getName());
 }
