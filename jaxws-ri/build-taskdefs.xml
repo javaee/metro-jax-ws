@@ -22,7 +22,7 @@
  Copyright 2006 Sun Microsystems Inc. All Rights Reserved
 -->
 
-<project name="JAXWS-RI" basedir=".">
+<project name="JAXWS-RI-taskdefs" basedir=".">
   <!--
     This build script fragment defines a set of common tasks.
   -->
