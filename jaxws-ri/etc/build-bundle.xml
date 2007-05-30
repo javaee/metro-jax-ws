@@ -235,8 +235,7 @@
         <ant dir="${basedir}/rt" target="clean"/>
         <ant dir="${basedir}/rt-fi" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
-        <ant dir="${basedir}/servlet" target="clean"/>
-        <ant dir="${basedir}/transports/local" target="clean"/>
+        <ant dir="${basedir}/servlet" target="clean"/>        
     </target>
 
     <!-- for now, this gets everything built -->

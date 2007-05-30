@@ -190,6 +190,15 @@
       </htmlmacro>
     </target>
 
+    <target name="clean">
+        <delete dir="${build.home}"/>
+        <delete dir="${dist.home}"/>
+        <ant dir="${basedir}/rt" target="clean"/>
+        <ant dir="${basedir}/rt-fi" target="clean"/>
+        <ant dir="${basedir}/tools/wscompile" target="clean"/>
+        <ant dir="${basedir}/servlet" target="clean"/>
+        <ant dir="${basedir}/transports/local" target="clean"/>
+    </target>
 <!-- for now, this gets everything built -->
     <target name="image" depends="tools-build">
         <ant dir="transports/local" target="dist" inheritrefs="true"/>
@@ -574,26 +583,26 @@
         <delete dir="${source.drop.dir}"/>
         <mkdir dir="${source.drop.dir}"/>
         <mkdir dir="${source.drop.dir}/jaxws-ri/lib"/>
-<!--duplicate="fail"-->
-        <zip destfile="${build.home}/jaxws-src.zip"  whenempty="fail">
+
+        <zip destfile="${build.home}/jaxws-src.zip"  duplicate="fail" whenempty="fail">
             <zipfileset dir="rt" prefix="${source.dist.dir.name}/rt" defaultexcludes="true"/>
             <zipfileset dir="rt-fi" prefix="${source.dist.dir.name}/rt-fi" defaultexcludes="true"/>
-            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true"/>
+            <zipfileset dir="tools" prefix="${source.dist.dir.name}/tools" defaultexcludes="true"
+                    excludes="**/*.iml,javadoc-link/**,lib/**,scripts/**,in-cvs.sh"/>
             <zipfileset dir="servlet" prefix="${source.dist.dir.name}/servlet" defaultexcludes="true"/>
             <zipfileset dir="${basedir}/etc" includes="build-bundle.xml"
                         fullpath="${source.dist.dir.name}/build.xml"/>
             <zipfileset dir="${basedir}/etc" includes="src-build-readme.txt"
                         fullpath="${source.dist.dir.name}/README"/>
             <!-- additional jar files -->
-            <zipfileset dir="${basedir}/build/lib" includes="*.jar" excludes="ant*.* junit.jar"
+            <zipfileset dir="${basedir}/lib" includes="*.jar" excludes="ant*.* junit.jar"
                         prefix="${source.dist.dir.name}/lib"/>
-            <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/>
+          <!--  <zipfileset dir="servlet/lib" includes="*.jar" prefix="${source.dist.dir.name}/lib"/> -->
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt, project.properties"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
                         prefix="${source.dist.dir.name}"/>
-
         </zip>        
     </target>
 
