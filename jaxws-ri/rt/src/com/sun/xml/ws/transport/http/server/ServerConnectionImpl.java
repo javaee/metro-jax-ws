@@ -47,6 +47,8 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
 import javax.xml.ws.handler.MessageContext;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -123,7 +125,15 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     }
 
     public @NotNull InputStream getInput() {
-        return httpExchange.getRequestBody();
+        // Light weight http server's InputStream.close() throws exception if
+        // all the bytes are not read. Work around until it is fixed.
+        return new FilterInputStream(httpExchange.getRequestBody()) {
+            @Override
+            public void close() throws IOException {
+                while (read() != -1);
+                super.close();
+            }
+        };
     }
 
     public @NotNull OutputStream getOutput() throws IOException {
@@ -133,7 +143,20 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         List<String> lenHeader = httpExchange.getResponseHeaders().get("Content-Length");
         int length = (lenHeader != null) ? Integer.parseInt(lenHeader.get(0)) : 0;
         httpExchange.sendResponseHeaders(getStatus(), length);
-        return httpExchange.getResponseBody();
+
+        // Light weight http server's OutputStream.close() throws exception if
+        // all the bytes are not read on the client side(StreamMessage on the client
+        // side doesn't read all bytes.
+        return new FilterOutputStream(httpExchange.getResponseBody()) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                } catch(IOException ioe) {
+                    // Ignoring purposefully.
+                }
+            }
+        };
     }
 
     public @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
