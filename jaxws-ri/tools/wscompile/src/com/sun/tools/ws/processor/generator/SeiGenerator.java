@@ -74,7 +74,9 @@ public class SeiGenerator extends GeneratorBase{
         extensionHandlers = new ArrayList<TJavaGeneratorExtension>();
 
         // register handlers for default extensions
-        register(new W3CAddressingJavaGeneratorExtension());
+        //spec does not require generation of these annotations
+        // and we can infer from wsdl anyway, so lets disable it
+        //register(new W3CAddressingJavaGeneratorExtension());
         
         for (TJavaGeneratorExtension j : extensions)
             register(j);
