@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPart;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.util.localization.Localizable;
 
@@ -484,8 +485,14 @@ public class RuntimeModeler {
         //override the @WebMethod.action value by the one from the WSDL
         if(binding != null){
             WSDLBoundOperationImpl bo = binding.getBinding().get(new QName(targetNamespace, operationName));
-            if(bo != null)
-                action = bo.getSOAPAction();
+            if(bo != null){
+                WSDLInputImpl wsdlInput = bo.getOperation().getInput();
+                String wsaAction = wsdlInput.getAction();
+                if(wsaAction != null && !wsdlInput.isDefaultAction())
+                    action = wsaAction;
+                else
+                    action = bo.getSOAPAction();
+            }
         }
 
         javaMethod.setOperationName(operationName);

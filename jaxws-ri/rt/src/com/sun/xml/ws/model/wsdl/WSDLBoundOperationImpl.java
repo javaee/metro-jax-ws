@@ -291,7 +291,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return faultMimeTypes.get(part);
     }
 
-    public WSDLOperation getOperation() {
+    public WSDLOperationImpl getOperation() {
         return operation;
     }
 
