@@ -37,7 +37,7 @@
     <dependency>
       <groupId>com.sun.org.apache.xml.internal</groupId>
       <artifactId>resolver</artifactId>
-      <version>2005097</version>
+      <version>20050927</version>
     </dependency>
   </dependencies>
 </project>
