@@ -130,11 +130,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         return new FilterInputStream(httpExchange.getRequestBody()) {
             @Override
             public void close() throws IOException {
-                try {
-                    while (read() != -1);
-                } catch(IOException e) {
-                    //Ignore
-                }
+                while (read() != -1);
                 super.close();
             }
         };

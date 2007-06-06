@@ -237,10 +237,6 @@ final class EndpointMethodHandler {
 
 
     public Packet invoke(Packet req) {
-        // Some transports(like HTTP) may want to send response before envoking endpoint method
-        if (isOneWay && req.transportBackChannel != null) {
-            req.transportBackChannel.close();
-        }
         Message reqMsg = req.getMessage();
         Object[] args = new Object[noOfArgs];
         try {
@@ -249,6 +245,12 @@ final class EndpointMethodHandler {
             throw new DeserializationException("failed.to.read.response",e);
         } catch (XMLStreamException e) {
             throw new DeserializationException("failed.to.read.response",e);
+        }
+        // Some transports(like HTTP) may want to send response before envoking endpoint method
+        // Doing this here so that after closing the response stream, cannot read
+        // request from some transports(light weight http server)
+        if (isOneWay && req.transportBackChannel != null) {
+            req.transportBackChannel.close();
         }
         Message responseMessage;
         try {
