@@ -53,6 +53,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.logging.Logger;
 
 /**
  * Factory for {@link XMLStreamReader}.
@@ -64,6 +65,8 @@ import java.net.URL;
  * @author Kohsuke Kawaguchi
  */
 public abstract class XMLStreamReaderFactory {
+
+    private static final Logger LOGGER = Logger.getLogger(XMLStreamReaderFactory.class.getName());
 
     /**
      * Singleton instance.
@@ -101,6 +104,7 @@ public abstract class XMLStreamReaderFactory {
             f = new Default(xif);
 
         theInstance = f;
+        LOGGER.fine("XMLStreamReaderFactory instance is = "+theInstance);
     }
 
     /**
