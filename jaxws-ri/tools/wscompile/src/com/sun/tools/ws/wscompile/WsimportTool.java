@@ -175,6 +175,9 @@ public class WsimportTool {
                 TJavaGeneratorExtension[] genExtn = ServiceFinder.find(TJavaGeneratorExtension.class).toArray();
                 CustomExceptionGenerator.generate(wsdlModel,  options, receiver);
                 SeiGenerator.generate(wsdlModel, options, receiver, genExtn);
+                if(receiver.hadError()){
+                    throw new AbortException();
+                }
                 ServiceGenerator.generate(wsdlModel, options, receiver);
                 CodeWriter cw = new WSCodeWriter(options.sourceDir, options);
                 if (options.verbose)

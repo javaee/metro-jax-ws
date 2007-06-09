@@ -47,7 +47,11 @@ import com.sun.tools.ws.processor.model.jaxb.JAXBTypeAndAnnotation;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.wscompile.WsimportOptions;
+import com.sun.tools.ws.wscompile.AbortException;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
+import com.sun.tools.ws.wsdl.document.PortType;
+import com.sun.tools.ws.wsdl.document.Kinds;
+import com.sun.tools.ws.resources.GeneratorMessages;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -58,6 +62,8 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.xml.sax.Locator;
 
 public class SeiGenerator extends GeneratorBase{
     private String serviceNS;
@@ -95,8 +101,22 @@ public class SeiGenerator extends GeneratorBase{
 
 
         JDefinedClass cls = getClass(className, ClassType.INTERFACE);
-        if (cls == null)
+        //Could not find reference to the class
+        if(cls == null){
+            QName portTypeName =
+                (QName) port.getProperty(
+                        ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
+            Locator loc = null;
+            if(portTypeName != null){
+                PortType pt = port.portTypes.get(portTypeName);
+                if(pt!=null)
+                    loc = pt.getLocator();
+            }
+            receiver.error(loc, GeneratorMessages.GENERATOR_SEI_CLASS_ALREADY_EXIST(intf.getName(), portTypeName));
             return;
+
+        }
+
 
         // If the class has methods it has already been defined
         // so skip it.
@@ -452,15 +472,7 @@ public class SeiGenerator extends GeneratorBase{
         if (port.isProvider()) {
             return;                // Not generating for Provider based endpoint
         }
-
-
-        try {
-            write(port);
-        } catch (Exception e) {
-            throw new GeneratorException(
-                "generator.nestedGeneratorError",
-                e);
-        }
+        write(port);
     }
 
     private void register(TJavaGeneratorExtension h) {

@@ -2258,6 +2258,10 @@ public class WSDLModeler extends WSDLModelerBase {
                 (QName) port.getProperty(
                         ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
         PortType pt = (PortType) document.find(Kinds.PORT_TYPE, portTypeName);
+        //populate the portType map here. We should get rid of all these properties
+        // lets not do it as it may break NB
+        //TODO: clean all these stuff part of NB RFE
+        port.portTypes.put(portTypeName, pt);
         JAXWSBinding jaxwsCust = (JAXWSBinding) getExtensionOfType(pt, JAXWSBinding.class);
         if (jaxwsCust != null && jaxwsCust.getClassName() != null) {
             CustomName name = jaxwsCust.getClassName();

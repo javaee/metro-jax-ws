@@ -37,6 +37,7 @@
 package com.sun.tools.ws.processor.model;
 
 import com.sun.tools.ws.processor.model.java.JavaInterface;
+import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
 import com.sun.tools.ws.wsdl.framework.Entity;
 
@@ -185,4 +186,5 @@ public class Port extends ModelObject {
     private String _address;
     private String _serviceImplName;
     private Map<String, Operation> operationsByName = new HashMap<String, Operation>();
+    public Map<QName, PortType> portTypes = new HashMap<QName, PortType>();
 }
