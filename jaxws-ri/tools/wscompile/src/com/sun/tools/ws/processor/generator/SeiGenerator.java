@@ -100,9 +100,10 @@ public class SeiGenerator extends GeneratorBase{
         }
 
 
-        JDefinedClass cls = getClass(className, ClassType.INTERFACE);
-        //Could not find reference to the class
-        if(cls == null){
+        JDefinedClass cls = null;
+        try {
+            cls = getClass(className, ClassType.INTERFACE);
+        } catch (JClassAlreadyExistsException e) {
             QName portTypeName =
                 (QName) port.getProperty(
                         ModelProperties.PROPERTY_WSDL_PORT_TYPE_NAME);
@@ -113,11 +114,8 @@ public class SeiGenerator extends GeneratorBase{
                     loc = pt.getLocator();
             }
             receiver.error(loc, GeneratorMessages.GENERATOR_SEI_CLASS_ALREADY_EXIST(intf.getName(), portTypeName));
-            return;
-
+            return;            
         }
-
-
         // If the class has methods it has already been defined
         // so skip it.
         if (!cls.methods().isEmpty())
