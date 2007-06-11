@@ -73,13 +73,16 @@
          dest="lib/package-rename-task.jar"/>
   </target>
 
-  <!--Invoke this target with build.id so that version.properties gets the right build id
+  <!--
+Use target j2se-integration from build.xml, which calls tools-build before renaming
+  
+  Invoke this target with build.id so that version.properties gets the right build id
       This calls dist to get version.properties generated,
       which are used by RuntimeVersion.java and ToolVersion.java
       This also generates code in rt/build/gen-src and tools/wscompile/build/gen-src which needs to be integrated.
     -->
-  <target name="j2se-integration"
-          description="prepare renamed source code for J2SE integration" depends="dist">
+  <target name="repackage-j2se-integration"
+          description="prepare renamed source code for J2SE integration">
 
     <package-rename srcdir="rt/src" destdir="j2se-integration/rt/src" />
     <package-rename srcdir="rt/build/gen-src/" destdir="j2se-integration/rt/src" />

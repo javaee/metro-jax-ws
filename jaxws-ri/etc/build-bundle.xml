@@ -254,7 +254,7 @@
    J2SE renaming
    ===================== -->
     <!-- assumes the dist target has been run -->
-    <target name="j2se-integration" description="Prepare Sources for J2SE integration">
-        <ant antfile="build-j2se.xml" target="j2se-integration" inheritrefs="true"/>
+    <target name="j2se-integration" description="Prepare Sources for J2SE integration" depends="tools-build">
+        <ant antfile="build-j2se.xml" target="repackage-j2se-integration" inheritrefs="true"/>
     </target>
 </project>
