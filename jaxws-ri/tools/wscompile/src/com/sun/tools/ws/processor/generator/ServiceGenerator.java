@@ -117,7 +117,8 @@ public class ServiceGenerator extends GeneratorBase {
         tryBlock.body().assign(urlVar, JExpr._new(cm.ref(URL.class)).arg(baseUrl).arg(wsdlLocation));
         JCatchBlock catchBlock = tryBlock._catch(cm.ref(MalformedURLException.class));
         catchBlock.param("e");
-        catchBlock.body().directStatement("logger.warning(\"Failed to create URL for the wsdl Location: " + wsdlLocation + "\");");
+
+        catchBlock.body().directStatement("logger.warning(\"Failed to create URL for the wsdl Location: " + JExpr.quotify('\'', wsdlLocation) + ", retrying as a local file\");");
         catchBlock.body().directStatement("logger.warning(e.getMessage());");
 
         staticBlock.assign(urlField, urlVar);
