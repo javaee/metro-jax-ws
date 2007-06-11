@@ -21,9 +21,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -60,6 +60,7 @@
         <pattern from="com.sun.txw2" to="com.sun.xsom.internal" />
         <pattern from="com.sun.istack" to="com.sun.istack.internal" />
         <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset" />
+        <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex" />  
         <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" />
         <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc" />
         <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" />
@@ -72,25 +73,40 @@
          dest="lib/package-rename-task.jar"/>
   </target>
 
+  <!--Invoke this target with build.id so that version.properties gets the right build id
+      This calls dist to get version.properties generated,
+      which are used by RuntimeVersion.java and ToolVersion.java
+      This also generates code in rt/build/gen-src and tools/wscompile/build/gen-src which needs to be integrated.
+    -->
   <target name="j2se-integration"
-          description="prepare renamed source code for J2SE integration">
+          description="prepare renamed source code for J2SE integration" depends="dist">
 
     <package-rename srcdir="rt/src" destdir="j2se-integration/rt/src" />
+    <package-rename srcdir="rt/build/gen-src/" destdir="j2se-integration/rt/src" />
     <package-rename srcdir="tools/wscompile/src" destdir="j2se-integration/tools/src" />
+    <package-rename srcdir="tools/wscompile/build/gen-src/" destdir="j2se-integration/tools/src" />
     <prename srcdir="tools/etc" destdir="j2se-integration/tools/etc/META-INF/services">
       <pattern from="com.sun.istack" to="com.sun.istack.internal" />
       <include name="com.sun.mirror.apt.AnnotationProcessorFactory" />
     </prename>
-     <!-- delete files not integrated in JDK -->
-    <delete dir="j2se-integration/rt/src/com/sun/xml/internal/ws/transport/http/servlet"/>
-    <delete>
-          <fileset dir="j2se-integration/rt/src">
-              <include name="**/WSRtObjectFactory.java"/>
-              <include name="**/WSRtObjectFactoryImpl.java"/>
-              <include name="**/WSDLPublisher.java"/>
-          </fileset>
-      </delete>
-      <delete dir="j2se-integration/tools/src/com/sun/tools/internal/ws/ant"/>
+    <package-rename srcdir="rt-fi/src" destdir="j2se-integration/rt/src" />
+    <!-- delete ant tasks -->  
+    <delete dir="j2se-integration/tools/src/com/sun/tools/internal/ws/ant"/>
+    <copy file="${basedir}/rt/build/classes/com/sun/xml/ws/util/version.properties"
+          todir="j2se-integration/rt/src/com/sun/xml/internal/ws/util"/>
+    <copy file="${basedir}/tools/wscompile/build/classes/com/sun/tools/ws/version.properties"
+          todir="j2se-integration/tools/src/com/sun/tools/internal/ws"/>
   </target>
+
+    <!-- target to rename everything in the servlet except classes in com.sun.xml.ws.transport.http.servlet.
+    This is to allow tests to deploy run on tomcat on top of jdk6u3, which has JAXWS/JAXB 2.1 -->
+   <target name="rename-j2se-servlet">
+        <!--package-rename srcdir="servlet/src" destdir="build/j2se-servlet/src" /-->
+       <prename srcdir="servlet/src" destdir="build/j2se-servlet/src">
+           <pattern from="com.sun.xml.ws" to="com.sun.xml.internal.ws" excludes="com.sun.xml.ws.transport.http.servlet" />
+           <pattern from="com.sun.istack" to="com.sun.istack.internal" />
+       </prename>
+
+    </target>
 
 </project>
