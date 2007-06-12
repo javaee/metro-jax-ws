@@ -149,7 +149,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             con.closeOutput();
 
             con.checkResponseCode();
-            if (con.statusCode== WSHTTPConnection.ONEWAY) {
+            if (con.statusCode== WSHTTPConnection.ONEWAY || !request.expectReply) {
                 return request.createClientResponse(null);    // one way. no response given.
             }
             String contentType = con.getContentType();
