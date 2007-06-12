@@ -232,6 +232,7 @@
     <target name="clean">
         <delete dir="${build.home}"/>
         <delete dir="${dist.home}"/>
+        <delete dir="${basedir}/j2se-integration"/>
         <ant dir="${basedir}/rt" target="clean"/>
         <ant dir="${basedir}/rt-fi" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
