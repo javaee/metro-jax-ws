@@ -508,7 +508,7 @@ abstract class ResponseBuilder {
         public Object readResponse(Message msg, Object[] args) throws JAXBException, XMLStreamException {
             Object retVal = null;
 
-            if(parts.length>0) {
+            if (parts.length>0) {
                 XMLStreamReader reader = msg.readPayload();
                 XMLStreamReaderUtil.verifyTag(reader,wrapperName);
                 Object wrapperBean = wrapper.unmarshal(reader, (msg.getAttachments() != null) ?
@@ -532,6 +532,8 @@ abstract class ResponseBuilder {
                 // we are done with the body
                 reader.close();
                 XMLStreamReaderFactory.recycle(reader);
+            } else {
+                msg.consume();
             }
 
             return retVal;

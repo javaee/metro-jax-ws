@@ -500,30 +500,27 @@ abstract class EndpointArgumentsBuilder {
         }
 
         public void readRequest(Message msg, Object[] args) throws JAXBException, XMLStreamException {
-            Object retVal = null;
 
-            XMLStreamReader reader = msg.readPayload();
-            Object wrapperBean = wrapper.unmarshal(reader, (msg.getAttachments() != null) ?
-                    new AttachmentUnmarshallerImpl(msg.getAttachments()): null);
+            if (parts.length>0) {
+                XMLStreamReader reader = msg.readPayload();
+                Object wrapperBean = wrapper.unmarshal(reader, (msg.getAttachments() != null) ?
+                        new AttachmentUnmarshallerImpl(msg.getAttachments()): null);
 
-            try {
-                for (PartBuilder part : parts) {
-                    Object o = part.readResponse(args,wrapperBean);
-                    // there's only at most one EndpointArgumentsBuilder that returns a value.
-                    // TODO: reorder parts so that the return value comes at the end.
-                    if(o!=null) {
-                        assert retVal==null;
-                        retVal = o;
+                try {
+                    for (PartBuilder part : parts) {
+                        part.readRequest(args,wrapperBean);
                     }
+                } catch (AccessorException e) {
+                    // this can happen when the set method throw a checked exception or something like that
+                    throw new WebServiceException(e);    // TODO:i18n
                 }
-            } catch (AccessorException e) {
-                // this can happen when the set method throw a checked exception or something like that
-                throw new WebServiceException(e);    // TODO:i18n
-            }
 
-            // we are done with the body
-            reader.close();
-            XMLStreamReaderFactory.recycle(reader);
+                // we are done with the body
+                reader.close();
+                XMLStreamReaderFactory.recycle(reader);
+            } else {
+                msg.consume();
+            }
         }
 
         /**
@@ -546,10 +543,9 @@ abstract class EndpointArgumentsBuilder {
                 assert accessor!=null && setter!=null;
             }
 
-            final Object readResponse( Object[] args, Object wrapperBean ) throws AccessorException {
+            final void readRequest( Object[] args, Object wrapperBean ) throws AccessorException {
                 Object obj = accessor.get(wrapperBean);
                 setter.put(obj,args);
-                return null;
             }
 
 
@@ -634,6 +630,6 @@ abstract class EndpointArgumentsBuilder {
     }
     
     private static boolean isXMLMimeType(String mimeType){
-        return (mimeType.equals("text/xml") || mimeType.equals("application/xml")) ? true : false;
+        return mimeType.equals("text/xml") || mimeType.equals("application/xml");
     }
 }
