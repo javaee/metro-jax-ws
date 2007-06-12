@@ -495,6 +495,8 @@ public abstract class Message {
      *
      * This consumes the message.
      *
+     * @return null
+     *      if there's no payload.
      * @throws JAXBException
      *      If JAXB reports an error during the processing.
      */
