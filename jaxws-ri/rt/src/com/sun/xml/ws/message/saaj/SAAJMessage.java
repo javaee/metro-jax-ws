@@ -249,7 +249,7 @@ public class SAAJMessage extends Message {
 
     public <T> T readPayloadAsJAXB(Bridge<T> bridge) throws JAXBException {
         try {
-            Node pn = sm.getSOAPBody().getFirstChild();
+            Node pn = DOMUtil.getFirstElementChild(sm.getSOAPBody());
             if (pn != null)
                 return bridge.unmarshal(pn,
                     new AttachmentUnmarshallerImpl(getAttachments()));
