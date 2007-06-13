@@ -200,10 +200,15 @@
       </zip>
     </target>
 
-    <target name="clean" depends="jax-ws.clean">
+    <target name="clean">
+        <delete dir="${build.home}"/>
+        <delete dir="${dist.home}"/>
+        <ant dir="${basedir}/rt" target="clean"/>
+        <ant dir="${basedir}/rt-fi" target="clean"/>
+        <ant dir="${basedir}/tools/wscompile" target="clean"/>
+        <ant dir="${basedir}/servlet" target="clean"/>
         <ant dir="${basedir}/transports/local" target="clean"/>
     </target>
-    
 <!-- for now, this gets everything built -->
     <target name="image" depends="tools-build">
         <ant dir="transports/local" target="dist" inheritrefs="true"/>
@@ -313,7 +318,7 @@
         </zip>
     </target>
 
-    <target name="hudson" depends="clean, dist.zip, src.zip, libs.src.zip, javadocs" />
+    <target name="hudson" depends="clean, dist.zip, src.zip, libs.src.zip, javadocs, doc-src-zip" />
 
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
@@ -606,7 +611,7 @@
 
             <!-- license files -->
             <zipfileset dir="."
-                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, build-j2se.xml, project.properties"
+                        includes="ThirdPartyLicense.txt, distributionREADME_WMforJava2.0.txt, project.properties"
                         prefix="${source.dist.dir.name}"/>
         </zip>        
     </target>
