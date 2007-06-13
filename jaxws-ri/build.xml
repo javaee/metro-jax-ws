@@ -189,6 +189,16 @@
       <property key="IMPL_VERSION_SUFFIX" value="${release.impl.version.suffix}"/>
       </htmlmacro>
     </target>
+    
+    <target name="doc-src-zip">
+      <!--
+        Create a zip file for release notes source files,
+        so that it can be used as a basis of the Metro release notes.
+      -->
+      <zip file="build/release-notes-src.zip">
+        <fileset dir="docs" includes="*" />
+      </zip>
+    </target>
 
     <target name="clean" depends="jax-ws.clean">
         <ant dir="${basedir}/transports/local" target="clean"/>
