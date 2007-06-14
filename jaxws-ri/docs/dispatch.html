@@ -27,7 +27,7 @@ Service service = Service.createService(URL wsdlLocation, QName serviceQName);
   <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service has an <code>addPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch&lt;T&gt;</code> instances.</p>
   <p>If the <code>Service</code> has been created with WSDL binding information the the port need not be added as the <code>Dispatch&lt;T&gt;</code> instance will be created specific for the binding information provided in the supplied WSDL file.</p>
 
-  <p>Developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint address parameters of this method. The JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} implementation supports three <code>Binding</code> URI's, that of the SOAP 1.1, the SOAP 1.2 and XML/HTTP Binding. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents. For the XML/HTTP binding please see chapter 11 of the JAX-WS 2.0 PFD Specification.</p>
+  <p>Developers who have used web service applications in the past are familiar with the port <code>QName</code> and endpoint address parameters of this method. ${PRODUCT_NAME} supports three <code>Binding</code> URI's, that of the SOAP 1.1, the SOAP 1.2 and XML/HTTP Binding. For more information on SOAP 1.2 support please refer to the SOAP 1.2 documents. For the XML/HTTP binding please see chapter 11 of the JAX-WS 2.0 PFD Specification.</p>
 
   <p>The addition of the SOAP 1.1 port using the <code>Service</code> API is shown here:</p>
   <pre>

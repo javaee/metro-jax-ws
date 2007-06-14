@@ -6,7 +6,7 @@
 <body><content>
 <section title="Overview">
 <p>
-JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX}&nbsp; is a Web Services framework 
+${PRODUCT_NAME} is a Web Services framework 
 that provides tools and infrastructure to develop Web Services solutions for the 
 end users and middleware developers. </p>
 </section>
@@ -102,7 +102,7 @@ end users and middleware developers. </p>
 				<a href="https://jax-ws-architecture-document.dev.java.net/nonav/doc21/index.html?com/sun/xml/ws/api/server/package-summary.html">
 				Hosting API</a> </font>
 			<ul>
-				<li>These APIs can be used b<font size="3">y a J2EE application server to integrate JAX-WS 2.1 RI for hosting JAX-WS 
+				<li>These APIs can be used b<font size="3">y a J2EE application server to integrate ${PRODUCT_NAME} for hosting JAX-WS 
 				services</font></li>
 			</ul>
 				</li>
@@ -139,7 +139,7 @@ for WS-Metadata, WS-Policy, WS-ReliableMessaging, WS-Transaction, WS-SecureConve
 and WS-Security.</p>
 <p>
 If you
-wish to use JAX-WS&nbsp; ${IMPL_VERSION}&nbsp; ${IMPL_VERSION_SUFFIX}&nbsp; RI in a Java EE container in a Java EE portable manner you need to use the
+wish to use ${PRODUCT_NAME} in a Java EE container in a Java EE portable manner you need to use the
 standard Java EE 5 deployment descriptor; please refer to the
 <a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a>
 documentation/samples. The majority of the documentation included with JAX-WS is
@@ -149,7 +149,7 @@ valid with Java EE 5 as well.
 
 <section title="Online Documentation">
 
-<p>The documentation for JAX-WS&nbsp; ${IMPL_VERSION}&nbsp; ${IMPL_VERSION_SUFFIX}&nbsp; as well as the sample applications
+<p>The documentation for ${PRODUCT_NAME} as well as the sample applications
     will be periodically updated in the JAX-WS
 <a href="https://jax-ws.dev.java.net">project</a>.</p>
 
@@ -183,11 +183,11 @@ valid with Java EE 5 as well.
 <p>The following applies to the JAX-WS standalone bundles.</p>
 
 <ul>
-	<li>Extract JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} bundle </li>
+	<li>Extract ${PRODUCT_NAME} bundle </li>
 	<li>Install on Glassfish v2<ul>
-	<li>Glassfish v2 Beta2 Candidate2 has JAX-WS RI integrated and is pretty 
-	close to JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} so you do not need to 
-	do anything. If you still want to use the JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} 
+	<li>Glassfish v2 Beta2 Candidate2 has ${PRODUCT_NAME} integrated and is pretty 
+	close to ${PRODUCT_NAME} so you do not need to 
+	do anything. If you still want to use the ${PRODUCT_NAME} 
 	overriding the one with Glassfish v2 follow the instructions for installing 
 	it on top of Sun One Application Server 9.0 Update 2</li>
 </ul>
@@ -210,13 +210,12 @@ valid with Java EE 5 as well.
 
 <p>If you intend to only invoke an already existing Web service, then
     alternatively you can use the <code>wsimport</code> and <code>wsgen</code>
-    scripts in the <code>bin</code> directory of the JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} bundle.</p>
+    scripts in the <code>bin</code> directory of the ${PRODUCT_NAME} bundle.</p>
     
 </section>
 
 <section title="Running on top of JDK 6">
-<p>JDK 6 includes JAXWS 2.0 and JAXB 2.0 API and RI. JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX}&nbsp; includes newer and enhanced APIs of JAXWS/JAXB 2.0. In order to run JAX-WS ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX} 
-you would need to put jaxws-api.jar, jaxb-api.jar, jsr173_api.jar and 
+<p>JDK 6 includes JAXWS 2.0 and JAXB 2.0 API and RI. ${PRODUCT_NAME} includes newer and enhanced APIs of JAXWS/JAXB 2.0. In order to run ${PRODUCT_NAME} you would need to put jaxws-api.jar, jaxb-api.jar, jsr173_api.jar and 
 saaj-api.jar.</p>
 <ul>
 	<li>Copy $JAXWS_HOME/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
@@ -282,7 +281,7 @@ extracted JAXWS RI bundle. JDK6_HOME points to JDK 6 installation directory.</p>
         implementations of JAX-WS, it may be necessary to modify your customization files
         to reflect different WSDL and schema file names.</li>
 	<li>
-        This holds true for different releases of the JAX-WS RI. The JAX-WS RI may in
+        This holds true for different releases of the ${PRODUCT_SHORT_NAME}. The ${PRODUCT_SHORT_NAME} may in
         each release change these file names to resolve bugs. If and when this does occur,
         a developer would need to change the filenames in their customization files to match
         the new file names.

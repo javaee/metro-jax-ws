@@ -1,5 +1,5 @@
 <html>
-<head caption="Stateful Web Service with JAX-WS RI">
+<head caption="Stateful Web Service with ${PRODUCT_SHORT_NAME}">
 	<link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
 
@@ -7,11 +7,11 @@
 
 <section title="Introduction">
 	<p>
-		The JAX-WS RI has a vendor extension that allows developers to bring back object state to the web service world. Normally, the JAX-WS RI only creates one instance of a service class, and have it serve all incoming requests concurrently. This makes it essentially impossible to use instance fields of the service class for any meaningful purpose.
+		${PRODUCT_SHORT_NAME} has a vendor extension that allows developers to bring back object state to the web service world. Normally, ${PRODUCT_SHORT_NAME} only creates one instance of a service class, and have it serve all incoming requests concurrently. This makes it essentially impossible to use instance fields of the service class for any meaningful purpose.
 	</p><p>
 		Because of this, people end up coding like C, in anti-OO fashion. Either that or you end up with writing boiler-plate code to dispatch a request to the right instance of your real domain object.
 	</p><p>
-		The stateful web service support in the JAX-WS RI resolves this problem by having the JAX-WS RI maintain multiple instances of a service. By using <a href="wsaddressing.html">WS-Addressing</a> behind the scene, it provides a standard-based on-the-wire protocol and easy-to-use programming model.
+		The stateful web service support in ${PRODUCT_SHORT_NAME} resolves this problem by having ${PRODUCT_SHORT_NAME} maintain multiple instances of a service. By using <a href="wsaddressing.html">WS-Addressing</a> behind the scene, it provides a standard-based on-the-wire protocol and easy-to-use programming model.
 	</p>
 </section>
 <section title="Usage">
@@ -55,7 +55,7 @@ in the above example.)
 <p>
 Each instance of a stateful web service class is identified by an unique
 EndpointReference. Your application creates an instance of
-a class, then you'll have the JAX-WS RI assign this unique EPR for the
+a class, then you'll have ${PRODUCT_SHORT_NAME} assign this unique EPR for the
 instance as follows:
 
 <pre>
@@ -73,7 +73,7 @@ class Bank { // this is ordinary stateless service
 
 <p>
 Typically you then pass this EPR to remote systems. When they send
-messages to this EPR, the JAX-WS RI makes sure that the particular exported
+messages to this EPR, ${PRODUCT_SHORT_NAME} makes sure that the particular exported
 instance associated with that EPR will receive a service invocation.
 
 </section>

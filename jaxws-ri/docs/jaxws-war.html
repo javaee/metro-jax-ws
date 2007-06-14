@@ -13,7 +13,7 @@ generated artifacts from <code>wsimport, </code><code>wsgen, or </code><code>apt
 tools.</p>
 <p>For example, a sample WAR file starting from a WSDL file:<br>
 </p>
-<pre>WEB-INF/classes/hello/HelloIF.class          SEI<br>WEB-INF/classes/hello/HelloImpl.class        Endpoint<br>WEB-INF/sun-jaxws.xml                        JAX-WS RI deployment descriptor<br>WEB-INF/web.xml                              Web deployment descriptor<br>WEB-INF/wsdl/HelloService.wsdl               WSDL<br>WEB-INF/wsdl/schema.xsd                      WSDL imports this Schema</pre>
+<pre>WEB-INF/classes/hello/HelloIF.class          SEI<br>WEB-INF/classes/hello/HelloImpl.class        Endpoint<br>WEB-INF/sun-jaxws.xml                        ${PRODUCT_SHORT_NAME} deployment descriptor<br>WEB-INF/web.xml                              Web deployment descriptor<br>WEB-INF/wsdl/HelloService.wsdl               WSDL<br>WEB-INF/wsdl/schema.xsd                      WSDL imports this Schema</pre>
 <h4><a name="The_sun-jaxws.xml_File"></a>The <code>sun-jaxws.xml</code>
 File</h4>
 <p>The <code>&lt;endpoints&gt;</code> element contain one or more <code>&lt;endpoint&gt;</code>
@@ -136,7 +136,7 @@ true or false. Default is false.<br>
 <h4>The<span style="font-family: monospace;"> </span><code>web.xml</code>
 File</h4>
 <p>The following shows a <code>web.xml</code> file for a simple <code>HelloWorld</code>
-service. It specifies JAX-WS RI specific listener, servlet classes.
+service. It specifies ${PRODUCT_SHORT_NAME} specific listener, servlet classes.
 These classes are
 com.sun.ws.transport.http.servlet.WSServletContextListener, and
 com.sun.xml.ws.transport.http.servlet.WSServlet is servlet<br>
