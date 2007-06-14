@@ -196,7 +196,7 @@ valid with Java EE 5 as well.
 	<li>Install on Sun One Application Server 9.0 Update 2<ul>
 		<li>Set AS_HOME to the installation directory of Glassfish</li>
 		<li>cd to the root directory of the extracted JAXWS RI bundle</li>
-		<li>Set JAXWS_HOME to the root directory of the extracted JAXWS RI bundle</li>
+		<li>Set ${HOME} to the root directory of the extracted JAXWS RI bundle</li>
 		<li>Invoke <code>'$ANT_HOME/bin/ant install'</code> to install JAXWS RI jar on the 
 		applciation servers - Glassfish v1/v2 or Sun One AS 9.0 UR1</li>
 	</ul>
@@ -218,18 +218,18 @@ valid with Java EE 5 as well.
 <p>JDK 6 includes JAXWS 2.0 and JAXB 2.0 API and RI. ${PRODUCT_NAME} includes newer and enhanced APIs of JAXWS/JAXB 2.0. In order to run ${PRODUCT_NAME} you would need to put jaxws-api.jar, jaxb-api.jar, jsr173_api.jar and 
 saaj-api.jar.</p>
 <ul>
-	<li>Copy $JAXWS_HOME/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	<li>Copy ${'$'+HOME}/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
 	directory </li>
-	<li>Copy $JAXWS_HOME/lib/jaxb-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	<li>Copy ${'$'+HOME}/lib/jaxb-api.jar to $JDK6_HOME/jre/lib/endorsed 
 	directory</li>
-	<li>Copy $JAXWS_HOME/lib/jsr173_api.jar to $JDK6_HOME/jre/lib/endorsed 
+	<li>Copy ${'$'+HOME}/lib/jsr173_api.jar to $JDK6_HOME/jre/lib/endorsed 
 	directory</li>
-	<li>Copy $JAXWS_HOME/lib/saaj-api.jar to $JDK6_HOME/jre/lib/endorsed 
+	<li>Copy ${'$'+HOME}/lib/saaj-api.jar to $JDK6_HOME/jre/lib/endorsed 
 	directory</li>
 </ul>
 <p>For details see
 <a href="http://java.sun.com/j2se/1.5.0/docs/guide/standards/">Endorsed 
-Directory Mechanism</a>. Above, JAXWS_HOME points to the root directory of the 
+Directory Mechanism</a>. Above, ${HOME} points to the root directory of the 
 extracted JAXWS RI bundle. JDK6_HOME points to JDK 6 installation directory.</p>
 </section>
 

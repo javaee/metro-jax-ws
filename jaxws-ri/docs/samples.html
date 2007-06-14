@@ -294,10 +294,10 @@ and on Apache Tomcat 5.x.</p>
                     point to the Application Server installation directory. </p>
 		</li>
 		<li>
-		<p style="margin-bottom: 0in;">Set <code>JAXWS_HOME</code>
+		<p style="margin-bottom: 0in;">Set <code>${HOME}</code>
                     to the JAX-WS installation directory.</p></li>
 		<li>
-		<p style="margin-bottom: 0in;">'cd $JAXWS_HOME' then invoke 'ant 
+		<p style="margin-bottom: 0in;">'cd ${'$'+HOME}' then invoke 'ant 
 		install'. This will add jaxws ${IMPL_VERSION} ${IMPL_VERSION_SUFFIX}&nbsp; jars in the classpath-prefix 
 		in domain.xml. This is required so 
 		that Glassfish picks-up JAXWS ${IMPL_VERSION}&nbsp; jar.</p></li>
@@ -391,7 +391,7 @@ and on Apache Tomcat 5.x.</p>
             dependency jars to ${CATALINA_HOME}/shared/lib.</font></p>
     </li>
     <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">Set JAXWS_HOME
+        <p style="margin-bottom: 0in;"><font color="#000000">Set ${HOME}
             to the ${PRODUCT_SHORT_NAME} installation directory.</font></p>
     </li>
     <li>

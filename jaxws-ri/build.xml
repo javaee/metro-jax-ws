@@ -190,6 +190,8 @@
         <!-- Product name so that we can switch between JAX-WS RI and Metro -->
         <property key="PRODUCT_SHORT_NAME" value="JAX-WS RI"/>
         <property key="PRODUCT_NAME" value="JAX-WS RI ${release.impl.version} ${release.impl.version.suffix}"/>
+        <!-- Used in various places to refer to installation dir -->
+        <property key="HOME" value="JAXWS_HOME" />
       </htmlmacro>
     </target>
     
