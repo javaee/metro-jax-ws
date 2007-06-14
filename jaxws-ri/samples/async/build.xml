@@ -43,7 +43,6 @@
     
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
-        <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
         <fileset dir="${lib.home}">
             <include name="*.jar"/>
             <exclude name="j2ee.jar"/>

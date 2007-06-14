@@ -41,7 +41,6 @@
     <import file="etc/deploy-targets.xml"/>
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
-        <pathelement location="${lib.sample.home}/jaxwsSampleUtils.jar"/>
         <pathelement location="etc/servlet.jar"/>
         <fileset dir="${lib.home}">
             <include name="*.jar"/>
