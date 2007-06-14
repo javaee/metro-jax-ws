@@ -85,7 +85,7 @@ import java.io.IOException;
 public class WSDLModeler extends WSDLModelerBase {
 
     //map of wsdl:operation QName to <soapenv:Body> child, as per BP it must be unique in a port
-    private final Map<QName, QName> uniqueBodyBlocks = new HashMap<QName, QName>();
+    private final Map<QName, Operation> uniqueBodyBlocks = new HashMap<QName, Operation>();
     private final QName VOID_BODYBLOCK = new QName("");
     private ClassNameCollector classNameCollector;
     private final String explicitDefaultPackage;
@@ -826,20 +826,26 @@ public class WSDLModeler extends WSDLModelerBase {
         QName body = VOID_BODYBLOCK;
         QName opName = null;
 
+        Operation thatOp;
         if (bb.hasNext()) {
             body = bb.next().getName();
-            opName = uniqueBodyBlocks.get(body);
+            thatOp = uniqueBodyBlocks.get(body);
         } else {
             //there is no body block
             body = VOID_BODYBLOCK;
-            opName = uniqueBodyBlocks.get(VOID_BODYBLOCK);
-        }
-        if (opName != null) {
-            error(info.port, ModelerMessages.WSDLMODELER_NON_UNIQUE_BODY(info.port.getName(), info.operation.getName(), opName, body));
-        } else {
-            uniqueBodyBlocks.put(body, info.operation.getName());
+            thatOp = uniqueBodyBlocks.get(VOID_BODYBLOCK);
         }
 
+        if(thatOp != null){
+            if(options.isExtensionMode()){
+                warning(info.port, ModelerMessages.WSDLMODELER_NON_UNIQUE_BODY_WARNING(info.port.getName(), info.operation.getName(), thatOp.getName(), body));
+            }else{
+                error(info.port, ModelerMessages.WSDLMODELER_NON_UNIQUE_BODY_ERROR(info.port.getName(), info.operation.getName(), thatOp.getName(), body));
+            }
+        }else{
+            uniqueBodyBlocks.put(body, info.operation);
+        }
+        
         // faults with duplicate names
         Set duplicateNames = getDuplicateFaultNames();
 
@@ -2733,7 +2739,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
     private void reportError(Entity entity,
         String formattedMsg, Exception nestedException ) {
-        Locator locator = (entity == null)?NULL_LOCATOR:entity.getLocator();
+        Locator locator = (entity == null)?null:entity.getLocator();
 
         SAXParseException e = new SAXParseException2( formattedMsg,
             locator,

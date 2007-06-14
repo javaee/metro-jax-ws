@@ -720,14 +720,14 @@ public abstract class WSDLModelerBase implements Modeler {
         if(numPasses > 1)
             return;
         if(entity == null)
-            errReceiver.warning(NULL_LOCATOR, message);
+            errReceiver.warning(null, message);
         else
             errReceiver.warning(entity.getLocator(), message);
     }
 
     protected void error(Entity entity, String message){
         if(entity == null)
-            errReceiver.error(NULL_LOCATOR, message);
+            errReceiver.error(null, message);
         else
             errReceiver.error(entity.getLocator(), message);
         throw new AbortException();
