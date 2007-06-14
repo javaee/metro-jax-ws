@@ -236,6 +236,7 @@ public final class StreamMessage extends AbstractMessageImpl {
     @Override
     public void consume() {
         assert unconsumed();
+        XMLStreamReaderUtil.close(reader);
         XMLStreamReaderFactory.recycle(reader);
     }
 
