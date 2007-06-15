@@ -43,10 +43,14 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.util.QNameMap;
+import com.sun.xml.ws.resources.ServerMessages;
 
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * An {@link com.sun.xml.ws.server.sei.EndpointMethodDispatcher} that uses
@@ -61,6 +65,8 @@ import java.util.Map;
  * @author Jitendra Kotamraju
  */
 final class PayloadQNameBasedDispatcher implements EndpointMethodDispatcher {
+    private static final Logger LOGGER = Logger.getLogger(PayloadQNameBasedDispatcher.class.getName());
+
     private final QNameMap<EndpointMethodHandler> methodHandlers;
     private static final String EMPTY_PAYLOAD_LOCAL = "";
     private static final String EMPTY_PAYLOAD_NSURI = "";
@@ -68,16 +74,23 @@ final class PayloadQNameBasedDispatcher implements EndpointMethodDispatcher {
 
     public PayloadQNameBasedDispatcher(AbstractSEIModelImpl model, WSBinding binding, SEIInvokerTube invokerTube) {
         // Find if any payload QNames repeat for operations
-        Map<QName, Integer> unique = new HashMap<QName, Integer>();
+        Map<QName, List<String>> unique = new HashMap<QName, List<String>>();
         for(JavaMethodImpl m : model.getJavaMethods()) {
             QName name = m.getRequestPayloadName();
             if (name == null)
                 name = EMPTY_PAYLOAD;
-            Integer count = unique.get(name);
-            if (count == null) {
-                unique.put(name, 1);
-            } else {
-                unique.put(name, ++count);
+            List<String> methods = unique.get(name);
+            if (methods == null) {
+                methods = new ArrayList<String>();
+                unique.put(name, methods);
+            }
+            methods.add(m.getMethod().getName());
+        }
+
+        // Log warnings about non unique payload QNames
+        for(Map.Entry<QName, List<String>> e : unique.entrySet()) {
+            if (e.getValue().size() > 1) {
+                LOGGER.warning(ServerMessages.NON_UNIQUE_DISPATCH_QNAME(e.getValue(), e.getKey()));
             }
         }
 
@@ -88,7 +101,7 @@ final class PayloadQNameBasedDispatcher implements EndpointMethodDispatcher {
                 name = EMPTY_PAYLOAD;
             // Set up method handlers only for unique QNames. So that dispatching
             // happens consistently for a method
-            if (unique.get(name) == 1) {
+            if (unique.get(name).size() == 1) {
                 methodHandlers.put(name, new EndpointMethodHandler(invokerTube,m,binding));
             }
         }
