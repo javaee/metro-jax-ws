@@ -42,11 +42,11 @@
   </banner>
   <!-- this portion is excuted as the footer -->
   <footer>
-    $Revision: 1.4 $<br/>      $Date: 2007-05-30 00:58:17 $<br/>
+    $Revision: 1.5 $<br/>      $Date: 2007-06-15 00:17:07 $<br/>
     <a href="Copyright.html">Copyright&#169; 2006 Sun Microsystems, Inc. All rights reserved.</a>
   </footer>
     
-  <chapter name="JAXWS 2.1">
+  <chapter name="JAX-WS RI 2.1.2 M1">
     <document name="Overview"
               url="index.html"/>
     <document name="Release Notes"

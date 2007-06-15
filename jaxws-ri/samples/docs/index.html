@@ -1,426 +1,414 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-  <title>JAX-WS 2.1 FCS -- Samples Documentation</title>
+  <title>JAX-WS 2.1.2 M1 -- Samples Documentation</title>
   <link rel="stylesheet" type="text/css" href="style/default.css"/>
 </head>
 
 <body>
 
 <h2 style="text-align: left"><font color="#000000">Samples</font></h2>
-<p>This document explains the samples that are bundled along with
-    the JAX-WS 2.1 FCS RI.</p>
+<p>This document explains the samples that are bundled along with JAX-WS RI 2.1.2 M1. The samples included with JAX-WS RIthat is distributed on Java.net documents how to use JAX-WS RIin a non-Java EE 5 servlet container using a proprietary deployment descriptor
+    <code>sun-jaxws.xml</code> and servlet
+    <code>com.sun.xml.ws.transport.http.servlet.WSServlet</code>. This means that you can these JAX-WS RIapplications in any servlet container that has been enabled with JAX-WS RI. Applications that use the proprietary DD and servlet will run in a JAX-WS RIenabled Java EE 5 servlet container, but they will be non-portable. If you wish to use these JAX-WS RIsamples in a Java EE container in a Java EE portable manner you need to modify them to use the standard Java EE 5 deployment descriptor; please refer to the
+    <a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or
+    <a href="https://glassfish.dev.java.net/">Glassfish</a> documentation/samples.
+    <p>All these samples are tested to run on
+      <a href="https://glassfish.dev.java.net/downloads/v2-b50.html">Glassfish Promoted Build v2 50</a> build and on Apache Tomcat 5.x.
 
-The samples included with JAX-WS that is distributed on Java.net documents how to use JAX-WS in a non-Java EE 5 servlet container using a
-proprietary deployment descriptor <code>sun-jaxws.xml</code> and servlet
-<code>com.sun.xml.ws.transport.http.servlet.WSServlet</code>.
-This means that you can these JAX-WS RI applications in any servlet container that has been
-enabled with the JAX-WS RI. Applications that use the proprietary DD and servlet
-will run in a JAX-WS RI enabled Java EE 5 servlet container, but
-they will be non-portable. If you
-wish to use these JAX-WS samples in a Java EE container in a Java EE portable manner you need to
-modify them to use the
-standard Java EE 5 deployment descriptor; please refer to the
-<a href="http://java.sun.com/javaee/index.jsp">Java EE 5</a> or <a href="https://glassfish.dev.java.net/">Glassfish</a>
-documentation/samples.
+    <h2>
+      <a name="1.0"></a>
+      <font color="#280099">1.0 Directory Structure</font>
+    </h2>
+    <p>This section explains the directory structure of the
+      <code>samples</code> directory in the bundle:
 
-<p>All these samples are tested to run on 
-		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
-Promoted Build v2 41a (Beta 2 Candidate 2)</a> build 
-and on Apache Tomcat 5.x.</p>
+    <table border="0" width="100%" cellspacing="0" cellpadding="2">
+      <tbody>
+        <tr valign="top">
+          <td width="15%">
+            <p>docs
+          </td>
+          <td width="85%">
+            <p>index.html, this file
+          </td>
+        </tr>
+        <tr>
+          <td>fromjava-wsaddressing</td>
+          <td>Starting from Java endpoint how to develop W3C WS-Addressing endpoint</td>
+        </tr>
+        <tr>
+          <td>fromwsdl-wsaddressing</td>
+          <td>Starting from WSDL how to develop a WS-Addressing endpoint</td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>fromjava
+          </td>
+          <td>
+            <p>Demonstrates how to build, deploy, and invoke a simple Web service starting from a Java service endpoint implementation using annotations.
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>fromjavahandler
+          </td>
+          <td>
+            <p>Same as
+              <b>fromjava</b> sample but with a simple logging handler on the client and server.
 
-<h2 style="text-align: left"><a name="1.0"></a><font color="#000000">1.0 Directory Structure</font></h2>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>fromwsdl
+          </td>
+          <td>
+            <p>Demonstrates how to build, deploy, and invoke a simple Web service starting from a WSDL using external customizations.
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>fromwsdl_secure
+          </td>
+          <td>
+            <p>Same as
+              <b>fromwsdl</b> sample but demonstrates how to build, deploy, and invoke an HTTPS Web service and client from a WSDL.
 
-<p>This section explains the directory structure of the <code>samples</code>
-    directory in the bundle:</p>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-<tbody>
-<tr valign="top">
-    <td width="15%">
-        <p>docs</p>
-    </td>
-    <td width="85%">
-        <p>index.html, this file</p>
-    </td>
-</tr>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>fromwsdlhandler
+          </td>
+          <td>
+            <p>Same as
+              <b>fromwsdl</b> sample but with a simple logging handler on the client and server.
 
-<tr>
-    <td>
-        fromjava-wsaddressing</td>
-    <td>
-        Starting from Java endpoint how to develop W3C WS-Addressing endpoint</td>
-</tr>
-<tr>
-    <td>
-        fromwsdl-wsaddressing</td>
-    <td>
-        Starting from WSDL how to develop a WS-Addressing endpoint</td>
-</tr>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>dispatch
+          </td>
+          <td>
+            <p>Demonstrates how to dynamically invoke web service endpoints.
+          </td>
+        </tr>
+        <tr>
+          <td>provider</td>
+          <td>Demonstrates how to build, deploy, and invoke
+            <code>javax.xml.ws.Provider</code> based Web service endpoint.
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>asyncprovider
+          </td>
+          <td>
+            <p>Demonstrates how to build, deploy, and invoke
+              <code>a server side asynchronous Provider</code> based Web service endpoint.
 
-<tr valign="top">
-    <td>
-        <p>fromjava</p>
-    </td>
-    <td>
-        <p>Demonstrates how to build, deploy, and invoke a simple Web
-            service starting from a Java service endpoint implementation using
-            annotations.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>fromjavahandler </p>
-    </td>
-    <td>
-        <p>Same as <b>fromjava</b> sample but with a simple logging
-            handler on the client and server.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>fromwsdl</p>
-    </td>
-    <td>
-        <p>Demonstrates how to build, deploy, and invoke a simple Web
-            service starting from a WSDL using external customizations.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>fromwsdl_secure</p>
-    </td>
-    <td>
-        <p>Same as <b>fromwsdl</b> sample but demonstrates how to build, deploy, and invoke an HTTPS Web
-            service and client from a WSDL.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>fromwsdlhandler </p>
-    </td>
-    <td>
-        <p>Same as <b>fromwsdl</b> sample but with a simple logging
-            handler on the client and server.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>dispatch</p>
-    </td>
-    <td>
-        <p>Demonstrates how to dynamically invoke web service endpoints.</p>
-    </td>
-</tr>
-<tr>
-    <td>
-        provider</td>
-    <td>
-        Demonstrates how to build, deploy, and invoke <code>javax.xml.ws.Provider</code>
-            based Web service endpoint.</td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>asyncprovider</p>
-    </td>
-    <td>
-        <p>Demonstrates how to build, deploy, and invoke <code>a server side 
-		asynchronous Provider</code>
-            based Web service endpoint.</p>
-    </td>
-</tr>
-<tr valign="top">
-    <td>
-        <p>annotations</p>
-    </td>
-    <td>
-        <p>Same as <b>fromjava</b> but shows how to specify a different
-            parameter name, operation name, targetNamespace, and other similar
-            features.</p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>async </p>
-    </td>
-    <td>
-        <p>Demonstrates how to generate async operations in a client SEI
-            from a WSDL and invoke it from the client application. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>external-customize </p>
-    </td>
-    <td>
-        <p>Demonstrates how a client client application can customize a
-            published WSDL using external binding file. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>inline-customize </p>
-    </td>
-    <td>
-        <p>Demonstrates how a client application and server endpoint can
-            be generated from a WSDL with embedded binding declarations. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>mtom </p>
-    </td>
-    <td>
-        <p>Demonstrates how to enable MTOM and swaRef. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>mtom-soap12 </p>
-    </td>
-    <td>
-        <p>Same as <b>mtom</b> sample but shows how to specify SOAP 1.2
-            binding. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>fromjava-soap12 </p>
-    </td>
-    <td>
-        <p>Same as <b>fromjava</b> sample but shows how to specify SOAP
-            1.2 binding. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>fromwsdl-soap12 </p>
-    </td>
-    <td>
-        <p>Same as <b>fromwsdl</b> sample but shows how to specify SOAP
-            1.2 binding. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>supplychain </p>
-    </td>
-    <td>
-        <p>Same as <b>fromjava</b> sample but using JavaBeans as
-            parameter and return types.<br>
-            Also the service can be built and deployed using Endpoint API.</p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>mime </p>
-    </td>
-    <td>
-        <p>Demonstrates how a MIME binding is defined in the WSDL to send
-            wsdl:part as MIME attachments. This requires that the development model
-            is 'starting from WSDL'. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>wsimport_catalog </p>
-    </td>
-    <td>
-        <p>Demonstrates a how a WSDL and schema URI's can be resolved
-            using catalog mechanism using wsimport ant tasks' catalog attribute and
-            also using ant's core type xmlcatalog. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>catalog </p>
-    </td>
-    <td>
-        <p>Shows the catalog capability on the client side; Catalog is
-            used every time the implementation tries to access a resource
-            identified by URI that is believed to contain either a WSDL document or
-            any other document on which it depends . </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        <p>restful </p>
-    </td>
-    <td>
-        <p>Shows an example of a REST Web Service implemented as a JAX-WS
-            2.0 Provider and accessed via a JAX-WS Dispatch client. The Request
-            uses an HTTP GET Request Method and uses the JAX-WS MessageContext
-            properties PATH_INFO and QUERY_STRING. </p>
-    </td>
-</tr>
-<tr>
-    <td>
-        stateful</td>
-    <td>
-        This sample shows the JAX-WS RI's stateful webservice support feature.</td>
-</tr>
-</tbody>
-</table>
-<h2 style="text-align: left"><a name="2.0"></a><font color="#000000">2.0 Prerequisites</font></h2>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td>
+            <p>annotations
+          </td>
+          <td>
+            <p>Same as
+              <b>fromjava</b> but shows how to specify a different parameter name, operation name, targetNamespace, and other similar features.
 
-<p>Here is the list of prerequisites that needs to be met before any
-    of the samples can be invoked:</p>
-<ol>
-    <li>
-        <p style="margin-bottom: 0in;">Download Java 2 Standard Edition 5.0 
-		Update 2 or later (<a href="http://java.sun.com/javase/downloads/index.jsp">J2SE 
-		5.0</a>).
-            Set <code>JAVA_HOME</code> to the J2SE 5.0 installation directory. </p>
-    </li>
-    <li>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>async
+          </td>
+          <td>
+            <p>Demonstrates how to generate async operations in a client SEI from a WSDL and invoke it from the client application.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>external-customize
+          </td>
+          <td>
+            <p>Demonstrates how a client client application can customize a published WSDL using external binding file.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>inline-customize
+          </td>
+          <td>
+            <p>Demonstrates how a client application and server endpoint can be generated from a WSDL with embedded binding declarations.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>mtom
+          </td>
+          <td>
+            <p>Demonstrates how to enable MTOM and swaRef.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>mtom-soap12
+          </td>
+          <td>
+            <p>Same as
+              <b>mtom</b> sample but shows how to specify SOAP 1.2 binding.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>fromjava-soap12
+          </td>
+          <td>
+            <p>Same as
+              <b>fromjava</b> sample but shows how to specify SOAP 1.2 binding.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>fromwsdl-soap12
+          </td>
+          <td>
+            <p>Same as
+              <b>fromwsdl</b> sample but shows how to specify SOAP 1.2 binding.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>supplychain
+          </td>
+          <td>
+            <p>Same as
+              <b>fromjava</b> sample but using JavaBeans as parameter and return types.
+              <br> Also the service can be built and deployed using Endpoint API.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>mime
+          </td>
+          <td>
+            <p>Demonstrates how a MIME binding is defined in the WSDL to send wsdl:part as MIME attachments. This requires that the development model is 'starting from WSDL'.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>wsimport_catalog
+          </td>
+          <td>
+            <p>Demonstrates a how a WSDL and schema URI's can be resolved using catalog mechanism using wsimport ant tasks' catalog attribute and also using ant's core type xmlcatalog.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>catalog
+          </td>
+          <td>
+            <p>Shows the catalog capability on the client side; Catalog is used every time the implementation tries to access a resource identified by URI that is believed to contain either a WSDL document or any other document on which it depends .
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>restful
+          </td>
+          <td>
+            <p>Shows an example of a REST Web Service implemented as a JAX-WS 2.0 Provider and accessed via a JAX-WS Dispatch client. The Request uses an HTTP GET Request Method and uses the JAX-WS MessageContext properties PATH_INFO and QUERY_STRING.
+          </td>
+        </tr>
+        <tr>
+          <td>stateful</td>
+          <td>This sample shows the JAX-WS RI's stateful webservice support feature.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>
+      <a name="2.0"></a>
+      <font color="#280099">2.0 Prerequisites</font>
+    </h2>
+    <p>Here is the list of prerequisites that needs to be met before any of the samples can be invoked:
+    <ol>
+      <li>
+        <p style="margin-bottom: 0in;">Download Java 2 Standard Edition 5.0 Update 2 or later (
+          <a href="http://java.sun.com/javase/downloads/index.jsp">J2SE 5.0</a>). Set
+          <code>JAVA_HOME</code> to the J2SE 5.0 installation directory.
+
+      </li>
+      <li>
         <p style="margin-bottom: 0in;">Download
-		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
-		Promoted Build v2 41a (Beta 2 Candidate 2)</a> and install it.</p>
-    </li>
-    <li>
-	<p style="margin-bottom: 0in;">Make sure that the Application Server is configured for port 8080 
-	(which is the default HTTP port for Glassfish installation) as samples
-            hardcoded with this port info. Otherwise, you need to change samples to use the correct port.
-	</p></li>
-	<li>
-	<p style="margin-bottom: 0in;">
-	<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
-	Promoted Build v2 41a (Beta 2 Candidate 2)</a> 
-	integrates JAXWS ${IMPL_VERSION} RI. The bits in Glassfish v2 is pretty 
-	close to JAXWS 2.1.1 RC1 RI so you may just start using it and skip 
-	step 5 below unless you want to use the latest JAXWS RI. 
-	</p></li>
-	<li>
-	<p style="margin-bottom: 0in;">If you have installed a standalone
-            JAX-WS bundle, </p>
-	<ol type="a">
-		<li>
-		<p style="margin-bottom: 0in;">Set <code>AS_HOME</code> to
-                    point to the Application Server installation directory. </p>
-		</li>
-		<li>
-		<p style="margin-bottom: 0in;">Set <code>JAXWS_HOME</code>
-                    to the JAX-WS installation directory.</p></li>
-		<li>
-		<p style="margin-bottom: 0in;">'cd $JAXWS_HOME' then invoke 'ant 
-		install'. This will add jaxws 2.1.1 RC1 jars in the classpath-prefix in domain.xml. This is required so 
-		that Glassfish picks-up JAXWS 2.1.1 RC1 jar.</p></li>
-	</ol></li>
-</ol>
+          <a href="https://glassfish.dev.java.net/downloads/v2-b50.html">Glassfish Promoted Build v2 50</a> and install it.
 
-<h2 style="text-align: left"><a name="3.0"></a><font color="#000000">3.0 Invoking the sample</font></h2>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">Make sure that the Application Server is configured for port 8080 (which is the default HTTP port for Glassfish installation) as samples hardcoded with this port info. Otherwise, you need to change samples to use the correct port.
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <a href="https://glassfish.dev.java.net/downloads/v2-b50.html">Glassfish Promoted Build v2 50</a> integrates JAX-WS RI 2.1.2 M1. So you may just start using it and skip step 5 below unless you want to use the latest JAX-WS RI 2.1.2 M1.
 
-<p>Each sample can be built, deployed and invoked using the
-    <code>ANT_HOME/bin/ant</code> and <code>build.xml</code> ant script
-    in the root directory of the sample. Each ant script supports the
-    following set of targets:</p>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-    <tbody>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">If you have installed a standalone JAX-WS RIbundle,
+        <ol type="a">
+          <li>
+            <p style="margin-bottom: 0in;">Set
+              <code>AS_HOME</code> to point to the Application Server installation directory.
+
+          </li>
+          <li>
+            <p style="margin-bottom: 0in;">Set
+              <code>JAXWS_HOME</code> to the JAX-WS installation directory.
+
+          </li>
+          <li>
+            <p style="margin-bottom: 0in;">'cd JAXWS_HOME' then invoke 'ant install'. This will add jaxws 2.1.2 M1&#160; jars in the classpath-prefix in domain.xml. This is required so that Glassfish picks-up JAXWS 2.1.2&#160; jar.
+          </li>
+        </ol>
+      </li>
+    </ol>
+    <h2>
+      <a name="3.0"></a>
+      <font color="#280099">3.0 Invoking the sample</font>
+    </h2>
+    <p>Each sample can be built, deployed and invoked using the
+      <code>ANT_HOME/bin/ant</code> and
+      <code>build.xml</code> ant script in the root directory of the sample. Each ant script supports the following set of targets:
+
+    <table border="0" width="100%" cellspacing="0" cellpadding="2">
+      <tbody>
         <tr>
-            <td width="15%">
-                <p><b>server</b></p>
-            </td>
-            <td width="85%">
-                <p><b>Builds and deploy the service endpoint WAR</b></p>
-            </td>
+          <td width="15%">
+            <p>
+              <b>server</b>
+
+          </td>
+          <td width="85%">
+            <p>
+              <b>Builds and deploy the service endpoint WAR</b>
+
+          </td>
         </tr>
         <tr>
-            <td>
-                <p><b>client</b></p>
-            </td>
-            <td>
-                <p><b>Builds the client</b></p>
-            </td>
+          <td>
+            <p>
+              <b>client</b>
+
+          </td>
+          <td>
+            <p>
+              <b>Builds the client</b>
+
+          </td>
         </tr>
         <tr>
-            <td>
-                <p><b>run</b></p>
-            </td>
-            <td>
-                <p><b>Runs the client</b></p>
-            </td>
+          <td>
+            <p>
+              <b>run</b>
+
+          </td>
+          <td>
+            <p>
+              <b>Runs the client</b>
+
+          </td>
         </tr>
-    </tbody>
-</table>
-<p><br>
-    Some samples(e.g. fromjava, supplychain) can be built, deployed using
-    javax.xml.ws.Endpoint API. These samples support extra targets:</p>
-<table width="100%" border="0" cellpadding="2" cellspacing="0">
-    <tbody>
+      </tbody>
+    </table>
+    <p>
+      <br> Some samples(e.g. fromjava, supplychain) can be built, deployed using javax.xml.ws.Endpoint API. These samples support extra targets:
+
+    <table border="0" width="100%" cellspacing="0" cellpadding="2">
+      <tbody>
         <tr>
-            <td width="17%">
-                <p><b>server-j2se</b></p>
-            </td>
-            <td width="82%">
-                <p><b>Builds and deploys the Endpoint API based service
-                    endpoint(doesn't terminate until server-j2se-stop is called)<br>
-                </b>
-                </p>
-            </td>
+          <td width="15%">
+            <p>
+              <b>server-j2se</b>
+
+          </td>
+          <td width="85%">
+            <p>
+              <b>Builds and deploys the Endpoint API based service endpoint(doesn't terminate until server-j2se-stop is called)
+                <br>
+              </b>
+
+          </td>
         </tr>
         <tr>
-            <td style="vertical-align: top;"><b>server-j2se-stop<br>
+          <td style="vertical-align: top;">
+            <b>server-j2se-stop
+              <br>
             </b>
-            </td>
-            <td style="vertical-align: top;"><b>Stops the Endpoint API based
-                service endpoint(need to run from a different window)<br>
+          </td>
+          <td style="vertical-align: top;">
+            <b>Stops the Endpoint API based service endpoint(need to run from a different window)
+              <br>
             </b>
-            </td>
+          </td>
         </tr>
-    </tbody>
-</table>
-<p><br>
-    It is essential for the service endpoint to be deployed on
-    Application Server before clients can be built because clients use
-    the WSDL exposed from the service endpoint deployed in the
-    Application Server. So please make sure that your Application Server
-    is either running before the <code>server</code> target is invoked or
-    run it after the <code>server</code> target is invoked. You will have
-    to wait a few minutes for the Application Server to deploy the
-    service endpoint correctly before building the client. </p>
+      </tbody>
+    </table>
+    <p>
+      <br> It is essential for the service endpoint to be deployed on Application Server before clients can be built because clients use the WSDL exposed from the service endpoint deployed in the Application Server. So please make sure that your Application Server is either running before the
+      <code>server</code> target is invoked or run it after the
+      <code>server</code> target is invoked. You will have to wait a few minutes for the Application Server to deploy the service endpoint correctly before building the client.
 
-<h3><font color="#000000"><b>Running Samples with Tomcat</b></font></h3>
-<ol>
-    <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">Set
-            CATALINA_HOME to your Tomcat installation.</font></p>
-    </li>
-    <li>
-        <p style="margin-bottom: 0in;">Make sure that tomcat is configured for port 8080 as samples hard coded with this
-            port info. Otherwise, you need to change samples to use the correct port. </p>
-    </li>
-    <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">If you have
-            installed a standalone JAX-WS bundle, Copy the JAX-WS RI jars and its
-            dependency jars to ${CATALINA_HOME}/shared/lib.</font></p>
-    </li>
-    <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">Set JAXWS_HOME
-            to the JAX-WS installation directory.</font></p>
-    </li>
-    <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">Make sure the
-            Tomcat container is up and running before running sample.</font></p>
-    </li>
-    <li>
-        <p style="margin-bottom: 0in;"><font color="#000000">While running
-            the ant targets in samples, specify “-Dtomcat=true”. For example: </font>
-        </p>
-    </li>
-</ol>
+    <p>
+      <font color="#280099">
+        <b>Running Samples with Tomcat:</b>
+      </font>
 
-<p style="margin-left: 0.79in; margin-bottom: 0in;">
-    <font color="#000000">ant clean server -Dtomcat=true, this will build
-        the service and deploy the war to ${CATALINA_HOME}/webapps.</font></p>
+    <ol>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <font color="#000000">Set CATALINA_HOME to your Tomcat installation.</font>
 
-<p style="margin-left: 0.79in; margin-bottom: 0in;">
-    <font color="#000000">ant clean client, this would
-        create client-side artifacts and compiles the files.</font></p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">Make sure that tomcat is configured for port 8080 as samples hardcoded with this port info. Otherwise, you need to change samples to use the correct port.
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <font color="#000000">If you have installed a standalone JAX-WS bundle, Copy the JAX-WS RIjars and its dependency jars to /shared/lib.</font>
 
-<p style="margin-left: 0.79in; margin-bottom: 0in;">
-    <font color="#000000">ant run</font><br>
-</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <font color="#000000">Set JAXWS_HOME to the JAX-WS RIinstallation directory.</font>
 
-<p>We appreciate your feedback, please send it to
-    <a href="mailto:users@jax-ws.dev.java.net">users@jax-ws.dev.java.net</a>.</p>
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <font color="#000000">Make sure the Tomcat container is up and running before running sample.</font>
+
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">
+          <font color="#000000">While running the ant targets in samples, specify &#8220;-Dtomcat=true&#8221;. For example:</font>
+
+      </li>
+    </ol>
+    <p style="margin-left: 0.79in; margin-bottom: 0in;">
+      <font color="#000000">ant clean server -Dtomcat=true, this will build the service and deploy the war to /webapps.</font>
+
+    <p style="margin-left: 0.79in; margin-bottom: 0in;">
+      <font color="#000000">ant clean client, this would create client-side artifacts and compiles the files.</font>
+
+    <p style="margin-left: 0.79in; margin-bottom: 0in;">
+      <font color="#000000">ant run</font>
+      <br>
+
+    <p>We appreciate your feedback, please send it to
+      <a href="mailto:users@jax-ws.dev.java.net">users@jax-ws.dev.java.net</a>.
+     
 </body>
 </html>
