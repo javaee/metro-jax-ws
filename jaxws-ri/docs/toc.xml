@@ -42,7 +42,7 @@
   </banner>
   <!-- this portion is excuted as the footer -->
   <footer>
-    $Revision: 1.5 $<br/>      $Date: 2007-06-15 00:17:07 $<br/>
+    $Revision: 1.6 $<br/>      $Date: 2007-06-15 19:20:16 $<br/>
     <a href="Copyright.html">Copyright&#169; 2006 Sun Microsystems, Inc. All rights reserved.</a>
   </footer>
     
@@ -101,7 +101,7 @@
     <document name="Apt"
               url="apt.html"/>
   </chapter>
-   <chapter name="JAXWS RI Extensions">
+   <chapter name="JAX-WS RI Extensions">
       <document name="Extensions"
                 url="ri-features.html"/>
    </chapter>
@@ -111,7 +111,7 @@
                 url="samples.html"/>
     </chapter>
 
-    <chapter name="JAXWS Community">
+    <chapter name="JAX-WS Community">
         <document name="Overview" url="community.html"/>
         <document name="Java.net Homepage" url="https://jax-ws.dev.java.net/"/>
         <document name="Mailing List" url="https://jax-ws.dev.java.net/servlets/ProjectMailingListList"/>

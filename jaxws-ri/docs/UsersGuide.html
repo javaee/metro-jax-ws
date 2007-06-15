@@ -147,8 +147,8 @@
 
 <H4><a name="2.1_JAX-WS_2.0_API">2.1 JAX-WS </a>${SPEC_VERSION}<a name="2.1_JAX-WS_2.0_API"> API</a></H4>
 
-<P>JAXWS ${SPEC_VERSION}is a Maintainence Release of JAXWS 2.0 API. JAXWS ${SPEC_VERSION}has 
-the following new features from JAXWS 2.0 specification:</P>
+<P>JAX-WS ${SPEC_VERSION} is a Maintainence Release of JAXWS 2.0 API. JAX-WS ${SPEC_VERSION} has 
+the following new features from JAX-WS 2.0 specification:</P>
 <ul>
 	<li>Support for JAXB 2.1 APIs (JSR 222)</li>
 	<li>WS-Addressing support</li>
@@ -169,9 +169,9 @@ the following new features from JAXWS 2.0 specification:</P>
 	<li>User friendly APIs to enable/disable features, such as MTOM and 
 	Addressing</li>
 </ul>
-<p>JAX-RPC users should note that JAXWS is a completely different technology 
+<p>JAX-RPC users should note that JAX-WS is a completely different technology 
 than JAX-RPC and thus cannot run JAX-RPC
-    applications on top of JAXWS. If you have an existing JAX-RPC application it must be
+    applications on top of JAX-WS. If you have an existing JAX-RPC application it must be
     converted to work with JAX-WS. </p>
 
 <H4><a name="2.2_Fully_Dynamic_Runtime_">2.2 Fully Dynamic Runtime</a></H4>
@@ -197,13 +197,13 @@ than JAX-RPC and thus cannot run JAX-RPC
 <H4>
     <a name="2.3_MTOM_&amp;_swaRef">2.3 MTOM &amp; swaRef</a></H4>
 
-<P>MTOM and swaRef support was added in JAXWS 2.0 RI FCS release. MTOM and 
-swaref support is required by the JAXWS 2.0 specification. This means that the 
-MTOM or swaref solution developed with JAXWS ${SPEC_VERSION} RI will be fully 
-portable with any JAXWS 2.0 compliant implementation.</P>
+<P>MTOM and swaRef support was added in JAX-WS 2.0 RI FCS release. MTOM and 
+swaref support is required by the JAX-WS 2.0 specification. This means that the 
+MTOM or swaref solution developed with ${PRODUCT_SHORT_NAME} will be fully 
+portable with any JAX-WS 2.0 compliant implementation.</P>
 <P>MTOM implementation was completely re-written to allow streaming attachment 
-support and just like rest of the JAXWS runtime its written for better 
-performance. This implementation was released as part of JAXWS 2.0.1 M1 release.&nbsp;
+support and just like rest of the ${PRODUCT_SHORT_NAME} runtime its written for better 
+performance. This implementation was released as part of JAX-WS 2.0.1 M1 release.
 </P>
 <P>JAX-WS ${SPEC_VERSION} brings in support for optimized transmission of
     binary data as specified by <A HREF="http://www.w3.org/TR/soap12-mtom/">MTOM</A>
@@ -270,8 +270,8 @@ Interface.</p>
 <H4><a name="2.7_WS-Addressing">2.7 WS-Addressing</a> </H4>
 <p>${PRODUCT_NAME} brings in native support for 
 WS-Addressing for both W3C and MemberSubmission specification. Applications 
-built on top of JAXWS can enable/disable WS-Addressing in JAXWS runtime using 
-JAXWS 2.1 defined standard APIs and Annotations. See WS-Addressing samples <b>
+built on top of JAX-WS can enable/disable WS-Addressing in JAX-WS runtime using 
+JAX-WS 2.1 defined standard APIs and Annotations. See WS-Addressing samples <b>
 fromjava-wsaddressing</b> and <b>fromwsdl-wsaddressing</b> with the ${PRODUCT_NAME}
 for details on the WS-Addressing programming model.</p>
 <p><b>Starting from Java class</b> </p>
@@ -344,7 +344,7 @@ shows usage of explicit wsa:Action values on the input, output and fault message
     Customizations</a></H4>
 
 <P>${PRODUCT_NAME} carries forward customization 
-support introduced in JAXWS 2.0 RI. </P>
+support introduced in JAX-WS 2.0 RI. </P>
 <UL>
     <LI>
 	<P>Define a package where Java artifacts mapped from a

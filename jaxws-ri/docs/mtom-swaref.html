@@ -11,13 +11,13 @@
 
 <div>
     1. <a href="#1._MTOM_and_XOP">MTOM and XOP</a><br/>
-    2. <a href="#2_MTOM_in_JAXWS_2.0">MTOM in JAXWS 2.0</a>
+    2. <a href="#2_MTOM_in_JAXWS_2.0">MTOM in JAX-WS 2.0</a>
 </div>
 
 <div style="margin-left:1em">
     2.1<a href="#2.1_xmmime:expectedMediaType_to_Java">xmime:expectedContentTypes to Java type mapping</a><br/>
     2.2 <a href="#2.2_xmime:contentType_schema_annotation">xmime:contentType schema annotation</a><br/>
-    2.3 <a href="#2.2_How_to_enable_MTOM_in_JAXWS_2.0">How to enable MTOM in JAXWS 2.0</a><br/>
+    2.3 <a href="#2.2_How_to_enable_MTOM_in_JAXWS_2.0">How to enable MTOM in JAX-WS 2.0</a><br/>
     2.4 <a href="#2.3_Attach_vs_In-line">Attach vs In-line</a><br>
     2.5 <a href="#2.4_MTOM_Samples">MTOM Samples</a><br/>
 </div>
@@ -27,7 +27,7 @@
 </div>
 
 <div style="margin-left:1em">
-    3.1 <a href="#3.1_swaRef_in_JAXWS_2.0">swaRef in JAXWS 2.0</a><br>
+    3.1 <a href="#3.1_swaRef_in_JAXWS_2.0">swaRef in JAX-WS 2.0</a><br>
     3.2 <a href="#3.2_How_to_use_swaRef">How to use swaRef </a><br>
     3.3 <a href="#3.3_swaRef_Samples">swaRef Sample</a>
 </div>
@@ -44,7 +44,7 @@ envelope. This gets quite in-efficient when the data size is more, for
 example a SOAP endpoint that exchanges images/songs etc. MTOM specifies
 how XOP packaging can be used to send the binary data optimally.<br>
 
-<h2><a name="2_MTOM_in_JAXWS_2.0"></a>2. MTOM in JAXWS 2.0</h2>
+<h2><a name="2_MTOM_in_JAXWS_2.0"></a>2. MTOM in JAX-WS 2.0</h2>
 MTOM feature is disabled in JAX-WS by default. It can be enabled on the
 client and server. Once enabled all the XML binary data, XML elements
 of type xs:base64Binary and xs:hexBinary is optimally transmitted.
@@ -173,7 +173,7 @@ mapping in Table 9-1. Here is this table:<br>
 <p><br></p>
 
 <h3><a name="2.2_How_to_enable_MTOM_in_JAXWS_2.0"></a>2.3 How to enable MTOM in
-    JAXWS 2.0</h3>
+    JAX-WS 2.0</h3>
 <br><b>Enabling MTOM on Server: </b><br>
 <ul>
     <li>Enable using @javax.xml.ws.soap.MTOM annotation on the endpoint (SEI) implementation
@@ -225,7 +225,7 @@ of the mtom sample:
 </li>
 <li>
 
-    JAXWS 2.0 specification has defined API to enable and to check if the
+    JAX-WS 2.0 specification has defined API to enable and to check if the
     MTOM is enabled.
     <ul><li>javax.xml.ws.soap.SOAPBinding.setMTOMEnabled(boolean enable) - enable or disable MTOM.</li>
     <li>javax.xml.ws.soap.SOAPBinding.isMTOMEnabled() - returns true if MTOM is enabled otherwise false.</li></ul>
@@ -240,7 +240,7 @@ of the mtom sample:
 </ul>
 <h3><a name="2.3_Attach_vs_In-line"></a>2.4 Attach vs In-line</h3>
 As defined by JAXB 2.0 specification xs:base64Binary and xs:hexBinary
-mapping to java is byte[]. JAXWS implementation has set a threshold of
+mapping to java is byte[]. JAX-WS implementation has set a threshold of
 1KB of byte[] size. This threshold can be modified using
 implementation specific property <code>com.sun.xml.ws.developer.JAXWSProperties.MTOM_THRESHOLD_VALUE</code>
 in the
@@ -268,7 +268,7 @@ corresponding schema.<br>
 Default threshold value for MTOM feature is 0 bytes.  You can set a
 threshold value for MTOM by using @MTOM annotation on server-side or using MTOMFeature on client-side.
 Let's say you set MTOM threshold as 3000, this serves as hint to JAX-WS when to send binary dat as attachments.
-In this case, JAXWS will send any byte array in the message thats equal to or larger than 3KB as attachment and the
+In this case, JAX-WS will send any byte array in the message thats equal to or larger than 3KB as attachment and the
 corresponding XML infoset will be XOP encoded (will contain reference
 to this attachment)
 
@@ -286,7 +286,7 @@ to this attachment)
 There are 2 samples:<br>
 <h4><a name="2.4.1_mtom"></a>2.5.1 mtom <br>
 </h4>
-This is SOAP 1.1 MTOM SampleThis is how the JAXWS generated XOP
+This is SOAP 1.1 MTOM SampleThis is how the JAX-WS generated XOP
 packaged SOAP message looks on the wire:
 <pre>Content-Type: Multipart/Related; <span
         style="color: rgb(204, 51, 204);">start-info="text/xml"</span>; <span
@@ -320,7 +320,7 @@ Here is the associated schema:<br>
         style="color: rgb(153, 0, 0);">xmime:expectedContentTypes="image/jpeg"</span>/&gt;<br> &lt;/sequence&gt;<br>&lt;/complexType&gt;
     <br></pre>
 <h4><a name="2.4.2_mtom-soap12"></a>2.5.2 mtom-soap12</h4>
-This is SOAP 1.2 MTOM Sample. Here is how the JAXWS generated soap
+This is SOAP 1.2 MTOM Sample. Here is how the JAX-WS generated soap
 message looks on the wire:<br>
 <br>
 <pre>&lt;element name="image" type="base64Binary" <span
@@ -359,10 +359,10 @@ as MIME attachment and the element inside SOAP Body holds the reference
 to this attachment in the CID URI scheme as defined by <a
         href="http://www.faqs.org/rfcs/rfc2111.html">RFC 2111</a>.<br>
 
-<h3><a name="3.1_swaRef_in_JAXWS_2.0"></a>3.1 swaRef in JAXWS 2.0</h3>
+<h3><a name="3.1_swaRef_in_JAXWS_2.0"></a>3.1 swaRef in JAX-WS 2.0</h3>
 JAXB 2.0 defines mapping of wsi:swaRef schema type to
 javax.activation.DataHandler. An application will construct the
-DataHandler with the data and the appropriate MIME type and JAXWS will
+DataHandler with the data and the appropriate MIME type and JAX-WS will
 coordinate with JAXB and SAAJ to send it as attachment MIME part.<br>
 
 <h3><a name="3.2_How_to_use_swaRef"></a>3.2 How to use swaRef</h3>
