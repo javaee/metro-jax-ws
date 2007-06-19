@@ -947,7 +947,7 @@ public final class WSEndpointReference {
         }
 
         private QName getElementTextAsQName(StreamReaderBufferProcessor xsr) throws XMLStreamException {
-            String text = xsr.getElementText();
+            String text = xsr.getElementText().trim();
             String prefix = XmlUtil.getPrefix(text);
             String name = XmlUtil.getLocalPart(text);
             if (name != null) {
