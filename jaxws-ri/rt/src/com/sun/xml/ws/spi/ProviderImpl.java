@@ -38,12 +38,15 @@ package com.sun.xml.ws.spi;
 
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSService;
-import com.sun.xml.ws.api.server.*;
-import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
+import com.sun.xml.ws.api.server.BoundEndpoint;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
+import com.sun.xml.ws.api.server.Module;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
@@ -62,11 +65,17 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.*;
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.EndpointReference;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.spi.Provider;
 import javax.xml.ws.spi.ServiceDelegate;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 
 /**
@@ -105,14 +114,20 @@ public class ProviderImpl extends Provider {
         return endpoint;
     }
 
-    public EndpointReference readEndpointReference(Source eprInfoset) {
-        Unmarshaller unmarshaller;
-        try {
-            unmarshaller = eprjc.createUnmarshaller();
-            return (EndpointReference) unmarshaller.unmarshal(eprInfoset);
-        } catch (JAXBException e) {
-            throw new WebServiceException("Error creating Marshaller or marshalling.", e);
-        }
+    public EndpointReference readEndpointReference(final Source eprInfoset) {
+        // EPR constructors are private, so we need privilege escalation.
+        // this unmarshalling can only access instances of a fixed, known set of classes,
+        // so doing that shouldn't introduce security vulnerability.
+        return AccessController.doPrivileged(new PrivilegedAction<EndpointReference>() {
+            public EndpointReference run() {
+                try {
+                    Unmarshaller unmarshaller = eprjc.createUnmarshaller();
+                    return (EndpointReference) unmarshaller.unmarshal(eprInfoset);
+                } catch (JAXBException e) {
+                    throw new WebServiceException("Error creating Marshaller or marshalling.", e);
+                }
+            }
+        });
     }
 
     public <T> T getPort(EndpointReference endpointReference, Class<T> clazz, WebServiceFeature... webServiceFeatures) {
