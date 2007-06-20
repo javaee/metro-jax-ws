@@ -73,7 +73,7 @@ import java.util.Map;
 
 @XmlRootElement(name = "EndpointReference", namespace = MemberSubmissionEndpointReference.MSNS)
 @XmlType(name = "EndpointReferenceType", namespace = MemberSubmissionEndpointReference.MSNS)
-public class MemberSubmissionEndpointReference extends EndpointReference implements MemberSubmissionAddressingConstants {
+public final class MemberSubmissionEndpointReference extends EndpointReference implements MemberSubmissionAddressingConstants {
 
     private final static JAXBContext msjc = MemberSubmissionEndpointReference.getMSJaxbContext();
 
