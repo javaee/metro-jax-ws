@@ -606,7 +606,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             return;
 
         String accessorName =JAXBRIContext.mangleNameToPropertyName(paramName);
-        String getterPrefix = paramType.equals("boolean") || paramType.equals("java.lang.Boolean") ? "is" : "get";
+        String getterPrefix = paramType.toString().equals("boolean")? "is" : "get";
         JType propType = getType(paramType);
         JMethod m = cls.method(JMod.PUBLIC, propType, getterPrefix+ accessorName);
         JDocComment methodDoc = m.javadoc();
