@@ -350,6 +350,11 @@ final class HttpClientTransport {
             httpConnection.setReadTimeout(reqTimeout);
         }
 
+        Integer connectTimeout = (Integer)context.invocationProperties.get(JAXWSProperties.CONNECT_TIMEOUT);
+        if (connectTimeout != null) {
+            httpConnection.setConnectTimeout(connectTimeout);
+        }
+
         Integer chunkSize = (Integer)context.invocationProperties.get(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE);
         if (chunkSize != null) {
             httpConnection.setChunkedStreamingMode(chunkSize);

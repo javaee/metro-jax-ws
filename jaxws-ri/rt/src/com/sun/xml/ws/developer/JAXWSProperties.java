@@ -56,11 +56,24 @@ public interface JAXWSProperties {
 
     /**
      * Set this property on the {@link BindingProvider#getRequestContext()} to
+     * enable {@link HttpURLConnection#setConnectTimeout(int)}
+     *
+     *<p>
+     * int timeout = ...;
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
+     * ctxt.put(CONNECT_TIMEOUT, timeout);
+     */
+    public static final String CONNECT_TIMEOUT =
+        "com.sun.xml.ws.connect.timeout";
+
+
+    /**
+     * Set this property on the {@link BindingProvider#getRequestContext()} to
      * enable {@link HttpURLConnection#setChunkedStreamingMode(int)}
      *
      *<p>
      * int chunkSize = ...;
-     * Map<String, Object> ctxt = (BindingProvider)proxy).getRequestContext();
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
      * ctxt.put(HTTP_CLIENT_STREAMING_CHUNK_SIZE, chunkSize);
      */
     public static final String HTTP_CLIENT_STREAMING_CHUNK_SIZE = "com.sun.xml.ws.transport.http.client.streaming.chunk.size";
@@ -73,7 +86,7 @@ public interface JAXWSProperties {
      *
      * <p>
      * HostNameVerifier hostNameVerifier = ...;
-     * Map<String, Object> ctxt = (BindingProvider)proxy).getRequestContext();
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
      * ctxt.put(HOSTNAME_VERIFIER, hostNameVerifier);
      *
      * <p>
@@ -88,7 +101,7 @@ public interface JAXWSProperties {
      *
      * <p>
      * SSLSocketFactory sslFactory = ...;
-     * Map<String, Object> ctxt = (BindingProvider)proxy).getRequestContext();
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
      * ctxt.put(SSL_SOCKET_FACTORY, sslFactory);
      *
      * <p>
