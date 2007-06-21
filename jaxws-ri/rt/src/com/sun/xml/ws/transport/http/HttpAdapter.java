@@ -615,13 +615,10 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             out.println("<table width='100%' border='1'>");
             out.println("<tr>");
             out.println("<td>");
-            // out.println("WSDLPort Name");
+            // out.println("Endpoint");
             out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_PORT_NAME());
             out.println("</td>");
-            out.println("<td>");
-            // out.println("Status");
-            out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_STATUS());
-            out.println("</td>");
+
             out.println("<td>");
             // out.println("Information");
             out.println(WsservletMessages.SERVLET_HTML_COLUMN_HEADER_INFORMATION());
@@ -631,17 +628,21 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             for (BoundEndpoint a : endpoints) {
                 String endpointAddress = con.getBaseAddress()+getValidPath();
                 out.println("<tr>");
-                out.println("<td>" + a + "</td>");
+
                 out.println("<td>");
-                out.println(WsservletMessages.SERVLET_HTML_STATUS_ACTIVE());
+                out.println(WsservletMessages.SERVLET_HTML_ENDPOINT_TABLE(
+                    a.getEndpoint().getServiceName(),
+                    a.getEndpoint().getPortName()
+                ));
                 out.println("</td>");
+
                 out.println("<td>");
                 out.println(WsservletMessages.SERVLET_HTML_INFORMATION_TABLE(
-                            endpointAddress,
-                            a.getEndpoint().getPortName(),
-                            a.getEndpoint().getImplementationClass().getName()
-                        ));
+                    endpointAddress,
+                    a.getEndpoint().getImplementationClass().getName()
+                ));
                 out.println("</td>");
+                
                 out.println("</tr>");
             }
             out.println("</table>");
