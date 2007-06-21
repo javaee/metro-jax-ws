@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
+import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.xml.ws.handler.MessageContext;
 import java.io.FilterInputStream;
@@ -214,6 +215,11 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
             return reqPath.substring(ctxtPath.length());
         }
         return null;
+    }
+
+    @Property(JAXWSProperties.HTTP_EXCHANGE)
+    public HttpExchange getExchange() {
+        return httpExchange;
     }
 
     @Override @NotNull
