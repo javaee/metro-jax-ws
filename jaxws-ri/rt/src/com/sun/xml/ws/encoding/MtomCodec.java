@@ -110,10 +110,12 @@ public class MtomCodec extends MimeCodec {
     }
 
     private void createConteTypeHeader(){
-        rootId = UUID.randomUUID().toString();
-        boundary = "uuid:" + rootId;
+        String uuid = UUID.randomUUID().toString();
+        boundary = "uuid:" + uuid;
+        rootId = "<rootpart*"+uuid+"@example.jaxws.sun.com>";
         String boundaryParameter = "boundary=\"" + boundary +"\"";
-        messageContentType = MULTIPART_RELATED_MIME_TYPE + 
+        messageContentType = MULTIPART_RELATED_MIME_TYPE +
+                ";start=\""+rootId +"\"" +
                 ";type=\"" + XOP_XML_MIME_TYPE + "\";" + 
                 boundaryParameter + 
                 ";start-info=\"" + version.contentType + "\"";
@@ -150,7 +152,7 @@ public class MtomCodec extends MimeCodec {
         if(packet.getMessage() != null){
             try {
                 OutputUtil.writeln("--"+boundary, out);
-                OutputUtil.writeln("Content-Id: " + "<rootpart*"+rootId+"@example.jaxws.sun.com>", out);
+                OutputUtil.writeln("Content-Id: " + rootId, out);
                 OutputUtil.writeln("Content-Type: "+ soapXopContentType,  out);
                 OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
                 OutputUtil.writeln(out);
