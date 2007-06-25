@@ -278,17 +278,12 @@ public abstract class SOAPFaultBuilder {
 
     private Exception createUserDefinedException(CheckedExceptionImpl ce) {
         Class exceptionClass = ce.getExceptionClass();
-        try {
-            Constructor constructor = exceptionClass.getConstructor(String.class);
-            Object exception = constructor.newInstance(getFaultString());
-            Node detail = getDetail().getDetails().get(0);
-            Object jaxbDetail = getJAXBObject(detail, ce);
-            Field[] fields = jaxbDetail.getClass().getFields();
-            for (Field f : fields) {
-                Method m = exceptionClass.getMethod(getWriteMethod(f));
-                m.invoke(exception, f.get(jaxbDetail));
-            }
-            throw (Exception) exception;
+        Class detailBean = ce.getDetailBean();
+        try{
+            Node detailNode = getDetail().getDetails().get(0);
+            Object jaxbDetail = getJAXBObject(detailNode, ce);
+            Constructor exConstructor = exceptionClass.getConstructor(String.class, detailBean);
+            return (Exception) exConstructor.newInstance(getFaultString(), jaxbDetail);
         } catch (Exception e) {
             throw new WebServiceException(e);
         }
