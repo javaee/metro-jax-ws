@@ -893,7 +893,7 @@ public final class WSEndpointReference {
                             if (localName.equals(version.eprType.serviceName)) {
                                 String portStr = xsr.getAttributeValue(null, version.eprType.portName);
                                 serviceName = getElementTextAsQName(xsr);
-                                if (serviceName != null)
+                                if (serviceName != null && portStr != null)
                                     portName = new QName(serviceName.getNamespaceURI(), portStr);
                             } else if (localName.equals(version.eprType.portTypeName)) {
                                 portTypeName = getElementTextAsQName(xsr);
@@ -933,7 +933,7 @@ public final class WSEndpointReference {
                     } else if (localName.equals(version.eprType.serviceName)) {
                         String portStr = xsr.getAttributeValue(null, version.eprType.portName);
                         serviceName = getElementTextAsQName(xsr);
-                        if (serviceName != null)
+                        if (serviceName != null && portStr != null)
                             portName = new QName(serviceName.getNamespaceURI(), portStr);
                     } else if (localName.equals(version.eprType.portTypeName)) {
                         portTypeName = getElementTextAsQName(xsr);
