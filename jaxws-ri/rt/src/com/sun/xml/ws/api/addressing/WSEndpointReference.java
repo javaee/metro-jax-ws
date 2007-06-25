@@ -637,7 +637,7 @@ public final class WSEndpointReference {
             if(localName.equals("Address")) {
                 if(address!=null) // double <Address>. That's an error.
                     throw new InvalidMapException(new QName(version.nsUri,rootLocalName),AddressingVersion.fault_duplicateAddressInEpr);
-                address = xsr.getElementText();
+                address = xsr.getElementText().trim();
             } else {
                 XMLStreamReaderUtil.skipElement(xsr);
             }
