@@ -60,6 +60,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.transform.Source;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
@@ -595,6 +596,11 @@ abstract class EndpointArgumentsBuilder {
                     reader.nextTag();
                 } else {
                     part.readRequest(args,reader, msg.getAttachments());
+                }
+                // skip any whitespace
+                if (reader.getEventType() != XMLStreamConstants.START_ELEMENT &&
+                        reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
+                    XMLStreamReaderUtil.nextElementContent(reader);
                 }
             }
 
