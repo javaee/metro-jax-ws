@@ -50,6 +50,7 @@ import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
+import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.localization.Localizable;
 
 import javax.jws.Oneway;
@@ -82,6 +83,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.concurrent.Future;
 
 /**
@@ -197,6 +199,10 @@ public class RuntimeModeler {
         });
     }
 
+    private static final Logger logger =
+        Logger.getLogger(
+            com.sun.xml.ws.util.Constants.LoggingDomain + ".server");
+
     //currently has many local vars which will be eliminated after debugging issues
     //first draft
     /**
@@ -217,6 +223,15 @@ public class RuntimeModeler {
             if (seiService == null) {
                 throw new RuntimeModelerException("runtime.modeler.endpoint.interface.no.webservice",
                     webService.endpointInterface());
+            }
+
+            //check if @SOAPBinding is defined on the impl class
+            SOAPBinding sbPortClass = getPrivClassAnnotation(portClass, SOAPBinding.class);
+            SOAPBinding sbSei = getPrivClassAnnotation(clazz, SOAPBinding.class);
+            if(sbPortClass != null){
+                if(sbSei == null || sbSei.style() != sbPortClass.style()|| sbSei.use() != sbPortClass.use()){
+                    logger.warning(ServerMessages.RUNTIMEMODELER_INVALIDANNOTATION_ON_IMPL("@SOAPBinding", portClass.getName(), clazz.getName()));
+                }
             }
         }
         if (serviceName == null)
