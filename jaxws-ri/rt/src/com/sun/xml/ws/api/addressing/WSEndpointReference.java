@@ -845,6 +845,8 @@ public final class WSEndpointReference {
         private @Nullable QName portName;
         private @Nullable QName portTypeName; //interfaceName
         private @Nullable Source wsdlSource;
+        private @Nullable String wsdliLocation;
+        
         public @Nullable QName getServiceName(){
             return serviceName;
         }
@@ -857,7 +859,10 @@ public final class WSEndpointReference {
         public @Nullable Source getWsdlSource(){
             return wsdlSource;
         }
-
+        public @Nullable String getWsdliLocation(){
+            return wsdliLocation;
+        }
+       
         private Metadata() {
             try {
                 parseMetaData();
@@ -886,6 +891,9 @@ public final class WSEndpointReference {
                 do {
                     //If the current element is metadata enclosure, look inside
                     if (xsr.getLocalName().equals(version.eprType.wsdlMetadata.getLocalPart())) {
+                        String wsdlLoc = xsr.getAttributeValue("http://www.w3.org/ns/wsdl-instance","wsdlLocation");
+                        if (wsdlLoc != null)
+                            wsdliLocation = wsdlLoc.trim();
                         XMLStreamBuffer mark;
                         while ((mark = xsr.nextTagAndMark()) != null) {
                             localName = xsr.getLocalName();
