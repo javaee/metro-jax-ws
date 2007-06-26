@@ -900,10 +900,14 @@ public final class WSEndpointReference {
                             ns = xsr.getNamespaceURI();
                             if (localName.equals(version.eprType.serviceName)) {
                                 String portStr = xsr.getAttributeValue(null, version.eprType.portName);
+                                if(serviceName != null)
+                                    throw new RuntimeException("More than one "+ version.eprType.serviceName +" element in EPR Metadata");
                                 serviceName = getElementTextAsQName(xsr);
                                 if (serviceName != null && portStr != null)
                                     portName = new QName(serviceName.getNamespaceURI(), portStr);
                             } else if (localName.equals(version.eprType.portTypeName)) {
+                                if(portTypeName != null)
+                                    throw new RuntimeException("More than one "+ version.eprType.portTypeName +" element in EPR Metadata");
                                 portTypeName = getElementTextAsQName(xsr);
                             } else if (ns.equals(WSDLConstants.NS_WSDL)
                                     && localName.equals(WSDLConstants.QNAME_DEFINITIONS.getLocalPart())) {
