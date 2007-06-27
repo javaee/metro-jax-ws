@@ -836,6 +836,7 @@ public class WSDLGenerator {
         }
         for (CheckedExceptionImpl exception : method.getCheckedExceptions()) {
             Fault fault = operation.fault().name(exception.getMessageName());
+            extension.addBindingOperationFaultExtension(fault, method, exception);
             SOAPFault soapFault = fault._element(SOAPFault.class).name(exception.getMessageName());
             soapFault.use(LITERAL);
         }        
