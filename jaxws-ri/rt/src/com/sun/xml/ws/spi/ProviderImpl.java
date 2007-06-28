@@ -211,10 +211,17 @@ public class ProviderImpl extends Provider {
     }
 
     private static JAXBContext getEPRJaxbContext() {
-        try {
-            return JAXBContext.newInstance(MemberSubmissionEndpointReference.class, W3CEndpointReference.class);
-        } catch (JAXBException e) {
-            throw new WebServiceException("Error creating JAXBContext for W3CEndpointReference. ", e);
-        }
+        // EPRs have package and private fields, so we need privilege escalation.
+        // this access only fixed, known set of classes, so doing that
+        // shouldn't introduce security vulnerability.
+        return AccessController.doPrivileged(new PrivilegedAction<JAXBContext>() {
+            public JAXBContext run() {
+                try {
+                    return JAXBContext.newInstance(MemberSubmissionEndpointReference.class, W3CEndpointReference.class);
+                } catch (JAXBException e) {
+                    throw new WebServiceException("Error creating JAXBContext for W3CEndpointReference. ", e);
+                }
+            }
+        });
     }
 }
