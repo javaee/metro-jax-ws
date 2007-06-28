@@ -174,16 +174,16 @@ public final class MetadataFinder extends DOMForest{
                 }
             }
         }
+        //no wsdl with wsdl:service found, throw error
+        if(rootWSDL == null){
+            StringBuffer strbuf = new StringBuffer();
+            for(String str : rootWsdls){
+                strbuf.append(str);
+                strbuf.append('\n');
+            }
+            errorReceiver.error(null, WsdlMessages.FAILED_NOSERVICE(strbuf.toString()));
+        }
     }
-
-
-
-
-    private String fixNull(String s) {
-        if (s == null) return "";
-        else return s;
-    }
-
 
     /*
     * If source and target namespace are also passed in,
