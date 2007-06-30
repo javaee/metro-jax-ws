@@ -540,10 +540,10 @@ public class RuntimeWSDLParser {
         WSDLBoundFaultImpl wsdlBoundFault = new WSDLBoundFaultImpl(reader, faultName);
         bindingOp.addFault(wsdlBoundFault);
 
-        extensionFacade.bindingOperationFaultAttributes(bindingOp, reader);
+        extensionFacade.bindingOperationFaultAttributes(wsdlBoundFault, reader);
 
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
-            extensionFacade.bindingOperationFaultElements(bindingOp, reader);
+            extensionFacade.bindingOperationFaultElements(wsdlBoundFault, reader);
         }
     }
 

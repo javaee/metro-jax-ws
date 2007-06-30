@@ -307,9 +307,9 @@ final class WSDLParserExtensionFacade extends WSDLParserExtension {
         }
     }
 
-    public boolean bindingOperationFaultElements(WSDLBoundOperation operation, XMLStreamReader reader) {
+    public boolean bindingOperationFaultElements(WSDLBoundFault fault, XMLStreamReader reader) {
         for (WSDLParserExtension e : extensions) {
-            if (e.bindingOperationFaultElements(operation, reader)) {
+            if (e.bindingOperationFaultElements(fault, reader)) {
                 return true;
             }
         }
@@ -317,9 +317,9 @@ final class WSDLParserExtensionFacade extends WSDLParserExtension {
         return true;
     }
 
-    public void bindingOperationFaultAttributes(WSDLBoundOperation operation, XMLStreamReader reader) {
+    public void bindingOperationFaultAttributes(WSDLBoundFault fault, XMLStreamReader reader) {
         for (WSDLParserExtension e : extensions) {
-            e.bindingOperationFaultAttributes(operation, reader);
+            e.bindingOperationFaultAttributes(fault, reader);
         }
     }
 
