@@ -36,18 +36,15 @@
 package com.sun.xml.ws.model.wsdl;
 
 import com.sun.istack.Nullable;
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.ParameterBinding;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
-import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
-import com.sun.xml.ws.api.model.wsdl.WSDLPart;
+import com.sun.xml.ws.api.model.wsdl.*;
 
 import javax.jws.WebParam.Mode;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation of {@link WSDLBoundOperation}
@@ -76,6 +73,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     private final Map<String, WSDLPartImpl> inParts;
     private final Map<String, WSDLPartImpl> outParts;
     private final Map<String, WSDLPartImpl> fltParts;
+    private final List<WSDLBoundFaultImpl> wsdlBoundFaults;
     private WSDLOperationImpl operation;
     private String soapAction;
     private ANONYMOUS anonymous;
@@ -98,6 +96,7 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         inParts = new HashMap<String, WSDLPartImpl>();
         outParts = new HashMap<String, WSDLPartImpl>();
         fltParts = new HashMap<String, WSDLPartImpl>();
+        wsdlBoundFaults = new ArrayList<WSDLBoundFaultImpl>();
         this.owner = owner;
     }
 
@@ -164,6 +163,16 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     public Map<String,WSDLPart> getOutParts() {
         return Collections.<String,WSDLPart>unmodifiableMap(outParts);
     }
+
+    @NotNull
+    public List<WSDLBoundFaultImpl> getFaults() {
+        return wsdlBoundFaults;
+    }
+
+    public void addFault(@NotNull WSDLBoundFaultImpl fault){
+        wsdlBoundFaults.add(fault);
+    }
+
 
     /**
      * Map of mime:content@part and the mime type from mime:content@type for wsdl:output
@@ -445,6 +454,9 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
     void freeze(WSDLModelImpl parent) {
         messages = parent.getMessages();
         operation = owner.getPortType().get(name.getLocalPart());
+        for(WSDLBoundFaultImpl bf : wsdlBoundFaults){
+            bf.freeze(this);
+        }
     }
 
     public void setAnonymous(ANONYMOUS anonymous) {

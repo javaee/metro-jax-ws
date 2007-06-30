@@ -52,19 +52,7 @@ import com.sun.xml.ws.api.wsdl.parser.ServiceDescriptor;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
-import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl;
-import com.sun.xml.ws.model.wsdl.WSDLFaultImpl;
-import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
-import com.sun.xml.ws.model.wsdl.WSDLMessageImpl;
-import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
-import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLOutputImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPartDescriptorImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPartImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortTypeImpl;
-import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
+import com.sun.xml.ws.model.wsdl.*;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.resources.WsdlmodelMessages;
 import com.sun.xml.ws.streaming.SourceReaderFactory;
@@ -548,21 +536,14 @@ public class RuntimeWSDLParser {
     }
 
     private void parseFaultBinding(XMLStreamReader reader, WSDLBoundOperationImpl bindingOp) {
-        boolean bodyFound = false;
+        String faultName = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
+        WSDLBoundFaultImpl wsdlBoundFault = new WSDLBoundFaultImpl(reader, faultName);
+        bindingOp.addFault(wsdlBoundFault);
+
         extensionFacade.bindingOperationFaultAttributes(bindingOp, reader);
+
         while (XMLStreamReaderUtil.nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
-            QName name = reader.getName();
-            if ((SOAPConstants.QNAME_BODY.equals(name) || SOAPConstants.QNAME_SOAP12BODY.equals(name)) && !bodyFound) {
-                bodyFound = true;
-                bindingOp.setFaultExplicitBodyParts(parseSOAPBodyBinding(reader, bindingOp.getFaultParts()));
-                goToEnd(reader);
-            } else if ((SOAPConstants.QNAME_HEADER.equals(name) || SOAPConstants.QNAME_SOAP12HEADER.equals(name))) {
-                parseSOAPHeaderBinding(reader, bindingOp.getFaultParts());
-            } else if (MIMEConstants.QNAME_MULTIPART_RELATED.equals(name)) {
-                parseMimeMultipartBinding(reader, bindingOp, BindingMode.FAULT);
-            } else {
-                extensionFacade.bindingOperationFaultElements(bindingOp, reader);
-            }
+            extensionFacade.bindingOperationFaultElements(bindingOp, reader);
         }
     }
 
