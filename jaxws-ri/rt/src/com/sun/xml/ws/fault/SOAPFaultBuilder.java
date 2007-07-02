@@ -282,8 +282,14 @@ public abstract class SOAPFaultBuilder {
         try{
             Node detailNode = getDetail().getDetails().get(0);
             Object jaxbDetail = getJAXBObject(detailNode, ce);
-            Constructor exConstructor = exceptionClass.getConstructor(String.class, detailBean);
-            return (Exception) exConstructor.newInstance(getFaultString(), jaxbDetail);
+            Constructor exConstructor;
+            try{
+                exConstructor = exceptionClass.getConstructor(String.class, detailBean);
+                return (Exception) exConstructor.newInstance(getFaultString(), jaxbDetail);
+            }catch(NoSuchMethodException e){
+                exConstructor = exceptionClass.getConstructor(String.class);
+                return (Exception) exConstructor.newInstance(getFaultString());
+            }
         } catch (Exception e) {
             throw new WebServiceException(e);
         }
