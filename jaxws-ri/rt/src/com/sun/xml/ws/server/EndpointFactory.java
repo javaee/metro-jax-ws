@@ -40,6 +40,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.AsyncProvider;
 import com.sun.xml.ws.api.server.Container;
@@ -49,6 +50,7 @@ import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver.Parser;
@@ -88,6 +90,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Entry point to the JAX-WS RI server-side runtime.
@@ -95,7 +99,20 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-public class EndpointFactory {
+public final class EndpointFactory {
+
+    public static <T> WSEndpoint<T> createEndpoint(
+        Class<T> implType, boolean processHandlerAnnotation, @NotNull InstanceResolver ir,
+        @Nullable QName serviceName, @Nullable QName portName,
+        @Nullable Container container, @Nullable WSBinding binding,
+        @Nullable SDDocumentSource primaryWsdl,
+        @Nullable Collection<? extends SDDocumentSource> metadata, EntityResolver resolver, boolean isTransportSynchronous) {
+
+        return createEndpoint(implType, processHandlerAnnotation, createInvoker(ir) ,
+            serviceName, portName, container, binding, primaryWsdl,
+            metadata, resolver, isTransportSynchronous);
+
+    }
 
     /**
      * Implements {@link WSEndpoint#create}.
@@ -120,7 +137,7 @@ public class EndpointFactory {
         verifyImplementorClass(implType);
 
         if (invoker == null) {
-            invoker = InstanceResolver.createDefault(implType).createInvoker();
+            invoker = createInvoker(InstanceResolver.createDefault(implType));
         }
 
         List<SDDocumentSource> md = new ArrayList<SDDocumentSource>();
@@ -546,6 +563,45 @@ public class EndpointFactory {
         }
 
     }
+
+    private @NotNull static <T> Invoker createInvoker(final InstanceResolver<T> ir) {
+        return new Invoker() {
+            @Override
+            public void start(@NotNull WSWebServiceContext wsc, @NotNull WSEndpoint endpoint) {
+                ir.start(wsc,endpoint);
+            }
+
+            @Override
+            public void dispose() {
+                ir.dispose();
+            }
+
+            @Override
+            public Object invoke(Packet p, Method m, Object... args) throws InvocationTargetException, IllegalAccessException {
+                T t = ir.resolve(p);
+                try {
+                    return m.invoke(t, args );
+                } finally {
+                    ir.postInvoke(p,t);
+                }
+            }
+
+            @Override
+            public <U> U invokeProvider(@NotNull Packet p, U arg) {
+                T t = ir.resolve(p);
+                try {
+                    return ((Provider<U>) t).invoke(arg);
+                } finally {
+                    ir.postInvoke(p,t);
+                }
+            }
+
+            public String toString() {
+                return "Default Invoker over "+ ir.toString();
+            }
+        };
+    }
+
 
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");

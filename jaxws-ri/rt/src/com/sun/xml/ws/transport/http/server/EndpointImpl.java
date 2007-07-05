@@ -40,10 +40,10 @@ import com.sun.istack.Nullable;
 import com.sun.xml.stream.buffer.XMLStreamBufferResult;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.xml.XmlUtil;
@@ -67,7 +67,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import org.xml.sax.EntityResolver;
 import org.w3c.dom.Element;
 
 
@@ -219,16 +218,17 @@ public class EndpointImpl extends Endpoint {
             throw new UnsupportedOperationException("NOT SUPPORTED");
         }
 
-        WSEndpoint wse = WSEndpoint.create(
-                (Class<?>) implementor.getClass(), true,
-                InstanceResolver.createSingleton(implementor).createInvoker(),
+        WSEndpoint wse = EndpointFactory.createEndpoint(
+                implementor.getClass(), true,
+                InstanceResolver.createSingleton(implementor),
                 getProperty(QName.class, Endpoint.WSDL_SERVICE),
                 getProperty(QName.class, Endpoint.WSDL_PORT),
                 null /* no container */,
                 binding,
                 getPrimaryWsdl(),
                 buildDocList(),
-                (EntityResolver) null
+                null,
+                false
         );
         // Don't load HttpEndpoint class before as it may load HttpServer classes
         actualEndpoint = new HttpEndpoint(wse, executor);
@@ -309,5 +309,6 @@ public class EndpointImpl extends Endpoint {
         }
         return ((HttpEndpoint)actualEndpoint).getEndpointReference(clazz,referenceParameters);
     }
+
 }
 

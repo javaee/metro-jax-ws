@@ -39,8 +39,8 @@ package com.sun.xml.ws.transport.http;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.InstanceResolver;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
@@ -252,7 +252,7 @@ public class DeploymentDescriptorParser<A> {
             ensureNoContent(reader);
             WSEndpoint<?> endpoint = WSEndpoint.create(
                     implementorClass, !handlersSetInDD,
-                    InstanceResolver.createDefault(implementorClass).createInvoker(),
+                    null,
                     serviceName, portName, container, binding,
                     primaryWSDL, docs.values(), createEntityResolver(),false
             );
@@ -532,6 +532,7 @@ public class DeploymentDescriptorParser<A> {
                 name);
         }
     }
+
 
     /**
      * Loads the class of the given name.

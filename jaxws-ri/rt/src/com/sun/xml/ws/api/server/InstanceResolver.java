@@ -224,47 +224,6 @@ public abstract class InstanceResolver<T> {
         }
     }
 
-    /**
-     * Wraps this {@link InstanceResolver} into an {@link Invoker}.
-     */
-    public @NotNull Invoker createInvoker() {
-        return new Invoker() {
-            @Override
-            public void start(@NotNull WSWebServiceContext wsc, @NotNull WSEndpoint endpoint) {
-                InstanceResolver.this.start(wsc,endpoint);
-            }
-
-            @Override
-            public void dispose() {
-                InstanceResolver.this.dispose();
-            }
-
-            @Override
-            public Object invoke(Packet p, Method m, Object... args) throws InvocationTargetException, IllegalAccessException {
-                T t = resolve(p);
-                try {
-                    return m.invoke(t, args );
-                } finally {
-                    postInvoke(p,t);
-                }
-            }
-
-            @Override
-            public <U> U invokeProvider(@NotNull Packet p, U arg) {
-                T t = resolve(p);
-                try {
-                    return ((Provider<U>) t).invoke(arg);
-                } finally {
-                    postInvoke(p,t);
-                }
-            }
-
-            public String toString() {
-                return "Default Invoker over "+InstanceResolver.this.toString();
-            }
-        };
-    }
-
     private static final Logger logger =
         Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".server");
