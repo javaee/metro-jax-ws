@@ -65,14 +65,19 @@ public class JMXAgent {
     /**
      * Instantiate and register your MBeans.
      */
-    public void init() throws Exception {    
+    public void init() throws Exception {
+
         RuntimeVersionMBean mbean = new RuntimeVersion();
         ObjectName mbeanName = new ObjectName("com.sun.xml.ws.util:type=RuntimeVersion");
-        getMBeanServer().registerMBean(mbean, mbeanName);
+        if (!getMBeanServer().isRegistered(mbeanName)) {
+            getMBeanServer().registerMBean(mbean, mbeanName);
+        }
 
         HttpDump dump = new HttpDump();
         ObjectName dumpName = new ObjectName("com.sun.xml.ws.transport.http:type=HttpDump");
-        getMBeanServer().registerMBean(dump, dumpName);
+        if (!getMBeanServer().isRegistered(dumpName)) {
+            getMBeanServer().registerMBean(dump, dumpName);
+        }
     }
     
     /**
