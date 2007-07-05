@@ -149,6 +149,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             con.closeOutput();
 
             con.checkResponseCode();
+            InputStream response = con.getInput();
+            if(dump) {
+                ByteArrayBuffer buf = new ByteArrayBuffer();
+                buf.write(response);
+                dump(buf,"HTTP response "+con.statusCode, con.getHeaders());
+                response = buf.newInputStream();
+            }
+            
             if (con.statusCode== WSHTTPConnection.ONEWAY || (request.expectReply != null && !request.expectReply)) {
                 return request.createClientResponse(null);    // one way. no response given.
             }
@@ -162,13 +170,6 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             Packet reply = request.createClientResponse(null);
             //reply.addSatellite(new HttpResponseProperties(con));
             reply.wasTransportSecure = con.isSecure();
-            InputStream response = con.getInput();
-            if(dump) {
-                ByteArrayBuffer buf = new ByteArrayBuffer();
-                buf.write(response);
-                dump(buf,"HTTP response "+con.statusCode, con.getHeaders());
-                response = buf.newInputStream();
-            }
             codec.decode(response, contentType, reply);
             return reply;
         } catch(WebServiceException wex) {
