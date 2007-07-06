@@ -252,13 +252,8 @@
       <li>
         <p style="margin-bottom: 0in;">Make sure that the Application Server is configured for port 8080 (which is the default HTTP port for Glassfish installation) as samples hardcoded with this port info. Otherwise, you need to change samples to use the correct port.
       </li>
-      <li>
-        <p style="margin-bottom: 0in;">
-          <a href="https://glassfish.dev.java.net/downloads/v2-b50.html">Glassfish Promoted Build v2 50</a> integrates JAX-WS RI 2.1.2 M1. So you may just start using it and skip step 5 below unless you want to use the latest JAX-WS RI 2.1.2 M1.
-
-      </li>
-      <li>
-        <p style="margin-bottom: 0in;">If you have installed a standalone JAX-WS RIbundle,
+    <li>
+        <p style="margin-bottom: 0in;">Set up the environment,
         <ol type="a">
           <li>
             <p style="margin-bottom: 0in;">Set
@@ -270,7 +265,18 @@
               <code>JAXWS_HOME</code> to the JAX-WS installation directory.
 
           </li>
-          <li>
+        </ol>
+      </li>
+
+    <li>
+        <p style="margin-bottom: 0in;">
+          <a href="https://glassfish.dev.java.net/downloads/v2-b50.html">Glassfish Promoted Build v2 50</a> integrates JAX-WS RI 2.1.2 M1. So you may just start using it and skip step 6 below unless you want to use the latest JAX-WS RI 2.1.2 M1.
+
+      </li>
+      <li>
+        <p style="margin-bottom: 0in;">If you have installed a standalone JAX-WS RIbundle,
+        <ol type="a">  
+        <li>
             <p style="margin-bottom: 0in;">'cd JAXWS_HOME' then invoke 'ant install'. This will add jaxws 2.1.2 M1&#160; jars in the classpath-prefix in domain.xml. This is required so that Glassfish picks-up JAXWS 2.1.2&#160; jar.
           </li>
         </ol>
