@@ -37,7 +37,6 @@ package com.sun.xml.ws.server;
 
 import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.DocumentAddressResolver;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
@@ -63,6 +62,7 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
     private static final QName SCHEMA_INCLUDE_QNAME = new QName(NS_XSD, "include");
     private static final QName SCHEMA_IMPORT_QNAME = new QName(NS_XSD, "import");
+    private static final QName SCHEMA_REDEFINE_QNAME = new QName(NS_XSD, "redefine");
 
     private static final Logger logger = Logger.getLogger(
             com.sun.xml.ws.util.Constants.LoggingDomain + ".wsdl.patcher");
@@ -120,6 +120,7 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
 
         if((name.equals(SCHEMA_INCLUDE_QNAME) && attLocalName.equals("schemaLocation"))
         || (name.equals(SCHEMA_IMPORT_QNAME)  && attLocalName.equals("schemaLocation"))
+        || (name.equals(SCHEMA_REDEFINE_QNAME)  && attLocalName.equals("schemaLocation"))
         || (name.equals(WSDLConstants.QNAME_IMPORT)  && attLocalName.equals("location"))) {
             // patch this attribute value.
 

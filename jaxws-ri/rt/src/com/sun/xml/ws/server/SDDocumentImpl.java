@@ -77,6 +77,7 @@ class SDDocumentImpl extends SDDocumentSource implements SDDocument {
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
     private static final QName SCHEMA_INCLUDE_QNAME = new QName(NS_XSD, "include");
     private static final QName SCHEMA_IMPORT_QNAME = new QName(NS_XSD, "import");
+    private static final QName SCHEMA_REDEFINE_QNAME = new QName(NS_XSD, "redefine");
     private static final String VERSION_COMMENT =
         " Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is "+RuntimeVersion.VERSION+". ";
 
@@ -109,7 +110,8 @@ class SDDocumentImpl extends SDDocumentSource implements SDDocument {
                          if (reader.getEventType() != XMLStreamConstants.START_ELEMENT)
                             continue;
                         QName name = reader.getName();
-                        if (SCHEMA_INCLUDE_QNAME.equals(name) || SCHEMA_IMPORT_QNAME.equals(name)) {
+                        if (SCHEMA_INCLUDE_QNAME.equals(name) || SCHEMA_IMPORT_QNAME.equals(name) ||
+                                SCHEMA_REDEFINE_QNAME.equals(name)) {
                             String importedDoc = reader.getAttributeValue(null, "schemaLocation");
                             if (importedDoc != null) {
                                 importedDocs.add(new URL(src.getSystemId(), importedDoc).toString());
@@ -148,7 +150,8 @@ class SDDocumentImpl extends SDDocumentSource implements SDDocument {
                             if (importedDoc != null) {
                                 importedDocs.add(new URL(src.getSystemId(), importedDoc).toString());
                             }
-                        } else if (SCHEMA_INCLUDE_QNAME.equals(name) || SCHEMA_IMPORT_QNAME.equals(name)) {
+                        } else if (SCHEMA_INCLUDE_QNAME.equals(name) || SCHEMA_IMPORT_QNAME.equals(name) ||
+                                SCHEMA_REDEFINE_QNAME.equals(name)) {
                             String importedDoc = reader.getAttributeValue(null, "schemaLocation");
                             if (importedDoc != null) {
                                 importedDocs.add(new URL(src.getSystemId(), importedDoc).toString());
