@@ -205,13 +205,7 @@
       </zip>
     </target>
 
-    <target name="clean">
-        <delete dir="${build.home}"/>
-        <delete dir="${dist.home}"/>
-        <ant dir="${basedir}/rt" target="clean"/>
-        <ant dir="${basedir}/rt-fi" target="clean"/>
-        <ant dir="${basedir}/tools/wscompile" target="clean"/>
-        <ant dir="${basedir}/servlet" target="clean"/>
+    <target name="clean" depends="jax-ws.clean">
         <ant dir="${basedir}/transports/local" target="clean"/>
     </target>
 <!-- for now, this gets everything built -->
