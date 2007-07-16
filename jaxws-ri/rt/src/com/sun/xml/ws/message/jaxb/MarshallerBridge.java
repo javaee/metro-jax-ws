@@ -37,8 +37,8 @@
 package com.sun.xml.ws.message.jaxb;
 
 import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.v2.runtime.JAXBContextImpl;
 import com.sun.xml.bind.v2.runtime.MarshallerImpl;
 import org.w3c.dom.Node;
@@ -77,7 +77,7 @@ final class MarshallerBridge extends Bridge {
     public void marshal(Marshaller m, Object object, OutputStream output, NamespaceContext nsContext) throws JAXBException {
         m.setProperty(Marshaller.JAXB_FRAGMENT,true);
         try {
-            m.marshal(object,output);
+            ((MarshallerImpl)m).marshal(object,output,nsContext);
         } finally {
             m.setProperty(Marshaller.JAXB_FRAGMENT,false);
         }
