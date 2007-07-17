@@ -142,11 +142,12 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
             return packet;
         } catch (InvalidMapException e) {
-            LOGGER.log(Level.WARNING,addressingVersion.getInvalidMapText(),e);
+            LOGGER.log(Level.WARNING,
+                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
             soapFault = helper.newInvalidMapFault(e, addressingVersion);
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
         } catch (MapRequiredException e) {
-            LOGGER.log(Level.WARNING,addressingVersion.getMapRequiredText(),e);
+            LOGGER.log(Level.WARNING,addressingVersion.getMapRequiredText()+", Problem header:"+ e.getMapQName(),e);
             soapFault = helper.newMapRequiredFault(e, addressingVersion);
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
         }

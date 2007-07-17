@@ -113,7 +113,8 @@ public final class WsaServerTube extends WsaTube {
             replyTo = hl.getReplyTo(addressingVersion, soapVersion);
             faultTo = hl.getFaultTo(addressingVersion, soapVersion);
         } catch (InvalidMapException e) {
-            LOGGER.log(Level.WARNING,addressingVersion.getInvalidMapText(),e);
+            LOGGER.log(Level.WARNING,
+                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
             SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
             if (request.getMessage().isOneWay(wsdlPort)) {
