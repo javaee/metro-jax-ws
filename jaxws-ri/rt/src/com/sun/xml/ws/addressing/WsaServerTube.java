@@ -66,10 +66,12 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
 import java.net.URI;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Handles WS-Addressing for the server.
  *
+ * @author Rama Pulavarthi
  * @author Kohsuke Kawaguchi
  * @author Arun Gupta
  */
@@ -111,11 +113,12 @@ public final class WsaServerTube extends WsaTube {
             replyTo = hl.getReplyTo(addressingVersion, soapVersion);
             faultTo = hl.getFaultTo(addressingVersion, soapVersion);
         } catch (InvalidMapException e) {
+            LOGGER.log(Level.WARNING,addressingVersion.getInvalidMapText(),e);
             SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
             if (request.getMessage().isOneWay(wsdlPort)) {
-                request.createServerResponse(null, wsdlPort, null, binding);
-                return doInvoke(next, request);
+                Packet response = request.createServerResponse(null, wsdlPort, null, binding);
+                return doReturnWith(response);
             }
 
             Message m = Messages.create(soapFault);
@@ -147,7 +150,7 @@ public final class WsaServerTube extends WsaTube {
         // if one-way message and WS-A header processing fault has occurred,
         // then do no further processing
         if (p.getMessage() == null)
-            // TODO: record the problem that we are dropping this problem on the floor.
+            // request message is invalid, exception is logged by now  and response is sent back  with null message
             return doReturnWith(p);
 
         // if we find an error in addressing header, just turn around the direction here
