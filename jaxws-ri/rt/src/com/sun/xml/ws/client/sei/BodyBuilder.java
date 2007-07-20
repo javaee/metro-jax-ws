@@ -120,10 +120,10 @@ abstract class BodyBuilder {
         /**
          * Creates a {@link BodyBuilder} from a bare parameter.
          */
-        Bare(ParameterImpl p, SOAPVersion soapVersion) {
+        Bare(ParameterImpl p, SOAPVersion soapVersion, ValueGetter getter) {
             super(p.getBridge(), soapVersion);
             this.methodPos = p.getIndex();
-            this.getter = ValueGetter.get(p);
+            this.getter = getter;
         }
 
         /**
@@ -151,7 +151,7 @@ abstract class BodyBuilder {
          */
         protected final ValueGetter[] getters;
 
-        protected Wrapped(WrapperParameter wp, SOAPVersion soapVersion) {
+        protected Wrapped(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
             super(wp.getBridge(), soapVersion);
 
             List<ParameterImpl> children = wp.getWrapperChildren();
@@ -161,7 +161,7 @@ abstract class BodyBuilder {
             for( int i=0; i<indices.length; i++ ) {
                 ParameterImpl p = children.get(i);
                 indices[i] = p.getIndex();
-                getters[i] = ValueGetter.get(p);
+                getters[i] = getter.get(p);
             }
         }
     }
@@ -184,8 +184,8 @@ abstract class BodyBuilder {
         /**
          * Creates a {@link BodyBuilder} from a {@link WrapperParameter}.
          */
-        DocLit(WrapperParameter wp, SOAPVersion soapVersion) {
-            super(wp, soapVersion);
+        DocLit(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
+            super(wp, soapVersion, getter);
 
             wrapper = (Class)wp.getBridge().getTypeReference().type;
 
@@ -260,8 +260,8 @@ abstract class BodyBuilder {
         /**
          * Creates a {@link BodyBuilder} from a {@link WrapperParameter}.
          */
-        RpcLit(WrapperParameter wp, SOAPVersion soapVersion) {
-            super(wp, soapVersion);
+        RpcLit(WrapperParameter wp, SOAPVersion soapVersion, ValueGetterFactory getter) {
+            super(wp, soapVersion, getter);
             // we'll use CompositeStructure to pack requests
             assert wp.getTypeReference().type==CompositeStructure.class;
 

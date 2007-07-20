@@ -36,8 +36,6 @@
 
 package com.sun.xml.ws.client.sei;
 
-import com.sun.xml.ws.model.ParameterImpl;
-
 import javax.jws.WebParam.Mode;
 import javax.xml.ws.Holder;
 
@@ -85,17 +83,9 @@ enum ValueGetter {
 
     /**
      * Gets the value to be sent, from a parameter given as a method argument.
+     * @param parameter that is passed by proxy
+     * @return if it holder then its value, otherise parameter itself
      */
     abstract Object get(Object parameter);
 
-    /**
-     * Returns a {@link ValueGetter} suitable for the given {@link Parameter}.
-     */
-    static ValueGetter get(ParameterImpl p) {
-        // return value is always PLAIN
-        if(p.getMode()== Mode.IN || p.getIndex() == -1)
-            return PLAIN;
-        else
-            return HOLDER;
-    }
 }

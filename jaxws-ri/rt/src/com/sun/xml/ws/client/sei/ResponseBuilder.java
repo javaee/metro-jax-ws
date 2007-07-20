@@ -474,7 +474,7 @@ abstract class ResponseBuilder {
 
         private final QName wrapperName;
 
-        public DocLit(WrapperParameter wp) {
+        public DocLit(WrapperParameter wp, ValueSetterFactory setterFactory) {
             wrapperName = wp.getName();
             wrapper = wp.getBridge();
             Class wrapperType = (Class) wrapper.getTypeReference().type;
@@ -492,7 +492,7 @@ abstract class ResponseBuilder {
                             wrapperType,
                             name.getNamespaceURI(),
                             p.getName().getLocalPart()),
-                        ValueSetter.get(p)
+                        setterFactory.get(p)
                     ));
                     // wrapper parameter itself always bind to body, and
                     // so do all its children
@@ -581,14 +581,14 @@ abstract class ResponseBuilder {
 
         private QName wrapperName;
 
-        public RpcLit(WrapperParameter wp) {
+        public RpcLit(WrapperParameter wp, ValueSetterFactory setterFactory) {
             assert wp.getTypeReference().type== CompositeStructure.class;
 
             wrapperName = wp.getName();
             List<ParameterImpl> children = wp.getWrapperChildren();
             for (ParameterImpl p : children) {
                 parts.put( p.getName(), new PartBuilder(
-                    p.getBridge(), ValueSetter.get(p)
+                    p.getBridge(), setterFactory.get(p)
                 ));
                 // wrapper parameter itself always bind to body, and
                 // so do all its children
