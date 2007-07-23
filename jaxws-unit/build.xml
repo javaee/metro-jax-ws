@@ -70,10 +70,11 @@
 
     <!-- Run tests on jaxws image -->
     <target name="run-jaxws-image-local" unless="jaxwsdir">
+        <property name="path-to-jaxws-image" location="build/jaxws-ri"/>
         <run-tests>
             <arguments>
                 <arg value="-cp:jaxws-image"/>
-                <arg path="build/jaxws-ri"/>
+                <arg path="${path-to-jaxws-image}"/>
                 <arg value="-transport"/>
                 <arg path="build/jaxws-local-transport.jar"/>
             </arguments>
@@ -82,10 +83,11 @@
 
 
     <target name="run-jaxws-image-with-tomcat-embedded" unless="jaxwsdir">
+        <property name="path-to-jaxws-image" location="build/jaxws-ri"/>
         <run-tests>
             <arguments>
                 <arg value="-cp:jaxws-image"/>
-                <arg path="build/jaxws-ri"/>
+                <arg path="${path-to-jaxws-image}"/>
                 <arg value="-tomcat-embedded"/>
                 <arg value="${tomcat.home}"/>
             </arguments>
