@@ -153,8 +153,7 @@
 
                 <arg value="-report"/>
                 <arg path="${logs.dir}"/>
-                <classpath refid="javac.classpath"/>
-
+                
                 <arguments/>
 
                 <!-- test data -->
