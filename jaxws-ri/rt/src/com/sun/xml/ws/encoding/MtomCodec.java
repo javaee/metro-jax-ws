@@ -272,9 +272,8 @@ public class MtomCodec extends MimeCodec {
         }
 
         public void writeBinary(DataHandler dataHandler) throws XMLStreamException {
-            Base64Data data  = new Base64Data();
-            data.set(dataHandler);
-            writeBinary(new ByteArrayBuffer(data.getDataHandler()));
+            // TODO how do we check threshold and if less inline the data
+            writeBinary(new ByteArrayBuffer(dataHandler));
         }
 
         public OutputStream writeBinary(String contentType) throws XMLStreamException {
