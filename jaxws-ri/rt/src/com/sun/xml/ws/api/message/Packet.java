@@ -652,7 +652,7 @@ public final class Packet extends DistributedPropertySet {
             return r;
         }
         // if one-way, then dont populate any WS-A headers
-        if (message == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
+        if (responseMessage == null || (wsdlPort != null && message.isOneWay(wsdlPort)))
             return r;
 
         // otherwise populate WS-Addressing headers
