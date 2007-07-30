@@ -217,6 +217,7 @@ public final class StreamMessage extends AbstractMessageImpl {
             return unmarshaller.unmarshal(reader);
         } finally{
             unmarshaller.setAttachmentUnmarshaller(null);
+            XMLStreamReaderUtil.readRest(reader);
             XMLStreamReaderUtil.close(reader);
             XMLStreamReaderFactory.recycle(reader);
         }
@@ -228,6 +229,7 @@ public final class StreamMessage extends AbstractMessageImpl {
         assert unconsumed();
         T r = bridge.unmarshal(reader,
             hasAttachments() ? new AttachmentUnmarshallerImpl(getAttachments()) : null);
+        XMLStreamReaderUtil.readRest(reader);
         XMLStreamReaderUtil.close(reader);
         XMLStreamReaderFactory.recycle(reader);
         return r;
@@ -236,6 +238,7 @@ public final class StreamMessage extends AbstractMessageImpl {
     @Override
     public void consume() {
         assert unconsumed();
+        XMLStreamReaderUtil.readRest(reader);
         XMLStreamReaderUtil.close(reader);
         XMLStreamReaderFactory.recycle(reader);
     }
@@ -271,7 +274,8 @@ public final class StreamMessage extends AbstractMessageImpl {
                 break;
             conv.bridge(reader,writer);
         }
-        reader.close();
+        XMLStreamReaderUtil.readRest(reader);
+        XMLStreamReaderUtil.close(reader);
         XMLStreamReaderFactory.recycle(reader);
     }
 
@@ -334,7 +338,8 @@ public final class StreamMessage extends AbstractMessageImpl {
 
                 conv.bridge();
             }
-            reader.close();
+            XMLStreamReaderUtil.readRest(reader);
+            XMLStreamReaderUtil.close(reader);
             XMLStreamReaderFactory.recycle(reader);
         } catch (XMLStreamException e) {
             Location loc = e.getLocation();
@@ -369,6 +374,8 @@ public final class StreamMessage extends AbstractMessageImpl {
                         XMLStreamReaderUtil.nextElementContent(reader);
                     }
                 }
+                XMLStreamReaderUtil.readRest(reader);
+                XMLStreamReaderUtil.close(reader);
                 XMLStreamReaderFactory.recycle(reader);
 
                 reader = xsb.readAsXMLStreamReader();

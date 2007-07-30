@@ -126,13 +126,20 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     }
 
     public @NotNull InputStream getInput() {
+
         // Light weight http server's InputStream.close() throws exception if
         // all the bytes are not read. Work around until it is fixed.
         return new FilterInputStream(httpExchange.getRequestBody()) {
+            // Workaround for "SJSXP XMLStreamReader.next() closes stream".
+            boolean closed;
+
             @Override
             public void close() throws IOException {
-                while (read() != -1);
-                super.close();
+                if (!closed) {
+                    while (read() != -1);
+                    super.close();
+                    closed = true;
+                }
             }
         };
     }
