@@ -86,7 +86,6 @@ public class WsimportTool {
         this.container = container;
     }
 
-
     public boolean run(String[] args) {
         class Listener extends WsimportListener {
             ConsoleErrorReporter cer = new ConsoleErrorReporter(out == null ? new PrintStream(new NullStream()) : out);
@@ -181,7 +180,7 @@ public class WsimportTool {
                 ServiceGenerator.generate(wsdlModel, options, receiver);
                 CodeWriter cw = new WSCodeWriter(options.sourceDir, options);
                 if (options.verbose)
-                    cw = new ProgressCodeWriter(cw, System.out);
+                    cw = new ProgressCodeWriter(cw, out);
                 options.getCodeModel().build(cw);
             } catch(AbortException e){
                 //error might have been reported
