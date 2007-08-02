@@ -350,10 +350,6 @@ public class MtomCodec extends MimeCodec {
         private boolean xopReferencePresent = false;
         private Base64Data base64AttData;
 
-        //values that will set to whether mtom or not as caller can call getPcData or getTextCharacters
-        private int textLength;
-        private int textStart;
-
         //To be used with #getTextCharacters
         private char[] base64EncodedText;
 
@@ -372,8 +368,6 @@ public class MtomCodec extends MimeCodec {
         public NamespaceContextEx getNamespaceContext() {
             NamespaceContext nsContext = reader.getNamespaceContext();
             return new MtomNamespaceContextEx(nsContext);
-
-
         }
 
         public String getElementTextTrim() throws XMLStreamException {
@@ -406,15 +400,16 @@ public class MtomCodec extends MimeCodec {
         }
 
         public int getTextLength() {
-            if (xopReferencePresent)
-                return textLength;
+            if (xopReferencePresent) {
+                return base64AttData.length();
+            }
             return reader.getTextLength();
         }
 
         public int getTextStart() {
-            //TODO: check if this is correct
-            if (xopReferencePresent)
+            if (xopReferencePresent) {
                 return 0;
+            }
             return reader.getTextStart();
         }
 
@@ -435,9 +430,7 @@ public class MtomCodec extends MimeCodec {
                     if(att != null){
                         base64AttData = new Base64Data();
                         base64AttData.set(att.asDataHandler());
-                        textLength = base64AttData.getDataLen();    // TODO DONT do this here
                     }
-                    textStart = 0;
                     xopReferencePresent = true;
                 } catch (IOException e) {
                     throw new WebServiceException(e);
@@ -452,8 +445,6 @@ public class MtomCodec extends MimeCodec {
             }
             if(xopReferencePresent){
                 xopReferencePresent = false;
-                textStart = 0;
-                textLength = 0;
                 base64EncodedText = null;
             }
             return event;
@@ -500,7 +491,6 @@ public class MtomCodec extends MimeCodec {
             if (xopReferencePresent) {
                 char[] chars = new char[base64AttData.length()];
                 base64AttData.writeTo(chars, 0);
-                textLength = chars.length;
                 return chars;
             }
             return reader.getTextCharacters();
@@ -523,26 +513,17 @@ public class MtomCodec extends MimeCodec {
                     throw new IndexOutOfBoundsException();
                 }
 
-                if(base64EncodedText != null){
-                    base64EncodedText = new char[base64AttData.length()];
-                    base64AttData.writeTo(base64EncodedText, 0);
-                    textLength = base64EncodedText.length;
-                    textStart = 0;
-                }
-
-                if((textStart + sourceStart) > textLength)
+                int textLength = base64AttData.length();
+                if(sourceStart > textLength)
                     throw new IndexOutOfBoundsException();
 
-                int available = textLength - sourceStart;
-                if(available < 0){
-                    throw new IndexOutOfBoundsException("sourceStart is greater than" +
-                            "number of characters associated with this event");
+                if(base64EncodedText == null){
+                    base64EncodedText = new char[base64AttData.length()];
+                    base64AttData.writeTo(base64EncodedText, 0);
                 }
 
-                int copiedLength = Math.min(available,length);
-
-                System.arraycopy(base64EncodedText, getTextStart() + sourceStart , target, targetStart, copiedLength);
-                textStart = sourceStart;
+                int copiedLength = Math.min(textLength - sourceStart, length);
+                System.arraycopy(base64EncodedText, sourceStart , target, targetStart, copiedLength);
                 return copiedLength;
             }
             return reader.getTextCharacters(sourceStart, target, targetStart, length);
@@ -550,9 +531,7 @@ public class MtomCodec extends MimeCodec {
 
         public String getText() {
             if (xopReferencePresent) {
-                String text =  base64AttData.toString();
-                textLength = text.length();
-                return text;
+                return base64AttData.toString();
             }
             return reader.getText();
         }
