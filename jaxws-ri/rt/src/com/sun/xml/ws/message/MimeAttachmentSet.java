@@ -40,7 +40,6 @@ package com.sun.xml.ws.message;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.encoding.MimeMultipartParser;
-import com.sun.xml.ws.message.stream.StreamAttachment;
 import com.sun.xml.ws.resources.EncodingMessages;
 import com.sun.istack.Nullable;
 
@@ -109,8 +108,8 @@ public final class MimeAttachmentSet implements AttachmentSet {
          * Browse thru all the attachments in the mpp, add them to #atts,
          * then return whether its empty.
          */
-        Map<String, StreamAttachment> attachments = mpp.getAttachmentParts();
-        for(Map.Entry<String, StreamAttachment> att : attachments.entrySet()) {
+        Map<String, Attachment> attachments = mpp.getAttachmentParts();
+        for(Map.Entry<String, Attachment> att : attachments.entrySet()) {
             if(atts.get(att.getKey()) == null){
                 atts.put(att.getKey(), att.getValue());
             }

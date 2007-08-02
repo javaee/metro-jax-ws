@@ -431,10 +431,11 @@ public class MtomCodec extends MimeCodec {
                 //its xop reference, take the URI reference
                 String href = reader.getAttributeValue(null, "href");
                 try {
-                    StreamAttachment att = getAttachment(href);
+                    Attachment att = getAttachment(href);
                     if(att != null){
-                        base64AttData = att.asBase64Data();
-                        textLength = base64AttData.getDataLen();
+                        base64AttData = new Base64Data();
+                        base64AttData.set(att.asDataHandler());
+                        textLength = base64AttData.getDataLen();    // TODO DONT do this here
                     }
                     textStart = 0;
                     xopReferencePresent = true;
@@ -483,10 +484,10 @@ public class MtomCodec extends MimeCodec {
         }
 
 
-        private StreamAttachment getAttachment(String cid) throws IOException {
+        private Attachment getAttachment(String cid) throws IOException {
             if (cid.startsWith("cid:"))
                 cid = cid.substring(4, cid.length());
-            StreamAttachment att = mimeMP.getAttachmentPart(cid);
+            Attachment att = mimeMP.getAttachmentPart(cid);
             if(att == null && needToDecode(cid)){
                 //try not be url decoding it - this is required for Indigo interop, they write content-id without escaping
                 cid = decodeCid(cid);

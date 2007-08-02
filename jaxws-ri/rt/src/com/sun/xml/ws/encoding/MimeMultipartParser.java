@@ -46,6 +46,7 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.ws.message.stream.StreamAttachment;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.api.message.Attachment;
 
 import javax.xml.ws.WebServiceException;
 import java.io.BufferedInputStream;
@@ -81,7 +82,7 @@ public final class MimeMultipartParser {
     private byte[] prevBuffer = new byte[BUFFER_SIZE];
     private boolean firstPart = true;
 
-    private final Map<String, StreamAttachment> attachments = new HashMap<String, StreamAttachment>();
+    private final Map<String, Attachment> attachments = new HashMap<String, Attachment>();
     private StreamAttachment root;
     
     private int cidCounter = 0;
@@ -117,7 +118,7 @@ public final class MimeMultipartParser {
      *         null if root part cannot be found
      *
      */
-    public @Nullable StreamAttachment getRootPart() {
+    public @Nullable Attachment getRootPart() {
         if (root != null) {
             return root;
         }
@@ -132,7 +133,7 @@ public final class MimeMultipartParser {
      *
      * @return Map<String, StreamAttachment> for all attachment parts
      */
-    public @NotNull Map<String, StreamAttachment> getAttachmentParts() {
+    public @NotNull Map<String, Attachment> getAttachmentParts() {
         while(!lastBodyPartFound() && (b != -1)) {
             getNextPart();
         }
@@ -146,9 +147,9 @@ public final class MimeMultipartParser {
      * @return StreamAttachment attachment for contentId
      *         null if there is no attachment for contentId
      */
-    public @Nullable StreamAttachment getAttachmentPart(String contentId) throws IOException {
+    public @Nullable Attachment getAttachmentPart(String contentId) throws IOException {
         //first see if this attachment is already parsed, if so return it
-        StreamAttachment streamAttach = attachments.get(contentId);
+        Attachment streamAttach = attachments.get(contentId);
         if (streamAttach != null) {
             return streamAttach;
         }

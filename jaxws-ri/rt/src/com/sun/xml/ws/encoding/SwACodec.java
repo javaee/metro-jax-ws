@@ -38,6 +38,7 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.message.stream.StreamAttachment;
@@ -66,10 +67,10 @@ public final class SwACodec extends MimeCodec {
     @Override
     protected void decode(MimeMultipartParser mpp, Packet packet) throws IOException {
         // TODO: handle attachments correctly
-        StreamAttachment root = mpp.getRootPart();
+        Attachment root = mpp.getRootPart();
         rootCodec.decode(root.asInputStream(),root.getContentType(),packet);
-        Map<String, StreamAttachment> atts = mpp.getAttachmentParts();
-        for(Map.Entry<String, StreamAttachment> att : atts.entrySet()) {
+        Map<String, Attachment> atts = mpp.getAttachmentParts();
+        for(Map.Entry<String, Attachment> att : atts.entrySet()) {
             packet.getMessage().getAttachments().add(att.getValue());
         }
     }
