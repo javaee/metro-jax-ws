@@ -1,6 +1,25 @@
 How to build
 ===============
+
 Use "ant" to build.
+
+Notes
+=====
+* Requires
+    - JDK 1.5 or latter
+    - ANT 1.6.x or latter
+
+* If using JDK 1.6
+
+If you are using JDK 1.6(your JAVA_HOME points to JDK 1.6 installation), you
+would need to use endorsed mechanism as defined at (http://java.sun.com/javase/6/docs/technotes/guides/standards/)
+before building.
+
+For example:
+
+$cp lib/*-api.jar in to $JAVA_HOME/jre/lib/endorsed
+   (if 'endorsed' directory is not there create it)
+$ant
 
 If using NetBeans 5.5.1, a project directory has been
 created under jaxws-ri. (If you are using NetBeans 4.0, there is a 4.0
