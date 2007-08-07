@@ -485,10 +485,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * Sets additional classes obtained from {@link javax.xml.bind.annotation.XmlSeeAlso} annotation. In starting
      * from wsdl case these classes would most likely be JAXB ObjectFactory that references other classes.
      */
-    public void setAdditionalClasses(Class[] additionalClasses) {
-        for(Class cls:additionalClasses){
+    public void addAdditionalClasses(Class... additionalClasses) {
+        for(Class cls : additionalClasses)
             this.additionalClasses.add(cls);
-        }
     }
 
     private List<Class> additionalClasses = new ArrayList<Class>();

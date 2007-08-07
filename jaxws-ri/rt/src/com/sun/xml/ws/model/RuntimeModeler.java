@@ -47,8 +47,8 @@ import com.sun.xml.ws.api.model.Parameter;
 import com.sun.xml.ws.api.model.ParameterBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPart;
 import com.sun.xml.ws.model.wsdl.WSDLBoundOperationImpl;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLInputImpl;
+import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.localization.Localizable;
@@ -83,8 +83,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 /**
  * Creates a runtime model of a SEI (portClass).
@@ -372,7 +372,7 @@ public class RuntimeModeler {
         //Add additional jaxb classes referenced by {@link XmlSeeAlso}
         XmlSeeAlso xmlSeeAlso = getPrivClassAnnotation(clazz, XmlSeeAlso.class);
         if(xmlSeeAlso != null)
-            model.setAdditionalClasses(xmlSeeAlso.value());
+            model.addAdditionalClasses(xmlSeeAlso.value());
     }
 
     protected boolean isWebMethod(Method method, Class clazz) {
