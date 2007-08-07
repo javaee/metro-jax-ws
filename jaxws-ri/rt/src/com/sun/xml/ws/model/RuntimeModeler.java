@@ -97,7 +97,7 @@ public class RuntimeModeler {
     private BindingID bindingId;
     private Class portClass;
     private AbstractSEIModelImpl model;
-    private com.sun.xml.ws.model.soap.SOAPBindingImpl defaultBinding;
+    private SOAPBindingImpl defaultBinding;
     // can be empty but never null
     private String packageName;
     private String targetNamespace;
