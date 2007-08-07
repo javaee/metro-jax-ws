@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Specification-Title: The Java API for XML Web Services
 Specification-Version: 2.0
 Implementation-Title: JAX-WS Implementation
-Implementation-Version: 2.0
+Implementation-Version: 2.1.3
 Implementation-Vendor: Sun Microsystems Inc
 Implementation-Vendor-Id: com.sun
 Extension-Name: com.sun.tools.ws
+Main-Class: com.sun.tools.ws.WsImport
 Class-Path: jaxws-rt.jar jaxb-xjc.jar relaxngDatatype.jar

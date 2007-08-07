@@ -79,12 +79,8 @@ fi
 if [ -n "$JAVA_HOME" ]
 then
     JAVA="$JAVA_HOME"/bin/java
-    LOCALCLASSPATH="$JAVA_HOME"/lib/tools.jar
 else
     JAVA=java
-    JAVACMD=`which $JAVA`
-    BINDIR=`dirname $JAVACMD`
-    LOCALCLASSPATH="$BINDIR"/../lib/tools.jar
 fi
 
-exec $JAVA $WSIMPORT_OPTS -cp "$LOCALCLASSPATH:$JAXWS_HOME/lib/jaxws-tools.jar" com.sun.tools.ws.WsImport "$@"
+exec "$JAVA" $WSIMPORT_OPTS -jar "$JAXWS_HOME/lib/jaxws-tools.jar" "$@"
