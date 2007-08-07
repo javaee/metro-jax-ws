@@ -54,6 +54,7 @@ import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.util.Pool;
 
 import javax.jws.WebParam.Mode;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import java.lang.reflect.Method;
@@ -482,7 +483,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     }
 
     /**
-     * Sets additional classes obtained from {@link javax.xml.bind.annotation.XmlSeeAlso} annotation. In starting
+     * Adds additional classes obtained from {@link XmlSeeAlso} annotation. In starting
      * from wsdl case these classes would most likely be JAXB ObjectFactory that references other classes.
      */
     public void addAdditionalClasses(Class... additionalClasses) {
