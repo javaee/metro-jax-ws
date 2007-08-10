@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws"
+          xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <!--bindings node="ns1:definitions"-->
+    <enableAsyncMapping>true</enableAsyncMapping>
+  <!--/bindings-->
+
+  <bindings node="wsdl:definitions/wsdl:types/xs:schema[@targetNamespace='urn:test:types']">
+    <ns2:schemaBindings xmlns:ns2="http://java.sun.com/xml/ns/jaxb">
+      <ns2:package name="async.wsdl_hello_lit.client"/>
+    </ns2:schemaBindings>
+  </bindings>
+
+  <bindings node="wsdl:definitions/wsdl:portType[@name='Hello']/wsdl:operation[@name='hello1']">
+    <method name="hello1World"/>
+  </bindings>
+</bindings>
