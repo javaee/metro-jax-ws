@@ -40,9 +40,8 @@ import com.sun.tools.ws.api.wsdl.TWSDLExtensible;
 import com.sun.tools.ws.api.wsdl.TWSDLExtensionHandler;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.util.xml.XmlUtil;
-import com.sun.tools.ws.wscompile.ErrorReceiver;
-import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wscompile.ErrorReceiverFilter;
+import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.Binding;
 import com.sun.tools.ws.wsdl.document.BindingFault;
 import com.sun.tools.ws.wsdl.document.BindingInput;
@@ -79,11 +78,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.io.IOException;
 
 /**
  * A parser for WSDL documents. This parser is used only at the tool time.
@@ -146,7 +145,7 @@ public class WSDLParser {
         // parse external binding files
         for (InputSource value : options.getWSDLBindings()) {
             errReceiver.pollAbort();
-            Document root = forest.parse(value, true); // TODO: I think this should be false - KK
+            Document root = forest.parse(value, false);
             if(root==null)       continue;   // error must have been reported
             Element binding = root.getDocumentElement();
             if (!fixNull(binding.getNamespaceURI()).equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS)
