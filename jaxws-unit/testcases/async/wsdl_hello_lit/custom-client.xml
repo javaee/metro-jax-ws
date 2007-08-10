@@ -2,9 +2,7 @@
 <bindings xmlns="http://java.sun.com/xml/ns/jaxws"
           xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <!--bindings node="ns1:definitions"-->
-    <enableAsyncMapping>true</enableAsyncMapping>
-  <!--/bindings-->
+  <enableAsyncMapping>true</enableAsyncMapping>
 
   <bindings node="wsdl:definitions/wsdl:types/xs:schema[@targetNamespace='urn:test:types']">
     <ns2:schemaBindings xmlns:ns2="http://java.sun.com/xml/ns/jaxb">
