@@ -1,0 +1,7 @@
+<descriptor since="2.0">
+  <description>Trivial WSDL with doc/lit</description>
+  <client href ="*.bsh" />
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl" />
+  </service>
+</descriptor>
