@@ -1,0 +1,100 @@
+<definitions
+  name="HelloTest"
+  targetNamespace="urn:test"
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="urn:test"
+  xmlns:types="urn:test:types">
+
+  <types>
+    <s:schema xmlns:s="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:test:types">
+      <s:complexType name="FooException">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="varString" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="varInt" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="varFloat" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Fault4">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="message" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="count" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="fooElement" type="types:FooException"/>
+      <s:element name="fault2Info" type="s:string"/>
+      <s:element name="fault3Info" type="s:int"/>
+      <s:element name="fault4Element" type="types:Fault4"/>
+      <s:element name="echoElement" type="s:string"/>
+    </s:schema>
+  </types>
+
+  <message name="EchoRequest">
+    <part name="type" element="types:echoElement"/>
+  </message>
+
+  <message name="EchoResponse">
+    <part name="result" element="types:echoElement"/>
+  </message>
+
+  <message name="Fault1Exception">
+    <part name="info" element="types:fooElement"/>
+  </message>
+
+  <message name="Fault2Exception">
+    <part name="info" element="types:fault2Info"/>
+  </message>
+
+  <message name="Fault3Exception">
+    <part name="info" element="types:fault3Info"/>
+  </message>
+
+  <message name="Fault4Exception">
+    <part name="info" element="types:fault4Element"/>
+  </message>
+
+
+  <portType name="Fault">
+    <operation name="echo">
+      <input message="tns:EchoRequest"/>
+      <output message="tns:EchoResponse"/>
+      <fault name="Fault1" message="tns:Fault1Exception"/>
+      <fault name="Fault2" message="tns:Fault2Exception"/>
+      <fault name="Fault3" message="tns:Fault3Exception"/>
+      <fault name="Fault4" message="tns:Fault4Exception"/>
+    </operation>
+  </portType>
+
+  <binding name="FaultBinding" type="tns:Fault">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="echo">
+      <soap:operation soapAction="urn:test:echo"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="Fault1">
+        <soap:fault name="Fault1" use="literal"/>
+      </fault>
+      <fault name="Fault2">
+        <soap:fault name="Fault2" use="literal"/>
+      </fault>
+      <fault name="Fault3">
+        <soap:fault name="Fault3" use="literal"/>
+      </fault>
+      <fault name="Fault4">
+        <soap:fault name="Fault4" use="literal"/>
+      </fault>
+    </operation>
+  </binding>
+
+  <service name="FaultService">
+    <port name="FaultPort" binding="tns:FaultBinding">
+      <soap:address location="http://test.org/fault"/>
+    </port>
+  </service>
+
+</definitions>
