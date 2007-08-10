@@ -44,9 +44,14 @@ import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import com.sun.tools.xjc.util.DOMUtils;
 import com.sun.xml.bind.v2.util.EditDistance;
-import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.DOMUtil;
-import org.w3c.dom.*;
+import com.sun.xml.ws.util.JAXWSUtils;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.namespace.NamespaceContext;
@@ -56,7 +61,12 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -134,7 +144,7 @@ public class Internalizer {
                 }
             } else {
                 //the node does not have
-                wsdlLocation = options.wsdlLocation;
+                wsdlLocation = forest.getFirstRootDocument();
             }
             target = forest.get(wsdlLocation);
 
