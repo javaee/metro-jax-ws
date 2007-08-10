@@ -1,0 +1,17 @@
+<descriptor since="2.1">
+    <description>
+        Test From Java Service in default package
+    </description>
+    <client>
+        assertTrue(echoPort.addNumbers(1,2)== 3);
+    </client>
+    <client>
+        try {
+            echoPort.addNumbers(-1,2);
+            assertTrue(false);
+        } catch(AddNumbersException_Exception e) {
+            //As expected
+        }
+    </client>
+    <service/>
+</descriptor>
