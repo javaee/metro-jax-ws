@@ -1,0 +1,41 @@
+<descriptor since="2.0">
+  <description>This is a Provider test</description>
+  <client><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("arg");
+    req.setExtra("extra");
+    for(i=0; i < 5; i++) {
+        response = helloPort.hello(req, req);
+        assertEquals("arg", response.getArgument());
+        assertEquals("extra", response.getExtra());
+    }
+  ]]></client>
+
+  <client><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("arg");
+    req.setExtra("extra");
+    for(i=0; i < 5; i++) {
+        response = helloAsyncPort.hello(req, req);
+        assertEquals("arg", response.getArgument());
+        assertEquals("extra", response.getExtra());
+    }
+  ]]></client>
+
+  <client><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("fault");
+    req.setExtra("extra");
+    try {
+        response = helloPort.hello(req, req);
+    } catch (SOAPFaultException e) {
+        se = (SOAPFaultException)e;
+        assertEquals("Server was unable to process request. ---> Not a valid accountnumber.", se.getFault().getFaultString());
+    }
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>
