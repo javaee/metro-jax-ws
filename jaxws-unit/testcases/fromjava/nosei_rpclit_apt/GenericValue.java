@@ -3,7 +3,7 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package fromjava.nosei_rpclit_apt.server;
+package fromjava.nosei_rpclit_apt;
 
 
 public final class GenericValue<T> {

@@ -1,5 +1,5 @@
 
-package fromjava.nosei_rpclit_apt.server;
+package fromjava.nosei_rpclit_apt;
 
 @javax.xml.ws.WebFault(name="BarException",
     targetNamespace="urn:test:types")

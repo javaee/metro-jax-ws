@@ -1,4 +1,4 @@
-package fromjava.nosei_rpclit_apt.server;
+package fromjava.nosei_rpclit_apt;
 
 import javax.jws.Oneway;
 import javax.jws.WebMethod;

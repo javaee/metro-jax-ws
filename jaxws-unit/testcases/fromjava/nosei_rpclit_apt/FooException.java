@@ -1,5 +1,5 @@
 
-package fromjava.nosei_rpclit_apt.server;
+package fromjava.nosei_rpclit_apt;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
