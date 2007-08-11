@@ -1,0 +1,22 @@
+<descriptor since="2.0">
+  <description>This is a Provider test</description>
+
+  <client sideEffectFree="true">
+  <description>testSimple</description>
+  <![CDATA[
+        Bar bar = new Bar();
+        bar.setAge(33);
+
+        assertEquals("test", echoImplPort.echoString("test"));
+        assertEquals("Mary & Paul", echoImplPort.echoString("Mary & Paul"));
+        assertEquals(bar.getAge(), echoImplPort.echoBar(bar).getAge());
+        Holder age = new Holder();
+        age.value = 33;
+        echoImplPort.echoIntHolder(age);
+        assertEquals(66, age.value);
+  ]]></client>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>
