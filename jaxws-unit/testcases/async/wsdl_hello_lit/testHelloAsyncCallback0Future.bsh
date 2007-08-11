@@ -1,0 +1,26 @@
+/*
+ * test for bug 6311690
+ */
+orig = 1;
+
+intHolder = new IntHolder();
+response = helloPort.hello0Async(orig,
+    new AsyncHandler() {
+    public void handleResponse(Response resp) {
+        try {
+            // add 10 to make sure this was called
+            intHolder.setValue(resp.get().intValue() + 10);
+        } catch (Exception e) {
+            e.printStackTrace();
+            intHolder.setValue(-100); // will cause failure
+        }
+    }
+});
+
+response.get(15,TimeUnit.SECONDS);
+int intResponseA = intHolder.getValue();
+Thread.sleep(7000);
+int intResponseB = intHolder.getValue();
+if (intResponseB != intResponseA) {
+    fail("Future.isDone() did not wait for response");
+}

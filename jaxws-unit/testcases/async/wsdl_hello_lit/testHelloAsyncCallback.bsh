@@ -4,7 +4,7 @@ extra = "bar";
 req = new Hello_Type();
 req.setArgument(arg);req.setExtra(extra);
 
-helloPort.helloAsync(req, new HelloCallbackHandler());
+response = helloPort.helloAsync(req, new HelloCallbackHandler());
 
 System.out.print("\nWaiting for CallbackHandler to complete...");
 
