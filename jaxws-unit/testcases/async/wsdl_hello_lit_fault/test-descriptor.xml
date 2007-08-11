@@ -41,6 +41,4 @@
     while (!response.isDone())
       ;
   ]]></client>
-  <client><![CDATA[
-  ]]></client>
 </descriptor>
