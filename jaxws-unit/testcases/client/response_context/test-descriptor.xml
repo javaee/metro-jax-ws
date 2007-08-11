@@ -1,4 +1,7 @@
 <descriptor since="2.1" transport="http">
+  <!--
+    This test needs real clean up. All those constants are not used at all.
+  -->
   <description>
     Testing ResponseContext
   </description>
@@ -6,19 +9,19 @@
     <wsdl href="hello_literal.wsdl" />
   </service>
   <client><![CDATA[
-        try {
-            req = new Hello_Type();
-            req.setArgument("foo");
-            req.setExtra("bar");
+    try {
+      req = new Hello_Type();
+      req.setArgument("foo");
+      req.setExtra("bar");
 
-            helloPort.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+      helloPort.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
 
-            response = stub.hello(req);
-            assertNull(response);
-        } catch (Exception e) {
-            rc = stub.getResponseContext();
-            assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
-        }
+      response = stub.hello(req);
+      assertNull(response);
+    } catch (Exception e) {
+      rc = stub.getResponseContext();
+      assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
+    }
   ]]></client>
   <client><![CDATA[
         assertNull(helloPort.getResponseContext());
