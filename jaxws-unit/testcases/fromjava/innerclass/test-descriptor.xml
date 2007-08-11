@@ -1,0 +1,18 @@
+<descriptor since="2.1">
+    <description>
+        Tests Web Service on inner class
+    </description>
+    <client>
+        <![CDATA[
+        Bar bar = new Bar();
+        bar.setAge(33);
+
+        assertNull(echoPort.echoString(null));
+        assertEquals("test", echoPort.echoString("test"));
+        assertEquals("Mary & Paul", echoPort.echoString("Mary & Paul"));
+        assertNull(echoPort.echoBar(null));
+        assertEquals(bar.getAge(), echoPort.echoBar(bar).getAge());
+        ]]>
+    </client>
+    <service class="fromjava.innerclass.EchoImpl$EchoInner"/>
+</descriptor>
