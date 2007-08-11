@@ -18,7 +18,7 @@
   <client><![CDATA[
     try{
         helloPort.hello(req);
-        fail();
+        assertNull(response.get());
     } catch(Exception e){
         System.out.println("e is " + e.getClass().getName());
         assertTrue(e instanceof HelloFault);
@@ -27,7 +27,6 @@
   <client><![CDATA[
     try{
       block(helloPort.helloAsync(req));
-      fail();
     } catch(Exception e){
       assertTrue(e instanceof ExecutionException);
       assertTrue(e.getCause() instanceof HelloFault);
@@ -35,6 +34,6 @@
   ]]></client>
   <client><![CDATA[
     response = helloPort.helloAsync(req, new HelloCallbackHandler());
-    block();
+    block(response);
   ]]></client>
 </descriptor>
