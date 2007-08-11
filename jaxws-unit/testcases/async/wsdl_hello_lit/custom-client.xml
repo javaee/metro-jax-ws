@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <bindings xmlns="http://java.sun.com/xml/ns/jaxws"
-          xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <enableAsyncMapping>true</enableAsyncMapping>
 
