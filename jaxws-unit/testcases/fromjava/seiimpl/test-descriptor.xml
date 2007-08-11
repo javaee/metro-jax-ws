@@ -1,13 +1,33 @@
 <descriptor since="2.0">
   <description>This is a Provider test</description>
-  <client sideEffectFree="true"><![CDATA[
-        Bar bar = new Bar();
+
+  <client sideEffectFree="true">
+  <description>testSimple</description>
+  <![CDATA[
+        bar = new Bar();
         bar.setAge(33);
-        assertTrue(echoImplPort.echoString("test").equals("test"));
-        assertTrue(echoImplPort.echoString("Mary & Paul").equals("Mary & Paul"));
-        assertTrue(echoImplPort.echoBar(bar).getAge() == bar.getAge());
+        assertEquals("test", echoImplPort.echoString("test"));
+        assertEquals("Mary & Paul", echoImplPort.echoString("Mary & Paul"));
+        assertEquals(bar.getAge(), echoImplPort.echoBar(bar).getAge());
   ]]></client>
 
+  <client sideEffectFree="true">
+  <description>echoBarList</description>
+  <![CDATA[
+        bar1 = new Bar();
+        bar1.setAge(33); 
+        bar2 = new Bar();
+        bar2.setAge(44);
+
+        barList = new ArrayList();
+        barList.add(bar1);
+        barList.add(bar2);
+
+        retList = echoImplPort.echoBarList(barList);
+        assertEquals(2, retList.size());
+        assertEquals(bar1.getAge(), retList.get(0).getAge());
+        assertEquals(bar2.getAge(), retList.get(1).getAge());
+  ]]></client>
 
   <service basedir="./server">
   </service>
