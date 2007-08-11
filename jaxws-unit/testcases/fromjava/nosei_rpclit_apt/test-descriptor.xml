@@ -1,0 +1,181 @@
+<descriptor since="2.1">
+  <description>
+    Test multibyte service names
+  </description>
+  <service />
+  <client><![CDATA[
+    //this test no more applies as rpclit body parts cant take null parameter
+    // since there are other tests that test this nullability, this test is commentedout
+    //assertTrue(echoPort.echoBook(null) == null);
+    assertEquals(echoPort.echoBook(Book.JWSDP),Book.JWSDP);
+    assertEquals(echoPort.echoStatus(Status.YELLOW),Status.YELLOW);
+  ]]></client>
+  <client><![CDATA[
+    var = new GenericValue();
+    var.setValue("fred");
+    assertEquals(echoPort.echoGenericString(var).getValue(),"fred&john");
+    var.setValue(null);
+    assertNull(echoPort.echoGenericString(var).getValue());
+
+    var.setValue(33);
+    assertEquals(echoPort.echoGenericInteger(var).getValue(),33);
+
+    assertEquals(echoPort.echoGenericObject(66),66);
+    assertEquals(echoPort.echoGenericObject("bill"),"bill");
+  ]]></client>
+  <client><![CDATA[
+        Bar bar = new Bar();
+        bar.setAge(33);
+
+        assertEquals(echoPort.echoString("foo"),"foo");
+        assertEquals(echoPort.echoString("test"),"test");
+        assertEquals(echoPort.echoString("Mary & Paul"),"Mary & Paul");
+
+        assertEquals(echoPort.echoInt(33),33);
+
+        //System.out.println("echoPort.echoBar(): "+echoPort.echoBar(null));
+//        assertTrue(echoPort.echoBar(null) == null);
+        assertEquals(echoPort.echoBar(bar).getAge(),bar.getAge());
+
+        InnerBar innerBar = new InnerBar();
+        innerBar.setName("doug");
+        assertEquals(echoPort.echoInnerBar(innerBar).getName(),"dougdoug");
+  ]]></client>
+  <client><![CDATA[
+    try {
+        echoPort.echoString("Exception1");
+        fail();
+    } catch (Exception1_Exception e){
+        Exception1 ex = e.getFaultInfo();
+        assertEquals(ex.getFaultString(),"my exception1");
+        assertTrue(ex.isValid());
+    }
+  ]]></client>
+  <client><![CDATA[
+    try {
+      echoPort.echoString("Fault1");
+      fail();
+    } catch (Fault1 e){
+        FooException ex = e.getFaultInfo();
+        assertEquals(e.getMessage(),"fault1");
+        assertEquals(ex.getVarFloat(),44F);
+        assertEquals(ex.getVarInt(),33);
+        assertEquals(ex.getVarString(),"foo");
+    }
+  ]]></client>
+  <client><![CDATA[
+    try {
+      echoPort.echoString("WSDLBarException");
+      fail();
+    } catch (WSDLBarException e){
+      Bar ex = e.getFaultInfo();
+      assertEquals(e.getMessage(),"my barException");
+      assertEquals(ex.getAge(),33);
+   }
+  ]]></client>
+  <client><![CDATA[
+    try {
+      echoPort.echoString("Fault2");
+      fail();
+    } catch (Fault2_Exception e){
+      assertEquals(e.getMessage(),"my fault2");
+      Fault2 fault2 = e.getFaultInfo();
+      assertEquals(fault2.getAge(),33);
+    }
+  ]]></client>
+  <client><![CDATA[
+    strHolder = new Holder("fred");
+
+    assertEquals(echoPort.outString("tmp", strHolder, 44),"tmp");
+    assertEquals(strHolder.value,"tmp44");
+    strHolder.value = "fred";
+
+    assertEquals(echoPort.inOutString("tmp", strHolder, 44),"tmp");
+    assertEquals(strHolder.value,"fredfred");
+
+    longHolder = new Holder();
+    assertEquals(echoPort.outLong(33, longHolder, "tmp"),33);
+
+    assertEquals(longHolder.value,345L);
+    assertEquals(echoPort.inOutLong(44, longHolder, "tmp"),44);
+    assertEquals(longHolder.value,690L);
+  ]]></client>
+  <client><![CDATA[
+        assertTrue(echoPort.echoInHeader(33, 34L, "fred") == 34L);
+
+        longHolder = new Holder(new Long(44));
+        assertEquals(echoPort.echoInOutHeader(33, longHolder, "fred"),"fred88");
+        assertEquals(longHolder.value,88L);
+
+
+        longHolder = new Holder();
+        assertTrue(echoPort.echoOutHeader(33, longHolder, "fred").equals("fred33"));
+        assertTrue(longHolder.value == 33L);
+  ]]></client>
+  <client><![CDATA[
+        StringArray strArray = new StringArray();
+//        List<String> list = strArray.getItem();
+        strArray.getItem().add("Mary");
+        strArray.getItem().add("Paul");
+//        String[] strArray = new String[] { "Mary", "Paul" };
+
+        StringArray returnArray = echoPort.echoStringArray(strArray);
+        assertTrue(returnArray.getItem().size() == strArray.getItem().size());
+        assertTrue(returnArray.getItem().get(0).equals(strArray.getItem().get(0)));
+        assertTrue(returnArray.getItem().get(1).equals(strArray.getItem().get(1)));
+//        assertTrue(returnArray[1].equals(strArray[1]));
+  ]]></client>
+  <client><![CDATA[
+        Bar bar = new Bar();
+        bar.setAge(33);
+        Bar bar2 = new Bar();
+        bar2.setAge(44);
+      BarArray array = new BarArray();
+      array.getItem().add(bar);
+      array.getItem().add(bar2);
+
+        BarArray barArray = echoPort.echoBarArray(array);
+        assertTrue(barArray.getItem().size() == 2);
+        assertTrue(barArray.getItem().get(0).getAge() == bar.getAge());
+        assertTrue(barArray.getItem().get(1).getAge() == bar2.getAge());
+  ]]></client>
+  <client><![CDATA[
+        Bar bar = new Bar();
+        bar.setAge(33);
+        Bar bar2 = new Bar();
+        bar2.setAge(44);
+//    BarArray array = new BarArray();
+//    array.getItem().add(bar);
+//    array.getItem().add(bar2);
+
+        BarArray barArray = echoPort.echoBarAndBar(bar, bar2);
+        assertTrue(barArray.getItem().size() == 2);
+        assertTrue(barArray.getItem().get(0).getAge() == bar.getAge());
+        assertTrue(barArray.getItem().get(1).getAge() == bar2.getAge());
+//        assertTrue(barArray[0].getAge() == bar.getAge());
+//        assertTrue(barArray[1].getAge() == bar2.getAge());
+  ]]></client>
+  <client><![CDATA[
+        echoPort.oneway();
+        assertTrue(echoPort.verifyOneway());
+  ]]></client>
+  <client><![CDATA[
+        assertTrue(echoPort.helloWorld().equals("hello world"));
+        echoPort.oneWayOperation();
+        assertTrue(echoPort.overloadedOperation("fred").equals("fred"));
+        assertTrue(echoPort.overloadedOperation2("ernie", " and bert").equals("ernie and bert"));
+        StringArray strArray = echoPort.arrayOperation();
+        assertTrue(strArray.getItem().get(0).equals("one"));
+        assertTrue(strArray.getItem().get(1).equals("two"));
+        assertTrue(strArray.getItem().get(2).equals("three"));
+        assertTrue(echoPort.arrayOperationFromClient(strArray).equals("success"));
+        h1 = new Holder("Hello1");
+        h2 = new Holder("Hello2");
+        assertTrue(echoPort.holderOperation(h1, h2).equals("success"));
+        assertTrue(h1.value.equals("Hello11"));
+        assertTrue(h2.value.equals("Hello22"));
+  ]]></client>
+  <client><![CDATA[
+        assertTrue(echoPort.echoIntHeaderResult(33) == 66);
+  ]]></client>
+v</descriptor>
