@@ -1,0 +1,73 @@
+spatch<SOAPMessage> createDispatchSOAPMessage() throws Exception {
+        Service service = Service.create(serviceQName);
+        service.addPort(portQName, SOAPBinding.SOAP11HTTP_BINDING, setTransport(endpointAddress));
+        dispatch = service.createDispatch(portQName, SOAPMessage.class,
+            Service.Mode.MESSAGE);
+        ClientServerTestUtil util = new ClientServerTestUtil();
+        return dispatch;
+    }
+
+    public void testDataSource() throws Exception {
+        Service service = Service.create(serviceQName);
+        service.addPort(portQName, HTTPBinding.HTTP_BINDING, endpointAddress);
+        Dispatch<DataSource> dispatch = service.createDispatch(portQName, DataSource.class, Service.Mode.MESSAGE);
+        final SOAPMessage message = getSOAPMessage();
+        DataSource ds = new DataSource() {
+            public InputStream getInputStream() {
+                try {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                     message.writeTo(bos);
+                    bos.close();
+                    return new ByteArrayInputStream(bos.toByteArray());
+                } catch(Exception ioe) {
+                    throw new RuntimeException(ioe);
+                }
+            }
+
+            public OutputStream getOutputStream() {
+                return null;
+            }
+
+            public String getContentType() {
+                return message.getMimeHeaders().getHeader("Content-Type")[0];
+            }
+
+            public String getName() {
+                return "";
+            }
+        };
+
+        DataSource result = dispatch.invoke(ds);
+    }
+
+    public void testHelloRequestResponseSOAPMessage() throws Exception {
+        Dispatch<SOAPMessage> dispatch = createDispatchSOAPMessage();
+        SOAPMessage message = getSOAPMessage();
+        SOAPMessage result = dispatch.invoke(message);
+        assertTrue(result instanceof SOAPMessage);
+    }
+
+    private SOAPMessage getSOAPMessage() throws Exception {
+        byte[] bytes = helloSM.getBytes();
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        MessageFactory factory = MessageFactory.newInstance();
+        SOAPMessage message = factory.createMessage();
+        message.getSOAPPart().setContent(new StreamSource(bis));
+
+        String userDir = System.getProperty("user.dir");
+        String sepChar = System.getProperty("file.separator");
+        String imageFile = userDir+sepChar
+            +"src/server/provider/xmlbind_ds/common_resources/WEB-INF/"
+            +"java.jpg";
+
+        // Attach Image        
+        Image img = Toolkit.getDefaultToolkit().getImage(imageFile);
+        AttachmentPart ap = message.createAttachmentPart(img, "image/jpeg");
+        message.addAttachmentPart(ap);
+
+        message.saveChanges();
+        return message;
+    }
+
+}
+

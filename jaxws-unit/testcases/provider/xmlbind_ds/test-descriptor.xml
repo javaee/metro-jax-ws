@@ -1,0 +1,31 @@
+<descriptor since="2.0">
+  <description>This is a Provider XML/HTTP test</description>
+
+  <client sideEffectFree="true"><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+    for(int i=0; i < 10; i++) {
+      response = helloPort.hello(req, req);
+      assertEquals("foo", response.getArgument());
+      assertEquals("bar", response.getExtra());
+    }
+  ]]></client>
+
+  <client sideEffectFree="true"><![CDATA[
+    try {
+      req = new Hello_Type();
+      req.setArgument("foo1");
+      req.setExtra("bar");
+      response = helloPort.hello(req, req);
+      assertTrue(false);
+    } catch(Exception e) {
+      // Should get an exception
+    }
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>
