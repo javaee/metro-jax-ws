@@ -1,16 +1,14 @@
-<descriptor since="2.0">
+<descriptor since="2.0" transport="http">
   <description>This is a Provider test</description>
   <client sideEffectFree="true"><![CDATA[
     req = new VoidType();
     response = helloPort.voidTest(req);
     assertNotNull(response);
 
-    if (!ClientServerTestUtil.useLocal()) {
-        Map<String, List<String>> map = (Map<String, List<String>>)((BindingProvider)stub).getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
+    map = ((BindingProvider)stub).getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
 
-        assertNotNull(map);
-        assertEquals("bar", map.get("foo").get(0));
-    }
+    assertNotNull(map);
+    assertEquals("bar", map.get("foo").get(0));
 
   ]]></client>
 
