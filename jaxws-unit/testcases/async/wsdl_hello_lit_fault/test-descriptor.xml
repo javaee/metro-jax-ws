@@ -3,11 +3,20 @@
   <service basedir="./server">
     <wsdl href="hello_test.wsdl" />
   </service>
+  <pre-client>
+    req = new Hello_Type();
+    req.setArgument("foo");
+    req.setExtra("bar");
+
+    // wait for the completion of the requets
+    block(response) {
+      System.out.print("\npolling for response ...");
+      while (!response.isDone())
+        Thread.yield();
+    }
+  </pre-client>
   <client><![CDATA[
     try{
-        req = new Hello_Type();
-        req.setArgument("foo");
-        req.setExtra("bar");
         helloPort.hello(req);
         fail();
     } catch(Exception e){
@@ -17,28 +26,15 @@
   ]]></client>
   <client><![CDATA[
     try{
-      req = new Hello_Type();
-      req.setArgument("foo");req.setExtra("bar");
-
-      response = helloPort.helloAsync(req);
-      System.out.print("\npolling for response ...");
-      while (!response.isDone())
-        ;
-
-      assertTrue(response.get() == null);
+      block(helloPort.helloAsync(req));
+      fail();
     } catch(Exception e){
       assertTrue(e instanceof ExecutionException);
       assertTrue(e.getCause() instanceof HelloFault);
     }
   ]]></client>
   <client><![CDATA[
-    req = new Hello_Type();
-    req.setArgument("foo");
-    req.setExtra("bar");
-
     response = helloPort.helloAsync(req, new HelloCallbackHandler());
-    System.out.print("\nWaiting for CallbackHandler to complete...");
-    while (!response.isDone())
-      ;
+    block();
   ]]></client>
 </descriptor>
