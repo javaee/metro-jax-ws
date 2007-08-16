@@ -511,9 +511,9 @@ public class WSDLGenerator {
         PortType portType = portDefinitions.portType().name(model.getPortTypeName().getLocalPart());
         extension.addPortTypeExtension(portType);
         for (JavaMethodImpl method : model.getJavaMethods()) {
-//            Operation operation = portType.operation().name(method.getOperation().getLocalName());
             Operation operation = portType.operation().name(method.getOperationName());
             generateParameterOrder(operation, method);
+            extension.addOperationExtension(operation, method);
             switch (method.getMEP()) {
                 case REQUEST_RESPONSE:
                     // input message
