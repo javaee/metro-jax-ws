@@ -45,7 +45,7 @@
   attributeFormDefault="unqualified"
   version="1.0">
 
-  <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocaption="http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd" />
+  <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocation="http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd" />
 
   <xsd:element name="endpoints">
     <xsd:complexType>
