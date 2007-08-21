@@ -420,6 +420,13 @@
          dest="lib/stax-ex-src.zip" />
   </target>
 
+  <target name="integrate-mimepull" depends="prepare"
+          description="integrate the last successful mimepull Hudson build">
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.0-SNAPSHOT/mimepull-1.0-SNAPSHOT.jar"
+         dest="lib/mimepull.jar" />
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.0-SNAPSHOT/mimepull-1.0-SNAPSHOT-sources.jar"
+         dest="lib/mimepull-src.zip" />
+  </target>
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
