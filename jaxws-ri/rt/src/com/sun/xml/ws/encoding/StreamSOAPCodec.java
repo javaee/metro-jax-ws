@@ -77,7 +77,7 @@ import java.util.Map;
  * @author Paul Sandoz
  */
 @SuppressWarnings({"StringEquality"})
-public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamSOAPCodec {
+public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamSOAPCodec, RootOnlyCodec {
 
     private static final String SOAP_ENVELOPE = "Envelope";
     private static final String SOAP_HEADER = "Header";
@@ -125,14 +125,7 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
     protected abstract List<String> getExpectedContentTypes();
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        List<String> expectedContentTypes = getExpectedContentTypes();
-        if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
-            throw new UnsupportedMediaException(contentType, expectedContentTypes);
-        }
-        String charset = new ContentTypeImpl(contentType).getCharSet();
-        XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
-        reader =  new TidyXMLStreamReader(reader, in);
-        packet.setMessage(decode(reader));
+        decode(in, contentType, packet, new AttachmentSetImpl());
     }
 
     /*
@@ -292,6 +285,20 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
         return new MutableXMLStreamBuffer();
     }
 
+    public void decode(InputStream in, String contentType, Packet packet, AttachmentSet att ) throws IOException {
+        List<String> expectedContentTypes = getExpectedContentTypes();
+        if (contentType != null && !isContentTypeSupported(contentType,expectedContentTypes)) {
+            throw new UnsupportedMediaException(contentType, expectedContentTypes);
+        }
+        String charset = new ContentTypeImpl(contentType).getCharSet();
+        XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
+        reader =  new TidyXMLStreamReader(reader, in);
+        packet.setMessage(decode(reader, att));
+    }
+
+    public void decode(ReadableByteChannel in, String contentType, Packet response, AttachmentSet att ) {
+        throw new UnsupportedOperationException();
+    }
 
 
 

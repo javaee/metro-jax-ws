@@ -42,6 +42,7 @@ import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.message.stream.StreamAttachment;
+import com.sun.xml.ws.message.MimeAttachmentSet;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -68,10 +69,14 @@ public final class SwACodec extends MimeCodec {
     protected void decode(MimeMultipartParser mpp, Packet packet) throws IOException {
         // TODO: handle attachments correctly
         Attachment root = mpp.getRootPart();
-        rootCodec.decode(root.asInputStream(),root.getContentType(),packet);
-        Map<String, Attachment> atts = mpp.getAttachmentParts();
-        for(Map.Entry<String, Attachment> att : atts.entrySet()) {
-            packet.getMessage().getAttachments().add(att.getValue());
+        if (rootCodec instanceof RootOnlyCodec) {
+            ((RootOnlyCodec)rootCodec).decode(root.asInputStream(),root.getContentType(),packet, new MimeAttachmentSet(mpp));
+        } else {
+            rootCodec.decode(root.asInputStream(),root.getContentType(),packet);
+            Map<String, Attachment> atts = mpp.getAttachmentParts();
+            for(Map.Entry<String, Attachment> att : atts.entrySet()) {
+                packet.getMessage().getAttachments().add(att.getValue());
+            }
         }
     }
 
