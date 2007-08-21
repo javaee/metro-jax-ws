@@ -46,21 +46,22 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.ws.message.stream.StreamAttachment;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.AttachmentPart;
 import javax.activation.DataHandler;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.jvnet.mimepull.MIMEMessage;
 import org.jvnet.mimepull.MIMEConfig;
@@ -70,18 +71,19 @@ import org.jvnet.mimepull.MIMEPart;
  * Parses Mime multipart message into primary part and attachment parts. It
  * parses the stream lazily as and when required.
  *
- * TODO need a list to keep all the attachments so that even if Content-Id is
- * not there it is accounted
- *
  * @author Vivek Pandey
  * @author Jitendra Kotamraju
  */
 public final class MimeMultipartParser {
 
     private final String start;
-    private final Map<String, Attachment> attachments = new HashMap<String, Attachment>();
-    private PartAttachment root;
     private final MIMEMessage message;
+    private Attachment root;
+    
+    // Attachments without root part
+    private final Map<String, Attachment> attachments = new HashMap<String, Attachment>();
+
+    private boolean gotAll;
 
     public MimeMultipartParser(InputStream in, String contentType) {
         try {
@@ -124,7 +126,18 @@ public final class MimeMultipartParser {
      * @return Map<String, StreamAttachment> for all attachment parts
      */
     public @NotNull Map<String, Attachment> getAttachmentParts() {
-        throw new UnsupportedOperationException();
+        if (!gotAll) {
+            MIMEPart rootPart = (start != null) ? message.getPart(start) : message.getPart(0);
+            List<MIMEPart> parts = message.getAttachments();
+            for(MIMEPart part : parts) {
+                if (part != rootPart) {
+                    PartAttachment attach = new PartAttachment(part);
+                    attachments.put(attach.getContentId(), attach);
+                }
+            }
+            gotAll = true;
+        }
+        return attachments;
     }
 
     /**
@@ -148,6 +161,7 @@ public final class MimeMultipartParser {
     static class PartAttachment implements Attachment {
 
         final MIMEPart part;
+        byte[] buf;
 
         PartAttachment(MIMEPart part) {
             this.part = part;
@@ -162,27 +176,41 @@ public final class MimeMultipartParser {
         }
 
         public byte[] asByteArray() {
-            throw new UnsupportedOperationException();
+            if (buf == null) {
+                ByteArrayBuffer baf = new ByteArrayBuffer();
+                try {
+                    baf.write(part.readOnce());
+                } catch(IOException ioe) {
+                    throw new WebServiceException(ioe);
+                }
+                buf = baf.toByteArray();
+            }
+            return buf;
         }
 
         public DataHandler asDataHandler() {
-            return new StreamingDataHandler(part);
+            return (buf != null)
+                ? new DataHandler(new ByteArrayDataSource(buf,getContentType()))
+                : new StreamingDataHandler(part);
         }
 
         public Source asSource() {
-            throw new UnsupportedOperationException();
+            return (buf != null)
+                ? new StreamSource(new ByteArrayInputStream(buf))
+                : new StreamSource(part.readOnce());
         }
 
         public InputStream asInputStream() {
-            return part.readOnce();
+            return (buf != null)
+                ? new ByteArrayInputStream(buf) : part.readOnce();
         }
 
         public void writeTo(OutputStream os) throws IOException {
-            throw new UnsupportedOperationException();
+            os.write(buf);
         }
 
         public void writeTo(SOAPMessage saaj) throws SOAPException {
-            throw new UnsupportedOperationException();
+            saaj.createAttachmentPart().setDataHandler(asDataHandler());
         }
     }
 
