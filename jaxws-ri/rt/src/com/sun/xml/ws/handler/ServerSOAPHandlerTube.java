@@ -197,8 +197,10 @@ public class ServerSOAPHandlerTube extends HandlerTube {
         Map<String, DataHandler> atts = (Map<String, DataHandler>) context.get(MessageContext.OUTBOUND_MESSAGE_ATTACHMENTS);
         AttachmentSet attSet = packet.getMessage().getAttachments();
         for(String cid : atts.keySet()){
-            Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
-            attSet.add(att);
+            if (attSet.get(cid) == null) { // Otherwise we would be adding attachments twice
+                Attachment att = new DataHandlerAttachment(cid, atts.get(cid));
+                attSet.add(att);
+            }
         }
 
         try {
