@@ -39,34 +39,29 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.InternetHeaders;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
-import com.sun.xml.ws.message.stream.StreamAttachment;
-import com.sun.xml.ws.util.ASCIIUtility;
+import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.developer.MIMEFeature;
+import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
-import com.sun.xml.ws.api.message.Attachment;
-import com.sun.xml.ws.developer.StreamingDataHandler;
-import com.sun.xml.ws.developer.MIMEFeature;
+import org.jvnet.mimepull.MIMEMessage;
+import org.jvnet.mimepull.MIMEPart;
 
-import javax.xml.ws.WebServiceException;
+import javax.activation.DataHandler;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.AttachmentPart;
-import javax.activation.DataHandler;
-import java.io.*;
-import java.util.BitSet;
+import javax.xml.ws.WebServiceException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-
-import org.jvnet.mimepull.MIMEMessage;
-import org.jvnet.mimepull.MIMEConfig;
-import org.jvnet.mimepull.MIMEPart;
+import java.util.Map;
 
 /**
  * Parses Mime multipart message into primary part and attachment parts. It
@@ -93,7 +88,9 @@ public final class MimeMultipartParser {
             if (boundary == null || boundary.equals("")) {
                 throw new WebServiceException("MIME boundary parameter not found" + contentType);
             }
-            message = new MIMEMessage(in, boundary, feature.getConfig());
+            message = (feature != null)
+                    ? new MIMEMessage(in, boundary, feature.getConfig())
+                    : new MIMEMessage(in, boundary);
             // Strip <...> from root part's Content-ID
             String st = ct.getParameter("start");
             if (st != null && st.length() > 2 && st.charAt(0) == '<' && st.charAt(st.length()-1) == '>') {
