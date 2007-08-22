@@ -189,14 +189,14 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
     }
     
     public SOAPBindingCodec(WSBinding binding, StreamSOAPCodec xmlSoapCodec) {
-        super(binding.getSOAPVersion());
+        super(binding.getSOAPVersion(), binding);
         
         this.xmlSoapCodec = xmlSoapCodec;
         xmlMimeType = xmlSoapCodec.getMimeType();
         
-        xmlMtomCodec = new MtomCodec(version, xmlSoapCodec, binding.getFeature(MTOMFeature.class));
+        xmlMtomCodec = new MtomCodec(version, xmlSoapCodec, binding, binding.getFeature(MTOMFeature.class));
         
-        xmlSwaCodec = new SwACodec(version, xmlSoapCodec);
+        xmlSwaCodec = new SwACodec(version, binding, xmlSoapCodec);
         
         String clientAcceptedContentTypes = xmlSoapCodec.getMimeType() + ", " +
                 xmlMtomCodec.getMimeType() + ", " +
@@ -208,7 +208,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
             fiSoapCodec = getFICodec(xmlSoapCodec, version);
             if (fiSoapCodec != null) {
                 fiMimeType = fiSoapCodec.getMimeType();
-                fiSwaCodec = new SwACodec(version, fiSoapCodec);
+                fiSwaCodec = new SwACodec(version, binding, fiSoapCodec);
                 connegXmlAccept = fiMimeType + ", " + clientAcceptedContentTypes;
                 
                 /**

@@ -49,6 +49,7 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.developer.StreamingDataHandler;
+import com.sun.xml.ws.developer.MIMEFeature;
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.transform.Source;
@@ -85,14 +86,14 @@ public final class MimeMultipartParser {
 
     private boolean gotAll;
 
-    public MimeMultipartParser(InputStream in, String contentType) {
+    public MimeMultipartParser(InputStream in, String contentType, MIMEFeature feature) {
         try {
             ContentType ct = new ContentType(contentType);
             String boundary = ct.getParameter("boundary");
             if (boundary == null || boundary.equals("")) {
                 throw new WebServiceException("MIME boundary parameter not found" + contentType);
             }
-            message = new MIMEMessage(in, boundary, new MIMEConfig(false, 8192, 20000));
+            message = new MIMEMessage(in, boundary, feature.getConfig());
             // Strip <...> from root part's Content-ID
             String st = ct.getParameter("start");
             if (st != null && st.length() > 2 && st.charAt(0) == '<' && st.charAt(st.length()-1) == '>') {

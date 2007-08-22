@@ -38,11 +38,13 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.xml.messaging.saaj.packaging.mime.util.OutputUtil;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
+import com.sun.xml.ws.developer.MIMEFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,9 +77,11 @@ abstract class MimeCodec implements Codec {
     private boolean hasAttachments;
     protected Codec rootCodec;
     protected final SOAPVersion version;
+    protected final WSBinding binding;
 
-    protected MimeCodec(SOAPVersion version) {
+    protected MimeCodec(SOAPVersion version, WSBinding binding) {
         this.version = version;
+        this.binding = binding;
     }
     
     public String getMimeType() {
@@ -145,10 +149,11 @@ abstract class MimeCodec implements Codec {
      */
     protected MimeCodec(MimeCodec that) {
         this.version = that.version;
+        this.binding = that.binding;
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        MimeMultipartParser parser = new MimeMultipartParser(in, contentType);
+        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, binding.getFeature(MIMEFeature.class));
         decode(parser,packet);
     }
 

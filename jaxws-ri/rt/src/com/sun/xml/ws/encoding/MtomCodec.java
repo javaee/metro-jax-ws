@@ -41,6 +41,7 @@ import com.sun.xml.bind.DatatypeConverterImpl;
 import com.sun.xml.bind.v2.runtime.output.Encoded;
 import com.sun.xml.messaging.saaj.packaging.mime.util.OutputUtil;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.Packet;
@@ -98,8 +99,8 @@ public class MtomCodec extends MimeCodec {
     //This is the mtom attachment stream, we should write it just after the root part for decoder
     private final List<ByteArrayBuffer> mtomAttachmentStream = new ArrayList<ByteArrayBuffer>();
 
-    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WebServiceFeature mtomFeature){
-        super(version);
+    MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
+        super(version, binding);
         this.codec = codec;
         createConteTypeHeader();
         this.soapXopContentType = XOP_XML_MIME_TYPE +";charset=utf-8;type=\""+version.contentType+"\"";
@@ -225,7 +226,7 @@ public class MtomCodec extends MimeCodec {
     }
 
     public MtomCodec copy() {
-        return new MtomCodec(version, (StreamSOAPCodec)codec.copy(), mtomFeature);
+        return new MtomCodec(version, (StreamSOAPCodec)codec.copy(), binding, mtomFeature);
     }
 
     private String encodeCid(){

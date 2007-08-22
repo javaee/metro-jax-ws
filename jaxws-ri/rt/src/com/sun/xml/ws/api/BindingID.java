@@ -346,7 +346,7 @@ public abstract class BindingID {
      */
     public static final BindingID XML_HTTP = new Impl(SOAPVersion.SOAP_11, HTTPBinding.HTTP_BINDING,false) {
         public Codec createEncoder(WSBinding binding) {
-            return new XMLHTTPBindingCodec();
+            return new XMLHTTPBindingCodec(binding);
         }
     };
 

@@ -41,6 +41,7 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.api.message.AttachmentSet;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -56,6 +57,7 @@ import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import com.sun.xml.ws.developer.MIMEFeature;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -118,7 +120,7 @@ public final class XMLMessage {
     /**
      * Construct a message given a content type and an input stream.
      */
-    public static Message create(final String ct, InputStream in) {
+    public static Message create(final String ct, InputStream in, WSBinding binding) {
         Message data;
         try {
             in = hasSomeData(in);
@@ -131,7 +133,7 @@ public final class XMLMessage {
                 final ContentType contentType = new ContentType(ct);
                 final int contentTypeId = identifyContentType(contentType);
                 if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                    data = new XMLMultiPart(ct, in);
+                    data = new XMLMultiPart(ct, in, binding.getFeature(MIMEFeature.class));
                 } else if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
                     data = Messages.createUsingPayload(new StreamSource(in),
                             SOAPVersion.SOAP_11);
@@ -154,11 +156,11 @@ public final class XMLMessage {
             Messages.createUsingPayload(source, SOAPVersion.SOAP_11);
     }
 
-    public static Message create(DataSource ds) {
+    public static Message create(DataSource ds, WSBinding binding) {
         try {
             return (ds == null) ? 
                 Messages.createEmpty(SOAPVersion.SOAP_11) : 
-                create(ds.getContentType(), ds.getInputStream());
+                create(ds.getContentType(), ds.getInputStream(), binding);
         } catch(IOException ioe) {
             throw new WebServiceException(ioe);
         }
@@ -274,15 +276,18 @@ public final class XMLMessage {
     public static final class XMLMultiPart extends AbstractMessageImpl implements MessageDataSource {
         private final DataSource dataSource;
         private MimeMultipartParser mpp;
+        private final MIMEFeature feature;
 
-        public XMLMultiPart(final String contentType, final InputStream is) {
+        public XMLMultiPart(final String contentType, final InputStream is, MIMEFeature feature) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
+            this.feature = feature;
         }
         
-        public XMLMultiPart(DataSource dataSource) {
+        public XMLMultiPart(DataSource dataSource, MIMEFeature feature) {
             super(SOAPVersion.SOAP_11);
             this.dataSource = dataSource;
+            this.feature = feature;
         }
 
         public DataSource getDataSource() {
@@ -295,7 +300,7 @@ public final class XMLMessage {
                 try {
                     mpp = new MimeMultipartParser(
                             dataSource.getInputStream(),
-                            dataSource.getContentType());
+                            dataSource.getContentType(), feature);
                 } catch(IOException ioe) {
                     throw new WebServiceException(ioe);
                 }
@@ -511,7 +516,7 @@ public final class XMLMessage {
 
     }
 
-    public static DataSource getDataSource(Message msg) {
+    public static DataSource getDataSource(Message msg, WSBinding binding) {
         if (msg instanceof MessageDataSource) {
             return ((MessageDataSource)msg).getDataSource();
         } else {
@@ -519,7 +524,7 @@ public final class XMLMessage {
             if (atts != null && !atts.isEmpty()) {
                 final ByteOutputStream bos = new ByteOutputStream();
                 try {
-                    Codec codec = new XMLHTTPBindingCodec();
+                    Codec codec = new XMLHTTPBindingCodec(binding);
                     com.sun.xml.ws.api.pipe.ContentType ct = codec.getStaticContentType(new Packet(msg));
                     codec.encode(new Packet(msg), bos);
                     return createDataSource(ct.getContentType(), bos.newInputStream());
