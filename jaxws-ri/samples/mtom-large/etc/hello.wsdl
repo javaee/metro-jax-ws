@@ -16,6 +16,7 @@
             elementFormDefault="qualified">
         <complexType name="uploadType">
             <sequence>
+                <element name="total" type="xsd:int"/>
                 <element name="name" type="xsd:string"/>
                 <element name="data" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
             </sequence>

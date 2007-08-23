@@ -118,8 +118,10 @@
                 <pathelement location="${build.classes.home}"/>
                 <pathelement location="${basedir}/etc"/>
             </classpath>
+<!--
             <jvmarg value="-agentlib:hprof=cpu=times"/>
             <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=${log}"/>
+-->
         </java>
     </target>
 

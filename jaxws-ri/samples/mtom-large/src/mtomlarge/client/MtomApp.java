@@ -60,8 +60,6 @@ import com.sun.xml.ws.developer.JAXWSProperties;
  */
 public class MtomApp {
 
-    //private static final int TOTAL = Integer.MAX_VALUE;
-    private static final int TOTAL = 20000000;
 
     public static void main (String[] args) throws Exception {
         Hello port = new HelloService().getHelloPort(new MTOMFeature());
@@ -71,20 +69,21 @@ public class MtomApp {
     }
 
     private static void testUpload(Hello port) throws Exception {
+        Holder<Integer> total = new Holder<Integer>(123456000);
         Holder<String> name = new Holder<String>("huge");
-        Holder<DataHandler> dh = new Holder<DataHandler>(getDataHandler());
-        port.upload(name, dh);
+        Holder<DataHandler> dh = new Holder<DataHandler>(getDataHandler(total.value));
+        port.upload(total, name, dh);
         if (!"hugehuge".equals(name.value)) {
            System.out.println("FAIL: Expecting: hugehuge Got: "+name.value);
            return;
         }
         System.out.println("SUCCESS: Got: "+name.value);
         System.out.println("Going to verify DataHandler. This would take some time");
-        validateDataHandler(dh.value);
+        validateDataHandler(total.value, dh.value);
         System.out.println("SUCCESS: DataHandler is verified");
     }
 
-    private static DataHandler getDataHandler()  {
+    private static DataHandler getDataHandler(final int total)  {
         return new DataHandler(new DataSource() {
             public InputStream getInputStream() throws IOException {
                 return new InputStream() {
@@ -92,7 +91,7 @@ public class MtomApp {
 
                     @Override
                     public int read() throws IOException {
-                        return i<TOTAL ? 'A'+(i++%26) : -1;
+                        return i<total ? 'A'+(i++%26) : -1;
                     }
                 };
             }
@@ -111,7 +110,9 @@ public class MtomApp {
         });
     }
 
-    private static void validateDataHandler(DataHandler dh) throws IOException {
+    private static void validateDataHandler(int expTotal, DataHandler dh)
+		throws IOException {
+
         InputStream in = dh.getInputStream();
         byte[] buf = new byte[8192];
         int total = 0;
@@ -123,12 +124,14 @@ public class MtomApp {
                 }
             }
             total += len;
-            System.out.print(".");
-            System.out.flush();
+            if (total%(8192*250) == 0) {
+            	System.out.println("Total so far="+total);
+            }
+        }
+        System.out.println();
+        if (total != expTotal) {
+           System.out.println("FAIL: DataHandler data size is different. Expected="+expTotal+" Got="+total);
         }
         in.close();
-        if (total != TOTAL) {
-           System.out.println("FAIL: DataHandler data size is different");
-        }
     }
 }
