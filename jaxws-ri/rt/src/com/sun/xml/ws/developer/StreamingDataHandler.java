@@ -39,33 +39,56 @@ import org.jvnet.mimepull.MIMEPart;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.File;
 
 /**
+ * DataHandler that can be used to access attachments efficiently.
+ * Applications can use the additional methods and decide how to
+ * access the attachment data.
+ *
  * @author Jitendra Kotamraju
  */
 public class StreamingDataHandler extends DataHandler {
-
-    public StreamingDataHandler(DataSource ds) {
-        super(ds);
-    }
-
-    public StreamingDataHandler(Object obj, String mimeType) {
-        super(obj, mimeType);
-    }
-
-    public StreamingDataHandler(URL url) {
-        super(url);
-    }
 
     public StreamingDataHandler(MIMEPart part) {
         super(new StreamingDataSource(part));
     }
 
-    static class StreamingDataSource implements DataSource {
+    /**
+     * Gives attachment data only one time. The attachment data
+     * can be streamed directly without writing to the disk in
+     * some circumstances. For example, if there is only one
+     * attachment, attachment data can be read in a streaming
+     * fashion. Also, this will reduce memory footprint of
+     * the applications.
+     *
+     * <p>
+     * Take advantage of this if the applications need the attachment
+     * data only once.
+     *
+     * @return the content of the attachment
+     * @throws IOException if any i/o error
+     */
+    public InputStream readOnce() throws IOException {
+        StreamingDataSource ds = (StreamingDataSource)this.getDataSource();
+        return ds.readOnce();
+        // TODO: should we capture runtime exception and convert to IOException
+    }
+
+    /**
+     * Moves the attachment data to a given file.
+     *
+     * @param file for attachment data
+     */
+    public void moveTo(File file) {
+        StreamingDataSource ds = (StreamingDataSource)this.getDataSource();
+        ds.moveTo(file);
+    }
+
+    private static final class StreamingDataSource implements DataSource {
         private final MIMEPart part;
 
         StreamingDataSource(MIMEPart part) {
@@ -73,7 +96,15 @@ public class StreamingDataHandler extends DataHandler {
         }
 
         public InputStream getInputStream() throws IOException {
-            return part.read();//readOnce() ??
+            return part.read();             //readOnce() ??
+        }
+
+        InputStream readOnce() throws IOException {
+            return part.readOnce();
+        }
+
+        void moveTo(File file) {
+            part.moveTo(file);
         }
 
         public OutputStream getOutputStream() throws IOException {
