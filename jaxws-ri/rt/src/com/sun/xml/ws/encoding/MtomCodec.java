@@ -50,7 +50,6 @@ import com.sun.xml.ws.api.pipe.StreamSOAPCodec;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.message.MimeAttachmentSet;
-import com.sun.xml.ws.message.stream.StreamAttachment;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
@@ -95,9 +94,6 @@ public class MtomCodec extends MimeCodec {
     private final String soapXopContentType;
     private String messageContentType;
     private final MTOMFeature mtomFeature;
-
-    //This is the mtom attachment stream, we should write it just after the root part for decoder
-    private final List<ByteArrayBuffer> mtomAttachmentStream = new ArrayList<ByteArrayBuffer>();
 
     MtomCodec(SOAPVersion version, StreamSOAPCodec codec, WSBinding binding, WebServiceFeature mtomFeature){
         super(version, binding);
@@ -147,7 +143,6 @@ public class MtomCodec extends MimeCodec {
 
     public ContentType encode(Packet packet, OutputStream out) throws IOException {
         //get the current boundary thaat will be reaturned from this method
-        mtomAttachmentStream.clear();
         ContentType contentType = getContentType(packet);
 
         if(packet.getMessage() != null){
@@ -157,12 +152,15 @@ public class MtomCodec extends MimeCodec {
                 OutputUtil.writeln("Content-Type: "+ soapXopContentType,  out);
                 OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
                 OutputUtil.writeln(out);
-                MtomStreamWriter writer = new MtomStreamWriter(XMLStreamWriterFactory.create(out),out);
+
+                //mtom attachments that need to be written after the root part
+                List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
+                MtomStreamWriter writer = new MtomStreamWriter(XMLStreamWriterFactory.create(out),out, mtomAttachments);
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
                 OutputUtil.writeln(out);
 
-                for(ByteArrayBuffer bos : mtomAttachmentStream){
+                for(ByteArrayBuffer bos : mtomAttachments){
                     bos.write(out);
                 }
 
@@ -256,10 +254,12 @@ public class MtomCodec extends MimeCodec {
     private class MtomStreamWriter extends XMLStreamWriterFilter implements XMLStreamWriterEx {
         private final OutputStream out;
         private final Encoded encoded = new Encoded();
+        private final List<ByteArrayBuffer> mtomAttachments;
 
-        public MtomStreamWriter(XMLStreamWriter w, OutputStream out) {
+        public MtomStreamWriter(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
             super(w);
             this.out = out;
+            this.mtomAttachments = mtomAttachments;
         }
 
         public void writeBinary(byte[] data, int start, int len, String contentType) throws XMLStreamException {
@@ -294,7 +294,7 @@ public class MtomCodec extends MimeCodec {
 
         private void writeBinary(ByteArrayBuffer bab) {
             try {
-                mtomAttachmentStream.add(bab);
+                mtomAttachments.add(bab);
 
                 writer.writeCharacters("");   // Force completion of open elems
                 writer.flush();
