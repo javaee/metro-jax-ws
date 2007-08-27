@@ -90,7 +90,9 @@ public class HelloImpl implements Hello {
     }
 
     private void validateDataHandler(int expTotal, DataHandler dh) throws IOException {
-        InputStream in = dh.getInputStream();
+        // readOnce() doesn't store attachment on the disk in some cases
+        // for e.g when only one attachment is in the message
+        InputStream in = ((com.sun.xml.ws.developer.StreamingDataHandler)dh).readOnce();
         byte[] buf = new byte[8192];
         int total = 0;
         int len;
