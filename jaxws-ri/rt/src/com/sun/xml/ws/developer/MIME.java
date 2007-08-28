@@ -4,6 +4,19 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.lang.annotation.*;
 
 /**
+ * This feature represents the use of MIME attachments with a
+ * web service.
+ *
+ * <pre>
+ * for e.g.: To keep all MIME attachments in memory
+ *
+ * <p>
+ * @WebService
+ * @MIME(allMemory=true)
+ * public class HelloService {
+ * }
+ * </pre>
+ *
  * @author Jitendra Kotamraju
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,17 +30,18 @@ public @interface MIME {
     String dir();
 
     /**
-     * The MIME message is parsed eagerly
+     * MIME message is parsed eagerly
      */
-    boolean parseEagerly();
+    boolean parseEagerly() default false;
 
     /**
      * All the attachments are kept in memory
      */
-    boolean allMemory();
+    boolean allMemory() default false;
 
     /**
-     * After this threshold(no of bytes), large attachments are wriiten to file system
+     * After this threshold(no of bytes), large
+     * attachments are written to file system
      */
-    int memoryThresold();
+    int memoryThresold() default 1048576;
 }
