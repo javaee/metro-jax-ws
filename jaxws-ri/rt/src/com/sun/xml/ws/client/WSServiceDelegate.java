@@ -184,9 +184,14 @@ public class WSServiceDelegate extends WSService {
         //we cant create a Service without serviceName
         if (serviceName == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NAME_NULL(serviceName));
+
+        InitParams initParams = INIT_PARAMS.get();
+        INIT_PARAMS.set(null);  // mark it as consumed
+        if(initParams==null)    initParams = EMPTY_PARAMS;
+
         this.serviceName = serviceName;
         this.serviceClass = serviceClass;
-        this.container = ContainerResolver.getInstance().getContainer();
+        this.container = initParams.getContainer()!=null ? initParams.getContainer() : ContainerResolver.getInstance().getContainer();
 
         // load interceptor
         ServiceInterceptor interceptor = ServiceInterceptorFactory.load(this, Thread.currentThread().getContextClassLoader());

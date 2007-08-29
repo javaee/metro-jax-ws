@@ -37,6 +37,8 @@
 package com.sun.xml.ws.api;
 
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.ContainerResolver;
 import com.sun.xml.ws.client.WSServiceDelegate;
 
 import javax.xml.bind.JAXBContext;
@@ -52,6 +54,8 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JAX-WS implementation of {@link ServiceDelegate}.
@@ -126,6 +130,61 @@ public abstract class WSService extends ServiceDelegate {
      */
     public static WSService create() {
         return create(null,new QName(WSService.class.getName(),"dummy"));
+    }
+
+    /**
+     * Typed parameter bag used by {@link WSService#create(URL, QName, InitParams)}
+     *
+     * @since 2.1.3
+     */
+    public static final class InitParams extends HashMap<String,Object> {
+        public InitParams(Map<String,?> m) {
+            super(m);
+        }
+
+        public InitParams() {
+        }
+
+        /**
+         * Sets the {@link Container} object used by the created service.
+         * This allows the client to use a specific {@link Container} instance
+         * as opposed to the one obtained by {@link ContainerResolver}.
+         */
+        public void setContainer(Container c) {
+            put(Container.class.getName(),c);
+        }
+        public Container getContainer() {
+            return (Container)get(Container.class.getName());
+        }
+    }
+
+    /**
+     * To create a {@link Service}, we need to go through the API that doesn't let us
+     * pass parameters, so as a hack we use thread local.
+     */
+    protected static final ThreadLocal<InitParams> INIT_PARAMS = new ThreadLocal<InitParams>();
+
+    /**
+     * Used as a immutable constant so that we can avoid null check. 
+     */
+    protected static final InitParams EMPTY_PARAMS = new InitParams();
+
+    /**
+     * Creates a {@link Service} instance but with additional 
+     */
+    public static Service create( URL wsdlDocumentLocation, QName serviceName, InitParams properties) {
+        if(INIT_PARAMS.get()!=null)
+            throw new IllegalStateException("someone left non-null InitParams");
+        INIT_PARAMS.set(properties);
+        try {
+            Service svc = Service.create(wsdlDocumentLocation, serviceName);
+            if(INIT_PARAMS.get()!=null)
+                throw new IllegalStateException("Service "+svc+" didn't recognize InitParams");
+            return svc;
+        } finally {
+            // even in case of an exception still reset INIT_PARAMS
+            INIT_PARAMS.set(null);
+        }
     }
 
     /**
