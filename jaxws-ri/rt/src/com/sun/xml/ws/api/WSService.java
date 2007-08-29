@@ -137,24 +137,18 @@ public abstract class WSService extends ServiceDelegate {
      *
      * @since 2.1.3
      */
-    public static final class InitParams extends HashMap<String,Object> {
-        public InitParams(Map<String,?> m) {
-            super(m);
-        }
-
-        public InitParams() {
-        }
-
+    public static final class InitParams {
+        private Container container;
         /**
          * Sets the {@link Container} object used by the created service.
          * This allows the client to use a specific {@link Container} instance
          * as opposed to the one obtained by {@link ContainerResolver}.
          */
         public void setContainer(Container c) {
-            put(Container.class.getName(),c);
+            this.container = c;
         }
         public Container getContainer() {
-            return (Container)get(Container.class.getName());
+            return container;
         }
     }
 
