@@ -61,6 +61,7 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
+import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
@@ -131,14 +132,9 @@ public final class WsaServerTube extends WsaTube {
             Packet response = request.createServerResponse(m, wsdlPort, null, binding);
             return doReturnWith(response);
         }
-        String messageId = hl.getMessageID(addressingVersion, soapVersion);
 
-        // TODO: This is probably not a very good idea.
-        // if someone wants to get this data, let them get from HeaderList.
-        // we can even provide a convenience method
-        //  -- KK.
-        request.invocationProperties.put(REQUEST_MESSAGE_ID, messageId);
-
+        // expose bunch of addressing related properties for advanced applications 
+        request.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,request));
 
         // defaulting
         if (replyTo == null)    replyTo = addressingVersion.anonymousEpr;
@@ -362,6 +358,10 @@ public final class WsaServerTube extends WsaTube {
         }
     }
 
+    /**
+     * @deprecated
+     *      Use {@link JAXWSProperties#ADDRESSING_MESSAGEID}.
+     */
     public static final String REQUEST_MESSAGE_ID = "com.sun.xml.ws.addressing.request.messageID";
 
     private static final Logger LOGGER = Logger.getLogger(WsaServerTube.class.getName());

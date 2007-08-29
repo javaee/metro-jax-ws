@@ -37,6 +37,7 @@ package com.sun.xml.ws.developer;
 
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.addressing.WSEndpointReference;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -142,4 +143,52 @@ public interface JAXWSProperties {
      * @since 2.1.2
      */
     public static final String WSENDPOINT = "com.sun.xml.ws.api.server.WSEndpoint";
+
+    /**
+     * Gets the <tt>wsa:To</tt> header.
+     *
+     * The propery value is available on incoming SOAP message. The type of the value
+     * is {@link WSEndpointReference}.
+     * 
+     * Null if the incoming SOAP message didn't have the header.
+     *
+     * @since 2.1.3
+     */
+    public static final String ADDRESSING_TO = "com.sun.xml.ws.api.addressing.to";
+
+    /**
+     * Gets the <tt>wsa:From</tt> header.
+     *
+     * The propery value is available on incoming SOAP message. The type of the value
+     * is {@link WSEndpointReference}.
+     *
+     * Null if the incoming SOAP message didn't have the header.
+     *
+     * @since 2.1.3
+     */
+    public static final String ADDRESSING_FROM = "com.sun.xml.ws.api.addressing.from";
+
+    /**
+     * Gets the <tt>wsa:Action</tt> header value.
+     *
+     * The propery value is available on incoming SOAP message. The type of the value
+     * is {@link String}.
+     *
+     * Null if the incoming SOAP message didn't have the header.
+     *
+     * @since 2.1.3
+     */
+    public static final String ADDRESSING_ACTION = "com.sun.xml.ws.api.addressing.action";
+
+    /**
+     * Gets the <tt>wsa:MessageID</tt> header value.
+     *
+     * The propery value is available on incoming SOAP message. The type of the value
+     * is {@link String}.
+     *
+     * Null if the incoming SOAP message didn't have the header.
+     *
+     * @since 2.1.3
+     */
+    public static final String ADDRESSING_MESSAGEID = "com.sun.xml.ws.api.addressing.messageId";
 }
