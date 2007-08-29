@@ -45,6 +45,7 @@ import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
+import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
@@ -248,6 +249,11 @@ final class ServletConnectionImpl extends WSHTTPConnection implements WebService
     @Property(MessageContext.SERVLET_REQUEST)
     public HttpServletRequest getRequest() {
         return request;
+    }
+
+    @Property(JAXWSProperties.HTTP_REQUEST_URL)
+    public String getRequestURL() {
+        return request.getRequestURL().toString();
     }
 
     @Override

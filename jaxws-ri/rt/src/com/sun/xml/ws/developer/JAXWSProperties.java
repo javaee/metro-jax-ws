@@ -191,4 +191,15 @@ public interface JAXWSProperties {
      * @since 2.1.3
      */
     public static final String ADDRESSING_MESSAGEID = "com.sun.xml.ws.api.addressing.messageId";
+
+    /**
+     * Reconstructs the URL the client used to make the request. The returned URL
+     * contains a protocol, server name, port number, and server path, but it does
+     * not include query string parameters.
+     * <p>
+     * The property value is available on incoming SOAP message on servlet transport.
+     *
+     * @since 2.1.3
+     */
+    public static final String HTTP_REQUEST_URL = "com.sun.xml.ws.transport.http.servlet.requestURL";
 }
