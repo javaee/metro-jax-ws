@@ -36,9 +36,11 @@
 
 package com.sun.xml.ws.api;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.client.WSServiceDelegate;
 
 import javax.xml.bind.JAXBContext;
@@ -95,6 +97,19 @@ public abstract class WSService extends ServiceDelegate {
      * but it takes the port name separately, so that EPR without embedded metadata can be used.
      */
     public abstract Dispatch<Object> createDispatch(QName portName, WSEndpointReference wsepr, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... features);
+
+    /**
+     * Gets the {@link Container} object.
+     *
+     * <p>
+     * The components inside {@link WSEndpoint} uses this reference
+     * to communicate with the hosting environment.
+     *
+     * @return
+     *      always same object. If no "real" {@link Container} instance
+     *      is given, {@link Container#NONE} will be returned.
+     */
+    public abstract @NotNull Container getContainer();
 
     /**
      * Create a <code>Service</code> instance.

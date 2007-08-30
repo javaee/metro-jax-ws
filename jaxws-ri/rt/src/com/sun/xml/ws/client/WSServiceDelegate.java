@@ -452,6 +452,11 @@ public class WSServiceDelegate extends WSService {
          return dispatch;
     }
 
+    @Override
+    public @NotNull Container getContainer() {
+        return container;
+    }
+
     public Dispatch<Object> createDispatch(QName portName, JAXBContext jaxbContext, Service.Mode mode, WebServiceFeature... webServiceFeatures) {
         WebServiceFeatureList featureList =  new WebServiceFeatureList(webServiceFeatures);
         WSEndpointReference wsepr = null;
