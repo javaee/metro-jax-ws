@@ -54,8 +54,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * JAX-WS implementation of {@link ServiceDelegate}.
@@ -164,8 +162,22 @@ public abstract class WSService extends ServiceDelegate {
     protected static final InitParams EMPTY_PARAMS = new InitParams();
 
     /**
-     * Creates a {@link Service} instance but with additional 
-     */
+     * Creates a {@link Service} instance.
+     *
+     * <p>
+     * This method works really like {@link Service#create(URL, QName)}
+     * except it takes one more RI specific parameter.
+     *
+     * @param wsdlDocumentLocation
+     *          {@code URL} for the WSDL document location for the service.
+     *          Can be null, in which case WSDL is not loaded.
+     * @param serviceName
+     *          {@code QName} for the service.
+     * @param properties
+     *          Additional RI specific initialization parameters. Can be null.
+     * @throws WebServiceException
+     *          If any error in creation of the specified service.
+     **/
     public static Service create( URL wsdlDocumentLocation, QName serviceName, InitParams properties) {
         if(INIT_PARAMS.get()!=null)
             throw new IllegalStateException("someone left non-null InitParams");
