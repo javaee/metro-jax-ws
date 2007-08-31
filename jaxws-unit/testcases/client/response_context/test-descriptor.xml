@@ -8,7 +8,7 @@
   <service>
     <wsdl href="hello_literal.wsdl" />
   </service>
-  <client><![CDATA[
+  <client name="client.response-context1"><![CDATA[
     try {
       req = new Hello_Type();
       req.setArgument("foo");
@@ -23,7 +23,7 @@
       assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context2"><![CDATA[
         assertNull(helloPort.getResponseContext());
   ]]></client>
 
@@ -64,7 +64,7 @@
         return dispatch;
     }
   ]]></pre-client>
-  <client><![CDATA[
+  <client name="client.response-context3"><![CDATA[
     dispatch = getDispatchJAXB();
     try {
         req = new Hello_Type();
@@ -79,16 +79,16 @@
         assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context4"><![CDATA[
     dispatch = getDispatchJAXB();
     assertNull(dispatch.getResponseContext());
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context5"><![CDATA[
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context6"><![CDATA[
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context7"><![CDATA[
   ]]></client>
-  <client><![CDATA[
+  <client name="client.response-context8"><![CDATA[
   ]]></client>
 </descriptor>

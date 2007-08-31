@@ -20,39 +20,39 @@
       assertEquals("bar", output.getExtra());
     }
   </pre-client>
-  <client><![CDATA[
+  <client name="async.rpclit1"><![CDATA[
     inout = new Holder(req);
     helloPort.hello(inout);
 
     assertFooBar(inout.value);
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit2"><![CDATA[
     response = helloPort.helloAsync(req);
     block(response);
 
     assertFooBar(response.get());
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit3"><![CDATA[
     block(helloPort.helloAsync(req, new HelloCallbackHandler()));
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit4"><![CDATA[
     inout = new Holder(req);
     int age = helloPort.hello2(inout, "foo");
 
     assertFooBar(inout.value);
     assertEquals(age, 1234);
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit5"><![CDATA[
     response = helloPort.hello2Async(req, "foo");
     block(response);
     resp = response.get();
     assertFooBar(resp.getParam());
     assertEquals(resp.getAge(), 1234);
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit6"><![CDATA[
     block(helloPort.hello2Async(req, "foo", new Hello2CallbackHandler()));
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit7"><![CDATA[
     reqH = new HelloType();
     reqH.setArgument("header arg");
     reqH.setExtra("header extra");
@@ -66,7 +66,7 @@
     assertEquals(reqH.getArgument(), respH.value.getArgument());
     assertEquals(reqH.getExtra(), respH.value.getExtra());
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit8"><![CDATA[
     reqH = new HelloType();
     reqH.setArgument("header arg");
     reqH.setExtra("header extra");
@@ -81,22 +81,22 @@
     assertEquals(reqH.getArgument(), outH.getArgument());
     assertEquals(reqH.getExtra(), outH.getExtra());
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit9"><![CDATA[
     reqH = new HelloType();
     reqH.setArgument("header arg");
     reqH.setExtra("header extra");
 
     block(helloPort.hello1Async(req, reqH, new Hello1CallbackHandler()));
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit10"><![CDATA[
     assertEquals(helloPort.hello0(54321), 54321);
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit11"><![CDATA[
     response = helloPort.hello0Async(54321);
     block(response);
     assertEquals(response.get(), 54321);
   ]]></client>
-  <client><![CDATA[
+  <client name="async.rpclit12"><![CDATA[
     reqH = new HelloType();
     reqH.setArgument("header arg");
     reqH.setExtra("header extra");

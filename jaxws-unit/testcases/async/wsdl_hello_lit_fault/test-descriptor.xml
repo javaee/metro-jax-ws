@@ -15,7 +15,7 @@
         Thread.yield();
     }
   </pre-client>
-  <client><![CDATA[
+  <client name="async.doclit.fault1"><![CDATA[
     try{
         helloPort.hello(req);
         assertNull(response.get());
@@ -24,7 +24,7 @@
         assertTrue(e instanceof HelloFault);
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="async.doclit.fault2"><![CDATA[
     try{
       block(helloPort.helloAsync(req));
     } catch(Exception e){
@@ -32,7 +32,7 @@
       assertTrue(e.getCause() instanceof HelloFault);
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="async.doclit.fault3"><![CDATA[
     response = helloPort.helloAsync(req, new HelloCallbackHandler());
     block(response);
   ]]></client>

@@ -2,10 +2,10 @@
     <description>
         Test From Java Service in default package
     </description>
-    <client>
+    <client name="fromjava.default-pkg1">
         assertTrue(echoPort.addNumbers(1,2)== 3);
     </client>
-    <client>
+    <client name="fromjava.default-pkg2">
         try {
             echoPort.addNumbers(-1,2);
             assertTrue(false);
