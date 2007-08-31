@@ -178,4 +178,4 @@
   <client name="fromjava.nosei_rpclit_apt15"><![CDATA[
         assertTrue(echoPort.echoIntHeaderResult(33) == 66);
   ]]></client>
-v</descriptor>
+</descriptor>
