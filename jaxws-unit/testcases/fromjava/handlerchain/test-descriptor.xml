@@ -4,7 +4,7 @@
         Uses @HandlerChain to configure handlers on server-side.
         Uses JAX-WS Customization and Programmatic configuration to configure handlers on client-side.
     </description>
-    <client>
+    <client name="fromjava.handlerchain1">
         <description>
             Checks if the handlers get invoked on Client and Service.
         </description>
@@ -22,7 +22,7 @@
         ]]>
     </client>
     
-    <client>
+    <client name="fromjava.handlerchain2">
         <description>
             Test configures handlers programmatically after
             clearing handlers out of registry in the service.

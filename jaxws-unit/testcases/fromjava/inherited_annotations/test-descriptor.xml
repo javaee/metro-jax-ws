@@ -2,7 +2,7 @@
     <description>
         Tests inherited annotations rules. 
     </description>
-    <client>
+    <client name="fromjava.inherited-annotations">
         assertTrue(echoPort.echoA("A").equals("EchoBase2:A"));
         assertTrue(echoPort.echoB("B").equals("EchoBase:B"));
         assertTrue(echoPort.echoC("C").equals("EchoBase3:C"));

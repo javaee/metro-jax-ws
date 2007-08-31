@@ -2,7 +2,7 @@
     <description>
         Tests from Java Web Service with generics 
     </description>
-    <client>
+    <client name="fromjava.generics">
         <![CDATA[
         Bar bar = new Bar();
         bar.setAge(33);

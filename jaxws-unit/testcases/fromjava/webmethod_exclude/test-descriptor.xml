@@ -2,7 +2,7 @@
   <description>
     Test @WebMethod(exclude="true")
   </description>
-  <client>
+  <client name="fromjava.webmethod_exclude">
       assertEquals("test", echoPort.echoString("test"));
   </client>
   <service />

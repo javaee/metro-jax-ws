@@ -3,7 +3,7 @@
         Test to check that unncessary schema imports are generated in the generated wsdl.
         In this rpc-lit case where all the types are primtive, no extra schema is needed in the wsdl.
     </description>
-    <client>
+    <client name="fromjava.extraschema">
         import com.sun.xml.ws.util.DOMUtil;
         import org.w3c.dom.Node;
         import org.w3c.dom.Element;

@@ -3,7 +3,7 @@
     <service basedir="./server">
         <wsdl href="hello_literal.wsdl"/>
     </service>
-    <client>
+    <client name="fromwsdl.doclit1">
         <description>
             Test hello().
         </description>
@@ -17,7 +17,7 @@
         assertEquals(extra, response.getExtra());
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit2">
         <description>
             Test Keywords.
         </description>
@@ -25,7 +25,7 @@
         assertEquals(resp, "Hello World!");
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit3">
         <description>
             Test method with void.
         </description>
@@ -34,7 +34,7 @@
         assertNotNull(response);
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit4">
         <description>
             Test echoArray()
         </description>
@@ -50,7 +50,7 @@
         assertNull(req.value);
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit5">
         <description>
             Test echoArray1()
         </description>
@@ -66,7 +66,7 @@
         assertTrue(Arrays.equals(in, req.value.getName().toArray()));
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit6">
         <description>
             Test echoArray2().
         </description>
@@ -75,7 +75,7 @@
         assertNull(req.value);
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit7">
         <description>
             Test echoArray3()
         </description>
@@ -89,7 +89,7 @@
         assertEquals(in, req.value);
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit8">
         <description>
             Test echoArray4().
         </description>
@@ -100,7 +100,7 @@
         assertEquals(resp.getName().get(1).getExtra(), "extra2");
     </client>
 
-    <client>
+    <client name="fromwsdl.doclit9">
         <description>
             Test MU
         </description>

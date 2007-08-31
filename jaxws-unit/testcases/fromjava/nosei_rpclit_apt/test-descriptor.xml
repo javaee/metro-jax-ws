@@ -3,14 +3,14 @@
     Test multibyte service names
   </description>
   <service />
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt1"><![CDATA[
     //this test no more applies as rpclit body parts cant take null parameter
     // since there are other tests that test this nullability, this test is commentedout
     //assertTrue(echoPort.echoBook(null) == null);
     assertEquals(echoPort.echoBook(Book.JWSDP),Book.JWSDP);
     assertEquals(echoPort.echoStatus(Status.YELLOW),Status.YELLOW);
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt2"><![CDATA[
     var = new GenericValue();
     var.setValue("fred");
     assertEquals(echoPort.echoGenericString(var).getValue(),"fred&john");
@@ -23,7 +23,7 @@
     assertEquals(echoPort.echoGenericObject(66),66);
     assertEquals(echoPort.echoGenericObject("bill"),"bill");
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt3"><![CDATA[
         Bar bar = new Bar();
         bar.setAge(33);
 
@@ -41,7 +41,7 @@
         innerBar.setName("doug");
         assertEquals(echoPort.echoInnerBar(innerBar).getName(),"dougdoug");
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt4"><![CDATA[
     try {
         echoPort.echoString("Exception1");
         fail();
@@ -51,7 +51,7 @@
         assertTrue(ex.isValid());
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt5"><![CDATA[
     try {
       echoPort.echoString("Fault1");
       fail();
@@ -63,7 +63,7 @@
         assertEquals(ex.getVarString(),"foo");
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt6"><![CDATA[
     try {
       echoPort.echoString("WSDLBarException");
       fail();
@@ -73,7 +73,7 @@
       assertEquals(ex.getAge(),33);
    }
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt7"><![CDATA[
     try {
       echoPort.echoString("Fault2");
       fail();
@@ -83,7 +83,7 @@
       assertEquals(fault2.getAge(),33);
     }
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt8"><![CDATA[
     strHolder = new Holder("fred");
 
     assertEquals(echoPort.outString("tmp", strHolder, 44),"tmp");
@@ -100,7 +100,7 @@
     assertEquals(echoPort.inOutLong(44, longHolder, "tmp"),44);
     assertEquals(longHolder.value,690L);
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt9"><![CDATA[
         assertTrue(echoPort.echoInHeader(33, 34L, "fred") == 34L);
 
         longHolder = new Holder(new Long(44));
@@ -112,7 +112,7 @@
         assertTrue(echoPort.echoOutHeader(33, longHolder, "fred").equals("fred33"));
         assertTrue(longHolder.value == 33L);
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt10"><![CDATA[
         StringArray strArray = new StringArray();
 //        List<String> list = strArray.getItem();
         strArray.getItem().add("Mary");
@@ -125,7 +125,7 @@
         assertTrue(returnArray.getItem().get(1).equals(strArray.getItem().get(1)));
 //        assertTrue(returnArray[1].equals(strArray[1]));
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt11"><![CDATA[
         Bar bar = new Bar();
         bar.setAge(33);
         Bar bar2 = new Bar();
@@ -139,7 +139,7 @@
         assertTrue(barArray.getItem().get(0).getAge() == bar.getAge());
         assertTrue(barArray.getItem().get(1).getAge() == bar2.getAge());
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt12"><![CDATA[
         Bar bar = new Bar();
         bar.setAge(33);
         Bar bar2 = new Bar();
@@ -155,11 +155,11 @@
 //        assertTrue(barArray[0].getAge() == bar.getAge());
 //        assertTrue(barArray[1].getAge() == bar2.getAge());
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt13"><![CDATA[
         echoPort.oneway();
         assertTrue(echoPort.verifyOneway());
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt14"><![CDATA[
         assertTrue(echoPort.helloWorld().equals("hello world"));
         echoPort.oneWayOperation();
         assertTrue(echoPort.overloadedOperation("fred").equals("fred"));
@@ -175,7 +175,7 @@
         assertTrue(h1.value.equals("Hello11"));
         assertTrue(h2.value.equals("Hello22"));
   ]]></client>
-  <client><![CDATA[
+  <client name="fromjava.nosei_rpclit_apt15"><![CDATA[
         assertTrue(echoPort.echoIntHeaderResult(33) == 66);
   ]]></client>
 v</descriptor>

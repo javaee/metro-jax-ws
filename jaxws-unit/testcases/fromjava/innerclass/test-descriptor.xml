@@ -2,7 +2,7 @@
     <description>
         Tests Web Service on inner class
     </description>
-    <client>
+    <client name="fromjava.innerclass">
         <![CDATA[
         Bar bar = new Bar();
         bar.setAge(33);
