@@ -1,14 +1,14 @@
 <descriptor since="2.0">
     <description>This is a fromwsdl rpc/lit fault test</description>
 
-    <client>
+    <client name="header.rpclit1">
         <description>
             test echo3()
         </description>
         assertEquals(1, helloPort.echo3("1"));
     </client>
 
-    <client>
+    <client name="header.rpclit2">
         <description>
             test echo()
         </description>
@@ -20,7 +20,7 @@
         assertEquals("foobarfoobar", response.getRespInfo());
     </client>
 
-    <client>
+    <client name="header.rpclit3">
         <description>
             test NULL parameter to test BP 1.1 R2211 violation
         </description>
@@ -34,7 +34,7 @@
         }
     </client>
 
-    <client>
+    <client name="header.rpclit4">
         <description>
             Test Null parameter on the server, BP 1.1 R2211 violation
         </description>
@@ -51,7 +51,7 @@
         }
     </client>
 
-    <client>
+    <client name="header.rpclit5">
         <description>
             Test echo1().
         </description>
@@ -60,7 +60,7 @@
         assertEquals("Hello World!", req.value);
     </client>
 
-    <client>
+    <client name="header.rpclit6">
         <description>
             Test echo2()
         </description>

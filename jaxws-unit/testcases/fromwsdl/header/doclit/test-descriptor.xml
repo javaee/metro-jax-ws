@@ -1,7 +1,7 @@
 <descriptor since="2.0">
     <description>This is a fromwsdl doc/lit fault test</description>
 
-    <client>
+    <client name="header.doclit1">
         <description>
             test echo()
         </description>
@@ -14,7 +14,7 @@
     </client>
 
 
-    <client>
+    <client name="header.doclit2">
         <description>
             test echo
         </description>
@@ -22,7 +22,7 @@
         assertEquals("foobar", response);
     </client>
 
-    <client>
+    <client name="header.doclit3">
         <description>
             test echo3()
         </description>
@@ -32,7 +32,7 @@
         assertEquals("foobar", req.value);
         ]]></client>
 
-    <client><![CDATA[
+    <client name="header.doclit4"><![CDATA[
         reqBody = new Echo4Type();
         reqBody.setExtra("foo1");
         reqBody.setArgument("bar1");
@@ -50,7 +50,7 @@
         ]]>
     </client>
 
-    <client>
+    <client name="header.doclit5">
         <description>
             test echo5()
         </description>
@@ -62,7 +62,7 @@
 
 
     <!--
-    <client>
+    <client name="header-doclit">
         <description>
             This test has header as return type, it wont work till we have annotation on
             @WebResult or similar solution. Commenting out till we have it.
@@ -81,7 +81,7 @@
 
     ]]>
      </client>
-    <client>
+    <client name="header-doclit">
         <description>
             This test has header as return type, it wont work till we have annotation
             on @WebResult or similar solution. Commenting out till we have it.
