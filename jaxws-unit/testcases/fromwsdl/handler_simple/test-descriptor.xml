@@ -1,7 +1,24 @@
 <descriptor since="2.0">
   <description>This is a fromwsdl test using HandlersS</description>
- <!-- <client href ="test.bsh" /> -->
   <service basedir="./server">
     <wsdl href="hello_literal.wsdl"/>
   </service>
+  <!--
+.injected services: hello_Service
+injected ports: helloPort helloPort12
+injected addresses: helloPortAddress helloPort12Address
+-->    
+  <client name="handlertest1">
+      <description>
+     Tests that handler specified in config file is used.
+
+     Each handler adds one to the int during request and response,
+     so we should receive the original number plus 4 if the
+     handlers are working.
+     </description>
+     int x = 1;
+     int diff = 4; // 2 per handler invoked
+     assertEquals(x+diff,helloPort.hello(x));
+
+  </client>
 </descriptor>
