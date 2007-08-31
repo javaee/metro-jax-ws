@@ -1,8 +1,10 @@
 package fromwsdl.handler_simple.server;
 
+import javax.jws.WebService;
+
 /**
  */
-@javax.jws.WebService(endpointInterface="fromwsdl.handler_simple.server.Hello")
+@WebService(endpointInterface="fromwsdl.handler_simple.server.Hello",portName="HelloPort")
 public class HelloService_Impl implements Hello {
 
     public int hello(int x) {
