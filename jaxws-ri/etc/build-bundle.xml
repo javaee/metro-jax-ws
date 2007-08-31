@@ -140,6 +140,8 @@
         <attribute name="file"/>
         <sequential>
             <manifest mode="update" file="@{file}">
+                <attribute name="Specification-Version" value="${release.spec.version}"/>
+                <attribute name="Implementation-Version" value="${release.impl.version}"/>
                 <attribute name="Build-Id" value="${build.id}"/>
                 <attribute name="Build-Version" value="${build.version}"/>
                 <attribute name="Major-Version" value="${release.impl.version}"/>
