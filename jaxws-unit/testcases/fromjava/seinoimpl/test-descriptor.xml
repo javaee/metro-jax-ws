@@ -1,7 +1,7 @@
 <descriptor since="2.0">
   <description>This is a Provider test</description>
 
-  <client sideEffectFree="true">
+  <client name="fromjava.seinoimpl" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
         Bar bar = new Bar();

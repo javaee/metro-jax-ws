@@ -1,7 +1,7 @@
 <descriptor since="2.0">
   <description>This is a Provider test</description>
 
-  <client sideEffectFree="true">
+  <client name="fromjava.seiimpl1" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
         bar = new Bar();
@@ -11,7 +11,7 @@
         assertEquals(bar.getAge(), echoImplPort.echoBar(bar).getAge());
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="fromjava.seiimpl2" sideEffectFree="true">
   <description>echoBarList</description>
   <![CDATA[
         bar1 = new Bar();
