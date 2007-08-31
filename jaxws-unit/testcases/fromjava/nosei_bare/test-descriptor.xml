@@ -1,7 +1,7 @@
 <descriptor since="2.0">
-  <description>nosei_apt</description>
+  <description>nosei_bare</description>
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testGenerics" sideEffectFree="true">
   <description>testGenerics</description>
   <![CDATA[
         holder = new Holder();
@@ -22,13 +22,13 @@
   ]]></client>
     
     
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testResultHeaders" sideEffectFree="true">
   <description>testResultHeaders</description>
   <![CDATA[
         assertEquals(66, echoPort.echoIntHeaderResult(33));
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testSimple" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
         Bar bar = new Bar();
@@ -48,7 +48,7 @@
   ]]></client>
 
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testExceptions" sideEffectFree="true">
   <description>testExceptions</description>
   <![CDATA[
         try {
@@ -88,7 +88,7 @@
   ]]></client>
 
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testHolders" sideEffectFree="true">
   <description>testHolders</description>
   <![CDATA[
         strHolder = new Holder();
@@ -113,7 +113,7 @@
   ]]></client>
 
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testHeaders" sideEffectFree="true">
   <description>testHeaders</description>
   <![CDATA[
         assertEquals(77L, echoPort.echoInHeader(33, 44L));
@@ -136,7 +136,7 @@
         assertEquals(33L, longHolder.value);
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testArray1" sideEffectFree="true">
   <description>testArray1</description>
   <![CDATA[
         strArray = new StringArray();
@@ -150,7 +150,7 @@
         assertEquals(strArray.getItem().get(1), returnArray.getItem().get(1));
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_bare_testArray2" sideEffectFree="true">
   <description>testArray2</description>
   <![CDATA[
         Bar bar = new Bar();
@@ -168,7 +168,7 @@
   ]]></client>
 
 
-  <client>
+  <client name="nosei_bare_testOneway" >
   <description>testOneway</description>
   <![CDATA[
         echoPort.oneway("bogus");
