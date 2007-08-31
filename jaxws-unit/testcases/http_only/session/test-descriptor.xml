@@ -1,7 +1,5 @@
 <descriptor since="2.0">
   <description>This is a Provider test</description>
-  <client/>
-
   <service basedir="./server">
   </service>
 
