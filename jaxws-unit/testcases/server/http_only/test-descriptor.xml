@@ -1,0 +1,7 @@
+<descriptor since="2.0" transport="http">
+  <description>http_only</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>
