@@ -1,7 +1,7 @@
 <descriptor since="2.0">
   <description>nosei_apt</description>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testSimple" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
         bar = new Bar();
@@ -15,8 +15,8 @@
         assertEquals(33L, echoPort.echoLong(33L));
   ]]></client>
 
-  <client sideEffectFree="true">
-  <description>testException1</description>
+  <client name="nosei_apt_testExceptions" sideEffectFree="true">
+  <description>testExceptions</description>
   <![CDATA[
         try {
             echoPort.echoString("Exception1");
@@ -30,7 +30,7 @@
   ]]></client>
 
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testFault1" sideEffectFree="true">
   <description>Fault1</description>
   <![CDATA[
         try {
@@ -45,7 +45,7 @@
         }
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testWSDLBarException" sideEffectFree="true">
   <description>WSDLBarException</description>
   <![CDATA[
         try {
@@ -58,7 +58,7 @@
         }
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testFault2" sideEffectFree="true">
   <description>Fault2</description>
   <![CDATA[
         try {
@@ -71,7 +71,7 @@
         }
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testInterrupted" sideEffectFree="true">
   <description>Interrupted</description>
   <![CDATA[
         try {
@@ -84,7 +84,7 @@
         }
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testHolder" sideEffectFree="true">
   <description>testHolder</description>
   <![CDATA[
         strHolder = new Holder();
@@ -105,7 +105,7 @@
         assertEquals(690L, longHolder.value);
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testHeaders" sideEffectFree="true">
   <description>testHeaders</description>
   <![CDATA[
         echoInHeader = new EchoInHeader();
@@ -135,7 +135,7 @@
 
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testArray1" sideEffectFree="true">
   <description>testArray1</description>
   <![CDATA[
         strArray = new ArrayList();
@@ -149,7 +149,7 @@
 
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testArray2" sideEffectFree="true">
   <description>testArray2</description>
   <![CDATA[
         bar = new Bar();
@@ -165,20 +165,20 @@
         assertEquals(bar2.getAge(), resultArray.get(1).getAge());
   ]]></client>
 
-  <client>
+  <client name="nosei_apt_testOneway" >
   <description>testOneway</description>
   <![CDATA[
         echoPort.oneway();
         assertTrue(echoPort.verifyOneway());
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testVoid" sideEffectFree="true">
   <description>testVoid</description>
   <![CDATA[
         echoPort.voidTest();
   ]]></client>
 
-  <client sideEffectFree="true">
+  <client name="nosei_apt_testOverloaded" sideEffectFree="true">
   <description>testOverloaded</description>
   <![CDATA[
         assertEquals("fred", echoPort.overloadedOperation("fred"));
@@ -190,8 +190,8 @@
         assertEquals("1 2 3 4", echoPort.overloadedOperation4("1", "2", "3", "4"));
   ]]></client>
 
-  <client sideEffectFree="true">
-  <description>testOverloaded</description>
+  <client name="nosei_apt_testHeader" sideEffectFree="true">
+  <description>testHeader</description>
   <![CDATA[
         intHolder = new Holder();
         result = new EchoIntHeaderResult();
