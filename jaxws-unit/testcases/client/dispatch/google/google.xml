@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns:gm="http://base.google.com/ns-metadata/1.0" xmlns:g="http://base.google.com/ns/1.0" xmlns:batch="http://schemas.google.com/gdata/batch">
+<id>http://www.google.com/base/feeds/snippets</id>
+<updated>2007-08-31T23:29:11.367Z</updated>
+<title type="text">Items matching query: sun tech days</title>
+<link rel="alternate" type="text/html" href="http://base.google.com"/>
+<link rel="http://schemas.google.com/g/2005#feed" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets"/>
+<link rel="http://schemas.google.com/g/2005#batch" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/batch"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets?start-index=1&amp;max-results=25&amp;bq=sun+tech+days"/>
+<link rel="next" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets?start-index=26&amp;max-results=25&amp;bq=sun+tech+days"/>
+<author>
+<name>Google Inc.</name>
+<email>base@google.com</email>
+</author>
+<generator version="1.0" uri="http://base.google.com">GoogleBase</generator>
+<openSearch:totalResults>2034</openSearch:totalResults>
+<openSearch:startIndex>1</openSearch:startIndex>
+<openSearch:itemsPerPage>25</openSearch:itemsPerPage>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/1826092063903830845</id>
+<published>2007-08-06T22:23:13.000Z</published>
+<updated>2007-08-27T22:23:02.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Events and Activities"/>
+<title type="text">Sun Tech Days Boston- Day 2</title>
+<content type="html">Sun presents the Tech Days Boston, a not so mini Java One Conference right here in town. _Sun Microsystems_: "Advance your development ability and shape your future with cutting-edge technical education; Sun Tech Days are loaded with practical  ...</content>
+<link rel="alternate" type="text/html" href="http://java.meetup.com/10/calendar/6114603/a/?PID=mu_ck4zxv4lbx&amp;AID=10396694"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/1826092063903830845"/>
+<author>
+<name>Meetup</name>
+<email>anon-8h8gc3yh9y9u@base.google.com</email>
+</author>
+<g:item_type type="text">Events and Activities</g:item_type>
+<g:event_date_range type="dateTime">2007-09-12T10:00:00.000Z</g:event_date_range>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://photos2.meetupstatic.com/photos/event/8/b/8/6/event_35718.jpeg</g:image_link>
+<g:customer_id type="int">1344296</g:customer_id>
+<g:event_type type="text">web</g:event_type>
+<g:event_type type="text">swing</g:event_type>
+<g:event_type type="text">developers</g:event_type>
+<g:event_type type="text">java</g:event_type>
+<g:event_type type="text">technology</g:event_type>
+<g:event_type type="text">awt</g:event_type>
+<g:event_type type="text">code</g:event_type>
+<g:event_type type="text">tech</g:event_type>
+<g:location type="location">Boston, MA, 02101, US</g:location>
+<g:id type="text">6114603</g:id>
+<g:expiration_date type="dateTime">2007-09-10T22:23:02.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/16375398130503267513</id>
+<published>2007-08-06T22:23:13.000Z</published>
+<updated>2007-08-27T22:23:02.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Events and Activities"/>
+<title type="text">Sun Tech Days Boston- Day 1</title>
+<content type="html">Sun presents the Tech Days Boston, a not so mini Java One Conference right here in town. _Sun Microsystems_: "Advance your development ability and shape your future with cutting-edge technical education; Sun Tech Days are loaded with practical  ...</content>
+<link rel="alternate" type="text/html" href="http://java.meetup.com/10/calendar/6114579/a/?PID=mu_ck4zxv4lbx&amp;AID=10396694"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/16375398130503267513"/>
+<author>
+<name>Meetup</name>
+<email>anon-8h8gc3yh9y9u@base.google.com</email>
+</author>
+<g:item_type type="text">Events and Activities</g:item_type>
+<g:event_date_range type="dateTime">2007-09-11T10:00:00.000Z</g:event_date_range>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://photos2.meetupstatic.com/photos/event/8/b/8/6/event_35718.jpeg</g:image_link>
+<g:customer_id type="int">1344296</g:customer_id>
+<g:event_type type="text">technology</g:event_type>
+<g:event_type type="text">tech</g:event_type>
+<g:event_type type="text">java</g:event_type>
+<g:event_type type="text">developers</g:event_type>
+<g:event_type type="text">swing</g:event_type>
+<g:event_type type="text">awt</g:event_type>
+<g:event_type type="text">web</g:event_type>
+<g:event_type type="text">code</g:event_type>
+<g:location type="location">Boston, MA, 02101, US</g:location>
+<g:id type="text">6114579</g:id>
+<g:expiration_date type="dateTime">2007-09-10T22:23:02.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/7664657254073371675</id>
+<published>2007-08-21T22:23:06.000Z</published>
+<updated>2007-08-27T22:23:02.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Events and Activities"/>
+<title type="text">The Boston Java September Meetup</title>
+<content type="html">Hello Java Programmers, let's talk, Java events. Sun is holding the Sun Tech Days Boston, Sept 11-12. Do you attend such events? What are your objectives? What was the best you got our of such an event? I look forward to seeing you all. Our meetings ...</content>
+<link rel="alternate" type="text/html" href="http://java.meetup.com/10/calendar/6214894/a/?PID=mu_ck4zxv4lbx&amp;AID=10396694"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/7664657254073371675"/>
+<author>
+<name>Meetup</name>
+<email>anon-8h8gc3yh9y9u@base.google.com</email>
+</author>
+<g:item_type type="text">Events and Activities</g:item_type>
+<g:event_date_range type="dateTime">2007-09-17T19:00:00.000Z</g:event_date_range>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://photos2.meetupstatic.com/photos/event/8/b/8/6/event_35718.jpeg</g:image_link>
+<g:customer_id type="int">1344296</g:customer_id>
+<g:event_type type="text">technology</g:event_type>
+<g:event_type type="text">code</g:event_type>
+<g:event_type type="text">swing</g:event_type>
+<g:event_type type="text">tech</g:event_type>
+<g:event_type type="text">awt</g:event_type>
+<g:event_type type="text">web</g:event_type>
+<g:event_type type="text">developers</g:event_type>
+<g:event_type type="text">java</g:event_type>
+<g:location type="location">Boston, MA, 02101, US</g:location>
+<g:id type="text">6214894</g:id>
+<g:expiration_date type="dateTime">2007-09-10T22:23:02.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/6549652756007367567</id>
+<published>2007-08-27T06:48:43.000Z</published>
+<updated>2007-08-27T07:14:35.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">ST39103FCCHEETAH 18LP 9.1GB FIBRE CHANNEL - SUN (3900016-02)ETA IS 2/3 DAYS Seagate Tech.</title>
+<content type="html">ST39103FCCHEETAH 18LP 9.1GB FIBRE CHANNEL - SUN (3900016-02)ETA IS 2/3 DAYS Seagate Tech.</content>
+<link rel="alternate" type="text/html" href="http://www.tamayatech.com/parts.php?i=ST39103FC"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/6549652756007367567"/>
+<author>
+<name>www.TamayaTech.com</name>
+<email>frankie@tamayatech.com</email>
+</author>
+<g:brand type="text">Seagate Tech.</g:brand>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:manufacturer type="text">Seagate Tech.</g:manufacturer>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">116.59 usd</g:price>
+<g:customer_id type="int">1190801</g:customer_id>
+<g:gigabyte type="float">9.1</g:gigabyte>
+<g:condition type="text">Refurbished</g:condition>
+<g:id type="text">ST39103FC</g:id>
+<g:expiration_date type="dateTime">2007-09-26T07:14:35.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/1922060637024762623</id>
+<published>2007-08-27T06:48:43.000Z</published>
+<updated>2007-08-27T07:14:35.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">ST118273FCBARRACUDA 18.2GB FIBRE CHANNEL - OEM &amp; SUN (3703678-05)ETA IS 2/3 DAYS Seagate Tech.</title>
+<content type="html">ST118273FCBARRACUDA 18.2GB FIBRE CHANNEL - OEM &amp; SUN (3703678-05)ETA IS 2/3 DAYS Seagate Tech.</content>
+<link rel="alternate" type="text/html" href="http://www.tamayatech.com/parts.php?i=ST118273FC"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/1922060637024762623"/>
+<author>
+<name>www.TamayaTech.com</name>
+<email>frankie@tamayatech.com</email>
+</author>
+<g:brand type="text">Seagate Tech.</g:brand>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:manufacturer type="text">Seagate Tech.</g:manufacturer>
+<g:price type="floatUnit">211.87 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:customer_id type="int">1190801</g:customer_id>
+<g:gigabyte type="float">18.2</g:gigabyte>
+<g:condition type="text">Refurbished</g:condition>
+<g:id type="text">ST118273FC</g:id>
+<g:expiration_date type="dateTime">2007-09-26T07:14:35.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/11441671406004646166</id>
+<published>2007-08-17T10:00:05.000Z</published>
+<updated>2007-08-17T10:00:05.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Divided Sun: MITI and the Breakdown of Japanese High-Tech Industrial Policy, 197</title>
+<content type="html">Brand new, not a remainder, no marks. As published by Stanford University Press. Paperback edition. Book Size: Length: 8 inches, Width 5 Height inches 0.71 Inches. Book Size: Length: 8 inches, Width 5 Height inches 0.71 Inches. This book will  ...</content>
+<link rel="alternate" type="text/html" href="http://www.abebooks.com/servlet/ListingDetails?bi=955180050&amp;cm_mmc=gbase-_-us-_-gbase-_-955180050"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/11441671406004646166"/>
+<author>
+<name>AbeBooks.com</name>
+<email>anon-9o9vnwoaalc9@base.google.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:publish_date type="dateTime">1997-01-01T12:00:00.000Z</g:publish_date>
+<g:isbn type="text">9780804731546</g:isbn>
+<g:publisher type="text">Stanford University Press</g:publisher>
+<g:id type="text">com955180050</g:id>
+<g:brand type="text">AbeBooks.com</g:brand>
+<g:product_type type="text">books</g:product_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">29.15 usd</g:price>
+<g:customer_id type="int">1842297</g:customer_id>
+<g:genre type="text">0804731543</g:genre>
+<g:genre type="text">9780804731546</g:genre>
+<g:genre type="text">NEW</g:genre>
+<g:binding type="text">softcover</g:binding>
+<g:author type="text">Scott Callon</g:author>
+<g:expiration_date type="dateTime">2007-09-16T10:00:05.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/85022978964406556</id>
+<published>2006-09-05T20:19:14.000Z</published>
+<updated>2006-09-05T20:19:13.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="News and Articles"/>
+<title type="text">Weekly Summary of News about Sun Microsystems</title>
+<content type="html">Sun kicks off its 9th worldwide "Sun Tech Days" series of technical seminars. The Atlanta OpenSolaris User Group will host Ryan Matteson talking about the "DTrace Toolkit" on September 12th. Fostering communities: that's what the new OpenSPARC and  ...</content>
+<link rel="alternate" type="text/html" href="http://base.google.com/base/a/1368914/D85022978964406556"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/85022978964406556"/>
+<author>
+<name>John McLaughlin</name>
+<email>anon-375u99wxk1t9@base.google.com</email>
+</author>
+<g:item_type type="text">News and Articles</g:item_type>
+<g:news_source type="text">http //sun systemnews com/articles/102/5</g:news_source>
+<g:item_language type="text">en</g:item_language>
+<g:price_units type="text"/>
+<g:label type="text">News and Articles</g:label>
+<g:target_country type="text">US</g:target_country>
+<g:publish_date type="dateTime">2006-09-03T00:00:00.000-07:00</g:publish_date>
+<g:customer_id type="int">1368914</g:customer_id>
+<g:quantity type="int">0</g:quantity>
+<g:author type="text">John J McLaughlin</g:author>
+<g:expiration_date type="dateTime">2038-01-19T03:14:07.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/9317773637496795814</id>
+<published>2007-08-03T02:24:48.000Z</published>
+<updated>2007-08-30T02:20:27.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Jobs"/>
+<title type="text">RAD-TECH PART TIME DAYS</title>
+<content type="html">Breathtaking beaches, beautiful surroundings and a community within a community. This is life. This is your Palm Beach Gardens Medical Center. A career at Palm Beach Gardens Medical Center is more than a job. Blossoming for the last 36 years, our  ...</content>
+<link rel="alternate" type="text/html" href="http://hotjobs.yahoo.com/job-JQ4CKNLWUKJ-l-Palm_Beach-FL-c-Healthcare"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/9317773637496795814"/>
+<author>
+<name>Yahoo.com</name>
+<email>anon-5nyqbull5pz0@base.google.com</email>
+</author>
+<g:job_type type="text">Part-Time, Employee</g:job_type>
+<g:item_type type="text">Jobs</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:employer type="text">Palm Beach Gardens Medical Center (A Tenet Healthcare Facility)</g:employer>
+<g:target_country type="text">US</g:target_country>
+<g:job_function type="text">Healthcare</g:job_function>
+<g:customer_id type="int">1562572</g:customer_id>
+<g:job_industry type="text">Healthcare</g:job_industry>
+<g:location type="location">Palm Beach, FL</g:location>
+<g:id type="text">0705016284</g:id>
+<g:salary type="floatUnit">2007.0 usd</g:salary>
+<g:expiration_date type="dateTime">2007-09-06T02:20:27.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/11477756875699222601</id>
+<published>2007-07-01T08:12:05.000Z</published>
+<updated>2007-08-31T07:20:02.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Virginia Tech Hokies Sport Watch, by Sun Time</title>
+<content type="html">SquareTrade Â© AP6.0 Virginia Tech Hokies Sport Watch by Sun Time...3 year Manufacturer Limited Warranty. We accept Mastercard, Visa, Discover, and American Express. We also accept Paypal, for your convenience. Returns are accepted within 7 days of  ...</content>
+<link rel="alternate" type="text/html" href="http://adfarm.mediaplex.com/ad/ck/711-5256-8196-2?loc=http%3A%2F%2Fcgi.ebay.com%2FVirginia-Tech-Hokies-Sport-Watch-by-Sun-Time_W0QQitemZ170126638971QQcmdZViewItem"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/11477756875699222601"/>
+<author>
+<name>eBay</name>
+<email>rcross@ebay.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">39.95 usd</g:price>
+<g:image_link type="url">http://thumbs.ebaystatic.com/pict/170126638971_1.jpg</g:image_link>
+<g:category type="text">Jewelry &amp; Watches&gt;Watches&gt;Wristwatches</g:category>
+<g:customer_id type="int">11729</g:customer_id>
+<g:id type="text">170126638971</g:id>
+<g:expiration_date type="dateTime">2007-09-30T07:20:02.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/7712086547432899981</id>
+<published>2007-06-06T04:14:22.000Z</published>
+<updated>2007-08-31T04:23:36.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">V Tech Sunny Days Radio</title>
+<content type="html">Manufacturer's Description Talking radio with English voice introduces ABC, shapes and early weather concepts Features five classic melodies and talking phrases Includes bird sound effects and 'sunny day', 'cloudy day' phrases with light up sun,  ...</content>
+<link rel="alternate" type="text/html" href="http://adfarm.mediaplex.com/ad/ck/711-5256-8196-2?loc=http%3A%2F%2Fcgi.ebay.com%2FV-Tech-Sunny-Days-Radio_W0QQitemZ6049269777QQcmdZViewItem"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/7712086547432899981"/>
+<author>
+<name>eBay</name>
+<email>rcross@ebay.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">1.99 usd</g:price>
+<g:image_link type="url">http://thumbs.ebaystatic.com/pict/6049269777_0.jpg</g:image_link>
+<g:category type="text">Toys &amp; Hobbies&gt;Educational&gt;Other</g:category>
+<g:customer_id type="int">11729</g:customer_id>
+<g:id type="text">6049269777</g:id>
+<g:expiration_date type="dateTime">2007-09-30T04:23:36.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/17472666734604484765</id>
+<published>2007-06-02T16:07:36.000Z</published>
+<updated>2007-08-27T10:12:24.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Virginia Tech Hokies College Sun Shade</title>
+<content type="html">Protect your precious cargo with this Virginia Tech Hokies College auto sun shade. Usually ships in 3-5 days.Dimensions: 14 1/4" wx 20 1/4" lView more Virginia Tech Hokies gear.View more auto accessories.</content>
+<link rel="alternate" type="text/html" href="http://www.universalshopping.com/virginia-tech-hokies-college-car-sun-shade.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/17472666734604484765"/>
+<author>
+<name>Universal Shopping</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">14.95 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:category type="text">Tailgate Town &gt; Sports Auto Accessories &gt; Sun Shade</g:category>
+<g:image_link type="url">http://us.st1.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/universal--shopping_1961_673629476</g:image_link>
+<g:customer_id type="int">7274</g:customer_id>
+<g:id type="text">virginia-tech-hokies-college-car-sun-shade</g:id>
+<g:expiration_date type="dateTime">2007-09-26T10:12:24.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/18137140299830323767</id>
+<published>2007-06-02T16:07:36.000Z</published>
+<updated>2007-08-27T10:12:24.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Georgia Tech Yellow Jackets College Sun Shade</title>
+<content type="html">Protect your precious cargo with this Georgia Tech Yellow Jackets College auto sun shade. Usually ships in 3-5 days.Dimensions: 14 1/4" wx 20 1/4" lView more Georgia Tech Yellow Jackets gear.View more auto accessories.</content>
+<link rel="alternate" type="text/html" href="http://www.universalshopping.com/georgia-tech-yellow-jackets-college-car-sun-shade.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/18137140299830323767"/>
+<author>
+<name>Universal Shopping</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">14.95 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://us.st3.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/universal--shopping_1961_917973584</g:image_link>
+<g:category type="text">Tailgate Town &gt; Sports Auto Accessories &gt; Sun Shade</g:category>
+<g:customer_id type="int">7274</g:customer_id>
+<g:id type="text">georgia-tech-yellow-jackets-college-car-sun-shade</g:id>
+<g:expiration_date type="dateTime">2007-09-26T10:12:24.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/17928384131650107831</id>
+<published>2007-08-18T10:00:04.000Z</published>
+<updated>2007-08-18T10:00:04.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Divided Sun: Miti and the Breakdown of Japanese High-Tech Industrial Policy, 197</title>
+<content type="html">USED published in 1995 Domestic Standard shipments arrive 7-10 business days. Priority 3-6.</content>
+<link rel="alternate" type="text/html" href="http://www.abebooks.com/servlet/ListingDetails?bi=832361263&amp;cm_mmc=gbase-_-us-_-gbase-_-832361263"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/17928384131650107831"/>
+<author>
+<name>AbeBooks.com</name>
+<email>anon-9o9vnwoaalc9@base.google.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:publish_date type="dateTime">1997-01-01T12:00:00.000Z</g:publish_date>
+<g:isbn type="text">9780804731546</g:isbn>
+<g:publisher type="text">Stanford University Press</g:publisher>
+<g:id type="text">com832361263</g:id>
+<g:brand type="text">AbeBooks.com</g:brand>
+<g:product_type type="text">books</g:product_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">7.8 usd</g:price>
+<g:customer_id type="int">1842297</g:customer_id>
+<g:genre type="text">ASIA JAPAN BUSINESS ECONOMICS INDUSTRIES GENERAL INTERNATIONAL RELATIONS POLITICS CURRENT EVENTS HI TECH MANUFACTURING C 1970 TO 1980 T</g:genre>
+<g:binding type="text">softcover</g:binding>
+<g:author type="text">Scott Callon</g:author>
+<g:expiration_date type="dateTime">2007-09-17T10:00:04.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/16483478962208556868</id>
+<published>2007-08-18T10:00:04.000Z</published>
+<updated>2007-08-18T10:00:04.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Divided Sun: MITI and the Breakdown of Japanese High-Tech Industrial Policy, 197</title>
+<content type="html">0804731543 This a new, unread, never used book in excellent condition. No highlighting or underlining. Pages are clean and bright throughout. Shipped from UK mainland warehouse. UK delivery typicaly 2-4 days by First Class Royal Mail. Professional  ...</content>
+<link rel="alternate" type="text/html" href="http://www.abebooks.com/servlet/ListingDetails?bi=930918758&amp;cm_mmc=gbase-_-us-_-gbase-_-930918758"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/16483478962208556868"/>
+<author>
+<name>AbeBooks.com</name>
+<email>anon-9o9vnwoaalc9@base.google.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:publisher type="text">Stanford University Press.</g:publisher>
+<g:isbn type="text">9780804731546</g:isbn>
+<g:id type="text">com930918758</g:id>
+<g:brand type="text">AbeBooks.com</g:brand>
+<g:product_type type="text">books</g:product_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">30.76 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:customer_id type="int">1842297</g:customer_id>
+<g:binding type="text">softcover</g:binding>
+<g:author type="text">Scott</g:author>
+<g:author type="text">Callon</g:author>
+<g:expiration_date type="dateTime">2007-09-17T10:00:04.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/8837299517923602109</id>
+<published>2007-08-17T10:00:05.000Z</published>
+<updated>2007-08-17T10:00:05.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Divided Sun: Miti and the Breakdown of Japanese High-Tech Industrial Policy, 197</title>
+<content type="html">USED published in 1995 Domestic Standard shipments arrive 7-10 business days. Priority 3-6.</content>
+<link rel="alternate" type="text/html" href="http://www.abebooks.com/servlet/ListingDetails?bi=832361029&amp;cm_mmc=gbase-_-us-_-gbase-_-832361029"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/8837299517923602109"/>
+<author>
+<name>AbeBooks.com</name>
+<email>anon-9o9vnwoaalc9@base.google.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:publish_date type="dateTime">1997-01-01T12:00:00.000Z</g:publish_date>
+<g:isbn type="text">9780804731546</g:isbn>
+<g:publisher type="text">Stanford University Press</g:publisher>
+<g:id type="text">com832361029</g:id>
+<g:brand type="text">AbeBooks.com</g:brand>
+<g:product_type type="text">books</g:product_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">7.8 usd</g:price>
+<g:customer_id type="int">1842297</g:customer_id>
+<g:genre type="text">ASIA JAPAN BUSINESS ECONOMICS INDUSTRIES GENERAL INTERNATIONAL RELATIONS POLITICS CURRENT EVENTS HI TECH MANUFACTURING C 1970 TO 1980 T</g:genre>
+<g:binding type="text">softcover</g:binding>
+<g:author type="text">Scott Callon</g:author>
+<g:expiration_date type="dateTime">2007-09-16T10:00:05.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/1459613431870480375</id>
+<published>2007-08-17T10:00:05.000Z</published>
+<updated>2007-08-17T10:00:05.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">The sun and the snow (MW Tech. Paper - Miller-Warden Associates)</title>
+<content type="html">COLLECTIBLE Inscription in Spanish. Front flap from DJ laid in. Novel with setting of Spanish Blue Division in Russia during WW II. Standard shipments arrive 7-10 business days.Priority 3-6.</content>
+<link rel="alternate" type="text/html" href="http://www.abebooks.com/servlet/ListingDetails?bi=658434901&amp;cm_mmc=gbase-_-us-_-gbase-_-658434901"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/1459613431870480375"/>
+<author>
+<name>AbeBooks.com</name>
+<email>anon-9o9vnwoaalc9@base.google.com</email>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:publish_date type="dateTime">1956-01-01T12:00:00.000Z</g:publish_date>
+<g:publisher type="text">H. Regnery Co</g:publisher>
+<g:jacket type="text">Dust Jacket</g:jacket>
+<g:id type="text">com658434901</g:id>
+<g:brand type="text">AbeBooks.com</g:brand>
+<g:signed type="text">Signed</g:signed>
+<g:product_type type="text">books</g:product_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">200.0 usd</g:price>
+<g:customer_id type="int">1842297</g:customer_id>
+<g:genre type="text">FICTION WORLD WAR 1939 1945</g:genre>
+<g:binding type="text">hardcover</g:binding>
+<g:author type="text">Rodrigo Royo</g:author>
+<g:expiration_date type="dateTime">2007-09-16T10:00:05.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/8412278903767828578</id>
+<published>2007-08-30T16:04:35.000Z</published>
+<updated>2007-08-30T16:04:35.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Jobs"/>
+<title type="text">286228 Permanent / Full Time Pharmacy Pharmacy Technician in Sun City, AZ</title>
+<content type="html">Permanent / Full Time Days Title: Certified Pharmacy IV Tech. Department: Pharmacy Shift: Days Hours: 2:30pm-11:00pm</content>
+<link rel="alternate" type="text/html" href="http://www.healthjobsusa.com/cgi-bin/search.cgi?action=display&amp;ID=27608838&amp;source=googlebase"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/8412278903767828578"/>
+<author>
+<name>Absolutely Health Care</name>
+<email>anon-08ltvzggwkc2@base.google.com</email>
+</author>
+<g:job_type type="text">full-time</g:job_type>
+<g:item_type type="text">Jobs</g:item_type>
+<g:publish_date type="dateTime">2007-08-30T12:00:00.000Z</g:publish_date>
+<g:job_function type="text">Pharmacy Technician</g:job_function>
+<g:id type="text">27608838</g:id>
+<g:immigration_status type="text">USA only</g:immigration_status>
+<g:item_language type="text">EN</g:item_language>
+<g:employer type="text">Sun Health Boswell Hospital</g:employer>
+<g:target_country type="text">US</g:target_country>
+<g:job_industry type="text">Health Care - Health Services</g:job_industry>
+<g:customer_id type="int">1224507</g:customer_id>
+<g:location type="location">Sun City,AZ 85351</g:location>
+<g:expiration_date type="dateTime">2007-09-06T16:04:35.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/4705399915562755169</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun Type 5 Mechanical Mouse (p/n 370-1586)</title>
+<content type="html">Sun Type 5 Mechanical Mouse 370-1586, X494A These Type 5 Mechanical Mice have all been tested in Good Working Condition. This 370-1586 is in stock and can ship the same day. Sun Compact 1 Mechanical Mouse (Type-5) The Mouse Pad 370-2038 can be  ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/3701586.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/4705399915562755169"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">24.98 usd</g:price>
+<g:image_link type="url">http://us.st9.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1962_36553196</g:image_link>
+<g:category type="text">Sun System Parts &gt; Keyboards</g:category>
+<g:category type="text">Mice and Pads &gt; Sun Mini-Din Mice</g:category>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">3701586</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/7532874295086386019</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun Fast HME 100baseT Ethernet Card (p/n X1056A)</title>
+<content type="html">Sun Fast HME 100baseT Ethernet Card 501-2655, X1056A This X1056A Ethernet Card has been pulled from a working system. The X1056A is in stock and can ship the same day. Sun Fast Ethernet 1.0 The minimum OS is SunOS 4.1.3 or Solaris 2.3 Hardware 5/94. ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/x1056a.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/7532874295086386019"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">78.98 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://us.st4.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1962_10696257</g:image_link>
+<g:category type="text">Sun System Parts &gt; SBUS &amp; PCI Network Cards</g:category>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">x1056a</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/8907264886840068215</id>
+<published>2007-08-29T09:15:23.000Z</published>
+<updated>2007-08-29T09:15:23.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Jobs"/>
+<title type="text"># 275676 Permanent / Full Time Pharmacy Pharmacy Technician in Sun City, AZ</title>
+<content type="html">Permanent / Full Time Days Title: Certified Pharmacy IV Tech. Department: Pharmacy Shift: Days Hours: 8:00am-4:30pm</content>
+<link rel="alternate" type="text/html" href="http://www.gadball.com/Job/Details.aspx?sid=17&amp;jid=8751954"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/8907264886840068215"/>
+<author>
+<name>listing provided by GadBall.com</name>
+<email>Keith.Duarte@DataFrenzy.com</email>
+</author>
+<g:item_type type="text">Jobs</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:employer type="text">Sun Health Boswell Hospital</g:employer>
+<g:target_country type="text">US</g:target_country>
+<g:salary_type type="text">starting</g:salary_type>
+<g:job_function type="text">Pharmacist</g:job_function>
+<g:customer_id type="int">1040545</g:customer_id>
+<g:location type="location">Sun City,AZ,85351</g:location>
+<g:id type="text">8751954</g:id>
+<g:expiration_date type="dateTime">2007-09-05T09:15:23.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/10301029789810665978</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun Ultra 2 Replacement 350 watt Power Supply (p/n 300-1342)</title>
+<content type="html">Sun Ultra 2 Replacement 350 watt Power Supply 300-1342, 300-1315, 300-1249 This Power Supply has been pulled from a working Sun Ultra 2 system. This power supply is in stock and can ship today. 350 Watt Power Supply. Manufactured by Zytec for Sun  ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/3001342.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/10301029789810665978"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">49.98 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:category type="text">Sun System Parts &gt; Power Supplies &gt; Sun Power Supplies by Part Number</g:category>
+<g:image_link type="url">http://us.st7.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1963_2810959</g:image_link>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">3001342</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/8786128709672446397</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun 36.4GB 3 1/2" 10000 RPM Single Ended Ultra-1 SCSI (p/n X5243A)</title>
+<content type="html">Sun 36.4GB 3 1/2" 10000 RPM Single Ended Ultra-1 SCSI X5243A, 540-4520, 390-0051, 390-0050, 390-0065, 390-0069, 390-0052, 390-0109, 390-0110, 390-0111 Sun p/n X5242A, Bar-code: 540-4521, 390-0051 (Fujitsu MAJ3364MC), 390-0050 (Seagate ST336704LC),  ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/x5243a.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/8786128709672446397"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:target_country type="text">US</g:target_country>
+<g:price type="floatUnit">288.98 usd</g:price>
+<g:category type="text">Sun System Parts &gt; Netra Components &gt; Netra Storage &gt; Netra st A1000 &gt; st A1000 Disk Drives</g:category>
+<g:image_link type="url">http://us.st4.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1964_3643028</g:image_link>
+<g:customer_id type="int">52012</g:customer_id>
+<g:gigabyte type="float">36.4</g:gigabyte>
+<g:id type="text">x5243a</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/7032173620001775325</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun 269 Watt AC Input Power Supply (p/n X826A)</title>
+<content type="html">Sun 269 Watt AC Input Power Supply Zytec 22914400, x573a, x574a, x576a, x726a, x727a, x816a, x826a, x836a, x846a, x6054a, x6056a This is a Sun original power supply. 269 Watt Power Supply. The MX-X7800A carries a MemoryTen 90 days exchange or repair ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/3001096.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/7032173620001775325"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">249.98 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:category type="text">Sun System Parts &gt; Power Supplies &gt; Sun Power Supplies by Part Number</g:category>
+<g:image_link type="url">http://us.st8.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1962_14308790</g:image_link>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">3001096</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/5559317687697956709</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Frame Buffer Sun Ultra 1E, Ultra 2 Creator3D Series 1 FFB (p/n X3652A)</title>
+<content type="html">Frame Buffer Sun Ultra 1E, Ultra 2 Creator3D Series 1 FFB X3652A, 501-2633, 501-3129, 501-4126 This Creator3D Frame Buffer has been pulled from a working Sun system. This frame buffered is in stock and can ship today. Creator3D Series 1 (FFB) 24-Bit ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/x3652a.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/5559317687697956709"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">88.98 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://us.st4.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1963_583504</g:image_link>
+<g:category type="text">Video Frame Buffers/Graphics Cards &gt; Sun UPS Bus Graphics Cards</g:category>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">x3652a</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+<entry>
+<id>http://www.google.com/base/feeds/snippets/2370502322906848675</id>
+<published>2007-06-03T12:07:25.000Z</published>
+<updated>2007-08-28T06:06:43.000Z</updated>
+<category scheme="http://base.google.com/categories/itemtypes" term="Products"/>
+<title type="text">Sun 68pin Differential SCSI Terminator (p/n 150-1890)</title>
+<content type="html">Sun 68pin Differential SCSI Terminator 150-1890 This is a Sun Original Differential SCSI Terminator. This 150-1890 is in stock and can ship the same day. 68pin Differential SCSI Terminator with LED. Terminates a Differential SCSI Bus. The 150-1890  ...</content>
+<link rel="alternate" type="text/html" href="http://mxsun.stores.yahoo.net/1501890.html"/>
+<link rel="self" type="application/atom+xml" href="http://www.google.com/base/feeds/snippets/2370502322906848675"/>
+<author>
+<name>MemoryX - Sun Microsystems</name>
+</author>
+<g:item_type type="text">Products</g:item_type>
+<g:item_language type="text">EN</g:item_language>
+<g:price type="floatUnit">49.98 usd</g:price>
+<g:target_country type="text">US</g:target_country>
+<g:image_link type="url">http://us.st1.yimg.com/us.st11.yimg.com/us.st.yimg.com/I/mxsun_1962_38306442</g:image_link>
+<g:category type="text">Sun System Parts &gt; Netra Components &gt; Netra Storage &gt; Netra st A1000 &gt; st A1000 External Cables</g:category>
+<g:customer_id type="int">52012</g:customer_id>
+<g:id type="text">1501890</g:id>
+<g:expiration_date type="dateTime">2007-09-27T06:06:43.000Z</g:expiration_date>
+</entry>
+</feed>
