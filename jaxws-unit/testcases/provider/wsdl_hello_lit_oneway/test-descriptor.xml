@@ -1,6 +1,6 @@
 <descriptor since="2.0">
   <description>This is a Provider Oneway test</description>
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.doclit.oneway" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
     req.setArgument("foo");
     req.setExtra("bar");

@@ -1,6 +1,6 @@
 <descriptor since="2.0" transport="http">
   <description>This is a Provider test</description>
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.doclit.context"sideEffectFree="true"><![CDATA[
     req = new VoidType();
     response = helloPort.voidTest(req);
     assertNotNull(response);

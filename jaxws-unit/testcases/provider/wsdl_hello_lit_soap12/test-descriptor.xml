@@ -1,7 +1,7 @@
 <descriptor since="2.0">
   <description>This is a Provider SOAP12 test</description>
 
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.soap12_doclit1" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
     req.setArgument("sendBean");
     req.setExtra("bar");
@@ -10,7 +10,7 @@
     assertEquals("bar", response.getExtra());
   ]]></client>
 
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.soap12_doclit2" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
     req.setArgument("sendSource");
     req.setExtra("bar");
@@ -19,7 +19,7 @@
     assertEquals("bar", response.getExtra());
   ]]></client>
 
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.soap12_doclit3" sideEffectFree="true"><![CDATA[
     try {
       req = new Hello_Type();
       req.setArgument("exp");

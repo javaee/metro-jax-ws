@@ -1,7 +1,7 @@
 <descriptor since="2.0">
   <description>This is a Provider XML/HTTP test</description>
 
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.xmlbind1" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
     req.setArgument("foo");
     req.setExtra("bar");
@@ -12,7 +12,7 @@
     }
   ]]></client>
 
-  <client sideEffectFree="true"><![CDATA[
+  <client name="provider.xmlbind2" sideEffectFree="true"><![CDATA[
     try {
       req = new Hello_Type();
       req.setArgument("foo1");
