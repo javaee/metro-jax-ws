@@ -144,4 +144,10 @@
     </port>
   </service>
 
+  <service name="HelloMsg">
+    <port name="HelloMsgPort" binding="tns:HelloBinding">
+      <soap:address location="http://test.org/hello"/>
+    </port>
+  </service>
+
 </definitions>

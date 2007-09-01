@@ -39,7 +39,7 @@ import javax.annotation.Resource;
 /**
  * @author Jitendra Kotamraju 
  */
-@WebServiceProvider
+@WebServiceProvider(targetNamespace="urn:test", portName="HelloMsgPort", serviceName="HelloMsg")
 @ServiceMode(value=Service.Mode.MESSAGE)
 public class SOAPMsgProvider implements Provider<SOAPMessage> {
 

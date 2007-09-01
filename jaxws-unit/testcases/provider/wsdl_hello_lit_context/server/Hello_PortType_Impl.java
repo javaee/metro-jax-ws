@@ -19,7 +19,7 @@ import javax.jws.HandlerChain;
 @WebServiceProvider(serviceName="Hello", portName="HelloPort",
     targetNamespace="urn:test",
     wsdlLocation="WEB-INF/wsdl/hello_literal_overridden.wsdl")
-@HandlerChain(file="handler.xml")
+@HandlerChain(file="handlers.xml")
 public class Hello_PortType_Impl extends ProviderImpl {
     @Resource(type=Object.class)
     protected WebServiceContext wsContext;
