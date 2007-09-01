@@ -4,7 +4,7 @@ import javax.jws.WebService;
 
 /**
  */
-@WebService(endpointInterface="fromwsdl.handler_simple.server.Hello",portName="HelloPort")
+@WebService(portName="HelloPort", endpointInterface="fromwsdl.handler_simple.server.Hello",portName="HelloPort")
 public class HelloService_Impl implements Hello {
 
     public int hello(int x) {
