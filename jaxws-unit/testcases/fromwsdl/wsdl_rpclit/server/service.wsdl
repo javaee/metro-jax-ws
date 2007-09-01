@@ -7,7 +7,7 @@
     xmlns="http://schemas.xmlsoap.org/wsdl/">
     <import
         namespace="urn:test:rpclit:retailer"
-        location="Retailer.wsdl"/>
+        location="retailer.wsdl"/>
     <types/>
     <service name="RetailerService">
         <port name="RetailerPort" binding="tns:RetailerSoapBinding">
