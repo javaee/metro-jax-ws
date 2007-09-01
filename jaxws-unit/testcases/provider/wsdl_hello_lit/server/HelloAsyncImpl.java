@@ -28,7 +28,7 @@ import javax.xml.ws.WebServiceContext;
     wsdlLocation="WEB-INF/wsdl/hello_literal.wsdl",
     targetNamespace="urn:test",
     serviceName="Hello",
-    portName="HelloPort")
+    portName="HelloAsyncPort")
 
 public class HelloAsyncImpl extends AbstractImpl implements AsyncProvider<Source> {
 
