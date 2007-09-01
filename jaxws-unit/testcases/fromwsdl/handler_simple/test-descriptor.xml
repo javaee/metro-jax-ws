@@ -3,12 +3,27 @@
   <service basedir="./server">
     <wsdl href="hello_literal.wsdl"/>
   </service>
-  <!--
-.injected services: hello_Service
-injected ports: helloPort helloPort12
-injected addresses: helloPortAddress helloPort12Address
--->    
-  <client name="handlertest1">
+
+  <pre-client>
+      import javax.xml.ws.soap.SOAPBinding;
+      
+      private int getIntFromResponse(Source source) throws Exception {
+        Transformer xFormer =
+            TransformerFactory.newInstance().newTransformer();
+        xFormer.setOutputProperty("omit-xml-declaration", "yes");
+        DOMResult dResult = new DOMResult();
+        xFormer.transform(source, dResult);
+        Node documentNode = dResult.getNode();
+        Node envelopeNode = documentNode.getFirstChild();
+        Node bodyNode = envelopeNode.getLastChild();
+        Node requestResponseNode = bodyNode.getFirstChild();
+        Node textNode = requestResponseNode.getFirstChild().getFirstChild();
+        int responseInt = Integer.parseInt(textNode.getNodeValue());
+        return responseInt;
+    }
+  </pre-client>
+    
+  <client name="testSimple">
       <description>
      Tests that handler specified in config file is used.
 
@@ -21,4 +36,355 @@ injected addresses: helloPortAddress helloPort12Address
      assertEquals(x+diff,helloPort.hello(x));
 
   </client>
+  <client name="testDynamic1">
+      <description>
+     Test tries to add a handler programmatically after clearing
+     handlers out of the service. Adds handler to binding. Uses
+     an empty handler resolver for clearing the service.
+      </description>
+      <![CDATA[
+        hr = new HandlerResolver() {
+            public List getHandlerChain(PortInfo info) {
+                return new ArrayList();
+            }
+        };
+        hello_Service.setHandlerResolver(hr);
+        Hello stub = hello_Service.getHelloPort();
+        int x = 1;
+        int diff = 2; // 2 per handler invoked
+
+        int y = stub.hello(x);
+        assertEquals(x+diff,y);
+
+        // now add client handler
+        handlerList = new ArrayList();
+        handlerList.add(new SOAPTestHandler());
+        Binding binding = stub.getBinding();
+        binding.setHandlerChain(handlerList);
+
+        // test again
+        diff = 4;
+        y = stub.hello(x);
+        assertEquals(x+diff,y);
+        ]]>
+  </client>
+
+
+    <client name="testDynamic2">
+      <description>
+    Test tries to add a handler programmatically after clearing
+     handlers out of the service. Adds handler using HandlerResolver.
+     Uses a null HandlerResolver to clear the service.
+      </description>
+      <![CDATA[
+      hello_Service.setHandlerResolver(null);
+        Hello stub = hello_Service.getHelloPort();
+
+        int x = 1;
+        int diff = 2; // 2 per handler invoked
+
+        int y = stub.hello(x);
+        assertEquals(x+diff, y);
+
+        // now add client handler
+        hr =new HandlerResolver() {
+           public List getHandlerChain(PortInfo info) {
+               list = new ArrayList();
+               list.add(new SOAPTestHandler());
+               return list;
+           }
+        };
+        hello_Service.setHandlerResolver(hr);
+        stub = hello_Service.getHelloPort();
+
+        // test again
+        diff = 4;
+        y = stub.hello(x);
+        assertEquals(x+diff,y);
+        ]]>
+  </client>
+
+    <client name="testLogicalSource">
+      <description>
+    Test removes the static handler and adds a logical
+    handler that uses a Source to change the message.
+      </description>
+      <![CDATA[
+      Binding binding = ((BindingProvider) helloPort).getBinding();
+
+        LogicalTestHandler handler = new LogicalTestHandler();
+        handler.setHandleMode(LogicalTestHandler.HandleMode.SOURCE);
+        handlerChain = new ArrayList();
+        handlerChain.add(handler);
+        binding.setHandlerChain(handlerChain);
+
+
+        int x = 1;
+        int diff = 4; // 2 per handler invoked
+
+        int y = helloPort.hello(x);
+        assertEquals(x+diff, y); // x+4 with all handlers
+        ]]>
+  </client>
+  <client name="testLogicalJAXB">
+      <description>
+    Test removes the static handler and adds a logical
+    handler that uses JAXB to change the message.
+      </description>
+      <![CDATA[
+      Binding binding = ((BindingProvider) helloPort).getBinding();
+
+        LogicalTestHandler handler = new LogicalTestHandler();
+        handler.setHandleMode(LogicalTestHandler.HandleMode.JAXB);
+        handlerChain = new ArrayList();
+        handlerChain.add(handler);
+        binding.setHandlerChain(handlerChain);
+
+
+        int x = 1;
+        int diff = 4; // 2 per handler invoked
+
+        int y = helloPort.hello(x);
+        assertEquals(x+diff, y); // x+4 with all handlers
+        ]]>
+  </client>
+
+  <client name="testLogicalGetSourceOnly">
+      <description>
+    Test removes the static handler and adds a logical
+    handler that gets the source but does not change it.
+      </description>
+      <![CDATA[
+      Binding binding = ((BindingProvider) helloPort).getBinding();
+
+        LogicalTestHandler handler = new LogicalTestHandler();
+        handler.setHandleMode(LogicalTestHandler.HandleMode.SOURCE_NO_CHANGE);
+        List handlerChain = new ArrayList();
+        handlerChain.add(handler);
+        binding.setHandlerChain(handlerChain);
+
+
+        int x = 1;
+        int diff = 2; // 2 per handler invoked
+
+        int y = helloPort.hello(x);
+        assertEquals(x+diff, y);
+        ]]>
+  </client>
+  
+  <client name="testDispatchJAXB">
+      <description>
+    Creates a Dispatch object with jaxb and tests that the
+    handler is called.
+      </description>
+      <![CDATA[
+      System.out.println("add1"+helloPortAddress);
+      System.out.println("add2"+helloPort12Address);
+     QName portQName = new QName("urn:test", "HelloPort");       
+
+        // create service with just qname - no handlers in that case
+        //Hello_Service service = createService();
+        QName serviceQName = new QName("urn:test", "Hello");
+        Service service = Service.create(serviceQName);
+
+        service.addPort(portQName, SOAPBinding.SOAP11HTTP_BINDING,helloPortAddress.toString() );
+        jaxbContext = createJAXBContext();
+       dispatch = service.createDispatch(portQName,
+            jaxbContext, Service.Mode.PAYLOAD);
+
+        int numHandlers = 0;
+        assertEquals("Should be " + numHandlers +
+            " handler(s) on dispatch object", numHandlers,
+            dispatch.getBinding().getHandlerChain().size());
+
+        int x = 1;
+        int diff = 2; // 2 per handler
+
+        Hello_Type hello = new Hello_Type();
+        hello.setIntin(x);
+        HelloResponse response = (HelloResponse) dispatch.invoke(hello);
+        assertEquals(x+diff, response.getIntout());
+
+        // add handler programatically
+        ClientServerTestUtil.addHandlerToBinding(
+            new SOAPTestHandler(), dispatch);
+        diff = 4;
+        response = (HelloResponse) dispatch.invoke(hello);
+        assertEquals(x+diff, response.getIntout());
+        ]]>
+  </client>
+  
+  <client name="testDispatchSourceSOAPHandler">
+      <description>
+          Creates a Dispatch object with source and tests that
+     the handler is called. Test uses a SOAP handler.
+      </description>
+      <![CDATA[
+       String req = "<?xml version=\"1.0\" ?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><Hello xmlns=\"urn:test:types\"><intin>1</intin></Hello></soapenv:Body></soapenv:Envelope>";
+        QName portQName = new QName("urn:test", "HelloPort");
+
+        // create service with just qname - no handlers in that case
+        QName serviceQName = new QName("urn:test", "Hello");
+        Service service = Service.create(serviceQName);
+        service.addPort(portQName, SOAPBinding.SOAP11HTTP_BINDING,helloPortAddress.toString());
+
+        dispatch = service.createDispatch(portQName,
+            Source.class, Service.Mode.MESSAGE);
+
+        int numHandlers = 0;
+        assertEquals("Should be " + numHandlers +
+            " handler(s) on dispatch object", numHandlers,
+            dispatch.getBinding().getHandlerChain().size());
+
+        int x = 1;
+        int diff = 2; // 2 per handler
+
+        ByteArrayInputStream iStream = new ByteArrayInputStream(req.getBytes());
+        Source requestSource = new StreamSource(iStream);
+        Source response = dispatch.invoke(requestSource);
+        int responseInt = getIntFromResponse(response);
+        assertEquals(x+diff, responseInt);
+
+        // add handler programatically
+        ClientServerTestUtil.addHandlerToBinding(
+            new SOAPTestHandler(), dispatch);
+        diff = 4;
+
+        // make new call
+        iStream = new ByteArrayInputStream(req.getBytes());
+        requestSource = new StreamSource(iStream);
+        response = dispatch.invoke(requestSource);
+        responseInt = getIntFromResponse(response);
+        assertEquals(x+diff, responseInt);
+
+        ]]>
+  </client>
+  <client name="testReferenceParametersProperty">
+      <description>
+      </description>
+      <![CDATA[
+        String xmlRefParam1 = "<myns:MyParam1 wsa:IsReferenceParameter='true' xmlns:myns=\"http://cptestservice.org/wsdl\" xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">Hello</myns:MyParam1>";
+        String xmlRefParam2 = "<myns:MyParam2 wsa:IsReferenceParameter='true' xmlns:myns=\"http://cptestservice.org/wsdl\" xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">There</myns:MyParam2>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header>" +
+                xmlRefParam1 + xmlRefParam2 +
+                "</S:Header><S:Body><Hello xmlns=\"urn:test:types\"><intin>1</intin></Hello></S:Body></S:Envelope>";
+
+        QName portQName = new QName("urn:test", "HelloPort");
+
+        // create service with just qname - no handlers in that case
+        QName serviceQName = new QName("urn:test", "Hello");
+        Service service = Service.create(serviceQName);
+        service.addPort(portQName, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, helloPortAddress.toString());
+        Dispatch dispatch = service.createDispatch(portQName, SOAPMessage.class , Service.Mode.MESSAGE);
+        MessageFactory messageFactory = MessageFactory.newInstance();
+        MimeHeaders headers = new MimeHeaders();
+        headers.addHeader("Content-Type", "text/xml");
+        SOAPMessage soapMsg = messageFactory.createMessage(headers,
+                new ByteArrayInputStream(request.getBytes()));
+        handlers = new ArrayList();
+        handlers.add(new ReferenceParameterHandler());
+        dispatch.getBinding().setHandlerChain(handlers);
+        SOAPMessage msg = (SOAPMessage) dispatch.invoke(soapMsg);
+        msg.writeTo(System.out);
+
+        ]]>
+  </client>
+  <client name="testDispatchSourceLogicalHandler">
+      <description>
+       Creates a Dispatch object with source and tests that
+       the handler is called. Test uses a logical handler.
+      </description>
+      <![CDATA[
+          String req = "<?xml version=\"1.0\" ?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><Hello xmlns=\"urn:test:types\"><intin>1</intin></Hello></soapenv:Body></soapenv:Envelope>";
+        QName portQName = new QName("urn:test", "HelloPort");
+
+        // create service with just qname - no handlers in that case
+        QName serviceQName = new QName("urn:test", "Hello");
+        Service service = Service.create(serviceQName);
+        service.addPort(portQName, SOAPBinding.SOAP11HTTP_BINDING, helloPortAddress.toString());
+
+        dispatch = service.createDispatch(portQName,
+            Source.class, Service.Mode.MESSAGE);
+        //ClientServerTestUtil.setTransport(dispatch, null);
+        int numHandlers = 0;
+        assertEquals("Should be " + numHandlers +
+            " handler(s) on dispatch object", numHandlers,
+            dispatch.getBinding().getHandlerChain().size());
+
+        int x = 1;
+        int diff = 2; // 2 per handler
+
+        ByteArrayInputStream iStream = new ByteArrayInputStream(req.getBytes());
+        Source requestSource = new StreamSource(iStream);
+        Source response = dispatch.invoke(requestSource);
+        int responseInt = getIntFromResponse(response);
+        assertEquals(x+diff, responseInt);
+
+        // add handler programatically
+        ClientServerTestUtil.addHandlerToBinding(
+            new LogicalTestHandler(), dispatch);
+        diff = 4;
+
+        // make new call
+        iStream = new ByteArrayInputStream(req.getBytes());
+        requestSource = new StreamSource(iStream);
+        response = dispatch.invoke(requestSource);
+        responseInt = getIntFromResponse(response);
+        assertEquals(x+diff, responseInt);
+
+        ]]>
+  </client>
+
+  <client name="testException">
+      <description>
+          Full exception tests are in the fromwsdl/handler
+      package. This one can be used for debugging simpler
+      cases.
+
+     The test clears the client handlers and the exception
+     is thrown on the server side.
+      </description>
+      try {
+            helloPort.hello(SOAPTestHandler.THROW_RUNTIME_EXCEPTION);
+            fail("did not receive an exception");
+        } catch (Exception e) {
+            // pass
+        }
+  </client>
+
+  <client name="testSOAP12Binding1">
+      <description>
+          The normal tests in this file are for soap 1.1. This is a soap 1.2
+      test to make sure that the port is created with the proper binding
+      so that the proper handlers are called. See bug 6353179.
+
+     </description>
+      <![CDATA[
+      // make sure port is working
+        int x = 1;
+        int diff = 2; // server handler only
+
+        int y = helloPort12.hello12(x);
+        assertEquals(x+diff, y);
+
+        Binding binding = ((BindingProvider) stub).getBinding();
+        handlers = binding.getHandlerChain();
+        assertEquals("should be 1 handler in chain", 1,
+            handlers.size());
+
+        Handler handler = handlers.get(0);
+        assertTrue("handler should be type Port12Handler, not " +
+            handler.getClass().toString(),
+            handler instanceof Port12Handler);
+
+        Port12Handler p12h = (Port12Handler) handler;
+        p12h.resetCalled();
+
+        helloPort.hello12(2);
+        assertEquals("handler should have been called two times",
+            2, p12h.getCalled());
+            ]]>
+  </client>
+
 </descriptor>
