@@ -1,0 +1,8 @@
+<descriptor since="2.0" transport="http">
+  <description>misc</description>
+    
+  <service basedir="./server">
+    <wsdl href="header.wsdl"/>
+  </service>
+
+</descriptor>
