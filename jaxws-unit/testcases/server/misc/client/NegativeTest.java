@@ -1,5 +1,5 @@
 /*
- * $Id: NegativeTest.java,v 1.1 2007-09-01 02:18:31 jitu Exp $
+ * $Id: NegativeTest.java,v 1.2 2007-09-01 02:28:19 jitu Exp $
  */
 
 /*
@@ -20,11 +20,9 @@ import javax.xml.namespace.QName;
 
 /**
  *
- * @author JAX-RPC RI Development Team
+ * @author Jitendra Kotamraju
  */
 public class NegativeTest extends TestCase {
-
-    private HelloPortType stub;
 
     public NegativeTest(String name) throws Exception {
         super(name);
@@ -64,7 +62,7 @@ public class NegativeTest extends TestCase {
         request.setReqInfo("foo");
         Echo2Type header2 = of.createEcho2Type();
         header2.setReqInfo("foo");
-        EchoResponseType response = stub.echo(request, request, header2);
+        EchoResponseType response = getStub().echo(request, request, header2);
         assertEquals("foofoofoo", (response.getRespInfo()));
     }
 
@@ -161,10 +159,6 @@ public class NegativeTest extends TestCase {
     /*
      * Sends empty body: <env:body/>
     public void testEmptyBody() throws Exception {
-        if (useLocal()) {
-            printSkip();
-            return;
-        }
         String message =
 "<?xml version='1.0' encoding='UTF-8'?><env:Envelope xmlns:env='http://schemas.xmlsoap.org/soap/envelope/' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><env:Header><echo xmlns='http://example.com/types'><reqInfo>foo</reqInfo></echo><echo2 xmlns='http://example.com/types'><reqInfo>foo</reqInfo></echo2></env:Header><env:Body></env:Body></env:Envelope>";
         ByteArrayInputStream is = new ByteArrayInputStream(message.getBytes());
