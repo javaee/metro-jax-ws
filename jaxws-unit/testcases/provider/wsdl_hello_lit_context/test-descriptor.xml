@@ -1,16 +1,21 @@
 <descriptor since="2.0" transport="http">
   <description>This is a Provider test</description>
-  <client name="provider.doclit.context" sideEffectFree="true">
+  <client name="testMsgVoid" sideEffectFree="true">
   <![CDATA[
-    req = new VoidType();
-    response = helloPort.voidTest(req);
+    response = helloMsgPort.voidTest(new VoidType());
     assertNotNull(response);
 
-    map = stub.getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
+    map = helloMsgPort.getResponseContext().get(MessageContext.HTTP_RESPONSE_HEADERS);
 
     assertNotNull(map);
     assertEquals("bar", map.get("foo").get(0));
 
+  ]]></client>
+
+  <client name="testVoid" sideEffectFree="true">
+  <![CDATA[
+    response = helloPort.voidTest(new VoidType());
+    assertNotNull(response);
   ]]></client>
 
   <service basedir="./server">
