@@ -26,6 +26,8 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.InternetHeaders;
 import java.io.*;
 import junit.framework.*;
+import javax.xml.ws.BindingType;
+import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.WebServiceProvider;
 
 /**
@@ -33,6 +35,7 @@ import javax.xml.ws.WebServiceProvider;
  */
 @WebServiceProvider
 @ServiceMode(value=Service.Mode.MESSAGE)
+@BindingType(value=HTTPBinding.HTTP_BINDING)
 public class HelloImpl implements Provider<DataSource> {
 
     private static final JAXBContext jaxbContext = createJAXBContext();
@@ -66,7 +69,7 @@ public class HelloImpl implements Provider<DataSource> {
 
     private void recvBean(Source source) throws Exception {
         System.out.println("**** recvBean ******");
-        Hello hello = (Hello)jaxbContext.createUnmarshaller().unmarshal(source);
+        Hello_Type hello = (Hello_Type)jaxbContext.createUnmarshaller().unmarshal(source);
         if ("Dispatch".equals(hello.getArgument())) {
             throw new WebServiceException("hello.getArgument() got ="+
 				hello.getArgument());

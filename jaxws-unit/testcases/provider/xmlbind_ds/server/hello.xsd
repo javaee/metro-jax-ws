@@ -13,12 +13,14 @@
         </xsd:complexType>
       </xsd:element>
 
+<!--
     <xsd:complexType name="HelloType">
             <xsd:sequence>
                 <xsd:element name="argument" type="xsd:string"/>
                 <xsd:element name="extra" type="xsd:string"/>
             </xsd:sequence>
         </xsd:complexType>
+-->
 
       <xsd:element name="HelloResponse">
         <xsd:complexType>
