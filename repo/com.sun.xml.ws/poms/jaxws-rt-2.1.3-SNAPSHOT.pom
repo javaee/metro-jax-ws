@@ -39,5 +39,10 @@
       <artifactId>resolver</artifactId>
       <version>20050927</version>
     </dependency>
+    <dependency>
+      <groupId>org.jvnet</groupId>
+      <artifactId>mimepull</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 </project>
