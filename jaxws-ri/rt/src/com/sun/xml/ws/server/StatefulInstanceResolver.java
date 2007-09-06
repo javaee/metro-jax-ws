@@ -363,6 +363,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
         String key = reverseInstances.get(o);
         if(key==null)   return; // already unexported
         instances.remove(key);
+        reverseInstances.remove(o);
     }
 
     public T resolve(EndpointReference epr) {
