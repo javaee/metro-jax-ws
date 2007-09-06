@@ -44,7 +44,7 @@ import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
-import com.sun.xml.ws.developer.MIMEFeature;
+import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -153,7 +153,7 @@ abstract class MimeCodec implements Codec {
     }
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
-        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, binding.getFeature(MIMEFeature.class));
+        MimeMultipartParser parser = new MimeMultipartParser(in, contentType, binding.getFeature(StreamingAttachmentFeature.class));
         decode(parser,packet);
     }
 

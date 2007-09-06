@@ -42,22 +42,17 @@ import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Attachment;
-import com.sun.xml.ws.api.message.AttachmentSet;
-import com.sun.xml.ws.api.message.HeaderList;
-import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Messages;
-import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
+import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.encoding.MimeMultipartParser;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
-import com.sun.xml.ws.developer.MIMEFeature;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -133,7 +128,7 @@ public final class XMLMessage {
                 final ContentType contentType = new ContentType(ct);
                 final int contentTypeId = identifyContentType(contentType);
                 if ((contentTypeId & MIME_MULTIPART_FLAG) != 0) {
-                    data = new XMLMultiPart(ct, in, binding.getFeature(MIMEFeature.class));
+                    data = new XMLMultiPart(ct, in, binding.getFeature(StreamingAttachmentFeature.class));
                 } else if ((contentTypeId & PLAIN_XML_FLAG) != 0) {
                     data = Messages.createUsingPayload(new StreamSource(in),
                             SOAPVersion.SOAP_11);
@@ -276,15 +271,15 @@ public final class XMLMessage {
     public static final class XMLMultiPart extends AbstractMessageImpl implements MessageDataSource {
         private final DataSource dataSource;
         private MimeMultipartParser mpp;
-        private final MIMEFeature feature;
+        private final StreamingAttachmentFeature feature;
 
-        public XMLMultiPart(final String contentType, final InputStream is, MIMEFeature feature) {
+        public XMLMultiPart(final String contentType, final InputStream is, StreamingAttachmentFeature feature) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(contentType, is);
             this.feature = feature;
         }
         
-        public XMLMultiPart(DataSource dataSource, MIMEFeature feature) {
+        public XMLMultiPart(DataSource dataSource, StreamingAttachmentFeature feature) {
             super(SOAPVersion.SOAP_11);
             this.dataSource = dataSource;
             this.feature = feature;

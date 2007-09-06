@@ -42,7 +42,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.ws.api.message.Attachment;
-import com.sun.xml.ws.developer.MIMEFeature;
+import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.ByteArrayDataSource;
@@ -81,7 +81,7 @@ public final class MimeMultipartParser {
 
     private boolean gotAll;
 
-    public MimeMultipartParser(InputStream in, String contentType, MIMEFeature feature) {
+    public MimeMultipartParser(InputStream in, String contentType, StreamingAttachmentFeature feature) {
         try {
             ContentType ct = new ContentType(contentType);
             String boundary = ct.getParameter("boundary");

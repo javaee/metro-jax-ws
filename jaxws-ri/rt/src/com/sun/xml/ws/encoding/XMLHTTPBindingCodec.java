@@ -40,17 +40,16 @@ import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.client.ContentNegotiation;
+import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.encoding.xml.XMLCodec;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.sun.xml.ws.encoding.xml.XMLMessage.MessageDataSource;
 import com.sun.xml.ws.encoding.xml.XMLMessage.UnknownContent;
 import com.sun.xml.ws.encoding.xml.XMLMessage.XMLMultiPart;
 import com.sun.xml.ws.resources.StreamingMessages;
-import com.sun.xml.ws.developer.MIMEFeature;
 
 import javax.activation.DataSource;
 import javax.xml.ws.WebServiceException;
@@ -205,7 +204,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
         if (contentType == null) {
             xmlCodec.decode(in, contentType, packet);
         } else if (isMultipartRelated(contentType)) {
-            packet.setMessage(new XMLMultiPart(contentType, in, binding.getFeature(MIMEFeature.class)));
+            packet.setMessage(new XMLMultiPart(contentType, in, binding.getFeature(StreamingAttachmentFeature.class)));
         } else if(isFastInfoset(contentType)) {
             if (fiCodec == null) {
                 throw new RuntimeException(StreamingMessages.FASTINFOSET_NO_IMPLEMENTATION());

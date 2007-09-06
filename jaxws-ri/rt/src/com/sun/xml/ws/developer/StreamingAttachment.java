@@ -4,11 +4,11 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.lang.annotation.*;
 
 /**
- * This feature represents the use of MIME attachments with a
+ * This feature represents the use of StreamingAttachment attachments with a
  * web service.
  *
  * <pre>
- * for e.g.: To keep all MIME attachments in memory
+ * for e.g.: To keep all StreamingAttachment attachments in memory
  *
  * <p>
  * @WebService
@@ -22,15 +22,15 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@WebServiceFeatureAnnotation(id = MIMEFeature.ID, bean = MIMEFeature.class)
-public @interface MIME {
+@WebServiceFeatureAnnotation(id = StreamingAttachmentFeature.ID, bean = StreamingAttachmentFeature.class)
+public @interface StreamingAttachment {
     /**
      * Directory in which large attachments are stored
      */
     String dir();
 
     /**
-     * MIME message is parsed eagerly
+     * StreamingAttachment message is parsed eagerly
      */
     boolean parseEagerly() default false;
 

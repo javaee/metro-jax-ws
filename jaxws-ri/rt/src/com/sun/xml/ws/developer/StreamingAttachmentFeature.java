@@ -8,14 +8,14 @@ import javax.xml.ws.WebServiceFeature;
 import org.jvnet.mimepull.MIMEConfig;
 
 /**
- * Proxy needs to be created with this feature to configure MIME
+ * Proxy needs to be created with this feature to configure StreamingAttachment
  * attachments behaviour.
  * 
  * <pre>
- * for e.g.: To configure all MIME attachments to be kept in memory
+ * for e.g.: To configure all StreamingAttachment attachments to be kept in memory
  * <p>
  *
- * MIMEFeature feature = new MIMEFeature();
+ * StreamingAttachmentFeature feature = new StreamingAttachmentFeature();
  * feature.setAllMemory(true);
  *
  * proxy = HelloService().getHelloPort(feature);
@@ -24,9 +24,9 @@ import org.jvnet.mimepull.MIMEConfig;
  *
  * @author Jitendra Kotamraju
  */
-public final class MIMEFeature extends WebServiceFeature {
+public final class StreamingAttachmentFeature extends WebServiceFeature {
     /**
-     * Constant value identifying the {@link @MIME} feature.
+     * Constant value identifying the {@link @StreamingAttachment} feature.
      */
     public static final String ID = "http://jax-ws.dev.java.net/features/mime";
 
@@ -38,11 +38,11 @@ public final class MIMEFeature extends WebServiceFeature {
     private int memoryThreshold;
 
     @FeatureConstructor
-    public MIMEFeature() {
+    public StreamingAttachmentFeature() {
     }
 
     @FeatureConstructor({"dir","parseEagerly","allMemory","memoryThreshold"})
-    public MIMEFeature(@Nullable String dir, boolean parseEagerly, boolean allMemory, int memoryThreshold) {
+    public StreamingAttachmentFeature(@Nullable String dir, boolean parseEagerly, boolean allMemory, int memoryThreshold) {
         this.enabled = true;
         this.dir = dir;
         this.parseEagerly = parseEagerly;
@@ -73,7 +73,7 @@ public final class MIMEFeature extends WebServiceFeature {
     }
 
     /**
-     * MIME message is parsed eagerly
+     * StreamingAttachment message is parsed eagerly
      */
     public void setParseEagerly(boolean parseEagerly) {
         this.parseEagerly = parseEagerly;
