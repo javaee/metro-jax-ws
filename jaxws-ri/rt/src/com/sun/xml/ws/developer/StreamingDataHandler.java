@@ -37,7 +37,6 @@ package com.sun.xml.ws.developer;
 
 import org.jvnet.mimepull.MIMEPart;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.InputStream;
 import java.io.IOException;
@@ -51,7 +50,7 @@ import java.io.File;
  *
  * @author Jitendra Kotamraju
  */
-public class StreamingDataHandler extends DataHandler {
+public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
 
     public StreamingDataHandler(MIMEPart part) {
         super(new StreamingDataSource(part));
@@ -75,6 +74,7 @@ public class StreamingDataHandler extends DataHandler {
     public InputStream readOnce() throws IOException {
         StreamingDataSource ds = (StreamingDataSource)this.getDataSource();
         return ds.readOnce();
+
         // TODO: should we capture runtime exception and convert to IOException
     }
 
@@ -100,7 +100,11 @@ public class StreamingDataHandler extends DataHandler {
         }
 
         InputStream readOnce() throws IOException {
-            return part.readOnce();
+            try {
+                return part.readOnce();
+            } catch(Exception e) {
+                throw new MyIOException(e);
+            }
         }
 
         void moveTo(File file) {
@@ -119,5 +123,19 @@ public class StreamingDataHandler extends DataHandler {
             return "";
         }
     }
+
+    private static final class MyIOException extends IOException {
+        private final Exception linkedException;
+
+        MyIOException(Exception linkedException) {
+            this.linkedException = linkedException;
+        }
+
+        @Override
+        public Throwable getCause() {
+            return linkedException;
+        }
+    }
+
 
 }
