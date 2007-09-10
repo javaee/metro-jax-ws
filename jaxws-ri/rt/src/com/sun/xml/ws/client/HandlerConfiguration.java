@@ -35,15 +35,13 @@
  */
 package com.sun.xml.ws.client;
 
+import com.sun.xml.ws.api.handler.MessageHandler;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.soap.SOAPHandler;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class holds the handler information on the BindingProvider.
@@ -65,6 +63,7 @@ public class HandlerConfiguration {
     private final List<Handler> handlerChain;
     private final List<LogicalHandler> logicalHandlers;
     private final List<SOAPHandler> soapHandlers;
+    private final List<MessageHandler> messageHandlers;
     private Set<QName> knownHeaders;
     private Set<QName> handlerKnownHeaders;
     /**
@@ -79,11 +78,13 @@ public class HandlerConfiguration {
     public HandlerConfiguration(Set<String> roles, Set<QName> portKnownHeaders,
                                 List<Handler> handlerChain,
                                 List<LogicalHandler> logicalHandlers, List<SOAPHandler> soapHandlers,
+                                List<MessageHandler> messageHandlers,
                                 Set<QName> handlerKnownHeaders) {
         this.roles = roles;
         this.handlerChain = handlerChain;
         this.logicalHandlers = logicalHandlers;
         this.soapHandlers = soapHandlers;
+        this.messageHandlers = messageHandlers;
         this.handlerKnownHeaders = handlerKnownHeaders;
         this.knownHeaders = new HashSet<QName>();
         if(portKnownHeaders != null)
@@ -113,6 +114,10 @@ public class HandlerConfiguration {
 
     public List<SOAPHandler> getSoapHandlers() {
         return soapHandlers;
+    }
+
+    public List<MessageHandler> getMessageHandlers() {
+        return messageHandlers;
     }
 
     public Set<QName> getKnownHeaders() {

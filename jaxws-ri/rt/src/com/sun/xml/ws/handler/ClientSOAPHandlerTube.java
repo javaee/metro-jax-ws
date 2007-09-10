@@ -106,7 +106,8 @@ public class ClientSOAPHandlerTube extends HandlerTube {
      * Close LogicalHandlers first and then SOAPHandlers on Server
      */
     public void close(MessageContext msgContext) {
-
+        //Do Nothing
+        // LogicalHandlerTube will drive closing of HandlerTubes
     }
 
     /**
@@ -114,7 +115,16 @@ public class ClientSOAPHandlerTube extends HandlerTube {
      * Close this Tube's handlers.
      */
     public void closeCall(MessageContext msgContext) {
-        closeSOAPHandlers(msgContext);
+        //assuming cousinTube is called if requestProcessingSucessful is true
+        if (requestProcessingSucessful) {
+            //cousinTube is null in XML/HTTP Binding
+            if (cousinTube != null) {
+                // Close SOAPHandlerTube
+                cousinTube.closeCall(msgContext);
+            }
+        }
+        if (processor != null)
+            closeSOAPHandlers(msgContext);
     }
 
     //TODO:
@@ -156,8 +166,7 @@ public class ClientSOAPHandlerTube extends HandlerTube {
     }
 
     MessageUpdatableContext getContext(Packet packet) {
-        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet);
-        context.setRoles(roles);
+        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet,roles);
         return context;
     }
 

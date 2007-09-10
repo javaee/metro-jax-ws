@@ -107,7 +107,7 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     public void close(MessageContext msgContext) {
 
         if (binding.getSOAPVersion() != null) {
-            //SOAPHandlerTube will drive the closing of LogicalHandlerTube
+            //MessageHandlerTube will drive the closing of LogicalHandlerTube
         } else {
             if (processor != null)
                 closeLogicalHandlers(msgContext);

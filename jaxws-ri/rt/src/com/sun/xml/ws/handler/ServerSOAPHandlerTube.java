@@ -109,15 +109,8 @@ public class ServerSOAPHandlerTube extends HandlerTube {
      * Close LogicalHandlers first and then SOAPHandlers on Server
      */
     public void close(MessageContext msgContext) {
-        //assuming cousinTube is called if requestProcessingSucessful is true
-        if (requestProcessingSucessful) {
-            if (cousinTube != null) {
-                // Close LogicalHandlerTube
-                cousinTube.closeCall(msgContext);
-            }
-        }
-        if (processor != null)
-            closeSOAPHandlers(msgContext);
+        // Do Nothing
+        // MessageHandlerTube will drive the closing of HandlerTubes
 
     }
 
@@ -168,8 +161,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
         // Do nothing, Processor is setup in the constructor.
     }
     MessageUpdatableContext getContext(Packet packet) {
-        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet);
-        context.setRoles(roles);
+        SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet,roles);
         return context;
     }
 

@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.handler.HandlerTube;
 import com.sun.xml.ws.handler.ServerLogicalHandlerTube;
+import com.sun.xml.ws.handler.ServerMessageHandlerTube;
 import com.sun.xml.ws.handler.ServerSOAPHandlerTube;
 import com.sun.xml.ws.protocol.soap.ServerMUTube;
 import com.sun.xml.ws.util.pipe.DumpTube;
@@ -159,7 +160,11 @@ public class ServerTubeAssemblerContext {
             HandlerTube cousin = new ServerLogicalHandlerTube(binding, wsdlModel, next);
             next = cousin;
             if (binding instanceof SOAPBinding) {
-                return new ServerSOAPHandlerTube(binding, next, cousin);
+                //Add SOAPHandlerTube
+                next = cousin = new ServerSOAPHandlerTube(binding, next, cousin);
+
+                //Add MessageHandlerTube
+                next = new ServerMessageHandlerTube(binding, next, cousin);
             }
         }
         return next;

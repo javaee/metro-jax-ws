@@ -67,9 +67,10 @@ class SOAPMessageContextImpl extends MessageUpdatableContext implements SOAPMess
     private SOAPMessage soapMsg = null;
     private WSBinding binding;
 
-    public SOAPMessageContextImpl(WSBinding binding, Packet packet) {
+    public SOAPMessageContextImpl(WSBinding binding, Packet packet,Set<String> roles) {
         super(packet);
-        this.binding = binding;        
+        this.binding = binding;
+        this.roles = roles;
     }
 
     public SOAPMessage getMessage() {
@@ -135,9 +136,5 @@ class SOAPMessageContextImpl extends MessageUpdatableContext implements SOAPMess
 
     public Set<String> getRoles() {
         return roles;
-    }
-
-    void setRoles(Set<String> roles) {
-        this.roles = roles;
-    }    
+    } 
 }

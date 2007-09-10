@@ -49,6 +49,7 @@ import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.handler.ClientLogicalHandlerTube;
+import com.sun.xml.ws.handler.ClientMessageHandlerTube;
 import com.sun.xml.ws.handler.ClientSOAPHandlerTube;
 import com.sun.xml.ws.handler.HandlerTube;
 import com.sun.xml.ws.protocol.soap.ClientMUTube;
@@ -173,13 +174,18 @@ public class ClientTubeAssemblerContext {
      * Creates a {@link Tube} that invokes protocol and logical handlers.
      */
     public Tube createHandlerTube(Tube next) {
-        HandlerTube soapHandlerTube = null;
+        HandlerTube cousinHandlerTube = null;
         //XML/HTTP Binding can have only LogicalHandlerPipe
         if (binding instanceof SOAPBinding) {
-            soapHandlerTube = new ClientSOAPHandlerTube(binding, wsdlModel, next);
-            next = soapHandlerTube;
+            //Add MessageHandlerTube
+            HandlerTube messageHandlerTube = new ClientMessageHandlerTube(binding, wsdlModel, next);
+            next = cousinHandlerTube = messageHandlerTube;
+
+            //Add SOAPHandlerTuber
+            HandlerTube soapHandlerTube = new ClientSOAPHandlerTube(binding, next, cousinHandlerTube);            
+            next = cousinHandlerTube = soapHandlerTube;
         }
-        return new ClientLogicalHandlerTube(binding, next, soapHandlerTube);
+        return new ClientLogicalHandlerTube(binding, next, cousinHandlerTube);
     }
 
     /**
