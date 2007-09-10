@@ -16,11 +16,11 @@ public class Port12Handler implements SOAPHandler<SOAPMessageContext> {
 
     private int called = 0;
 
-    void resetCalled() {
+    public void resetCalled() {
         called = 0;
     }
 
-    int getCalled() {
+    public int getCalled() {
         return called;
     }
 

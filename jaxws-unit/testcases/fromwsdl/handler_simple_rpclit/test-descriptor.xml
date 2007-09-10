@@ -183,7 +183,7 @@
         int y = helloPort12.hello12(x);
         assertEquals(x+diff, y);
 
-        Binding binding = ((BindingProvider) stub).getBinding();
+        Binding binding = ((BindingProvider) helloPort12).getBinding();
         handlers = binding.getHandlerChain();
         assertEquals("should be 1 handler in chain", 1,
             handlers.size());
@@ -196,7 +196,7 @@
         Port12Handler p12h = (Port12Handler) handler;
         p12h.resetCalled();
 
-        helloPort.hello12(2);
+        helloPort12.hello12(2);
         assertEquals("handler should have been called two times",
             2, p12h.getCalled());
             ]]>
