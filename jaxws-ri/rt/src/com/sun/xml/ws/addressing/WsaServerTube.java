@@ -53,21 +53,17 @@ import com.sun.xml.ws.api.message.Messages;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.pipe.ClientTubeAssemblerContext;
-import com.sun.xml.ws.api.pipe.Fiber;
-import com.sun.xml.ws.api.pipe.NextAction;
-import com.sun.xml.ws.api.pipe.TransportTubeFactory;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.*;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
-import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
 import java.net.URI;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles WS-Addressing for the server.
@@ -77,7 +73,7 @@ import java.util.logging.Level;
  * @author Arun Gupta
  */
 public final class WsaServerTube extends WsaTube {
-
+    private WSEndpoint endpoint;
     // store the replyTo/faultTo of the message currently being processed.
     // both will be set to non-null in processRequest
     private WSEndpointReference replyTo;
@@ -88,8 +84,10 @@ public final class WsaServerTube extends WsaTube {
      * Used for determining ReplyTo or Fault Action for non-anonymous responses     * 
      */
     private WSDLBoundOperation wbo;
-    public WsaServerTube(@NotNull WSDLPort wsdlPort, WSBinding binding, Tube next) {
+    public WsaServerTube(WSEndpoint endpoint, @NotNull WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(wsdlPort, binding, next);
+        this.endpoint = endpoint;
+
     }
 
     public WsaServerTube(WsaServerTube that, TubeCloner cloner) {
@@ -230,7 +228,7 @@ public final class WsaServerTube extends WsaTube {
         // we need to assemble a pipeline to talk to this endpoint.
         // TODO: what to pass as WSService?
         Tube transport = TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(),
-            new ClientTubeAssemblerContext(adrs, wsdlPort, null, binding));
+            new ClientTubeAssemblerContext(adrs, wsdlPort, null, binding,endpoint.getContainer()));
 
         packet.endpointAddress = adrs;
         String action = packet.getMessage().isFault() ?
