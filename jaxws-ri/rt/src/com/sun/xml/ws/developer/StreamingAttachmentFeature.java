@@ -34,19 +34,17 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
 
     private String dir;
     private boolean parseEagerly;
-    private boolean allMemory;
-    private int memoryThreshold;
+    private long memoryThreshold;
 
     @FeatureConstructor
     public StreamingAttachmentFeature() {
     }
 
-    @FeatureConstructor({"dir","parseEagerly","allMemory","memoryThreshold"})
-    public StreamingAttachmentFeature(@Nullable String dir, boolean parseEagerly, boolean allMemory, int memoryThreshold) {
+    @FeatureConstructor({"dir","parseEagerly","memoryThreshold"})
+    public StreamingAttachmentFeature(@Nullable String dir, boolean parseEagerly, int memoryThreshold) {
         this.enabled = true;
         this.dir = dir;
         this.parseEagerly = parseEagerly;
-        this.allMemory = allMemory;
         this.memoryThreshold = memoryThreshold;
     }
 
@@ -54,13 +52,19 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
         return ID;
     }
 
+    /**
+     * Returns the configuration object. Once this is called, you cannot
+     * change the configuration.
+     *
+     * @return
+     */
     public MIMEConfig getConfig() {
         if (config == null) {
             config = new MIMEConfig();
             config.setDir(dir);
             config.setParseEagerly(parseEagerly);
-            config.setOnlyMemory(allMemory);
-            config.setInMemorySize(memoryThreshold);
+            config.setMemoryThreshold(memoryThreshold);
+            config.validate();
         }
         return config;
     }
@@ -77,13 +81,6 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
      */
     public void setParseEagerly(boolean parseEagerly) {
         this.parseEagerly = parseEagerly;
-    }
-
-    /**
-     * All the attachments are kept in memory
-     */
-    public void setAllMemory(boolean allMemory) {
-        this.allMemory = allMemory;
     }
 
     /**

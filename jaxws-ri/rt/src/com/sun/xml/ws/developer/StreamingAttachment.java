@@ -2,20 +2,23 @@ package com.sun.xml.ws.developer;
 
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import java.lang.annotation.*;
+import java.io.File;
 
 /**
  * This feature represents the use of StreamingAttachment attachments with a
  * web service.
  *
  * <pre>
- * for e.g.: To keep all StreamingAttachment attachments in memory
+ * for e.g.: To keep all MIME attachments in memory, do the following
  *
  * <p>
  * @WebService
- * @MIME(allMemory=true)
+ * @MIME(memoryThreshold=-1L)
  * public class HelloService {
  * }
  * </pre>
+ *
+ * @see StreamingAttachmentFeature
  *
  * @author Jitendra Kotamraju
  */
@@ -24,24 +27,26 @@ import java.lang.annotation.*;
 @Documented
 @WebServiceFeatureAnnotation(id = StreamingAttachmentFeature.ID, bean = StreamingAttachmentFeature.class)
 public @interface StreamingAttachment {
-    /**
-     * Directory in which large attachments are stored
-     */
-    String dir();
 
     /**
-     * StreamingAttachment message is parsed eagerly
+     * Directory in which large attachments are stored. {@link File#createTempFile}
+     * methods are used to create temp files for storing attachments. This
+     * value is used in {@link File#createTempFile}, if specified. If a file
+     * cannot be created in this dir, then all the content is kept in memory.
+     */
+    String dir() default "";
+
+    /**
+     * MIME message is parsed eagerly.
      */
     boolean parseEagerly() default false;
 
     /**
-     * All the attachments are kept in memory
+     * After this threshold(no of bytes per attachment), large attachment is
+     * written to file system.
+     *
+     * If the value is -1, then all the attachment content is kept in memory.
      */
-    boolean allMemory() default false;
+    long memoryThresold() default 1048576L;
 
-    /**
-     * After this threshold(no of bytes), large
-     * attachments are written to file system
-     */
-    int memoryThresold() default 1048576;
 }
