@@ -36,12 +36,11 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
     private boolean parseEagerly;
     private long memoryThreshold;
 
-    @FeatureConstructor
     public StreamingAttachmentFeature() {
     }
 
     @FeatureConstructor({"dir","parseEagerly","memoryThreshold"})
-    public StreamingAttachmentFeature(@Nullable String dir, boolean parseEagerly, int memoryThreshold) {
+    public StreamingAttachmentFeature(@Nullable String dir, boolean parseEagerly, long memoryThreshold) {
         this.enabled = true;
         this.dir = dir;
         this.parseEagerly = parseEagerly;

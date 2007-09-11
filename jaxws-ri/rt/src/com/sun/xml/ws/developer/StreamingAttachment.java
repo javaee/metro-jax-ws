@@ -47,6 +47,6 @@ public @interface StreamingAttachment {
      *
      * If the value is -1, then all the attachment content is kept in memory.
      */
-    long memoryThresold() default 1048576L;
+    long memoryThreshold() default 1048576L;
 
 }
