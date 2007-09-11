@@ -43,11 +43,16 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.*;
 
+import com.sun.xml.ws.developer.*;
+
 /**
+ * Tests {@link StreamingAttachment}
+ *
  * @author Jitendra Kotamraju
  */
 
 @WebService (endpointInterface = "fromwsdl.swaref_large.server.Hello")
+@StreamingAttachment(parseEagerly=true, memoryThreshold=4000000L)
 public class HelloImpl {
 
     public ClaimFormTypeResponse claimForm(ClaimFormTypeRequest data) {

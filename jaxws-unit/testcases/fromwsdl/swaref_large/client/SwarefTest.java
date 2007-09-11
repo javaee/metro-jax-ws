@@ -36,25 +36,37 @@
 
 package fromwsdl.swaref_large.client;
 
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Source;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.*;
+import java.util.*;
 import junit.framework.*;
 
+import com.sun.xml.ws.developer.*;
+
 /**
+ * Tests {@link StreamingAttachmentFeature}, {@link StreamingDataHandler}
+ *
  * @author Jitendra Kotamraju
  */
-public class MimeApp extends TestCase {
+public class SwarefTest extends TestCase {
 
-    public MimeApp(String name) throws Exception {
+    public SwarefTest(String name) throws Exception {
         super(name);
     }
 
     public void testSwaref () throws Exception {
-        Hello port = new HelloService().getHelloPort ();
+
+        StreamingAttachmentFeature saf = new StreamingAttachmentFeature(null, true, 4000000);
+
+        Hello port = new HelloService().getHelloPort (saf);
+        Map<String, Object> ctxt = ((BindingProvider)port).getRequestContext();
+        ctxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192);
+
         int total = 120000000;
         ClaimFormTypeRequest req = new ClaimFormTypeRequest();
         req.setRequest(getDataHandler(total));
@@ -96,7 +108,7 @@ public class MimeApp extends TestCase {
 
         // readOnce() doesn't store attachment on the disk in some cases
         // for e.g when only one attachment is in the message
-        InputStream in = ((com.sun.xml.ws.developer.StreamingDataHandler)dh).readOnce();
+        InputStream in = ((StreamingDataHandler)dh).readOnce();
         byte[] buf = new byte[8192];
         int total = 0;
         int len;
