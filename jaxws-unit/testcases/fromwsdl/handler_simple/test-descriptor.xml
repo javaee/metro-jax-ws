@@ -7,7 +7,7 @@
   <pre-client>
       import javax.xml.ws.soap.SOAPBinding;
       import testutil.ClientServerTestUtil;
-      
+      import org.w3c.dom.Node;
       private int getIntFromResponse(Source source) throws Exception {
         Transformer xFormer =
             TransformerFactory.newInstance().newTransformer();
