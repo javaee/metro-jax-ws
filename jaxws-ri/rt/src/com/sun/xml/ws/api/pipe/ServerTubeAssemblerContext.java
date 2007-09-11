@@ -164,7 +164,7 @@ public class ServerTubeAssemblerContext {
                 next = cousin = new ServerSOAPHandlerTube(binding, next, cousin);
 
                 //Add MessageHandlerTube
-                next = new ServerMessageHandlerTube(binding, next, cousin);
+                next = new ServerMessageHandlerTube(seiModel, binding, next, cousin);
             }
         }
         return next;

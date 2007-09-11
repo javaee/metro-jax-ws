@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.client.ClientPipelineHook;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.api.server.Container;
@@ -70,6 +71,7 @@ public class ClientTubeAssemblerContext {
 
     private final @NotNull EndpointAddress address;
     private final @NotNull WSDLPort wsdlModel;
+    private final @Nullable SEIModel seiModel;
     private final @NotNull WSService rootOwner;
     private final @NotNull WSBinding binding;
     private final @NotNull Container container;
@@ -81,21 +83,29 @@ public class ClientTubeAssemblerContext {
 
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
+                                      @NotNull Container container) {
+        // WSBinding is actually BindingImpl
+        this(address, wsdlModel, rootOwner, binding, container, ((BindingImpl)binding).createCodec() );
+    }
+
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
+                                      @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec) {
+        this(address, wsdlModel, rootOwner, binding, container, codec, null);
+    }
+
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
+                                      @NotNull WSService rootOwner, @NotNull WSBinding binding,
+                                      @NotNull Container container, Codec codec, SEIModel seiModel) {
         this.address = address;
         this.wsdlModel = wsdlModel;
         this.rootOwner = rootOwner;
         this.binding = binding;
         this.container = container;
         this.codec = codec;
+        this.seiModel = seiModel;
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
-                                      @NotNull WSService rootOwner, @NotNull WSBinding binding,
-                                      @NotNull Container container) {
-        // WSBinding is actually BindingImpl
-        this(address, wsdlModel, rootOwner, binding, container, ((BindingImpl)binding).createCodec() );
-    }
 
     /**
      * The endpoint address. Always non-null. This parameter is taken separately
@@ -129,6 +139,16 @@ public class ClientTubeAssemblerContext {
      */
     public @NotNull WSBinding getBinding() {
         return binding;
+    }
+
+    /**
+     * The created pipeline will use seiModel to get java concepts for the endpoint
+     *
+     * @return Null if the service doesn't have SEI model e.g. Dispatch,
+     *         and otherwise non-null.
+     */
+    public @Nullable SEIModel getSEIModel() {
+        return seiModel;
     }
 
     /**
@@ -178,7 +198,7 @@ public class ClientTubeAssemblerContext {
         //XML/HTTP Binding can have only LogicalHandlerPipe
         if (binding instanceof SOAPBinding) {
             //Add MessageHandlerTube
-            HandlerTube messageHandlerTube = new ClientMessageHandlerTube(binding, wsdlModel, next);
+            HandlerTube messageHandlerTube = new ClientMessageHandlerTube(seiModel, binding, wsdlModel, next);
             next = cousinHandlerTube = messageHandlerTube;
 
             //Add SOAPHandlerTuber

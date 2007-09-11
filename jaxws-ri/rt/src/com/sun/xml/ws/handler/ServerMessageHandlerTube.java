@@ -1,25 +1,28 @@
 package com.sun.xml.ws.handler;
 
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.handler.MessageHandler;
 import com.sun.xml.ws.api.message.Attachment;
+import com.sun.xml.ws.api.message.AttachmentSet;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
-import com.sun.xml.ws.api.handler.MessageHandler;
-import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.client.HandlerConfiguration;
 import com.sun.xml.ws.message.DataHandlerAttachment;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.WebServiceException;
+
 import javax.activation.DataHandler;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
 import java.util.*;
 
 /**
  * @author Rama Pulavarthi
  */
 public class ServerMessageHandlerTube extends HandlerTube{
+    private SEIModel seiModel;
     private WSBinding binding;
     private List<MessageHandler> messageHandlers;
     private Set<String> roles;
@@ -32,8 +35,9 @@ public class ServerMessageHandlerTube extends HandlerTube{
      * LogicalHandlerTube.
      * With this handle, SOAPHandlerTube can call LogicalHandlerTube.closeHandlers()
      */
-    public ServerMessageHandlerTube(WSBinding binding, Tube next, HandlerTube cousinTube) {
+    public ServerMessageHandlerTube(SEIModel seiModel, WSBinding binding, Tube next, HandlerTube cousinTube) {
         super(next, cousinTube);
+        this.seiModel = seiModel;
         this.binding = binding;
         setUpProcessorOnce();
     }
