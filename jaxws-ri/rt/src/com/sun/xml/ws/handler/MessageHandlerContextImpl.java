@@ -1,26 +1,25 @@
 package com.sun.xml.ws.handler;
 
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.handler.MessageHandlerContext;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.message.HeaderList;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.addressing.WsaPropertyBag;
-import com.sun.istack.NotNull;
-import org.w3c.dom.Element;
+import com.sun.xml.ws.api.model.SEIModel;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * @author Rama Pulavarthi
  */
 public class MessageHandlerContextImpl extends MessageUpdatableContext implements MessageHandlerContext {
+    private @Nullable SEIModel seiModel;
     private Set<String> roles;
     private WSBinding binding;
 
-    public MessageHandlerContextImpl(WSBinding binding, Packet packet, Set<String> roles) {
+    public MessageHandlerContextImpl(@Nullable SEIModel seiModel, WSBinding binding, Packet packet, Set<String> roles) {
         super(packet);
+        this.seiModel = seiModel;
         this.binding = binding;
         this.roles = roles; 
     }
@@ -38,6 +37,10 @@ public class MessageHandlerContextImpl extends MessageUpdatableContext implement
 
     public WSBinding getWSBinding() {
         return binding;
+    }
+
+    public @Nullable SEIModel getSEIModel() {
+        return seiModel;
     }
 
     void updateMessage() {

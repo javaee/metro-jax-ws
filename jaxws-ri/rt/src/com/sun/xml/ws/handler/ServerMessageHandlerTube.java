@@ -113,7 +113,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
     }
 
     MessageUpdatableContext getContext(Packet packet) {
-       MessageHandlerContextImpl context = new MessageHandlerContextImpl(binding, packet, roles);
+       MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, packet, roles);
        return context;
     }
 

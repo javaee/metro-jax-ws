@@ -144,7 +144,7 @@ public class ClientMessageHandlerTube extends HandlerTube {
 
 
     MessageUpdatableContext getContext(Packet p) {
-        MessageHandlerContextImpl context = new MessageHandlerContextImpl(binding, packet,roles);
+        MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, packet,roles);
         return context;
     }
 

@@ -1,7 +1,9 @@
 package com.sun.xml.ws.api.handler;
 
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.model.SEIModel;
 import javax.xml.ws.handler.MessageContext;
 import java.util.Set;
 
@@ -43,5 +45,10 @@ public interface MessageHandlerContext extends MessageContext {
      *              <code>WSBinding#isFeatureEnabled(AddressingFeature)</code> to check if addressing is enabled
      */
     public WSBinding getWSBinding();
+
+    /**
+     * Provides access to <code>SEIModel</code>.
+     */
+    public @Nullable SEIModel getSEIModel();
    
 }
