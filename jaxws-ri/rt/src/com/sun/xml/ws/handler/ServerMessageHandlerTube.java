@@ -47,6 +47,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
      */
     private ServerMessageHandlerTube(ServerMessageHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
+        this.seiModel = that.seiModel;
         this.binding = that.binding;
         setUpProcessorOnce();
     }

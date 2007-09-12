@@ -43,6 +43,7 @@ public class ClientMessageHandlerTube extends HandlerTube {
      */
     private ClientMessageHandlerTube(ClientMessageHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
+        this.seiModel = that.seiModel;
         this.binding = that.binding;
     }
 
