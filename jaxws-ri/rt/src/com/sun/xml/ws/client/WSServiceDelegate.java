@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.Container;
@@ -66,9 +67,9 @@ import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.resources.DispatchMessages;
 import com.sun.xml.ws.resources.ProviderApiMessages;
+import com.sun.xml.ws.util.JAXWSUtils;
 import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
-import com.sun.xml.ws.util.JAXWSUtils;
 import static com.sun.xml.ws.util.xml.XmlUtil.createDefaultCatalogResolver;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import org.xml.sax.SAXException;
@@ -406,7 +407,10 @@ public class WSServiceDelegate extends WSService {
     private Tube createPipeline(PortInfo portInfo, WSBinding binding) {
         //Check all required WSDL extensions are understood
         checkAllWSDLExtensionsUnderstood(portInfo,binding);
-
+        SEIModel seiModel = null;
+        if(portInfo instanceof SEIPortInfo) {
+            seiModel = ((SEIPortInfo)portInfo).model;
+        }
         BindingID bindingId = portInfo.bindingId;
 
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
@@ -417,7 +421,7 @@ public class WSServiceDelegate extends WSService {
                 new ClientTubeAssemblerContext(
                         portInfo.targetEndpoint,
                         portInfo.portModel,
-                        this, binding, container));
+                        this, binding, container,((BindingImpl)binding).createCodec(),seiModel));
     }
 
     /**
