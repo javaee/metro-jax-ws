@@ -52,6 +52,7 @@ import com.sun.xml.ws.encoding.MimeMultipartParser;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
+import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -322,7 +323,7 @@ public final class XMLMessage {
         @Override
         public AttachmentSet getAttachments() {
             convertDataSourceToMessage();
-            return new XMLAttachmentSet(mpp);
+            return new MimeAttachmentSet(mpp);
         }
 
         public String getPayloadLocalPart() {
@@ -370,45 +371,6 @@ public final class XMLMessage {
 
         public boolean hasUnconsumedDataSource() {
             return mpp == null;
-        }
-
-    }
-    
-    private static final class XMLAttachmentSet implements AttachmentSet {
-
-        private final Map<String, Attachment> attMap;
-
-        public XMLAttachmentSet(MimeMultipartParser mpp) {
-            // TODO 
-            attMap = new HashMap<String, Attachment>();
-            attMap.putAll(mpp.getAttachmentParts());
-        }
-
-        /**
-         * Gets the attachment by the content ID.
-         *
-         * @return null
-         *         if no such attachment exist.
-         */
-        public Attachment get(String contentId) {
-            return attMap.get(contentId);
-        }
-
-        public boolean isEmpty() {
-            return attMap.isEmpty();
-        }
-
-        /**
-         * Returns an iterator over a set of elements of type T.
-         *
-         * @return an Iterator.
-         */
-        public Iterator<Attachment> iterator() {
-            return attMap.values().iterator();
-        }
-
-        public void add(Attachment att) {
-            attMap.put(att.getContentId(), att);
         }
 
     }
