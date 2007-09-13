@@ -204,7 +204,16 @@ public final class MimeMultipartParser {
         }
 
         public void writeTo(OutputStream os) throws IOException {
-            os.write(buf);
+            if (buf != null) {
+                os.write(buf);
+            } else {
+                InputStream in = part.readOnce();
+                byte[] temp = new byte[8192];
+                int len;
+                while((len=in.read(temp)) != -1) {
+                    os.write(temp, 0, len);
+                }
+            }
         }
 
         public void writeTo(SOAPMessage saaj) throws SOAPException {
