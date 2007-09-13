@@ -259,7 +259,12 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
             if(cousinTube != null) {
                 cousinTube.exchange = exchange;
             }
-        }        
+        } else {
+            if(cousinTube != null) {
+                cousinTube.exchange = exchange;
+            }
+
+        }
     }
     private HandlerTubeExchange exchange;
 

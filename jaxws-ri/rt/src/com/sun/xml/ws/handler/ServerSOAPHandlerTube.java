@@ -119,7 +119,13 @@ public class ServerSOAPHandlerTube extends HandlerTube {
      * Close this Tube's handlers.
      */
     public void closeCall(MessageContext msgContext) {
-        closeSOAPHandlers(msgContext);
+       if (cousinTube != null) {
+                // Close LogicalHandlerTube
+                cousinTube.closeCall(msgContext);
+            }
+
+        if (processor != null)
+           closeSOAPHandlers(msgContext);
     }
 
     //TODO:
