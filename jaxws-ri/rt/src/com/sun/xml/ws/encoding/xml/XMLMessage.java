@@ -37,7 +37,6 @@
 package com.sun.xml.ws.encoding.xml;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.*;
@@ -69,9 +68,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  *
@@ -265,9 +261,8 @@ public final class XMLMessage {
     /**
      * Data represented as a multi-part MIME message. 
      * <p>
-     * The root part may be an XML or an FI document.
-     *
-     * This class parses {@link MimeMultipart} lazily.
+     * The root part may be an XML or an FI document. This class
+     * parses MIME message lazily.
      */
     public static final class XMLMultiPart extends AbstractMessageImpl implements MessageDataSource {
         private final DataSource dataSource;
