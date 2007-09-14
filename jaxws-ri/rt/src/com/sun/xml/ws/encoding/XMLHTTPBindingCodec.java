@@ -36,7 +36,6 @@
 
 package com.sun.xml.ws.encoding;
 
-import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
@@ -50,6 +49,7 @@ import com.sun.xml.ws.encoding.xml.XMLMessage.MessageDataSource;
 import com.sun.xml.ws.encoding.xml.XMLMessage.UnknownContent;
 import com.sun.xml.ws.encoding.xml.XMLMessage.XMLMultiPart;
 import com.sun.xml.ws.resources.StreamingMessages;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.activation.DataSource;
 import javax.xml.ws.WebServiceException;
@@ -336,7 +336,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
                 p.getMessage().getAttachments();
                 codec.getStaticContentType(p);
                 
-                ByteOutputStream bos = new ByteOutputStream();
+                ByteArrayBuffer bos = new ByteArrayBuffer();
                 ContentType ct = codec.encode(p, bos);
                 return XMLMessage.createDataSource(ct.getContentType(), bos.newInputStream());
             } else if (!isFastInfoset && useFastInfoset) {
@@ -349,7 +349,7 @@ public final class XMLHTTPBindingCodec extends MimeCodec {
                 p.getMessage().getAttachments();
                 codec.getStaticContentType(p);
                 
-                ByteOutputStream bos = new ByteOutputStream();
+                ByteArrayBuffer bos = new ByteArrayBuffer();
                 com.sun.xml.ws.api.pipe.ContentType ct = codec.encode(p, bos);
                 return XMLMessage.createDataSource(ct.getContentType(), bos.newInputStream());                
             }

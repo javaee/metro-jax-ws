@@ -38,11 +38,9 @@ package com.sun.xml.ws.message;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.Bridge;
-import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.util.ASCIIUtility;
-import com.sun.xml.ws.util.ByteArrayDataSource;
-import java.io.ByteArrayInputStream;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -52,10 +50,10 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.xml.ws.WebServiceException;
 
 /**
  * @author Jitendra Kotamraju
@@ -99,13 +97,13 @@ public final class JAXBAttachment implements Attachment, DataSource {
     }
 
     public InputStream asInputStream() {
-        ByteOutputStream bos = new ByteOutputStream();
+        ByteArrayBuffer bab = new ByteArrayBuffer();
         try {
-            writeTo(bos);
+            writeTo(bab);
         } catch (IOException e) {
             throw new WebServiceException(e);
         }
-        return bos.newInputStream();
+        return bab.newInputStream();
     }
 
     public void writeTo(OutputStream os) throws IOException {

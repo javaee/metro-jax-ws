@@ -39,7 +39,6 @@ package com.sun.xml.ws.encoding.xml;
 import com.sun.istack.NotNull;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
-import com.sun.xml.messaging.saaj.util.ByteOutputStream;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.*;
@@ -54,6 +53,7 @@ import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
+import com.sun.xml.ws.util.ByteArrayBuffer;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -479,7 +479,7 @@ public final class XMLMessage {
         } else {
             AttachmentSet atts = msg.getAttachments();
             if (atts != null && !atts.isEmpty()) {
-                final ByteOutputStream bos = new ByteOutputStream();
+                final ByteArrayBuffer bos = new ByteArrayBuffer();
                 try {
                     Codec codec = new XMLHTTPBindingCodec(binding);
                     com.sun.xml.ws.api.pipe.ContentType ct = codec.getStaticContentType(new Packet(msg));
@@ -490,7 +490,7 @@ public final class XMLMessage {
                 }
                 
             } else {
-                final ByteOutputStream bos = new ByteOutputStream();
+                final ByteArrayBuffer bos = new ByteArrayBuffer();
                 XMLStreamWriter writer = XMLStreamWriterFactory.create(bos);
                 try {
                     msg.writePayloadTo(writer);
