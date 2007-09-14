@@ -320,7 +320,11 @@ public abstract class XMLStreamReaderFactory {
             } catch (IllegalAccessException e) {
                 throw new XMLReaderException("stax.cantCreate",e);
             } catch (InvocationTargetException e) {
-                throw new XMLReaderException("stax.cantCreate",e);
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    cause = e;
+                }
+                throw new XMLReaderException("stax.cantCreate", cause);
             } catch (XMLStreamException e) {
                 throw new XMLReaderException("stax.cantCreate",e);
             }
