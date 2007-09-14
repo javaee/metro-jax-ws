@@ -39,7 +39,6 @@ package com.sun.xml.ws.encoding;
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.DatatypeConverterImpl;
 import com.sun.xml.bind.v2.runtime.output.Encoded;
-import com.sun.xml.messaging.saaj.packaging.mime.util.OutputUtil;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
@@ -147,18 +146,18 @@ public class MtomCodec extends MimeCodec {
 
         if(packet.getMessage() != null){
             try {
-                OutputUtil.writeln("--"+boundary, out);
-                OutputUtil.writeln("Content-Id: " + rootId, out);
-                OutputUtil.writeln("Content-Type: "+ soapXopContentType,  out);
-                OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
-                OutputUtil.writeln(out);
+                writeln("--"+boundary, out);
+                writeln("Content-Id: " + rootId, out);
+                writeln("Content-Type: "+ soapXopContentType,  out);
+                writeln("Content-Transfer-Encoding: binary", out);
+                writeln(out);
 
                 //mtom attachments that need to be written after the root part
                 List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
                 MtomStreamWriter writer = new MtomStreamWriter(XMLStreamWriterFactory.create(out),out, mtomAttachments);
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
-                OutputUtil.writeln(out);
+                writeln(out);
 
                 for(ByteArrayBuffer bos : mtomAttachments){
                     bos.write(out);
@@ -168,8 +167,8 @@ public class MtomCodec extends MimeCodec {
                 writeAttachments(packet.getMessage().getAttachments(),out);
 
                 //write out the end boundary
-                OutputUtil.writeAsAscii("--"+boundary, out);
-                OutputUtil.writeAsAscii("--", out);
+                writeAsAscii("--"+boundary, out);
+                writeAsAscii("--", out);
 
             } catch (XMLStreamException e) {
                 throw new WebServiceException(e);
@@ -192,10 +191,10 @@ public class MtomCodec extends MimeCodec {
 
         void write(OutputStream os) throws IOException {
             //build attachment frame
-            OutputUtil.writeln("--"+boundary, os);
+            writeln("--"+boundary, os);
             writeMimeHeaders(dh.getContentType(), contentId, os);
             dh.writeTo(os);
-            OutputUtil.writeln(os);
+            writeln(os);
         }
     }
 
@@ -203,19 +202,19 @@ public class MtomCodec extends MimeCodec {
         String cid = contentId;
         if(cid != null && cid.length() >0 && cid.charAt(0) != '<')
             cid = '<' + cid + '>';
-        OutputUtil.writeln("Content-Id: " + cid, out);
-        OutputUtil.writeln("Content-Type: " + contentType, out);
-        OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
-        OutputUtil.writeln(out);
+        writeln("Content-Id: " + cid, out);
+        writeln("Content-Type: " + contentType, out);
+        writeln("Content-Transfer-Encoding: binary", out);
+        writeln(out);
     }
 
     private void writeAttachments(AttachmentSet attachments, OutputStream out) throws IOException {
         for(Attachment att : attachments){
             //build attachment frame
-            OutputUtil.writeln("--"+boundary, out);
+            writeln("--"+boundary, out);
             writeMimeHeaders(att.getContentType(), att.getContentId(), out);
             att.writeTo(out);
-            OutputUtil.writeln(out);                    // write \r\n
+            writeln(out);                    // write \r\n
         }
     }
 

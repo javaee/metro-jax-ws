@@ -36,7 +36,6 @@
 
 package com.sun.xml.ws.encoding;
 
-import com.sun.xml.messaging.saaj.packaging.mime.util.OutputUtil;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Attachment;
@@ -71,6 +70,7 @@ import java.util.UUID;
  */
 abstract class MimeCodec implements Codec {
     public static final String MULTIPART_RELATED_MIME_TYPE = "multipart/related";
+    private static final byte[] newline = {'\r','\n'};
     
     private String boundary;
     private String messageContentType;
@@ -97,31 +97,31 @@ abstract class MimeCodec implements Codec {
         }
 
         if (hasAttachments) {
-            OutputUtil.writeln("--"+boundary, out);
-            OutputUtil.writeln("Content-Type: " + rootCodec.getMimeType(), out);
-            OutputUtil.writeln(out);
+            writeln("--"+boundary, out);
+            writeln("Content-Type: " + rootCodec.getMimeType(), out);
+            writeln(out);
         }
         ContentType primaryCt = rootCodec.encode(packet, out);
 
         if (hasAttachments) {
-            OutputUtil.writeln(out);
+            writeln(out);
             // Encode all the attchments
             for (Attachment att : msg.getAttachments()) {
-                OutputUtil.writeln("--"+boundary, out);
+                writeln("--"+boundary, out);
                 //SAAJ's AttachmentPart.getContentId() returns content id already enclosed with
                 //angle brackets. For now put angle bracket only if its not there
                 String cid = att.getContentId();
                 if(cid != null && cid.length() >0 && cid.charAt(0) != '<')
                     cid = '<' + cid + '>';
-                OutputUtil.writeln("Content-Id:" + cid, out);
-                OutputUtil.writeln("Content-Type: " + att.getContentType(), out);
-                OutputUtil.writeln("Content-Transfer-Encoding: binary", out);
-                OutputUtil.writeln(out);                    // write \r\n
+                writeln("Content-Id:" + cid, out);
+                writeln("Content-Type: " + att.getContentType(), out);
+                writeln("Content-Transfer-Encoding: binary", out);
+                writeln(out);                    // write \r\n
                 att.writeTo(out);
-                OutputUtil.writeln(out);                    // write \r\n
+                writeln(out);                    // write \r\n
             }
-            OutputUtil.writeAsAscii("--"+boundary, out);
-            OutputUtil.writeAsAscii("--", out);
+            writeAsAscii("--"+boundary, out);
+            writeAsAscii("--", out);
         }
         // TODO not returing correct multipart/related type(no boundary)
         return hasAttachments ? new ContentTypeImpl(messageContentType, packet.soapAction, null) : primaryCt;
@@ -167,4 +167,23 @@ abstract class MimeCodec implements Codec {
     protected abstract void decode(MimeMultipartParser mpp, Packet packet) throws IOException;
 
     public abstract MimeCodec copy();
+
+
+    public static void writeln(String s,OutputStream out) throws IOException {
+        writeAsAscii(s,out);
+        writeln(out);
+    }
+
+    /**
+     * Writes a string as ASCII string.
+     */
+    public static void writeAsAscii(String s,OutputStream out) throws IOException {
+        int len = s.length();
+        for( int i=0; i<len; i++ )
+            out.write((byte)s.charAt(i));
+    }
+
+    public static void writeln(OutputStream out) throws IOException {
+        out.write(newline);
+    }
 }
