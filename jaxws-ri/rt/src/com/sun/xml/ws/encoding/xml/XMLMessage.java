@@ -37,7 +37,6 @@
 package com.sun.xml.ws.encoding.xml;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
 import com.sun.xml.messaging.saaj.packaging.mime.internet.MimeMultipart;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -49,6 +48,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.encoding.MimeMultipartParser;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
+import com.sun.xml.ws.encoding.ContentType;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.MimeAttachmentSet;

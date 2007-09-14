@@ -38,12 +38,11 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.istack.Nullable;
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.pipe.ContentType;
 
 /**
  * @author Vivek Pandey
  */
-public final class ContentTypeImpl implements ContentType {
+public final class ContentTypeImpl implements com.sun.xml.ws.api.pipe.ContentType {
     private final @NotNull String contentType;
     private final @NotNull String soapAction;
     private final @Nullable String accept;
@@ -63,7 +62,7 @@ public final class ContentTypeImpl implements ContentType {
         this.soapAction = getQuotedSOAPAction(soapAction);
         String tmpCharset = null;
         try {
-            tmpCharset = new com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType(contentType).getParameter("charset");
+            tmpCharset = new ContentType(contentType).getParameter("charset");
         } catch(Exception e) {
             //Ignore the parsing exception.
         }

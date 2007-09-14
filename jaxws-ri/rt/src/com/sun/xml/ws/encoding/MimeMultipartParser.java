@@ -39,8 +39,6 @@ package com.sun.xml.ws.encoding;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.ContentType;
-import com.sun.xml.messaging.saaj.packaging.mime.internet.ParseException;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.developer.StreamingDataHandler;
@@ -82,24 +80,20 @@ public final class MimeMultipartParser {
     private boolean gotAll;
 
     public MimeMultipartParser(InputStream in, String contentType, StreamingAttachmentFeature feature) {
-        try {
-            ContentType ct = new ContentType(contentType);
-            String boundary = ct.getParameter("boundary");
-            if (boundary == null || boundary.equals("")) {
-                throw new WebServiceException("MIME boundary parameter not found" + contentType);
-            }
-            message = (feature != null)
-                    ? new MIMEMessage(in, boundary, feature.getConfig())
-                    : new MIMEMessage(in, boundary);
-            // Strip <...> from root part's Content-ID
-            String st = ct.getParameter("start");
-            if (st != null && st.length() > 2 && st.charAt(0) == '<' && st.charAt(st.length()-1) == '>') {
-                st = st.substring(1, st.length()-1);
-            }
-            start = st;    
-        } catch (ParseException e) {
-            throw new WebServiceException(e);
+        ContentType ct = new ContentType(contentType);
+        String boundary = ct.getParameter("boundary");
+        if (boundary == null || boundary.equals("")) {
+            throw new WebServiceException("MIME boundary parameter not found" + contentType);
         }
+        message = (feature != null)
+                ? new MIMEMessage(in, boundary, feature.getConfig())
+                : new MIMEMessage(in, boundary);
+        // Strip <...> from root part's Content-ID
+        String st = ct.getParameter("start");
+        if (st != null && st.length() > 2 && st.charAt(0) == '<' && st.charAt(st.length()-1) == '>') {
+            st = st.substring(1, st.length()-1);
+        }
+        start = st;
     }
 
     /**
