@@ -108,7 +108,8 @@ public class SwarefTest extends TestCase {
 
         // readOnce() doesn't store attachment on the disk in some cases
         // for e.g when only one attachment is in the message
-        InputStream in = ((StreamingDataHandler)dh).readOnce();
+        StreamingDataHandler sdh = (StreamingDataHandler)dh;
+        InputStream in = sdh.readOnce();
         byte[] buf = new byte[8192];
         int total = 0;
         int len;
@@ -128,6 +129,7 @@ public class SwarefTest extends TestCase {
            System.out.println("FAIL: DataHandler data size is different. Expected="+expTotal+" Got="+total);
         }
         in.close();
+        sdh.close();
     }
 
 }
