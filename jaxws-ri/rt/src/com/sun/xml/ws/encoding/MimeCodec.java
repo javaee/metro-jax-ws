@@ -45,6 +45,8 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.ContentType;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -69,6 +71,28 @@ import java.util.UUID;
  * @author Kohsuke Kawaguchi
  */
 abstract class MimeCodec implements Codec {
+    
+    static {
+        // DataHandler.writeTo() may search for DCH. So adding some default ones.
+        try {
+            CommandMap map = CommandMap.getDefaultCommandMap();
+            if (map instanceof MailcapCommandMap) {
+                MailcapCommandMap mailMap = (MailcapCommandMap) map;
+                String hndlrStr = ";;x-java-content-handler=";
+                mailMap.addMailcap(
+                    "text/xml" + hndlrStr + XmlDataContentHandler.class.getName());
+                mailMap.addMailcap(
+                    "application/xml" + hndlrStr + XmlDataContentHandler.class.getName());
+                mailMap.addMailcap(
+                    "image/*" + hndlrStr + ImageDataContentHandler.class.getName());
+                mailMap.addMailcap(
+                    "text/plain" + hndlrStr + StringDataContentHandler.class.getName());
+            }
+        } catch (Throwable t) {
+            // ignore the exception.
+        }
+    }
+
     public static final String MULTIPART_RELATED_MIME_TYPE = "multipart/related";
     private static final byte[] newline = {'\r','\n'};
     

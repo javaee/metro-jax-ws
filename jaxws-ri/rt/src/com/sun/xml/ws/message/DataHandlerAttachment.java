@@ -56,11 +56,6 @@ import java.io.ByteArrayOutputStream;
  * @author Jitendra Kotamraju
  */
 public final class DataHandlerAttachment implements Attachment {
-    // TODO fix the hack
-    // So that SAAJ registers DCHs for MIME types
-    static {
-        new com.sun.xml.messaging.saaj.soap.AttachmentPartImpl();
-    }
 
     private final DataHandler dh;
     private final String contentId;

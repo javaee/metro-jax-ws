@@ -75,11 +75,6 @@ import java.io.OutputStream;
  */
 public final class XMLMessage {
 
-    // So that SAAJ registers DCHs for MIME types
-    static {
-        new com.sun.xml.messaging.saaj.soap.AttachmentPartImpl();
-    }
-
     private static final int PLAIN_XML_FLAG      = 1;       // 00001
     private static final int MIME_MULTIPART_FLAG = 2;       // 00010
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
