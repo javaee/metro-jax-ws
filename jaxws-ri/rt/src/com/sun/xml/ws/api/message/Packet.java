@@ -722,8 +722,7 @@ public final class Packet extends DistributedPropertySet {
         hl.add(new StringHeader(av.messageIDTag, responsePacket.getMessage().getID(av, sv)));
 
         // wsa:RelatesTo
-        // TODO: this property is defined in WsaServerTube.REQUEST_MESSAGE_ID
-        String mid = (String)responsePacket.invocationProperties.get("com.sun.xml.ws.addressing.request.messageID");
+        String mid = (String)responsePacket.get(JAXWSProperties.ADDRESSING_MESSAGEID);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
 

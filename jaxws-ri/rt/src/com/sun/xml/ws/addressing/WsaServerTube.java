@@ -102,6 +102,8 @@ public final class WsaServerTube extends WsaTube {
         Message msg = request.getMessage();
         if(msg==null)   return doInvoke(next,request); // hmm?
 
+        // expose bunch of addressing related properties for advanced applications 
+        request.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,request));
 
         // Store request ReplyTo and FaultTo in requestPacket.invocationProperties
         // so that they can be used after responsePacket is received.
@@ -130,9 +132,6 @@ public final class WsaServerTube extends WsaTube {
             Packet response = request.createServerResponse(m, wsdlPort, null, binding);
             return doReturnWith(response);
         }
-
-        // expose bunch of addressing related properties for advanced applications 
-        request.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,request));
 
         // defaulting
         if (replyTo == null)    replyTo = addressingVersion.anonymousEpr;
