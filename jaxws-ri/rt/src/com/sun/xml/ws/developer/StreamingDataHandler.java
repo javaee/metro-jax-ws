@@ -44,48 +44,42 @@ import java.io.OutputStream;
 import java.io.File;
 
 /**
- * DataHandler that can be used to access attachments efficiently.
- * Applications can use the additional methods and decide how to
- * access the attachment data.
+ * Implementation of {@link org.jvnet.staxex.StreamingDataHandler} to access MIME
+ * attachments efficiently. Applications can use the additional methods and decide
+ * on how to access the attachment data in JAX-WS applications.
+ *
+ * <p>
+ * for e.g.:
+ *
+ * DataHandler dh = proxy.getData();
+ * StreamingDataHandler sdh = (StreamingDataHandler)dh;
+ * // readOnce() doesn't store attachment on the disk in some cases
+ * // for e.g when only one huge attachment after soap envelope part in MIME message
+ * InputStream in = sdh.readOnce();
+ * ...
+ * in.close();
+ * sdh.close();
  *
  * @author Jitendra Kotamraju
  */
 public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
+    private final StreamingDataSource ds;
 
     public StreamingDataHandler(MIMEPart part) {
         super(new StreamingDataSource(part));
+        ds = (StreamingDataSource)getDataSource();
     }
 
-    /**
-     * Gives attachment data only one time. The attachment data
-     * can be streamed directly without writing to the disk in
-     * some circumstances. For example, if there is only one
-     * attachment, attachment data can be read in a streaming
-     * fashion. Also, this will reduce memory footprint of
-     * the applications.
-     *
-     * <p>
-     * Take advantage of this if the applications need the attachment
-     * data only once.
-     *
-     * @return the content of the attachment
-     * @throws IOException if any i/o error
-     */
     public InputStream readOnce() throws IOException {
-        StreamingDataSource ds = (StreamingDataSource)this.getDataSource();
         return ds.readOnce();
-
-        // TODO: should we capture runtime exception and convert to IOException
     }
 
-    /**
-     * Moves the attachment data to a given file.
-     *
-     * @param file for attachment data
-     */
-    public void moveTo(File file) {
-        StreamingDataSource ds = (StreamingDataSource)this.getDataSource();
+    public void moveTo(File file) throws IOException {
         ds.moveTo(file);
+    }
+
+    public void close() throws IOException {
+        ds.close();  
     }
 
     private static final class StreamingDataSource implements DataSource {
@@ -107,7 +101,7 @@ public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler 
             }
         }
 
-        void moveTo(File file) {
+        void moveTo(File file) throws IOException {
             part.moveTo(file);
         }
 
@@ -121,6 +115,10 @@ public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler 
 
         public String getName() {
             return "";
+        }
+
+        public void close() throws IOException {
+            part.close();
         }
     }
 
@@ -136,6 +134,5 @@ public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler 
             return linkedException;
         }
     }
-
 
 }
