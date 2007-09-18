@@ -45,6 +45,8 @@ import javax.activation.DataSource;
 import java.awt.Image;
 import java.io.*;
 
+import com.sun.xml.ws.developer.StreamingDataHandler;
+
 @MTOM
 @WebService (endpointInterface = "mtomlarge.server.Hello")
 public class HelloImpl implements Hello {
@@ -92,7 +94,8 @@ public class HelloImpl implements Hello {
     private void validateDataHandler(int expTotal, DataHandler dh) throws IOException {
         // readOnce() doesn't store attachment on the disk in some cases
         // for e.g when only one attachment is in the message
-        InputStream in = ((com.sun.xml.ws.developer.StreamingDataHandler)dh).readOnce();
+        StreamingDataHandler sdh = (StreamingDataHandler)dh;
+        InputStream in = sdh.readOnce();
         byte[] buf = new byte[8192];
         int total = 0;
         int len;
@@ -108,6 +111,7 @@ public class HelloImpl implements Hello {
             }
         }
         in.close();
+        sdh.close();
         if (total != expTotal) {
            throw new WebServiceException("DataHandler data size is different");
         }

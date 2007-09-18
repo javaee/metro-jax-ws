@@ -43,6 +43,8 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.*;
 
+import com.sun.xml.ws.developer.StreamingDataHandler;
+
 /**
  * @author Jitendra Kotamraju
  */
@@ -96,7 +98,8 @@ public class MimeApp {
 
         // readOnce() doesn't store attachment on the disk in some cases
         // for e.g when only one attachment is in the message
-        InputStream in = ((com.sun.xml.ws.developer.StreamingDataHandler)dh).readOnce();
+        StreamingDataHandler sdh = (StreamingDataHandler)dh;
+        InputStream in = sdh.readOnce();
         byte[] buf = new byte[8192];
         int total = 0;
         int len;
@@ -116,6 +119,7 @@ public class MimeApp {
            System.out.println("FAIL: DataHandler data size is different. Expected="+expTotal+" Got="+total);
         }
         in.close();
+        sdh.close();
     }
 
 }
