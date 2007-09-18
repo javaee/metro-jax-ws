@@ -43,17 +43,19 @@ import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.Handler;
+import java.util.List;
 
 /**
  * @author WS Development team
  */
 
 public abstract class HandlerTube extends AbstractFilterTubeImpl {
-    
     /**
      * handle hold reference to other Tube for inter-tube communication
      */
     HandlerTube cousinTube;
+    protected List<Handler> handlers;
     HandlerProcessor processor;
     boolean remedyActionTaken = false;
     private final @Nullable WSDLPort port;
@@ -134,7 +136,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
                 throw re;
         } finally {
             if(!requestProcessingSucessful) {
-                cleanUpState(context.getMessageContext());
+                initiateClosing(context.getMessageContext());
             }
         }
 
@@ -158,7 +160,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
                 callHandlersOnResponse(context, isFault);
             }
         } finally {
-            cleanUpState(context.getMessageContext());
+            initiateClosing(context.getMessageContext());
         }
         //Update Packet with user modifications
         context.updatePacket();
@@ -173,7 +175,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
             return doThrow(t);
         } finally {
             MessageUpdatableContext context = getContext(packet);
-            cleanUpState(context.getMessageContext());
+            initiateClosing(context.getMessageContext());
             /* TODO revisit: commented this out as the modified packet is no longer used
                     In future if the message is propagated even when an exception
                     occurs, then uncomment context.updatePacket();
@@ -184,18 +186,100 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
 
         }
     }
+    
+    /**
+     * Must be overridden by HandlerTube that drives other handler tubes for processing a message.
+     * On Client-side: ClientLogicalHandlerTube drives the Handler Processing.
+     * On Server-side: In case SOAP Binding, ServerMessageHandlerTube drives the Handler Processing.
+     *                 In case XML/HTTP Binding, ServerLogicalHandlerTube drives the Handler Processing.
+     *
+     *
+     * If its a top HandlerTube, should override by calling #close(MessaggeContext);
+     *
+     */
+
+    protected void initiateClosing(MessageContext mc) {
+        // Do nothing
+
+    }
 
     /**
      * Calls close on previously invoked handlers.
      * Also, Cleans up any state left over in the Tube instance from the current
      * invocation, as Tube instances can be reused after the completion of MEP.
      *
+     * On Client, SOAPHandlers are closed first and then LogicalHandlers
+     * On Server, LogicalHandlers are closed first and then SOAPHandlers
      */
-    private void cleanUpState(MessageContext mc) {
-        close(mc);
+    final public void close(MessageContext msgContext) {
+        //assuming cousinTube is called if requestProcessingSucessful is true
+        if (requestProcessingSucessful) {
+            if (cousinTube != null) {
+                cousinTube.close(msgContext);
+            }
+
+        }
+        if (processor != null)
+            closeHandlers(msgContext);
+        
         // Clean up the exchange for next invocation.
         exchange = null;
         requestProcessingSucessful = false;
+
+    }
+
+    /**
+     * On Client, Override by calling #closeClientHandlers(MessageContext mc)
+     * On Server, Override by calling #closeServerHandlers(MessageContext mc)
+     *      The difference is the order in which they are closed.
+     * @param mc
+     */
+    abstract void closeHandlers(MessageContext mc);
+
+    /**
+     * Called by close(MessageContext mc) in a Client Handlertube
+     */
+    protected void closeClientsideHandlers(MessageContext msgContext) {
+         if (processor == null)
+            return;
+        if (remedyActionTaken) {
+            //Close only invoked handlers in the chain
+
+            //CLIENT-SIDE
+            processor.closeHandlers(msgContext, processor.getIndex(), 0);
+            processor.setIndex(-1);
+            //reset remedyActionTaken
+            remedyActionTaken = false;
+        } else {
+            //Close all handlers in the chain
+
+            //CLIENT-SIDE
+            processor.closeHandlers(msgContext, handlers.size() - 1, 0);
+
+        }
+    }
+
+    /**
+     * Called by close(MessageContext mc) in a Server Handlertube
+     */
+    protected void closeServersideHandlers(MessageContext msgContext) {
+        if (processor == null)
+            return;
+        if (remedyActionTaken) {
+            //Close only invoked handlers in the chain
+
+            //SERVER-SIDE
+            processor.closeHandlers(msgContext, processor.getIndex(), handlers.size() - 1);
+            processor.setIndex(-1);
+            //reset remedyActionTaken
+            remedyActionTaken = false;
+        } else {
+            //Close all handlers in the chain
+
+            //SERVER-SIDE
+            processor.closeHandlers(msgContext, 0, handlers.size() - 1);
+
+        }
     }
 
     abstract void callHandlersOnResponse(MessageUpdatableContext context, boolean handleFault);
@@ -216,21 +300,11 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     }
 
     abstract void setUpProcessor();
-    abstract boolean isHandlerChainEmpty();
+    final public boolean isHandlerChainEmpty() {
+        return handlers.isEmpty();
+    }
     abstract MessageUpdatableContext getContext(Packet p);
     
-    /**
-     * Close SOAPHandlers first and then LogicalHandlers on Client
-     * Close LogicalHandlers first and then SOAPHandlers on Server
-     */
-    protected abstract void close(MessageContext msgContext);
-    
-    /**
-     * This is called from cousinTube.
-     * Close this Tube's handlers.
-     */
-    protected abstract void closeCall(MessageContext msgContext);
-
     private boolean isHandleFault(Packet packet) {
         if (cousinTube != null) {
             return exchange.isHandleFault();

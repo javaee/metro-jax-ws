@@ -18,6 +18,7 @@ import com.sun.xml.ws.message.DataHandlerAttachment;
 import javax.activation.DataHandler;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.Handler;
 import java.util.*;
 
 /**
@@ -26,7 +27,6 @@ import java.util.*;
 public class ClientMessageHandlerTube extends HandlerTube {
     private SEIModel seiModel;
     private WSBinding binding;
-    private List<MessageHandler> messageHandlers;
     private Set<String> roles;
     
     /**
@@ -45,38 +45,6 @@ public class ClientMessageHandlerTube extends HandlerTube {
         super(that, cloner);
         this.seiModel = that.seiModel;
         this.binding = that.binding;
-    }
-
-    boolean isHandlerChainEmpty() {
-        return messageHandlers.isEmpty();
-    }
-
-    protected void close(MessageContext msgContext) {
-     //Do nothing
-     // LogicalHandlerTube will drive closing of HandlerTubes
-    }
-
-    protected void closeCall(MessageContext msgContext) {
-       closeMessageHandlers(msgContext);
-    }
-
-    private void closeMessageHandlers(MessageContext msgContext) {
-        if (processor == null)
-            return;
-        if (remedyActionTaken) {
-            //Close only invoked handlers in the chain
-
-            //CLIENT-SIDE
-            processor.closeHandlers(msgContext, processor.getIndex(), 0);
-            processor.setIndex(-1);
-            //reset remedyActionTaken
-            remedyActionTaken = false;
-        } else {
-            //Close all handlers in the chain
-
-            //CLIENT-SIDE
-            processor.closeHandlers(msgContext, messageHandlers.size() - 1, 0);
-        }
     }
 
     public AbstractFilterTubeImpl copy(TubeCloner cloner) {
@@ -128,17 +96,22 @@ public class ClientMessageHandlerTube extends HandlerTube {
         return handlerResult;
     }
 
+    void closeHandlers(MessageContext mc) {
+        closeClientsideHandlers(mc);
+
+    }
+    
     void setUpProcessor() {
        // Take a snapshot, User may change chain after invocation, Same chain
         // should be used for the entire MEP
-        messageHandlers = new ArrayList<MessageHandler>();
+        handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
         List<MessageHandler> msgHandlersSnapShot= handlerConfig.getMessageHandlers();
         if (!msgHandlersSnapShot.isEmpty()) {
-            messageHandlers.addAll(msgHandlersSnapShot);
+            handlers.addAll(msgHandlersSnapShot);
             roles = new HashSet<String>();
             roles.addAll(handlerConfig.getRoles());
-            processor = new SOAPHandlerProcessor(true, this, binding, messageHandlers);
+            processor = new SOAPHandlerProcessor(true, this, binding, handlers);
         }
     }
 

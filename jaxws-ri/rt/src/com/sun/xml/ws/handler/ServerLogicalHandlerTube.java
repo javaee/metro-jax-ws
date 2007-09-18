@@ -49,6 +49,7 @@ import com.sun.xml.ws.message.DataHandlerAttachment;
 
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.Handler;
 import javax.xml.ws.WebServiceException;
 import javax.activation.DataHandler;
 import java.util.List;
@@ -62,7 +63,6 @@ import java.util.Map;
 public class ServerLogicalHandlerTube extends HandlerTube {
 
     private WSBinding binding;
-    private List<LogicalHandler> logicalHandlers;
 
     /**
      * Creates a new instance of LogicalHandlerTube
@@ -96,67 +96,31 @@ public class ServerLogicalHandlerTube extends HandlerTube {
         setUpProcessorOnce();
     }
 
-    boolean isHandlerChainEmpty() {
-        return logicalHandlers.isEmpty();
-    }
-
-    /**
-     * Close SOAPHandlers first and then LogicalHandlers on Client
-     * Close LogicalHandlers first and then SOAPHandlers on Server
-     */
-    public void close(MessageContext msgContext) {
-
-        if (binding.getSOAPVersion() != null) {
-            //MessageHandlerTube will drive the closing of LogicalHandlerTube
+    //should be overridden by DriverHandlerTubes
+    @Override
+    protected void initiateClosing(MessageContext mc) {
+         if (binding.getSOAPVersion() != null) {
+            super.initiateClosing(mc);
         } else {
-            if (processor != null)
-                closeLogicalHandlers(msgContext);
-        }
-
-    }
-
-    /**
-     * This is called from cousinTube.
-     * Close this Tube's handlers.
-     */
-    public void closeCall(MessageContext msgContext) {
-        closeLogicalHandlers(msgContext);
-    }
-
-    //TODO:
-    private void closeLogicalHandlers(MessageContext msgContext) {
-        if (processor == null)
-            return;
-        if (remedyActionTaken) {
-            //Close only invoked handlers in the chain
-            //SERVER-SIDE
-            processor.closeHandlers(msgContext, processor.getIndex(), logicalHandlers.size() - 1);
-            processor.setIndex(-1);
-            //reset remedyActionTaken
-            remedyActionTaken = false;
-        } else {
-            //Close all handlers in the chain
-            //SERVER-SIDE
-            processor.closeHandlers(msgContext, 0, logicalHandlers.size() - 1);
-
+            close(mc);
+            super.initiateClosing(mc); 
         }
     }
 
-    public AbstractFilterTubeImpl copy(TubeCloner cloner) {
+   public AbstractFilterTubeImpl copy(TubeCloner cloner) {
         return new ServerLogicalHandlerTube(this, cloner);
     }
 
     private void setUpProcessorOnce() {
-        logicalHandlers = new ArrayList<LogicalHandler>();
+        handlers = new ArrayList<Handler>();
         List<LogicalHandler> logicalSnapShot= ((BindingImpl) binding).getHandlerConfig().getLogicalHandlers();
         if (!logicalSnapShot.isEmpty()) {
-            logicalHandlers.addAll(logicalSnapShot);
+            handlers.addAll(logicalSnapShot);
             if (binding.getSOAPVersion() == null) {
                 processor = new XMLHandlerProcessor(this, binding,
-                        logicalHandlers);
+                        handlers);
             } else {
-                processor = new SOAPHandlerProcessor(false, this, binding,
-                        logicalHandlers);
+                processor = new SOAPHandlerProcessor(false, this, binding, handlers);
             }
         }
     }
@@ -205,5 +169,10 @@ public class ServerLogicalHandlerTube extends HandlerTube {
         } catch (RuntimeException re) {
             throw re;
         }
+    }
+
+    void closeHandlers(MessageContext mc) {
+        closeServersideHandlers(mc);
+
     }
 }
