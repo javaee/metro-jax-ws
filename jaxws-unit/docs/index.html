@@ -2,43 +2,43 @@
 <html xmlns:d="jelly:define" xmlns:jsl="jelly:jsl" xmlns:j="jelly:core" xmlns:l="layout" xmlns:x="jelly:xml">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1"> 
-    <title>JAX-WS/Tango Test Harness User Guide</title> 
+    <title>Metro Test Harness User Guide</title> 
     <style>
-		H1 {
-			text-align: center;
-		}
-		
-		PRE.cmd { /* command line example */
-			background-color: #eee;
-			border: solid 1px gray;
-			font-weight: bold;
-			padding: 0.2em;
-		}
-		
-		PRE.script { /* script example */
-			background-color: #efe;
-			border: solid 1px darkgreen;
-			font-weight: bold;
-			padding: 0.2em;
-		}
-		
-		PRE.dir { /* directory layout */
-			padding: 0.2em;
-			align: center;
-		}
-		
-		DIV.tip {
-			padding: 0.2em;
-			margin: 1em;
-			margin-left: 3em;
-			border: 1px dashed black;
-			background-color: #ddf;
-		}
-	</style> 
+    H1 {
+      text-align: center;
+    }
+    
+    PRE.cmd { /* command line example */
+      background-color: #eee;
+      border: solid 1px gray;
+      font-weight: bold;
+      padding: 0.2em;
+    }
+    
+    PRE.script { /* script example */
+      background-color: #efe;
+      border: solid 1px darkgreen;
+      font-weight: bold;
+      padding: 0.2em;
+    }
+    
+    PRE.dir { /* directory layout */
+      padding: 0.2em;
+      align: center;
+    }
+    
+    DIV.tip {
+      padding: 0.2em;
+      margin: 1em;
+      margin-left: 3em;
+      border: 1px dashed black;
+      background-color: #ddf;
+    }
+  </style> 
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.10 2007-01-26 02:47:09 kohsuke Exp $</div>      
+    <div align="right">$Id: index.html,v 1.11 2007-09-19 23:17:25 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -63,6 +63,10 @@
           <ol> </ol>    
           <li>
             <a href="#WSIT_Binary_Image">WSIT Binary Image</a>
+          </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Overriding_jars">Overriding jars</a>
           </li> 
           <ol> </ol>  
         </ol>    
@@ -105,6 +109,15 @@
             <ol> </ol>  
           </ol>    
           <li>
+            <a href="#Jetty">Jetty</a>
+          </li> 
+          <ol>   
+            <li>
+              <a href="#Embedded_Jetty">Embedded Jetty</a>
+            </li> 
+            <ol> </ol>  
+          </ol>    
+          <li>
             <a href="#Glassfish">Glassfish</a>
           </li> 
           <ol>   
@@ -125,6 +138,10 @@
         <li>
           <a href="#Summarizing_Test_Results">Summarizing Test Results</a>
         </li> 
+        <ol> </ol>    
+        <li>
+          <a href="#Generating_Coverage_Report">Generating Coverage Report</a>
+        </li> 
         <ol> </ol>  
       </ol>                
       <li>
@@ -138,7 +155,12 @@
         <li>
           <a href="#Test_Descriptor">Test Descriptor</a>
         </li> 
-        <ol> </ol>    
+        <ol>   
+          <li>
+            <a href="#Linking_to_Relevant_Bugs">Linking to Relevant Bugs</a>
+          </li> 
+          <ol> </ol>  
+        </ol>    
         <li>
           <a href="#Client_Test_Scripts">Client Test Scripts</a>
         </li> 
@@ -150,8 +172,20 @@
           <li>
             <a href="#More_on_Script_Execution_Environment">More on Script Execution Environment</a>
           </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Common_utility">Common utility</a>
+          </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Side_effect_free_tests">Side-effect free tests</a>
+          </li> 
           <ol> </ol>  
         </ol>    
+        <li>
+          <a href="#Java_Client">Java Client</a>
+        </li> 
+        <ol> </ol>    
         <li>
           <a href="#Service">Service</a>
         </li> 
@@ -167,6 +201,10 @@
         <ol> </ol>    
         <li>
           <a href="#Resources">Resources</a>
+        </li> 
+        <ol> </ol>    
+        <li>
+          <a href="#Common_source_files">Common source files</a>
         </li> 
         <ol> </ol>  
       </ol>                
@@ -187,7 +225,9 @@
         <a href="#Configuring_the_Harness_Classpath_for_Different_Delivery_Vehicles">1.1.</a>  Configuring the Harness Classpath for Different Delivery Vehicles
       </a>
     </h3>   
-    <p>The harness can be used to test different projects that use the JAX-WS RI. Normally, the harness will be able to automatically guess which project you are working on, and set up classpath automatically. However, you can always use one of the following options to manually specify it to override this default behavior.         
+    <p>The harness can be used to test different projects that use the JAX-WS RI. Normally,
+      <b>the harness will be able to automatically guess which project you are working on, and set up classpath automatically</b>. However, you can always use one of the following options to manually specify it to override this default behavior.
+             
     <a name="JAX_WS_RI_Workspace"></a>
     <h4>
       <a name="JAX_WS_RI_Workspace">
@@ -227,7 +267,16 @@
     <p>The following option tells the harness to pick up the WSIT classes from a binary dist image. Using this option, the harness will only look at the WSIT library jars (webservices.jar &amp; webservices-tools.jar) found under the
       <TT>lib</TT> directory of the dist image directory that you specify.
       
-    <pre class="cmd">$ java -jar path/to/harness.jar -cp:wsit-image path/to/wsit-image test-dir1 test-dir2 ...</pre>                    
+    <pre class="cmd">$ java -jar path/to/harness.jar -cp:wsit-image path/to/wsit-image test-dir1 test-dir2 ...</pre>               
+    <a name="Overriding_jars"></a>
+    <h4>
+      <a name="Overriding_jars">
+        <a href="#Overriding_jars">1.1.5.</a>  Overriding jars
+      </a>
+    </h4>   
+    <p>Sometimes it's convenient to be able to override some of the test subject jars with an override (like applying a patch.) You can use
+      <tt>-cp:override</tt> option to do this.
+                      
     <a name="Running_Tests_Manually"></a>
     <h3>
       <a name="Running_Tests_Manually">
@@ -446,17 +495,32 @@ work/                    (root test directory)
         </tr>
       </table> 
     </div>                    
+    <a name="Jetty"></a>
+    <h4>
+      <a name="Jetty">
+        <a href="#Jetty">1.4.3.</a>  Jetty
+      </a>
+    </h4>   
+    <p>This test harness supports Jetty 6.x.         
+    <a name="Embedded_Jetty"></a>
+    <h5>
+      <a name="Embedded_Jetty">
+        <a href="#Embedded_Jetty">1.4.3.1.</a>  Embedded Jetty
+      </a>
+    </h5>   
+    <p>The following command causes the harness to run Jetty within the same VM. See the embedded tomcat description for more about what it means to embed a container.  
+    <pre class="cmd">$ java -jar path/to/harness.jar -jetty-embedded path/to/jetty-6.1.0 test-dir1 test-dir2 ...</pre>                    
     <a name="Glassfish"></a>
     <h4>
       <a name="Glassfish">
-        <a href="#Glassfish">1.4.3.</a>  Glassfish
+        <a href="#Glassfish">1.4.4.</a>  Glassfish
       </a>
     </h4>   
     <p>This test harness supports Glassfish 1.0.         
     <a name="Remote_Glassfish"></a>
     <h5>
       <a name="Remote_Glassfish">
-        <a href="#Remote_Glassfish">1.4.3.1.</a>  Remote Glassfish
+        <a href="#Remote_Glassfish">1.4.4.1.</a>  Remote Glassfish
       </a>
     </h5>   
     <p>To test with existing instance of Glassfish, use the following option. This mode assumes that you have already started a domain, and the harness will simply deploy/undeploy applications to this running service:  
@@ -477,7 +541,7 @@ work/                    (root test directory)
     <a name="Local_Glassfish"></a>
     <h5>
       <a name="Local_Glassfish">
-        <a href="#Local_Glassfish">1.4.3.2.</a>  Local Glassfish
+        <a href="#Local_Glassfish">1.4.4.2.</a>  Local Glassfish
       </a>
     </h5>   
     <p>The test harness is capable of starting and stopping Glassfish on its own before/after running tests. This mode assumes that you have Glassfish installed locally. Use the following command line option to run in this mode:  
@@ -503,6 +567,17 @@ work/                    (root test directory)
     </h3>   
     <p>The
       <tt>-report DIR</tt> option causes the harness to generate JUnit test report files into the specified directory. This allows the reports to be combined with other JUnit or TestNG-based tests (such as per-class unit test.) These XML reports can be then formatted into HTML (via &lt;junitreport&gt; ant task) or picked up by Hudson for further processing.
+                 
+    <a name="Generating_Coverage_Report"></a>
+    <h3>
+      <a name="Generating_Coverage_Report">
+        <a href="#Generating_Coverage_Report">1.7.</a>  Generating Coverage Report
+      </a>
+    </h3>   
+    <p>The test harness can generate
+      <a href="http://emma.sourceforge.net/">EMMA</a> coverage report of the tests by specifying the
+      <tt>-emma OUTPUTFILE</tt> option. The coverage will include both the runtime as well as tools. See
+      <a href="http://emma.sourceforge.net/userguide/ar01s02s03.html">Emma User's Guide</a> for how to generate various reports from the coverage data file.
                       
     <a name="Writing_Tests"></a>
     <h2>
@@ -519,11 +594,15 @@ work/                    (root test directory)
     <pre class="dir">
 testdir/
  +- test-descriptor.xml     (metadata file that describes a test)
+ +- custom-client.xml       (optional client customization file)
  +- *.bsh                   (client test scripts)
- +- resources/              (resource files if needed by test)
+ +- common/                 (optional common source files)
+ |   +- *.java
+ +- client/                 (optional client source files)
+ |   +- *.java
+ +- resources/              (optional resource files if needed by test)
  |   +- mascot.jpeg
- |
- +- AddNumbers.wsdl         (WSDL that represents service, if any)
+ +- AddNumbers.wsdl         (optional WSDL that represents service)
  +- **/*.java               (Java code that implements service)
 </pre>              
     <a name="Test_Descriptor"></a>
@@ -534,8 +613,8 @@ testdir/
     </h3>   
     <p>The file
       <TT>test-descriptor.xml</TT> is the heart of the test data, and it contains the required configuration information for each test. A typical "fromwsdl" test descriptor could look like the following:
-      <br> 
-      <pre>
+     
+    <pre>
 &lt;descriptor&gt;
    &lt;description&gt;this is a very useful test that tests stuff&lt;/description&gt; 
    &lt;client href="*.bsh"/&gt;
@@ -544,10 +623,21 @@ testdir/
    &lt;/service&gt;
 &lt;/despcriptor&gt;
 </pre> 
-    
     <p>The structure of the test descriptor is defined in
       <a href="test-descriptor.rnc">a schema</a>, and the harness performs an XML validation to make sure the data is in the expected format.
-                 
+             
+    <a name="Linking_to_Relevant_Bugs"></a>
+    <h4>
+      <a name="Linking_to_Relevant_Bugs">
+        <a href="#Linking_to_Relevant_Bugs">2.2.1.</a>  Linking to Relevant Bugs
+      </a>
+    </h4>   
+    <p>It is recommended that you link test cases to relevant bugs, so that in the future we can take advantage of information programatically. To do this, use the bugs attribute on the descriptor element. It takes whitespace-separated list of bugs,where each of them are either 7-digit bugster ID or a java.net proeject name followed by an issue number. 
+    <pre>
+&lt;descriptor bugs="6420352 wsit-123 jax-ws-234"&gt;
+  ...
+&lt;/descriptor&gt;
+</pre>                   
     <a name="Client_Test_Scripts"></a>
     <h3>
       <a name="Client_Test_Scripts">
@@ -559,11 +649,11 @@ testdir/
         <li>files. They can be anywhere and have any name, since the harness locates them through
           <tt>&lt;client href="..."&gt;</tt> inside the descriptor. However, we recommend keeping them at the top directory and use ".bsh" suffix.
         </li>
-        <li>Inline inside the test descriptor, as illustrated below. This is particularly convenient for small test clients:
+        <li>Inline inside the test descriptor, as illustrated below. This is particularly convenient for small test clients. The name attribute indicates human readable short summary of a test:
           <pre>
 &lt;descriptor&gt;
   &lt;description&gt;this is a very useful test that tests stuff&lt;/description&gt; 
-  &lt;client&gt;
+  &lt;client name="echo test"&gt;
     assertEquals("hello",fooPort.echo("hello"));
   &lt;/client&gt;
   ...
@@ -642,9 +732,17 @@ helloService.addPort(new QName("foo","bar"), javax.xml.ws.soap.SOAPBinding.SOAP1
         <li>The following Java packages are implicitly imported.
           <ul>
             <li>java.lang</li>
+            <li>java.util</li>
+            <li>java.util.cocurrent</li>
+            <li>javax.xml.soap</li>
             <li>javax.xml.ws</li>
+            <li>javax.xml.ws.soap</li>
             <li>javax.xml.bind</li>
             <li>javax.xml.namespace</li>
+            <li>javax.xml.transform</li>
+            <li>javax.xml.transform.sax</li>
+            <li>javax.xml.transform.dom</li>
+            <li>javax.xml.transform.stream</li>
             <li>(client artifact packages)</li>
           </ul> So you could just say
           <tt>JAXBContext.newInstance(...)</tt> instead of
@@ -656,14 +754,46 @@ bean.setId(53);
 </pre>  
         </li>
         <li>Helper methods. The harness defines a few helper methods that are avaialble to the script as if they are global functions. See
-          <a href="http://kohsuke.sfbay/hudson/job/jaxws-test-harness/ws/src/com/sun/xml/ws/test/client/ScriptBaseClass.java">this source code</a> for the complete list and their semantics.
+          <a href="http://kohsuke.sfbay/hudson/job/jaxws-test-harness/ws/src/com/sun/xml/ws/test/client/ScriptBaseClass.java">this source code</a> and
+          <a href="http://kohsuke.sfbay/hudson/job/jaxws-test-harness/ws/src/com/sun/xml/ws/test/exec/util.bsh">this source code</a> for the complete list and their semantics.
         </li>
       </ol> 
-                      
+                 
+    <a name="Common_utility"></a>
+    <h4>
+      <a name="Common_utility">
+        <a href="#Common_utility">2.3.3.</a>  Common utility
+      </a>
+    </h4>   
+    <p>Often it's useful to factor out the common variable/function/etc for multiple &lt;client&gt; scripts in a single test suite. This can be done by defining &lt;pre-client&gt; element in the test descriptor. If specified, the pre-script will be executed before each client test script is executed.             
+    <a name="Side_effect_free_tests"></a>
+    <h4>
+      <a name="Side_effect_free_tests">
+        <a href="#Side_effect_free_tests">2.3.4.</a>  Side-effect free tests
+      </a>
+    </h4>   
+    <p>Many tests are written in such a way that they do not have any side-effect on both server or client (when I say side-effect, I mean things like updating global counters or touching database or anything of that sort.) Test descriptor can mark those tests as "side-effect free" by adding the attribute as follows: 
+    <pre>
+&lt;descriptor&gt;
+...
+&lt;client href="abc.bsh" sideEffectFree="true" /&gt;
+&lt;/descriptor&gt;
+</pre> 
+    <p>With the '-concurrent-side-effect-free' option, tests marked in this way will be run in concurrent environment. That is to say, the same test will be run repeatedly in multiple threads. This allows the runtime to be exercised in a new way.                   
+    <a name="Java_Client"></a>
+    <h3>
+      <a name="Java_Client">
+        <a href="#Java_Client">2.4.</a>  Java Client
+      </a>
+    </h3>   
+    <p>If your client test scripts need some Java helper code (such as handlers), or if you have some JUnit test classes written as Java classes, you can put them under the
+      <tt>testdir/client</tt> directory. All classes that ends with "Test" will be considered JUnit tests and executed like client test scripts.
+    
+    <p>Also, all the Java source files are compiled and made available to client test scripts (for example so that you can access those classes.) The "client" package itself will be also imported into the client test scripts, so classes in the "client" package can be accessed by their short name.             
     <a name="Service"></a>
     <h3>
       <a name="Service">
-        <a href="#Service">2.4.</a>  Service
+        <a href="#Service">2.5.</a>  Service
       </a>
     </h3>   
     <p>Code that constitutes a service needs to be written by using Java. By default, those files should be placed into the same test directory. If you are converting existing test services to this harness, most likely the only thing that needs to change is the declared package name.
@@ -681,7 +811,7 @@ bean.setId(53);
             <pre>
 @WebService
 @BindingType(SOAPBinding.SOAP11HTTP_BINDING)
-class FooBarService {
+class FooBarSgervice {
   ...
 }
 </pre>  
@@ -692,7 +822,7 @@ class FooBarService {
     <a name="WSDL"></a>
     <h4>
       <a name="WSDL">
-        <a href="#WSDL">2.4.1.</a>  WSDL
+        <a href="#WSDL">2.5.1.</a>  WSDL
       </a>
     </h4>   
     <p>For scenarios which requiring building the service from a WSDL, there is a sub-element of service named
@@ -706,12 +836,13 @@ class FooBarService {
     
     <p>To further customize the compilation process, place a JAX-WS customization file named
       <tt>custom-server.xml</tt> to the service top directory (to refer to WSDL file and schema files from this customization file, just use the relative path from the customization file to WSDL/schemas like
-      <tt>"./foo.xsd"</tt>.
+      <tt>"./foo.xsd"</tt>.) You can also use
+      <tt>custom-schema-server.xml</tt> to specify additional JAXB customization file.
                       
     <a name="Requiring_certain_modes"></a>
     <h3>
       <a name="Requiring_certain_modes">
-        <a href="#Requiring_certain_modes">2.5.</a>  Requiring certain modes
+        <a href="#Requiring_certain_modes">2.6.</a>  Requiring certain modes
       </a>
     </h3>   
     <p>A test can declare that it requires a particular kind of a transport by declaring the transport attribute. The possible values are the values you specify in the scheme portion of the endpoint address URI (The major values include "http" and "local", but open-ended as new transports are added.)
@@ -741,15 +872,40 @@ class FooBarService {
     <a name="Resources"></a>
     <h3>
       <a name="Resources">
-        <a href="#Resources">2.6.</a>  Resources
+        <a href="#Resources">2.7.</a>  Resources
       </a>
     </h3>   
     <p>If test programs need to use image files, binary files, or other data files, they should be put in
       <TT>resources</TT> directory at test's top-level. This is optional. Those resources can be loaded by using the helper methods as follows: 
       <pre class="script">
-File f = resource("foo.xml");  // load resources/foo.xml
+File f = resource("foo.jpg");  // load resources/foo.jpg
 </pre>  
     
+    <p>For resources that are XML, you can define them by using &lt;xml-resource&gt; elements. 
+    <pre>
+&lt;!-- define it inline --&gt;
+&lt;xml-resource name="foo"&gt;
+  &lt;echoRequest&gt;123&lt;/echoRequest&gt;
+&lt;/xml-resource&gt;
+
+&lt;!-- define it externally --&gt;
+&lt;xml-resource name="bar" href="my.xml" /&gt;
+</pre> 
+    <p>Such XML resources are injected into clients as variables of the type
+      <a href="http://kohsuke.sfbay/hudson/job/jaxws-test-harness/ws/src/com/sun/xml/ws/test/client/XmlResource.java">
+        <tt>XmlResource</tt>
+      </a>, so you can use them like this:
+      
+    <pre class="script">
+echoPort.echoString(foo.asString());
+</pre>               
+    <a name="Common_source_files"></a>
+    <h3>
+      <a name="Common_source_files">
+        <a href="#Common_source_files">2.8.</a>  Common source files
+      </a>
+    </h3>   
+    <p>If test programs need to share some Java source files between the server and the client, those files can be put into the 'common' directory. They will be compiled and made available to both client and server.
     <p> 
       <span style="color:red; font-weight:bold">(not fully cooked. Feedback welcome)</span>  we are hoping to define more convenience methods and define how to access resources from server.
                       
