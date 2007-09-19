@@ -154,7 +154,7 @@ abstract class AsyncMethodHandler extends SEIMethodHandler {
             this.args = args;
         }
 
-        public void run () {
+        public void do_run () {
             Packet req = new Packet(createRequestMessage(args));
             req.soapAction = soapAction;
             req.expectReply = !isOneWay;
@@ -181,21 +181,26 @@ abstract class AsyncMethodHandler extends SEIMethodHandler {
                             responseImpl.set(rargs[0], null);
                         }
                    } catch (Throwable t) {
-                        if (t instanceof RuntimeException) {
-                            if (t instanceof WebServiceException) {
+                        if (t instanceof WebServiceException) {
                                 responseImpl.set(null, t);
-                            }
-                        }  else if (t instanceof Exception) {
-                            responseImpl.set(null, t);
+
+                        } else {
+                            //its RuntimeException or some other exception resulting from user error, wrap it in
+                            // WebServiceException
+                            responseImpl.set(null, new WebServiceException(t));
                         }
-                        //its some other exception resulting from user error, wrap it in
-                        // WebServiceException
-                        responseImpl.set(null, new WebServiceException(t));
                     }
                 }
 
                 public void onCompletion(@NotNull Throwable error) {
-                    responseImpl.set(null, error);
+                    if (error instanceof WebServiceException) {
+                        responseImpl.set(null, error);
+
+                    } else {
+                        //its RuntimeException or some other exception resulting from user error, wrap it in
+                        // WebServiceException
+                        responseImpl.set(null, new WebServiceException(error));
+                    }
                 }
             };
             owner.doProcessAsync(req, rc, callback);
