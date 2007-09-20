@@ -4,15 +4,15 @@
   <bindings node="wsdl:definitions/wsdl:portType[@name='Hello']">
         <class name="HelloPortType"/>
   </bindings>
-  
+
   <bindings>
     <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
       <handler-chain>
         <handler>
-          <handler-class>handler.messagehandler.common.TestHandler</handler-class>
+          <handler-class>handler.messagehandler.client.TestHandler</handler-class>
         </handler>
       </handler-chain>
     </handler-chains>
   </bindings>
-
+  
 </bindings>

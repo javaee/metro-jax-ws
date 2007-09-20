@@ -5,14 +5,8 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.soap.SOAPBinding;
 
-/**
- */
-@javax.jws.HandlerChain(
-    name="",
-    file="handlers.xml"
-)
+//@javax.jws.HandlerChain(name="",file="handlers.xml")
 @WebService(name="Hello", serviceName="HelloService", targetNamespace="urn:test")
-@SOAPBinding(style=SOAPBinding.Style.RPC)
 public class HelloService_Impl {
 
     @WebMethod
