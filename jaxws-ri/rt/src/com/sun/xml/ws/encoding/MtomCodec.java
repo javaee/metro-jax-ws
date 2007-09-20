@@ -455,36 +455,18 @@ public class MtomCodec extends MimeCodec {
                 cid = URLDecoder.decode(cid, "utf-8");
             } catch (UnsupportedEncodingException e) {
                 //on recceiving side lets not fail now, try to look for it
-                return cid;
             }
             return cid;
         }
 
-        private boolean needToDecode(String cid){
-            int numChars = cid.length();
-            int i=0;
-            char c;
-            while (i < numChars) {
-                c = cid.charAt(i++);
-                switch (c) {
-                    case '%':
-                        return true;
-                }
-            }
-            return false;
-        }
-
-
         private Attachment getAttachment(String cid) throws IOException {
             if (cid.startsWith("cid:"))
                 cid = cid.substring(4, cid.length());
-            Attachment att = mimeMP.getAttachmentPart(cid);
-            if(att == null && needToDecode(cid)){
-                //try not be url decoding it - this is required for Indigo interop, they write content-id without escaping
+            if (cid.indexOf('%') != -1) {
                 cid = decodeCid(cid);
                 return mimeMP.getAttachmentPart(cid);
             }
-            return att;
+            return mimeMP.getAttachmentPart(cid);
         }
 
         public char[] getTextCharacters() {
