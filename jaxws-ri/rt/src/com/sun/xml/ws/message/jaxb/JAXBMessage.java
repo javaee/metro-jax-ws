@@ -51,6 +51,7 @@ import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.RootElementSniffer;
 import com.sun.xml.ws.message.stream.StreamMessage;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -65,6 +66,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import javax.xml.transform.Source;
 import javax.xml.ws.WebServiceException;
 import java.io.OutputStream;
@@ -276,7 +278,10 @@ public final class JAXBMessage extends AbstractMessageImpl {
                 bridge.marshal(jaxbObject,sbr);
                 infoset = sbr.getXMLStreamBuffer();
             }
-            return infoset.readAsXMLStreamReader();
+            XMLStreamReader reader = infoset.readAsXMLStreamReader();
+            if(reader.getEventType()== START_DOCUMENT)
+                XMLStreamReaderUtil.nextElementContent(reader);
+            return reader;
         } catch (JAXBException e) {
            // bug 6449684, spec 4.3.4
            throw new WebServiceException(e);
