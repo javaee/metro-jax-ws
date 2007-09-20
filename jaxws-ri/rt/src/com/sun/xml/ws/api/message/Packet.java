@@ -656,8 +656,8 @@ public final class Packet extends DistributedPropertySet {
             return r;
 
         // otherwise populate WS-Addressing headers
-        return populateAddressingHeaders(binding, r, wsdlPort,seiModel);
-
+        populateAddressingHeaders(binding, r, wsdlPort,seiModel);
+        return r;
     }
 
     /**
@@ -688,20 +688,17 @@ public final class Packet extends DistributedPropertySet {
             return responsePacket;
         }
 
-        return populateAddressingHeaders(responsePacket,
-                addressingVersion,
-                soapVersion,
-                action);
+        populateAddressingHeaders(responsePacket, addressingVersion, soapVersion, action);
+        return responsePacket;
     }
 
-    private Packet populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action) {
+    private void populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action) {
         // populate WS-A headers only if WS-A is enabled
-        if (av == null)
-            return responsePacket;
+        if (av == null) return;
 
         // if one-way, then dont populate any WS-A headers
         if (responsePacket.getMessage() == null)
-            return responsePacket;
+            return;
 
         HeaderList hl = responsePacket.getMessage().getHeaders();
 
@@ -742,22 +739,19 @@ public final class Packet extends DistributedPropertySet {
         if (refpEPR != null) {
             refpEPR.addReferenceParameters(hl);
         }
-
-        return responsePacket;
     }
 
-    private Packet populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
+    private void populateAddressingHeaders(WSBinding binding, Packet responsePacket, WSDLPort wsdlPort, SEIModel seiModel) {
         AddressingVersion addressingVersion = binding.getAddressingVersion();
 
-        if (addressingVersion == null)
-            return responsePacket;
+        if (addressingVersion == null)  return;
 
         WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort,seiModel, binding);
         String action = responsePacket.message.isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);
 
-        return populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action);
+        populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action);
     }
 
     // completes TypedMap
