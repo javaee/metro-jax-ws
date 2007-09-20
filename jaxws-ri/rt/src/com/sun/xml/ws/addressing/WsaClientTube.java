@@ -77,8 +77,10 @@ public final class WsaClientTube extends WsaTube {
 
     public @NotNull NextAction processResponse(Packet response) {
         // if one-way then, no validation
-        if (response.getMessage() != null)
+        if (response.getMessage() != null) {
             response = validateInboundHeaders(response);
+            response.addSatellite(new WsaPropertyBag(addressingVersion,soapVersion,response));
+        }
 
         return doReturnWith(response);
     }
