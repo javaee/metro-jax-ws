@@ -719,7 +719,7 @@ public final class Packet extends DistributedPropertySet {
         hl.add(new StringHeader(av.messageIDTag, responsePacket.getMessage().getID(av, sv)));
 
         // wsa:RelatesTo
-        String mid = (String)responsePacket.get(JAXWSProperties.ADDRESSING_MESSAGEID);
+        String mid = getMessage().getHeaders().getMessageID(av,sv);
         if (mid != null)
             hl.add(new RelatesToHeader(av.relatesToTag, mid));
 
