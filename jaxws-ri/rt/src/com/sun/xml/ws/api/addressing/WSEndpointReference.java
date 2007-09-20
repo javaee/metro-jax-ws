@@ -667,8 +667,8 @@ public final class WSEndpointReference {
     public XMLStreamReader read(final @NotNull String localName) throws XMLStreamException {
         return new StreamReaderBufferProcessor(infoset) {
             protected void processElement(String prefix, String uri, String _localName) {
-                if(_depth==0)
-                        _localName = localName;
+                if (_depth == 0)
+                    _localName = localName;
                 super.processElement(prefix, uri, _localName);
             }
         };
