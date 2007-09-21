@@ -1,0 +1,11 @@
+<descriptor since="2.0">
+  <description>Handler tests with single type handler tube
+      The Service exercies handlers are properly invoked and
+      closed in correct order with different ports in the service. 
+  </description>
+    
+  <service basedir="./server">
+      <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>
