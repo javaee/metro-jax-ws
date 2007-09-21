@@ -299,10 +299,20 @@ abstract class ResponseBuilder {
         
         Object mapAttachment(Attachment att, Object[] args) {
             Image image;
+            InputStream is = null;
             try {
-                image = ImageIO.read(att.asInputStream());
+                is = att.asInputStream();
+                image = ImageIO.read(is);
             } catch(IOException ioe) {
                 throw new WebServiceException(ioe);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch(IOException ioe) {
+                        throw new WebServiceException(ioe);
+                    }
+                }
             }
             return setter.put(image, args);
         }

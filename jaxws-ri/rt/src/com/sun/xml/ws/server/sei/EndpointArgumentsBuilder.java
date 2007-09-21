@@ -231,7 +231,7 @@ abstract class EndpointArgumentsBuilder {
             } else if(isXMLMimeType(param.getBinding().getMimeType())) {
                 return new JAXBBuilder(param, setter);
             } else {
-                throw new UnsupportedOperationException("Attachment is not mapped");
+                throw new UnsupportedOperationException("Unknown Type="+type+" Attachment is not mapped.");
             }
         }
         
@@ -289,10 +289,20 @@ abstract class EndpointArgumentsBuilder {
         
         void mapAttachment(Attachment att, Object[] args) {
             Image image;
+            InputStream is = null;
             try {
-                image = ImageIO.read(att.asInputStream());
+                is = att.asInputStream();
+                image = ImageIO.read(is);
             } catch(IOException ioe) {
                 throw new WebServiceException(ioe);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch(IOException ioe) {
+                        throw new WebServiceException(ioe);
+                    }
+                }
             }
             setter.put(image, args);
         }
