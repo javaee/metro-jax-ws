@@ -485,10 +485,6 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             builder.onError(classDecl.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_CLASS_IS_ABSTRACT(classDecl.getQualifiedName()));
             return false;
         }
-        if (classDecl.getDeclaringType() != null && !modifiers.contains(Modifier.STATIC) && !isStateful) {
-            builder.onError(classDecl.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_CLASS_IS_INNERCLASS_NOT_STATIC(classDecl.getQualifiedName()));
-            return false;
-        }
         boolean hasDefaultConstructor = false;
         for (ConstructorDeclaration constructor : classDecl.getConstructors()) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC) &&
@@ -498,6 +494,11 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             }
         }
         if (!hasDefaultConstructor && !isStateful) {
+            if (classDecl.getDeclaringType() != null && !modifiers.contains(Modifier.STATIC)) {
+                builder.onError(classDecl.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_CLASS_IS_INNERCLASS_NOT_STATIC(classDecl.getQualifiedName()));
+                return false;
+            }
+
             builder.onError(classDecl.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_NO_DEFAULT_CONSTRUCTOR(classDecl.getQualifiedName()));
             return false;
         }
