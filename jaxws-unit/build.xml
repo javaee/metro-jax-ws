@@ -57,7 +57,7 @@
         <unzip src="build/jaxws-ri.zip" dest="build"/>
         <!-- for JDK6 endorsed dir -->
         <mkdir dir="build/jaxws-ri/lib1"/>
-        <copydir src="build/jaxws-ri/lib" dest="build/jaxws-ri/lib1" includes="*-api.jar"/>
+        <copydir src="build/jaxws-ri/lib" dest="build/jaxws-ri/lib1" includes="*-api.jar,activation.jar"/>
 
         <get src="http://kohsuke.sfbay.sun.com/hudson/job/${jaxws-hudson-project}/lastSuccessfulBuild/artifact/jax-ws-sources/jaxws-ri/transports/local/build/jaxws-local-transport.jar"
              dest="build/jaxws-local-transport.jar"/>
