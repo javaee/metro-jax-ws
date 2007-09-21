@@ -11,7 +11,7 @@ import javax.xml.ws.soap.Addressing;
 /**
  * @author Kohsuke Kawaguchi
  */
-@WebService
+@WebService(portName = "accountPort")
 @Addressing
 @Stateful
 public class Account {
