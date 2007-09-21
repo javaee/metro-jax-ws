@@ -1,4 +1,4 @@
-<descriptor since="2.1">
+<descriptor since="2.1.3">
     <description>
         Tests Web Service on inner class
     </description>
