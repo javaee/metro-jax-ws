@@ -20,7 +20,8 @@ import java.io.ByteArrayOutputStream;
 @WebServiceProvider(
     wsdlLocation="WEB-INF/wsdl/hello_literal.wsdl",
     targetNamespace="urn:test",
-    serviceName="Hello")
+    serviceName="Hello",
+    portName="HelloAsyncPort")
 
 public class HelloAsyncImpl implements AsyncProvider<Source> {
 
