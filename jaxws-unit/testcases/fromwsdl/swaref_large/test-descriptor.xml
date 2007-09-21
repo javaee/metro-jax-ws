@@ -1,4 +1,8 @@
-<descriptor since="2.0">
+<!--
+   Depends on StreamingHandler which is available in 2.1.3 only.
+   in-vm transport keeps all transport data in memory.
+-->
+<descriptor since="2.1.3" transport="http">
   <description>This is a fromwsdl swaref test</description>
   <service basedir="./server">
     <wsdl href="hello.wsdl"/>
