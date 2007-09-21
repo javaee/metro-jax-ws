@@ -6,7 +6,7 @@ import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
 import static javax.jws.soap.SOAPBinding.Style.DOCUMENT;
 import static javax.jws.soap.SOAPBinding.Use.LITERAL;
 
-@WebService
+@WebService(portName="DocLitWrappedPort")
 @SOAPBinding(style=DOCUMENT, use=LITERAL ,parameterStyle=WRAPPED)
 public class DocLitWrapped {
     public Person[] echo(Person[] people){

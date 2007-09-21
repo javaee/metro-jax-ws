@@ -6,7 +6,7 @@ import static javax.jws.soap.SOAPBinding.ParameterStyle.BARE;
 import static javax.jws.soap.SOAPBinding.Style.DOCUMENT;
 import static javax.jws.soap.SOAPBinding.Use.LITERAL;
 
-@WebService
+@WebService(portName="DocLitBarePort")
 @SOAPBinding(style=DOCUMENT, use=LITERAL ,parameterStyle=BARE)
 public class DocLitBare {
     public Person[] echo(Person[] people){
