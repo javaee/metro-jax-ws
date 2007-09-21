@@ -131,11 +131,11 @@
         req = new ShortArrayType();
         req.getShortArray().add((short)100);
         req.getShortArray().add((short)200);
-        req.getShortArray().add((short)300);
-        resp = retailerPort.shortArrayTest(req);
-        assertEquals(resp.getShortArray().get(0), 100);
-        assertEquals(resp.getShortArray().get(1), 200);
-        assertEquals(resp.getShortArray().get(2), 300);
+        req.getShortArray().add((short)210);
+        resp = retailerPort.shortArrayTest(req);        
+        assertEquals(resp.getShortArray().get(0), (short)100);
+        assertEquals(resp.getShortArray().get(1), (short)200);
+        assertEquals(resp.getShortArray().get(2), (short)210);
     </client>
 
     <client name="fromwsdl.wsdl_rpclit.holders.parameterOrder">
