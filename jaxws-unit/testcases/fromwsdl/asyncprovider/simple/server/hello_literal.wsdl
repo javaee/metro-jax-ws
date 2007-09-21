@@ -144,9 +144,6 @@
     <port name="HelloPort" binding="tns:HelloBinding">
       <soap:address location="http://test.org/hello"/>
     </port>
-    <port name="HelloAsyncPort" binding="tns:HelloBinding">
-      <soap:address location="http://test.org/hello"/>
-    </port>
   </service>
 
 </definitions>
