@@ -1,4 +1,4 @@
-<descriptor since="2.1">
+<descriptor since="2.1.3">
     <description>
         Tests using Handlers from Java.
         Uses @HandlerChain to configure handlers on server-side.
