@@ -1,0 +1,10 @@
+<descriptor since="2.0">
+  <description>Handler tests that test Handler Processing on server and client.
+      It tests handler invocation order, handler closing order, handling Exception processing in handlers.
+  </description>
+    
+  <service basedir="./server">
+      <wsdl href="service.wsdl"/>
+  </service>
+
+</descriptor>
