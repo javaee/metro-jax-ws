@@ -22,6 +22,17 @@
         </xsd:complexType>
       </xsd:element>
 
+        <!-- Added this type to avoid JAXB tie-breaker algorithm.
+            TODO: remove it after KK provides accessor API to get property from
+            the async response bean. -->
+        <xsd:element name="Hellox">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="argument" type="xsd:string"/>
+                <xsd:element name="extra" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
     <xsd:element name="Hello1" type="types:HelloType"/>
     <xsd:complexType name="HelloType">
             <xsd:sequence>
@@ -41,6 +52,7 @@
 
       <xsd:element name="Header" type="types:HelloType"/>
       <xsd:element name="ExtraHeader" type="xsd:string"/>
+      
     </xsd:schema>
   </types>
 
