@@ -1,5 +1,5 @@
 <descriptor>
-  <description>WS-Addressing test</description>
+  <description>WS-Addressing action test</description>
 
   <service basedir="./server" />
 </descriptor>
