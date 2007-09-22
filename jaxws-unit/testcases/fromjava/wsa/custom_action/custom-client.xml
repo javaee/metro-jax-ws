@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<bindings xmlns="http://java.sun.com/xml/ns/jaxws">
+  <bindings>
+    <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+      <handler-chain>
+        <port-name-pattern xmlns:ns2="http://foobar.org/">ns2:AddNumbersPort</port-name-pattern>
+        <handler>
+          <handler-class>fromjava.wsa.custom_action.client.ClientSOAPHandler</handler-class>
+        </handler>
+      </handler-chain>
+    </handler-chains>
+  </bindings>
+</bindings>
