@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions
+    name="MTOMTestService"
+    targetNamespace="http://example.org/mtom"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://example.org/mtom"
+    xmlns:s="http://example.org/mtom"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+               targetNamespace="http://example.org/mtom"
+               xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+               elementFormDefault="qualified">
+
+                 <complexType name="DataType">
+                     <sequence>
+                         <element name="docName1" type="string"/>
+                         <element name="docName2" type="string"/>
+                         <element name="docName3" type="string"/>
+                         <element name="docName4" type="string"/>
+                         <element name="docUrl1" type="string"/>
+                         <element name="docUrl2" type="string"/>
+                         <element name="docUrl3" type="string"/>
+                         <element name="docUrl4" type="string"/>
+                         <element name="doc1" type="base64Binary" xmime:expectedContentTypes="text/xml"/>
+                         <element name="doc2" type="base64Binary" xmime:expectedContentTypes="application/xml"/>
+                         <element name="doc3" type="base64Binary" xmime:expectedContentTypes="text/html"/>
+                         <element name="doc4" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
+                     </sequence>
+                 </complexType>
+                 <element name="MTOMIn" type="s:DataType"/>
+                 <element name="MTOMInResponse" type="xsd:string"/>
+          </schema>
+    </types>
+    <message name="MTOMInRequest">
+        <part name="data" element="s:MTOMIn"/>
+    </message>
+    <message name="MTOMInResponse">
+        <part name="result" element="s:MTOMInResponse"/>
+    </message>
+
+     <portType name="Hello">
+          <operation name="MTOMIn">
+               <input message="tns:MTOMInRequest"/>
+               <output message="tns:MTOMInResponse"/>
+          </operation>
+     </portType>
+
+     <binding name="MTOMBinding" type="tns:Hello">
+          <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+          <operation name="MTOMIn">
+               <soap:operation soapAction=""/>
+               <input>
+                    <soap:body use="literal"/>
+               </input>
+               <output>
+                    <soap:body use="literal"/>
+               </output>
+          </operation>
+     </binding>
+
+  <service name="HelloService">
+    <port name="HelloPort" binding="tns:MTOMBinding">
+      <soap:address location="http://foo:9999/bar"/>
+    </port>
+  </service>
+</definitions>

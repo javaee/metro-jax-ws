@@ -1,0 +1,6 @@
+<descriptor since="2.0">
+    <description>XOP test from TCK </description>
+    <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+</descriptor>
