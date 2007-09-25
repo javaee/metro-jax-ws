@@ -18,9 +18,9 @@
  * [name of copyright owner]
  */
 /*
- * $Id: StringDataContentHandler.java,v 1.1 2007-09-18 02:33:22 jitu Exp $
- * $Revision: 1.1 $
- * $Date: 2007-09-18 02:33:22 $
+ * $Id: StringDataContentHandler.java,v 1.2 2007-09-25 23:56:10 jitu Exp $
+ * $Revision: 1.2 $
+ * $Date: 2007-09-25 23:56:10 $
  */
 
 /*
@@ -62,6 +62,7 @@ package com.sun.xml.ws.encoding;
 
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataSource;
+import javax.activation.DataContentHandler;
 import java.awt.datatransfer.DataFlavor;
 import java.io.*;
 
@@ -70,7 +71,7 @@ import java.io.*;
  *
  * @author Anil Vijendran
  */
-public class StringDataContentHandler {
+public class StringDataContentHandler implements DataContentHandler {
 
     /**
      * return the DataFlavors for this <code>DataContentHandler</code>
