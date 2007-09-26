@@ -246,7 +246,7 @@
         <!-- Overriden by main project -->
         <copy todir="${build.home}">
             <fileset dir="."
-                     includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt"/>
+                     includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt"/>
         </copy>
     </target>
 

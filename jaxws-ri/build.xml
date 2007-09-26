@@ -161,7 +161,7 @@
 
   <target name="docs" depends="prepare">
       <copy todir="${build.home}/docs">
-          <fileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt" />
+          <fileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt" />
           <fileset dir="docs" includes="sun-jaxws.xsd" />
           <filterset begintoken="@@" endtoken="@@">
             <filter token="SPEC_VERSION"
@@ -215,7 +215,7 @@
 
         <copy todir="${build.home}">
             <fileset dir="."
-                     includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt"/>
+                     includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt"/>
         </copy>
     </target>
 
@@ -278,7 +278,7 @@
 
     <!-- add a copy of the license and README files to the top level -->
     <copy todir="${dist20.home}">
-        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL-1.0-license.txt, distributionREADME_WMforJava2.0.txt" />
+        <fileset dir="." includes="ThirdPartyLicense.txt, CDDL+GPLv2.txt, distributionREADME_WMforJava2.0.txt" />
     </copy>
 
     <copy todir="${dist20.home}"
@@ -376,7 +376,7 @@
   
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.1/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.1.6/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -422,9 +422,9 @@
 
   <target name="integrate-mimepull" depends="prepare"
           description="integrate the last successful mimepull Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.1-SNAPSHOT/mimepull-1.1-SNAPSHOT.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.0-SNAPSHOT/mimepull-1.0-SNAPSHOT.jar"
          dest="lib/mimepull.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.1-SNAPSHOT/mimepull-1.1-SNAPSHOT-sources.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.0-SNAPSHOT/mimepull-1.0-SNAPSHOT-sources.jar"
          dest="lib/mimepull-src.zip" />
   </target>
 
@@ -495,7 +495,7 @@
       <tstamp/>
       <!-- generate the class -->
       <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_${DSTAMP}.jar"
-          licenseFile="${basedir}/CDDL-1.0-license.txt"
+          licenseFile="${basedir}/CDDL+GPLv2.txt"
           zipFile="${build.home}/jaxws-ri.zip" />
     </target>
     
@@ -582,7 +582,7 @@
 
       <!-- generate the installer -->
       <installerBuilder classFile="${build.home}/JAXWS${release.impl.version}${release.impl.version.suffix}_source_${DSTAMP}.jar"
-          licenseFile="${basedir}/CDDL-1.0-license.txt"
+          licenseFile="${basedir}/CDDL+GPLv2.txt"
           zipFile="${source.drop.dir}/jaxws-src-installer.zip"/>
       <delete dir="${source.drop.dir}"/>
     </target>
