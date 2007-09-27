@@ -192,7 +192,11 @@ public class WSServiceDelegate extends WSService {
 
         this.serviceName = serviceName;
         this.serviceClass = serviceClass;
-        this.container = initParams.getContainer()!=null ? initParams.getContainer() : ContainerResolver.getInstance().getContainer();
+        Container tContainer = initParams.getContainer()!=null ? initParams.getContainer() : ContainerResolver.getInstance().getContainer();
+        if (tContainer == Container.NONE) {
+            tContainer = new ClientContainer();
+        }
+        this.container = tContainer;
 
         // load interceptor
         ServiceInterceptor interceptor = ServiceInterceptorFactory.load(this, Thread.currentThread().getContextClassLoader());

@@ -37,6 +37,7 @@
 package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.ResourceLoader;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Container;
 
@@ -44,6 +45,8 @@ import javax.servlet.ServletContext;
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Provides access to {@link ServletContext} via {@link Container}. Pipes
@@ -65,6 +68,12 @@ class ServletContainer extends Container {
         }
     };
 
+    private final ResourceLoader loader = new ResourceLoader() {
+        public URL getResource(String resource) throws MalformedURLException {
+            return servletContext.getResource("/WEB-INF/"+resource);
+        }
+    };
+
     ServletContainer(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
@@ -75,6 +84,9 @@ class ServletContainer extends Container {
         }
         if (spiType.isAssignableFrom(ServletModule.class)) {
             return spiType.cast(module);
+        }
+        if (spiType == ResourceLoader.class) {
+            return spiType.cast(loader);
         }
         return null;
     }
