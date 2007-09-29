@@ -46,11 +46,13 @@ import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.api.server.ServerPipelineHook;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.handler.HandlerTube;
 import com.sun.xml.ws.handler.ServerLogicalHandlerTube;
 import com.sun.xml.ws.handler.ServerMessageHandlerTube;
 import com.sun.xml.ws.handler.ServerSOAPHandlerTube;
 import com.sun.xml.ws.protocol.soap.ServerMUTube;
+import com.sun.xml.ws.server.SchemaValidationTube;
 import com.sun.xml.ws.util.pipe.DumpTube;
 
 import javax.xml.ws.soap.SOAPBinding;
@@ -200,6 +202,16 @@ public class ServerTubeAssemblerContext {
      */
     public Tube createDumpTube(String name, PrintStream out, Tube next) {
         return new DumpTube(name, out, next);
+    }
+
+    /**
+     * creates a {@link Tube} that validates messages against schema
+     */
+    public Tube createValidationTube(Tube next) {
+        if (binding instanceof SOAPBinding && binding.isFeatureEnabled(SchemaValidationFeature.class) && wsdlModel!=null)
+            return new SchemaValidationTube(endpoint, binding, next);
+        else
+            return next;
     }
 
     /**
