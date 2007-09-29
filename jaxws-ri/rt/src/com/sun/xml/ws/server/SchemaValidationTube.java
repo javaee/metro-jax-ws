@@ -15,13 +15,13 @@ import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.ServiceDefinition;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.w3c.dom.ls.LSInput;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -38,11 +38,14 @@ import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Jitendra Kotamraju
  */
 public class SchemaValidationTube extends AbstractFilterTubeImpl {
+
+    private static final Logger LOGGER = Logger.getLogger(SchemaValidationTube.class.getName());
 
     private final WSBinding binding;
     private final ServiceDefinition docs;
@@ -54,12 +57,17 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
         this.binding = binding;
         docs = endpoint.getServiceDefinition();
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Source[] sources = getSchemaSources();
+        for(Source source : sources) {
+            LOGGER.fine("Constructing validation Schema from = "+source.getSystemId());
+        }
         try {
-            schema = sf.newSchema(getSchemaSources());
+            schema = sf.newSchema(sources);
         } catch(SAXException e) {
             throw new WebServiceException(e);
         }
         validator = schema.newValidator();
+        validator.setResourceResolver(new ResourceResolver());
     }
 
     private Source[] getSchemaSources() {
@@ -73,32 +81,41 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
                 } catch (IOException ioe) {
                     throw new WebServiceException(ioe);
                 }
+
+                // Get WSDL infoset as DOM
                 Transformer trans = XmlUtil.newTransformer();
-System.out.println("******** Data="+new String(bab.toByteArray()));               
                 Source source = new StreamSource(bab.newInputStream(), doc.getURL().toExternalForm());
-                DOMResult result = new DOMResult(DOMUtil.createDom());
+                DOMResult result = new DOMResult();
                 try {
                     trans.transform(source, result);
                 } catch(TransformerException te) {
                     throw new WebServiceException(te);
                 }
 
-                Node schemaNode = getSchemaElement((Document)result.getNode());
-                if (schemaNode != null) {
-                    list.add(new DOMSource(schemaNode, doc.getURL().toExternalForm()));
-                }
+                // Get xsd:schema node from WSDL's DOM
+                addSchemaSource((Document)result.getNode(), doc, list);
             }
         }
         return list.toArray(new Source[list.size()]) ;
     }
 
+    private static class ResourceResolver implements LSResourceResolver {
+
+        public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+            LOGGER.fine("type="+type+ " namespaceURI="+namespaceURI+" publicId="+publicId+" systemId="+systemId+" baseURI="+baseURI);
+            throw new UnsupportedOperationException(" TODO implement it");
+        }
+
+    }
+
     /**
-     * Locates xsd:schema element in the WSDL
+     * Locates xsd:schema elements in the WSDL and creates DOMSource and adds them to the list
      *
      * @param doc WSDL document
-     * @return first xsd:schema element
+     * @param sddoc SDDocument for WSDL document
+     * @param list xsd:schema DOMSource list
      */
-    private @Nullable Element getSchemaElement(Document doc) {
+    private @Nullable void addSchemaSource(Document doc, SDDocument sddoc, List<Source> list) {
 
         Element e = doc.getDocumentElement();
         assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
@@ -110,21 +127,19 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
                 NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
                 for(int j=0; j < schemaList.getLength(); j++) {
                     if (schemaList.item(j) instanceof Element) {
-                        return (Element)schemaList.item(j);
+                        list.add(new DOMSource(schemaList.item(j), sddoc.getURL().toExternalForm()));
                     }
                 }
             }
         }
-        return null;
     }
 
     private static class ValidationDocumentAddressResolver implements DocumentAddressResolver {
 
         @Nullable
         public String getRelativeAddressFor(@NotNull SDDocument current, @NotNull SDDocument referenced) {
-System.out.println("Curent="+current+" ref="+referenced);
-System.out.println("Resolving to = "+referenced.getURL().toExternalForm());
-            return referenced.getURL().toExternalForm();    // TODO
+            LOGGER.fine("Current = "+current.getURL()+" resolved relative="+referenced.getURL());
+            return referenced.getURL().toExternalForm();
         }
     }
 
@@ -134,6 +149,7 @@ System.out.println("Resolving to = "+referenced.getURL().toExternalForm());
         this.docs = that.docs;
         this.schema = that.schema;
         this.validator = schema.newValidator();
+        validator.setResourceResolver(new ResourceResolver());
     }
 
     @Override
