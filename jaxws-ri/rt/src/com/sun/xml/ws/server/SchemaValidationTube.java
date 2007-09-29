@@ -82,7 +82,7 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
                 } catch(TransformerException te) {
                     throw new WebServiceException(te);
                 }
-                //Document document = result.getNode().getOwnerDocument();
+
                 Node schemaNode = getSchemaElement((Document)result.getNode());
                 if (schemaNode != null) {
                     list.add(new DOMSource(schemaNode, doc.getURL().toExternalForm()));
@@ -104,13 +104,6 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
         assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
         assert e.getLocalName().equals("definitions");
 
-        /*
-        node.
-        if (!(node instanceof Element)) {
-            return null;
-        }
-        Element e = (Element)node;
-        */
         NodeList typesList = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "types");
         for(int i=0; i < typesList.getLength(); i++) {
             if (typesList.item(i) instanceof Element) {
@@ -129,8 +122,8 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
 
         @Nullable
         public String getRelativeAddressFor(@NotNull SDDocument current, @NotNull SDDocument referenced) {
-            System.out.println("Curent="+current+" ref="+referenced);
-            System.out.println("Resolving to = "+referenced.getURL().toExternalForm());
+System.out.println("Curent="+current+" ref="+referenced);
+System.out.println("Resolving to = "+referenced.getURL().toExternalForm());
             return referenced.getURL().toExternalForm();    // TODO
         }
     }
@@ -145,11 +138,14 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
 
     @Override
     public NextAction processRequest(Packet request) {
+        if (!request.getMessage().hasPayload() || request.getMessage().isFault()) {
+            return super.processRequest(request);
+        }
         validator.reset();
         Message msg = request.getMessage().copy();
         Source source = msg.readPayloadAsSource();
         try {
-            // Validator javadoc seems to allow ONLY SAX, and DOM Sources
+            // Validator javadoc allows ONLY SAX, and DOM Sources
             // But the impl seems to handle all kinds.
             validator.validate(source);
         } catch(IOException e) {
@@ -159,6 +155,27 @@ System.out.println("******** Data="+new String(bab.toByteArray()));
         }
         return super.processRequest(request);
     }
+
+    @Override
+    public NextAction processResponse(Packet response) {
+        if (response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
+            return super.processResponse(response);
+        }
+        validator.reset();
+        Message msg = response.getMessage().copy();
+        Source source = msg.readPayloadAsSource();
+        try {
+            // Validator javadoc allows ONLY SAX, and DOM Sources
+            // But the impl seems to handle all kinds.
+            validator.validate(source);
+        } catch(IOException e) {
+            throw new WebServiceException(e);
+        } catch(SAXException e) {
+            throw new WebServiceException(e);
+        }
+        return super.processResponse(response);
+    }
+
 
     public AbstractTubeImpl copy(TubeCloner cloner) {
         return new SchemaValidationTube(this,cloner);
