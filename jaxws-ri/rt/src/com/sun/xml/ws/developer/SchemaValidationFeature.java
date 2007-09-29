@@ -6,8 +6,10 @@ import javax.xml.ws.WebServiceFeature;
 
 
 /**
+ * {@link WebServiceFeature} for schema validation.
  *
- * @since 2.1.3
+ * @since JAX-WS 2.1.3
+ * @author Jitendra Kotamraju
  * @see SchemaValidation
  */
 public class SchemaValidationFeature extends WebServiceFeature {

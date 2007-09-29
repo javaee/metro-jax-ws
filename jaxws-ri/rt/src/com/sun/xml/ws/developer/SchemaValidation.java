@@ -1,25 +1,32 @@
 package com.sun.xml.ws.developer;
 
-import com.sun.xml.ws.api.server.InstanceResolverAnnotation;
-import com.sun.xml.ws.server.StatefulInstanceResolver;
-
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
- * Designates a stateful {@link javax.jws.WebService}.
+ * Validates all request and response messages for a {@link javax.jws.WebService}
+ * against the XML schema. To use this feature, annotate the endpoint class with
+ * this annotation.
  *
- * <p>
- * A service class that has this feature on will behave as a stateful web service.
- * See {@link StatefulWebServiceManager} for more about stateful web service.
+ * <pre>
+ * for e.g.:
  *
- * @since 2.1
+ * @WebService
+ * @SchemaValidation
+ * public class HelloImpl {
+ *   ...
+ * }
+ * </pre>
+ *
+ * At present, schema validation works for doc/lit web services only.
+ *
+ * @since JAX-WS 2.1.3
  * @author Jitendra Kotamraju
- * @ses StatefulWebServiceManager
+ * @see SchemaValidationFeature
  */
 @Retention(RUNTIME)
 @Target(TYPE)
