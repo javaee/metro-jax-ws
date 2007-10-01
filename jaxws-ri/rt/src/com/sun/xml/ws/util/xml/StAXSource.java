@@ -36,16 +36,9 @@
 
 package com.sun.xml.ws.util.xml;
 
+import com.sun.istack.SAXParseException2;
 import com.sun.istack.XMLStreamReaderToContentHandler;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 
@@ -189,12 +182,12 @@ public class StAXSource extends SAXSource {
             } catch( XMLStreamException e ) {
                 // wrap it in a SAXException
                 SAXParseException se =
-                    new SAXParseException(
+                    new SAXParseException2(
                         e.getMessage(),
                         null,
                         null,
-                        e.getLocation().getLineNumber(),
-                        e.getLocation().getColumnNumber(),
+                        e.getLocation() == null ? -1 : e.getLocation().getLineNumber(),
+                        e.getLocation() == null ? -1 : e.getLocation().getColumnNumber(),
                         e);
 
                 // if the consumer sets an error handler, it is our responsibility
