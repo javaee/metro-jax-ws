@@ -70,6 +70,8 @@ public final class TagInfoset {
     /**
      * Namespace declarations on this tag. Read-only.
      *
+     * This is an array of the even length of the form { prefix0, uri0, prefix1, uri1, ... }.
+     *
      * URIs/prefixes can be null (StAX-style)
      */
     public final @NotNull String[] ns;
