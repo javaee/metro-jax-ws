@@ -37,7 +37,6 @@ package com.sun.xml.ws.wsdl.parser;
 
 
 import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.XMLReader;
 import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.util.xml.XmlUtil;
 
@@ -67,13 +66,6 @@ public class ParserUtil {
         return reader.getAttributeValue(name.getNamespaceURI(), name.getLocalPart());
     }
 
-    public static void verifyTag(XMLReader reader, QName name) {
-        if (!name.equals(reader.getName())) {
-            throw new XMLReaderException("xmlreader.unexpectedState.tag",
-                new Object[] { name, reader.getName() });
-        }
-    }
-
     public static QName getQName(XMLStreamReader reader, String tag){
         String localName = XmlUtil.getLocalPart(tag);
         String pfix = XmlUtil.getPrefix(tag);
@@ -95,18 +87,6 @@ public class ParserUtil {
         return value;
     }
 
-    public static void fail(String key, XMLReader reader) {
-        //throw new WebServicesClientException(key,
-        //        Integer.toString(reader.getLineNumber()));
-    }
-
-    public static void failWithFullName(String key, XMLReader reader) {
-        //throw new WebServicesClientException(key,
-        //new Object[]{
-        //  Integer.toString(reader.getLineNumber()),
-        //  reader.getName().toString()});
-    }
-
     public static void failWithFullName(String key, XMLStreamReader reader) {
 //        throw new WebServicesClientException(key,
 //        new Object[]{
@@ -119,15 +99,6 @@ public class ParserUtil {
         //        new Object[]{
         //           Integer.toString(reader.getLineNumber()),
         //          reader.getLocalName()});
-    }
-
-    public static void failWithLocalName(String key, XMLReader reader,
-        String arg) {
-        //throw new WebServicesClientException(key,
-        //      new Object[]{
-        //          Integer.toString(reader.getLineNumber()),
-        //          reader.getLocalName(),
-        //          arg});
     }
 
     public static void failWithLocalName(String key, XMLStreamReader reader,
