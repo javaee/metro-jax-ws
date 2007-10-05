@@ -27,14 +27,6 @@ public class ServerMessageHandlerTube extends HandlerTube{
     private WSBinding binding;
     private Set<String> roles;
 
-    // Handle to LogicalHandlerTube means its used on SERVER-SIDE
-
-    /**
-     * This constructor is used on client-side where, LogicalHandlerTube is created
-     * first and then a SOAPHandlerTube is created with a handler to that
-     * LogicalHandlerTube.
-     * With this handle, SOAPHandlerTube can call LogicalHandlerTube.closeHandlers()
-     */
     public ServerMessageHandlerTube(SEIModel seiModel, WSBinding binding, Tube next, HandlerTube cousinTube) {
         super(next, cousinTube);
         this.seiModel = seiModel;
@@ -114,7 +106,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
 
     }
     MessageUpdatableContext getContext(Packet packet) {
-       MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, packet, roles);
+       MessageHandlerContextImpl context = new MessageHandlerContextImpl(seiModel, binding, port, packet, roles);
        return context;
     }
 

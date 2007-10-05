@@ -58,7 +58,7 @@ public abstract class HandlerTube extends AbstractFilterTubeImpl {
     protected List<Handler> handlers;
     HandlerProcessor processor;
     boolean remedyActionTaken = false;
-    private final @Nullable WSDLPort port;
+    protected final @Nullable WSDLPort port;
     // flag used to decide whether to call close on cousinTube
     boolean requestProcessingSucessful = false;
 

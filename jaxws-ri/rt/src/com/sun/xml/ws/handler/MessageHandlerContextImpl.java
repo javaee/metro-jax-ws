@@ -6,6 +6,7 @@ import com.sun.xml.ws.api.handler.MessageHandlerContext;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 import java.util.Set;
 
@@ -16,12 +17,14 @@ public class MessageHandlerContextImpl extends MessageUpdatableContext implement
     private @Nullable SEIModel seiModel;
     private Set<String> roles;
     private WSBinding binding;
+    private @Nullable WSDLPort wsdlModel;
 
-    public MessageHandlerContextImpl(@Nullable SEIModel seiModel, WSBinding binding, Packet packet, Set<String> roles) {
+    public MessageHandlerContextImpl(@Nullable SEIModel seiModel, WSBinding binding, @Nullable WSDLPort wsdlModel, Packet packet, Set<String> roles) {
         super(packet);
         this.seiModel = seiModel;
         this.binding = binding;
-        this.roles = roles; 
+        this.wsdlModel = wsdlModel;
+        this.roles = roles;
     }
     public Message getMessage() {
         return packet.getMessage();
@@ -43,6 +46,10 @@ public class MessageHandlerContextImpl extends MessageUpdatableContext implement
         return seiModel;
     }
 
+    public @Nullable WSDLPort getPort() {
+        return wsdlModel;
+    }
+    
     void updateMessage() {
        // Do Nothing
     }
