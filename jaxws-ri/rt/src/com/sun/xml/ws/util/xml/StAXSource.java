@@ -216,7 +216,7 @@ public class StAXSource extends SAXSource {
      * @throws IllegalStateException iff the reader is not pointing at either a
      * START_DOCUMENT or START_ELEMENT event
      */
-    public StAXSource(XMLStreamReader reader, boolean eagerQuit) {
+    public StAXSource(XMLStreamReader reader, boolean eagerQuit, String[] inscope) {
         if( reader == null )
             throw new IllegalArgumentException();
 
@@ -226,7 +226,7 @@ public class StAXSource extends SAXSource {
             throw new IllegalStateException();
         }
 
-        this.reader = new XMLStreamReaderToContentHandler(reader,repeater,eagerQuit,false);
+        this.reader = new XMLStreamReaderToContentHandler(reader,repeater,eagerQuit,false,inscope);
 
         super.setXMLReader(pseudoParser);
         // pass a dummy InputSource. We don't care
