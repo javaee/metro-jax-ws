@@ -4,6 +4,8 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+
 import javax.xml.ws.handler.MessageContext;
 import java.util.Set;
 
@@ -50,5 +52,13 @@ public interface MessageHandlerContext extends MessageContext {
      * Provides access to <code>SEIModel</code>.
      */
     public @Nullable SEIModel getSEIModel();
+
+    /**
+     * Gets the {@link WSDLPort} that represents the port.
+     * @return
+     *      returns the WSDLModel of the port that the client/endpoint binds to.
+     *      null when the Service is not configured with WSDL information.
+     */
+    public @Nullable WSDLPort getPort();
    
 }
