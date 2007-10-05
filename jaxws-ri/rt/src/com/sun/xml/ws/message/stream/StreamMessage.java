@@ -363,6 +363,13 @@ public final class StreamMessage extends AbstractMessageImpl {
                 //the boolean value tells the first body part is written.
                 //based on this we do the right thing
                 StreamReaderBufferCreator c = new StreamReaderBufferCreator(xsb);
+
+                // preserving inscope namespaces from envelope, and body. Other option
+                // would be to create a filtering XMLStreamReader from reader+envelopeTag+bodyTag
+                c.storeElement(envelopeTag.nsUri, envelopeTag.localName, envelopeTag.prefix, envelopeTag.ns);
+                c.storeElement(bodyTag.nsUri, bodyTag.localName, bodyTag.prefix, bodyTag.ns);
+
+                // Loop all the way for multi payload case
                 while(reader.getEventType() != XMLStreamConstants.END_DOCUMENT){
                     String name = reader.getLocalName();
                     String nsUri = reader.getNamespaceURI();
@@ -380,6 +387,7 @@ public final class StreamMessage extends AbstractMessageImpl {
 
                 reader = xsb.readAsXMLStreamReader();
                 clone = xsb.readAsXMLStreamReader();
+
                 // advance to the start tag of the first element
                 proceedToRootElement(reader);
                 proceedToRootElement(clone);
@@ -397,6 +405,8 @@ public final class StreamMessage extends AbstractMessageImpl {
 
     private void proceedToRootElement(XMLStreamReader xsr) throws XMLStreamException {
         assert xsr.getEventType()==START_DOCUMENT;
+        xsr.nextTag();
+        xsr.nextTag();
         xsr.nextTag();
         assert xsr.getEventType()==START_ELEMENT;
     }
