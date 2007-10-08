@@ -2,8 +2,6 @@ package com.sun.xml.ws.server;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.istack.SAXParseException2;
-import com.sun.xml.bind.unmarshaller.DOMScanner;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
@@ -19,13 +17,11 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
-import org.xml.sax.*;
-import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.NamespaceSupport;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -34,7 +30,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -46,6 +41,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -247,181 +243,59 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
                 NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
                 for(int j=0; j < schemaList.getLength(); j++) {
                     Element elem = (Element)schemaList.item(j);
-                    Source source = new MySource(elem);
-                    source.setSystemId(sddoc.getURL().toExternalForm()+"#schema"+j);
-                    source = this.toDOMSource(source);
-                    list.add(source);
-
-                    //list.add(new DOMSource(elem, sddoc.getURL().toExternalForm()+"#schema"+j));
+                    NamespaceSupport nss = new NamespaceSupport();
+                    buildNamespaceSupport(nss, elem);
+                    patchDOMFragment(nss, elem);
+                    list.add(new DOMSource(elem, sddoc.getURL().toExternalForm()+"#schema"+j));
                 }
             }
         }
     }
 
-    private static class MySource extends SAXSource {
+    /**
+     * Recursively visit ancestors and build up {@link org.xml.sax.helpers.NamespaceSupport} oject.
+     */
+    private void buildNamespaceSupport(NamespaceSupport nss, Node node) {
+        if(node==null || node.getNodeType()!=Node.ELEMENT_NODE)
+            return;
 
-        private final Element elem;
+        buildNamespaceSupport( nss, node.getParentNode() );
 
-
-        // this object will pretend as an XMLReader.
-        // no matter what parameter is specified to the parse method,
-        // it will just read from the DOM element
-        private final XMLReader pseudoParser = new XMLReader() {
-            public boolean getFeature(String name) throws SAXNotRecognizedException {
-                throw new SAXNotRecognizedException(name);
+        nss.pushContext();
+        NamedNodeMap atts = node.getAttributes();
+        for( int i=0; i<atts.getLength(); i++ ) {
+            Attr a = (Attr)atts.item(i);
+            if( "xmlns".equals(a.getPrefix()) ) {
+                nss.declarePrefix( a.getLocalName(), a.getValue() );
+                continue;
             }
-
-            public void setFeature(String name, boolean value) throws SAXNotRecognizedException {
-                // Should support these two features according to XMLReader javadoc.
-                if (name.equals("http://xml.org/sax/features/namespaces") && value) {
-                    // Ignore for now
-                } else if (name.equals("http://xml.org/sax/features/namespace-prefixes") && !value) {
-                    // Ignore for now
-                } else {
-                    throw new SAXNotRecognizedException(name);
-                }
+            if( "xmlns".equals(a.getName()) ) {
+                nss.declarePrefix( "", a.getValue() );
+                continue;
             }
-
-            public Object getProperty(String name) throws SAXNotRecognizedException {
-                if ("http://xml.org/sax/properties/lexical-handler".equals(name)) {
-                    return lexicalHandler;
-                }
-                throw new SAXNotRecognizedException(name);
-            }
-
-            public void setProperty(String name, Object value) throws SAXNotRecognizedException {
-                if ("http://xml.org/sax/properties/lexical-handler".equals(name)) {
-                    this.lexicalHandler = (LexicalHandler) value;
-                    return;
-                }
-                throw new SAXNotRecognizedException(name);
-            }
-
-            private LexicalHandler lexicalHandler;
-
-            // we will store this value but never use it by ourselves.
-            private EntityResolver entityResolver;
-
-            public void setEntityResolver(EntityResolver resolver) {
-                this.entityResolver = resolver;
-            }
-
-            public EntityResolver getEntityResolver() {
-                return entityResolver;
-            }
-
-            private DTDHandler dtdHandler;
-
-            public void setDTDHandler(DTDHandler handler) {
-                this.dtdHandler = handler;
-            }
-
-            public DTDHandler getDTDHandler() {
-                return dtdHandler;
-            }
-
-            private ContentHandler contentHandler;
-
-            public void setContentHandler(ContentHandler handler) {
-                this.contentHandler = handler;
-            }
-
-            public ContentHandler getContentHandler() {
-                return contentHandler;
-            }
-
-            private ErrorHandler errorHandler;
-
-            public void setErrorHandler(ErrorHandler handler) {
-                this.errorHandler = handler;
-            }
-
-            public ErrorHandler getErrorHandler() {
-                return errorHandler;
-            }
-
-            public void parse(InputSource input) throws SAXException {
-                parse();
-            }
-
-            public void parse(String systemId) throws SAXException {
-                parse();
-            }
-
-            public void parse() throws SAXException {
-                // parses from a StAX reader and generates SAX events which
-                // go through the repeater and are forwarded to the appropriate
-                // component
-                try {
-                    DOMScanner scanner = new DOMScanner();
-                    scanner.setContentHandler(contentHandler);
-                    scanner.scan(elem);
-                } catch (Exception e) {
-                    // wrap it in a SAXException
-                    SAXParseException se =
-                            new SAXParseException2(e.getMessage(), null, null, -1, -1, e);
-
-                    // if the consumer sets an error handler, it is our responsibility
-                    // to notify it.
-                    if (errorHandler != null)
-                        errorHandler.fatalError(se);
-
-                    // this is a fatal error. Even if the error handler
-                    // returns, we will abort anyway.
-                    throw se;
-
-                }
-            }
-        };
-
-
-        public MySource(Element element) {
-            this.elem = element;
-
-            super.setXMLReader(pseudoParser);
-            // pass a dummy InputSource. We don't care
-            super.setInputSource(new InputSource());
-        }
-
-    }
-
-    /*
-    private @Nullable void patchDOMFragment(Element elem) {
-        Element dest = elem;
-        while(elem.getParentNode().getNodeType() != Node.DOCUMENT_NODE) {
-            Element parent = (Element)elem.getParentNode();
-
-            if (parent.hasAttributes()) {
-                NamedNodeMap attrs = parent.getAttributes();
-                int numOfAttributes = attrs.getLength();
-
-                for (int i = 0; i < numOfAttributes; i++) {
-                    Node attr = attrs.item(i);
-                    String nsUri = attr.getNamespaceURI();
-                    if (nsUri != null && nsUri.equals(XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
-                        // handle default ns declarations
-                        String local = attr.getLocalName().equals(XMLConstants.XMLNS_ATTRIBUTE) ? "" : attr.getLocalName();
-                        
-                        //if (local.equals(nodePrefix) && attr.getNodeValue().equals(nodeNS)) {
-                        //    prefixDecl = true;
-                        //}
-                        if (local.equals("")) {
-                            //writer.writeDefaultNamespace(attr.getNodeValue());
-                        } else {
-                            dest.
-                            // this is a namespace declaration, not an attribute
-                            LOGGER.info("prefix="+local+" nsuri="+dest.lookupNamespaceURI(local));
-
-                            //writer.setPrefix(attr.getLocalName(), attr.getNodeValue());
-                            //writer.writeNamespace(attr.getLocalName(), attr.getNodeValue());
-                        }
-                    }
-                }
-            }
-            elem = parent;
         }
     }
-    */
+
+    /**
+     * Patches <xsd:schema> fragment nodes with inscope namespaces.
+     * 
+     * @param nss
+     * @param elem
+     */
+    private @Nullable void patchDOMFragment(NamespaceSupport nss, Element elem) {
+        NamedNodeMap atts = elem.getAttributes();
+        for( Enumeration en = nss.getPrefixes(); en.hasMoreElements(); ) {
+            String prefix = (String)en.nextElement();
+
+            for( int i=0; i<atts.getLength(); i++ ) {
+                Attr a = (Attr)atts.item(i);
+                if (!"xmlns".equals(a.getPrefix()) || !a.getLocalName().equals("prefix")) {
+                    LOGGER.info("Creating xmlns:"+prefix+"="+nss.getURI(prefix));
+                    elem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+prefix, nss.getURI(prefix));
+                }
+            }
+        }
+    }
 
 
     private static class ValidationDocumentAddressResolver implements DocumentAddressResolver {
