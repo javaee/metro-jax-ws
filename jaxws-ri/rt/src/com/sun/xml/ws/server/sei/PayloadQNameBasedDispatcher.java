@@ -123,6 +123,8 @@ final class PayloadQNameBasedDispatcher implements EndpointMethodDispatcher {
             nsUri = EMPTY_PAYLOAD_NSURI;
         } else {
             nsUri = message.getPayloadNamespaceURI();
+            if(nsUri == null)
+                nsUri = EMPTY_PAYLOAD_NSURI;
         }
         EndpointMethodHandler mh = methodHandlers.get(nsUri, localPart);
 
