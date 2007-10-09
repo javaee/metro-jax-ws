@@ -38,11 +38,13 @@ package com.sun.xml.ws.transport.local;
 
 import com.sun.xml.ws.transport.http.ResourceLoader;
 
+import javax.xml.ws.WebServiceException;
 import java.io.File;
-import java.net.URL;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Set;
+import java.net.URL;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * {@link ResourceLoader} that deals with the expanded image of a war file
@@ -59,7 +61,11 @@ public final class FileSystemResourceLoader implements ResourceLoader {
     }
 
     public URL getResource(String path) throws MalformedURLException {
-        return new File(root+path).toURL();
+        try {
+            return new File(root+path).getCanonicalFile().toURL();
+        } catch(IOException ioe) {
+            throw new WebServiceException(ioe);
+        }
     }
 
     public URL getCatalogFile() throws MalformedURLException {
