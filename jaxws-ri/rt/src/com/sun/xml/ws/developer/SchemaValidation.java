@@ -1,6 +1,9 @@
 package com.sun.xml.ws.developer;
 
+import javax.xml.validation.Schema;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
+import javax.xml.transform.Source;
+import javax.jws.WebService;
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
@@ -8,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * Validates all request and response messages for a {@link javax.jws.WebService}
+ * Validates all request and response messages for a {@link WebService}
  * against the XML schema. To use this feature, annotate the endpoint class with
  * this annotation.
  *
@@ -33,5 +36,31 @@ import java.lang.annotation.Target;
 @Documented
 @WebServiceFeatureAnnotation(id = StatefulFeature.ID, bean = SchemaValidationFeature.class)
 public @interface SchemaValidation {
+
+    /**
+     * Invalid schema instances are rejected, a SOAP fault message is created
+     * for any invalid request and response message. If it is set to false, schema
+     * validation messages are just logged.
+     */
+    boolean reject() default true;
+
+    /**
+     * Does validation for bound headers in a SOAP message.
+     *
+    boolean headers() default false;
+     */
+
+    /**
+     * Additional schema documents that are used to create {@link Schema} object. Useful
+     * when the application adds additional SOAP headers to the message. This is a list
+     * of system-ids, that are used to create {@link Source} objects and used in creation
+     * of {@link Schema} object
+     *
+     * for e.g.:
+     * @SchemaValidation(schemaLocations={"http://bar.foo/b.xsd", "http://foo.bar/a.xsd"}
+     *
+    String[] schemaLocations() default {};
+     */
+
 }
 

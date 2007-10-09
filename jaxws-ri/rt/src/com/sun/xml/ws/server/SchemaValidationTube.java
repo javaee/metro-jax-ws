@@ -17,6 +17,7 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
+import com.sun.xml.ws.developer.SchemaValidationFeature;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -60,26 +61,43 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
     private final Schema schema;
     private final Validator validator;
     private final DocumentAddressResolver resolver = new ValidationDocumentAddressResolver();
+    private final SchemaValidationFeature feature;
+    private final boolean noValidation;
 
     public SchemaValidationTube(WSEndpoint endpoint, WSBinding binding, Tube next) {
         super(next);
         this.binding = binding;
+        feature = binding.getFeature(SchemaValidationFeature.class);
         docs = endpoint.getServiceDefinition();
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        sf.setResourceResolver(new ResourceResolver());
         Source[] sources = getSchemaSources();
         for(Source source : sources) {
             LOGGER.fine("Constructing validation Schema from = "+source.getSystemId());
             //printDOM((DOMSource)source);
         }
-        try {
-            schema = sf.newSchema(sources);
-        } catch(SAXException e) {
-            throw new WebServiceException(e);
+        if (sources.length != 0) {
+            noValidation = false;
+            sf.setResourceResolver(new ResourceResolver());
+            try {
+                schema = sf.newSchema(sources);
+            } catch(SAXException e) {
+                throw new WebServiceException(e);
+            }
+            validator = schema.newValidator();
+        } else {
+            noValidation = true;
+            schema = null;
+            validator = null;
         }
-        validator = schema.newValidator();
     }
 
+    /**
+     * Constructs list of schema documents as follows:
+     *   - all <xsd:schema> fragements from all WSDL documents.
+     *   - all schema documents in the application(from WAR etc)
+     *
+     * @return list of root schema documents
+     */
     private Source[] getSchemaSources() {
         List<Source> list = new ArrayList<Source>();
         for(SDDocument doc : docs) {
@@ -98,6 +116,7 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
     }
 
     private Document createDOM(SDDocument doc) {
+        // Get infoset
         ByteArrayBuffer bab = new ByteArrayBuffer();
         try {
             doc.writeTo(null, resolver, bab);
@@ -105,7 +124,7 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
             throw new WebServiceException(ioe);
         }
 
-        // Get WSDL infoset as DOM
+        // Convert infoset to DOM
         Transformer trans = XmlUtil.newTransformer();
         Source source = new StreamSource(bab.newInputStream(), null); //doc.getURL().toExternalForm());
         DOMResult result = new DOMResult();
@@ -290,7 +309,7 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
             for( int i=0; i<atts.getLength(); i++ ) {
                 Attr a = (Attr)atts.item(i);
                 if (!"xmlns".equals(a.getPrefix()) || !a.getLocalName().equals("prefix")) {
-                    LOGGER.info("Creating xmlns:"+prefix+"="+nss.getURI(prefix));
+                    LOGGER.fine("Patching with xmlns:"+prefix+"="+nss.getURI(prefix));
                     elem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+prefix, nss.getURI(prefix));
                 }
             }
@@ -313,46 +332,43 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
         this.docs = that.docs;
         this.schema = that.schema;
         this.validator = schema.newValidator();
+        this.feature = that.feature;
+        this.noValidation = that.noValidation;
     }
 
     @Override
     public NextAction processRequest(Packet request) {
-        if (!request.getMessage().hasPayload() || request.getMessage().isFault()) {
+        if (noValidation || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
             return super.processRequest(request);
         }
-        validator.reset();
-        Message msg = request.getMessage().copy();
-        Source source = msg.readPayloadAsSource();
-        try {
-            // Validator javadoc allows ONLY SAX, and DOM Sources
-            // But the impl seems to handle all kinds.
-            validator.validate(source);
-        } catch(IOException e) {
-            throw new WebServiceException(e);
-        } catch(SAXException e) {
-            throw new WebServiceException(e);
-        }
+        doProcess(request);
         return super.processRequest(request);
     }
 
     @Override
     public NextAction processResponse(Packet response) {
-        if (response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
+        if (noValidation || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
             return super.processResponse(response);
         }
+        doProcess(response);
+        return super.processResponse(response);
+    }
+
+    private void doProcess(Packet packet) {
         validator.reset();
-        Message msg = response.getMessage().copy();
+        Message msg = packet.getMessage().copy();
         Source source = msg.readPayloadAsSource();
         try {
             // Validator javadoc allows ONLY SAX, and DOM Sources
             // But the impl seems to handle all kinds.
             validator.validate(source);
-        } catch(IOException e) {
-            throw new WebServiceException(e);
-        } catch(SAXException e) {
-            throw new WebServiceException(e);
+        } catch(Exception e) {
+            if (feature.getReject()) {
+                throw new WebServiceException(e);
+            } else {
+                LOGGER.log(Level.WARNING, "Exception during validation", e);
+            }
         }
-        return super.processResponse(response);
     }
 
     private DOMSource toDOMSource(Source source) {
