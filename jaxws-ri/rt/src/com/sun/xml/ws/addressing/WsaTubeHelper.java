@@ -248,7 +248,7 @@ public abstract class WsaTubeHelper {
         String action = AddressingVersion.UNSET_OUTPUT_ACTION;
         if(seiModel!= null) {
             JavaMethodImpl jm = (JavaMethodImpl) packet.getMessage().getMethod(seiModel);
-            if(jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
+            if(jm != null && jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
                 return jm.getOutputAction();
             }
         }
