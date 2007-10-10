@@ -116,7 +116,7 @@ public final class MemberSubmissionEndpointReference extends EndpointReference i
     public void writeTo(Result result) {
         try {
             Marshaller marshaller = MemberSubmissionEndpointReference.msjc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+            //marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.marshal(this, result);
         } catch (JAXBException e) {
             throw new WebServiceException("Error marshalling W3CEndpointReference. ", e);
