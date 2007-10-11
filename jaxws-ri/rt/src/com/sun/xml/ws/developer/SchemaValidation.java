@@ -1,9 +1,11 @@
 package com.sun.xml.ws.developer;
 
+import com.sun.xml.ws.server.DraconianValidationErrorHandler;
+
+import javax.jws.WebService;
+import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 import javax.xml.ws.spi.WebServiceFeatureAnnotation;
-import javax.xml.transform.Source;
-import javax.jws.WebService;
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
@@ -11,15 +13,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * Validates all request and response messages for a {@link WebService}
+ * Validates all request and response messages payload(SOAP:Body) for a {@link WebService}
  * against the XML schema. To use this feature, annotate the endpoint class with
  * this annotation.
  *
  * <pre>
  * for e.g.:
  *
- * @WebService
- * @SchemaValidation
+ * &#64;WebService
+ * &#64;SchemaValidation
  * public class HelloImpl {
  *   ...
  * }
@@ -34,15 +36,16 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 @Documented
-@WebServiceFeatureAnnotation(id = StatefulFeature.ID, bean = SchemaValidationFeature.class)
+@WebServiceFeatureAnnotation(id = SchemaValidationFeature.ID, bean = SchemaValidationFeature.class)
 public @interface SchemaValidation {
 
     /**
-     * Invalid schema instances are rejected, a SOAP fault message is created
-     * for any invalid request and response message. If it is set to false, schema
-     * validation messages are just logged.
+     * Configure the validation behaviour w.r.t error handling. The default handler
+     * just rejects any invalid schema intances. If the application want to change
+     * this default behaviour(say just log the errors), it can do so by providing
+     * a custom implementation of {@link ValidationErrorHandler}.
      */
-    boolean reject() default true;
+    Class<? extends ValidationErrorHandler> handler() default DraconianValidationErrorHandler.class;
 
     /**
      * Does validation for bound headers in a SOAP message.
@@ -63,4 +66,3 @@ public @interface SchemaValidation {
      */
 
 }
-

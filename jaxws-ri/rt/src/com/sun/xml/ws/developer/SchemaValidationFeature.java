@@ -18,16 +18,16 @@ public class SchemaValidationFeature extends WebServiceFeature {
      */
     public static final String ID = "http://jax-ws.dev.java.net/features/schema-validation";
 
-    private boolean reject;
+    private Class<? extends ValidationErrorHandler> clazz;
 
     /**
      * Create an <code>SchemaValidationFeature</code>.
      * The instance created will be enabled.
      */
-    @FeatureConstructor({"reject"})
-    public SchemaValidationFeature(boolean reject) {
+    @FeatureConstructor({"handler"})
+    public SchemaValidationFeature(Class<? extends ValidationErrorHandler> clazz) {
         this.enabled = true;
-        this.reject = reject;
+        this.clazz = clazz;
     }
 
     public String getID() {
@@ -39,7 +39,7 @@ public class SchemaValidationFeature extends WebServiceFeature {
      * for any invalid request and response message. If it is set to false, schema
      * validation messages are just logged.
      */
-    public boolean getReject() {
-        return reject;
+    public Class<? extends ValidationErrorHandler> getErrorHandler() {
+        return clazz;
     }
 }

@@ -18,6 +18,7 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
+import com.sun.xml.ws.developer.ValidationErrorHandler;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -63,6 +64,7 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
     private final DocumentAddressResolver resolver = new ValidationDocumentAddressResolver();
     private final SchemaValidationFeature feature;
     private final boolean noValidation;
+
 
     public SchemaValidationTube(WSEndpoint endpoint, WSBinding binding, Tube next) {
         super(next);
@@ -258,15 +260,13 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
 
         NodeList typesList = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "types");
         for(int i=0; i < typesList.getLength(); i++) {
-            if (typesList.item(i) instanceof Element) {
-                NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
-                for(int j=0; j < schemaList.getLength(); j++) {
-                    Element elem = (Element)schemaList.item(j);
-                    NamespaceSupport nss = new NamespaceSupport();
-                    buildNamespaceSupport(nss, elem);
-                    patchDOMFragment(nss, elem);
-                    list.add(new DOMSource(elem, sddoc.getURL().toExternalForm()+"#schema"+j));
-                }
+            NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
+            for(int j=0; j < schemaList.getLength(); j++) {
+                Element elem = (Element)schemaList.item(j);
+                NamespaceSupport nss = new NamespaceSupport();
+                buildNamespaceSupport(nss, elem);
+                patchDOMFragment(nss, elem);
+                list.add(new DOMSource(elem, sddoc.getURL().toExternalForm()+"#schema"+j));
             }
         }
     }
@@ -296,10 +296,10 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
     }
 
     /**
-     * Patches <xsd:schema> fragment nodes with inscope namespaces.
+     * Adds inscope namespaces as attributes to  <xsd:schema> fragment nodes.
      * 
-     * @param nss
-     * @param elem
+     * @param nss namespace context info
+     * @param elem that is patched with inscope namespaces
      */
     private @Nullable void patchDOMFragment(NamespaceSupport nss, Element elem) {
         NamedNodeMap atts = elem.getAttributes();
@@ -356,6 +356,15 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
 
     private void doProcess(Packet packet) {
         validator.reset();
+        Class<? extends ValidationErrorHandler> handlerClass = feature.getErrorHandler();
+        ValidationErrorHandler handler;
+        try {
+            handler = handlerClass.newInstance();
+        } catch(Exception e) {
+            throw new WebServiceException(e);
+        }
+        handler.setPacket(packet);
+        validator.setErrorHandler(handler);
         Message msg = packet.getMessage().copy();
         Source source = msg.readPayloadAsSource();
         try {
@@ -363,11 +372,7 @@ public class SchemaValidationTube extends AbstractFilterTubeImpl {
             // But the impl seems to handle all kinds.
             validator.validate(source);
         } catch(Exception e) {
-            if (feature.getReject()) {
-                throw new WebServiceException(e);
-            } else {
-                LOGGER.log(Level.WARNING, "Exception during validation", e);
-            }
+            throw new WebServiceException(e);
         }
     }
 
