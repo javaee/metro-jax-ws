@@ -62,7 +62,7 @@ import org.w3c.dom.Element;
  *
  * @author Jitendra Kotamraju
  */
-final class HttpEndpoint {
+public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
     private String address;
     private HttpContext httpContext;
     private final HttpAdapter adapter;
