@@ -248,7 +248,7 @@ public class EndpointReferenceUtil {
                                 msEpr.referenceParameters = new MemberSubmissionEndpointReference.Elements();
                                 msEpr.referenceParameters.elements = new ArrayList<Element>();
                             }
-                            msEpr.referenceParameters.elements.add((Element) refParams.item(i));
+                            msEpr.referenceParameters.elements.add((Element) refParams.item(j));
                         }
                     }
                 } else if (child.getNamespaceURI().equals(AddressingVersion.W3C.nsUri) &&
