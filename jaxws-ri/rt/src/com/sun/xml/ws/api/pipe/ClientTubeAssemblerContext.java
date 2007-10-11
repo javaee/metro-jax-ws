@@ -49,6 +49,8 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.binding.BindingImpl;
+import com.sun.xml.ws.client.ClientSchemaValidationTube;
+import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.handler.ClientLogicalHandlerTube;
 import com.sun.xml.ws.handler.ClientMessageHandlerTube;
 import com.sun.xml.ws.handler.ClientSOAPHandlerTube;
@@ -215,6 +217,16 @@ public class ClientTubeAssemblerContext {
     public Tube createClientMUTube(Tube next) {
         if(binding instanceof SOAPBinding)
             return new ClientMUTube(binding,next);
+        else
+            return next;
+    }
+
+    /**
+     * creates a {@link Tube} that validates messages against schema
+     */
+    public Tube createValidationTube(Tube next) {
+        if (binding instanceof SOAPBinding && binding.isFeatureEnabled(SchemaValidationFeature.class) && wsdlModel!=null)
+            return new ClientSchemaValidationTube(binding, next);
         else
             return next;
     }
