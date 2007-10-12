@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.util.xml;
 
+import com.sun.istack.NotNull;
 import com.sun.istack.SAXParseException2;
 import com.sun.istack.XMLStreamReaderToContentHandler;
 import org.xml.sax.*;
@@ -207,6 +208,16 @@ public class StAXSource extends SAXSource {
      * Creates a new {@link javax.xml.transform.Source} for the given
      * {@link XMLStreamReader}.
      *
+     * @see #StAXSource(XMLStreamReader, boolean, String[])
+     */
+    public StAXSource(XMLStreamReader reader, boolean eagerQuit) {
+        this(reader, eagerQuit, new String[0]);
+    }
+
+    /**
+     * Creates a new {@link javax.xml.transform.Source} for the given
+     * {@link XMLStreamReader}.
+     *
      * The XMLStreamReader must be pointing at either a
      * {@link javax.xml.stream.XMLStreamConstants#START_DOCUMENT} or
      * {@link javax.xml.stream.XMLStreamConstants#START_ELEMENT} event.
@@ -216,7 +227,7 @@ public class StAXSource extends SAXSource {
      * @throws IllegalStateException iff the reader is not pointing at either a
      * START_DOCUMENT or START_ELEMENT event
      */
-    public StAXSource(XMLStreamReader reader, boolean eagerQuit, String[] inscope) {
+    public StAXSource(XMLStreamReader reader, boolean eagerQuit, @NotNull String[] inscope) {
         if( reader == null )
             throw new IllegalArgumentException();
 
