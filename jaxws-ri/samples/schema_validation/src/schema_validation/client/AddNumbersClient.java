@@ -36,7 +36,9 @@
 
 package schema_validation.client;
 
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
+import com.sun.xml.ws.developer.SchemaValidationFeature;
 
 /**
  * Schema Validation sample
@@ -45,24 +47,49 @@ import javax.xml.ws.soap.SOAPFaultException;
  */
 
 public class AddNumbersClient {
-    public static void main (String[] args) {
-        AddNumbersPortType port = new AddNumbersService().getAddNumbersPort ();
 
+    public static void main (String[] args) {
+        AddNumbersService service = new AddNumbersService();
+        testServerValidationFailure(service);
+        testClientValidationFailure(service);
+        testClientServerValidationPass(service);
+    }
+
+    public static void testServerValidationFailure(AddNumbersService service) {
+        AddNumbersPortType port = service.getAddNumbersPort ();
+        int number1 = 10001;     // more than 4 digits, so doesn't pass validation
+        int number2 = 20;
+        try {
+            int result = port.addNumbers (number1, number2);
+            throw new RuntimeException("Server Schema Validation didn't work");
+        } catch(SOAPFaultException se) {
+            System.out.println("Success: Server side validation failed as expected");
+        }
+    }
+
+    private static void testClientValidationFailure(AddNumbersService service) {
+
+        SchemaValidationFeature feature = new SchemaValidationFeature();
+        AddNumbersPortType port = service.getAddNumbersPort(feature);
+        int number1 = 10001;     // more than 4 digits, so doesn't pass validation
+        int number2 = 20;
+        try {
+            int result = port.addNumbers (number1, number2);
+            throw new RuntimeException("Client Schema Validation didn't work");
+        } catch(SOAPFaultException se) {
+            throw new RuntimeException("Client Schema Validation didn't work");
+        } catch(WebServiceException se) {
+            System.out.println("Success: Client side validation failed as expected");
+        }
+    }
+
+    private static void testClientServerValidationPass(AddNumbersService service) {
+        SchemaValidationFeature feature = new SchemaValidationFeature();
+        AddNumbersPortType port = service.getAddNumbersPort(feature);
         int number1 = 1000;
         int number2 = 20;
-        System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
         int result = port.addNumbers (number1, number2);
-        System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
-
-        number1 = 10001;     // more than 4 digits, so doesn't pass validation
-        try {
-            System.out.printf ("Invoking addNumbers(%d, %d) and this should generate schema validation exception. \n", number1, number2);
-            result = port.addNumbers (number1, number2);
-            throw new RuntimeException("Schema Validation didn't work");
-        } catch(SOAPFaultException se) {
-            se.printStackTrace();
-            System.out.printf ("Caught expected exception since 10001 has 5 digits");
-        }
-            
+        System.out.println("Success: Both Client and Server validation passed.");
     }
+
 }
