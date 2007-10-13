@@ -13,7 +13,6 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
 import com.sun.xml.ws.util.xml.XmlUtil;
-import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -95,7 +94,7 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
             if (doc.isWSDL()) {
                 Document dom = createDOM(doc);
                 // Get xsd:schema node from WSDL's DOM
-                addSchemaFragmentSource(dom, doc, list);
+                addSchemaFragmentSource(dom, doc.getURL().toExternalForm(), list);
             }
         }
         // If there are multiple schemas with the same targetnamespace,
@@ -233,31 +232,6 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
 
     }
 
-    /**
-     * Locates xsd:schema elements in the WSDL and creates DOMSource and adds them to the list
-     *
-     * @param doc WSDL document
-     * @param sddoc SDDocument for WSDL document
-     * @param list xsd:schema DOMSource list
-     */
-    private @Nullable void addSchemaFragmentSource(Document doc, SDDocument sddoc, List<Source> list) {
-
-        Element e = doc.getDocumentElement();
-        assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
-        assert e.getLocalName().equals("definitions");
-
-        NodeList typesList = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "types");
-        for(int i=0; i < typesList.getLength(); i++) {
-            NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
-            for(int j=0; j < schemaList.getLength(); j++) {
-                Element elem = (Element)schemaList.item(j);
-                NamespaceSupport nss = new NamespaceSupport();
-                buildNamespaceSupport(nss, elem);
-                patchDOMFragment(nss, elem);
-                list.add(new DOMSource(elem, sddoc.getURL().toExternalForm()+"#schema"+j));
-            }
-        }
-    }
 
     protected Validator getValidator() {
         return validator;

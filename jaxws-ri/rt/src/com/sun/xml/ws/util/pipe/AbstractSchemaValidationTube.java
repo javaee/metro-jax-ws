@@ -12,6 +12,7 @@ import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
+import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -26,6 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -55,6 +57,33 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
     protected abstract Validator getValidator();
 
     protected abstract boolean isNoValidation();
+
+    /**
+     * Locates xsd:schema elements in the WSDL and creates DOMSource and adds them to the list
+     *
+     * @param doc WSDL document
+     * @param systemId systemId for WSDL document
+     * @param list xsd:schema DOMSource list
+     */
+    protected @Nullable void addSchemaFragmentSource(Document doc, String systemId, List<Source> list) {
+
+        Element e = doc.getDocumentElement();
+        assert e.getNamespaceURI().equals(WSDLConstants.NS_WSDL);
+        assert e.getLocalName().equals("definitions");
+
+        NodeList typesList = e.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "types");
+        for(int i=0; i < typesList.getLength(); i++) {
+            NodeList schemaList = ((Element)typesList.item(i)).getElementsByTagNameNS(WSDLConstants.NS_XMLNS, "schema");
+            for(int j=0; j < schemaList.getLength(); j++) {
+                Element elem = (Element)schemaList.item(j);
+                NamespaceSupport nss = new NamespaceSupport();
+                buildNamespaceSupport(nss, elem);
+                patchDOMFragment(nss, elem);
+                list.add(new DOMSource(elem, systemId+"#schema"+j));
+            }
+        }
+    }
+    
 
     /**
      * Recursively visit ancestors and build up {@link org.xml.sax.helpers.NamespaceSupport} oject.

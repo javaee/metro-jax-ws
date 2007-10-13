@@ -226,7 +226,7 @@ public class ClientTubeAssemblerContext {
      */
     public Tube createValidationTube(Tube next) {
         if (binding instanceof SOAPBinding && binding.isFeatureEnabled(SchemaValidationFeature.class) && wsdlModel!=null)
-            return new ClientSchemaValidationTube(binding, next);
+            return new ClientSchemaValidationTube(binding, wsdlModel, next);
         else
             return next;
     }
