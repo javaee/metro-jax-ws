@@ -1,6 +1,7 @@
 package com.sun.xml.ws.developer;
 
 import com.sun.xml.ws.api.FeatureConstructor;
+import com.sun.xml.ws.server.DraconianValidationErrorHandler;
 
 import javax.xml.ws.WebServiceFeature;
 
@@ -19,6 +20,10 @@ public class SchemaValidationFeature extends WebServiceFeature {
     public static final String ID = "http://jax-ws.dev.java.net/features/schema-validation";
 
     private Class<? extends ValidationErrorHandler> clazz;
+
+    public SchemaValidationFeature() {
+        this(DraconianValidationErrorHandler.class);
+    }
 
     /**
      * Create an <code>SchemaValidationFeature</code>.
