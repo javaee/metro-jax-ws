@@ -219,22 +219,23 @@ public class SAAJMessage extends Message {
         if (!parsedMessage) {
             return sm;
         } else {
-          SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
-          SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
-          for (Element part : bodyParts) {
+            SOAPMessage msg = soapVersion.saajMessageFactory.createMessage();
+            SOAPBody newBody = msg.getSOAPPart().getEnvelope().getBody();
+            for (Element part : bodyParts) {
                 Node n = newBody.getOwnerDocument().importNode(part, true);
                 newBody.appendChild(n);
-          }
-          for(Header header: headers){
-              header.writeTo(msg);
-          }
-          for(Attachment att : getAttachments()) {
-            AttachmentPart part = msg.createAttachmentPart();
-            part.setDataHandler(att.asDataHandler());
-            part.setContentId('<'+att.getContentId()+'>');
-            msg.addAttachmentPart(part);
-        }
-          return msg;
+            }
+            for (Header header : headers) {
+                header.writeTo(msg);
+            }
+            for (Attachment att : getAttachments()) {
+                AttachmentPart part = msg.createAttachmentPart();
+                part.setDataHandler(att.asDataHandler());
+                part.setContentId('<' + att.getContentId() + '>');
+                msg.addAttachmentPart(part);
+            }
+            msg.saveChanges();
+            return msg;
         }
     }
 
