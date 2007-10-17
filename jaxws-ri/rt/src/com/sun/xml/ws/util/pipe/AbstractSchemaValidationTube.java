@@ -1,5 +1,6 @@
 package com.sun.xml.ws.util.pipe;
 
+import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
@@ -8,10 +9,13 @@ import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
-import com.sun.xml.ws.util.ByteArrayBuffer;
-import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.api.server.DocumentAddressResolver;
+import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
+import com.sun.xml.ws.server.SDDocumentImpl;
+import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -24,8 +28,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,6 +47,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
 
     protected final WSBinding binding;
     protected final SchemaValidationFeature feature;
+    protected final DocumentAddressResolver resolver = new ValidationDocumentAddressResolver();
 
     public AbstractSchemaValidationTube(WSBinding binding, Tube next) {
         super(next);
@@ -57,6 +64,37 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
     protected abstract Validator getValidator();
 
     protected abstract boolean isNoValidation();
+
+    private static class ValidationDocumentAddressResolver implements DocumentAddressResolver {
+
+        @Nullable
+        public String getRelativeAddressFor(@NotNull SDDocument current, @NotNull SDDocument referenced) {
+            LOGGER.fine("Current = "+current.getURL()+" resolved relative="+referenced.getURL());
+            return referenced.getURL().toExternalForm();
+        }
+    }
+
+    protected Document createDOM(SDDocumentImpl doc) {
+        // Get infoset
+        ByteArrayBuffer bab = new ByteArrayBuffer();
+        try {
+            doc.writeTo(bab);
+        } catch (IOException ioe) {
+            throw new WebServiceException(ioe);
+        }
+
+        // Convert infoset to DOM
+        Transformer trans = XmlUtil.newTransformer();
+        Source source = new StreamSource(bab.newInputStream(), null); //doc.getURL().toExternalForm());
+        DOMResult result = new DOMResult();
+        try {
+            trans.transform(source, result);
+        } catch(TransformerException te) {
+            throw new WebServiceException(te);
+        }
+        return (Document)result.getNode();
+    }
+
 
     /**
      * Locates xsd:schema elements in the WSDL and creates DOMSource and adds them to the list

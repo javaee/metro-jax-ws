@@ -36,24 +36,16 @@
 
 package com.sun.xml.ws.server;
 
-import com.sun.xml.ws.api.server.DocumentAddressResolver;
-import com.sun.xml.ws.api.server.PortAddressResolver;
-import com.sun.xml.ws.api.server.SDDocument;
-import com.sun.xml.ws.api.server.SDDocumentFilter;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.ParserUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
-import com.sun.xml.ws.util.RuntimeVersion;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.*;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -72,7 +64,7 @@ import java.util.Set;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-class SDDocumentImpl extends SDDocumentSource implements SDDocument {
+public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
 
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
     private static final QName SCHEMA_INCLUDE_QNAME = new QName(NS_XSD, "include");
@@ -238,6 +230,31 @@ class SDDocumentImpl extends SDDocumentSource implements SDDocument {
     public Set<String> getImports() {
         return imports;
     }
+
+    public void writeTo(OutputStream os) throws IOException {
+        XMLStreamWriter w = null;
+        try {
+            //generate the WSDL with utf-8 encoding and XML version 1.0
+            w = XMLStreamWriterFactory.create(os, "UTF-8");
+            w.writeStartDocument("UTF-8", "1.0");
+            new XMLStreamReaderToXMLStreamWriter().bridge(source.read(), w);
+            w.writeEndDocument();
+        } catch (XMLStreamException e) {
+            IOException ioe = new IOException(e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
+        } finally {
+            try {
+                if (w != null)
+                    w.close();
+            } catch (XMLStreamException e) {
+                IOException ioe = new IOException(e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
+            }
+        }
+    }
+
 
     public void writeTo(PortAddressResolver portAddressResolver, DocumentAddressResolver resolver, OutputStream os) throws IOException {
         XMLStreamWriter w = null;
