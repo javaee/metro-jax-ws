@@ -18,9 +18,9 @@
  * [name of copyright owner]
  */
 /*
- * $Id: ImageDataContentHandler.java,v 1.1 2007-09-18 02:33:22 jitu Exp $
- * $Revision: 1.1 $
- * $Date: 2007-09-18 02:33:22 $
+ * $Id: ImageDataContentHandler.java,v 1.2 2007-10-17 23:20:36 jitu Exp $
+ * $Revision: 1.2 $
+ * $Date: 2007-10-17 23:20:36 $
  */
 
 /*
@@ -70,7 +70,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.datatransfer.DataFlavor;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.Iterator;
 import java.io.IOException;
 import java.io.BufferedInputStream;
@@ -163,9 +162,9 @@ public class ImageDataContentHandler extends Component
                     + obj.getClass().toString());
             }
             ImageWriter writer = null;
-            Iterator i = ImageIO.getImageWritersByMIMEType(type);
+            Iterator<ImageWriter> i = ImageIO.getImageWritersByMIMEType(type);
             if (i.hasNext()) {
-                writer = (ImageWriter)i.next();
+                writer = i.next();
             }
             if (writer != null) {
                 ImageOutputStream stream = ImageIO.createImageOutputStream(os);
