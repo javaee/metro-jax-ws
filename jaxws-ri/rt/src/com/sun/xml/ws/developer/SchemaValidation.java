@@ -1,7 +1,5 @@
 package com.sun.xml.ws.developer;
 
-import com.sun.xml.ws.api.pipe.TubeAnnotation;
-import com.sun.xml.ws.api.pipe.TubeContext;
 import com.sun.xml.ws.server.DraconianValidationErrorHandler;
 
 import javax.jws.WebService;
@@ -39,7 +37,6 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Documented
 @WebServiceFeatureAnnotation(id = SchemaValidationFeature.ID, bean = SchemaValidationFeature.class)
-@TubeAnnotation(TubeContext.class)
 public @interface SchemaValidation {
 
     /**
