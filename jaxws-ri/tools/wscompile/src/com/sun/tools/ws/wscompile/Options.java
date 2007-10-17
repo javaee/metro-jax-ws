@@ -160,6 +160,10 @@ public class Options {
 
 
     public boolean debug = false;
+
+    /**
+     * -Xdebug - gives complete stack trace
+     */
     public boolean debugMode = false;
 
 

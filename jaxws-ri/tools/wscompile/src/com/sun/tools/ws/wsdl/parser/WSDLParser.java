@@ -178,7 +178,7 @@ public class WSDLParser {
     private WSDLDocument buildWSDLDocument(){
         /**
          * Currently we are working off first WSDL document
-         * TODO: add support of creating WSDLDocument from collection of WSDL documents
+         * TODO: add support of creating WSDLDocument from fromjava.collection of WSDL documents
          */
 
         String location = forest.getRootWSDL();

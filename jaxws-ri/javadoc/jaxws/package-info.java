@@ -48,22 +48,23 @@
  
        // libraries
        node [style=filled,color=lightblue];
-       "JAXB-RT-API" [label="JAXB runtime API"]; "JAXB XJC API";  SAAJ; 
+       "JAXB-RT-API" [label="JAXB runtime API"]; "JAXB XJC API"; StAX; SAAJ;
 
        // modules
        node [style=filled,color=lightpink];
-       "JAX-WS"; tools; runtime; SPI; "Annotation Processor";
+       "JAX-WS"; Tools; Runtime; SPI; "Annotation Processor";
 
-       "JAX-WS" -> tools;
-       "JAX-WS" -> runtime;
+       "JAX-WS" -> Tools;
+       "JAX-WS" -> Runtime;
        "JAX-WS" -> SPI;
        "JAX-WS" -> "Annotation Processor";
-       APT -> "Annotation Processor" -> tools -> APT;
-       tools -> "JAXB XJC API";
-       runtime -> SAAJ;
-       runtime -> "JAXB-RT-API";
+       APT -> "Annotation Processor" -> Tools -> APT;
+       Tools -> "JAXB XJC API";
+       Runtime -> SAAJ;
+       Runtime -> StAX
+       Runtime -> "JAXB-RT-API";
        SPI -> tools;
-       SPI -> runtime;
+       SPI -> Runtime;
        "Java EE" -> SPI;
      }
  * }

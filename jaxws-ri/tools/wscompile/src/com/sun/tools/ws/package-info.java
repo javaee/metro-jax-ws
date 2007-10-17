@@ -35,7 +35,7 @@
  */
 
 /**
- * <h1>JAX-WS 2.0.1 Tools</h1>
+ * <h1>JAX-WS 2.1 Tools</h1>
  * This document describes the tools included with JAX-WS 2.0.1. 
  *
  * {@DotDiagram
@@ -45,7 +45,7 @@
  
        // ANT tasks
        node [style=filled,color=lightyellow];
-       "WsGen ANT Task"; "WsImport ANT Task"; "Apt ANT Task"; 
+       "WsGen ANT Task"; "WsImport ANT Task"; "Apt ANT Task";
 
       // commandline
        node [style=filled,color=lightpink];
@@ -53,22 +53,24 @@
  
        // libraries
       node [style=filled,color=lightblue];
-      CompileTool; "WSAP"; WebServiceAP; Processor; Modeler; ProcessorActions; 
+      WsimportTool; WsgenTool;"WSAP"; WebServiceAP; WSDLModeler;WSDLParser;SeiGenerator;ServiceGenerator;ExceptionGenerator;"JAXB XJC APIs";CodeModel;
 
        // aps
 #       node [style=filled,color=lightpink];
 #       "JAX-WS"; tools; runtime; SPI; "Annotation Processor";
 
        "Apt ANT Task" -> APT;
-       "WsGen ANT Task" -> wsgen -> CompileTool;
-       "WsImport ANT Task" -> wsimport -> CompileTool;
+       "WsGen ANT Task" -> wsgen -> WsgenTool;
+       "WsImport ANT Task" -> wsimport -> WsimportTool;
        
-       CompileTool -> APT -> WSAP -> WebServiceAP;
-       CompileTool -> Processor -> Modeler;
-       Processor -> ProcessorActions;
-       CompileTool -> WebServiceAP;
- 
-       Modeler -> WSDLModeler;
+       WsgenTool -> APT -> WSAP -> WebServiceAP;
+       WsimportTool -> WSDLModeler;
+       WSDLModeler->WSDLParser;
+       WSDLModeler->"JAXB XJC APIs"
+       WsimportTool->SeiGenerator->CodeModel;
+       WsimportTool->ServiceGenerator->CodeModel;
+       WsimportTool->ExceptionGenerator->CodeModel;
+       WebServiceAP->CodeModel
      }
  * }
  * <div align=right>

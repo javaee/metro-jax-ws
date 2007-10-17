@@ -264,6 +264,7 @@ public class WsimportTool {
 
     protected void usage(Options options) {
         System.out.println(WscompileMessages.WSIMPORT_HELP(WSIMPORT));
+        System.out.println(WscompileMessages.WSIMPORT_USAGE_EXTENSIONS());
         System.out.println(WscompileMessages.WSIMPORT_USAGE_EXAMPLES());
     }
 }

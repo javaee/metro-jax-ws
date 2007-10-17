@@ -690,7 +690,12 @@ public class WSDLModeler extends WSDLModelerBase {
 
         if (soapStyle == SOAPStyle.RPC) {
             if (soapRequestBody.isEncoded()) {
-                error(soapRequestBody, ModelerMessages.WSDLMODELER_20_RPCENC_NOT_SUPPORTED());
+                if(options.isExtensionMode()){
+                    warning(soapRequestBody, ModelerMessages.WSDLMODELER_20_RPCENC_NOT_SUPPORTED());
+                    processNonSOAPOperation();
+                }else{
+                    error(soapRequestBody, ModelerMessages.WSDLMODELER_20_RPCENC_NOT_SUPPORTED());
+                }
             }
             return processLiteralSOAPOperation(StyleAndUse.RPC_LITERAL);
         }
@@ -845,7 +850,52 @@ public class WSDLModeler extends WSDLModelerBase {
         }else{
             uniqueBodyBlocks.put(body, info.operation);
         }
-        
+
+        //Add additional headers
+        if (options.additionalHeader) {
+            List<Parameter> additionalHeaders = new ArrayList<Parameter>();
+            if (inputMessage != null) {
+                for (MessagePart part : getAdditionHeaderParts(inputMessage, true)) {
+                    QName name = part.getDescriptor();
+                    JAXBType jaxbType = getJAXBType(part);
+                    Block block = new Block(name, jaxbType, part);
+                    Parameter param = ModelerUtils.createParameter(part.getName(), jaxbType, block);
+                    additionalHeaders.add(param);
+                    request.addHeaderBlock(block);
+                    request.addParameter(param);
+                    definitiveParameterList.add(param);
+                }
+            }
+
+            if (isRequestResponse && outputMessage != null) {
+                List<Parameter> outParams = new ArrayList<Parameter>();
+                for (MessagePart part : getAdditionHeaderParts(outputMessage, false)) {
+                    QName name = part.getDescriptor();
+                    JAXBType jaxbType = getJAXBType(part);
+                    Block block = new Block(name, jaxbType, part);
+                    Parameter param = ModelerUtils.createParameter(part.getName(), jaxbType, block);
+                    param.setMode(Mode.OUT);
+                    outParams.add(param);
+                    response.addHeaderBlock(block);
+                    response.addParameter(param);
+                }
+                for (Parameter outParam : outParams) {
+                    for (Parameter inParam : additionalHeaders) {
+                        if (inParam.getName().equals(outParam.getName()) &&
+                                inParam.getBlock().getName().equals(outParam.getBlock().getName())) {
+                            //it is INOUT
+                            inParam.setMode(Mode.INOUT);
+                            outParam.setMode(Mode.INOUT);
+                            break;
+                        }
+                    }
+                    if (outParam.isOUT()) {
+                        definitiveParameterList.add(outParam);
+                    }
+                }
+            }
+        }
+
         // faults with duplicate names
         Set duplicateNames = getDuplicateFaultNames();
 
@@ -864,6 +914,7 @@ public class WSDLModeler extends WSDLModelerBase {
 
         return info.operation;
     }
+
 
     private boolean validateParameterName(List<Parameter> params) {
         if (options.isExtensionMode())
@@ -1477,6 +1528,19 @@ public class WSDLModeler extends WSDLModelerBase {
         return null;
     }
 
+    private List<MessagePart> getAdditionHeaderParts(Message message, boolean isInput){
+        List<MessagePart> headerParts = new ArrayList<MessagePart>();
+        List<MessagePart> parts = message.getParts();
+        List<MessagePart> headers = getHeaderParts(isInput);
+
+        for(MessagePart part: headers){
+            if(parts.contains(part))
+                continue;
+            headerParts.add(part);
+        }
+        return headerParts;
+    }
+
     private List<MessagePart> getHeaderPartsFromMessage(Message message, boolean isInput) {
         List<MessagePart> headerParts = new ArrayList<MessagePart>();
         Iterator<MessagePart> parts = message.parts();
@@ -1505,19 +1569,6 @@ public class WSDLModeler extends WSDLModelerBase {
                 return headerMessage;
         }
         return null;
-    }
-
-    private List<MessagePart> getHeaderPartsNotFromMessage(Message message, boolean isInput) {
-        List<MessagePart> headerParts = new ArrayList<MessagePart>();
-        List<MessagePart> parts = message.getParts();
-        Iterator<MessagePart> headers = getHeaderParts(isInput).iterator();
-        while (headers.hasNext()) {
-            MessagePart part = headers.next();
-            if (!parts.contains(part)) {
-                headerParts.add(part);
-            }
-        }
-        return headerParts;
     }
 
     private List<MessagePart> getHeaderParts(boolean isInput) {
