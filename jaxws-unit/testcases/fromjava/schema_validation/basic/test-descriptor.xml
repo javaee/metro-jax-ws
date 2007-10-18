@@ -28,6 +28,14 @@
         assertEquals(66, echoPort.echoIntHeaderResult(33));
   ]]></client>
 
+  <client name="schema_validation_basic_testSimpleValidation" sideEffectFree="true">
+  <description>testSimple</description>
+  <![CDATA[
+        com.sun.xml.ws.developer.SchemaValidationFeature feature = new com.sun.xml.ws.developer.SchemaValidationFeature();
+        echoPort1 = echoService.getEchoPort(feature);
+        assertEquals("test", echoPort1.echoString("test"));
+  ]]></client>
+
   <client name="schema_validation_basic_testSimple" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
