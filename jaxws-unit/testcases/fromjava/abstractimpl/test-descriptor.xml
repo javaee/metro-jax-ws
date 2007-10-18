@@ -1,0 +1,8 @@
+<descriptor since="2.1">
+  <description>
+    Test wsgen where EndpointImplementation extends an abstract class.
+    Issue:371  
+  </description>
+  <client href ="*.bsh" />
+  <service />
+</descriptor>
