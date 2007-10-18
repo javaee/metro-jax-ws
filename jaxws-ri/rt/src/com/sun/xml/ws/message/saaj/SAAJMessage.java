@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.*;
 import com.sun.xml.ws.message.AttachmentUnmarshallerImpl;
 import com.sun.xml.ws.message.AbstractMessageImpl;
+import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.streaming.DOMStreamReader;
 import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
@@ -174,6 +175,15 @@ public class SAAJMessage extends Message {
     public @NotNull HeaderList getHeaders() {
         parse();
         return headers;
+    }
+    /**
+     * Gets the attachments of this message
+     * (attachments live outside a message.)
+     */
+    @Override
+    public @NotNull AttachmentSet getAttachments() {
+        parse();
+        return attachmentSet;
     }
 
     public @Nullable String getPayloadLocalPart() {
