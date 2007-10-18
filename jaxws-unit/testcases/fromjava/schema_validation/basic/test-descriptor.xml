@@ -31,7 +31,7 @@
   <client name="schema_validation_basic_testSimpleValidation" sideEffectFree="true">
   <description>testSimple</description>
   <![CDATA[
-        com.sun.xml.ws.developer.SchemaValidationFeature feature = new com.sun.xml.ws.developer.SchemaValidationFeature();
+        feature = new com.sun.xml.ws.developer.SchemaValidationFeature();
         echoPort1 = echoService.getEchoPort(feature);
         assertEquals("test", echoPort1.echoString("test"));
   ]]></client>
