@@ -186,6 +186,15 @@ public class SAAJMessage extends Message {
         return attachmentSet;
     }
 
+    /**
+     * Optimization hint for the derived class to check
+     * if we may have some attachments.
+     */
+    protected boolean hasAttachments() {
+        parse();
+        return attachmentSet!=null;
+    }
+    
     public @Nullable String getPayloadLocalPart() {
         access();
         return payloadLocalName;
