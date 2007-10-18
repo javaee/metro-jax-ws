@@ -76,13 +76,25 @@ public class WsImport2 extends MatchingTask {
     /** Enable/disable debug messages - stack trace **/
     private boolean xdebug = false;
 
-
     public boolean isXdebug() {
         return xdebug;
     }
 
     public void setXdebug(boolean xdebug) {
         this.xdebug = xdebug;
+    }
+
+    /**
+     * -XadditionalHeader - maps headers not bound to req/resp messages to Java parameters
+     */
+    private boolean xadditionalHeader = false;
+
+    public boolean isXadditionalHeader() {
+        return xadditionalHeader;
+    }
+
+    public void setXadditionalHeader(boolean xadditionalHeader) {
+        this.xadditionalHeader = xadditionalHeader;
     }
 
     /** Gets the base directory to output generated class. **/
@@ -487,6 +499,10 @@ public class WsImport2 extends MatchingTask {
 
         if(isXdebug()){
             cmd.createArgument().setValue("-Xdebug");
+        }
+
+        if(isXadditionalHeader()){
+            cmd.createArgument().setValue("-XadditionalHeader");
         }
 
         // keep option
