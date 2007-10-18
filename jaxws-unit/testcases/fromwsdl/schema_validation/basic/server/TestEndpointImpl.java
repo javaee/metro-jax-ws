@@ -43,7 +43,7 @@ import com.sun.xml.ws.developer.SchemaValidation;
  * @author Jitendra Kotamraju
  */
 @WebService(endpointInterface = "fromwsdl.schema_validation.basic.server.Hello")
-@SchemaValidation(reject=true)
+@SchemaValidation(handler=MyErrorHandler.class)
 
 public class TestEndpointImpl implements Hello {
     public HelloResponse hello(Hello_Type req) {
