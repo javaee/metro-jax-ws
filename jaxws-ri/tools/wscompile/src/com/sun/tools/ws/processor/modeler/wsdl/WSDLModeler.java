@@ -852,7 +852,7 @@ public class WSDLModeler extends WSDLModelerBase {
         }
 
         //Add additional headers
-        if (options.additionalHeader) {
+        if (options.additionalHeaders) {
             List<Parameter> additionalHeaders = new ArrayList<Parameter>();
             if (inputMessage != null) {
                 for (MessagePart part : getAdditionHeaderParts(inputMessage, true)) {

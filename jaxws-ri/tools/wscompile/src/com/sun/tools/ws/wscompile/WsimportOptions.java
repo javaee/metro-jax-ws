@@ -88,9 +88,9 @@ public class WsimportOptions extends Options {
     public String defaultPackage = null;
 
     /**
-     * -XadditionalHeader
+     * -XadditionalHeaders
      */
-    public boolean additionalHeader;
+    public boolean additionalHeaders;
 
     /**
      * JAXB's {@link SchemaCompiler} to be used for handling the schema portion.
@@ -134,8 +134,8 @@ public class WsimportOptions extends Options {
         } else if (args[i].equals("-wsdllocation")) {
             wsdlLocation = requireArgument("-wsdllocation", args, ++i);
             return 2;
-        } else if (args[i].equals("-XadditionalHeader")) {
-            additionalHeader = true;
+        } else if (args[i].equals("-XadditionalHeaders")) {
+            additionalHeaders = true;
             return 1;
         }else if (args[i].equals("-p")) {
             defaultPackage = requireArgument("-p", args, ++i);

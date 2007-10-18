@@ -85,16 +85,16 @@ public class WsImport2 extends MatchingTask {
     }
 
     /**
-     * -XadditionalHeader - maps headers not bound to req/resp messages to Java parameters
+     * -XadditionalHeaders - maps headers not bound to req/resp messages to Java parameters
      */
-    private boolean xadditionalHeader = false;
+    private boolean xadditionalHeaders = false;
 
-    public boolean isXadditionalHeader() {
-        return xadditionalHeader;
+    public boolean isXadditionalHeaders() {
+        return xadditionalHeaders;
     }
 
-    public void setXadditionalHeader(boolean xadditionalHeader) {
-        this.xadditionalHeader = xadditionalHeader;
+    public void setXadditionalHeaders(boolean xadditionalHeaders) {
+        this.xadditionalHeaders = xadditionalHeaders;
     }
 
     /** Gets the base directory to output generated class. **/
@@ -501,8 +501,8 @@ public class WsImport2 extends MatchingTask {
             cmd.createArgument().setValue("-Xdebug");
         }
 
-        if(isXadditionalHeader()){
-            cmd.createArgument().setValue("-XadditionalHeader");
+        if(isXadditionalHeaders()){
+            cmd.createArgument().setValue("-XadditionalHeaders");
         }
 
         // keep option
