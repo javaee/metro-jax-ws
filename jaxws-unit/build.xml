@@ -133,7 +133,6 @@
     </target>
 
     <property name="skip" value="false"/>
-    <setproxy proxyhost="webcache.sfbay.sun.com" proxyport="8080"/>
     
     <!-- invokes Unit test-->
     <macrodef name="run-tests">
