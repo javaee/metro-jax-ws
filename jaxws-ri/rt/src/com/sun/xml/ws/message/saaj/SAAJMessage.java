@@ -190,6 +190,7 @@ public class SAAJMessage extends Message {
      * Optimization hint for the derived class to check
      * if we may have some attachments.
      */
+    @Override
     protected boolean hasAttachments() {
         parse();
         return attachmentSet!=null;
