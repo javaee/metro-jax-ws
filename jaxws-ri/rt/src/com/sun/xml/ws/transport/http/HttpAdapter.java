@@ -625,8 +625,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
             out.println("</td>");
             out.println("</tr>");
 
-            for (BoundEndpoint a : endpoints) {
-                String endpointAddress = con.getBaseAddress()+getValidPath();
+            for (BoundEndpoint a : endpoints) {               
+                String endpointAddress = a.getAddress(con.getBaseAddress()).toString();
                 out.println("<tr>");
 
                 out.println("<td>");
