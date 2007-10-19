@@ -1,16 +1,18 @@
 package com.sun.xml.ws.server;
 
-import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
-import com.sun.xml.ws.api.server.*;
+import com.sun.xml.ws.api.server.SDDocument;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.ServiceDefinition;
+import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
-import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.util.xml.MetadataDocument;
 import org.w3c.dom.*;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -20,11 +22,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -112,17 +110,17 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
 
     private class MetadataResolverImpl implements MetadataUtil.MetadataResolver, LSResourceResolver {
 
-        Map<String, SDDocumentImpl> docs = new HashMap<String, SDDocumentImpl>();
+        Map<String, SDDocument> docs = new HashMap<String, SDDocument>();
 
         MetadataResolverImpl(ServiceDefinition sd) {
             for(SDDocument doc : sd) {
-                SDDocumentImpl sdi = (SDDocumentImpl)doc;
-                docs.put(sdi.getSystemId().toExternalForm(), sdi);
+                SDDocument sdi = doc;
+                docs.put(sdi.getURL().toExternalForm(), sdi);
             }
         }
 
-        public SDDocumentImpl resolveEntity(String systemId) {
-            SDDocumentImpl sdi = docs.get(systemId);
+        public SDDocument resolveEntity(String systemId) {
+            SDDocument sdi = docs.get(systemId);
             if (sdi == null) {
                 SDDocumentSource sds;
                 try {
@@ -130,7 +128,7 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
                 } catch(MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-                sdi = SDDocumentImpl.create(sds, new QName(""), new QName(""));
+                sdi = MetadataDocument.create(sds, new QName(""), new QName(""));
                 docs.put(systemId, sdi);
             }
             return sdi;
@@ -141,7 +139,7 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
             try {
                 URL base = baseURI == null ? null : new URL(baseURI);
                 final URL rel = new URL(base, systemId);
-                final SDDocumentImpl doc = docs.get(rel.toExternalForm());
+                final SDDocument doc = docs.get(rel.toExternalForm());
                 return new LSInput() {
 
                     public Reader getCharacterStream() {

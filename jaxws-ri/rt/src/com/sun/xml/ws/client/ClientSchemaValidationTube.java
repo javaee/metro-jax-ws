@@ -1,19 +1,16 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.server.ServiceDefinition;
-import com.sun.xml.ws.api.server.SDDocument;
-import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
-import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.ws.api.server.SDDocument;
+import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.util.MetadataUtil;
 import com.sun.xml.ws.util.pipe.AbstractSchemaValidationTube;
-import com.sun.xml.ws.server.SDDocumentImpl;
+import com.sun.xml.ws.util.xml.MetadataDocument;
 import org.w3c.dom.Document;
-import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -24,13 +21,12 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.ws.WebServiceException;
-import java.io.InputStream;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
@@ -77,10 +73,10 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
 
     private class MetadataResolverImpl implements MetadataUtil.MetadataResolver{
 
-        Map<String, SDDocumentImpl> docs = new HashMap<String, SDDocumentImpl>();
+        Map<String, SDDocument> docs = new HashMap<String, SDDocument>();
 
-        public SDDocumentImpl resolveEntity(String systemId) {
-            SDDocumentImpl sdi = docs.get(systemId);
+        public SDDocument resolveEntity(String systemId) {
+            SDDocument sdi = docs.get(systemId);
             if (sdi == null) {
                 SDDocumentSource sds;
                 try {
@@ -88,7 +84,7 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
                 } catch(MalformedURLException e) {
                     throw new WebServiceException(e);
                 }
-                sdi = SDDocumentImpl.create(sds, new QName(""), new QName(""));
+                sdi = MetadataDocument.create(sds, new QName(""), new QName(""));
                 docs.put(systemId, sdi);
             }
             return sdi;

@@ -13,7 +13,6 @@ import com.sun.xml.ws.api.server.DocumentAddressResolver;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.ValidationErrorHandler;
-import com.sun.xml.ws.server.SDDocumentImpl;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
