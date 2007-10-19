@@ -74,11 +74,11 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
     }
 
-    protected Document createDOM(SDDocumentImpl doc) {
+    protected Document createDOM(SDDocument doc) {
         // Get infoset
         ByteArrayBuffer bab = new ByteArrayBuffer();
         try {
-            doc.writeTo(bab);
+            doc.writeTo(null, resolver, bab);
         } catch (IOException ioe) {
             throw new WebServiceException(ioe);
         }

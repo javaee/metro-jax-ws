@@ -1,11 +1,11 @@
 package com.sun.xml.ws.util;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.server.SDDocumentImpl;
+import org.xml.sax.EntityResolver;
 
 import java.util.*;
-
-import org.xml.sax.EntityResolver;
 
 /**
  * WSDL, schema document metadata utility class.
@@ -24,9 +24,9 @@ public class MetadataUtil {
      * @param onlyTopLevelSchemas if true, the imported schemas from a schema would be ignored
      * @return all the documents
      */
-    public static Map<String, SDDocumentImpl> getMetadataClosure(@NotNull String systemId,
+    public static Map<String, SDDocument> getMetadataClosure(@NotNull String systemId,
             @NotNull MetadataResolver resolver, boolean onlyTopLevelSchemas) {
-        Map <String, SDDocumentImpl> closureDocs = new HashMap<String, SDDocumentImpl>();
+        Map <String, SDDocument> closureDocs = new HashMap<String, SDDocument>();
         Set<String> remaining = new HashSet<String>();
         remaining.add(systemId);
 
@@ -35,8 +35,8 @@ public class MetadataUtil {
             String current = it.next();
             remaining.remove(current);
 
-            SDDocumentImpl currentDoc = resolver.resolveEntity(current);
-            SDDocumentImpl old = closureDocs.put(currentDoc.getSystemId().toExternalForm(), currentDoc);
+            SDDocument currentDoc = resolver.resolveEntity(current);
+            SDDocument old = closureDocs.put(currentDoc.getURL().toExternalForm(), currentDoc);
             assert old == null;
 
             Set<String> imports =  currentDoc.getImports();
@@ -62,7 +62,7 @@ public class MetadataUtil {
          * @param systemId document's systemId
          * @return document for the systemId
          */
-        @NotNull SDDocumentImpl resolveEntity(String systemId);
+        @NotNull SDDocument resolveEntity(String systemId);
     }
 
 }

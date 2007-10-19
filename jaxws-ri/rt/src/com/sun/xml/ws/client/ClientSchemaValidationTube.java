@@ -98,11 +98,11 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
     private Source[] getSchemaSources(String primary) {
 
         MetadataUtil.MetadataResolver mdresolver = new MetadataResolverImpl();
-        Map<String, SDDocumentImpl> docs = MetadataUtil.getMetadataClosure(primary, mdresolver, true);
+        Map<String, SDDocument> docs = MetadataUtil.getMetadataClosure(primary, mdresolver, true);
 
         List<Source> list = new ArrayList<Source>();
-        for(Map.Entry<String, SDDocumentImpl> entry : docs.entrySet()) {
-            SDDocumentImpl doc = entry.getValue();
+        for(Map.Entry<String, SDDocument> entry : docs.entrySet()) {
+            SDDocument doc = entry.getValue();
             // Add all xsd:schema fragments from all WSDLs. That should form a closure of schemas.
             if (doc.isWSDL()) {
                 Document dom = createDOM(doc);

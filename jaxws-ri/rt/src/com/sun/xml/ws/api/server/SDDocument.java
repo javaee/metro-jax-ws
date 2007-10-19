@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 /**
  * Represents an individual document that forms a {@link ServiceDefinition}.
@@ -78,6 +79,11 @@ public interface SDDocument {
      * Returns true if this document is schema.
      */
     boolean isSchema();
+
+    /**
+     * returns the referenced documents
+     */
+    Set<String> getImports();
 
     /**
      * Gets the system ID of the document where it's taken from. Generated documents
