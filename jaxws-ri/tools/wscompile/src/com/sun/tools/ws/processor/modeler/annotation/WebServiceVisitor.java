@@ -608,11 +608,13 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         if (!hasWebMethods && (webMethod !=null) && webMethod.exclude()) {
             return true;
         }
+        /*
+        This check is not needed as Impl class is already checked that it is not abstract.
         if (typeDecl instanceof ClassDeclaration && method.getModifiers().contains(Modifier.ABSTRACT)) {
             builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_METHOD_IS_ABSTRACT(typeDecl.getQualifiedName(), method.getSimpleName()));
             return false;
         }
-
+        */
         if (!isLegalType(method.getReturnType())) {
             builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_METHOD_RETURN_TYPE_CANNOT_IMPLEMENT_REMOTE(typeDecl.getQualifiedName(),
                 method.getSimpleName(),
