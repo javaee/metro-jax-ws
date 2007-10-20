@@ -22,21 +22,31 @@ import javax.jws.HandlerChain;
 @HandlerChain(file="handlers.xml")
 public class Hello_PortType_Impl extends ProviderImpl {
     @Resource(type=Object.class)
-    protected WebServiceContext wsContext;
+    private  WebServiceContext wsContextViaField;
+
+    private  WebServiceContext wsContextViaMethod;
 
     private boolean injectionDone;
-
-    public WebServiceContext getContext() {
-        return wsContext;
-    }
 
     @PostConstruct
     public void over() {
         System.out.println("PostConstruct Complete");
+        if (wsContextViaField == null) {
+            throw new WebServiceException("wsContextViaField injection is not done");
+        }
+        if (wsContextViaMethod == null) {
+            throw new WebServiceException("wsContextViaMethod injection is not done");
+        }
+        if (wsContextViaBaseField == null) {
+            throw new WebServiceException("wsContextViaBaseField injection is not done");
+        }
+        if (wsContextViaBaseMethod == null) {
+            throw new WebServiceException("wsContextViaBaseMethod injection is not done");
+        }
         injectionDone = true;
         boolean illegal = false;
         try {
-        	wsContext.getMessageContext();
+        	wsContextViaField.getMessageContext();
         } catch(IllegalStateException ie) {
 			// No op. Expected to get this exception
             illegal = true;
@@ -51,7 +61,7 @@ public class Hello_PortType_Impl extends ProviderImpl {
         System.out.println("PreDestroy is called");
         boolean illegal = false;
         try {
-        	wsContext.getMessageContext();
+        	wsContextViaMethod.getMessageContext();
         } catch(IllegalStateException ie) {
 			// No op. Expected to get this exception
             illegal = true;
@@ -63,5 +73,10 @@ public class Hello_PortType_Impl extends ProviderImpl {
 
     public boolean isInjectionDone() {
         return injectionDone;
+    }
+
+    @Resource
+    public void setMyContext(WebServiceContext ctxt) {
+        this.wsContextViaMethod = ctxt;
     }
 }

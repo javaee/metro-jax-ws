@@ -47,12 +47,20 @@ import javax.annotation.Resource;
 public abstract class ProviderImpl implements Provider<Source> {
 
     private int combo;
-    public abstract WebServiceContext getContext();
+    @Resource
+    WebServiceContext wsContextViaBaseField;
+
+    WebServiceContext wsContextViaBaseMethod;
+  
     public abstract boolean isInjectionDone();
 
+    @Resource
+    public void setBaseContext(WebServiceContext ctxt) {
+        this.wsContextViaBaseMethod = ctxt;
+    }
+
     private void printContext() {
-        WebServiceContext wsContext = getContext();
-        MessageContext ctxt = wsContext.getMessageContext();
+        MessageContext ctxt = wsContextViaBaseField.getMessageContext();
 /*
         TODO: WSDL_DESCRIPTION's value type is not specified correctly in spec
         InputSource source = (InputSource)ctxt.getProperty(JAXRPCContext.WSDL_DESCRIPTION);
