@@ -62,11 +62,14 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * model of the web service.  Used by the runtime marshall/unmarshall
@@ -144,6 +147,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             // Need to avoid doPriv block once JAXB is fixed. Afterwards, use the above
             jaxbContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBRIContext>() {
                 public JAXBRIContext run() throws Exception {
+                    if(LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+ Arrays.asList(cls)+" and types="+types);
+                    }
                     return JAXBRIContext.newInstance(cls, types, null, targetNamespace, false, null);
                 }
             });
@@ -243,7 +249,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * JavaMethod jm.
      *
      * @deprecated
-     *      Use {@link JavaMethod#getPayloadName()}.
+     *      Use {@link JavaMethod#getOperationName()}.
      */
     public QName getQNameForJM(JavaMethodImpl jm) {
         for (QName key : nameToJM.keySet()) {
@@ -510,4 +516,6 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
     private WSDLPortImpl port;
+
+    private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }
