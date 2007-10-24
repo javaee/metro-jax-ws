@@ -68,6 +68,8 @@ public class ConsoleErrorReporter extends ErrorReceiver {
         print(WscompileMessages.WSIMPORT_ERROR_MESSAGE(e.getMessage()), e);
     }
 
+
+
     public void fatalError(SAXParseException e) {
         if(debug)
             e.printStackTrace();
@@ -78,7 +80,7 @@ public class ConsoleErrorReporter extends ErrorReceiver {
     public void warning(SAXParseException e) {
         print(WscompileMessages.WSIMPORT_WARNING_MESSAGE(e.getMessage()), e);
     }
-
+    
     /**
      * Used to report possibly verbose information that
      * can be safely ignored.
@@ -86,6 +88,11 @@ public class ConsoleErrorReporter extends ErrorReceiver {
     public void info(SAXParseException e) {
         print(WscompileMessages.WSIMPORT_INFO_MESSAGE(e.getMessage()), e);
     }
+
+    public void debug(SAXParseException e){
+        print(WscompileMessages.WSIMPORT_DEBUG_MESSAGE(e.getMessage()), e);
+    }
+
 
     private void print(String message, SAXParseException e) {
         output.println(message);

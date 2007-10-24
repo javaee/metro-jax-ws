@@ -63,6 +63,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.Authenticator;
 
 /**
  * @author Vivek Pandey
@@ -116,6 +117,11 @@ public class WsimportTool {
             }
 
             @Override
+            public void debug(SAXParseException exception) {
+                cer.debug(exception);
+            }
+
+            @Override
             public void info(SAXParseException exception) {
                 cer.info(exception);
             }
@@ -141,6 +147,13 @@ public class WsimportTool {
                 if (listener.isCanceled())
                     throw new AbortException();
             }
+
+            @Override
+            public void debug(SAXParseException exception){
+                if(options.debugMode){
+                    listener.debug(exception);
+                }
+            }
         };
 
         for (String arg : args) {
@@ -159,6 +172,11 @@ public class WsimportTool {
             try {
                 if( !options.quiet )
                     listener.message(WscompileMessages.WSIMPORT_PARSING_WSDL());
+
+                //set auth info
+                //if(options.authFile != null)
+                    Authenticator.setDefault(new DefaultAuthenticator(receiver, options.authFile));
+
 
                 WSDLModeler wsdlModeler = new WSDLModeler(options, receiver);
                 Model wsdlModel = wsdlModeler.buildModel();

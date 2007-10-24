@@ -136,6 +136,8 @@ public abstract class ErrorReceiver  implements ErrorHandler, ErrorListener {
         info( new SAXParseException(msg,null) );
     }
 
+    public abstract void debug(SAXParseException exception);
+
 //
 //
 // convenience methods for derived classes

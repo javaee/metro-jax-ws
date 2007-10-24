@@ -60,6 +60,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -97,6 +98,11 @@ public class WsimportOptions extends Options {
      * This object is also configured through options.
      */
     private SchemaCompiler schemaCompiler = XJC.createSchemaCompiler();
+
+    /**
+     * Authentication file
+     */
+    public File authFile;
 
     public JCodeModel getCodeModel() {
         if(codeModel == null)
@@ -191,6 +197,10 @@ public class WsimportOptions extends Options {
                 //Driver.usage(jaxbOptions,false);
                 throw new BadCommandLineException(e.getMessage(),e);
             }
+        } else if (args[i].equals("-authfile")) {
+            String authfile = requireArgument("-authfile", args, ++i);
+            authFile = new File(authfile);
+            return 2;
         }
 
         return 0; // what's this option?
@@ -200,11 +210,11 @@ public class WsimportOptions extends Options {
         if (wsdls.isEmpty()) {
             throw new BadCommandLineException(WscompileMessages.WSIMPORT_MISSING_FILE());
         }
+
         if(wsdlLocation == null){
             wsdlLocation = wsdls.get(0).getSystemId();
         }
     }
-
 
     @Override
     protected void addFile(String arg) throws BadCommandLineException {
@@ -378,5 +388,4 @@ public class WsimportOptions extends Options {
             }
         }
     }
-
 }
