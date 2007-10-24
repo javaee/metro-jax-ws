@@ -92,6 +92,7 @@ public final class WsaServerTube extends WsaTube {
 
     public WsaServerTube(WsaServerTube that, TubeCloner cloner) {
         super(that, cloner);
+        endpoint = that.endpoint;
     }
 
     public WsaServerTube copy(TubeCloner cloner) {
