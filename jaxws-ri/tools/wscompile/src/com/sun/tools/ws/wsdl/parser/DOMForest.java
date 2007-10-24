@@ -38,18 +38,20 @@
 package com.sun.tools.ws.wsdl.parser;
 
 import com.sun.istack.NotNull;
+import com.sun.tools.ws.resources.WscompileMessages;
+import com.sun.tools.ws.wscompile.AbortException;
+import com.sun.tools.ws.wscompile.DefaultAuthenticator;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.schema.SchemaConstants;
 import com.sun.tools.xjc.reader.internalizer.LocatorTable;
 import com.sun.xml.bind.marshaller.DataWriter;
+import com.sun.xml.ws.util.JAXWSUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -62,10 +64,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -203,8 +205,64 @@ public class DOMForest {
                 reader.setErrorHandler(errorReceiver);
             if (options.entityResolver != null)
                 reader.setEntityResolver(options.entityResolver);
+
+            InputStream is = null;
+            if(inputSource.getByteStream() != null){
+                is = inputSource.getByteStream();
+            }
+            if(is == null){
+                int redirects=0;
+                boolean redirect;
+                URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
+                URLConnection conn = url.openConnection();
+                do {
+                    redirect = false;
+                    try {
+                        is = conn.getInputStream();
+                        //is = sun.net.www.protocol.http.HttpURLConnection.openConnectionCheckRedirects(conn);
+                    } catch (IOException e) {
+                        if (conn instanceof HttpURLConnection) {
+                            HttpURLConnection httpConn = ((HttpURLConnection) conn);
+                            int code = httpConn.getResponseCode();
+                            if (code == 401) {
+                                errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_INFO_NEEDED(e.getMessage(), systemId, DefaultAuthenticator.defaultAuthfile), null, e));
+                                throw new AbortException();
+                            }
+                            //FOR other code we will retry with MEX
+                        }
+                        throw e;
+                    }
+
+                    //handle 302 or 303, JDK does not seem to handle 302 very well.
+                    //Need to redesign this a bit as we need to throw better error message for IOException in this case
+                    if (conn instanceof HttpURLConnection) {
+                        HttpURLConnection httpConn = ((HttpURLConnection) conn);
+                        int code = httpConn.getResponseCode();
+                        if (code == 302 || code == 303) {
+                            //retry with the value in Location header
+                            List<String> seeOther = httpConn.getHeaderFields().get("Location");
+                            if (seeOther != null && seeOther.size() > 0) {
+                                URL newurl = new URL(url, seeOther.get(0));
+                                if (!newurl.equals(url)){
+                                    errorReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_HTTP_REDIRECT(code, seeOther.get(0)), null));
+                                    url = newurl;
+                                    httpConn.disconnect();
+                                    if(redirects >= 5){
+                                        errorReceiver.error(new SAXParseException("Can not get a WSDL maximum number of redirects(5) reached!", null));
+                                        throw new AbortException();
+                                    }
+                                    conn = url.openConnection();
+                                    redirects++;
+                                    redirect = true;
+                                }                                
+                            }
+                        }
+                    }
+                } while (redirect);
+            }
+            inputSource.setByteStream(is);
             reader.parse(inputSource);
-             Element doc = dom.getDocumentElement();
+            Element doc = dom.getDocumentElement();
             if (doc == null) {
                 return null;
             }
