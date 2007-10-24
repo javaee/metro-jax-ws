@@ -197,8 +197,8 @@ public class WsimportOptions extends Options {
                 //Driver.usage(jaxbOptions,false);
                 throw new BadCommandLineException(e.getMessage(),e);
             }
-        } else if (args[i].equals("-authfile")) {
-            String authfile = requireArgument("-authfile", args, ++i);
+        } else if (args[i].equals("-Xauthfile")) {
+            String authfile = requireArgument("-Xauthfile", args, ++i);
             authFile = new File(authfile);
             return 2;
         }

@@ -80,6 +80,7 @@ public class WsImport2 extends MatchingTask {
         return xdebug;
     }
 
+
     public void setXdebug(boolean xdebug) {
         this.xdebug = xdebug;
     }
@@ -436,6 +437,7 @@ public class WsImport2 extends MatchingTask {
     private File catalog;
 
 
+
     private String wsdl;
     /**
      * @return Returns the wsdl.
@@ -450,7 +452,21 @@ public class WsImport2 extends MatchingTask {
         this.wsdl = wsdl;
         dependsSet.add(new File(wsdl));
     }
-    
+
+
+    /**
+     * -Xauth
+     */
+    private File xauthfile;
+
+    public File getXauthfile() {
+        return xauthfile;
+    }
+
+    public void setXauthfile(File xauthfile) {
+        this.xauthfile = xauthfile;
+    }
+
     public void addConfiguredBinding( FileSet fs ) {
         DirectoryScanner ds = fs.getDirectoryScanner(getProject());
         String[] includedFiles = ds.getIncludedFiles();
@@ -544,6 +560,11 @@ public class WsImport2 extends MatchingTask {
         //wsdl
         if(getWsdl() != null){
             cmd.createArgument().setValue(getWsdl());
+        }
+
+        if(getXauthfile() != null){
+            cmd.createArgument().setValue("-Xauthfile");
+            cmd.createArgument().setFile(getXauthfile());
         }
 
         //package
