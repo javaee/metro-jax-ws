@@ -20,8 +20,8 @@
 
   <p>The methods to create a dynamic <code>Service</code> are shown here:</p>
   <pre>
-Service service = Service.createService(QName serviceQName);
-Service service = Service.createService(URL wsdlLocation, QName serviceQName);
+Service service = Service.create(QName serviceQName);
+Service service = Service.create(URL wsdlLocation, QName serviceQName);
 </pre>
 
   <p>A <code>Dispatch&lt;T&gt;</code> instance must be bound to a specific port and endpoint before use. The service has an <code>addPort(QName portName, URI bindingID, String endpointAddress)</code> method that the client program can invoke for <code>Dispatch&lt;T&gt;</code> objects. Ports created using this method can only be used with <code>Dispatch&lt;T&gt;</code> instances.</p>
