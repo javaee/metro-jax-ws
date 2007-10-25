@@ -59,16 +59,33 @@ public class DefaultAuthenticator extends Authenticator {
 
     //can user.home value be null?
     public static final String defaultAuthfile = System.getProperty("user.home")+ System.getProperty("file.separator")+".metro"+System.getProperty("file.separator")+"auth";
+    private File authFile = new File(defaultAuthfile);
+    private boolean giveError;
 
     public DefaultAuthenticator(@NotNull ErrorReceiver receiver, @NotNull File authfile) throws BadCommandLineException {
         this.errReceiver = receiver;
         this.proxyUser = System.getProperty("http.proxyUser");
         this.proxyPasswd = System.getProperty("http.proxyPassword");
 
-        if(authfile != null)
-            parseAuth(authfile);
-        else
-            parseAuth();
+        if(authfile != null){
+            this.authFile = authfile;
+            this.giveError = true;
+        }
+
+        if(!authFile.exists()){
+            try {
+                error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authFile.getCanonicalPath(), defaultAuthfile), null));
+            } catch (IOException e) {
+                error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authFile,e.getMessage()), null));
+            }
+            return;
+        }
+
+        if(!authFile.canRead()){
+            error(new SAXParseException("Authorization file: "+authFile + " does not have read permission!", null));
+            return;
+        }
+        parseAuth();
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {
@@ -85,17 +102,17 @@ public class DefaultAuthenticator extends Authenticator {
         return null;
     }
 
-    private void parseAuth(File authfile) {
-        errReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_READING_AUTH_FILE(authfile), null));
+    private void parseAuth() {
+        errReceiver.info(new SAXParseException(WscompileMessages.WSIMPORT_READING_AUTH_FILE(authFile), null));
 
         BufferedReader in;
         try {
-            in = new BufferedReader(new InputStreamReader(new FileInputStream(authfile), "UTF-8"));
+            in = new BufferedReader(new InputStreamReader(new FileInputStream(authFile), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            errReceiver.error(new SAXParseException(e.getMessage(), null));
+            error(new SAXParseException(e.getMessage(), null));
             return;
         } catch (FileNotFoundException e) {
-            errReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authfile, defaultAuthfile), null, e));
+            error(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(authFile, defaultAuthfile), null, e));
             return;
         }
         String text;
@@ -103,10 +120,10 @@ public class DefaultAuthenticator extends Authenticator {
         try {
             int lineno = 1;
 
-            locator.setSystemId(authfile.getCanonicalPath());
+            locator.setSystemId(authFile.getCanonicalPath());
 
             while ((text = in.readLine()) != null) {
-                locator.setLineNumber(lineno);
+                locator.setLineNumber(lineno++);
                 try {
                     URL url = new URL(text);
                     String authinfo = url.getUserInfo();
@@ -119,34 +136,30 @@ public class DefaultAuthenticator extends Authenticator {
                             String password = authinfo.substring(i + 1);
                             authInfo.add(new AuthInfo(new URL(text), user, password));
                         } else {
-                            errReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
+                            error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
                         }
                     } else {
-                        errReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
+                        error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(url), locator));
                     }
 
                 } catch (NumberFormatException e) {
-                    errReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
+                    error(new SAXParseException(WscompileMessages.WSIMPORT_ILLEGAL_AUTH_INFO(text), locator));
                 }
             }
             in.close();
         } catch (IOException e) {
-            errReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authfile,e.getMessage()), locator));
+            error(new SAXParseException(WscompileMessages.WSIMPORT_FAILED_TO_PARSE(authFile,e.getMessage()), locator));
         }
     }
 
-    private void parseAuth() {
-        File auth = new File(defaultAuthfile);
-
-        if(!auth.exists()){
-            errReceiver.debug(new SAXParseException(WscompileMessages.WSIMPORT_AUTH_FILE_NOT_FOUND(defaultAuthfile, defaultAuthfile), null));
-            return;
+    /**
+     * When user provides authfile explicitly using -Xauthfile we throw error otherwise show the mesage by default with -Xdebug flag
+     */
+    private void error(SAXParseException e){
+        if(giveError){
+            errReceiver.error(e);
+        } else{
+            errReceiver.debug(e);
         }
-
-        if(!auth.canRead()){
-            errReceiver.debug(new SAXParseException("Authorization file: "+auth + " does not have read permission!", null));
-            return;
-        }
-        parseAuth(auth);
     }
 }

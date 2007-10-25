@@ -248,7 +248,7 @@ public class DOMForest {
                                     url = newurl;
                                     httpConn.disconnect();
                                     if(redirects >= 5){
-                                        errorReceiver.error(new SAXParseException("Can not get a WSDL maximum number of redirects(5) reached!", null));
+                                        errorReceiver.error(new SAXParseException(WscompileMessages.WSIMPORT_MAX_REDIRECT_ATTEMPT(), null));
                                         throw new AbortException();
                                     }
                                     conn = url.openConnection();
