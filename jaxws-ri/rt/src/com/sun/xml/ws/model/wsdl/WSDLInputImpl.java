@@ -38,6 +38,9 @@ package com.sun.xml.ws.model.wsdl;
 
 import com.sun.xml.ws.api.model.wsdl.WSDLInput;
 import com.sun.xml.ws.api.model.wsdl.WSDLMessage;
+import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
@@ -73,6 +76,15 @@ public final class WSDLInputImpl extends AbstractExtensibleImpl implements WSDLI
 
     public String getAction() {
         return action;
+    }
+
+    @NotNull
+    public WSDLOperation getOperation() {
+        return operation;
+    }
+
+    public QName getQName() {
+        return new QName(operation.getName().getNamespaceURI(), getName());
     }
 
     public void setAction(String action) {

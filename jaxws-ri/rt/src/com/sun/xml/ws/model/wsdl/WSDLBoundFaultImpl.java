@@ -39,8 +39,10 @@ import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundFault;
 import com.sun.xml.ws.api.model.wsdl.WSDLFault;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.namespace.QName;
 
 /**
  * @author Vivek Pandey
@@ -48,10 +50,12 @@ import javax.xml.stream.XMLStreamReader;
 public class WSDLBoundFaultImpl extends AbstractExtensibleImpl implements WSDLBoundFault {
     private final String name;
     private WSDLFault fault;
+    private WSDLBoundOperationImpl owner;
 
-    public WSDLBoundFaultImpl(XMLStreamReader xsr, String name) {
+    public WSDLBoundFaultImpl(XMLStreamReader xsr, String name, WSDLBoundOperationImpl owner) {
         super(xsr);
         this.name = name;
+        this.owner = owner;
     }
 
     public
@@ -60,8 +64,20 @@ public class WSDLBoundFaultImpl extends AbstractExtensibleImpl implements WSDLBo
         return name;
     }
 
+    public QName getQName() {
+        if(owner.getOperation() != null){
+            return new QName(owner.getOperation().getName().getNamespaceURI(), name);
+        }
+        return null;
+    }
+
     public WSDLFault getFault() {
         return fault;
+    }
+
+    @NotNull
+    public WSDLBoundOperation getBoundOperation() {
+        return owner;
     }
 
     void freeze(WSDLBoundOperationImpl root) {

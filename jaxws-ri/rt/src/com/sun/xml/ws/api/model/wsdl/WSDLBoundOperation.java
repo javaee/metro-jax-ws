@@ -69,6 +69,11 @@ public interface WSDLBoundOperation extends WSDLObject, WSDLExtensible {
     @NotNull WSDLOperation getOperation();
 
     /**
+     * Gives the owner {@link WSDLBoundPortType}
+     */
+    @NotNull WSDLBoundPortType getBoundPortType();
+
+    /**
      * Gets the soapbinding:binding/operation/wsaw:Anonymous. A default value of OPTIONAL is returned.
      *
      * @return Anonymous value of the operation

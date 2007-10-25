@@ -537,7 +537,7 @@ public class RuntimeWSDLParser {
 
     private void parseFaultBinding(XMLStreamReader reader, WSDLBoundOperationImpl bindingOp) {
         String faultName = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
-        WSDLBoundFaultImpl wsdlBoundFault = new WSDLBoundFaultImpl(reader, faultName);
+        WSDLBoundFaultImpl wsdlBoundFault = new WSDLBoundFaultImpl(reader, faultName, bindingOp);
         bindingOp.addFault(wsdlBoundFault);
 
         extensionFacade.bindingOperationFaultAttributes(wsdlBoundFault, reader);
@@ -714,7 +714,7 @@ public class RuntimeWSDLParser {
         String msg = ParserUtil.getMandatoryNonEmptyAttribute(reader, "message");
         QName msgName = ParserUtil.getQName(reader, msg);
         String name = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
-        WSDLFaultImpl fault = new WSDLFaultImpl(reader,name, msgName);
+        WSDLFaultImpl fault = new WSDLFaultImpl(reader,name, msgName, operation);
         operation.addFault(fault);
         extensionFacade.portTypeOperationFaultAttributes(fault, reader);
         extensionFacade.portTypeOperationFault(operation, reader);

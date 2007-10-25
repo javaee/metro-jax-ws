@@ -304,6 +304,11 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return operation;
     }
 
+
+    public WSDLBoundPortType getBoundPortType() {
+        return owner;
+    }
+
     public void setInputExplicitBodyParts(boolean b) {
         explicitInputSOAPBodyParts = b;
     }
