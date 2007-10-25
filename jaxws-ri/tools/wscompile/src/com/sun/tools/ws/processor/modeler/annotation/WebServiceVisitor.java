@@ -764,7 +764,12 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
     protected boolean isLegalType(TypeMirror type) {
         if (!(type instanceof DeclaredType))
             return true;
-        return !builder.isRemote(((DeclaredType)type).getDeclaration());
+        TypeDeclaration typeDecl = ((DeclaredType)type).getDeclaration();
+        if(typeDecl == null) {
+            // can be null, if this type's declaration is unknown. This may be the result of a processing error, such as a missing class file.
+            builder.onError(WebserviceapMessages.WEBSERVICEAP_COULD_NOT_FIND_TYPEDECL(typeDecl.toString(), context.getRound()));
+        }
+        return !builder.isRemote(typeDecl);
     }
 
     protected ParameterDeclaration getOutParameter(MethodDeclaration method) {
