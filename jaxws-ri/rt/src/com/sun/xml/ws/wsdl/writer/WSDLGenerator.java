@@ -592,7 +592,9 @@ public class WSDLGenerator {
                 }
             }
         }
-        operation.parameterOrder(paramOrder.toString());
+        if (i>1) {
+            operation.parameterOrder(paramOrder.toString());
+        }
     }
 
 
