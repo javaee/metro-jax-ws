@@ -407,20 +407,13 @@ public class WsImport2 extends MatchingTask {
         return lastModified;
     }
 
-
-    private String binding;
     /**
-     * @return Returns the binding.
-     */
-    public String getBinding() {
-        return binding;
-    }
-    /**
-     * @param binding The binding to set.
+     * @param binding The external binding to set.
      */
     public void setBinding(String binding) {
-        this.binding = binding;
-        dependsSet.add(new File(binding));
+        File f = new File(binding);
+        bindingFiles.add(f);
+        dependsSet.add(f);
     }
 
     /**
@@ -573,11 +566,6 @@ public class WsImport2 extends MatchingTask {
             cmd.createArgument().setValue(getPackage());
         }
 
-        if(getBinding() != null){
-            cmd.createArgument().setValue("-b");
-            cmd.createArgument().setValue(getBinding());
-        }
-
         for( String a : xjcCmdLine.getArguments() ) {
             if(a.startsWith("-")) {
                 cmd.createArgument().setValue("-B"+a);
@@ -586,17 +574,18 @@ public class WsImport2 extends MatchingTask {
             }
         }
         
-        if((wsdlLocation != null) && (wsdlLocation.length() != 0)){
-            cmd.createArgument().setValue("-wsdllocation");
-            cmd.createArgument().setValue(wsdlLocation);
-        }
-
         if(!bindingFiles.isEmpty()){
             for(File binding : bindingFiles){
                 cmd.createArgument().setValue("-b");
                 cmd.createArgument().setFile(binding);
             }
         }
+
+        if((wsdlLocation != null) && (wsdlLocation.length() != 0)){
+            cmd.createArgument().setValue("-wsdllocation");
+            cmd.createArgument().setValue(wsdlLocation);
+        }
+         
     }
 
 
