@@ -145,14 +145,8 @@ specification.</FONT></FONT></SPAN></P>
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>endpointInterface</FONT></FONT></FONT></P>
 		</TD>
 		<TD WIDTH=54% BGCOLOR="#ffffff">
-			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>The
-			qualified name of the service endpoint interface. This annotation
-			allows the separation of interface contract from implementation.
-			If this property is specified, all other WebService properties are
-			ignored as are all other 181 annotations. Only the annotations on
-			the service endpoint interface will be taken into consideration.
-			The endpoint implementation class is not required to implement the
-			endpointInterface.</FONT></FONT></FONT></P>
+			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>The qualified name of the service endpoint interface. If the implementation bean references a service endpoint interface, that service endpoint interface is used to determine the abstract WSDL contract (portType and bindings). In this case, the service implementation bean MUST NOT include any JSR-181 annotations other than @WebService and @HandlerChain. In addition, the @WebService annotation MUST NOT include the name annotation element.
+The endpoint implementation class is not required to implement the endpointInterface.</FONT></FONT></FONT></P>
 		</TD>
 		<TD WIDTH=30% BGCOLOR="#ffffff">
 			<P ALIGN=LEFT STYLE="font-style: normal; text-decoration: none"><FONT COLOR="#000000"><FONT FACE="Times, serif"><FONT SIZE=3>None
