@@ -171,7 +171,7 @@ public class EndpointFactory {
         AbstractSEIModelImpl seiModel = null;
         // create WSDL model
         if (primaryDoc != null) {
-            wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName);
+            wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container);
         }
 
         WebServiceFeatureList features=((BindingImpl)binding).getFeatures();
@@ -195,7 +195,7 @@ public class EndpointFactory {
             if (primaryDoc == null) {
                 primaryDoc = generateWSDL(binding, seiModel, docList, container, implType);
                 // create WSDL model
-                wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName);
+                wsdlPort = getWSDLPort(primaryDoc, docList, serviceName, portName, container);
                 seiModel.freeze(wsdlPort);
             }
             // New Features might have been added in WSDL through Policy.
@@ -498,16 +498,17 @@ public class EndpointFactory {
      * @param metadata it may contain imported WSDL and schema documents
      * @param serviceName service name in wsdl
      * @param portName port name in WSDL
+     * @param container container in which this service is running
      * @return non-null wsdl port object
      */
     private static @NotNull WSDLPortImpl getWSDLPort(SDDocumentSource primaryWsdl, List<? extends SDDocumentSource> metadata,
-                                                     @NotNull QName serviceName, @NotNull QName portName) {
+                                                     @NotNull QName serviceName, @NotNull QName portName, Container container) {
         URL wsdlUrl = primaryWsdl.getSystemId();
         try {
             // TODO: delegate to another entity resolver
             WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(
                 new Parser(primaryWsdl), new EntityResolverImpl(metadata),
-                    false, ServiceFinder.find(WSDLParserExtension.class).toArray());
+                    false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
             WSDLPortImpl wsdlPort = wsdlDoc.getService(serviceName).get(portName);
             if (wsdlPort == null) {
                 throw new ServerRtException(ServerMessages.localizableRUNTIME_PARSER_WSDL_INCORRECTSERVICEPORT(serviceName, portName, wsdlUrl));

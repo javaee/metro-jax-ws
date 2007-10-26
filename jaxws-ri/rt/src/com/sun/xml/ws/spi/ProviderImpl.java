@@ -149,12 +149,12 @@ public class ProviderImpl extends Provider {
     }
 
     public W3CEndpointReference createW3CEndpointReference(String address, QName serviceName, QName portName, List<Element> metadata, String wsdlDocumentLocation, List<Element> referenceParameters) {
+        Container container = ContainerResolver.getInstance().getContainer();
         if (address == null) {
             if (serviceName == null || portName == null) {
                 throw new IllegalStateException(ProviderApiMessages.NULL_ADDRESS_SERVICE_ENDPOINT());
             } else {
                 //check if it is run in a Java EE Container and if so, get address using serviceName and portName
-                Container container = ContainerResolver.getInstance().getContainer();
                 Module module = container.getSPI(Module.class);
                 if (module != null) {
                     List<BoundEndpoint> beList = module.getBoundEndpoints();
@@ -186,7 +186,7 @@ public class ProviderImpl extends Provider {
 
                 URL wsdlLoc = new URL(wsdlDocumentLocation);
                 WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(wsdlLoc, new StreamSource(wsdlLoc.toExternalForm()), er,
-                        false, ServiceFinder.find(WSDLParserExtension.class).toArray());
+                        false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
                 if (serviceName != null) {
                     WSDLService wsdlService = wsdlDoc.getService(serviceName);
                     if (wsdlService == null)

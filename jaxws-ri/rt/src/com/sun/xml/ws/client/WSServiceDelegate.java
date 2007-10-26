@@ -47,7 +47,6 @@ import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.client.ServiceInterceptor;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
 import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ContainerResolver;
@@ -262,7 +261,7 @@ public class WSServiceDelegate extends WSService {
     private WSDLModelImpl parseWSDL(URL wsdlDocumentLocation, Source wsdlSource) {
         try {
             return RuntimeWSDLParser.parse(wsdlDocumentLocation, wsdlSource, createDefaultCatalogResolver(),
-                true, ServiceFinder.find(WSDLParserExtension.class).toArray());
+                true, getContainer(), ServiceFinder.find(WSDLParserExtension.class).toArray());
         } catch (IOException e) {
             throw new WebServiceException(e);
         } catch (XMLStreamException e) {

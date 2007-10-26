@@ -35,12 +35,15 @@
  */
 package com.sun.xml.ws.api.wsdl.parser;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.api.server.Container;
 
 /**
  * Provides contextual information for {@link WSDLParserExtension}s.
  * 
  * @author Vivek Pandey
+ * @author Fabian Ritzmann
  */
 public interface WSDLParserExtensionContext {
     /**
@@ -54,4 +57,12 @@ public interface WSDLParserExtensionContext {
      * {@link WSDLParserExtension#finished(WSDLParserExtensionContext)} is called.
      */
     WSDLModel getWSDLModel();
+
+    /**
+     * Provides the {@link Container} in which this service or client is running.
+     * May return null.
+     *
+     * @return The container in which this service or client is running.
+     */
+    @NotNull Container getContainer();
 }
