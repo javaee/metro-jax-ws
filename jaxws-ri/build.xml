@@ -654,4 +654,44 @@
     <ant antfile="build-pkg.xml" target="create.hpux" inheritrefs="true"/>
   </target>
 
+
+
+    <!-- fundbugs -->
+     <property name="findbugs.home" value="${basedir}/etc/findbugs/"/>
+
+    <path id="findbugs.class">
+        <fileset dir="${findbugs.home}/lib" includes="*.jar"/>
+    </path>
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+        <classpath refid="findbugs.class"/>
+    </taskdef>
+
+
+    <target name="findbugs" depends="main">
+        <findbugs home="${findbugs.home}"
+                  output="xml"
+                  outputFile="${build.home}/jaxws-findbugs.xml"
+                  jvmargs="-Xms64m -Xmx256m ">
+            <auxclasspath path="${runtime.compile.classpath}"/>
+            <sourcepath path="${basedir}/rt/src ${basedir}/wscompile/src"/>
+            <class location="${build.home}/lib/jaxws-rt.jar"/>
+            <class location="${build.home}/lib/jaxws-tools.jar"/>
+
+        </findbugs>
+    </target>
+
+
+    <target name="findbugs-html" depends="main">
+        <findbugs home="${findbugs.home}"
+                  output="html"
+                  outputFile="${build.home}/jaxws-findbugs.html"
+                  jvmargs="-Xms64m -Xmx256m ">
+            <auxclasspath path="${runtime.compile.classpath}"/>
+            <sourcepath path="${basedir}/rt/src ${basedir}/wscompile/src"/>
+            <class location="${build.home}/lib/jaxws-rt.jar"/>
+            <class location="${build.home}/lib/jaxws-tools.jar"/>
+
+        </findbugs>
+    </target>
+
 </project>
