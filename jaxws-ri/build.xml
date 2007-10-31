@@ -667,16 +667,21 @@
     </taskdef>
 
 
-    <target name="findbugs" depends="main">
+    <target name="findbugs">
         <findbugs home="${findbugs.home}"
                   output="xml"
                   outputFile="${build.home}/jaxws-findbugs.xml"
-                  jvmargs="-Xms64m -Xmx256m ">
-            <auxclasspath path="${runtime.compile.classpath}"/>
-            <sourcepath path="${basedir}/rt/src ${basedir}/wscompile/src"/>
+                  jvmargs="-Xms64m -Xmx256m">
+            <auxclasspath>
+                <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
+                <fileset file="${java.home}/../lib/tools.jar"/>
+            </auxclasspath>
+            <sourcepath>
+                <pathelement location="${basedir}/rt/src"/>
+                <pathelement location="${basedir}/wscompile/src"/>                
+            </sourcepath>
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>
-
         </findbugs>
     </target>
 
@@ -686,11 +691,16 @@
                   output="html"
                   outputFile="${build.home}/jaxws-findbugs.html"
                   jvmargs="-Xms64m -Xmx256m ">
-            <auxclasspath path="${runtime.compile.classpath}"/>
-            <sourcepath path="${basedir}/rt/src ${basedir}/wscompile/src"/>
+            <auxclasspath>
+                <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
+                <fileset file="${java.home}/../lib/tools.jar"/>
+            </auxclasspath>
+            <sourcepath>
+                <pathelement location="${basedir}/rt/src"/>
+                <pathelement location="${basedir}/wscompile/src"/>
+            </sourcepath>
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>
-
         </findbugs>
     </target>
 
