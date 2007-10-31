@@ -374,7 +374,7 @@ public class MtomCodec extends MimeCodec {
             throw new UnsupportedOperationException();
         }
 
-        private class MtomNamespaceContextEx implements NamespaceContextEx {
+        private static class MtomNamespaceContextEx implements NamespaceContextEx {
             private NamespaceContext nsContext;
 
             public MtomNamespaceContextEx(NamespaceContext nsContext) {
