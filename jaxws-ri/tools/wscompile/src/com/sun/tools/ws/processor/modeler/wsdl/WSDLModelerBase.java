@@ -299,23 +299,11 @@ public abstract class WSDLModelerBase implements Modeler {
     private boolean validateMimeContentPartNames(List<MIMEContent> mimeContents) {
         //validate mime:content(s) in the mime:part as per R2909
         for (MIMEContent mimeContent : mimeContents) {
-            String mimeContnetPart = null;
+            String mimeContnetPart;
+            mimeContnetPart = getMimeContentPartName(mimeContent);
             if(mimeContnetPart == null) {
-                mimeContnetPart = getMimeContentPartName(mimeContent);
-                if(mimeContnetPart == null) {
-                    warning(mimeContent, ModelerMessages.MIMEMODELER_INVALID_MIME_CONTENT_MISSING_PART_ATTRIBUTE(info.operation.getName().getLocalPart()));
-                    return false;
-                }
-            }else {
-                String newMimeContnetPart = getMimeContentPartName(mimeContent);
-                if(newMimeContnetPart == null) {
-                    warning(mimeContent, ModelerMessages.MIMEMODELER_INVALID_MIME_CONTENT_MISSING_PART_ATTRIBUTE(info.operation.getName().getLocalPart()));
-                    return false;
-                }else if(!newMimeContnetPart.equals(mimeContnetPart)) {
-                    //throw new ModelerException("mimemodeler.invalidMimeContent.differentPart");
-                    warning(mimeContent, ModelerMessages.MIMEMODELER_INVALID_MIME_CONTENT_DIFFERENT_PART());
-                    return false;
-                }
+                warning(mimeContent, ModelerMessages.MIMEMODELER_INVALID_MIME_CONTENT_MISSING_PART_ATTRIBUTE(info.operation.getName().getLocalPart()));
+                return false;
             }
         }
         return true;
