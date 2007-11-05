@@ -72,31 +72,31 @@ import java.io.PrintStream;
 public class ClientTubeAssemblerContext {
 
     private final @NotNull EndpointAddress address;
-    private final @NotNull WSDLPort wsdlModel;
+    private final @Nullable WSDLPort wsdlModel;
     private final @Nullable SEIModel seiModel;
     private final @NotNull WSService rootOwner;
     private final @NotNull WSBinding binding;
     private final @NotNull Container container;
     private @NotNull Codec codec;
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel, @NotNull WSService rootOwner, @NotNull WSBinding binding) {
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel, @NotNull WSService rootOwner, @NotNull WSBinding binding) {
         this(address, wsdlModel, rootOwner, binding, Container.NONE);
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container) {
         // WSBinding is actually BindingImpl
         this(address, wsdlModel, rootOwner, binding, container, ((BindingImpl)binding).createCodec() );
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec) {
         this(address, wsdlModel, rootOwner, binding, container, codec, null);
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @NotNull WSDLPort wsdlModel,
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec, SEIModel seiModel) {
         this.address = address;
