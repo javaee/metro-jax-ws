@@ -55,6 +55,21 @@ public class TckTest extends TestCase {
         doc5.value = getImage("attach2.jpeg");
 
     	proxy.mtomInOut(doc1, doc2, doc3, doc4, doc5);
+        validate(getDataHandler("attach.txt"), doc1.value);
+        validate(getDataHandler("attach.html"), doc2.value);
+        validate(getDataHandler("attach.xml"), doc3.value);
+    }
+
+    private void validate(DataHandler exp, DataHandler got) throws Exception {
+        InputStream inExp = exp.getInputStream();
+        InputStream inGot = got.getInputStream();
+        int ch;
+        while((ch=inExp.read()) != -1) {
+	    assertEquals(ch, inGot.read());	
+        }
+        assertEquals(-1, inGot.read());
+        inExp.close();
+        inGot.close();
     }
 
     private Image getImage(String image) throws Exception {
