@@ -49,18 +49,11 @@ public class HelloImpl {
     }
 
     public void mtomInOut(
-        Holder<String> docName1,
-        Holder<String> docName2,
-        Holder<String> docName3,
-        Holder<String> docName4,
-        Holder<String> docUrl1,
-        Holder<String> docUrl2,
-        Holder<String> docUrl3,
-        Holder<String> docUrl4,
-        Holder<Source> doc1,
-        Holder<Source> doc2,
+        Holder<DataHandler> doc1,
+        Holder<DataHandler> doc2,
         Holder<DataHandler> doc3,
-        Holder<Image> doc4) {
+        Holder<Image> doc4,
+        Holder<Image> doc5) {
     }
 
     private String getStringFromSource(Source source) throws Exception {

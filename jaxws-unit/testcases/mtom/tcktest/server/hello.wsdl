@@ -32,10 +32,19 @@
                          <element name="doc4" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
                      </sequence>
                  </complexType>
+                 <complexType name="MyType">
+                     <sequence>
+                         <element name="doc1" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+                         <element name="doc2" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+                         <element name="doc3" type="base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+                         <element name="doc4" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
+                         <element name="doc5" type="base64Binary" xmime:expectedContentTypes="image/jpeg"/>
+                     </sequence>
+                 </complexType>
                  <element name="MTOMIn" type="s:DataType"/>
                  <element name="MTOMInResponse" type="xsd:string"/>
-                 <element name="MTOMInOut" type="s:DataType"/>
-                 <element name="MTOMInOutResponse" type="s:DataType"/>
+                 <element name="MTOMInOut" type="s:MyType"/>
+                 <element name="MTOMInOutResponse" type="s:MyType"/>
           </schema>
     </types>
 

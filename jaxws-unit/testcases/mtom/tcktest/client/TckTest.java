@@ -8,6 +8,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.ws.Holder;
 import java.awt.*;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +40,21 @@ public class TckTest extends TestCase {
 
         String works = proxy.mtomIn(dt);
         assertEquals("works", works);
+    }
+
+    public void testMtomInOut() throws Exception {
+        Holder<DataHandler> doc1 = new Holder<DataHandler>();
+	doc1.value = getDataHandler("attach.txt");
+        Holder<DataHandler> doc2 = new Holder<DataHandler>();
+        doc2.value = getDataHandler("attach.html");
+        Holder<DataHandler> doc3 = new Holder<DataHandler>();
+        doc3.value = getDataHandler("attach.xml");
+        Holder<Image> doc4 = new Holder<Image>();
+        doc4.value = getImage("attach.jpeg");
+        Holder<Image> doc5 = new Holder<Image>();
+        doc5.value = getImage("attach2.jpeg");
+
+    	proxy.mtomInOut(doc1, doc2, doc3, doc4, doc5);
     }
 
     private Image getImage(String image) throws Exception {
