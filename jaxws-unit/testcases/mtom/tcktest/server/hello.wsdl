@@ -34,8 +34,11 @@
                  </complexType>
                  <element name="MTOMIn" type="s:DataType"/>
                  <element name="MTOMInResponse" type="xsd:string"/>
+                 <element name="MTOMInOut" type="s:DataType"/>
+                 <element name="MTOMInOutResponse" type="s:DataType"/>
           </schema>
     </types>
+
     <message name="MTOMInRequest">
         <part name="data" element="s:MTOMIn"/>
     </message>
@@ -43,16 +46,36 @@
         <part name="result" element="s:MTOMInResponse"/>
     </message>
 
+    <message name="MTOMInOutRequest">
+        <part name="data" element="s:MTOMInOut"/>
+    </message>
+    <message name="MTOMInOutResponse">
+        <part name="result" element="s:MTOMInOutResponse"/>
+    </message>
+
      <portType name="Hello">
           <operation name="MTOMIn">
                <input message="tns:MTOMInRequest"/>
                <output message="tns:MTOMInResponse"/>
+          </operation>
+          <operation name="MTOMInOut">
+               <input message="tns:MTOMInOutRequest"/>
+               <output message="tns:MTOMInOutResponse"/>
           </operation>
      </portType>
 
      <binding name="MTOMBinding" type="tns:Hello">
           <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
           <operation name="MTOMIn">
+               <soap:operation soapAction=""/>
+               <input>
+                    <soap:body use="literal"/>
+               </input>
+               <output>
+                    <soap:body use="literal"/>
+               </output>
+          </operation>
+          <operation name="MTOMInOut">
                <soap:operation soapAction=""/>
                <input>
                     <soap:body use="literal"/>
