@@ -119,7 +119,7 @@ public final class WsaServerTube extends WsaTube {
                     addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
             SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
-            if (request.getMessage().isOneWay(wsdlPort)) {
+            if ((wsdlPort!=null) && request.getMessage().isOneWay(wsdlPort)) {
                 Packet response = request.createServerResponse(null, wsdlPort, null, binding);
                 return doReturnWith(response);
             }
@@ -210,7 +210,7 @@ public final class WsaServerTube extends WsaTube {
         if (packet.transportBackChannel != null)
             packet.transportBackChannel.close();
 
-        if (packet.getMessage().isOneWay(wsdlPort)) {
+        if ((wsdlPort!=null) && packet.getMessage().isOneWay(wsdlPort)) {
             // one way message but with replyTo. I believe this is a hack for WS-TX - KK.
             LOGGER.fine(AddressingMessages.NON_ANONYMOUS_RESPONSE_ONEWAY());
             return;

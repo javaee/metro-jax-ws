@@ -154,7 +154,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
         if (soapFault != null) {
             // WS-A fault processing for one-way methods
-            if (packet.getMessage().isOneWay(wsdlPort)) {
+            if ((wsdlPort !=null)  && packet.getMessage().isOneWay(wsdlPort)) {
                 return packet.createServerResponse(null, wsdlPort, null, binding);
             }
 
@@ -335,6 +335,8 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
     }
 
     protected final WSDLBoundOperation getWSDLBoundOperation(Packet packet) {
+        if(wsdlPort == null)
+            return null;
         return packet.getMessage().getOperation(wsdlPort);
     }
 

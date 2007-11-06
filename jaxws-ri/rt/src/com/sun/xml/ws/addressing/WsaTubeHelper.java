@@ -229,10 +229,10 @@ public abstract class WsaTubeHelper {
     public String getSOAPAction(Packet packet) {
         String action = "";
 
-        if (packet == null)
+        if (packet == null || packet.getMessage() == null)
             return action;
 
-        if (packet.getMessage() == null)
+        if (wsdlPort == null)
             return action;
 
         WSDLBoundOperation op = packet.getMessage().getOperation(wsdlPort);

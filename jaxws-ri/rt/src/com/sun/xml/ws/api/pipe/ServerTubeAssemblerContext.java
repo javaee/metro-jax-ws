@@ -218,7 +218,7 @@ public class ServerTubeAssemblerContext {
      * Creates WS-Addressing pipe
      */
     public Tube createWsaTube(Tube next) {
-        if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding) && wsdlModel!=null)
+        if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding))
             return new WsaServerTube(endpoint, wsdlModel, binding, next);
         else
             return next;
