@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.1.3">
   <description>schema_validation_basic</description>
 
   <client name="schema_validation_basic_testGenerics" sideEffectFree="true">
