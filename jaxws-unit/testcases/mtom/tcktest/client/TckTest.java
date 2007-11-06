@@ -6,23 +6,11 @@ import testutil.ClientServerTestUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Holder;
 import javax.xml.ws.soap.MTOMFeature;
-import javax.xml.ws.Service;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPBinding;
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Map;
-
-import com.sun.xml.ws.developer.JAXWSProperties;
 
 /**
  * @author Jitendra Kotamraju
@@ -33,6 +21,9 @@ public class TckTest extends TestCase {
 
     public TckTest(String name) throws Exception{
         super(name);
+    }
+
+    protected void setUp() throws Exception {
         proxy = new HelloService().getHelloPort(new MTOMFeature());
         ClientServerTestUtil.setTransport(proxy);
     }
