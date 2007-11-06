@@ -241,6 +241,7 @@ public class RuntimeWSDLParser {
         // register handlers for default extensions
         register(new MemberSubmissionAddressingWSDLParserExtension());
         register(new W3CAddressingWSDLParserExtension());
+        register(new W3CAddressingMetadataWSDLParserExtension());
 
         for (WSDLParserExtension e : extensions)
             register(e);
