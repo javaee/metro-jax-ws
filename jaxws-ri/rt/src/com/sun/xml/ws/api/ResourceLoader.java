@@ -18,7 +18,7 @@ public abstract class ResourceLoader {
      * that represents a virtual locaion of a file understood by a container.
      * ResourceLoader impl for a Container knows how to map this
      * virtual location to actual location.
-     * <p/>
+     * <p>
      * Extensions can get hold of this object using {@link Container}.
      * <p/>
      * for e.g.:
