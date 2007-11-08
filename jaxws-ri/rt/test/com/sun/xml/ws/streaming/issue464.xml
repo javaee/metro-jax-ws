@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<elem1 xmlns="http://mynamespace/">
+    <elem2 attr="attribute and default namespace declaration mixed causing
+problems"></elem2>
+</elem1>
