@@ -12,7 +12,11 @@
         <name>Sun Microsystems, Inc</name>
         <url>http://www.sun.com/</url>
   </organization>
-
+  <scm>
+        <connection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jsr224</connection>
+        <developerConnection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jsr224</developerConnection>
+        <url>https://jsr224.dev.java.net/source/browse/jsr224/api/</url>
+  </scm>
   <issueManagement>
     <system>issueZilla</system>
     <url>https://jsr224.dev.java.net/servlets/ProjectIssues</url>
