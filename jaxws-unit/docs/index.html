@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.17 2007-11-09 19:27:38 kohsuke Exp $</div>      
+    <div align="right">$Id: index.html,v 1.18 2007-11-09 19:51:16 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -158,6 +158,10 @@
         <ol>   
           <li>
             <a href="#Linking_to_Relevant_Bugs">Linking to Relevant Bugs</a>
+          </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Specifying_verbatim_wsimport_options">Specifying verbatim wsimport options</a>
           </li> 
           <ol> </ol>  
         </ol>    
@@ -637,6 +641,23 @@ testdir/
 &lt;descriptor bugs="6420352 wsit-123 jax-ws-234"&gt;
   ...
 &lt;/descriptor&gt;
+</pre>              
+    <a name="Specifying_verbatim_wsimport_options"></a>
+    <h4>
+      <a name="Specifying_verbatim_wsimport_options">
+        <a href="#Specifying_verbatim_wsimport_options">2.2.2.</a>  Specifying verbatim wsimport options
+      </a>
+    </h4>   
+    <p>If your test requires a certain wsimport command line options, you can specify verbatim by using the nested
+      <tt>wsimport-client</tt> and
+      <tt>wsimport-server</tt> elements. These are passed as-is to when the harness invokes wsimport for generating client artifacts and generating server artifacts, respectively. Options can be separated by tab, space, CR, and NL.
+    
+    <p>Please use this option with caution, so that tests can retain its generality. 
+    <pre>
+&lt;descriptor&gt;
+   &lt;description&gt;this is a very useful test that tests stuff&lt;/description&gt;
+   &lt;wsimport-client&gt;-abc -def -ghi&lt;/wsimport-client&gt;
+&lt;/despcriptor&gt;
 </pre>                   
     <a name="Client_Test_Scripts"></a>
     <h3>
