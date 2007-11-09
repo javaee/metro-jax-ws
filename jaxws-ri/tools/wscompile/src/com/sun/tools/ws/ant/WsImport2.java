@@ -85,6 +85,19 @@ public class WsImport2 extends MatchingTask {
         this.xdebug = xdebug;
     }
 
+
+    public boolean isXnocompile() {
+        return xnocompile;
+    }
+
+    public void setXnocompile(boolean xnocompile) {
+        this.xnocompile = xnocompile;
+    }
+
+    /** do not compile generated classes **/
+    private boolean xnocompile = false;
+
+    
     /**
      * -XadditionalHeaders - maps headers not bound to req/resp messages to Java parameters
      */
@@ -508,6 +521,10 @@ public class WsImport2 extends MatchingTask {
 
         if(isXdebug()){
             cmd.createArgument().setValue("-Xdebug");
+        }
+
+        if(isXnocompile()){
+            cmd.createArgument().setValue("-Xnocompile");
         }
 
         if(isXadditionalHeaders()){
