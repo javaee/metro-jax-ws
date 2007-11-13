@@ -236,6 +236,7 @@ public final class WsaServerTube extends WsaTube {
                 helper.getOutputAction(wbo);
         //set the SOAPAction, as its got to be same as wsa:Action
         packet.soapAction = action;
+        packet.expectReply = false;
         Fiber.current().runSync(transport, packet);
     }
 
