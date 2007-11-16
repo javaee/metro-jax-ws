@@ -325,12 +325,12 @@ public final class DOMStreamReader implements XMLStreamReader, NamespaceContext 
      * Allocate new {@link Scope} for {@link #splitAttributes()}.
      */
     private Scope allocateScope() {
-        if(scopes.length==depth) {
+        if(scopes.length==++depth) {
             Scope[] newBuf = new Scope[scopes.length*2];
             System.arraycopy(scopes,0,newBuf,0,scopes.length);
             scopes = newBuf;
         }
-        Scope scope = scopes[++depth];
+        Scope scope = scopes[depth];
         if(scope==null) {
             scope = scopes[depth] = new Scope(scopes[depth-1]);
         } else {
