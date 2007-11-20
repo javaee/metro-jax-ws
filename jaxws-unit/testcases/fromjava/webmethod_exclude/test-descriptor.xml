@@ -1,9 +1,0 @@
-<descriptor since="2.1">
-  <description>
-    Test @WebMethod(exclude="true")
-  </description>
-  <client name="fromjava.webmethod_exclude">
-      assertEquals("test", echoPort.echoString("test"));
-  </client>
-  <service />
-</descriptor>

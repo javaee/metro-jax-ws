@@ -1,8 +1,0 @@
-<bindings xmlns="http://java.sun.com/xml/ns/jaxws"
-          xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <enableAsyncMapping>true</enableAsyncMapping>
-
-  <bindings node="wsdl:definitions/wsdl:portType[@name='Hello']/wsdl:operation[@name='hello1']">
-    <method name="hello1World"/>
-  </bindings>
-</bindings>

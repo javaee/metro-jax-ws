@@ -1,7 +1,0 @@
-axisMsg="<?xml version='1.0' ?><S:Envelope xmlns:S='http://schemas.xmlsoap.org/soap/envelope/'><S:Body><ns2:echoDate xmlns:ns2='http://server.jaxws195.fromjava/'><arg0 xsi:type='xs:dateTime' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema\'>0006-05-01T10:00:00.000Z</arg0></ns2:echoDate></S:Body></S:Envelope>";
-
-disp = testServiceService.createDispatch(new QName("http://server.jaxws195.fromjava/", "TestServicePort"), SOAPMessage.class, Service.Mode.MESSAGE);
-mhs = new MimeHeaders();
-mhs.addHeader("Content-Type", "text/xml");
-msg = MessageFactory.newInstance().createMessage(mhs, new ByteArrayInputStream(axisMsg.getBytes()));
-disp.invoke(msg);

@@ -1,7 +1,0 @@
-<descriptor since="2.1.3" bugs="jax-ws-371">
-  <description>
-    Test wsgen where EndpointImplementation extends an abstract class.
-  </description>
-  <client href ="*.bsh" />
-  <service />
-</descriptor>

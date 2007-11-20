@@ -1,7 +1,0 @@
-<descriptor since="2.0">
-  <description>This test uses EPR as web parameter </description>
-  <client href ="test.bsh" />
-  <service basedir="./server">
-  </service>
-</descriptor>
-

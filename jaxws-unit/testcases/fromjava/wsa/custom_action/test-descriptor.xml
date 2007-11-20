@@ -1,7 +1,0 @@
-<descriptor>
-  <description>WS-Addressing custom action test</description>
-
-  <service basedir="./server">
-    <!--wsdl href="AddNumbersService.wsdl" /-->
-  </service>
-</descriptor>

@@ -1,5 +1,0 @@
-<bindings since="2.1.3">
-    <bindings node="ns1:definitions/ns1:portType[@name='Hello']/ns1:operation[@name='Hello']" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
-        <enableAsyncMapping>true</enableAsyncMapping>        
-    </bindings>
-</bindings>
