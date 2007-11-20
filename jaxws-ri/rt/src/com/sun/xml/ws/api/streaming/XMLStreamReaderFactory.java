@@ -86,6 +86,7 @@ public abstract class XMLStreamReaderFactory {
             xif = XMLInputFactory.newInstance();
         }
         xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
 
         XMLStreamReaderFactory f=null;
 
