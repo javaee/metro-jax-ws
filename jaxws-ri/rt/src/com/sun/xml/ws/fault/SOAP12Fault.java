@@ -132,7 +132,13 @@ class SOAP12Fault extends SOAPFaultBuilder {
 
         reason = new ReasonType(fault.getFaultString());
         role = fault.getFaultRole();
-        detail = new DetailType(fault.getDetail());
+        if (fault.getDetail() != null) {
+            Iterator iter = fault.getDetail().getDetailEntries();
+            while(iter.hasNext()){
+                Element fd = (Element)iter.next();
+                detail = new DetailType(fd);
+            }
+        }
     }
 
     SOAP12Fault(QName code, String reason, Element detailObject) {
