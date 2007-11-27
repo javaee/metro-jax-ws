@@ -37,6 +37,7 @@ package com.sun.xml.ws.transport.http.client;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
@@ -62,16 +63,18 @@ import java.util.Map.Entry;
 public class HttpTransportPipe extends AbstractTubeImpl {
 
     private final Codec codec;
+    private final WSBinding binding;
 
-    public HttpTransportPipe(Codec codec) {
+    public HttpTransportPipe(Codec codec, WSBinding binding) {
         this.codec = codec;
+        this.binding = binding;
     }
 
     /**
      * Copy constructor for {@link Tube#copy(TubeCloner)}.
      */
     private HttpTransportPipe(HttpTransportPipe that, TubeCloner cloner) {
-        this( that.codec.copy() );
+        this( that.codec.copy(), that.binding);
         cloner.add(that,this);
     }
 
@@ -180,7 +183,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
      */
     private void writeSOAPAction(Map<String, List<String>> reqHeaders, String soapAction, Packet packet) {
         //dont write SOAPAction HTTP header for SOAP 1.2 messages.
-        if(SOAPVersion.SOAP_12.httpBindingId.equals(packet.proxy.getBinding().getBindingID()))
+        if(SOAPVersion.SOAP_12.equals(binding.getSOAPVersion()))
             return;
         if (soapAction != null)
             reqHeaders.put("SOAPAction", Collections.singletonList(soapAction));
