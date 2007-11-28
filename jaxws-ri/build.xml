@@ -337,10 +337,11 @@
     <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
     <maven-repository-importer
         destdir="build/maven-repo" version="${jar.suffix}">
-      <artifact
+      <!-- only push API at certain key points, and do so with new version number -->
+      <!--artifact
         jar="${dist20.home}/lib/jaxws-api.jar"
         pom="etc/poms/jaxws-api.pom"
-        srczip="lib/jaxws-api-src.zip" />
+        srczip="lib/jaxws-api-src.zip" /-->
       <artifact
         jar="${dist20.home}/lib/jaxws-rt.jar"
         pom="etc/poms/jaxws-rt.pom"
