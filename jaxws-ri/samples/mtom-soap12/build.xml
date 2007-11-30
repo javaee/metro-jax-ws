@@ -70,7 +70,7 @@
                 extension="true"
                 destdir="${build.classes.home}"
                 package="mtom_soap12.server"
-                wsdl="${basedir}/etc/hello.wsdl">
+                wsdl="${basedir}/etc/mtomsample.wsdl">
         </wsimport>
         <javac
                 fork="true"
@@ -100,7 +100,7 @@
                 extension="true"
                 destdir="${build.classes.home}"
                 package="mtom_soap12.client"
-                wsdl="http://localhost:8080/jaxws-mtom-soap12/hello?wsdl">
+                wsdl="http://localhost:8080/jaxws-mtom-soap12/mtomsample?wsdl">
         </wsimport>
     </target>
 

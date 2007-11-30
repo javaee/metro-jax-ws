@@ -35,15 +35,13 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-
 <endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
     <endpoint
-        name="Mtom-soap12"
-        implementation="mtom_soap12.server.HelloImpl"
-        wsdl="WEB-INF/wsdl/hello.wsdl"
-        service='{http://example.org/mtom}HelloService'
-        port='{http://example.org/mtom}HelloPort'
+        name="Mtom"
+        implementation="mtom_soap12.server.MtomSampleImpl"
+        wsdl="WEB-INF/wsdl/mtomsample.wsdl"
+        service='{http://example.org/mtomsample}MtomService'
+        port='{http://example.org/mtomsample}MtomPort'
         binding="http://www.w3.org/2003/05/soap/bindings/HTTP/"
-        url-pattern="/hello"/>
+        url-pattern="/mtomsample"/>
 </endpoints>
-
