@@ -36,17 +36,62 @@
 
 package mtom.server;
 
-import javax.jws.WebService;
-import javax.xml.ws.Holder;
-import javax.xml.ws.soap.MTOM;
+
 import javax.activation.DataHandler;
-import java.awt.Image;
+import javax.activation.DataSource;
+import javax.jws.WebService;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.MTOM;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 @MTOM
-@WebService (endpointInterface = "mtom.server.Hello")
-public class HelloImpl implements Hello {
-    public void detail (Holder<byte[]> photo, Holder<Image> image) {
+@WebService (endpointInterface = "mtom.server.MtomSample")
+
+public class MtomSampleImpl implements MtomSample {
+
+    public String upload(Image data) {
+        if(data != null)
+            return "Success";
+        throw new WebServiceException("No image Received!");
     }
-      
-    public void echoData (Holder<byte[]> data){
+
+    /**
+     * Send data as attachment in streaming fashion
+     */
+    public DataHandler download(int size) {
+        return getDataHandler(size);
+    }
+
+    /**
+     * Streaming data handler
+     */
+    private static DataHandler getDataHandler(final int total)  {
+        return new DataHandler(new DataSource() {
+            public InputStream getInputStream() throws IOException {
+                return new InputStream() {
+                    int i;
+
+                    @Override
+                    public int read() throws IOException {
+                        return i<total ? 'A'+(i++%26) : -1;
+                    }
+                };
+            }
+
+            public OutputStream getOutputStream() throws IOException {
+                return null;
+            }
+
+            public String getContentType() {
+                return "application/octet-stream";
+            }
+
+            public String getName() {
+                return "";
+            }
+        });
     }
 }

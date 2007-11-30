@@ -68,7 +68,7 @@
                 keep="true"
                 destdir="${build.classes.home}"
                 package="mtom.server"
-                wsdl="${basedir}/etc/hello.wsdl">
+                wsdl="${basedir}/etc/mtomsample.wsdl">
         </wsimport>
         <javac
                 fork="true"
@@ -97,7 +97,7 @@
                 keep="true"
                 destdir="${build.classes.home}"
                 package="mtom.client"
-                wsdl="http://localhost:8080/jaxws-mtom/hello?wsdl">
+                wsdl="http://localhost:8080/jaxws-mtom/mtomsample?wsdl">
         </wsimport>
     </target>
 
