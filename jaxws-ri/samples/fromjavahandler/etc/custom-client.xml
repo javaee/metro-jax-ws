@@ -41,9 +41,6 @@
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
     wsdlLocation="http://localhost:8080/jaxws-fromjavahandler/addnumbers?wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws">
-    <bindings node="wsdl:definitions">
-        <package name="fromjavahandler.client"/>
-    </bindings>
     <bindings node="wsdl:definitions" xmlns:jws="http://java.sun.com/xml/ns/javaee">
         <jws:handler-chains>
             <jws:handler-chain>
