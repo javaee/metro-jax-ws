@@ -182,7 +182,7 @@
           </classpath>
       </taskdef>
       <htmlmacro  destdir="${build.home}/docs">
-        <documents dir="${docs.home}" includes="*.html *.xsd" excludes="sun-jaxws.xsd"/>
+        <documents dir="${docs.home}" includes="*.html *.xsd *.xml" excludes="sun-jaxws.xsd"/>
         <tags dir="${docs.home}/tags" includes="**/*.tag" />
         <property key="SPEC_VERSION" value="${release.spec.version}"/>
         <property key="IMPL_VERSION" value="${release.impl.version}"/>
@@ -237,6 +237,18 @@
                   value="${release.impl.version.suffix}"/>
         </filterset>
     </copy>
+
+      <copy tofile="${dist20.home}/tomcat.xml" file="${build.home}/../etc/istackontomcat.xml">
+          <filterset begintoken="@@" endtoken="@@">
+            <filter token="SPEC_VERSION"
+                    value="${release.spec.version}" />
+            <filter token="IMPL_VERSION"
+                    value="${release.impl.version}"/>
+            <filter token="IMPL_VERSION_SUFFIX"
+                    value="${release.impl.version.suffix}"/>
+          </filterset>
+      </copy>
+
     <copy    todir="${dist20.home}/bin">
       <fileset dir="${build.home}/bin"
           includes="wsimport.*, wsgen.*"/>
@@ -256,7 +268,8 @@
     <copy    todir="${dist20.home}/samples">
       <fileset dir="samples" includes="**/common_resources/**"/>
     </copy>
-  	<copy todir="${dist20.home}/samples">
+
+     <copy todir="${dist20.home}/samples">
         <fileset dir="samples" includes="**" excludes="**/common_resources/**,**/CVS/**" />
         <filterset begintoken="@@" endtoken="@@">
           <filter token="SPEC_VERSION" 
