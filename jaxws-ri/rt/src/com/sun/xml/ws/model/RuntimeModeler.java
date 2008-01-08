@@ -65,14 +65,7 @@ import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Action;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.FaultAction;
-import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.Response;
-import javax.xml.ws.ResponseWrapper;
-import javax.xml.ws.WebFault;
+import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -286,6 +279,57 @@ public class RuntimeModeler {
         } catch (ClassNotFoundException e) {
             throw new RuntimeModelerException(errorMessage);
         }
+    }
+
+    private Class getRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
+        try {
+            if (classLoader == null)
+                return Thread.currentThread().getContextClassLoader().loadClass(className);
+            else
+                return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return createRequestWrapperClass(className, method, webMethod, tns,
+                    classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+        }
+    }
+
+    private Class createRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
+        logger.info("Creating request wrapper Class "+className);
+        return WrapperBeanGenerator.createRequestWrapperBean(className, method, webMethod, tns, cl);
+    }
+
+    private Class getResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
+        try {
+            if (classLoader == null)
+                return Thread.currentThread().getContextClassLoader().loadClass(className);
+            else
+                return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return createResponseWrapperClass(className, method, webMethod, tns,  classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+        }
+    }
+
+
+    private Class createResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
+        logger.info("Creating response wrapper bean Class "+className);
+        return WrapperBeanGenerator.createResponseWrapperBean(className, method, webMethod, tns, cl);
+
+    }
+
+    private Class getExceptionBeanClass(String className, Class exception, String name, String namespace) {
+        try {
+            if (classLoader == null)
+                return Thread.currentThread().getContextClassLoader().loadClass(className);
+            else
+                return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return createExceptionBeanClass(className, exception, name, namespace, classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+        }
+    }
+
+    private Class createExceptionBeanClass(String className, Class exception, String name, String namespace, ClassLoader cl) {
+        logger.info("Creating exception bean Class "+className);
+        return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, cl);
     }
 
     protected void setUsesWebMethod(Class clazz, Boolean usesWebMethod) {
@@ -593,7 +637,7 @@ public class RuntimeModeler {
             responseClassName = beanPackage + capitalize(method.getName()) + RESPONSE;
         }
 
-        Class requestClass = getClass(requestClassName, ModelerMessages.localizableRUNTIME_MODELER_WRAPPER_NOT_FOUND(requestClassName));
+        Class requestClass = getRequestWrapperClass(requestClassName, method, webMethod, targetNamespace);
 
         String reqName = operationName;
         String reqNamespace = targetNamespace;
@@ -609,7 +653,7 @@ public class RuntimeModeler {
         String resName = operationName+"Response";
         String resNamespace = targetNamespace;
         if (!isOneway) {
-            responseClass = getClass(responseClassName, ModelerMessages.localizableRUNTIME_MODELER_WRAPPER_NOT_FOUND(responseClassName));
+            responseClass = getResponseWrapperClass(responseClassName, method, webMethod, targetNamespace);
             if (resWrapper != null) {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
@@ -1003,7 +1047,7 @@ public class RuntimeModeler {
                     namespace = webFault.targetNamespace();
             }
             if (faultInfoMethod == null)  {
-                exceptionBean = getClass(className, ModelerMessages.localizableRUNTIME_MODELER_WRAPPER_NOT_FOUND(className));
+                exceptionBean = getExceptionBeanClass(className, exception, name, namespace);
                 exceptionType = ExceptionType.UserDefined;
                 anns = exceptionBean.getAnnotations();
             } else {
