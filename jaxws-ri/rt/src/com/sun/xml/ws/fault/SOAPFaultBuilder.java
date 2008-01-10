@@ -320,8 +320,14 @@ public abstract class SOAPFaultBuilder {
             Object detail = detailBean.newInstance();
             for (Field f : fields) {
                 Method em = exception.getClass().getMethod(getReadMethod(f));
-                Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
-                sm.invoke(detail, em.invoke(exception));
+                try {
+                    Method sm = detailBean.getMethod(getWriteMethod(f), em.getReturnType());
+                    sm.invoke(detail, em.invoke(exception));
+                } catch(NoSuchMethodException ne) {
+                    // Try to use exception bean's public field to populate the value.
+                    Field sf = detailBean.getField(f.getName());
+                    sf.set(detail, em.invoke(exception));
+                }
             }
             return detail;
         } catch (Exception e) {
