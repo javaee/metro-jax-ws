@@ -35,28 +35,28 @@
  */
 package com.sun.xml.ws.model;
 
+import com.sun.istack.NotNull;
+import com.sun.xml.bind.api.JAXBRIContext;
+import com.sun.xml.ws.util.StringUtils;
+import org.objectweb.asm.*;
+import static org.objectweb.asm.Opcodes.*;
+import org.objectweb.asm.Type;
+
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.xml.bind.annotation.XmlAttachmentRef;
+import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.ws.Holder;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.ResponseWrapper;
+import javax.xml.ws.WebServiceException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.lang.reflect.*;
-import java.lang.annotation.Annotation;
-
-import org.objectweb.asm.*;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.signature.SignatureWriter;
-import static org.objectweb.asm.Opcodes.*;
-
-import javax.xml.bind.annotation.XmlAttachmentRef;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.ws.*;
-import javax.jws.WebResult;
-import javax.jws.WebParam;
-import javax.jws.WebMethod;
-
-import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.istack.NotNull;
 
 /**
  * Byte code generator for request and response wrapper beans
@@ -78,8 +78,9 @@ public class WrapperBeanGenerator {
                                String typeName, String typeNS, String[] propOrder,
                                List<Field> fields) throws Exception {
 
+
         ClassWriter cw = new ClassWriter(0);
-        //org.objectweb.asm.util.TraceClassVisitor cw = new TraceClassVisitor(actual, new java.io.PrintWriter(System.out));
+        //org.objectweb.asm.util.TraceClassVisitor cw = new org.objectweb.asm.util.TraceClassVisitor(actual, new java.io.PrintWriter(System.out));
 
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, replaceDotWithSlash(className), null, "java/lang/Object", null);
 
@@ -101,6 +102,7 @@ public class WrapperBeanGenerator {
         type.visitEnd();
 
         for(Field field : fields) {
+            LOGGER.info("Descriptor="+field.asmType.getDescriptor()+" sig="+field.getSignature());
             FieldVisitor fv = cw.visitField(ACC_PUBLIC, field.fieldName, field.asmType.getDescriptor(), field.getSignature(), null);
 
             AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
@@ -505,14 +507,15 @@ public class WrapperBeanGenerator {
         }
 
         String getSignature() {
-            return null;
-            //SignatureWriter sw = new SignatureWriter();
-            //return sw.toString();
+            if (reflectType instanceof Class) {
+                return null;
+            }
+            if (reflectType instanceof TypeVariable) {
+                return null;
+            }
+            return FieldSignature.vms(reflectType);
         }
     }
-
-
-
 
     // TODO MOVE Names to runtime (instead of doing the following)
 
