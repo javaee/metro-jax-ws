@@ -442,6 +442,14 @@
          dest="lib/mimepull-src.zip" />
   </target>
 
+    <target name="integrate-wom" depends="prepare"
+            description="integrate the last successful wom Hudson build">
+      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
+           dest="lib/wom.jar" />
+      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
+           dest="lib/wom-src.zip" />
+    </target>
+
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
     <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
