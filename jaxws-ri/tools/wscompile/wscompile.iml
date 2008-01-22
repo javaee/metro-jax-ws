@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/gen-src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="JDK1.5" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="rt" exported="" />
     <orderEntry type="module-library" exported="">

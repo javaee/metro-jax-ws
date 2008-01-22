@@ -58,6 +58,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.jvnet.wom.impl.parser.XMLParserImpl;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -272,4 +273,9 @@ public final class MetadataFinder extends DOMForest{
         }
         return root.getDocumentElement();
     }
+
+    public void transform(){
+        new Internalizer(this, options, errorReceiver).transform();
+    }
+
 }

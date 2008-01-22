@@ -53,6 +53,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLFilterImpl;
+import org.jvnet.wom.impl.parser.XMLParserImpl;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -69,6 +70,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.*;
 import java.util.*;
+
+import com.sun.xml.xsom.parser.XMLParser;
 
 /**
  * @author Vivek Pandey
@@ -464,6 +467,10 @@ public class DOMForest {
         } catch (TransformerException e) {
             e.printStackTrace();
         }
+    }
+
+    public XMLParser createParser(){
+        return new DOMForestParser(this, new XMLParserImpl());
     }
 
 }
