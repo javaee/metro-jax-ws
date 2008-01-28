@@ -401,13 +401,25 @@ public final class Packet extends DistributedPropertySet {
      * <p>
      * This field can be null. While a message is being processed,
      * this field can be set explicitly to null, to prevent
-     * future pipes from closing a transport.
+     * future pipes from closing a transport (see {@link #keepTransportBackChannelOpen()})
      *
      * <p>
      * This property is set from the parameter
      * of {@link WSEndpoint.PipeHead#process}.
      */
     public @Nullable TransportBackChannel transportBackChannel;
+
+    /**
+     * Keeps the transport back channel open (by seeting {@link #transportBackChannel} to null.)
+     *
+     * @return
+     *      The previous value of {@link #transportBackChannel}.
+     */
+    public TransportBackChannel keepTransportBackChannelOpen() {
+        TransportBackChannel r = transportBackChannel;
+        transportBackChannel = null;
+        return r;
+    }
 
     /**
      * The governing {@link WSEndpoint} in which this message is floating.
