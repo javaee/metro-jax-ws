@@ -629,7 +629,7 @@ public final class Fiber implements Runnable {
                         break;
                     case NextAction.SUSPEND:
                         pushCont(last);
-                        next = null;
+                        next = na.next;
                         suspend();
                         break;
                     default:
