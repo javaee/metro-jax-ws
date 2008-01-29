@@ -39,5 +39,5 @@ package com.sun.tools.ws.api;
  * @author Vivek Pandey
  */
 public interface JavaModelVisitable {
-    public <V, P> void accept(JavaVisitor<V, P> visitor, P param);
+    public <V, P> V accept(JavaVisitor<V, P> visitor, P param);
 }

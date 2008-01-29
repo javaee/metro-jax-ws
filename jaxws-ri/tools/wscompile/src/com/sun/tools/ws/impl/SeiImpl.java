@@ -34,36 +34,48 @@
  * holder.
  */
 package com.sun.tools.ws.impl;
-import com.sun.tools.ws.api.Parameter;
+
+import com.sun.tools.ws.api.Sei;
+import com.sun.tools.ws.api.Operation;
 import com.sun.tools.ws.api.JavaVisitor;
-import com.sun.codemodel.JVar;
-import com.sun.codemodel.JType;
+import com.sun.codemodel.JClass;
+import org.jvnet.wom.api.WSDLPortType;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Vivek Pandey
  */
-public class ParameterImpl implements Parameter{
-    private final JVar jvar;
-    private final OperationImpl owner;
+public class SeiImpl implements Sei {
 
-    public ParameterImpl(JVar jvar, OperationImpl owner) {
-        this.jvar = jvar;
-        this.owner = owner;
+    private final WSDLPortType portType;
+    private final JClass type;
+    private final List<Operation> operations = new ArrayList<Operation>();
+
+    public SeiImpl(WSDLPortType portType, JClass type) {
+        this.portType = portType;
+        this.type = type;
     }
 
-    public String name() {
-        return jvar.name();
+    public WSDLPortType getWSDLPortType() {
+        return portType;
     }
 
-    public String typeName() {
-        return jvar.type().fullName();
+    public JClass getType() {
+        return type;
     }
 
-    public JType type() {
-        return jvar.type();
+    public Collection<Operation> getOperations() {
+        return operations;
+    }
+
+    public void addOperation(Operation op){
+        this.operations.add(op);
     }
 
     public <V, P> V accept(JavaVisitor<V, P> visitor, P param) {
-        return visitor.parameter(this, param);
+        return visitor.sei(this, param);
     }
 }

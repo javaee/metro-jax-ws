@@ -35,16 +35,16 @@
  */
 package com.sun.tools.ws.impl;
 
-import com.sun.tools.ws.api.Operation;
-import com.sun.tools.ws.api.JavaVisitor;
-import com.sun.tools.ws.api.Sei;
-import com.sun.tools.ws.api.Parameter;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JVar;
-
+import com.sun.tools.ws.api.JavaVisitor;
+import com.sun.tools.ws.api.Operation;
+import com.sun.tools.ws.api.Parameter;
+import com.sun.tools.ws.api.Sei;
 import org.jvnet.wom.api.WSDLOperation;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -53,6 +53,7 @@ public class OperationImpl implements Operation {
     private final JMethod jmethod;
     private final Sei owner;
     private final WSDLOperation wsdlOperation;
+    private final List<Parameter> params = new ArrayList<Parameter>();
 
     public OperationImpl(JMethod jmethod, Sei owner, WSDLOperation wsdlOperation) {
         this.jmethod = jmethod;
@@ -60,8 +61,8 @@ public class OperationImpl implements Operation {
         this.wsdlOperation = wsdlOperation;
     }    
 
-    public <V, P> void accept(JavaVisitor<V, P> visitor, P param) {
-        visitor.operation(this, param);
+    public <V, P> V accept(JavaVisitor<V, P> visitor, P param) {
+        return visitor.operation(this, param);
     }
 
     public String name() {

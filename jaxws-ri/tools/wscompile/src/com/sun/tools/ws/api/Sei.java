@@ -44,7 +44,6 @@ import java.util.Collection;
  * @author Vivek Pandey
  */
 public interface Sei extends JavaModelVisitable{
-
     public WSDLPortType getWSDLPortType();
     public JClass getType();
     public Collection<Operation> getOperations();
