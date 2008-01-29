@@ -459,6 +459,7 @@ public class WrapperBeanGenerator {
                 }
             }
         }
+        Collections.sort(fields);
         return fields;
     }
 
@@ -489,7 +490,7 @@ public class WrapperBeanGenerator {
         return jaxbAnnotation;
     }
 
-    private static class Field {
+    private static class Field implements Comparable<Field> {
         private final java.lang.reflect.Type reflectType;
         private final Type asmType;
         private final String fieldName;
@@ -515,6 +516,11 @@ public class WrapperBeanGenerator {
             }
             return FieldSignature.vms(reflectType);
         }
+
+        public int compareTo(Field o) {
+            return fieldName.compareTo(o.fieldName);
+        }
+
     }
 
     // TODO MOVE Names to runtime (instead of doing the following)
