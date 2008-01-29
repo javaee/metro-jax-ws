@@ -216,7 +216,7 @@ public class EndpointImpl extends Endpoint {
         try {
             Class.forName("com.sun.net.httpserver.HttpServer");
         } catch (Exception e) {
-            throw new UnsupportedOperationException("NOT SUPPORTED");
+            throw new UnsupportedOperationException("Couldn't load light weight http server", e);
         }
 
         WSEndpoint wse = WSEndpoint.create(
