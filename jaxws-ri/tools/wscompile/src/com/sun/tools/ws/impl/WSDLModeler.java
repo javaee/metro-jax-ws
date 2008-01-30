@@ -40,15 +40,14 @@ import com.sun.tools.ws.wscompile.ErrorReceiverFilter;
 import com.sun.tools.ws.wscompile.WsimportOptions;
 import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import com.sun.tools.ws.wsdl.parser.DOMForest;
-import com.sun.tools.ws.wsdl.parser.DOMForestParser;
 import com.sun.tools.ws.wsdl.parser.DOMForestScanner;
 import com.sun.tools.ws.wsdl.parser.MetadataFinder;
 import com.sun.tools.ws.wsdl.parser.WSDLInternalizationLogic;
 import com.sun.tools.xjc.api.SchemaCompiler;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
-import org.jvnet.wom.api.parser.WOMParser;
+import org.jvnet.wom.api.WSDLPortType;
 import org.jvnet.wom.api.WSDLSet;
-import org.jvnet.wom.impl.parser.XMLParserImpl;
+import org.jvnet.wom.api.parser.WOMParser;
 import org.jvnet.wom.impl.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -56,8 +55,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import javax.xml.namespace.QName;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * @author Vivek Pandey
@@ -124,6 +125,12 @@ public final class WSDLModeler {
                 scanner.scan( (Element)wsdls.item(i), womParser.getParserHandler() );
         }
         WSDLSet wsdlSet =  womParser.getResult();
+
+        Iterator<WSDLPortType> iter = wsdlSet.portTypes();
+        while(iter.hasNext()){
+            WSDLPortType portType = iter.next();
+            QName name = portType.getName();
+        }
     }
 
     
