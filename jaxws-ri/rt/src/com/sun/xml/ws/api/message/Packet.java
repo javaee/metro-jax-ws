@@ -187,6 +187,25 @@ public final class Packet extends DistributedPropertySet {
         // copy other properties that need to be copied. is there any?
     }
 
+    /**
+     * Creates a copy of this {@link Packet}.
+     * 
+     * @param copyMessage determines whether the {@link Message} from the original {@link Packet} should be copied as 
+     *        well, or not. If the value is {@code false}, the {@link Message} in the copy of the {@link Packet} is {@code null}.
+     * @return copy of the original packet
+     */
+    public Packet copy(boolean copyMessage) {
+        // the copy constructor is originally designed for creating a response packet,
+        // but so far the implementation is usable for this purpose as well, so calling the copy constructor
+        // to avoid code dupliation.
+        Packet copy = new Packet(this);
+        if (copyMessage) {
+            copy.message = this.message.copy(); 
+        }
+       
+        return copy;
+    }
+    
     private Message message;
 
     /**
