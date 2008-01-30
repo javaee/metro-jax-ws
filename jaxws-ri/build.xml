@@ -386,8 +386,17 @@
       </copy>
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
+    <target name="integrate-policy-hudson"
+            description="integrate the last successful policy-core Hudson build">
 
-  <target name="integrate-maven-repository-importer">
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/policy-core/lastSuccessfulBuild/artifact/target/policy.jar"
+             dest="lib/policy.jar"/>
+        <get src="http://kohsuke.sfbay.sun.com/hudson/job/policy-core/lastSuccessfulBuild/artifact/target/policy-src.zip"
+             dest="lib/policy-src.zip"/>
+
+    </target>
+
+    <target name="integrate-maven-repository-importer">
     <get src="http://kohsuke.sfbay/hudson/job/maven-repository-importer/lastSuccessfulBuild/artifact/build/maven-repository-importer.jar"
          dest="tools/lib/maven-repository-importer.jar" />
   </target>
