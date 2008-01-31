@@ -35,18 +35,18 @@
  */
 package com.sun.tools.ws.impl;
 
-import org.xml.sax.Locator;
 import org.jvnet.wom.api.WSDLEntity;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Vivek Pandey
  */
-public abstract class AbstractBDeclaration implements BDeclaration{
+public abstract class AbstractBDeclaration implements BDeclaration {
     protected BindingInfo parent;
     protected WSDLEntity owner;
     protected Locator locator;
@@ -60,7 +60,7 @@ public abstract class AbstractBDeclaration implements BDeclaration{
         return name;
     }
 
-    void setName(QName name){
+    void setName(QName name) {
         this.name = name;
     }
 
@@ -68,15 +68,23 @@ public abstract class AbstractBDeclaration implements BDeclaration{
         return null;
     }
 
-    void setSourceLocator(Locator locator){
+    void setSourceLocator(Locator locator) {
         this.locator = locator;
     }
 
     public Collection<BDeclaration> getChildren() {
+        return decls;
+    }
+
+    public <T extends BDeclaration> T getChild(Class<T> child) {
+        for (BDeclaration decl : decls) {
+            if (child.isInstance(decl))
+                return (T) decl;
+        }
         return null;
     }
 
-    void add(BDeclaration child){
+    void add(BDeclaration child) {
         decls.add(child);
     }
 

@@ -35,20 +35,17 @@
  */
 package com.sun.tools.ws.impl;
 
-import org.jvnet.wom.api.parser.XMLSchemaParser;
-import org.jvnet.wom.api.WSDLExtension;
+import com.sun.tools.xjc.api.Mapping;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.SchemaCompiler;
+import com.sun.tools.xjc.api.TypeAndAnnotation;
 import org.jvnet.wom.Schema;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ContentHandler;
+import org.jvnet.wom.api.WSDLExtension;
+import org.jvnet.wom.api.parser.XMLSchemaParser;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.XMLFilterImpl;
-import com.sun.tools.xjc.api.SchemaCompiler;
-import com.sun.tools.xjc.api.XJC;
-import com.sun.tools.xjc.api.S2JJAXBModel;
-import com.sun.tools.xjc.api.Mapping;
-import com.sun.tools.xjc.api.TypeAndAnnotation;
 
 import javax.xml.namespace.QName;
 import java.util.Collection;
@@ -84,7 +81,7 @@ public class XMLSchemaExtensionHandler implements XMLSchemaParser {
 
     public ContentHandler getContentHandlerFor(String nsUri, String localName) {
         return ("http://www.w3.org/2001/XMLSchema".equals(nsUri) &&
-        "schema".equals(localName))?delegatingHandler:null;
+                "schema".equals(localName)) ? delegatingHandler : null;
     }
 
     private S2JJAXBModel model;
@@ -93,20 +90,25 @@ public class XMLSchemaExtensionHandler implements XMLSchemaParser {
         return xmlschema;
     }
 
+    public S2JJAXBModel getJAXBModel() {
+        return model;
+    }
+
     public void freeze() {
         model = schemaCompiler.bind();
         xmlschema = new XMLSchema();
     }
 
     private class XMLSchemaCH extends XMLFilterImpl {
-        private int counter=0;
+        private int counter = 0;
 
-        /** This method must be called first by WOM parser otherwise there is no way to get ContentHandler from
-         *  SchemaCompiler
+        /**
+         * This method must be called first by WOM parser otherwise there is no way to get ContentHandler from
+         * SchemaCompiler
          */
         @Override
         public void setDocumentLocator(Locator locator) {
-            schemaHandler = schemaCompiler.getParserHandler(locator.getSystemId()+"#types?schema"+counter++);
+            schemaHandler = schemaCompiler.getParserHandler(locator.getSystemId() + "#types?schema" + counter++);
             schemaHandler.setDocumentLocator(locator);
             super.setContentHandler(schemaHandler);
         }
@@ -114,7 +116,7 @@ public class XMLSchemaExtensionHandler implements XMLSchemaParser {
 
     private Schema<Mapping, TypeAndAnnotation> xmlschema;
 
-    private class XMLSchema implements Schema<Mapping, TypeAndAnnotation>{
+    public class XMLSchema implements Schema<Mapping, TypeAndAnnotation> {
 
         public QName getName() {
             return new QName("http://www.w3.org/2001/XMLSchema", "schema");
@@ -126,6 +128,10 @@ public class XMLSchemaExtensionHandler implements XMLSchemaParser {
 
         public TypeAndAnnotation resolveType(QName typeName) {
             return model.getJavaType(typeName);
+        }
+
+        public S2JJAXBModel getJAXBModel() {
+            return model;
         }
     }
 

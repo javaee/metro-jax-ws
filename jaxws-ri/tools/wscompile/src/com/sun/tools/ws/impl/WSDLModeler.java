@@ -35,6 +35,7 @@
  */
 package com.sun.tools.ws.impl;
 
+import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.ws.wscompile.ErrorReceiverFilter;
 import com.sun.tools.ws.wscompile.WsimportOptions;
@@ -55,7 +56,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import javax.xml.namespace.QName;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -76,26 +76,26 @@ public final class WSDLModeler {
     private MetadataFinder buildDOMForest() throws IOException, SAXException {
         MetadataFinder forest = new MetadataFinder(new WSDLInternalizationLogic(), options, errReceiver);
         forest.parseWSDL();
-        if(forest.isMexMetadata)
+        if (forest.isMexMetadata)
             errReceiver.reset();
 
         // parse external binding files
         for (InputSource value : options.getWSDLBindings()) {
             errReceiver.pollAbort();
             Document root = forest.parse(value, false);
-            if(root==null)       continue;   // error must have been reported
+            if (root == null) continue;   // error must have been reported
             Element binding = root.getDocumentElement();
             if (!XmlUtil.fixNull(binding.getNamespaceURI()).equals(JAXWSBindingsConstants.NS_JAXWS_BINDINGS)
-                    || !binding.getLocalName().equals("bindings")){
-                    errReceiver.error(forest.locatorTable.getStartLocation(binding), WsdlMessages.PARSER_NOT_A_BINDING_FILE(
+                    || !binding.getLocalName().equals("bindings")) {
+                errReceiver.error(forest.locatorTable.getStartLocation(binding), WsdlMessages.PARSER_NOT_A_BINDING_FILE(
                         binding.getNamespaceURI(),
                         binding.getLocalName()));
                 continue;
             }
 
             NodeList nl = binding.getElementsByTagNameNS(
-                "http://java.sun.com/xml/ns/javaee", "handler-chains");
-            for(int i = 0; i < nl.getLength(); i++){
+                    "http://java.sun.com/xml/ns/javaee", "handler-chains");
+            for (int i = 0; i < nl.getLength(); i++) {
                 options.addHandlerChainConfiguration((Element) nl.item(i));
             }
 
@@ -106,34 +106,49 @@ public final class WSDLModeler {
     }
 
     public void buildModel() throws IOException, SAXException {
-        WOMParser parser = new WOMParser();
-        parser.setErrorHandler(errReceiver);
-        parser.setEntityResolver(options.entityResolver);
         SchemaCompiler schemaCompiler = options.getSchemaCompiler();
         schemaCompiler.resetSchema();
+
+        //force JAXB to generate schema->Java class in the explictly defined
+        //package on wsimport (wsimport - p pkgName)
+        if (options.defaultPackage != null)
+            schemaCompiler.forcePackageName(options.defaultPackage);
         schemaParser = new XMLSchemaExtensionHandler(schemaCompiler);
 
         //build DOM forest
         MetadataFinder forest = buildDOMForest();
         DOMForestScanner scanner = new DOMForestScanner(forest);
         WOMParser womParser = createWOMParser(forest);
-        // find <xsd:schema>s and parse them individually
-        for( InputSource wsdl : options.getWSDLs() ) {
-            Document wsdlDom = forest.get( wsdl.getSystemId() );
-            NodeList wsdls = wsdlDom.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "definitions");
-            for( int i=0; i<wsdls.getLength(); i++ )
-                scanner.scan( (Element)wsdls.item(i), womParser.getParserHandler() );
-        }
-        WSDLSet wsdlSet =  womParser.getResult();
+        womParser.setErrorHandler(errReceiver);
+        womParser.setEntityResolver(options.entityResolver);
 
+        // find <xsd:schema>s and parse them individually
+        for (InputSource wsdl : options.getWSDLs()) {
+            Document wsdlDom = forest.get(wsdl.getSystemId());
+            NodeList wsdls = wsdlDom.getElementsByTagNameNS(WSDLConstants.NS_WSDL, "definitions");
+            for (int i = 0; i < wsdls.getLength(); i++)
+                scanner.scan((Element) wsdls.item(i), womParser.getParserHandler());
+        }
+        WSDLSet wsdlSet = womParser.getResult();
         Iterator<WSDLPortType> iter = wsdlSet.portTypes();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
+
             WSDLPortType portType = iter.next();
-            QName name = portType.getName();
+            ModelerContext context = new ModelerContext(wsdlSet, options, errReceiver);
+
+
+            try {
+
+
+                SeiImpl sei = new SeiImpl(portType, context);
+
+            } catch (JClassAlreadyExistsException e) {
+//                errReceiver.error(portType.getLocation(), GeneratorMessages.GENERATOR_SEI_CLASS_ALREADY_EXIST(seiName, portType.getName()));
+                continue;
+            }
         }
     }
 
-    
 
     public WOMParser createWOMParser(final DOMForest forest) {
         WOMParser p = new WOMParser(forest.createParser());
@@ -145,17 +160,16 @@ public final class WSDLModeler {
                 // these references, yet we don't want to just run them blindly, since if we do that
                 // DOMForestParser always get the translated system ID when catalog is used
                 // (where DOMForest records trees with their original system IDs.)
-                if(systemId!=null && forest.get(systemId)!=null)
+                if (systemId != null && forest.get(systemId) != null)
                     return new InputSource(systemId);
-                if(options.entityResolver!=null)
-                    return options.entityResolver.resolveEntity(publicId,systemId);
+                if (options.entityResolver != null)
+                    return options.entityResolver.resolveEntity(publicId, systemId);
 
                 return null;
             }
         });
         return p;
     }
-
 
 
 }

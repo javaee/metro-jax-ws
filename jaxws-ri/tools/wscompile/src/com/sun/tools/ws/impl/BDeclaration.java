@@ -35,8 +35,8 @@
  */
 package com.sun.tools.ws.impl;
 
-import org.xml.sax.Locator;
 import org.jvnet.wom.api.WSDLExtension;
+import org.xml.sax.Locator;
 
 import java.util.Collection;
 
@@ -45,6 +45,10 @@ import java.util.Collection;
  */
 public interface BDeclaration extends WSDLExtension {
     void setParent(BindingInfo bindingInfo);
+
     Locator getSourceLocator();
+
     Collection<BDeclaration> getChildren();
+
+    <T extends BDeclaration> T getChild(Class<T> child);
 }

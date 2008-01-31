@@ -35,8 +35,10 @@
  */
 package com.sun.tools.ws.impl;
 
-import org.jvnet.wom.api.parser.WSDLExtensionHandler;
+import com.sun.tools.ws.processor.generator.Names;
+import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
 import org.jvnet.wom.api.WSDLExtension;
+import org.jvnet.wom.api.parser.WSDLExtensionHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
@@ -46,10 +48,6 @@ import org.xml.sax.helpers.XMLFilterImpl;
 
 import java.util.Collection;
 import java.util.Stack;
-
-import com.sun.tools.ws.wsdl.document.jaxws.JAXWSBindingsConstants;
-import com.sun.tools.ws.processor.generator.Names;
-import com.sun.xml.bind.api.JAXBRIContext;
 
 /**
  * @author Vivek Pandey
@@ -69,15 +67,39 @@ public class JAXWSBindingParser implements WSDLExtensionHandler {
         return null;
     }
 
+    private int chState = 0;
+
     public ContentHandler getContentHandlerFor(String nsUri, String localName) {
-        if(nsUri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS))
-            return contentHandler;
+        if (nsUri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS)) {
+            return bindingsContentHandler;
+        } else if (nsUri.equals(JAXWSBindingsConstants.CLASS)) {
+            chState = 1;
+            return classContentHandler;
+        } else if (nsUri.equals(JAXWSBindingsConstants.METHOD)) {
+            chState = 2;
+            return methodContentHandler;
+        } else if (nsUri.equals(JAXWSBindingsConstants.PACKAGE)) {
+            chState = 3;
+            return packageContentHandler;
+        } else if (nsUri.equals(JAXWSBindingsConstants.JAVADOC)) {
+            switch (chState) {
+                case 1:
+                    return classContentHandler;
+                case 2:
+                    return methodContentHandler;
+                case 3:
+                    return packageContentHandler;
+            }
+        }
         return null;
     }
 
-    private final JAXWSBindingCH contentHandler = new JAXWSBindingCH();
+    private final JAXWSBindingCH bindingsContentHandler = new JAXWSBindingCH();
+    private final JAXWSClassCH classContentHandler = new JAXWSClassCH();
+    private final JAXWSMethodCH methodContentHandler = new JAXWSMethodCH();
+    private final JAXWSPackageCH packageContentHandler = new JAXWSPackageCH();
 
-    private class JAXWSBindingCH extends XMLFilterImpl{
+    private class JAXWSBindingCH extends XMLFilterImpl {
         int state = 0;
 
         @Override
@@ -88,81 +110,226 @@ public class JAXWSBindingParser implements WSDLExtensionHandler {
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-            if(!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())){
+            if (!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())) {
                 //Throw error?
                 return;
             }
 
-            if(localName.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getLocalPart())){
-                if(root == null){
+            if (localName.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getLocalPart())) {
+                if (root == null) {
                     root = new BindingInfo(locator);
                     stack.push(root);
-                }else{
+                } else {
                     BindingInfo child = new BindingInfo(locator);
                     root.add(child);
                     stack.push(child);
                     root = child;
                 }
-            }else if(localName.equals(JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING.getLocalPart())){
-                state = 1;
-            }else if(localName.equals(JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE.getLocalPart())){
-                state = 2;
-            }else if(localName.equals(JAXWSBindingsConstants.ENABLE_MIME_CONTENT.getLocalPart())){
-                state = 3;
-            }else if(localName.equals(JAXWSBindingsConstants.CLASS.getLocalPart())){
+            } else if (localName.equals(JAXWSBindingsConstants.PARAMETER.getLocalPart())) {
+                String part = atts.getValue("part");
+                String childElementName = atts.getValue("childElementName");
                 String name = atts.getValue("name");
                 validateName(name);
-                state = 4;//javadoc
-            }
-
-
-
-
-        }
-
-        private void validateName(String name) throws SAXParseException {
-            if((name == null) ||
-                    Names.isJavaReservedWord(name)){
-                throw new SAXParseException("Invalid name customization: "+name+".", locator);
+                root.add(new BParameter(part, name, childElementName, locator));
+            } else if (localName.equals(JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING.getLocalPart())) {
+                state = 1;
+            } else if (localName.equals(JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE.getLocalPart())) {
+                state = 2;
+            } else if (localName.equals(JAXWSBindingsConstants.ENABLE_MIME_CONTENT.getLocalPart())) {
+                state = 3;
+            } else if (localName.equals(JAXWSBindingsConstants.PROVIDER.getLocalPart())) {
+                root.add(new BProvider(true, locator));
             }
         }
 
         @Override
         public void characters(char ch[], int start, int length) throws SAXException {
-            switch(state){
+            switch (state) {
                 case 1: //enableAsync
                     String enableAsync = new String(ch, start, length);
                     root.setEnableAsync(Boolean.valueOf(enableAsync));
+                    state = 0;
                     break;
                 case 2: //enableWraper
                     String enableWrapper = new String(ch, start, length);
                     root.setEnableWrapperStyle(Boolean.valueOf(enableWrapper));
+                    state = 0;
                     break;
                 case 3: //enableMimeContent
                     String enableMimeContent = new String(ch, start, length);
                     BMimeContent mimeContent = new BMimeContent(Boolean.valueOf(enableMimeContent), locator);
                     root.add(mimeContent);
+                    state = 0;
                     break;
-                case 4:
-                    String javadoc = new String(ch, start, length);
-                    
             }
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            if(!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())){
+            if (!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())) {
                 return;
             }
 
-            if(localName.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getLocalPart())){
+            if (localName.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getLocalPart())) {
                 root = stack.pop();
-            }
-
-            if(localName.equals(JAXWSBindingsConstants.ENABLE_ASYNC_MAPPING.getLocalPart()) ||
-                    localName.equals(JAXWSBindingsConstants.ENABLE_WRAPPER_STYLE.getLocalPart())){
-                state = 0;
             }
         }
     }
+
+    private class JAXWSClassCH extends XMLFilterImpl {
+        int state = 0;
+        BClass bclass;
+
+        @Override
+        public void setDocumentLocator(Locator loc) {
+            locator = loc;
+            super.setDocumentLocator(loc);
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            if (!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())) {
+                //Throw error?
+                return;
+            }
+
+            if (localName.equals(JAXWSBindingsConstants.CLASS.getLocalPart())) {
+                String name = atts.getValue("name");
+                validateName(name);
+                bclass = new BClass(name, locator);
+            } else if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                state = 1;
+            }
+        }
+
+
+        private StringBuffer javadoc = new StringBuffer();
+
+        @Override
+        public void characters(char ch[], int start, int length) throws SAXException {
+            if (state == 1) {
+                javadoc.append(ch, start, length);
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                if (javadoc.length() > 0 && bclass != null) {
+                    bclass.setJavaDoc(javadoc.toString());
+                    javadoc.setLength(0);
+                    state = 0;
+                }
+            } else if (localName.equals(JAXWSBindingsConstants.CLASS.getLocalPart())) {
+                root.add(bclass);
+            }
+        }
+    }
+
+    private class JAXWSMethodCH extends XMLFilterImpl {
+        int state = 0;
+        BMethod bmethod;
+
+        @Override
+        public void setDocumentLocator(Locator loc) {
+            locator = loc;
+            super.setDocumentLocator(loc);
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            if (!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())) {
+                //Throw error?
+                return;
+            }
+
+            if (localName.equals(JAXWSBindingsConstants.METHOD.getLocalPart())) {
+                String name = atts.getValue("name");
+                validateName(name);
+                bmethod = new BMethod(name, locator);
+            } else if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                state = 1;
+            }
+        }
+
+        private StringBuffer javadoc = new StringBuffer();
+
+        @Override
+        public void characters(char ch[], int start, int length) throws SAXException {
+            if (state == 1) {
+                javadoc.append(ch, start, length);
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                if (javadoc.length() > 0 && bmethod != null) {
+                    bmethod.setJavaDoc(javadoc.toString());
+                    javadoc.setLength(0);
+                    state = 0;
+                }
+            } else if (localName.equals(JAXWSBindingsConstants.METHOD.getLocalPart())) {
+                root.add(bmethod);
+            }
+        }
+    }
+
+    private class JAXWSPackageCH extends XMLFilterImpl {
+        int state = 0;
+        BPackage bpackage;
+
+        @Override
+        public void setDocumentLocator(Locator loc) {
+            locator = loc;
+            super.setDocumentLocator(loc);
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            if (!uri.equals(JAXWSBindingsConstants.JAXWS_BINDINGS.getNamespaceURI())) {
+                //Throw error?
+                return;
+            }
+
+            if (localName.equals(JAXWSBindingsConstants.PACKAGE.getLocalPart())) {
+                String name = atts.getValue("name");
+                validateName(name);
+                bpackage = new BPackage(name, locator);
+            } else if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                state = 1;
+            }
+        }
+
+        private StringBuffer javadoc = new StringBuffer();
+
+        @Override
+        public void characters(char ch[], int start, int length) throws SAXException {
+            if (state == 1) {
+                javadoc.append(ch, start, length);
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (localName.equals(JAXWSBindingsConstants.JAVADOC.getLocalPart())) {
+                if (javadoc.length() > 0 && bpackage != null) {
+                    bpackage.setJavaDoc(javadoc.toString());
+                    javadoc.setLength(0);
+                    state = 0;
+                }
+            } else if (localName.equals(JAXWSBindingsConstants.PACKAGE.getLocalPart())) {
+                root.add(bpackage);
+            }
+        }
+    }
+
+
+    private void validateName(String name) throws SAXParseException {
+        if ((name == null) ||
+                Names.isJavaReservedWord(name)) {
+            throw new SAXParseException("Invalid name customization: " + name + ".", locator);
+        }
+    }
+
 }
