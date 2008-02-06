@@ -1129,6 +1129,8 @@ public class RuntimeModeler {
                         requestNamespace = webParam.targetNamespace();
                     }
                     isHeader = webParam.header();
+                    if(isHeader)
+                        paramName = "arg"+pos;
                     paramMode = webParam.mode();
                     if (isHolder && paramMode == Mode.IN)
                         paramMode = Mode.INOUT;
