@@ -54,6 +54,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.logging.Logger;
+import java.security.AccessController;
 
 /**
  * Factory for {@link XMLStreamReader}.
@@ -75,7 +76,7 @@ public abstract class XMLStreamReaderFactory {
 
     static {
         XMLInputFactory xif = null;
-        if (Boolean.getBoolean(XMLStreamReaderFactory.class.getName()+".woodstox")) {
+        if (getProperty(XMLStreamReaderFactory.class.getName()+".woodstox")) {
             try {
                 xif = (XMLInputFactory)Class.forName("com.ctc.wstx.stax.WstxInputFactory").newInstance();
             } catch (Exception e) {
@@ -92,7 +93,7 @@ public abstract class XMLStreamReaderFactory {
 
         // this system property can be used to disable the pooling altogether,
         // in case someone hits an issue with pooling in the production system.
-        if(!Boolean.getBoolean(XMLStreamReaderFactory.class.getName()+".noPool"))
+        if(!getProperty(XMLStreamReaderFactory.class.getName()+".noPool"))
             f = Zephyr.newInstance(xif);
 
         if(f==null) {
@@ -410,5 +411,17 @@ public abstract class XMLStreamReaderFactory {
         public XMLStreamReader doCreate(String systemId, Reader in, boolean rejectDTDs) {
             return super.doCreate(systemId, in, rejectDTDs);
         }
+    }
+
+    private static Boolean getProperty(final String prop) {
+        Boolean b = AccessController.doPrivileged(
+            new java.security.PrivilegedAction<Boolean>() {
+                public Boolean run() {
+                    String value = System.getProperty(prop);
+                    return value != null ? Boolean.valueOf(value) : Boolean.FALSE;
+                }
+            }
+        );
+        return Boolean.FALSE;
     }
 }
