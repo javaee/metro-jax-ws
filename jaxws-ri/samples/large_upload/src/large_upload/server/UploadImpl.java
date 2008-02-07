@@ -60,6 +60,7 @@ public class UploadImpl {
              File file = File.createTempFile(name, "");
              System.out.println("Creating file = "+file);
              dh.moveTo(file);
+             dh.close();
              System.out.println("Verifying file = "+file);
              verifyFile(file);
              System.out.println("Verified file = "+file);
