@@ -118,6 +118,7 @@
   <![CDATA[
         assertEquals(77L, echoPort.echoInHeader(33, 44L));
         assertEquals(77L, echoPort.echoIn2Header(33, 44L, "dirk"));
+        assertEquals(77L, echoPort.echoIn3Header(33, 44L, "dirk"));
 
         longHolder = new Holder(new Long(44));
         assertEquals(121L, echoPort.echoInOutHeader(33, longHolder));
