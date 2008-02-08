@@ -74,6 +74,7 @@ import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import org.xml.sax.SAXException;
 
 import javax.jws.HandlerChain;
+import javax.jws.WebService;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -253,7 +254,7 @@ public class WSServiceDelegate extends WSService {
     }
 
     /**
-     * Parses the WSDL and builds {@link WSDLModel}.
+     * Parses the WSDL and builds {@link com.sun.xml.ws.api.model.wsdl.WSDLModel}.
      * @param wsdlDocumentLocation
      *      Either this or <tt>wsdl</tt> parameter must be given.
      *      Null location means the system won't be able to resolve relative references in the WSDL,
@@ -331,6 +332,16 @@ public class WSServiceDelegate extends WSService {
     public <T> T getPort(Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI
         QName portTypeName = RuntimeModeler.getPortTypeName(portInterface);
+        WSDLServiceImpl wsdlService = this.wsdlService;
+        if(wsdlService == null) {
+            // assigning it to local variable and not setting it back to this.wsdlService intentionally
+            // as we don't want to include the service instance with information gathered from sei
+            wsdlService = getWSDLModelfromSEI(portInterface);
+            //still null? throw error need wsdl metadata to create a proxy
+            if(wsdlService == null) {
+                throw new WebServiceException(ProviderApiMessages.NO_WSDL_NO_PORT(portInterface.getName()));
+            }
+        }
         //get the first port corresponding to the SEI
         WSDLPortImpl port = wsdlService.getMatchingPort(portTypeName);
         if (port == null)
@@ -548,6 +559,34 @@ public class WSServiceDelegate extends WSService {
         return portName;
 
     }
+
+    private WSDLServiceImpl getWSDLModelfromSEI(final Class sei) {
+        WebService ws = AccessController.doPrivileged(new PrivilegedAction<WebService>() {
+            public WebService run() {
+                return (WebService) sei.getAnnotation(WebService.class);
+            }
+        });
+        if (ws == null || ws.wsdlLocation().equals(""))
+            return null;
+        String wsdlLocation = ws.wsdlLocation();
+        wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
+        Source wsdl = new StreamSource(wsdlLocation);
+        WSDLServiceImpl service = null;
+
+        try {
+            URL url = wsdl.getSystemId() == null ? null : new URL(wsdl.getSystemId());
+            WSDLModelImpl model = parseWSDL(url, wsdl);
+            service = model.getService(this.serviceName);
+            if (service == null)
+                throw new WebServiceException(
+                        ClientMessages.INVALID_SERVICE_NAME(this.serviceName,
+                                buildNameList(model.getServices().keySet())));
+        } catch (MalformedURLException e) {
+            throw new WebServiceException(ClientMessages.INVALID_WSDL_URL(wsdl.getSystemId()));
+        }
+        return service;
+    }
+
     public QName getServiceName() {
         return serviceName;
     }
