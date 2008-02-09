@@ -308,8 +308,19 @@ public class WSServiceDelegate extends WSService {
     public <T> T getPort(QName portName, Class<T> portInterface, WebServiceFeature... features) {
         if (portName == null || portInterface == null)
             throw new IllegalArgumentException();
-        WSDLPortImpl portModel = getPortModel(portName);
-        return getPort(portModel.getEPR(),portName,portInterface,features);
+        WSDLServiceImpl tWsdlService = this.wsdlService;
+        if (tWsdlService == null) {
+            // assigning it to local variable and not setting it back to this.wsdlService intentionally
+            // as we don't want to include the service instance with information gathered from sei
+            tWsdlService = getWSDLModelfromSEI(portInterface);
+            //still null? throw error need wsdl metadata to create a proxy
+            if (tWsdlService == null) {
+                throw new WebServiceException(ProviderApiMessages.NO_WSDL_NO_PORT(portInterface.getName()));
+            }
+
+        }
+        WSDLPortImpl portModel = getPortModel(tWsdlService, portName);
+        return getPort(portModel.getEPR(), portName, portInterface, features);
     }
 
     public <T> T getPort(EndpointReference epr, Class<T> portInterface, WebServiceFeature... features) {
@@ -498,7 +509,7 @@ public class WSServiceDelegate extends WSService {
         // TODO: what if it has different epr address?
         {
             PortInfo portInfo = new PortInfo(this, (wsepr.getAddress() == null) ? null : EndpointAddress.create(wsepr.getAddress()), eprPortName,
-                    getPortModel(eprPortName).getBinding().getBindingId());
+                    getPortModel(wsdlService, eprPortName).getBinding().getBindingId());
             if (!ports.containsKey(eprPortName)) {
                 ports.put(eprPortName, portInfo);
             }
@@ -650,11 +661,11 @@ public class WSServiceDelegate extends WSService {
      *
      * @return guaranteed to be non-null.
      */
-    public @NotNull WSDLPortImpl getPortModel(QName portName) {
+    private @NotNull WSDLPortImpl getPortModel(WSDLServiceImpl wsdlService, QName portName) {
         WSDLPortImpl port = wsdlService.get(portName);
         if (port == null)
             throw new WebServiceException(
-                ClientMessages.INVALID_PORT_NAME(portName,buildWsdlPortNames()));
+                    ClientMessages.INVALID_PORT_NAME(portName, buildWsdlPortNames()));
         return port;
     }
 
@@ -666,7 +677,7 @@ public class WSServiceDelegate extends WSService {
     private void addSEI(QName portName, Class portInterface) throws WebServiceException {
         SEIPortInfo spi = seiContext.get(portName);
         if (spi != null) return;
-        WSDLPortImpl wsdlPort = getPortModel(portName);
+        WSDLPortImpl wsdlPort = getPortModel(wsdlService, portName);
         RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort);
         modeler.setPortName(portName);
         AbstractSEIModelImpl model = modeler.buildRuntimeModel();
