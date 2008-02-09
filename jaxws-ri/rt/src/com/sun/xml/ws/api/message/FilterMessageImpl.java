@@ -130,7 +130,7 @@ public class FilterMessageImpl extends Message {
     }
 
     public SOAPMessage readAsSOAPMessage(Packet packet, boolean inbound) throws SOAPException {
-        return super.readAsSOAPMessage(packet, inbound);
+        return delegate.readAsSOAPMessage(packet, inbound);
     }
 
     public <T> T readPayloadAsJAXB(Unmarshaller unmarshaller) throws JAXBException {
