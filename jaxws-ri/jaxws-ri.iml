@@ -9,6 +9,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/annotations/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -50,6 +51,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/async/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -91,6 +93,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/asyncprovider/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -132,6 +135,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/catalog/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -173,6 +177,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/dispatch/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -214,6 +219,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/external-customize/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -255,6 +261,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromjava/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -296,6 +303,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromjava-soap12/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -337,6 +345,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromjava-wsaddressing/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -378,6 +387,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromjavahandler/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -419,6 +429,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdl/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -460,6 +471,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdl-soap12/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -501,6 +513,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdl-wsaddressing/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -542,6 +555,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdlhandler/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -583,6 +597,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdl_secure/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -624,6 +639,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/inline-customize/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -665,6 +681,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/mime/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -706,6 +723,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/mime-large/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -747,6 +765,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/mtom/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -788,6 +807,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/mtom-large/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -829,6 +849,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/mtom-soap12/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -870,6 +891,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/provider/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -911,6 +933,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/restful/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -952,6 +975,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/stateful/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -993,6 +1017,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/supplychain/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -1034,6 +1059,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/type_substitution/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -1075,6 +1101,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/schema_validation/etc" relative="/WEB-INF" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -1116,6 +1143,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/samples/fromwsdl/build/war" relative="/" />
         </webroots>
+        <sourceRoots />
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -1166,7 +1194,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="APT" level="application" />
     <orderEntryProperties />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">

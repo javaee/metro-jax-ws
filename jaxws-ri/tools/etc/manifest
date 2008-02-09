@@ -7,4 +7,4 @@ Implementation-Vendor: Sun Microsystems Inc
 Implementation-Vendor-Id: com.sun
 Extension-Name: com.sun.tools.ws
 Main-Class: com.sun.tools.ws.WsImport
-Class-Path: jaxws-rt.jar jaxb-xjc.jar relaxngDatatype.jar wom.jar
+Class-Path: jaxws-rt.jar jaxb-xjc.jar relaxngDatatype.jar

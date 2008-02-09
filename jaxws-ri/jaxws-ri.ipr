@@ -337,12 +337,11 @@
       <module fileurl="file://$PROJECT_DIR$/tools/resourcegen/resourcegen.iml" filepath="$PROJECT_DIR$/tools/resourcegen/resourcegen.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt/rt.iml" filepath="$PROJECT_DIR$/rt/rt.iml" />
       <module fileurl="file://$PROJECT_DIR$/rt-fi/rt-fi.iml" filepath="$PROJECT_DIR$/rt-fi/rt-fi.iml" />
-      <module fileurl="file://$PROJECT_DIR$/samples/samples.iml" filepath="$PROJECT_DIR$/samples/samples.iml" />
       <module fileurl="file://$PROJECT_DIR$/servlet/servlet.iml" filepath="$PROJECT_DIR$/servlet/servlet.iml" group="transports" />
       <module fileurl="file://$PROJECT_DIR$/../test-rearch/test/test.iml" filepath="$PROJECT_DIR$/../test-rearch/test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/../test-rearch/testutil/testutil.iml" filepath="$PROJECT_DIR$/../test-rearch/testutil/testutil.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/wscompile/wscompile.iml" filepath="$PROJECT_DIR$/tools/wscompile/wscompile.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../wsit/wsit.iml" filepath="$PROJECT_DIR$/../wsit/wsit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../wsit/wsit.iml" filepath="$PROJECT_DIR$/..it.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="JDK1.5" project-jdk-type="JavaSDK" />
@@ -362,7 +361,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="CVS" />
-    <mapping directory="$PROJECT_DIR$/../wsit" vcs="CVS" />
+    <mapping directory="/wsit" vcs="CVS" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
