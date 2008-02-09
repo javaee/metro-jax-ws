@@ -53,6 +53,7 @@ import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
 import com.sun.xml.ws.client.dispatch.DispatchImpl;
 import com.sun.xml.ws.message.AttachmentSetImpl;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
+import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import org.jvnet.staxex.XMLStreamReaderEx;
 import org.jvnet.staxex.XMLStreamWriterEx;
 import org.xml.sax.ContentHandler;
@@ -65,11 +66,13 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.Detail;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Source;
 import javax.xml.ws.Dispatch;
+import javax.xml.ws.WebServiceException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -436,6 +439,27 @@ public abstract class Message {
 
         String nsUri = getPayloadNamespaceURI();
         return nsUri.equals(SOAPVersion.SOAP_11.nsUri) || nsUri.equals(SOAPVersion.SOAP_12.nsUri);
+    }
+
+    /**
+     * It gives S:Envelope/S:Body/S:Fault/detail 's first child's name. Should
+     * be called for messages that have SOAP Fault.
+     *
+     * <p> This implementation is expensive so concrete implementations are
+     * expected to override this one.
+     *
+     * @return first detail entry's name, if there is one
+     *         else null
+     */
+    public @Nullable QName getFirstDetailEntryName() {
+        assert isFault();
+        Message msg = copy();
+        try {
+            SOAPFaultBuilder fault = SOAPFaultBuilder.create(msg);
+            return fault.getFirstDetailEntryName();
+        } catch (JAXBException e) {
+            throw new WebServiceException(e);
+        }
     }
 
     /**
