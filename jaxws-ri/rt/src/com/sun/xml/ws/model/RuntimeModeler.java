@@ -1122,15 +1122,15 @@ public class RuntimeModeler {
             for (Annotation annotation : pannotations[pos]) {
                 if (annotation.annotationType() == javax.jws.WebParam.class) {
                     javax.jws.WebParam webParam = (javax.jws.WebParam) annotation;
+                    isHeader = webParam.header();
+                    if(isHeader)
+                        paramName = "arg"+pos;
                     if (webParam.name().length() > 0)
                         paramName = webParam.name();
                     partName = webParam.partName();
                     if (!webParam.targetNamespace().equals("")) {
                         requestNamespace = webParam.targetNamespace();
-                    }
-                    isHeader = webParam.header();
-                    if(isHeader)
-                        paramName = "arg"+pos;
+                    }                    
                     paramMode = webParam.mode();
                     if (isHolder && paramMode == Mode.IN)
                         paramMode = Mode.INOUT;
