@@ -39,6 +39,8 @@ package com.sun.xml.ws.wsdl.parser;
 import com.sun.xml.ws.streaming.Attributes;
 import com.sun.xml.ws.streaming.XMLReaderException;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 
 
 import java.io.File;
@@ -69,7 +71,7 @@ public class ParserUtil {
     public static QName getQName(XMLStreamReader reader, String tag){
         String localName = XmlUtil.getLocalPart(tag);
         String pfix = XmlUtil.getPrefix(tag);
-        String uri = reader.getNamespaceURI(pfix);
+        String uri = reader.getNamespaceURI(fixNull(pfix));
         return new QName(uri, localName);
     }
 
@@ -108,5 +110,10 @@ public class ParserUtil {
         //          Integer.toString(reader.getLineNumber()),
         //          reader.getLocalName(),
         //          arg});
+    }
+
+    private static @NotNull String fixNull(@Nullable String s) {
+        if (s == null) return "";
+        else return s;
     }
 }
