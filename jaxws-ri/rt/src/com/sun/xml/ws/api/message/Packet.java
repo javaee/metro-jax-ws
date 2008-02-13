@@ -184,7 +184,7 @@ public final class Packet extends DistributedPropertySet {
         this.handlerScopePropertyNames = that.handlerScopePropertyNames;
         this.contentNegotiation = that.contentNegotiation;
         this.wasTransportSecure = that.wasTransportSecure;
-        this.endpointAddress = EndpointAddress.create(that.endpointAddress.toString());
+        this.endpointAddress = (that.endpointAddress != null) ? EndpointAddress.create(that.endpointAddress.toString()) : null;
         // copy other properties that need to be copied. is there any?
     }
 
