@@ -67,6 +67,17 @@ public interface JAXWSProperties {
     public static final String CONNECT_TIMEOUT =
         "com.sun.xml.ws.connect.timeout";
 
+    /**
+     * Set this property on the {@link BindingProvider#getRequestContext()} to
+     * enable {@link HttpURLConnection#httpConnection.setReadTimeout(int)}
+     *
+     *<p>
+     * int timeout = ...;
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
+     * ctxt.put(REQUEST_TIMEOUT, timeout);
+     */
+     public static final String REQUEST_TIMEOUT =
+        "com.sun.xml.ws.request.timeout";
 
     /**
      * Set this property on the {@link BindingProvider#getRequestContext()} to
