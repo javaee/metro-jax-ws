@@ -40,12 +40,17 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 
 /**
- * @author Arun Gupta
+ * This is used to create exception when a particular WS-Addressing header is missing in the message
+ * @author Rama Pulavarthi
  */
-public class MapRequiredException extends WebServiceException {
+public class MissingAddressingHeaderException extends WebServiceException {
     QName name;
 
-    public MapRequiredException(QName name) {
+    /**
+     *
+     * @param name QName of the missing WS-Addressing Header
+     */
+    public MissingAddressingHeaderException(QName name) {
         this.name = name;
     }
 

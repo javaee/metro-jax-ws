@@ -41,7 +41,7 @@ import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_ANONYMOUS_AD
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
 import com.sun.xml.ws.addressing.model.InvalidMapException;
-import com.sun.xml.ws.addressing.model.MapRequiredException;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -306,11 +306,11 @@ public final class WsaServerTube extends WsaTube {
 
         // if no wsa:To header is found
         if (!foundTo)
-            throw new MapRequiredException(addressingVersion.toTag);
+            throw new MissingAddressingHeaderException(addressingVersion.toTag);
 
         // if two-way and no wsa:MessageID is found
         if (!wbo.getOperation().isOneWay() && !foundMessageId)
-            throw new MapRequiredException(addressingVersion.messageIDTag);
+            throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
     }
 
 

@@ -38,7 +38,7 @@ package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.addressing.model.InvalidMapException;
-import com.sun.xml.ws.addressing.model.MapRequiredException;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -146,7 +146,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
                     addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
             soapFault = helper.newInvalidMapFault(e, addressingVersion);
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
-        } catch (MapRequiredException e) {
+        } catch (MissingAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,addressingVersion.getMapRequiredText()+", Problem header:"+ e.getMapQName(),e);
             soapFault = helper.newMapRequiredFault(e, addressingVersion);
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
@@ -219,7 +219,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             // no WS-A headers are found
             if (addressingRequired)
                 // if WS-A is required, then throw an exception looking for wsa:Action header
-                throw new MapRequiredException(addressingVersion.actionTag);
+                throw new MissingAddressingHeaderException(addressingVersion.actionTag);
             else
                 // else no need to process
                 return;
@@ -359,7 +359,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
         // if no wsa:Action header is found
         if (!foundAction)
-            throw new MapRequiredException(addressingVersion.actionTag);
+            throw new MissingAddressingHeaderException(addressingVersion.actionTag);
         validateSOAPAction(packet);
     }
     private static final Logger LOGGER = Logger.getLogger(WsaTube.class.getName());

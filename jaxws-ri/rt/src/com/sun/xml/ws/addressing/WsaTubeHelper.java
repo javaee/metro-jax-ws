@@ -37,7 +37,7 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.xml.ws.addressing.model.InvalidMapException;
-import com.sun.xml.ws.addressing.model.MapRequiredException;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
@@ -52,7 +52,6 @@ import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.istack.Nullable;
-import com.sun.istack.NotNull;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.Marshaller;
@@ -299,7 +298,7 @@ public abstract class WsaTubeHelper {
         }
     }
 
-    public SOAPFault newMapRequiredFault(MapRequiredException e, AddressingVersion av) {
+    public SOAPFault newMapRequiredFault(MissingAddressingHeaderException e, AddressingVersion av) {
         QName subcode = av.mapRequiredTag;
         QName subsubcode = av.mapRequiredTag;
         String faultstring = av.getMapRequiredText();

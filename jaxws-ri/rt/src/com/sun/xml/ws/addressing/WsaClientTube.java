@@ -38,9 +38,7 @@ package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
-import com.sun.xml.ws.addressing.model.MapRequiredException;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -111,7 +109,7 @@ public final class WsaClientTube extends WsaTube {
 //        if(!foundRelatesTo)
 //            // RelatesTo required as per
 //            // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
-//            throw new MapRequiredException(addressingVersion.relatesToTag);
+//            throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
 
     }
 }
