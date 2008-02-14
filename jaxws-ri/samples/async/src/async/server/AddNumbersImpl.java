@@ -43,6 +43,8 @@ public class AddNumbersImpl {
     
     public int addNumbers (int number1, int number2) {
         System.out.println ("Received Request!");
+        System.out.println("Sleepign for 5 seconds");
+        Thread.sleep(6000);
         return number1 + number2;
     }
 }
