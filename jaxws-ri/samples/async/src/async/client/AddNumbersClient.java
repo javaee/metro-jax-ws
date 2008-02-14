@@ -104,8 +104,8 @@ public class AddNumbersClient {
         System.out.println("\nInvoking Asynchronous Callback addNumbersAsync():");
         AddNumbersCallbackHandler callbackHandler = new AddNumbersCallbackHandler();
         Future<?> response = port.addNumbersAsync(number1, number2, callbackHandler);
-        Thread.sleep(2000);
-
+        Thread.sleep(8000);
+        assertTrue("Waited 8 sec, no response yet, something wrong", response.isDone());
         AddNumbersResponse output = callbackHandler.getResponse();
         System.out.printf("The result of adding %d and %d is %d.\n", number1, number2, output.getReturn());
     }
@@ -120,6 +120,7 @@ public class AddNumbersClient {
         * @see javax.xml.ws.AsyncHandler#handleResponse(javax.xml.ws.Response)
         */
         public void handleResponse(Response<AddNumbersResponse> response) {
+            System.out.println("AddNumbersCallbackHandler: Received Response from the service");
             try {
                 output = response.get();
             } catch (ExecutionException e) {
