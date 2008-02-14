@@ -54,7 +54,7 @@ public class MissingAddressingHeaderException extends WebServiceException {
         this.name = name;
     }
 
-    public QName getMapQName() {
+    public QName getMissingHeaderQName() {
         return name;
     }
 }

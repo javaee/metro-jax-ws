@@ -312,7 +312,7 @@ public abstract class WsaTubeHelper {
                 fault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
                 fault.appendFaultSubcode(subcode);
                 fault.appendFaultSubcode(subsubcode);
-                getMapRequiredDetail(e.getMapQName(), fault.addDetail());
+                getMapRequiredDetail(e.getMissingHeaderQName(), fault.addDetail());
             } else {
                 factory = SOAPVersion.SOAP_11.saajSoapFactory;
                 fault = factory.createFault();
