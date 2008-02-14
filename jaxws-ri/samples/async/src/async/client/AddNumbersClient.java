@@ -105,9 +105,12 @@ public class AddNumbersClient {
         AddNumbersCallbackHandler callbackHandler = new AddNumbersCallbackHandler();
         Future<?> response = port.addNumbersAsync(number1, number2, callbackHandler);
         Thread.sleep(8000);
-        assertTrue("Waited 8 sec, no response yet, something wrong", response.isDone());
-        AddNumbersResponse output = callbackHandler.getResponse();
-        System.out.printf("The result of adding %d and %d is %d.\n", number1, number2, output.getReturn());
+        if(response.isDone()) {
+            AddNumbersResponse output = callbackHandler.getResponse();
+            System.out.printf("The result of adding %d and %d is %d.\n", number1, number2, output.getReturn());
+        } else {
+            System.out.println("Waited 8 sec, no response yet, something wrong");
+        }        
     }
 
     /**
