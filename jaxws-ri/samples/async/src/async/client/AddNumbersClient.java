@@ -41,7 +41,8 @@ import javax.xml.ws.Response;
 import java.rmi.RemoteException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
+import javax.xml.ws.BindingProvider;
+import com.sun.xml.ws.developer.JAXWSProperties;
 public class AddNumbersClient {
     private AddNumbersImpl port;
 
@@ -82,9 +83,16 @@ public class AddNumbersClient {
         int number1 = 10;
         int number2 = 20;
 
+        //set request timeout to 30 sec, so that the client does n't wait forever
+        int timeout = 30000;
+        ((BindingProvider)port).getRequestContext().put(JAXWSProperties.REQUEST_TIMEOUT, timeout);
+
         System.out.println("\nInvoking Asynchronous Polling addNumbersAsync():");
         Response<AddNumbersResponse> resp = port.addNumbersAsync(number1, number2);
-        Thread.sleep(2000);
+        while (!resp.isDone()) {
+            System.out.println("No Response yet, Sleeping for 1 sec");
+            Thread.sleep(1000);
+        }
         AddNumbersResponse output = resp.get();
         System.out.printf("The result of adding %d and %d is %d.\n", number1, number2, output.getReturn());
     }
