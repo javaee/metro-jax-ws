@@ -96,7 +96,7 @@ public abstract class SOAPFaultBuilder {
         if (dt != null) {
             Node entry = dt.getDetail(0);
             if (entry != null) {
-                new QName(entry.getNamespaceURI(), entry.getLocalName());
+                return new QName(entry.getNamespaceURI(), entry.getLocalName());
             }
         }
         return null;
