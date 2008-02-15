@@ -45,6 +45,7 @@ import com.sun.tools.ws.processor.generator.JavaGeneratorExtensionFacade;
  *
  * @see JavaGeneratorExtensionFacade
  * @author Vivek Pandey
+ * @deprecated This class is deprecated, will be removed in JAX-WS 2.2 RI.
  */
 public abstract class TJavaGeneratorExtension {
     /**
