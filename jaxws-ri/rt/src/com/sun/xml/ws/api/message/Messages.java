@@ -320,7 +320,16 @@ public abstract class Messages {
         return new DOMMessage(ver,fault);
     }
 
-
+    /**
+     * Creates a fault {@link Message} that captures the code/subcode/subsubcode
+     * defined by WS-Addressing if one of the expected WS-Addressing headers is
+     * missing in the message
+     *
+     * @param binding WSBinding
+     * @param missingHeader The missing WS-Addressing Header
+     * @return
+     *      A message representing SOAPFault that contains the WS-Addressing code/subcode/subsubcode.
+     */
     public static Message createAddressingFaultMessage(WSBinding binding, QName missingHeader) {
         AddressingVersion av = binding.getAddressingVersion();
         if(av == null) {
