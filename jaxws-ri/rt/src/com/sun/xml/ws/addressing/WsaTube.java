@@ -148,7 +148,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
         } catch (MissingAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,addressingVersion.getMapRequiredText()+", Problem header:"+ e.getMissingHeaderQName(),e);
-            soapFault = helper.newMapRequiredFault(e, addressingVersion);
+            soapFault = helper.newMapRequiredFault(e);
             s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMissingHeaderQName());
         }
 

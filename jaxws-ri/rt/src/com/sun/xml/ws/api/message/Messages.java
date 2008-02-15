@@ -42,6 +42,7 @@ import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.runtime.MarshallerImpl;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.Codecs;
@@ -59,6 +60,11 @@ import com.sun.xml.ws.message.source.ProtocolSourceMessage;
 import com.sun.xml.ws.streaming.XMLStreamReaderException;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.ws.addressing.WsaTubeHelper;
+import com.sun.xml.ws.addressing.WsaTubeHelperImpl;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
+import com.sun.xml.ws.resources.AddressingMessages;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -73,6 +79,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.AddressingFeature;
 
 /**
  * Factory methods for various {@link Message} implementations.
@@ -313,6 +320,16 @@ public abstract class Messages {
         return new DOMMessage(ver,fault);
     }
 
+
+    public static Message createAddressingFaultMessage(WSBinding binding, QName missingHeader) {
+        AddressingVersion av = binding.getAddressingVersion();
+        if(av == null) {
+            // Addressing is not enabled.
+            throw new WebServiceException(AddressingMessages.ADDRESSING_SHOULD_BE_ENABLED());
+        }
+        WsaTubeHelper helper = av.getWsaHelper(null,null,binding);
+        return create(helper.newMapRequiredFault(new MissingAddressingHeaderException(missingHeader)));
+    }
     /**
      * Creates a fault {@link Message} that captures the code/subcode/subsubcode
      * defined by WS-Addressing if wsa:Action is not supported.

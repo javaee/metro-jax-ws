@@ -298,10 +298,10 @@ public abstract class WsaTubeHelper {
         }
     }
 
-    public SOAPFault newMapRequiredFault(MissingAddressingHeaderException e, AddressingVersion av) {
-        QName subcode = av.mapRequiredTag;
-        QName subsubcode = av.mapRequiredTag;
-        String faultstring = av.getMapRequiredText();
+    public SOAPFault newMapRequiredFault(MissingAddressingHeaderException e) {
+        QName subcode = addVer.mapRequiredTag;
+        QName subsubcode = addVer.mapRequiredTag;
+        String faultstring = addVer.getMapRequiredText();
 
         try {
             SOAPFactory factory;
