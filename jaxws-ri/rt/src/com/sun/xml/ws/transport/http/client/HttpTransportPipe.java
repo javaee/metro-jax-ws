@@ -43,8 +43,11 @@ import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.resources.ClientMessages;
 
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.MessageContext;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,9 +57,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.net.HttpURLConnection;
 
 /**
  * {@link Pipe} and {@link Tube} that sends a request to a remote HTTP server.
+ *
+ * TODO: need to create separate HTTP transport pipes for binding. SOAP1.1, SOAP1.2,
+ * TODO: XML/HTTP differ in handling status codes.
  *
  * @author Jitendra Kotamraju
  */
@@ -146,11 +153,14 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
             con.closeOutput();
 
-            con.checkResponseCode();
+            con.readResponseCodeAndMessage();   // throws IOE
             InputStream response = con.getInput();
             if(dump) {
                 ByteArrayBuffer buf = new ByteArrayBuffer();
-                buf.write(response);
+                if (response != null) {
+                    buf.write(response);
+                    response.close();
+                }
                 dump(buf,"HTTP response "+con.statusCode, con.getHeaders());
                 response = buf.newInputStream();
             }
@@ -158,6 +168,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             if (con.statusCode== WSHTTPConnection.ONEWAY || (request.expectReply != null && !request.expectReply)) {
                 return request.createClientResponse(null);    // one way. no response given.
             }
+
+            checkStatusCode(response, con.statusCode, con.statusMessage); // throws ClientTransportException
+
             String contentType = con.getContentType();
             if (contentType == null) {
                 throw new WebServiceException("No Content-type in the header!");
@@ -175,6 +188,17 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         } catch(Exception ex) {
             throw new WebServiceException(ex);
         }
+    }
+
+    private void checkStatusCode(InputStream in, int statusCode, String statusMessage) throws IOException {
+        // SOAP1.1 and SOAP1.2 differ here
+        if (binding instanceof SOAPBinding) {
+            if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR) {
+                in.close();
+                throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
+            }
+        }
+        // Every status code is OK for XML/HTTP
     }
 
     /**
