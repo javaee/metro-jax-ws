@@ -166,6 +166,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             }
             
             if (con.statusCode== WSHTTPConnection.ONEWAY || (request.expectReply != null && !request.expectReply)) {
+                checkStatusCodeOneway(response, con.statusCode, con.statusMessage);   // throws ClientTransportException
                 return request.createClientResponse(null);    // one way. no response given.
             }
 
@@ -199,6 +200,13 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             }
         }
         // Every status code is OK for XML/HTTP
+    }
+
+    private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {
+        if (statusCode != WSHTTPConnection.ONEWAY && statusCode != WSHTTPConnection.OK) {
+            in.close();
+            throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode,statusMessage));
+        }
     }
 
     /**
