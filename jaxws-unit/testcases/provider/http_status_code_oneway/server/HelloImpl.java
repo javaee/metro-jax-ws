@@ -32,6 +32,7 @@ import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.annotation.Resource;
+import java.io.StringReader;
 
 import org.w3c.dom.Node;
 
@@ -39,15 +40,15 @@ import org.w3c.dom.Node;
  * @author Jitendra Kotamraju
  */
 @WebServiceProvider
-@ServiceMode(value=Service.Mode.MESSAGE)
-public class HelloImpl implements Provider<SOAPMessage> {
+@ServiceMode(value=Service.Mode.PAYLOAD)
+public class HelloImpl implements Provider<Source> {
 
     @Resource
     WebServiceContext wsCtxt;
 
-    public SOAPMessage invoke(SOAPMessage msg) {
+    public Source invoke(Source msg) {
         MessageContext msgCtxt = wsCtxt.getMessageContext();        
         msgCtxt.put(MessageContext.HTTP_RESPONSE_CODE, 502);
-        return null;
+        return new StreamSource(new StringReader("<foo/>"));
     }
 }
