@@ -61,6 +61,8 @@
   </target>
 
   <target name="compile" depends="generate-code">
+    <!-- do this to bundle ASM classes into jaxws-rt.jar -->
+    <unjar src="${basedir}/../lib/jaxws-asm.jar" dest="${basedir}/build/classes" />
     <javac srcdir="src:build/gen-src"
         destdir="${basedir}/build/classes"
         debug="${compile.debug}"
