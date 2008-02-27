@@ -39,14 +39,15 @@ package com.sun.xml.ws.model;
 import junit.framework.TestCase;
 
 import java.util.List;
+import java.util.HashMap;
 import java.lang.reflect.Field;
 
 /**
- * VM signature test
+ * VM signature test for wrapper bean fields
  * 
  * @author Jitendra Kotamraju
  */
-public class FieldSignatureTest extends TestCase {
+public class FieldSignatureTest<K,V> extends TestCase {
 
     public void test() throws Exception {
         assertEquals("Ljava/lang/String;", FieldSignature.vms(String.class));
@@ -78,5 +79,14 @@ public class FieldSignatureTest extends TestCase {
         Field f = FieldSignatureTest.class.getField("type4");
         assertEquals("Ljava/util/List<+Ljava/lang/Number;>;", FieldSignature.vms(f.getGenericType()));
     }
+
+// While creating wrapper bean fields, it doesn't create with TypeVariables
+// Otherwise, the type variable need to be declared in the wrapper bean class
+//
+//    public HashMap<K,V> type5;
+//    public void test5() throws Exception {
+//        Field f = FieldSignatureTest.class.getField("type5");
+//        assertEquals("Ljava/util/HashMap<TK;TV;>;", FieldSignature.vms(f.getGenericType()));
+//    }
 
 }

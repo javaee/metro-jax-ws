@@ -59,8 +59,10 @@ public class FieldSignature {
         } else if (t instanceof GenericArrayType) {
             return "["+vms(((GenericArrayType)t).getGenericComponentType());
         } else if (t instanceof TypeVariable) {
-            //return "T"+((TypeVariable)t).getName()+";"; // TODO Bounds
-            return "Ljava/lang/Object;";
+            // While creating wrapper bean fields, it doesn't create with TypeVariables
+            // Otherwise, the type variable need to be declared in the wrapper bean class
+            // return "T"+((TypeVariable)t).getName()+";";
+            return "Ljava/lang/Object;";        // TODO bounds ??
         } else if (t instanceof WildcardType) {
             WildcardType w = (WildcardType)t;
             if (w.getLowerBounds().length > 0) {
