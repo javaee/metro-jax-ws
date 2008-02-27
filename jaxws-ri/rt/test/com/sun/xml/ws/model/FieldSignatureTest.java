@@ -38,6 +38,9 @@ package com.sun.xml.ws.model;
 
 import junit.framework.TestCase;
 
+import java.util.List;
+import java.lang.reflect.Field;
+
 /**
  * VM signature test
  * 
@@ -45,13 +48,35 @@ import junit.framework.TestCase;
  */
 public class FieldSignatureTest extends TestCase {
 
-    public void test1() throws Exception {
+    public void test() throws Exception {
         assertEquals("Ljava/lang/String;", FieldSignature.vms(String.class));
         assertEquals("Lbyte;", FieldSignature.vms(byte.class));
         assertEquals("L[Ljava/lang/Object;;", FieldSignature.vms((new Object[3]).getClass()));
         assertEquals("L[[[[[[[I;", FieldSignature.vms((new int[3][4][5][6][7][8][9]).getClass()));
+    }
 
-        // TODO add more complex tests
+    public List<List<String>[]> type1;
+    public void test1() throws Exception {
+        Field f = FieldSignatureTest.class.getField("type1");
+        assertEquals("Ljava/util/List<[Ljava/util/List<Ljava/lang/String;>;>;", FieldSignature.vms(f.getGenericType()));
+    }
+
+    public List<?> type2;
+    public void test2() throws Exception { 
+        Field f = FieldSignatureTest.class.getField("type2");
+        assertEquals("Ljava/util/List<*>;", FieldSignature.vms(f.getGenericType()));
+    }
+
+    public List<? super Integer> type3;
+    public void test3() throws Exception {
+        Field f = FieldSignatureTest.class.getField("type3");
+        assertEquals("Ljava/util/List<-Ljava/lang/Integer;>;", FieldSignature.vms(f.getGenericType()));
+    }
+
+    public List<? extends Number> type4;
+    public void test4() throws Exception {
+        Field f = FieldSignatureTest.class.getField("type4");
+        assertEquals("Ljava/util/List<+Ljava/lang/Number;>;", FieldSignature.vms(f.getGenericType()));
     }
 
 }

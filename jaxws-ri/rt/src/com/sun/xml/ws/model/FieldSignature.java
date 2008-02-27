@@ -57,19 +57,21 @@ public class FieldSignature {
         if (t instanceof Class || t instanceof ParameterizedType) {
             return "L"+fqcn(t)+";";
         } else if (t instanceof GenericArrayType) {
-            return "["+fqcn(((GenericArrayType)t).getGenericComponentType());
+            return "["+vms(((GenericArrayType)t).getGenericComponentType());
         } else if (t instanceof TypeVariable) {
             //return "T"+((TypeVariable)t).getName()+";"; // TODO Bounds
             return "Ljava/lang/Object;";
         } else if (t instanceof WildcardType) {
             WildcardType w = (WildcardType)t;
-            if (w.getLowerBounds().length == 0) {
-                return "+"+vms(w.getUpperBounds()[0]);
-            } else if (w.getUpperBounds().length == 0) {
+            if (w.getLowerBounds().length > 0) {
                 return "-"+vms(w.getLowerBounds()[0]);
-            } else {
-                //assert w.getUpperBounds()[0] instanceof Object.class;
-                return "*";
+            } else if (w.getUpperBounds().length > 0) {
+                Type wt = w.getUpperBounds()[0];
+                if (wt.equals(Object.class)) {
+                    return "*";
+                } else {
+                    return "+"+vms(wt);
+                }
             }
         }
         throw new IllegalArgumentException("Illegal vms arg " + t);
