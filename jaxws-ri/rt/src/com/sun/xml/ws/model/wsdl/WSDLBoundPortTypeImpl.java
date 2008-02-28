@@ -231,7 +231,7 @@ public final class WSDLBoundPortTypeImpl extends AbstractFeaturedObjectImpl impl
             payloadMap = new QNameMap<WSDLBoundOperationImpl>();
             // For doclit The tag will be the operation that has the same input part descriptor value
             for(WSDLBoundOperationImpl op : bindingOperations.values()){
-                QName name = op.getPayloadName();
+                QName name = op.getReqPayloadName();
                 if(name == null){
                     //empty payload
                     emptyPayloadOperation = op;
