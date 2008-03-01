@@ -53,6 +53,7 @@ import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
@@ -245,26 +246,9 @@ public class WrapperBeanGenerator {
         return name.replace('.', '/');
     }
 
-    static Class createRequestWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
+    static Class createRequestWrapperBean(String className, Method method, QName reqElemName, ClassLoader cl) {
 
-        String reqName = webMethod != null && webMethod.operationName().length() > 0 ?
-                        webMethod.operationName() : method.getName();
-        String reqNamespace = typeNamespace;
-
-        String requestClassName = className;
-        RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
-        if (reqWrapper != null) {
-            if (reqWrapper.className().length() > 0) {
-                requestClassName = reqWrapper.className();
-            }
-            if (reqWrapper.localName().length() > 0) {
-                reqName = reqWrapper.localName();
-            }
-            if (reqWrapper.targetNamespace().length() > 0) {
-                reqNamespace = reqWrapper.targetNamespace();
-            }
-        }
-        LOGGER.fine("Request Wrapper Class : "+requestClassName);
+        LOGGER.fine("Request Wrapper Class : "+className);
 
         List<Field> fields = collectRequestWrapperMembers(method);
 
@@ -272,34 +256,19 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(requestClassName, reqName, reqNamespace,
-                reqName, reqNamespace, propOrder,
+            image = dump(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
+                reqElemName.getLocalPart(), reqElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
 
-        return Injector.inject(cl, requestClassName, image);
+        return Injector.inject(cl, className, image);
     }
 
-    static Class createResponseWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
-        String resName = webMethod != null && webMethod.operationName().length() > 0 ?
-                        webMethod.operationName()+"Response" : method.getName()+"Response";
-        String resNamespace = typeNamespace;
-        String responseClassName = className;
-        ResponseWrapper responseWrapper = method.getAnnotation(ResponseWrapper.class);
-        if (responseWrapper != null) {
-            if (responseWrapper.className().length() > 0) {
-                responseClassName = responseWrapper.className();
-            }
-            if (responseWrapper.localName().length() > 0) {
-                resName = responseWrapper.localName();
-            }
-            if (responseWrapper.targetNamespace().length() > 0) {
-                resNamespace = responseWrapper.targetNamespace();
-            }
-        }
-        LOGGER.fine("Response Wrapper Class : "+responseClassName);
+    static Class createResponseWrapperBean(String className, Method method, QName resElemName, ClassLoader cl) {
+
+        LOGGER.fine("Response Wrapper Class : "+className);
 
         List<Field> fields = collectResponseWrapperMembers(method);
 
@@ -307,14 +276,14 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(responseClassName, resName, resNamespace,
-                resName, resNamespace, propOrder,
+            image = dump(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
+                resElemName.getLocalPart(), resElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
 
-        return Injector.inject(cl, responseClassName, image);
+        return Injector.inject(cl, className, image);
     }
 
     private static String[] getPropOrder(List<Field> fields) {

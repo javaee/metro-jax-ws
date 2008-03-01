@@ -288,55 +288,35 @@ public class RuntimeModeler {
         }
     }
 
-    private Class getRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
+    private Class getRequestWrapperClass(String className, Method method, QName reqElemName) {
+        ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
+            return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            return createRequestWrapperClass(className, method, webMethod, tns,
-                    classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+            logger.info("Dynamically creating request wrapper Class "+ className);
+            return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
         }
     }
 
-    private Class createRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
-        logger.info("Creating request wrapper Class "+className);
-        return WrapperBeanGenerator.createRequestWrapperBean(className, method, webMethod, tns, cl);
-    }
-
-    private Class getResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
+    private Class getResponseWrapperClass(String className, Method method, QName resElemName) {
+        ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
+            return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            return createResponseWrapperClass(className, method, webMethod, tns,  classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+            logger.info("Dynamically creating response wrapper bean Class "+ className);
+            return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
         }
     }
 
-
-    private Class createResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
-        logger.info("Creating response wrapper bean Class "+className);
-        return WrapperBeanGenerator.createResponseWrapperBean(className, method, webMethod, tns, cl);
-
-    }
 
     private Class getExceptionBeanClass(String className, Class exception, String name, String namespace) {
+        ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
+            return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            return createExceptionBeanClass(className, exception, name, namespace, classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
+            logger.info("Dynamically creating exception bean Class "+ className);
+            return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
         }
-    }
-
-    private Class createExceptionBeanClass(String className, Class exception, String name, String namespace, ClassLoader cl) {
-        logger.info("Creating exception bean Class "+className);
-        return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, cl);
     }
 
     protected void setUsesWebMethod(Class clazz, Boolean usesWebMethod) {
@@ -644,8 +624,6 @@ public class RuntimeModeler {
             responseClassName = beanPackage + capitalize(method.getName()) + RESPONSE;
         }
 
-        Class requestClass = getRequestWrapperClass(requestClassName, method, webMethod, targetNamespace);
-
         String reqName = operationName;
         String reqNamespace = targetNamespace;
         if (reqWrapper != null) {
@@ -655,20 +633,22 @@ public class RuntimeModeler {
                 reqName = reqWrapper.localName();
         }
         QName reqElementName = new QName(reqNamespace, reqName);
+        Class requestClass = getRequestWrapperClass(requestClassName, method, reqElementName);
 
         Class responseClass = null;
         String resName = operationName+"Response";
         String resNamespace = targetNamespace;
+        QName resElementName = null;
         if (!isOneway) {
-            responseClass = getResponseWrapperClass(responseClassName, method, webMethod, targetNamespace);
             if (resWrapper != null) {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
                 if (resWrapper.localName().length() > 0)
                     resName = resWrapper.localName();
             }
+            resElementName = new QName(resNamespace, resName);
+            responseClass = getResponseWrapperClass(responseClassName, method, resElementName);
         }
-        QName resElementName = new QName(resNamespace, resName);
 
         TypeReference typeRef =
                 new TypeReference(reqElementName, requestClass);
