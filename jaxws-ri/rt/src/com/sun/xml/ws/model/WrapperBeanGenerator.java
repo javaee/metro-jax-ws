@@ -73,12 +73,11 @@ public class WrapperBeanGenerator {
     public static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
     public static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
 
-
+    // Creates class's bytes
     private static byte[] dump(String className,
                                String rootName, String rootNS,
                                String typeName, String typeNS, String[] propOrder,
                                List<Field> fields) throws Exception {
-
 
         ClassWriter cw = new ClassWriter(0);
         //org.objectweb.asm.util.TraceClassVisitor cw = new org.objectweb.asm.util.TraceClassVisitor(actual, new java.io.PrintWriter(System.out));
@@ -89,15 +88,6 @@ public class WrapperBeanGenerator {
         root.visit("name", rootName);
         root.visit("namespace", rootNS);
         root.visitEnd();
-        if (LOGGER.isLoggable(Level.INFO)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("@XmlRootElement(name=");
-            sb.append(rootName);
-            sb.append(", namespace=");
-            sb.append(rootNS);
-            sb.append(")");
-            LOGGER.info(sb.toString());
-        }
 
         AnnotationVisitor type = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
         type.visit("name", typeName);
@@ -110,25 +100,6 @@ public class WrapperBeanGenerator {
             propVisitor.visitEnd();
         }
         type.visitEnd();
-        if (LOGGER.isLoggable(Level.INFO)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("@XmlType(name=");
-            sb.append(typeName);
-            sb.append(", namespace=");
-            sb.append(typeNS);
-            if (propOrder.length > 1) {
-                sb.append(", propOrder={");
-                for(int i=0; i < propOrder.length; i++) {
-                    if (i != 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(propOrder[i]);
-                }
-                sb.append("}");
-            }
-            sb.append(")");
-            LOGGER.info(sb.toString());
-        }
 
         for(Field field : fields) {
             FieldVisitor fv = cw.visitField(ACC_PUBLIC, field.fieldName, field.asmType.getDescriptor(), field.getSignature(), null);
@@ -163,32 +134,6 @@ public class WrapperBeanGenerator {
                     throw new WebServiceException("Unknown JAXB annotation " + ann);
                 }
             }
-
-            if (LOGGER.isLoggable(Level.INFO)) {
-                StringBuilder sb = new StringBuilder();
-                if (!field.noXmlElem) {
-                    sb.append("@XmlRootElement(name=");
-                    sb.append(field.elementName);
-                    sb.append(", namespace=");
-                    sb.append(field.elementNS);
-                    if (field.reflectType instanceof GenericArrayType) {
-                        sb.append("nillable=true");
-                    }
-                    sb.append(")\n");
-                }
-
-                sb.append("public ");
-                if (field.getSignature() == null) {
-                    sb.append(field.asmType.getDescriptor());
-                } else {
-                    sb.append(field.getSignature());
-                }
-                sb.append(" ");
-                sb.append(field.fieldName);
-
-                LOGGER.info(sb.toString());
-            }
-
             
             fv.visitEnd();
         }
@@ -203,6 +148,96 @@ public class WrapperBeanGenerator {
 
         cw.visitEnd();
 
+        if (LOGGER.isLoggable(Level.INFO)) {
+            // Class's @XmlRootElement
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n");
+            sb.append("@XmlRootElement(name=");
+            sb.append(rootName);
+            sb.append(", namespace=");
+            sb.append(rootNS);
+            sb.append(")");
+
+            // Class's @XmlType
+            sb.append("\n");
+            sb.append("@XmlType(name=");
+            sb.append(typeName);
+            sb.append(", namespace=");
+            sb.append(typeNS);
+            if (propOrder.length > 1) {
+                sb.append(", propOrder={");
+                for(int i=0; i < propOrder.length; i++) {
+                    if (i != 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(propOrder[i]);
+                }
+                sb.append("}");
+            }
+            sb.append(")");
+
+            // class declaration
+            sb.append("\n");
+            sb.append("public class ");
+            sb.append(className);
+            sb.append(" {");
+
+            // fields declaration
+            for(Field field : fields) {
+                sb.append("\n");
+
+                // Field's @XmlRootElement decl
+                if (!field.noXmlElem) {
+                    sb.append("\n    ");
+                    sb.append("@XmlRootElement(name=");
+                    sb.append(field.elementName);
+                    sb.append(", namespace=");
+                    sb.append(field.elementNS);
+                    if (field.reflectType instanceof GenericArrayType) {
+                        sb.append("nillable=true");
+                    }
+                    sb.append(")");
+                }
+
+                // Field's other JAXB annotations
+                for(Annotation ann : field.jaxbAnnotations) {
+                    sb.append("\n    ");
+
+                    if (ann instanceof XmlMimeType) {
+                        sb.append("@XmlMimeType(value=");
+                        sb.append(((XmlMimeType)ann).value());
+                        sb.append(")");
+                    } else if (ann instanceof XmlJavaTypeAdapter) {
+                        sb.append("@XmlJavaTypeAdapter(value=");
+                        sb.append(((XmlMimeType)ann).value());
+                        sb.append(", type=");
+                        sb.append(((XmlJavaTypeAdapter)ann).type());
+                        sb.append(")");
+                    } else if (ann instanceof XmlAttachmentRef) {
+                        sb.append("@XmlAttachmentRef");
+                    } else if (ann instanceof XmlList) {
+                        sb.append("@XmlList");
+                    } else {
+                        throw new WebServiceException("Unknown JAXB annotation " + ann);
+                    }
+                }
+
+                // Field declaration
+                sb.append("\n    ");
+                sb.append("public ");
+                if (field.getSignature() == null) {
+                    sb.append(field.asmType.getDescriptor());
+                } else {
+                    sb.append(field.getSignature());
+                }
+                sb.append(" ");
+                sb.append(field.fieldName);
+            }
+
+            sb.append("\n\n}");
+            LOGGER.info(sb.toString());
+        }
+
         return cw.toByteArray();
     }
 
@@ -210,7 +245,7 @@ public class WrapperBeanGenerator {
         return name.replace('.', '/');
     }
 
-    public static Class createRequestWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
+    static Class createRequestWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
 
         String reqName = webMethod != null && webMethod.operationName().length() > 0 ?
                         webMethod.operationName() : method.getName();
@@ -247,7 +282,7 @@ public class WrapperBeanGenerator {
         return Injector.inject(cl, requestClassName, image);
     }
 
-    public static Class createResponseWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
+    static Class createResponseWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
         String resName = webMethod != null && webMethod.operationName().length() > 0 ?
                         webMethod.operationName()+"Response" : method.getName()+"Response";
         String resNamespace = typeNamespace;
@@ -463,7 +498,7 @@ public class WrapperBeanGenerator {
         return null;
     }
 
-    public static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
+    static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
 
         List<Field> fields = collectExceptionProperties(exception);
         String[] propOrder = getPropOrder(fields);
@@ -516,7 +551,6 @@ public class WrapperBeanGenerator {
         Collections.sort(fields);
         return fields;
     }
-
 
 
     private static List<Annotation> collectJAXBAnnotations(Annotation[] anns) {
