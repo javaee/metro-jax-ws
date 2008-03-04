@@ -42,7 +42,6 @@ import static com.sun.xml.ws.org.objectweb.asm.Opcodes.*;
 import com.sun.xml.ws.org.objectweb.asm.Type;
 import com.sun.xml.ws.org.objectweb.asm.*;
 
-import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.xml.bind.annotation.XmlAttachmentRef;
@@ -50,8 +49,6 @@ import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
@@ -75,7 +72,7 @@ public class WrapperBeanGenerator {
     public static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
 
     // Creates class's bytes
-    private static byte[] dump(String className,
+    private static byte[] createBeanImage(String className,
                                String rootName, String rootNS,
                                String typeName, String typeNS, String[] propOrder,
                                List<Field> fields) throws Exception {
@@ -256,7 +253,7 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
+            image = createBeanImage(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
                 reqElemName.getLocalPart(), reqElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
@@ -276,7 +273,7 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
+            image = createBeanImage(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
                 resElemName.getLocalPart(), resElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
@@ -474,7 +471,7 @@ public class WrapperBeanGenerator {
         
         byte[] image;
         try {
-            image = dump(className, elemName, elemNS,
+            image = createBeanImage(className, elemName, elemNS,
                 exception.getSimpleName(), typeNS, propOrder,
                 fields);
         } catch(Exception e) {
