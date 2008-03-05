@@ -1,0 +1,7 @@
+<descriptor since="2.0">
+  <description>mtom rpc/lit</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>
