@@ -421,10 +421,8 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return owner;
     }
 
-    private QName payloadName;
     private QName requestPayloadName;
     private QName responsePayloadName;
-    private boolean emptyPayload;
     private boolean emptyRequestPayload;
     private boolean emptyResponsePayload;
     private Map<QName, WSDLMessageImpl> messages;

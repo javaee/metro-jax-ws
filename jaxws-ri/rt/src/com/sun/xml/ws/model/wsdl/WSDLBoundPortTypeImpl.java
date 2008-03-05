@@ -224,9 +224,10 @@ public final class WSDLBoundPortTypeImpl extends AbstractFeaturedObjectImpl impl
 
     private void freezePayloadMap() {
         if(style== Style.RPC) {
-            // If the style is rpc then the tag name should be
-            // same as operation name so return the operation that matches the tag name.
-            payloadMap = bindingOperations;
+            payloadMap = new QNameMap<WSDLBoundOperationImpl>();
+            for(WSDLBoundOperationImpl op : bindingOperations.values()){
+                payloadMap.put(op.getReqPayloadName(), op);
+            }
         } else {
             payloadMap = new QNameMap<WSDLBoundOperationImpl>();
             // For doclit The tag will be the operation that has the same input part descriptor value
