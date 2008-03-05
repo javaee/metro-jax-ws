@@ -743,12 +743,15 @@ public final class Packet extends DistributedPropertySet {
         } catch (InvalidMapException e) {
             replyTo = null;
         }
-        // wsa:Action
-        // action can be null when there is no SEIModel or WSDL Model, ex: Provider with no wsdl
-        // Expects User to set the coresponding header on the Message.
-        if(action != null) {
+
+        // wsa:Action, add if the message doesn't already contain it,
+        // generally true for SEI case where there is SEIModel or WSDLModel
+        //           false for Provider with no wsdl, Expects User to set the coresponding header on the Message.
+        if(responsePacket.getMessage().getHeaders().getAction(av,sv) == null) {
+            //wsa:Action header is not set in the message, so use the wsa:Action  passed as the parameter.
             hl.add(new StringHeader(av.actionTag, action));
         }
+
         // wsa:MessageID
         hl.add(new StringHeader(av.messageIDTag, responsePacket.getMessage().getID(av, sv)));
 
