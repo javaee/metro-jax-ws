@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.1" bugs="jax-ws-529">
     <description>WSDL Rpclit tests</description>
     <service basedir="./server">
         <wsdl href="WrapperService.wsdl"/>
