@@ -1,5 +1,5 @@
 /*
- * $Id: TestConstants.java,v 1.1 2007-09-22 00:39:23 ramapulavarthi Exp $
+ * $Id: TestConstants.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -58,7 +58,8 @@ public interface TestConstants {
     public static final int HA_THROW_RUNTIME_EXCEPTION_OUTBOUND = 28;
     public static final int HA_THROW_SOAP_FAULT_EXCEPTION_INBOUND = 29;
     public static final int HA_THROW_SOAP_FAULT_EXCEPTION_OUTBOUND = 30;
-    
+    public static final int HA_ADD_MIMEHEADER_OUTBOUND = 31;
+    public static final int HA_CHECK_MIMEHEADER_INBOUND = 32;
     // actions for a handler during a handleFault call
     // all need to be above 200 for server to check
     public static final int HF_CHECK_FAULT_MESSAGE_STRING = 200;

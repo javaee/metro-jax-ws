@@ -1,5 +1,5 @@
 /*
- * $Id: BaseSOAPHandler.java,v 1.1 2007-09-22 00:39:23 ramapulavarthi Exp $
+ * $Id: BaseSOAPHandler.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -77,6 +77,10 @@ public class BaseSOAPHandler implements SOAPHandler<SOAPMessageContext>,
                     messageContext, name, INBOUND);
             case HA_ADD_HEADER_OUTBOUND :
                 return util.addHeaderToMessage(messageContext, OUTBOUND, null);
+            case HA_ADD_MIMEHEADER_OUTBOUND:
+                return util.addMimeHeaderToMessage(messageContext, OUTBOUND);
+            case HA_CHECK_MIMEHEADER_INBOUND:
+                return util.checkMimeHeaderInMessage(messageContext, INBOUND);
             case HA_CHECK_FOR_ADDED_HEADER_OUTBOUND :
                 return util.checkForAddedHeader(messageContext, OUTBOUND);
             case HA_CHECK_FOR_ADDED_HEADER_INBOUND :

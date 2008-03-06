@@ -1,5 +1,5 @@
 /**
- * $Id: EndToEndTest.java,v 1.1 2007-09-22 00:39:24 ramapulavarthi Exp $
+ * $Id: EndToEndTest.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -129,6 +129,22 @@ public class EndToEndTest extends TestCaseBase {
         reportStub.setInstruction(SERVER_PREFIX + "4", HA_CHECK_SMC);
         tracker.clearAll();
         testStub.testInt(4);
+    }
+
+    /**
+     * Testcase for https://jax-ws.dev.java.net/issues/show_bug.cgi?id=457
+     *
+     */
+    public void testAddMimeHeadersInSOApMessage() throws Exception {
+        HandlerTracker tracker = HandlerTracker.getClientInstance();
+        TestService testStub = getTestStub(getService());
+        tracker.clearAll();
+        tracker.setHandlerAction(CLIENT_PREFIX + "4",HA_ADD_MIMEHEADER_OUTBOUND);
+        ReportService reportStub = getReportStub(getService());
+        reportStub.clearHandlerTracker();
+        reportStub.setInstruction(SERVER_PREFIX + "4", HA_CHECK_MIMEHEADER_INBOUND);
+
+        testStub.testInt(2);
     }
 
     /*

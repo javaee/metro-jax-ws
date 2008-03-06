@@ -1,5 +1,5 @@
 /*
- * $Id: HandlerUtil.java,v 1.1 2007-09-22 00:39:24 ramapulavarthi Exp $
+ * $Id: HandlerUtil.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -516,6 +516,49 @@ public class HandlerUtil implements TestConstants {
         // Object [] headers = context.getHeaders(headerName, jaxbContext, true);
         // test result here; throw exception if wrong
         return true;
+    }
+
+    boolean addMimeHeaderToMessage(SOAPMessageContext context, String direction) {
+
+        Boolean outbound = (Boolean)
+            context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        if ( (outbound == Boolean.TRUE && direction.equals(INBOUND)) ||
+                (outbound == Boolean.FALSE && direction.equals(OUTBOUND)) ) {
+            // not the direction we want
+            return true;
+        }
+        if (ignoreReportMessage(context)) {
+            return true;
+        }
+
+        SOAPMessage msg = context.getMessage();
+        MimeHeaders mimeHdrs = msg.getMimeHeaders();
+        mimeHdrs.setHeader("My-Mime-Hdr", "Highly Confidential");
+        context.setMessage(msg);
+
+        return true;
+    }
+
+    boolean checkMimeHeaderInMessage(SOAPMessageContext context, String direction) {
+
+        Boolean outbound = (Boolean)
+            context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        if ( (outbound == Boolean.TRUE && direction.equals(INBOUND)) ||
+                (outbound == Boolean.FALSE && direction.equals(OUTBOUND)) ) {
+            // not the direction we want
+            return true;
+        }
+        if (ignoreReportMessage(context)) {
+            return true;
+        }
+
+        SOAPMessage msg = context.getMessage();
+        MimeHeaders mimeHdrs = msg.getMimeHeaders();
+        String[] myHdrs = mimeHdrs.getHeader("My-Mime-Hdr");
+        if(myHdrs == null || !myHdrs[0].equals("Highly Confidential"))
+            throw new RuntimeException("Expected Mime Header Not present");
+        else
+            return true;        
     }
 
     /*
