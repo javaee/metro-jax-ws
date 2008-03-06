@@ -70,7 +70,7 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     public ServerLogicalHandlerTube(WSBinding binding, WSDLPort port, Tube next) {
         super(next, port);
         this.binding = binding;
-        setUpProcessorOnce();
+        setUpHandlersOnce();
     }
 
     /**
@@ -83,7 +83,7 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     public ServerLogicalHandlerTube(WSBinding binding, Tube next, HandlerTube cousinTube) {
         super(next, cousinTube);
         this.binding = binding;
-        setUpProcessorOnce();
+        setUpHandlersOnce();
     }
 
     /**
@@ -93,7 +93,7 @@ public class ServerLogicalHandlerTube extends HandlerTube {
     private ServerLogicalHandlerTube(ServerLogicalHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
         this.binding = that.binding;
-        setUpProcessorOnce();
+        this.handlers = that.handlers;
     }
 
     //should be overridden by DriverHandlerTubes
@@ -111,11 +111,16 @@ public class ServerLogicalHandlerTube extends HandlerTube {
         return new ServerLogicalHandlerTube(this, cloner);
     }
 
-    private void setUpProcessorOnce() {
+    private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
         List<LogicalHandler> logicalSnapShot= ((BindingImpl) binding).getHandlerConfig().getLogicalHandlers();
         if (!logicalSnapShot.isEmpty()) {
             handlers.addAll(logicalSnapShot);
+        }
+    }
+
+    void setUpProcessor() {
+        if (!handlers.isEmpty()) {
             if (binding.getSOAPVersion() == null) {
                 processor = new XMLHandlerProcessor(this, binding,
                         handlers);
@@ -123,10 +128,6 @@ public class ServerLogicalHandlerTube extends HandlerTube {
                 processor = new SOAPHandlerProcessor(false, this, binding, handlers);
             }
         }
-    }
-
-    void setUpProcessor() {
-     // Do nothing, Processor is setup in the constructor.
     }
 
     MessageUpdatableContext getContext(Packet packet) {
