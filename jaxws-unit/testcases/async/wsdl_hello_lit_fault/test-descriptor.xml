@@ -33,7 +33,10 @@
     }
   ]]></client>
   <client name="async.doclit.fault3"><![CDATA[
-    response = helloPort.helloAsync(req, new HelloCallbackHandler());
+    handler = new HelloCallbackHandler();
+    response = helloPort.helloAsync(req, handler);
     block(response);
+    assertTrue(handler.correctException);
+    assertEquals(1, handler.noTimes);
   ]]></client>
 </descriptor>
