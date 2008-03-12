@@ -58,7 +58,7 @@ public class UploadClient {
         ctxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192); 
         File file = getFile();
         proxy.fileUpload("file.bin", new DataHandler(new FileDataSource(file)));
-        file.deleteOnExit();
+        file.delete();
     }
 
     public static File getFile() throws IOException {
