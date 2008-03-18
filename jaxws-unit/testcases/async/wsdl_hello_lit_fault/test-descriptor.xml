@@ -37,6 +37,12 @@
     response = helloPort.helloAsync(req, handler);
     block(response);
     assertTrue(handler.correctException);
+  ]]></client>
+  <client name="async.doclit.fault4" since="2.1.4"><![CDATA[
+    handler = new HelloCallbackHandler();
+    response = helloPort.helloAsync(req, handler);
+    block(response);
+    assertTrue(handler.correctException);
     assertEquals(1, handler.noTimes);
   ]]></client>
 </descriptor>
