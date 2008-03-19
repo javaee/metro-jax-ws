@@ -226,18 +226,6 @@ public class EchoImpl {
         return num.value+age;
     }
 
-    /**
-     * Testcase to test generation of default name and partName in wsdl for headers.
-     * Issue:466 
-     */
-    @WebMethod
-    public Long echoIn3Header(Integer age, @WebParam(header=true)Long num,
-                              @WebParam(header=true)String name) {
-        log("-----------num: "+num);
-        log("-----------name: "+name);
-        return num+age;
-    }
-
     @WebMethod
 //    @WebResult(name="overLoadResponse")
     public String overloadedOperation(@WebParam(name="overLoad")String param) throws java.rmi.RemoteException {
