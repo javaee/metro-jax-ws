@@ -6,7 +6,7 @@
     <pre-client>
         import java.math.BigDecimal;
     </pre-client>
-    <client name="fromwsdl.wsa.wsdl_rpclit.echoMsgOperation">
+    <client name="fromwsdl.wsa.wsdl_rpclit.echoMsgOperation" since="2.1.4">
         <description>
             Test WS-Addressing with rpclit
         </description>
