@@ -121,7 +121,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 if (ct.getAcceptHeader() != null) {
                     reqHeaders.put("Accept", Collections.singletonList(ct.getAcceptHeader()));
                 }
-                writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(),request);
+                if (binding instanceof SOAPBinding) {
+                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(),request);
+                }
                 
                 if(dump)
                     dump(buf, "HTTP request", reqHeaders);
@@ -133,7 +135,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 if (ct.getAcceptHeader() != null) {
                     reqHeaders.put("Accept", Collections.singletonList(ct.getAcceptHeader()));
                 }
-                writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(), request);
+                if (binding instanceof SOAPBinding) {
+                    writeSOAPAction(reqHeaders, ct.getSOAPActionHeader(), request);
+                }
                 
                 if(dump) {
                     ByteArrayBuffer buf = new ByteArrayBuffer();
