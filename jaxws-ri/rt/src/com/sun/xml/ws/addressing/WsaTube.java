@@ -61,6 +61,7 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.AddressingFeature;
+import javax.xml.ws.soap.SOAPBinding;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -323,15 +324,8 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         // TODO: always in current role, this may not to be fixed.
         if (binding == null)
             return true;
+        return ((SOAPBinding)binding).getRoles().contains(header.getRole(soapVersion));
 
-
-        if (soapVersion == SOAPVersion.SOAP_11) {
-            // Rama: Why not checking for SOAP 1.1?
-            return true;
-        } else {
-            String role = header.getRole(soapVersion);
-            return (role.equals(SOAPVersion.SOAP_12.implicitRole));
-        }
     }
 
     protected final WSDLBoundOperation getWSDLBoundOperation(Packet packet) {
