@@ -46,8 +46,8 @@ import javax.xml.namespace.QName;
  * @author Rama Pulavarthi
  */
 public class InvalidAddressingHeaderException extends WebServiceException {
-    QName problemHeader;
-    QName subsubcode;
+    private QName problemHeader;
+    private QName subsubcode;
 
     /**
      * Creates a InvalidAddressingHeader exception capturing information about the invalid

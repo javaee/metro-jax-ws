@@ -44,7 +44,7 @@ import javax.xml.namespace.QName;
  * @author Rama Pulavarthi
  */
 public class MissingAddressingHeaderException extends WebServiceException {
-    QName name;
+    private QName name;
 
     /**
      *
