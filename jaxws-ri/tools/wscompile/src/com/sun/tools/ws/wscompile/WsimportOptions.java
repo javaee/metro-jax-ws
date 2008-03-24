@@ -122,6 +122,50 @@ public class WsimportOptions extends Options {
 
     private JCodeModel codeModel;
 
+    /**
+     * This captures jars passed on the commandline and passes them to XJC and puts them in the classpath for compilation
+     */
+    public List<String> cmdlineJars = new ArrayList<String>();
+
+    /**
+     * Parses arguments and fill fields of this object.
+     *
+     * @exception BadCommandLineException
+     *      thrown when there's a problem in the command-line arguments
+     */
+    @Override
+    public final void parseArguments( String[] args ) throws BadCommandLineException {
+
+        for (int i = 0; i < args.length; i++) {
+            if(args[i].length()==0)
+                throw new BadCommandLineException();
+            if (args[i].charAt(0) == '-') {
+                int j = parseArguments(args,i);
+                if(j==0)
+                    throw new BadCommandLineException(WscompileMessages.WSCOMPILE_INVALID_OPTION(args[i]));
+                i += (j-1);
+            } else {
+                if(args[i].endsWith(".jar")) {
+
+                    try {
+                cmdlineJars.add(args[i]);
+                schemaCompiler.getOptions().scanEpisodeFile(new File(args[i]));
+
+            } catch (com.sun.tools.xjc.BadCommandLineException e) {
+                //Driver.usage(jaxbOptions,false);
+                throw new BadCommandLineException(e.getMessage(), e);
+            }
+                } else{
+                    addFile(args[i]);
+                }
+            }
+        }
+        if(destDir == null)
+            destDir = new File(".");
+        if(sourceDir == null)
+            sourceDir = destDir;
+    }
+
     /** -Xno-addressing-databinding option to disable addressing namespace data binding. This is
      * experimental switch and will be working as a temporary workaround till
      * jaxb can provide a better way to selelctively disable compiling of an

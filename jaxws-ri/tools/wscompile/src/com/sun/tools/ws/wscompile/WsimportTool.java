@@ -277,7 +277,11 @@ public class WsimportTool {
     }
 
     private String createClasspathString() {
-        return System.getProperty("java.class.path");
+        String classpathStr = System.getProperty("java.class.path");
+        for(String s: options.cmdlineJars) {
+            classpathStr = classpathStr+File.pathSeparator+new File(s);
+        }
+        return classpathStr;
     }
 
     protected void usage(Options options) {
