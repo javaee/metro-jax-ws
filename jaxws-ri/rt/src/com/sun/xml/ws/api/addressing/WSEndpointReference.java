@@ -47,7 +47,7 @@ import com.sun.xml.stream.buffer.stax.StreamReaderBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamWriterBufferCreator;
 import com.sun.xml.ws.addressing.EndpointReferenceUtil;
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
-import com.sun.xml.ws.addressing.model.InvalidMapException;
+import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -636,7 +636,7 @@ public final class WSEndpointReference {
             } else
             if(localName.equals("Address")) {
                 if(address!=null) // double <Address>. That's an error.
-                    throw new InvalidMapException(new QName(version.nsUri,rootLocalName),AddressingVersion.fault_duplicateAddressInEpr);
+                    throw new InvalidAddressingHeaderException(new QName(version.nsUri,rootLocalName),AddressingVersion.fault_duplicateAddressInEpr);
                 address = xsr.getElementText().trim();
             } else {
                 XMLStreamReaderUtil.skipElement(xsr);
@@ -652,7 +652,7 @@ public final class WSEndpointReference {
         }
 
         if(address==null)
-            throw new InvalidMapException(new QName(version.nsUri,rootLocalName),version.fault_missingAddressInEpr);
+            throw new InvalidAddressingHeaderException(new QName(version.nsUri,rootLocalName),version.fault_missingAddressInEpr);
     }
 
 

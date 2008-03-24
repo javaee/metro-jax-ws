@@ -40,19 +40,30 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 
 /**
- * @author Arun Gupta
+ * This exception captures SOAP Fault information when a WS-Addressing 1.0 Message Addressing
+ * Property is invalid and cannot be processed.
+ * 
+ * @author Rama Pulavarthi
  */
-public class InvalidMapException extends WebServiceException {
-    QName name;
+public class InvalidAddressingHeaderException extends WebServiceException {
+    QName problemHeader;
     QName subsubcode;
 
-    public InvalidMapException(QName name, QName subsubcode) {
-        this.name = name;
+    /**
+     * Creates a InvalidAddressingHeader exception capturing information about the invalid
+     * Addressing Message Property and the reason in Subsubcode.
+     * @param problemHeader
+     *      represents the invalid Addressing Header.
+     * @param subsubcode
+     *      represents the reason why the Addressing header in question is invalid. 
+     */
+    public InvalidAddressingHeaderException(QName problemHeader, QName subsubcode) {
+        this.problemHeader = problemHeader;
         this.subsubcode = subsubcode;
     }
 
-    public QName getMapQName() {
-        return name;
+    public QName getProblemHeader() {
+        return problemHeader;
     }
 
     public QName getSubsubcode() {

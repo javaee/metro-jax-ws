@@ -37,7 +37,7 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.addressing.model.InvalidMapException;
+import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -142,11 +142,11 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             checkCardinality(packet);
 
             return packet;
-        } catch (InvalidMapException e) {
+        } catch (InvalidAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,
-                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
-            soapFault = helper.newInvalidMapFault(e, addressingVersion);
-            s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
+                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
+            soapFault = helper.createInvalidAddressingHeaderFault(e, addressingVersion);
+            s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getProblemHeader());
         } catch (MissingAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,addressingVersion.getMapRequiredText()+", Problem header:"+ e.getMissingHeaderQName(),e);
             soapFault = helper.newMapRequiredFault(e);
@@ -302,7 +302,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
         // check for invalid cardinality first before checking for mandatory headers
         if (duplicateHeader != null) {
-            throw new InvalidMapException(duplicateHeader, addressingVersion.invalidCardinalityTag);
+            throw new InvalidAddressingHeaderException(duplicateHeader, addressingVersion.invalidCardinalityTag);
         }
 
         // WS-A is engaged if wsa:Action header is found
@@ -339,7 +339,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         if (gotA == null)
             throw new WebServiceException(AddressingMessages.VALIDATION_SERVER_NULL_ACTION());
         if(packet.soapAction != null && !packet.soapAction.equals("\"\"") && !packet.soapAction.equals("\""+gotA+"\"")) {
-            throw new InvalidMapException(addressingVersion.actionTag, addressingVersion.actionMismatchTag);
+            throw new InvalidAddressingHeaderException(addressingVersion.actionTag, addressingVersion.actionMismatchTag);
         }
     }
 

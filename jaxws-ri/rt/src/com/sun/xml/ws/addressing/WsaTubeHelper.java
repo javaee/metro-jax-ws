@@ -36,7 +36,7 @@
 
 package com.sun.xml.ws.addressing;
 
-import com.sun.xml.ws.addressing.model.InvalidMapException;
+import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -268,8 +268,8 @@ public abstract class WsaTubeHelper {
         }
         return action;
     }
-    public SOAPFault newInvalidMapFault(InvalidMapException e, AddressingVersion av) {
-        QName name = e.getMapQName();
+    public SOAPFault createInvalidAddressingHeaderFault(InvalidAddressingHeaderException e, AddressingVersion av) {
+        QName name = e.getProblemHeader();
         QName subsubcode = e.getSubsubcode();
         QName subcode = av.invalidMapTag;
         String faultstring = String.format(av.getInvalidMapText(), name, subsubcode);
