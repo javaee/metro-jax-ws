@@ -63,14 +63,6 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
     @Override
     protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
                                          boolean foundFaultTo, boolean foundMessageID, boolean foundRelatesTo) {
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-        // no need to check for for non-application messages
-        if (wbo == null)
-            return;
-
-        // if no wsa:Action header is found
-        if (!foundAction)
-            throw new MissingAddressingHeaderException(addressingVersion.actionTag);
-        validateSOAPAction(packet);
+        super.checkMandatoryHeaders(packet,foundAction,foundTo,foundReplyTo,foundFaultTo,foundMessageID,foundRelatesTo);
     }
 }

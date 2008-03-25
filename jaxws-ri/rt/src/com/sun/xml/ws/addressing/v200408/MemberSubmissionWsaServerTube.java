@@ -66,16 +66,15 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
     @Override
     protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
             boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
-        		WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
 
-        // validate strictly, even the application messages should follow the rules in WS-Addressing spec.
-        // // no need to check for for non-application messages
-        // if (wbo == null)
-        //    return;
-
+        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
+                foundFaultTo, foundMessageId, foundRelatesTo);
+        
         // if no wsa:To header is found
         if (!foundTo)
             throw new MissingAddressingHeaderException(addressingVersion.toTag);
+
+        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
         // if two-way, must contain wsa:ReplyTo
         // Unlike W3C version, we cannot assume default value as anonymous if not present.
         if(!wbo.getOperation().isOneWay()) {

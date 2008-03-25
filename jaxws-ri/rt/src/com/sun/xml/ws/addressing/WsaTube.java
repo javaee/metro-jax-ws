@@ -329,8 +329,12 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         // Both wsa:Action and wsa:To MUST be present on request (for oneway MEP) and
         // response messages (for oneway and request/response MEP only)
         if (engaged || addressingRequired) {
+            WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+            // no need to check for for non-application messages
+            if (wbo == null)
+                return;
             checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
-                    foundFaultTo, foundMessageId, foundRelatesTo);
+                    foundFaultTo, foundMessageId, foundRelatesTo);            
         }
     }
 
@@ -361,14 +365,24 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
 
     protected abstract void validateAction(Packet packet);
 
+    /**
+     * This should be called only when Addressing is engaged.
+     *
+     * Checks only for presence of wsa:Action and validates that wsa:Action
+     * equals SOAPAction header when non-empty
+     * Should be overridden if other wsa headers need to be checked based on version.
+     * 
+     * @param packet
+     * @param foundAction
+     * @param foundTo
+     * @param foundReplyTo
+     * @param foundFaultTo
+     * @param foundMessageId
+     * @param foundRelatesTo
+     */
     protected void checkMandatoryHeaders(
         Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
             boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-        // no need to check for for non-application messages
-        if (wbo == null)
-            return;
-
         // if no wsa:Action header is found
         if (!foundAction)
             throw new MissingAddressingHeaderException(addressingVersion.actionTag);
