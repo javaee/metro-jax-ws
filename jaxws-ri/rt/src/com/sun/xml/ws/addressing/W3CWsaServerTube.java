@@ -2,10 +2,12 @@ package com.sun.xml.ws.addressing;
 
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.istack.NotNull;
 
 /**
@@ -29,7 +31,23 @@ public class W3CWsaServerTube extends WsaServerTube{
     }
 
     @Override
-    protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageId, boolean foundRelatesTo) {
-        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundMessageId, foundRelatesTo);  
+    protected void checkMandatoryHeaders(
+            Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
+            boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
+        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
+                foundFaultTo, foundMessageId, foundRelatesTo);
+        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+        // no need to check for for non-application messages
+        if (wbo == null)
+            return;
+
+        // if no wsa:To header is found
+        if (!foundTo)
+            throw new MissingAddressingHeaderException(addressingVersion.toTag);
+
+        // if two-way and no wsa:MessageID is found
+        if (!wbo.getOperation().isOneWay() && !foundMessageId)
+            throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
     }
+
 }

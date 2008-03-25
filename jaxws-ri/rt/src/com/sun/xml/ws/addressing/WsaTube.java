@@ -329,7 +329,8 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         // Both wsa:Action and wsa:To MUST be present on request (for oneway MEP) and
         // response messages (for oneway and request/response MEP only)
         if (engaged || addressingRequired) {
-            checkMandatoryHeaders(packet, foundAction, foundTo, foundMessageId, foundRelatesTo);
+            checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
+                    foundFaultTo, foundMessageId, foundRelatesTo);
         }
     }
 
@@ -359,8 +360,10 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
     }
 
     protected abstract void validateAction(Packet packet);
+
     protected void checkMandatoryHeaders(
-        Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageId, boolean foundRelatesTo) {
+        Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
+            boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
         // no need to check for for non-application messages
         if (wbo == null)

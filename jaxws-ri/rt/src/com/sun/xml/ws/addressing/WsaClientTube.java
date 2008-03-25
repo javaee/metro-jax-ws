@@ -56,7 +56,7 @@ import javax.xml.ws.WebServiceException;
  *
  * @author Arun Gupta
  */
-public final class WsaClientTube extends WsaTube {
+public class WsaClientTube extends WsaTube {
     public WsaClientTube(WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(wsdlPort, binding, next);
     }
@@ -103,8 +103,10 @@ public final class WsaClientTube extends WsaTube {
     }
 
     @Override
-    protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageID, boolean foundRelatesTo) {
-        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundMessageID, foundRelatesTo);
+    protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
+            boolean foundFaultTo, boolean foundMessageID, boolean foundRelatesTo) {
+        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
+                foundFaultTo, foundMessageID, foundRelatesTo);
         
 //        if(!foundRelatesTo)
 //            // RelatesTo required as per

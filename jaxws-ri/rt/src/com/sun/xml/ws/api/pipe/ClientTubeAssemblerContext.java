@@ -39,6 +39,10 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.addressing.WsaClientTube;
+import com.sun.xml.ws.addressing.W3CWsaServerTube;
+import com.sun.xml.ws.addressing.W3CWsaClientTube;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaServerTube;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaClientTube;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
@@ -187,7 +191,11 @@ public class ClientTubeAssemblerContext {
      */
     public Tube createWsaTube(Tube next) {
         if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding) && wsdlModel!=null)
-            return new WsaClientTube(wsdlModel, binding, next);
+            if(AddressingVersion.fromBinding(binding) == AddressingVersion.MEMBER) {
+                return new MemberSubmissionWsaClientTube(wsdlModel, binding, next);    
+            } else {
+                return new W3CWsaClientTube(wsdlModel, binding, next);
+            }
         else
             return next;
     }

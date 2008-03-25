@@ -36,53 +36,41 @@
 
 package com.sun.xml.ws.addressing.v200408;
 
-import com.sun.xml.ws.addressing.WsaServerTube;
+import com.sun.xml.ws.addressing.WsaClientTube;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
-import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.istack.NotNull;
 
 /**
  * @author Rama Pulavarthi
  */
-public class MemberSubmissionWsaServerTube extends WsaServerTube {
-    public MemberSubmissionWsaServerTube(WSEndpoint endpoint, @NotNull WSDLPort wsdlPort, WSBinding binding, Tube next) {
-        super(endpoint, wsdlPort, binding, next);
+public class MemberSubmissionWsaClientTube extends WsaClientTube {
+    public MemberSubmissionWsaClientTube(WSDLPort wsdlPort, WSBinding binding, Tube next) {
+        super(wsdlPort, binding, next);
     }
 
-    public MemberSubmissionWsaServerTube(WsaServerTube that, TubeCloner cloner) {
+    public MemberSubmissionWsaClientTube(WsaClientTube that, TubeCloner cloner) {
         super(that, cloner);
     }
-
-    public MemberSubmissionWsaServerTube copy(TubeCloner cloner) {
-        return new MemberSubmissionWsaServerTube(this, cloner);
+    public MemberSubmissionWsaClientTube copy(TubeCloner cloner) {
+        return new MemberSubmissionWsaClientTube(this, cloner);
     }
 
     @Override
     protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
-            boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
-        		WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+                                         boolean foundFaultTo, boolean foundMessageID, boolean foundRelatesTo) {
+        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+        // no need to check for for non-application messages
+        if (wbo == null)
+            return;
 
-        // validate strictly, even the application messages should follow the rules in WS-Addressing spec.
-        // // no need to check for for non-application messages
-        // if (wbo == null)
-        //    return;
-
-        // if no wsa:To header is found
-        if (!foundTo)
-            throw new MissingAddressingHeaderException(addressingVersion.toTag);
-        // if two-way, must contain wsa:ReplyTo
-        // Unlike W3C version, we cannot assume default value as anonymous if not present.
-        if(!wbo.getOperation().isOneWay()) {
-            throw new MissingAddressingHeaderException(addressingVersion.replyToTag);
-        }
-        // wsa:MessageId is required if wsa:ReplyTo is present.
-        if ((foundReplyTo || foundFaultTo ) && !foundMessageId)
-            throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);       
+        // if no wsa:Action header is found
+        if (!foundAction)
+            throw new MissingAddressingHeaderException(addressingVersion.actionTag);
+        validateSOAPAction(packet);
     }
 }
