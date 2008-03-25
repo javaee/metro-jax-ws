@@ -85,7 +85,7 @@ public final class WsaClientTube extends WsaTube {
 
 
     @Override
-    public void validateAction(Packet packet) {
+    protected void validateAction(Packet packet) {
         //There may not be a WSDL operation.  There may not even be a WSDL.
         //For instance this may be a RM CreateSequence message.
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);

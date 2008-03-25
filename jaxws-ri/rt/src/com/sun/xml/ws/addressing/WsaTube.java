@@ -134,13 +134,12 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
      * a fault message and returns that. Otherwise
      * it will pass through the parameter 'packet' object to the return value.
      */
-    protected final Packet validateInboundHeaders(Packet packet) {
+    protected Packet validateInboundHeaders(Packet packet) {
         SOAPFault soapFault;
         FaultDetailHeader s11FaultDetailHeader;
 
         try {
-            checkCardinality(packet);
-
+            checkMessageAddressingProperties(packet);
             return packet;
         } catch (InvalidAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,
@@ -169,6 +168,22 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         }
 
         return packet;
+    }
+
+    /**
+     * This method checks all the WS-Addressing headers are valid and as per the spec definded rules.
+     * Mainly it checks the cardinality of the WSA headers and checks that mandatory headers exist.
+     * It also checks if the SOAPAction is equal to wsa:Action value when non-empty.
+     *
+     * Override this method if you need to additional checking of headers other than just existence of the headers.
+     * For ex: On server-side, check Anonymous and Non-Anonymous semantics in addition to checking cardinality.
+     * 
+     * Override checkMandatoryHeaders(Packet p) to have different validation rules for different versions
+     * 
+     * @param packet
+     */
+    protected void checkMessageAddressingProperties(Packet packet) {
+        checkCardinality(packet);
     }
 
     final boolean isAddressingEngagedOrRequired(Packet packet, WSBinding binding) {
@@ -205,7 +220,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
      * <li>an uknown WS-Addressing header is present</li>
      * </ul>
      */
-    public void checkCardinality(Packet packet) {
+    protected void checkCardinality(Packet packet) {
         Message message = packet.getMessage();
         if (message == null) {
             if (addressingRequired)

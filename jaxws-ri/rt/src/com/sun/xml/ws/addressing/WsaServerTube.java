@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Arun Gupta
  */
-public final class WsaServerTube extends WsaTube {
+public class WsaServerTube extends WsaTube {
     private WSEndpoint endpoint;
     // store the replyTo/faultTo of the message currently being processed.
     // both will be set to non-null in processRequest
@@ -241,7 +241,7 @@ public final class WsaServerTube extends WsaTube {
     }
 
     @Override
-    public void validateAction(Packet packet) {
+    protected void validateAction(Packet packet) {
         //There may not be a WSDL operation.  There may not even be a WSDL.
         //For instance this may be a RM CreateSequence message.
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
@@ -264,9 +264,8 @@ public final class WsaServerTube extends WsaTube {
         }
     }
 
-    @Override
-    public void checkCardinality(Packet packet) {
-        super.checkCardinality(packet);
+    protected void checkMessageAddressingProperties(Packet packet) {
+        super.checkMessageAddressingProperties(packet);
 
         // wsaw:Anonymous validation
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
@@ -295,7 +294,8 @@ public final class WsaServerTube extends WsaTube {
         */
 
     }
-
+    
+    @Override
     protected void checkMandatoryHeaders(
         Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageId, boolean foundRelatesTo) {
         super.checkMandatoryHeaders(packet, foundAction, foundTo, foundMessageId, foundRelatesTo);
