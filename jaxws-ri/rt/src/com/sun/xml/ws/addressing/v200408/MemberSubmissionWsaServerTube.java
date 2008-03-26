@@ -77,7 +77,7 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
         // if two-way, must contain wsa:ReplyTo
         // Unlike W3C version, we cannot assume default value as anonymous if not present.
-        if(!wbo.getOperation().isOneWay()) {
+        if(!wbo.getOperation().isOneWay() && !foundReplyTo) {
             throw new MissingAddressingHeaderException(addressingVersion.replyToTag);
         }
         // wsa:MessageId is required if wsa:ReplyTo is present.
