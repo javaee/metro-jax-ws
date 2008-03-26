@@ -329,10 +329,14 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         // Both wsa:Action and wsa:To MUST be present on request (for oneway MEP) and
         // response messages (for oneway and request/response MEP only)
         if (engaged || addressingRequired) {
+            // Check for mandatory headers always (even for Protocol messages).
+            // If it breaks any interop scenarios, Remove the comments.
+            /*
             WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
             // no need to check for for non-application messages
             if (wbo == null)
                 return;
+            */
             checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
                     foundFaultTo, foundMessageId, foundRelatesTo);            
         }
