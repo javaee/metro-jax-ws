@@ -37,10 +37,14 @@ public class W3CWsaServerTube extends WsaServerTube{
         super.checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
                 foundFaultTo, foundMessageId, foundRelatesTo);
 
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-        // if two-way and no wsa:MessageID is found
-        if (!wbo.getOperation().isOneWay() && !foundMessageId)
-            throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
+        //we can find Req/Response or Oneway only with WSDLModel
+        if (wsdlPort != null) {
+            WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+
+            // if two-way and no wsa:MessageID is found
+            if (!wbo.getOperation().isOneWay() && !foundMessageId)
+                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
+        }
     }
 
 }
