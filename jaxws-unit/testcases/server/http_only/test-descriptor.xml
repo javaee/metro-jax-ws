@@ -1,4 +1,4 @@
-<descriptor since="2.0" transport="http">
+<descriptor since="2.0" transport="http" excludeFrom="jdk6">
   <description>http_only</description>
     
   <service basedir="./server">
