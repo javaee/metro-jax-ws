@@ -64,5 +64,15 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
     protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
                                          boolean foundFaultTo, boolean foundMessageID, boolean foundRelatesTo) {
         super.checkMandatoryHeaders(packet,foundAction,foundTo,foundReplyTo,foundFaultTo,foundMessageID,foundRelatesTo);
+        
+        // if no wsa:To header is found
+        if (!foundTo) {
+            throw new MissingAddressingHeaderException(addressingVersion.toTag);
+        }
+
+        // if it is not one-way, response must contain wsa:RelatesTo
+        if( (packet.getMessage() != null) && !foundRelatesTo) {
+            throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+        }
     }
 }
