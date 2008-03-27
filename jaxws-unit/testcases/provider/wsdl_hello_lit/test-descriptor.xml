@@ -11,17 +11,6 @@
     }
   ]]></client>
 
-  <client name="provider.doclit2" sideEffectFree="true"><![CDATA[
-    req = new Hello_Type();
-    req.setArgument("arg");
-    req.setExtra("extra");
-    for(i=0; i < 5; i++) {
-        response = helloAsyncPort.hello(req, req);
-        assertEquals("arg", response.getArgument());
-        assertEquals("extra", response.getExtra());
-    }
-  ]]></client>
-
   <client name="provider.doclit3" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
     req.setArgument("fault");

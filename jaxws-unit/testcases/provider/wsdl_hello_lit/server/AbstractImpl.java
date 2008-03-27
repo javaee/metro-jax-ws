@@ -11,8 +11,6 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.ws.WebServiceException;
-import com.sun.xml.ws.api.server.AsyncProvider;
-import com.sun.xml.ws.api.server.AsyncProviderCallback;
 import javax.xml.ws.Service;
 import javax.xml.ws.Service.Mode;
 import javax.xml.transform.Source;
