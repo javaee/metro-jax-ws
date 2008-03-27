@@ -23,6 +23,20 @@
     }
   ]]></client>
 
+  <client name="provider.verify.wsdl" transport="http" sideEffectFree="true"><![CDATA[
+        URL pubUrl = new URL(helloPortAddress + "?wsdl");
+        InputStream in = pubUrl.openStream();
+        while(in.read() != -1);
+        in.close();
+  ]]></client>
+
+  <client name="provider.verify.xsd" transport="http" sideEffectFree="true"><![CDATA[
+        URL pubUrl = new URL(helloPortAddress + "?xsd=1");
+        InputStream in = pubUrl.openStream();
+        while(in.read() != -1);
+        in.close();
+  ]]></client>
+
   <service basedir="./server">
     <wsdl href="hello_literal.wsdl"/>
   </service>
