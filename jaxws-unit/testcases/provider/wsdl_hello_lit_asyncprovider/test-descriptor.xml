@@ -1,0 +1,19 @@
+<descriptor since="2.0" excludeFrom="jdk6">
+  <description>This is a AsyncProvider test</description>
+
+  <client name="wsdl_hello_lit_asyncprovider.test1" sideEffectFree="true"><![CDATA[
+    req = new Hello_Type();
+    req.setArgument("arg");
+    req.setExtra("extra");
+    for(i=0; i < 5; i++) {
+        response = helloAsyncPort.hello(req, req);
+        assertEquals("arg", response.getArgument());
+        assertEquals("extra", response.getExtra());
+    }
+  ]]></client>
+
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
+  </service>
+
+</descriptor>
