@@ -1,8 +1,5 @@
 package mtom.tcktest.server;
 
-
-import com.sun.xml.ws.developer.JAXWSProperties;
-
 import javax.xml.ws.WebServiceException;
 import javax.activation.DataHandler;
 import javax.annotation.Resource;
