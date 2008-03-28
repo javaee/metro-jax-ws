@@ -102,16 +102,4 @@ public class WsaClientTube extends WsaTube {
             throw new ActionNotSupportedException(gotA);
     }
 
-    @Override
-    protected void checkMandatoryHeaders(Packet packet, boolean foundAction, boolean foundTo, boolean foundReplyTo,
-            boolean foundFaultTo, boolean foundMessageID, boolean foundRelatesTo) {
-        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundReplyTo,
-                foundFaultTo, foundMessageID, foundRelatesTo);
-        
-//        if(!foundRelatesTo)
-//            // RelatesTo required as per
-//            // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
-//            throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
-
-    }
 }

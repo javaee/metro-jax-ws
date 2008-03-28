@@ -71,8 +71,14 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
         }
 
         // if it is not one-way, response must contain wsa:RelatesTo
-        if( (packet.getMessage() != null) && !foundRelatesTo) {
-            throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+        // RelatesTo required as per
+        // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
+        // Don't check for AddressingFaults as Faults for requests with duplicate MessageId will have no wsa:RelatesTo
+        if ((packet.getMessage() != null) && !foundRelatesTo) {
+            String action = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+            if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {
+                throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+            }
         }
     }
 }
