@@ -1,4 +1,5 @@
-<descriptor since="2.0">
+<!-- Uses internal class so excluding from JDK6 test runs -->
+<descriptor since="2.0" excludeFrom="jdk6">
   <description>This is a Provider XML/HTTP test</description>
 
    <pre-client><![CDATA[

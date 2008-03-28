@@ -1,4 +1,4 @@
-<descriptor since="2.1">
+<descriptor since="2.1" excludeFrom="jdk6">
   <description>
     Test stateful web service behavior.
   </description>
