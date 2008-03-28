@@ -101,15 +101,6 @@
         <part name="echo1Header" element="types:Info"/>
     </message>
 
-    <message name="echo3Request">
-        <part name="echo3Req" type="xsd:string"/>
-    </message>
-
-    <message name="echo3Response">
-        <part name="echo3Resp" type="xsd:int"/>
-    </message>
-
-
     <wsdl:portType name="HelloPortType">
 
         <wsdl:operation name="echo">
@@ -126,11 +117,6 @@
         <wsdl:operation name="echo2">
             <wsdl:input message="tns:echo2Request"/>
             <wsdl:output message="tns:echo2Response"/>
-        </wsdl:operation>
-
-        <wsdl:operation name="echo3">
-            <wsdl:input message="tns:echo3Request"/>
-            <wsdl:output message="tns:echo3Response"/>
         </wsdl:operation>
 
     </wsdl:portType>
@@ -170,16 +156,6 @@
             </wsdl:input>
             <wsdl:output>
                 <soap:body message="tns:echo2Response" parts="respBody" use="literal" namespace="http://example.com/"/>
-            </wsdl:output>
-        </wsdl:operation>
-
-        <wsdl:operation name="echo3">
-            <soap:operation/>
-            <wsdl:input>
-                <soap:body message="tns:echo3Request" use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body message="tns:echo3Response" use="literal" namespace="http://example.com/echo3"/>
             </wsdl:output>
         </wsdl:operation>
 

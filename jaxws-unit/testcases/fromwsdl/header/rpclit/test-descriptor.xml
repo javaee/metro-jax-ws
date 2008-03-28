@@ -1,13 +1,6 @@
 <descriptor since="2.0">
     <description>This is a fromwsdl rpc/lit fault test</description>
 
-    <client name="header.rpclit1">
-        <description>
-            test echo3()
-        </description>
-        assertEquals(1, helloPort.echo3("1"));
-    </client>
-
     <client name="header.rpclit2">
         <description>
             test echo()

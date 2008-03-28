@@ -86,8 +86,4 @@ public class TestEndpointImpl
         return response;
     }
 
-    public int echo3(String echo3Req) {
-        return Integer.valueOf(echo3Req);
-    }
-
 }
