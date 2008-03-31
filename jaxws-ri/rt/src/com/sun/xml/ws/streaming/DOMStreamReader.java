@@ -315,8 +315,10 @@ public final class DOMStreamReader implements XMLStreamReader, NamespaceContext 
                 return; // declared correctly
         }
 
+        if(prefix.equals("xml") || prefix.equals("xmlns"))
+            return; // implicitly declared namespaces
+        
         // needs to be declared
-
         scope.additionalNamespaces.add(prefix);
         scope.additionalNamespaces.add(uri);
     }
