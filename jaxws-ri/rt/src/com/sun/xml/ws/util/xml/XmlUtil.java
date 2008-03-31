@@ -51,11 +51,21 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -199,6 +209,12 @@ public class XmlUtil {
 
     static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
+    static final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+
+    static {
+        saxParserFactory.setNamespaceAware(true);
+    }
+
     /**
      * Creates a new identity transformer.
      */
@@ -208,6 +224,35 @@ public class XmlUtil {
         } catch (TransformerConfigurationException tex) {
             throw new IllegalStateException("Unable to create a JAXP transformer");
         }
+    }
+
+    /**
+     * Performs identity transformation.
+     */
+    public static <T extends Result>
+    T identityTransform(Source src, T result) throws TransformerException, SAXException, ParserConfigurationException, IOException {
+        if (src instanceof StreamSource) {
+            // work around a bug in JAXP in JDK6u4 and earlier where the namespace processing
+            // is not turned on by default
+            StreamSource ssrc = (StreamSource) src;
+            TransformerHandler th = ((SAXTransformerFactory) transformerFactory).newTransformerHandler();
+            th.setResult(result);
+            XMLReader reader = saxParserFactory.newSAXParser().getXMLReader();
+            reader.setContentHandler(th);
+            reader.parse(toInputSource(ssrc));
+        } else {
+            newTransformer().transform(src, result);
+        }
+        return result;
+    }
+
+    private static InputSource toInputSource(StreamSource src) {
+        InputSource is = new InputSource();
+        is.setByteStream(src.getInputStream());
+        is.setCharacterStream(src.getReader());
+        is.setPublicId(src.getPublicId());
+        is.setSystemId(src.getSystemId());
+        return is;
     }
 
     /*
