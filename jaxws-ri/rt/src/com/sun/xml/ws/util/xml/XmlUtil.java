@@ -82,6 +82,8 @@ import java.util.StringTokenizer;
  * @author WS Development Team
  */
 public class XmlUtil {
+    private final static String LEXICAL_HANDLER_PROPERTY =
+	"http://xml.org/sax/properties/lexical-handler";
 
     public static String getPrefix(String s) {
         int i = s.indexOf(':');
@@ -239,6 +241,7 @@ public class XmlUtil {
             th.setResult(result);
             XMLReader reader = saxParserFactory.newSAXParser().getXMLReader();
             reader.setContentHandler(th);
+            reader.setProperty(LEXICAL_HANDLER_PROPERTY, th);
             reader.parse(toInputSource(ssrc));
         } else {
             newTransformer().transform(src, result);
