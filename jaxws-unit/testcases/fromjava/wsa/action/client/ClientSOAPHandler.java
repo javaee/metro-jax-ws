@@ -22,7 +22,7 @@
 
 package fromjava.wsa.action.client;
 
-import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
+import javax.xml.ws.WebServiceException;
 import testutil.WsaBaseSOAPHandler;
 import fromjava.wsa.action.common.TestConstants;
 
@@ -37,23 +37,23 @@ public class ClientSOAPHandler extends WsaBaseSOAPHandler {
     protected void checkInboundActions(String oper, String action) {
         if (oper.equals("addNumbersNoActionResponse")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_OUT_NOACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersEmptyActionResponse")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_OUT_EMPTYACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersResponse")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_OUT_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbers2Response")) {
             if (!action.equals(TestConstants.ADD_NUMBERS2_OUT_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbers3Response")) {
             if (!action.equals(TestConstants.ADD_NUMBERS3_OUT_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         }
     }
@@ -62,55 +62,55 @@ public class ClientSOAPHandler extends WsaBaseSOAPHandler {
     protected void checkFaultActions(String requestName, String detailName, String action) {
         if (requestName.equals("addNumbersFault1") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT1_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault2") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT2_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault2") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT2_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault3") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT3_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault3") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT3_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault4") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT4_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault4") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT4_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault5") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT5_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault5") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT5_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault6") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT6_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault6") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT6_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault7") && detailName.equals("AddNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT7_ADDNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (requestName.equals("addNumbersFault7") && detailName.equals("TooBigNumbersException")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT7_TOOBIGNUMBERS_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         }
         super.checkFaultActions(requestName, detailName, action);

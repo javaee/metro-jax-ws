@@ -22,7 +22,7 @@
 
 package fromjava.wsa.action.server;
 
-import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
+import javax.xml.ws.WebServiceException;
 import testutil.WsaBaseSOAPHandler;
 import fromjava.wsa.action.common.TestConstants;
 
@@ -33,51 +33,51 @@ public class ServerSOAPHandler extends WsaBaseSOAPHandler {
     protected void checkInboundActions(String oper, String action) {
         if (oper.equals("addNumbersNoAction")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_IN_NOACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersEmptyAction")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_IN_EMPTYACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbers")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbers2")) {
             if (!action.equals(TestConstants.ADD_NUMBERS2_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbers3")) {
             if (!action.equals(TestConstants.ADD_NUMBERS3_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault1")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT1_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault2")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT2_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault3")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT3_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault4")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT4_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault5")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT5_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault6")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT6_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         } else if (oper.equals("addNumbersFault7")) {
             if (!action.equals(TestConstants.ADD_NUMBERS_FAULT7_IN_ACTION)) {
-                throw new ActionNotSupportedException(action);
+                throw new WebServiceException("Unexpected action received " + action);
             }
         }
     }
