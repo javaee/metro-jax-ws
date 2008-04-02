@@ -51,7 +51,7 @@ import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
  * @author Rama Pulavarthi
  */
 public class MemberSubmissionWsaClientTube extends WsaClientTube {
-    private MemberSubmissionAddressing.Validation validation;
+    private final MemberSubmissionAddressing.Validation validation;
 
     public MemberSubmissionWsaClientTube(WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(wsdlPort, binding, next);

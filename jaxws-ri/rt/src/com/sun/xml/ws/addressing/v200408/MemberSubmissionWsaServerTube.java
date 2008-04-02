@@ -53,7 +53,7 @@ import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
  * @author Rama Pulavarthi
  */
 public class MemberSubmissionWsaServerTube extends WsaServerTube {
-    private MemberSubmissionAddressing.Validation validation;
+    private final MemberSubmissionAddressing.Validation validation;
     public MemberSubmissionWsaServerTube(WSEndpoint endpoint, @NotNull WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(endpoint, wsdlPort, binding, next);
         validation = binding.getFeature(MemberSubmissionAddressingFeature.class).getValidation();
