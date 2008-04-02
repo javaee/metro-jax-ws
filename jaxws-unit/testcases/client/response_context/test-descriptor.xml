@@ -5,8 +5,8 @@
   <description>
     Testing ResponseContext
   </description>
-  <service>
-    <wsdl href="hello_literal.wsdl" />
+  <service basedir="./server">
+    <wsdl href="hello_literal.wsdl"/>
   </service>
   <client name="client.response-context1"><![CDATA[
     try {
@@ -14,12 +14,12 @@
       req.setArgument("foo");
       req.setExtra("bar");
 
-      helloPort.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+      helloPort.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress);
 
-      response = stub.hello(req);
+      response = helloPort.hello(req);
       assertNull(response);
     } catch (Exception e) {
-      rc = stub.getResponseContext();
+      rc = helloPort.getResponseContext();
       assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
@@ -71,7 +71,7 @@
         req.setArgument("foo");
         req.setExtra("bar");
 
-        dispatch.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+        dispatch.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress);
         assertNull(dispatch.invoke(req));
     } catch (Exception e) {
         //e.printStackTrace();
