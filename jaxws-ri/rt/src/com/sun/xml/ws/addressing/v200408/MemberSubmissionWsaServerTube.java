@@ -36,27 +36,32 @@
 
 package com.sun.xml.ws.addressing.v200408;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.addressing.WsaServerTube;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.developer.MemberSubmissionAddressing;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 
 /**
  * @author Rama Pulavarthi
  */
 public class MemberSubmissionWsaServerTube extends WsaServerTube {
+    private MemberSubmissionAddressing.Validation validation;
     public MemberSubmissionWsaServerTube(WSEndpoint endpoint, @NotNull WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(endpoint, wsdlPort, binding, next);
+        validation = binding.getFeature(MemberSubmissionAddressingFeature.class).getValidation();
     }
 
-    public MemberSubmissionWsaServerTube(WsaServerTube that, TubeCloner cloner) {
+    public MemberSubmissionWsaServerTube(MemberSubmissionWsaServerTube that, TubeCloner cloner) {
         super(that, cloner);
+        this.validation = that.validation;
     }
 
     public MemberSubmissionWsaServerTube copy(TubeCloner cloner) {
@@ -84,8 +89,10 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
                 throw new MissingAddressingHeaderException(addressingVersion.replyToTag);
             }
         }
-        // wsa:MessageId is required if wsa:ReplyTo is present.
-        if ((foundReplyTo || foundFaultTo ) && !foundMessageId)
-            throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);       
+        if (!validation.equals(MemberSubmissionAddressing.Validation.LAX)) {
+            // wsa:MessageId is required if wsa:ReplyTo is present.
+            if ((foundReplyTo || foundFaultTo) && !foundMessageId)
+                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
+        }
     }
 }

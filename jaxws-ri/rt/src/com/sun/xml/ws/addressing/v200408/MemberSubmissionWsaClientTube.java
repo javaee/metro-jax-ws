@@ -44,17 +44,25 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.developer.MemberSubmissionAddressing;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 
 /**
  * @author Rama Pulavarthi
  */
 public class MemberSubmissionWsaClientTube extends WsaClientTube {
+    private MemberSubmissionAddressing.Validation validation;
+
     public MemberSubmissionWsaClientTube(WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(wsdlPort, binding, next);
+        validation = binding.getFeature(MemberSubmissionAddressingFeature.class).getValidation();
+
     }
 
-    public MemberSubmissionWsaClientTube(WsaClientTube that, TubeCloner cloner) {
+    public MemberSubmissionWsaClientTube(MemberSubmissionWsaClientTube that, TubeCloner cloner) {
         super(that, cloner);
+        this.validation = that.validation;
+
     }
     public MemberSubmissionWsaClientTube copy(TubeCloner cloner) {
         return new MemberSubmissionWsaClientTube(this, cloner);
@@ -70,14 +78,17 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
             throw new MissingAddressingHeaderException(addressingVersion.toTag);
         }
 
-        // if it is not one-way, response must contain wsa:RelatesTo
-        // RelatesTo required as per
-        // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
-        // Don't check for AddressingFaults as Faults for requests with duplicate MessageId will have no wsa:RelatesTo
-        if ((packet.getMessage() != null) && !foundRelatesTo) {
-            String action = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
-            if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {
-                throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+        if (!validation.equals(MemberSubmissionAddressing.Validation.LAX)) {
+
+            // if it is not one-way, response must contain wsa:RelatesTo
+            // RelatesTo required as per
+            // Table 5-3 of http://www.w3.org/TR/2006/WD-ws-addr-wsdl-20060216/#wsdl11requestresponse
+            // Don't check for AddressingFaults as Faults for requests with duplicate MessageId will have no wsa:RelatesTo
+            if ((packet.getMessage() != null) && !foundRelatesTo) {
+                String action = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+                if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {
+                    throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+                }
             }
         }
     }
