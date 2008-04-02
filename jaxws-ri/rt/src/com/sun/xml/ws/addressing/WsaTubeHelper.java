@@ -330,9 +330,7 @@ public abstract class WsaTubeHelper {
     public abstract void getProblemActionDetail(String action, Element element);
     public abstract void getInvalidMapDetail(QName name, Element element);
     public abstract void getMapRequiredDetail(QName name, Element element);
-
-    protected Unmarshaller unmarshaller;
-    protected Marshaller marshaller;
+    
     protected SEIModel seiModel;
     protected WSDLPort wsdlPort;
     protected WSBinding binding;
