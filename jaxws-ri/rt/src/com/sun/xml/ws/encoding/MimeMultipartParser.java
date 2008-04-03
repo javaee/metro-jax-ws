@@ -182,7 +182,7 @@ public final class MimeMultipartParser {
 
         public DataHandler asDataHandler() {
             return (buf != null)
-                ? new DataHandler(new ByteArrayDataSource(buf,getContentType()))
+                ? new DataSourceStreamingDataHandler(new ByteArrayDataSource(buf,getContentType()))
                 : new StreamingDataHandler(part);
         }
 
@@ -207,6 +207,7 @@ public final class MimeMultipartParser {
                 while((len=in.read(temp)) != -1) {
                     os.write(temp, 0, len);
                 }
+                in.close();
             }
         }
 

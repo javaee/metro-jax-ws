@@ -41,6 +41,7 @@ import com.sun.xml.bind.api.Bridge;
 import com.sun.xml.ws.api.message.Attachment;
 import com.sun.xml.ws.util.ASCIIUtility;
 import com.sun.xml.ws.util.ByteArrayBuffer;
+import com.sun.xml.ws.encoding.DataSourceStreamingDataHandler;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -89,7 +90,7 @@ public final class JAXBAttachment implements Attachment, DataSource {
     }
 
     public DataHandler asDataHandler() {
-        return new DataHandler(this);
+        return new DataSourceStreamingDataHandler(this);
     }
 
     public Source asSource() {
