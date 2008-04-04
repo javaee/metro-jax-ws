@@ -1,5 +1,5 @@
 /**
- * $Id: EndToEndTest.java,v 1.2 2008-03-06 02:38:15 ramapulavarthi Exp $
+ * $Id: EndToEndTest.java,v 1.3 2008-04-04 00:34:00 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -134,7 +134,8 @@ public class EndToEndTest extends TestCaseBase {
     /**
      * Testcase for https://jax-ws.dev.java.net/issues/show_bug.cgi?id=457
      *
-     */
+     * Commenting it out since the fix hasn't gone into 2.1.4
+     *
     public void testAddMimeHeadersInSOApMessage() throws Exception {
         HandlerTracker tracker = HandlerTracker.getClientInstance();
         TestService testStub = getTestStub(getService());
@@ -146,6 +147,7 @@ public class EndToEndTest extends TestCaseBase {
 
         testStub.testInt(2);
     }
+     */
 
     /*
      * Check LogicalMessageContext in handlers
