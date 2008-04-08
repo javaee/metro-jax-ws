@@ -82,10 +82,10 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
         //we can find Req/Response or Oneway only with WSDLModel
         if (wsdlPort != null) {
             WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-
             // if two-way, must contain wsa:ReplyTo
             // Unlike W3C version, we cannot assume default value as anonymous if not present.
-            if (!wbo.getOperation().isOneWay() && !foundReplyTo) {
+            // For protocol messages, don't check as they do not have any corresponding wsdl operations
+            if (wbo != null && !wbo.getOperation().isOneWay() && !foundReplyTo) {
                 throw new MissingAddressingHeaderException(addressingVersion.replyToTag);
             }
         }
