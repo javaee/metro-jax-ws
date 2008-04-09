@@ -53,10 +53,13 @@ import javax.xml.ws.WebServiceException;
  * WsaClientTube appears in the Tubeline only if addressing is enabled.
  * This tube checks the validity of addressing headers in the incoming messages
  * based on the WSDL model.
- *
+ * @author Rama Pulavarthi
  * @author Arun Gupta
  */
 public class WsaClientTube extends WsaTube {
+    // capture if the request expects a reply so that it can be used to
+    // determine if its oneway for response validation.
+    protected boolean expectReply = true;
     public WsaClientTube(WSDLPort wsdlPort, WSBinding binding, Tube next) {
         super(wsdlPort, binding, next);
     }
@@ -70,6 +73,7 @@ public class WsaClientTube extends WsaTube {
     }
 
     public @NotNull NextAction processRequest(Packet request) {
+        expectReply = request.expectReply;
         return doInvoke(next,request);
    }
 
