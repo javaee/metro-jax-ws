@@ -133,7 +133,51 @@
 
        <delete dir="build/ant-j2se"/>
        <mkdir dir="build/ant-j2se/classes"/>
-       <unzip src="lib/jaxb-xjc.src.zip" dest="build/ant-j2se/tempsrc"/>
+       <unzip src="lib/jaxb-xjc.src.zip" dest="build/ant-j2se/jaxb-src"/>
+       <mkdir dir="build/ant-j2se/tempsrc"/>
+       <copy todir="build/ant-j2se/tempsrc">
+            <fileset dir="build/ant-j2se/jaxb-src"
+                     includes="**/*Task.java,com/sun/tools/xjc/Messages.java, com/sun/tools/xjc/ClassLoaderBuilder.java,
+                     com/sun/tools/xjc/XJCFacade.java,
+                     com/sun/tools/jxc/SchemaGeneratorFacade.java, com/sun/istack/tools/*.java"/>
+       </copy>
+       <prename srcdir="build/ant-j2se/tempsrc" destdir="build/ant-j2se/src">
+            <pattern from="com.sun.codemodel" to="com.sun.codemodel.internal"/>
+            <pattern from="com.sun.xml" to="com.sun.xml.internal"/>
+            <pattern from="com.sun.xsom" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.txw2" to="com.sun.xsom.internal"/>
+            <pattern from="com.sun.istack" to="com.sun.istack.internal" excludes="com.sun.istack.tools.ProtectedTask"/>
+            <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
+            <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
+            <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
+            <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
+                     excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
+                     com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.AptBasedTask,
+                    com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
+        </prename>
+
+        <replace dir="build/ant-j2se/src/com/sun/tools/xjc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.tools.internal.xjc;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.xjc;
+import com.sun.tools.internal.xjc.*;]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/tools/jxc">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.tools.internal.jxc;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.tools.jxc;
+import com.sun.tools.internal.jxc.*;]]></replacevalue>
+        </replace>
+        <replace dir="build/ant-j2se/src/com/sun/istack/tools/">
+            <include name="*.java"/>
+            <replacetoken><![CDATA[package com.sun.istack.internal.tools;]]></replacetoken>
+            <replacevalue><![CDATA[package com.sun.istack.tools;
+import com.sun.istack.internal.tools.*;]]></replacevalue>
+        </replace>
+       <delete dir="build/ant-j2se/jaxb-src"/>
+       <delete dir="build/ant-j2se/tempsrc"/>
+       <mkdir dir="build/ant-j2se/tempsrc"/>
        <copydir src="tools/wscompile/src" dest="build/ant-j2se/tempsrc"/>
 
        <prename srcdir="build/ant-j2se/tempsrc" destdir="build/ant-j2se/src">
@@ -141,19 +185,21 @@
             <pattern from="com.sun.xml" to="com.sun.xml.internal"/>
             <pattern from="com.sun.xsom" to="com.sun.xsom.internal"/>
             <pattern from="com.sun.txw2" to="com.sun.xsom.internal"/>
-            <pattern from="com.sun.istack" to="com.sun.istack.internal"/>
+            <pattern from="com.sun.istack" to="com.sun.istack.internal" excludes="com.sun.istack.tools.ProtectedTask"/>
             <pattern from="org.jvnet.fastinfoset" to="com.sun.xml.internal.org.jvnet.fastinfoset"/>
             <pattern from="org.jvnet.staxex" to="com.sun.xml.internal.org.jvnet.staxex"/>
             <pattern from="com.sun.tools.ws" to="com.sun.tools.internal.ws" excludes="com.sun.tools.ws.ant"/>
-            <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"/>
-            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc"/>
-            <include name="**/XJC2Task.java"/>
+            <pattern from="com.sun.tools.xjc" to="com.sun.tools.internal.xjc"
+                     excludes="com.sun.tools.xjc.XJCTask,com.sun.tools.xjc.XJC2Task, com.sun.tools.xjc.Messages,
+                     com.sun.tools.xjc.XJCFacade, com.sun.tools.xjc.ClassLoaderBuilder"/>
+            <pattern from="com.sun.tools.jxc" to="com.sun.tools.internal.jxc" excludes="com.sun.tools.jxc.AptBasedTask,
+                    com.sun.tools.jxc.SchemaGenTask, com.sun.tools.jxc.SchemaGeneratorFacade"/>
             <include name="**/ant/*.java"/>
-            <include name="com/sun/istack/tools/*.java"/>
         </prename>
+
        <delete dir="build/ant-j2se/tempsrc"/>
 
-       <!-- JAVA_HOME must be set to JDK 6 to compile -->
+
        <javac bootclasspathref="jdk.classpath" srcdir="build/ant-j2se/src"
             debug="${compile.debug}"
             destdir="build/ant-j2se/classes" >
@@ -161,7 +207,7 @@
 
         <jar destfile="build/ant-j2se/jdk6-jaxws-ant-tasks.jar"
             basedir="build/ant-j2se/classes"/>
-
+    
     </target>
 
 </project>
