@@ -52,16 +52,16 @@ public class AddNumbersClient {
         AddNumbersImpl soap  = new AddNumbersImplService().getSoap();
         int number1 = 10;
         int number2 = 20;
-        System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
-        int result = soap .addNumbers (number1, number2);
+        System.out.printf ("Invoking add(%d, %d)\n", number1, number2);
+        int result = soap .add(number1, number2);
         System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
 
         // Uses REST binding
         BindingTypeFeature bf = new BindingTypeFeature(JAXWSProperties.REST_BINDING);
         AddNumbersImpl rest = new AddNumbersImplService().getSoap(bf);
         ((BindingProvider)rest).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://localhost:8080/jaxws-dual_binding/rest");
-        System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
-        result = rest.addNumbers(number1, number2);
+        System.out.printf ("Invoking add(%d, %d)\n", number1, number2);
+        result = rest.add(number1, number2);
         System.out.printf("The result of adding %d and %d is %d.\n\n", number1, number2, result);
     }
 

@@ -37,6 +37,7 @@
 package dual_binding.server;
 
 import javax.jws.WebService;
+import javax.jws.WebMethod;
 
 /**
  * @author Jitendra Kotamraju
@@ -45,6 +46,7 @@ import javax.jws.WebService;
 @WebService
 public class AddNumbersImpl {
     
+    @WebMethod(operationName="add")
     public int addNumbers(int number1, int number2) {
         return number1 + number2;
     }
