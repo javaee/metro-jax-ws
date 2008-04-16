@@ -2,7 +2,22 @@
   <description>Handler tests that test Handler Processing on server and client.
       It tests handler invocation order, handler closing order, handling Exception processing in handlers.
   </description>
-    
+
+    <client name="testAddMimeHeadersInSOAPMessage" since="2.1.5"><![CDATA[
+    import handler.handler_processing.common.*;
+    try {
+    HandlerTracker tracker = HandlerTracker.getClientInstance();
+    tracker.clearAll();
+    tracker.setHandlerAction(TestConstants.CLIENT_PREFIX + "4",TestConstants.HA_ADD_MIMEHEADER_OUTBOUND);
+    reportServicePort.clearHandlerTracker();
+    reportServicePort.setInstruction(TestConstants.SERVER_PREFIX + "4", TestConstants.HA_CHECK_MIMEHEADER_INBOUND);
+    testServicePort.testInt(2);
+    } finally {
+        tracker.clearAll();
+        reportServicePort.clearHandlerTracker();
+    }
+  ]]></client>
+
   <service basedir="./server">
       <wsdl href="service.wsdl"/>
   </service>
