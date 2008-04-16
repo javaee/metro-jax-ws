@@ -150,7 +150,7 @@
             -->
             <java jar="${lib.home}/harness.jar" fork="true">
                 <sysproperty key="com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump" value="${log}"/>
-                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="true"/>
+                <sysproperty key="com.sun.xml.ws.transport.local.LocalTransportTube.dump" value="${log}"/>
 
                 <arg value="-report"/>
                 <arg path="${logs.dir}"/>
