@@ -14,13 +14,15 @@
       req.setArgument("foo");
       req.setExtra("bar");
 
-      helloPort.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress);
+      helloPort.getRequestContext().put(
+        BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress.toString());
 
       response = helloPort.hello(req);
-      assertNull(response);
     } catch (Exception e) {
       rc = helloPort.getResponseContext();
-      assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
+      assertNotNull(rc);
+      assertNotNull(rc.get(MessageContext.HTTP_RESPONSE_CODE));
+      assertEquals(200,rc.get(MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
   <client name="client.response-context2"><![CDATA[
@@ -54,33 +56,32 @@
     delayTest = "<delay xmlns=\"urn:test:types\"><interval>10000</interval></delay>";
 
     createDispatchJAXB() {
+        service = Service.create(new QName("urn:test", "Hello"));
         context = createJAXBContext();
         portQName = new QName("urn:test", "HelloPort");
         service.addPort(portQName,
           "http://schemas.xmlsoap.org/wsdl/soap/http",
-          helloPortAddress);
+          helloPortAddress.toString());
         dispatch = service.createDispatch(portQName, context, Service.Mode.PAYLOAD);
-        setTransport(dispatch);
         return dispatch;
     }
   ]]></pre-client>
   <client name="client.response-context3"><![CDATA[
-    dispatch = getDispatchJAXB();
+    dispatch = createDispatchJAXB();
     try {
         req = new Hello_Type();
         req.setArgument("foo");
         req.setExtra("bar");
 
-        dispatch.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress);
-        assertNull(dispatch.invoke(req));
+        dispatch.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloPortAddress.toString());
+        dispatch.invoke(req);
     } catch (Exception e) {
-        //e.printStackTrace();
         rc = dispatch.getResponseContext();
-        assertEquals(404,rc.get(MessageContext.HTTP_RESPONSE_CODE));
+        assertEquals(200,rc.get(MessageContext.HTTP_RESPONSE_CODE));
     }
   ]]></client>
   <client name="client.response-context4"><![CDATA[
-    dispatch = getDispatchJAXB();
+    dispatch = createDispatchJAXB();
     assertNull(dispatch.getResponseContext());
   ]]></client>
   <client name="client.response-context5"><![CDATA[
