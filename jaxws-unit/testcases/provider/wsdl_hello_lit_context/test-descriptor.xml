@@ -2,6 +2,10 @@
   <description>This is a Provider test</description>
   <client name="testMsgVoid" sideEffectFree="true">
   <![CDATA[
+    // Setting the address explicitly, so that it works with SE container
+    // In SE, only one endpoint gets patched
+    helloMsgPort.getRequestContext().put(
+        BindingProvider.ENDPOINT_ADDRESS_PROPERTY, helloMsgPortAddress.toString());
     response = helloMsgPort.voidTest(new VoidType());
     assertNotNull(response);
 
