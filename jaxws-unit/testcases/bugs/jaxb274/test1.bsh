@@ -7,7 +7,7 @@ o.add(p1);
 
 h = new Holder(o);
 docLitBarePort.echo(h);
-assertTrue(h.value.size()==o.size());
+assertEquals(o.size(), h.value.size());
 
 r=docLitWrappedPort.echo(o);
-assertTrue(r.size()==o.size());
+assertEquals(o.size(), r.size());
