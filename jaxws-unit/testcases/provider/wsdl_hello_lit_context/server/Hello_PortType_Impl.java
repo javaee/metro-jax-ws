@@ -17,8 +17,7 @@ import javax.jws.HandlerChain;
  * @author Jitendra Kotamraju
  */
 @WebServiceProvider(serviceName="Hello", portName="HelloPort",
-    targetNamespace="urn:test",
-    wsdlLocation="WEB-INF/wsdl/hello_literal_overridden.wsdl")
+    targetNamespace="urn:test")
 @HandlerChain(file="handlers.xml")
 public class Hello_PortType_Impl extends ProviderImpl {
     @Resource(type=Object.class)
