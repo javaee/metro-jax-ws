@@ -1,4 +1,4 @@
-<descriptor since="2.0" transport="http">
+<descriptor since="2.1.4" transport="http">
   <description>This is a Provider Oneway test</description>
   <client name="provider.http_status_code_oneway" sideEffectFree="true"><![CDATA[
     req = new Hello_Type();
