@@ -1,16 +1,17 @@
-        service = Service.create(new QName("urn:test", "Endpoint"));
-        service.addPort(new QName("urn:test", "EndpointPort"), SOAPBinding.SOAP11HTTP_BINDING, "http://localhost:8080/jaxrpc-provider_tests_multiple_body/endpoint");
-        disp = service.createDispatch(new QName("urn:test", "EndpointPort"), SOAPMessage.class, Service.Mode.MESSAGE);
-        sm = MessageFactory.newInstance().createMessage();
-        SOAPBody sb = sm.getSOAPBody();
-        sb.addBodyElement(new QName("http://first.body", "first"));
-        sb.addBodyElement(new QName("http://second.body", "second"));
-        resp = disp.invoke(sm);
+service = Service.create(new QName("urn:test", "Endpoint"));
+service.addPort(new QName("urn:test", "EndpointPort"), SOAPBinding.SOAP11HTTP_BINDING, endpointPortAddress.toString());
+disp = service.createDispatch(new QName("urn:test", "EndpointPort"), SOAPMessage.class, Service.Mode.MESSAGE);
+sm = MessageFactory.newInstance().createMessage();
+SOAPBody sb = sm.getSOAPBody();
+sb.addBodyElement(new QName("http://first.body", "first"));
+sb.addBodyElement(new QName("http://second.body", "second"));
+resp = disp.invoke(sm);
 
-        body = resp.getSOAPBody();
-        nl = body.getChildNodes();
-        assertTrue(nl.getLength() == 2);
-        n = nl.item(0);
-        assertTrue(n.getLocalName().equals("first") && n.getNamespaceURI().equals("http://first.body"));
-        n = nl.item(1);
-        assertTrue(n.getLocalName().equals("second") && n.getNamespaceURI().equals("http://second.body"));
+body = resp.getSOAPBody();
+nl = body.getChildNodes();
+assertTrue(nl.getLength() == 2);
+n = nl.item(0);
+assertTrue(n.getLocalName().equals("first") && n.getNamespaceURI().equals("http://first.body"));
+n = nl.item(1);
+assertTrue(n.getLocalName().equals("second") && n.getNamespaceURI().equals("http://second.body"));
+
