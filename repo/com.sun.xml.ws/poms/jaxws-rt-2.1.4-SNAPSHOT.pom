@@ -73,6 +73,14 @@
       <artifactId>streambuffer</artifactId>
       <version>0.7</version>
     </dependency>
+<!-- If you want to use woodstox StAX parser, uncomment this and comment
+     sjsxp
+    <dependency>
+      <groupId>woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.3</version>
+    </dependency>
+-->
     <dependency>
       <groupId>com.sun.xml.stream</groupId>
       <artifactId>sjsxp</artifactId>
