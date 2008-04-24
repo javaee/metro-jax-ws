@@ -408,7 +408,7 @@
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/dist/lib/saaj-impl.jar"
+    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
          dest="lib/saaj-impl.jar" />
     <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
          dest="lib/saaj-impl.src.zip" />
