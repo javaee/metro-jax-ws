@@ -1,4 +1,7 @@
-<descriptor since="2.1">
+<!--
+  Marking as skipped since Google refuses the connections sometimes.
+-->
+<descriptor since="2.1" skip="true" >
   <description>
     Google web service with dispatch
   </description>
