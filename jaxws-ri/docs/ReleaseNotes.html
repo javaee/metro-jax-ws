@@ -12,6 +12,9 @@ end users and middleware developers. </p>
 </section>
 
 <section title="Features in this release">
+</section>
+
+<section title="Features in this release">
 <ul>
 	<li>Reference Implementation (RI) of JAX-WS ${SPEC_VERSION} API. Full 
 	<a href="http://jcp.org/en/jsr/detail?id=224">JAX-WS 
@@ -20,7 +23,7 @@ end users and middleware developers. </p>
         		<ul>
 					<li>WSDL to Java generator<ul>
 						<li>Wsimport
-						<a href="wsimport.html">comman line tool</a>,
+						<a href="wsimport.html">command line tool</a>,
 						<a href="wsimportant.html">ant task</a> 
 						and
 						<a href="https://jax-ws-commons.dev.java.net/jaxws-maven-plugin/">
@@ -32,9 +35,11 @@ end users and middleware developers. </p>
 						and
 						<a href="https://jax-ws-commons.dev.java.net/jaxws-maven-plugin/">Maven2 plugin</a></li>
 					</ul></li>
+<!--
 					<li>Integrated with
 					<a href="http://www.netbeans.info/downloads/dev.php">NetBeans&nbsp; 
 			5.5.1 </a></li>
+-->
 				</ul></li>
 	<li>Standards 
 	<ul>
@@ -53,7 +58,7 @@ end users and middleware developers. </p>
 	<li>Extensions (May not be final unless says so)<ul>
 		<li>Web Services Interoperable Technologies (
 		<a href="https://wsit.dev.java.net/index.html#downloads">WSIT</a>) - 
-		enables .NET 3.0 interoperability 
+		enables .NET 3.x interoperability 
 		<ul>
 			<li>WS-ReliableMessaging</li>
 			<li>WS-Policy</li>
@@ -87,7 +92,7 @@ end users and middleware developers. </p>
 		<a href="https://open-jbi-components.dev.java.net/">Open JBI component</a></li>
 	</ul>
 	</li>
-	<li>Data binding - <a href="https://jaxb.dev.java.net/2.1.2/">JAXB 2.1.3 RI</a> 
+	<li>Data binding - <a href="https://jaxb.dev.java.net/2.1.7/">JAXB 2.1.7 RI</a> 
 	</li>
 	<li>Server Side Asynchrony -
 	<a href="https://jax-ws.dev.java.net/nonav/21/docs/asyncprovider.html">
@@ -173,8 +178,7 @@ valid with Java EE 5 as well.
     </li>
     <li>
         <p>Tested to work with 
-		<a href="https://glassfish.dev.java.net/servlets/NewsItemView?newsItemID=4814">Glassfish 
-		Promoted Build v2 41a (Beta 2 Candidate 2)</a> and Apache Tomcat 5.x</p>
+		<a href="https://glassfish.dev.java.net/downloads/v2ur2-b04.html">Glassfish V2 UR2</a> and Apache Tomcat 5.5.x</p>
     </li>
 </ul>
 </section>
@@ -185,8 +189,7 @@ valid with Java EE 5 as well.
 <ul>
 	<li>Extract ${PRODUCT_NAME} bundle </li>
 	<li>Install on Glassfish v2<ul>
-	<li>Glassfish v2 b50 has ${PRODUCT_NAME} integrated  so you do not need to 
-	do anything. If you still want to use the ${PRODUCT_NAME} 
+	<li>If you want to use the ${PRODUCT_NAME} 
 	overriding the one with Glassfish v2 follow the instructions for installing 
 	it on top of Sun One Application Server 9.0 Update 1</li>
 </ul>
@@ -214,18 +217,7 @@ valid with Java EE 5 as well.
 </section>
 
 <section title="Running on top of JDK 6">
-<p>JDK 6 includes JAX-WS 2.0 and JAXB 2.0 API and RI. ${PRODUCT_NAME} includes newer and enhanced APIs of JAX-WS/JAXB 2.0. In order to run ${PRODUCT_NAME} you would need to put jaxws-api.jar, jaxb-api.jar, jsr173_api.jar and 
-saaj-api.jar.</p>
-<ul>
-	<li>Copy ${'$'+HOME}/lib/jaxws-api.jar to $JDK6_HOME/jre/lib/endorsed 
-	directory </li>
-	<li>Copy ${'$'+HOME}/lib/jaxb-api.jar to $JDK6_HOME/jre/lib/endorsed 
-	directory</li>
-</ul>
-<p>For details see
-<a href="http://java.sun.com/j2se/1.5.0/docs/guide/standards/">Endorsed 
-Directory Mechanism</a>. Above, ${HOME} points to the root directory of the 
-extracted ${PRODUCT_SHORT_NAME} bundle. JDK6_HOME points to JDK 6 installation directory.</p>
+<p>JDK 6u4 includes JAX-WS 2.1 and JAXB 2.1 API and RI. ${PRODUCT_NAME} includes newer and enhanced RI of JAX-WS/JAXB 2.1. In order to run ${PRODUCT_NAME} you would need to put the jars in the classpath(endorsed mechanism is not required anymore). </p>
 </section>
 
 <section title="Jar dependency">
@@ -254,21 +246,18 @@ extracted ${PRODUCT_SHORT_NAME} bundle. JDK6_HOME points to JDK 6 installation d
 <section title="Bugs Fixed in this release">
 <ul>
 	<li>
-	<a href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&issue_type=DEFECT&component=jax-ws&issue_status=RESOLVED&resolution=FIXED&target_milestone=2.1.3&email1=&emailtype1=exact&emailassigned_to1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=fulltext&long_desc=&long_desc_type=fulltext&issue_file_loc=&issue_file_loc_type=fulltext&status_whiteboard=&status_whiteboard_type=fulltext&keywords=&keywords_type=anytokens&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&namedcmd=as91only&newqueryname=&order=Reuse+same+sort+as+last+time">Bug fixes</a></li>
+	<a href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&issue_type=ENHANCEMENT&issue_type=DEFECT&component=jax-ws&issue_status=RESOLVED&issue_status=CLOSED&resolution=FIXED&target_milestone=2.1.4&email1=&emailtype1=exact&emailassigned_to1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=fulltext&long_desc=&long_desc_type=fulltext&issue_file_loc=&issue_file_loc_type=fulltext&status_whiteboard=&status_whiteboard_type=fulltext&keywords=&keywords_type=anytokens&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&namedcmd=as91only&newqueryname=&order=Reuse+same+sort+as+last+time">Bug fixes</a></li>
 </ul>
 </section>
-<section title="Changes from JAX-WS 2.1.2 RI">
-<p><a href="changelog.html">Changes from JAX-WS 2.1.2 RI</a></p>
+<section title="Changes from JAX-WS 2.1.3 RI">
+<p><a href="changelog.html">Changes from JAX-WS 2.1.3 RI</a></p>
 </section>
 
 <section title="Known Bugs/Issues">
 <ul>
 	<li>
-        <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6475032">Bug 
-		6475032</a> This bug was introduced in JDK 1.5_07 and the fix will be 
-		available in JDK 1.5_12 in second quarter 2007. You should not see if 
-		you are using 
-		<a href="http://java.sun.com/products/archive/j2se/5.0_06/index.html">JDK 1.5_06</a>.</li>
+        If you use woodstox StAX parser, the MTOM attachment data is inlined. See <a href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=558">558</a>. Will be fixed in the next release.
+        </li>
 	<li>
         Although JAX-WS customizations are portable across implementations, the names of
         WSDL and schema files generated are not specified. Therefore each vendor may and
