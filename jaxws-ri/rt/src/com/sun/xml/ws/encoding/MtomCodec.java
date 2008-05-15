@@ -52,6 +52,7 @@ import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
+import com.sun.xml.ws.streaming.MtomStreamWriter;
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -66,6 +67,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.bind.attachment.AttachmentMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -74,12 +76,14 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Mtom messge Codec. It can be used even for non-soap message's mtom encoding.
  *
  * @author Vivek Pandey
+ * @author Jitendra Kotamraju
  */
 public class MtomCodec extends MimeCodec {
     public static final String XOP_XML_MIME_TYPE = "application/xop+xml";
@@ -153,7 +157,7 @@ public class MtomCodec extends MimeCodec {
 
                 //mtom attachments that need to be written after the root part
                 List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
-                MtomStreamWriter writer = new MtomStreamWriter(XMLStreamWriterFactory.create(out),out, mtomAttachments);
+                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(XMLStreamWriterFactory.create(out),out, mtomAttachments);
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
                 writeln(out);
@@ -249,12 +253,13 @@ public class MtomCodec extends MimeCodec {
         }
     }
 
-    private class MtomStreamWriter extends XMLStreamWriterFilter implements XMLStreamWriterEx {
+    private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
+            MtomStreamWriter {
         private final OutputStream out;
         private final Encoded encoded = new Encoded();
         private final List<ByteArrayBuffer> mtomAttachments;
 
-        public MtomStreamWriter(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
+        public MtomStreamWriterImpl(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
             super(w);
             this.out = out;
             this.mtomAttachments = mtomAttachments;
@@ -310,6 +315,57 @@ public class MtomCodec extends MimeCodec {
             }
         }
 
+        @Override
+        public Object getProperty(String name) throws IllegalArgumentException {
+            // Hack for JDK6's SJSXP
+            if (name.equals("sjsxp-outputstream") && writer instanceof Map) {
+                Object obj = ((Map) writer).get("sjsxp-outputstream");
+                if (obj != null) {
+                    return obj;
+                }
+            }
+            return super.getProperty(name);
+        }
+
+        /**
+         * JAXBMessage writes envelope directly to the OutputStream(for SJSXP, woodstox).
+         * While writing, it calls the AttachmentMarshaller methods for adding attachments.
+         * JAXB writes xop:Include in this case.
+         */
+        public AttachmentMarshaller getAttachmentMarshaller() {
+            return new AttachmentMarshaller() {
+
+                public String addMtomAttachment(DataHandler data, String elementNamespace, String elementLocalName) {
+                    // Should we do the threshold processing on DataHandler ? But that would be
+                    // expensive as DataHolder need to read the data again from its source
+                    ByteArrayBuffer bab = new ByteArrayBuffer(data);
+                    mtomAttachments.add(bab);
+                    return bab.contentId;
+                }
+
+                public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementNamespace, String elementLocalName) {
+                    // inline the data based on the threshold
+                    if (mtomFeature.getThreshold() > length) {
+                        return null;                // JAXB inlines the attachment data
+                    }
+                    ByteArrayBuffer bab = new ByteArrayBuffer(new DataHandler(new ByteArrayDataSource(data, offset, length, mimeType)));
+                    mtomAttachments.add(bab);
+                    return bab.contentId;
+                }
+
+                public String addSwaRefAttachment(DataHandler data) {
+                    ByteArrayBuffer bab = new ByteArrayBuffer(data);
+                    mtomAttachments.add(bab);
+                    return bab.contentId;
+                }
+
+                @Override
+                public boolean isXOPPackage() {
+                    return true;
+                }
+            };
+        }
+
         private class MtomNamespaceContextEx implements NamespaceContextEx {
             private NamespaceContext nsContext;
 
@@ -334,6 +390,7 @@ public class MtomCodec extends MimeCodec {
             }
         }
 
+        @Override
         public NamespaceContextEx getNamespaceContext() {
             NamespaceContext nsContext = writer.getNamespaceContext();
             return new MtomNamespaceContextEx(nsContext);
