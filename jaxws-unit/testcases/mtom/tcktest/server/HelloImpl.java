@@ -12,10 +12,12 @@ import java.io.*;
 import java.util.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
+import javax.xml.ws.soap.MTOM;
 
 /**
  * @author Jitendra Kotamraju
  */
+@MTOM
 @WebService(endpointInterface = "mtom.tcktest.server.Hello")
 
 public class HelloImpl {
