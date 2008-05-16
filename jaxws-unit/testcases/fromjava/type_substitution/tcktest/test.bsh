@@ -1,0 +1,25 @@
+cars = carDealerPort.getSedans();
+
+i = cars.iterator();  
+int ncars = 0;
+while (i.hasNext()) {
+    Car car = i.next();
+    ncars++;
+    String make = car.getMake();
+    String model = car.getModel();
+    String year = car.getYear();
+    String color;
+
+    if (car instanceof Toyota) {
+        assertEquals("Toyota", make);
+        assertEquals("Camry", model);
+        assertEquals("1998", year);
+    } else if (car instanceof Ford) {
+        assertEquals("Ford", make);
+        assertEquals("Mustang", model);
+        assertEquals("1999", year);
+    } else {
+        fail("data mismatch - no car of this type expected "+car);
+    }
+}
+assertEquals(2, ncars);
