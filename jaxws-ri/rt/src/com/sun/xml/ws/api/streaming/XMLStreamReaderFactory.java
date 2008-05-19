@@ -244,9 +244,10 @@ public abstract class XMLStreamReaderFactory {
             // check if this is from Zephyr
             try {
                 Class<?> clazz = xif.createXMLStreamReader(new StringReader("<foo/>")).getClass();
-
-                if(!clazz.getName().startsWith("com.sun.xml.stream."))
+                // JDK has different XMLStreamReader impl class, check for that
+                if(!(clazz.getName().startsWith("com.sun.xml.stream.") ||clazz.getName().startsWith("com.sun.org.apache.xerces.internal.impl")) )
                     return null;    // nope
+
 
                 return new Zephyr(xif,clazz);
             } catch (NoSuchMethodException e) {
