@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -121,17 +121,18 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
             reader.nextTag();   // move to the first element, which is the header element
 
             attributes = new FinalArrayList<Attribute>();
-
+            boolean refParamAttrWritten = false;
             for (int i = 0; i < reader.getAttributeCount(); i++) {
                 final String localName = reader.getAttributeLocalName(i);
                 final String namespaceURI = reader.getAttributeNamespace(i);
                 final String value = reader.getAttributeValue(i);
-
+                if(namespaceURI.equals(AddressingVersion.W3C.nsUri)&& localName.equals("IS_REFERENCE_PARAMETER"))
+                    refParamAttrWritten = true;
                 attributes.add(new Attribute(namespaceURI,localName,value));
             }
-
-            // we are adding one more attribute "wsa:IsReferenceParameter"
-            attributes.add(new Attribute(AddressingVersion.W3C.nsUri,IS_REFERENCE_PARAMETER,TRUE_VALUE));
+            // we are adding one more attribute "wsa:IsReferenceParameter", if its not alrady there
+            if(!refParamAttrWritten)
+                attributes.add(new Attribute(AddressingVersion.W3C.nsUri,IS_REFERENCE_PARAMETER,TRUE_VALUE));
         } catch (XMLStreamException e) {
             throw new WebServiceException("Unable to read the attributes for {"+nsUri+"}"+localName+" header",e);
         }
@@ -220,14 +221,17 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
     public void writeTo(XMLStreamWriter w) throws XMLStreamException {
         infoset.writeToXMLStreamWriter(new XMLStreamWriterFilter(w) {
             private boolean root=true;
-
+            private boolean onRootEl = true;
             public void writeStartElement(String localName) throws XMLStreamException {
                 super.writeStartElement(localName);
                 writeAddedAttribute();
             }
 
             private void writeAddedAttribute() throws XMLStreamException {
-                if(!root)   return;
+                if(!root) {
+                    onRootEl = false;
+                    return;
+                }
                 root=false;
                 writeNamespace("wsa",AddressingVersion.W3C.nsUri);
                 super.writeAttribute("wsa",AddressingVersion.W3C.nsUri,IS_REFERENCE_PARAMETER,TRUE_VALUE);
@@ -256,6 +260,19 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
                     super.writeNamespace(prefix,namespaceURI);
             }
 
+            public void writeAttribute(String prefix, String namespaceURI, String localName, String value) throws XMLStreamException {
+                //skip if its on root element and attribute is wsa;IsReferenceParameter, as we write it.
+                if(onRootEl && namespaceURI.equals(AddressingVersion.W3C.nsUri)
+                            && localName.equals(IS_REFERENCE_PARAMETER))
+                    return;
+
+                writer.writeAttribute(prefix, namespaceURI, localName, value);
+            }
+            public void writeAttribute(String namespaceURI, String localName, String value) throws XMLStreamException {
+
+
+                writer.writeAttribute(namespaceURI, localName, value);
+            }
             private boolean isPrefixDeclared(String prefix, String namespaceURI ) {
                 return namespaceURI.equals(getNamespaceContext().getNamespaceURI(prefix));
             }
@@ -282,14 +299,18 @@ final class OutboundReferenceParameterHeader extends AbstractHeaderImpl {
                 if(depth++==0) {
                     // add one more attribute
                     super.startPrefixMapping("wsa",AddressingVersion.W3C.nsUri);
-                    AttributesImpl atts2 = new AttributesImpl(atts);
-                    atts2.addAttribute(
-                        AddressingVersion.W3C.nsUri,
-                        IS_REFERENCE_PARAMETER,
-                        "wsa:IsReferenceParameter",
-                        "CDATA",
-                        TRUE_VALUE);
-                    atts = atts2;
+
+                    //Add the attirbute wsa:IsReferenceParameter if not present already
+                    if(atts.getIndex(AddressingVersion.W3C.nsUri,IS_REFERENCE_PARAMETER) == -1) {
+                        AttributesImpl atts2 = new AttributesImpl(atts);
+                        atts2.addAttribute(
+                                AddressingVersion.W3C.nsUri,
+                                IS_REFERENCE_PARAMETER,
+                                "wsa:IsReferenceParameter",
+                                "CDATA",
+                                TRUE_VALUE);
+                        atts = atts2;
+                    }
                 }
 
                 super.startElement(uri, localName, qName, atts);
