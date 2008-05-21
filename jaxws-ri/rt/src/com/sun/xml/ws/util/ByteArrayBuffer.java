@@ -93,7 +93,12 @@ public class ByteArrayBuffer extends OutputStream {
     }
 
     public ByteArrayBuffer(byte[] data) {
+        this(data,data.length);
+    }
+
+    public ByteArrayBuffer(byte[] data, int length) {
         this.buf = data;
+        this.count = length;
     }
 
     /**
