@@ -75,20 +75,7 @@ public abstract class XMLStreamReaderFactory {
     private static volatile @NotNull XMLStreamReaderFactory theInstance;
 
     static {
-        XMLInputFactory xif = null;
-        if (getProperty(XMLStreamReaderFactory.class.getName()+".woodstox")) {
-            try {
-                xif = (XMLInputFactory)Class.forName("com.ctc.wstx.stax.WstxInputFactory").newInstance();
-            } catch (Exception e) {
-                // Ignore and fallback to default XMLInputFactory
-            }
-        }
-        if (xif == null) {
-            xif = XMLInputFactory.newInstance();
-        }
-        xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
-        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-
+        XMLInputFactory xif = getXMLInputFactory();
         XMLStreamReaderFactory f=null;
 
         // this system property can be used to disable the pooling altogether,
@@ -103,11 +90,29 @@ public abstract class XMLStreamReaderFactory {
         }
 
         if(f==null)
-            f = new Default(xif);
+            f = new Default();
 
         theInstance = f;
         LOGGER.fine("XMLStreamReaderFactory instance is = "+theInstance);
     }
+
+    private static XMLInputFactory getXMLInputFactory() {
+        XMLInputFactory xif = null;
+        if (getProperty(XMLStreamReaderFactory.class.getName()+".woodstox")) {
+            try {
+                xif = (XMLInputFactory)Class.forName("com.ctc.wstx.stax.WstxInputFactory").newInstance();
+            } catch (Exception e) {
+                // Ignore and fallback to default XMLInputFactory
+            }
+        }
+        if (xif == null) {
+            xif = XMLInputFactory.newInstance();
+        }
+        xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        return xif;
+    }
+
 
     /**
      * Overrides the singleton {@link XMLStreamReaderFactory} instance that
@@ -244,11 +249,10 @@ public abstract class XMLStreamReaderFactory {
             // check if this is from Zephyr
             try {
                 Class<?> clazz = xif.createXMLStreamReader(new StringReader("<foo/>")).getClass();
-                // JDK has different XMLStreamReader impl class, check for that
-                if(!(clazz.getName().startsWith("com.sun.xml.stream.") ||clazz.getName().startsWith("com.sun.org.apache.xerces.internal.impl")) )
+                // JDK has different XMLStreamReader impl class. Even if we check for that,
+                // it doesn't have setInputSource(InputSource). Let it use Default
+                if(!(clazz.getName().startsWith("com.sun.xml.stream.")) )
                     return null;    // nope
-
-
                 return new Zephyr(xif,clazz);
             } catch (NoSuchMethodException e) {
                 return null;    // this factory is not for zephyr
@@ -344,21 +348,40 @@ public abstract class XMLStreamReaderFactory {
      * that can work with any {@link XMLInputFactory}.
      *
      * <p>
-     * {@link XMLInputFactory} is not required to be thread-safe, so the
-     * create method on this implementation is synchronized.
+     * {@link XMLInputFactory} is not required to be thread-safe, but
+     * if the create method on this implementation is synchronized,
+     * it may run into (see <a href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=555">
+     * race condition</a>). Hence, using a XMLInputFactory per theread.
      */
-    public static final class Default extends NoLock {
-        public Default(XMLInputFactory xif) {
-            super(xif);
+    public static final class Default extends XMLStreamReaderFactory {
+
+        private final ThreadLocal<XMLInputFactory> xif = new ThreadLocal<XMLInputFactory>() {
+            @Override
+            public XMLInputFactory initialValue() {
+                return getXMLInputFactory();
+            }
+        };
+
+        public XMLStreamReader doCreate(String systemId, InputStream in, boolean rejectDTDs) {
+            try {
+                return xif.get().createXMLStreamReader(systemId,in);
+            } catch (XMLStreamException e) {
+                throw new XMLReaderException("stax.cantCreate",e);
+            }
         }
 
-        public synchronized XMLStreamReader doCreate(String systemId, InputStream in, boolean rejectDTDs) {
-            return super.doCreate(systemId, in, rejectDTDs);
+        public XMLStreamReader doCreate(String systemId, Reader in, boolean rejectDTDs) {
+            try {
+                return xif.get().createXMLStreamReader(systemId,in);
+            } catch (XMLStreamException e) {
+                throw new XMLReaderException("stax.cantCreate",e);
+            }
         }
 
-        public synchronized XMLStreamReader doCreate(String systemId, Reader in, boolean rejectDTDs) {
-            return super.doCreate(systemId, in, rejectDTDs);
+        public void doRecycle(XMLStreamReader r) {
+            // there's no way to recycle with the default StAX API.
         }
+
     }
 
     /**
