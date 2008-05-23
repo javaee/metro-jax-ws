@@ -1,0 +1,5 @@
+<descriptor since="2.1.5">
+  <description>Tests W3CEndpointReference API </description>
+  <client href="test.bsh" />
+</descriptor>
+

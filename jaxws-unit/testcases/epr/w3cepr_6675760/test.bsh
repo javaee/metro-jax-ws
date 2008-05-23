@@ -1,0 +1,45 @@
+import java.io.StringReader;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.*;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+/**
+ * Regression test for 6675760. Checks for extension elements and attributes
+ * @author Jitendra Kotamraju
+ */
+
+source = new StreamSource(new FileInputStream(resource("w3cepr.xml")));
+W3CEndpointReference jaxwsEPR = new W3CEndpointReference(source);
+str = jaxwsEPR.toString();
+
+assertTrue(str.indexOf("eprattr") != -1);
+assertTrue(str.indexOf("epr-attribute") != -1);
+
+assertTrue(str.indexOf("addrattr") != -1);
+assertTrue(str.indexOf("address-attribute") != -1);
+
+assertTrue(str.indexOf("refattr") != -1);
+assertTrue(str.indexOf("ref-attribute") != -1);
+assertTrue(str.indexOf("refelem1") != -1);
+assertTrue(str.indexOf("ref-element-1-text") != -1);
+assertTrue(str.indexOf("refelem2") != -1);
+assertTrue(str.indexOf("ref-element-2-text") != -1);
+
+assertTrue(str.indexOf("metaattr") != -1);
+assertTrue(str.indexOf("meta-attribute") != -1);
+assertTrue(str.indexOf("metaelem") != -1);
+assertTrue(str.indexOf("metaelemattr") != -1);
+assertTrue(str.indexOf("meta-element-attribute") != -1);
+assertTrue(str.indexOf("meta-element-text") != -1);
+
+assertTrue(str.indexOf("eprelem") != -1);
+assertTrue(str.indexOf("eprelemattr") != -1);
+assertTrue(str.indexOf("epr-element-attribute") != -1);
+assertTrue(str.indexOf("epr-element-text") != -1);
