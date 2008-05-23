@@ -10,6 +10,12 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+getField(Object instance, Class cls, String name) throws Exception {
+    f = cls.getDeclaredField(name);
+    f.setAccessible(true);
+    return f.get(instance);
+}
+
 /**
  * Regression test for 6675760. Checks for extension elements and attributes
  * @author Jitendra Kotamraju
@@ -18,6 +24,17 @@ import org.xml.sax.InputSource;
 source = new StreamSource(new FileInputStream(resource("w3cepr.xml")));
 W3CEndpointReference jaxwsEPR = new W3CEndpointReference(source);
 str = jaxwsEPR.toString();
+
+address = getField(jaxwsEPR, W3CEndpointReference.class, "address");
+assertTrue(address != null);
+referenceParameters = getField(jaxwsEPR, W3CEndpointReference.class, "referenceParameters");
+assertTrue(referenceParameters != null);
+metadata = getField(jaxwsEPR, W3CEndpointReference.class, "metadata");
+assertTrue(metadata != null);
+elements = getField(jaxwsEPR, W3CEndpointReference.class, "elements");
+assertTrue(elements != null);
+attributes = getField(jaxwsEPR, W3CEndpointReference.class, "attributes");
+assertTrue(attributes != null);
 
 assertTrue(str.indexOf("eprattr") != -1);
 assertTrue(str.indexOf("epr-attribute") != -1);
