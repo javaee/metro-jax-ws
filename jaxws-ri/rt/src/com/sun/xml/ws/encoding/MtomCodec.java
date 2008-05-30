@@ -340,7 +340,7 @@ public class MtomCodec extends MimeCodec {
                     // expensive as DataHolder need to read the data again from its source
                     ByteArrayBuffer bab = new ByteArrayBuffer(data);
                     mtomAttachments.add(bab);
-                    return bab.contentId;
+                    return "cid:"+bab.contentId;
                 }
 
                 public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementNamespace, String elementLocalName) {
@@ -350,13 +350,13 @@ public class MtomCodec extends MimeCodec {
                     }
                     ByteArrayBuffer bab = new ByteArrayBuffer(new DataHandler(new ByteArrayDataSource(data, offset, length, mimeType)));
                     mtomAttachments.add(bab);
-                    return bab.contentId;
+                    return "cid:"+bab.contentId;
                 }
 
                 public String addSwaRefAttachment(DataHandler data) {
                     ByteArrayBuffer bab = new ByteArrayBuffer(data);
                     mtomAttachments.add(bab);
-                    return bab.contentId;
+                    return "cid:"+bab.contentId;
                 }
 
                 @Override
