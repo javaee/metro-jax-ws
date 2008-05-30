@@ -134,6 +134,58 @@ headers = new MimeHeaders();
 headers.addHeader("Content-Type", ds.getContentType());
 soap =  MessageFactory.newInstance().createMessage(headers, ds.getInputStream());
 
+// verify S:Body 
+body = soap.getSOAPBody();
+it = body.getChildElements();
+elem = it.next();
+assertEquals(new QName("http://example.org/mtom", "MTOMInOutResponse"), elem.getElementQName());
+docit = elem.getChildElements();
+
+// verify <doc1> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc1"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc2> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc2"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc3> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc3"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc4> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc4"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
+// verify <doc5> contains xop:Include
+elem = docit.next();
+assertEquals(new QName("http://example.org/mtom", "doc5"), elem.getElementQName());
+xopit = elem.getChildElements();
+elem = xopit.next();
+assertEquals(new QName("http://www.w3.org/2004/08/xop/include", "Include"), elem.getElementQName());
+String href = elem.getAttributeValue(new QName("", "href"));
+assertEquals("cid:", href.substring(0,4));
+
 // Validate the number of attachments
 assertEquals(5, soap.countAttachments());
 
