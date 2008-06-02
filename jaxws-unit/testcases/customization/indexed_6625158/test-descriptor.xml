@@ -1,0 +1,8 @@
+<descriptor since="2.1.5" skip="true">
+    <description>This is a jaxws customization test for jaxb customization</description>
+    <service basedir="./server">
+        <wsdl href="test.wsdl"/>
+    </service>
+    <client name="test1">
+    </client>
+</descriptor>
