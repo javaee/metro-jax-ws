@@ -40,12 +40,12 @@ import org.jvnet.mimepull.MIMEPart;
 import javax.activation.DataSource;
 import java.io.*;
 
-import com.sun.xml.ws.util.ByteArrayDataSource;
+import com.sun.xml.ws.developer.StreamingDataHandler;
 
 /**
  * @author Jitendra Kotamraju
  */
-public class DataSourceStreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
+public class DataSourceStreamingDataHandler extends StreamingDataHandler {
 
     public DataSourceStreamingDataHandler(DataSource ds) {
         super(ds);

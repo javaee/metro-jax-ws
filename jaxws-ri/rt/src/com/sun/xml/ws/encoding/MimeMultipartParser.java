@@ -183,7 +183,7 @@ public final class MimeMultipartParser {
         public DataHandler asDataHandler() {
             return (buf != null)
                 ? new DataSourceStreamingDataHandler(new ByteArrayDataSource(buf,getContentType()))
-                : new StreamingDataHandler(part);
+                : new MIMEPartStreamingDataHandler(part);
         }
 
         public Source asSource() {

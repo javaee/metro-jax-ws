@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.developer;
+package com.sun.xml.ws.encoding;
 
 import org.jvnet.mimepull.MIMEPart;
 
@@ -42,10 +42,11 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.File;
-import java.net.URL;
+
+import com.sun.xml.ws.developer.StreamingDataHandler;
 
 /**
- * Implementation of {@link org.jvnet.staxex.StreamingDataHandler} to access MIME
+ * Implementation of {@link StreamingDataHandler} to access MIME
  * attachments efficiently. Applications can use the additional methods and decide
  * on how to access the attachment data in JAX-WS applications.
  *
@@ -63,18 +64,77 @@ import java.net.URL;
  *
  * @author Jitendra Kotamraju
  */
-public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
+public class MIMEPartStreamingDataHandler extends StreamingDataHandler {
+    private final StreamingDataSource ds;
 
-    public StreamingDataHandler(Object o, String s) {
-        super(o, s);
+    public MIMEPartStreamingDataHandler(MIMEPart part) {
+        super(new StreamingDataSource(part));
+        ds = (StreamingDataSource)getDataSource();
     }
 
-    public StreamingDataHandler(URL url) {
-        super(url);
+    public InputStream readOnce() throws IOException {
+        return ds.readOnce();
     }
 
-    public StreamingDataHandler(DataSource dataSource) {
-        super(dataSource);
+    public void moveTo(File file) throws IOException {
+        ds.moveTo(file);
+    }
+
+    public void close() throws IOException {
+        ds.close();
+    }
+
+    private static final class StreamingDataSource implements DataSource {
+        private final MIMEPart part;
+
+        StreamingDataSource(MIMEPart part) {
+            this.part = part;
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return part.read();             //readOnce() ??
+        }
+
+        InputStream readOnce() throws IOException {
+            try {
+                return part.readOnce();
+            } catch(Exception e) {
+                throw new MyIOException(e);
+            }
+        }
+
+        void moveTo(File file) throws IOException {
+            part.moveTo(file);
+        }
+
+        public OutputStream getOutputStream() throws IOException {
+            return null;
+        }
+
+        public String getContentType() {
+            return part.getContentType();
+        }
+
+        public String getName() {
+            return "";
+        }
+
+        public void close() throws IOException {
+            part.close();
+        }
+    }
+
+    private static final class MyIOException extends IOException {
+        private final Exception linkedException;
+
+        MyIOException(Exception linkedException) {
+            this.linkedException = linkedException;
+        }
+
+        @Override
+        public Throwable getCause() {
+            return linkedException;
+        }
     }
 
 }
