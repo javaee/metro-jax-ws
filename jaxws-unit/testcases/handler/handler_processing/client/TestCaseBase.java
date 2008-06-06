@@ -1,5 +1,5 @@
 /**
- * $Id: TestCaseBase.java,v 1.1 2007-09-22 00:39:24 ramapulavarthi Exp $
+ * $Id: TestCaseBase.java,v 1.2 2008-06-06 00:02:57 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -50,7 +50,6 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
     static final QName testPortQName = new QName("urn:test", "TestServicePort");
     static final QName reportPortQName =
         new QName("urn:test", "ReportServicePort");
-    static final String endpointAddress;
 
     static final String bindingIdString = SOAPBinding.SOAP11HTTP_BINDING;
     
@@ -59,17 +58,6 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
     static String NONE;
     static String ULTIMATE_RECEIVER;
     
-    static {
-        // we'll fix the test harness correctly later,
-        // so that test code won't have to hard code any endpoint address nor transport,
-        // but for now let's just support local and HTTP to make unit tests happier.
-        // this is not a good code, but it's just a bandaid solutino that works for now.
-        if(ClientServerTestUtil.useLocal())
-            endpointAddress = "local://"+System.getProperty("tempdir");
-        else
-            endpointAddress = "http://localhost:8080/jaxrpc-fromwsdl_handler/test";
-    }
-
     public TestCaseBase(String name) {
         super(name);
         
@@ -98,15 +86,26 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
     }
 
     ReportService getReportStub(TestService_Service service) throws Exception {
+        // Hack for SE container as it doesn't patch second port
+        TestService stub1 = service.getTestServicePort();
+        String address = (String)((BindingProvider)stub1).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+        int index = address.lastIndexOf("/");
+        address = address.substring(0,index)+"/ReportService_Impl";
+
         ReportService stub = service.getReportServicePort();
+((BindingProvider)stub).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
         return stub;
     }
 
+/*
     // create service with just qname -- no handlers in that case
     Dispatch<Object> getDispatchJAXB(QName name) throws Exception {
+        TestService stub1 = service.getTestServicePort();
+        String address = (String)((BindingProvider)stub1).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+
         QName serviceQName = new QName("urn:test", "Hello");
         Service service = Service.create(serviceQName);
-        service.addPort(name, bindingIdString, endpointAddress);
+        service.addPort(name, bindingIdString, address);
         JAXBContext jaxbContext =
             JAXBContext.newInstance(ObjectFactory.class);
         Dispatch<Object> dispatch = service.createDispatch(name,
@@ -114,6 +113,7 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
         ClientServerTestUtil.setTransport(dispatch, null);
         return dispatch;
     }
+*/
     
     void clearHandlersInService(Service service) {
         service.setHandlerResolver(new HandlerResolver(){
