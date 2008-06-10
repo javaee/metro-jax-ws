@@ -1,5 +1,5 @@
 /**
- * $Id: TestCaseBase.java,v 1.2 2008-06-06 00:02:57 jitu Exp $
+ * $Id: TestCaseBase.java,v 1.3 2008-06-10 19:03:19 jitu Exp $
  *
  * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -57,6 +57,8 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
     static String NEXT_1_2;
     static String NONE;
     static String ULTIMATE_RECEIVER;
+
+    String address;
     
     public TestCaseBase(String name) {
         super(name);
@@ -82,18 +84,17 @@ public abstract class TestCaseBase extends TestCase implements TestConstants {
 
     TestService getTestStub(TestService_Service service) throws Exception {
         TestService stub = service.getTestServicePort();
+        address = (String)((BindingProvider)stub).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
         return stub;
     }
 
     ReportService getReportStub(TestService_Service service) throws Exception {
         // Hack for SE container as it doesn't patch second port
-        TestService stub1 = service.getTestServicePort();
-        String address = (String)((BindingProvider)stub1).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
         int index = address.lastIndexOf("/");
         address = address.substring(0,index)+"/ReportService_Impl";
 
         ReportService stub = service.getReportServicePort();
-((BindingProvider)stub).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
+        ((BindingProvider)stub).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, address);
         return stub;
     }
 
