@@ -59,10 +59,11 @@ import javax.xml.ws.BindingProvider;
 import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
+import java.io.BufferedInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FilterInputStream;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
@@ -187,15 +188,16 @@ final class HttpClientTransport {
         // are some bytes left in the InputStream. This confuses JDK and may
         // not reuse underlying sockets. Hopefully JDK fixes it in its code !
         final InputStream temp = is;
-        return new FilterInputStream(temp) {
+        return new BufferedInputStream(temp) {
             // Workaround for "SJSXP XMLStreamReader.next() closes stream".
             // So it doesn't read from the closed stream
             boolean closed;
             @Override
-            public void close() throws IOException {
+            public void close() throws IOException {                
                 if (!closed) {
                     closed = true;
-                    while(temp.read() != -1);
+                    byte[] buf = new byte[8192];
+                    while(temp.read(buf) != -1);
                     super.close();
                 }
             }
@@ -354,48 +356,24 @@ final class HttpClientTransport {
      * is kept in memory. This wraps the ChunkedOuputStream so that it writes only small
      * chunks.
      */
-    private static final class WSChunkedOuputStream extends OutputStream {
-        final OutputStream actual;
+    private static final class WSChunkedOuputStream extends FilterOutputStream {
         final int chunkSize;
 
         WSChunkedOuputStream(OutputStream actual, int chunkSize) {
-            this.actual = actual;
+            super(actual);
             this.chunkSize = chunkSize;
         }
 
         @Override
         public void write(byte b[], int off, int len) throws IOException {
-            int sent = 0;
-            while(sent < len) {
-                int chunk = len-sent;
-                if (chunk > chunkSize) {
-                    chunk = chunkSize;
-                }
-                actual.write(b, off, chunk);
-                off += chunk;
-                sent += chunk;
+            while(len > 0) {
+                int sent = (len > chunkSize) ? chunkSize : len;
+                out.write(b, off, sent);        // don't use super.write() as it writes byte-by-byte
+                len -= sent;
+                off += sent;
             }
         }
 
-        @Override
-        public void write(byte b[]) throws IOException {
-            write(b, 0, b.length);
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            actual.write(b);
-        }
-
-        @Override
-        public void flush() throws IOException {
-            actual.flush();
-        }
-
-        @Override
-        public void close() throws IOException {
-            actual.close();
-        }
     }
 
 }
