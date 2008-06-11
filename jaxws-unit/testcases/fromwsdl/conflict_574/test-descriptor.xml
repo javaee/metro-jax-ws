@@ -1,4 +1,4 @@
-<descriptor since="2.1.5">
+<descriptor since="2.1.4">
     <description>wsimport reports a wrong conflict</description>
     <service basedir="./server">
         <wsdl href="hello_literal.wsdl"/>
