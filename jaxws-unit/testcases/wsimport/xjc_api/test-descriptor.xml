@@ -1,0 +1,4 @@
+<descriptor since="2.1.5">
+  <description>WsImport Test exercising XJC api to pass episode binding file </description>
+  <client href ="testEpisode.bsh"/>      
+</descriptor>

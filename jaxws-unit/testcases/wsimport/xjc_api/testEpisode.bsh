@@ -1,0 +1,23 @@
+
+      import com.sun.tools.xjc.api.SchemaCompiler;
+      import com.sun.tools.xjc.api.XJC;
+      import com.sun.tools.xjc.api.S2JJAXBModel;
+      import com.sun.tools.xjc.api.Mapping;
+      import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
+
+      import javax.xml.stream.XMLStreamReader;
+      import javax.xml.namespace.QName;
+      import java.net.URL;
+      import java.io.File;
+
+        SchemaCompiler schemaCompiler = XJC.createSchemaCompiler();
+        String schemaRes = resource("wrap.xsd");
+        XMLStreamReader schema =XMLStreamReaderFactory.create(schemaRes,schemaRes.openStream(),true);
+        schemaCompiler.parseSchema(schemaRes.getPath(),schema);
+
+        String episode = resource("episode.jar");
+        schemaCompiler.getOptions().scanEpisodeFile(new File(episode));
+        S2JJAXBModel model = schemaCompiler.bind();
+        Mapping mapping = model.get(new QName("urn:test:types","Hello"));
+        assertNotNull(mapping);
+  

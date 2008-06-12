@@ -1,0 +1,12 @@
+<xsd:schema xmlns:types="urn:test:types" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="urn:test:types" schemaLocation="hello.xsd"/>
+
+    <xsd:element name="ElInWrap">
+        <xsd:complesType>
+            <xsd:sequence>
+                <xsd:element name="arg" type="types:AbstrcatType"/>
+            </xsd:sequence>
+        </xsd:complesType>
+    </xsd:element>
+    
+</xsd:schema>
