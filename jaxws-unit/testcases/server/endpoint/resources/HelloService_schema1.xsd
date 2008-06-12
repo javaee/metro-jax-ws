@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://server.java_annotations.misc/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="echoFoo" type="ns1:echoFoo" xmlns:ns1="http://server.java_annotations.misc/"/>
+
+  <xs:complexType name="echoFoo">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="echoFooResponse" type="ns2:echoFooResponse" xmlns:ns2="http://server.java_annotations.misc/"/>
+
+  <xs:complexType name="echoFooResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+
