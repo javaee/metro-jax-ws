@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.1.4">
   <description>This is WebMethod test</description>
 
   <client name="method_has_WebMethod" sideEffectFree="true">
