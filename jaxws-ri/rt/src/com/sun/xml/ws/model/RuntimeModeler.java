@@ -53,6 +53,7 @@ import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.localization.Localizable;
+import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
@@ -393,9 +394,17 @@ public class RuntimeModeler {
         }*/
 
         for (Method method : clazz.getMethods()) {
-            if (method.getDeclaringClass()==Object.class ||
-                !isWebMethod(method, clazz)) {
-                continue;
+            if (!clazz.isInterface()) {     // if clazz is SEI, then all methods are web methods
+                if (!legacyWebMethod) {
+                    if (!isWebMethodBySpec(method, clazz)) {
+                        continue;
+                    }
+                } else {
+                    if (method.getDeclaringClass()==Object.class ||
+                        !isWebMethod(method, clazz)) {
+                        continue;
+                    }
+                }
             }
             // TODO: binding can be null. We need to figure out how to post-process
             // RuntimeModel to link to WSDLModel
@@ -406,6 +415,29 @@ public class RuntimeModeler {
         if(xmlSeeAlso != null)
             model.addAdditionalClasses(xmlSeeAlso.value());
     }
+
+    /*
+     * Section 3.3 of spec
+     * Otherwise, the class implicitly defines a service endpoint interface (SEI) which
+     * comprises all of the public methods that satisfy one of the following conditions:
+     *  1. They are annotated with the javax.jws.WebMethod annotation with the exclude element set to
+     *     false or missing (since false is the default for this annotation element).
+     *  2. They are not annotated with the javax.jws.WebMethod annotation but their declaring class has a
+     *     javax.jws.WebService annotation.
+     */
+    private boolean isWebMethodBySpec(Method method, Class clazz) {
+        assert Modifier.isPublic(method.getModifiers());
+        assert !clazz.isInterface();
+
+        WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
+        if (webMethod != null && !webMethod.exclude()) {
+            return true;
+        } else {
+            Class declClass = method.getDeclaringClass();
+            return getPrivClassAnnotation(declClass, WebService.class) != null;
+        }
+    }
+
 
     protected boolean isWebMethod(Method method, Class clazz) {
         if (clazz.isInterface()) {
@@ -1386,4 +1418,22 @@ public class RuntimeModeler {
         }
         return null;
     }
+
+    private static Boolean getProperty(final String prop) {
+        Boolean b = AccessController.doPrivileged(
+            new java.security.PrivilegedAction<Boolean>() {
+                public Boolean run() {
+                    String value = System.getProperty(prop);
+                    return value != null ? Boolean.valueOf(value) : Boolean.FALSE;
+                }
+            }
+        );
+        return Boolean.FALSE;
+    }
+
+    /**
+     * Support for legacy WebMethod computation.
+     */
+    public static final boolean legacyWebMethod = getProperty(RuntimeModeler.class.getName()+".legacyWebMethod");
+
 }
