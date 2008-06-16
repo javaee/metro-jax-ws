@@ -1,0 +1,7 @@
+<descriptor since="2.0" transport="http" excludeFrom="jdk6">
+  <description>httpsessionscope</description>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>
