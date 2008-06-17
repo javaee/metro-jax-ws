@@ -44,6 +44,8 @@
 
   <target name="prepare">
     <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}/test-classes"/>
+    <mkdir dir="${build.dir}/test-reports"/>
   </target>
 
   <target name="generate-code" depends="prepare"
@@ -74,7 +76,9 @@
     <!-- Copy AnnotationProcessor factory info -->
     <copy todir="${build.dir}/classes/META-INF/services">
       <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*"/>
-    </copy> 
+    </copy>
+
+    <antcall target="test" inheritrefs="true"/>  
   </target>
 
   <target name="compile-mustang" depends="generate-code">
@@ -91,6 +95,37 @@
   
   <target name="clean">
     <delete dir="${build.dir}"/>
+  </target>
+
+
+
+  <target name="test" description="rt-whitebox-tests">
+     <path id="test.classpath">
+        <path refid="runtime.compile.classpath"/>
+        <pathelement path="${build.dir}/classes" />
+     </path>
+
+
+      <javac srcdir="${basedir}/test"
+             destdir="${build.dir}/test-classes"
+             debug="${compile.debug}"
+             optimize="${compile.optimize}">
+		<classpath refid="test.classpath"/>
+	    </javac>
+
+
+
+      <junit printsummary="no" haltonfailure="yes" fork="true">
+	    <classpath refid="test.classpath"/>
+        <formatter type="xml" if="xmlformatter"/>
+		<batchtest todir="${build.dir}/test-reports" haltonerror="false">
+			<fileset dir="${build.dir}/test-classes">
+				<include name="**/AllTests.class" />
+                <include name="**/*Test.class" />
+            </fileset>
+		</batchtest>
+	</junit>
+
   </target>
 
 </project> 
