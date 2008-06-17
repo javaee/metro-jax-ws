@@ -459,6 +459,14 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
             return false;
         }
         */
+        Collection<Modifier> modifiers = method.getModifiers();
+        boolean staticFinal = modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.FINAL);
+        if (staticFinal) {
+            if (webMethod != null) {
+                builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_METHOD_IS_STATIC_OR_FINAL(method.getDeclaringType(), method));
+            }
+            return false;
+        }
         boolean retval = (endpointReferencesInterface ||
                 method.getDeclaringType().equals(typeDecl) ||
                 (method.getDeclaringType().getAnnotation(WebService.class) != null));

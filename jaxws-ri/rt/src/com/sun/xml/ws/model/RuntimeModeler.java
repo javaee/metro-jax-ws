@@ -424,18 +424,34 @@ public class RuntimeModeler {
      *     false or missing (since false is the default for this annotation element).
      *  2. They are not annotated with the javax.jws.WebMethod annotation but their declaring class has a
      *     javax.jws.WebService annotation.
+     *
+     * also the method should non-static or non-final
      */
     private boolean isWebMethodBySpec(Method method, Class clazz) {
-        assert Modifier.isPublic(method.getModifiers());
+
+        int modifiers = method.getModifiers();
+        boolean staticFinal = Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers);
+
+        assert Modifier.isPublic(modifiers);
         assert !clazz.isInterface();
 
         WebMethod webMethod = getPrivMethodAnnotation(method, WebMethod.class);
-        if (webMethod != null && !webMethod.exclude()) {
-            return true;
-        } else {
-            Class declClass = method.getDeclaringClass();
-            return getPrivClassAnnotation(declClass, WebService.class) != null;
+        if (webMethod != null) {
+            if (webMethod.exclude()) {
+                return false;       // @WebMethod(exclude="true")
+            }
+            if (staticFinal) {
+                throw new RuntimeModelerException(ModelerMessages.localizableRUNTIME_MODELER_WEBMETHOD_MUST_BE_NONSTATICFINAL(method));
+            }
+            return true;            // @WebMethod
         }
+
+        if (staticFinal) {
+            return false;
+        }
+
+        Class declClass = method.getDeclaringClass();
+        return getPrivClassAnnotation(declClass, WebService.class) != null;
     }
 
 
