@@ -44,5 +44,6 @@ import javax.xml.ws.Holder;
 @WebService(endpointInterface = "customization.indexed_6625158.server.Hello")
 public class TestEndpoint {
     public String echo(Name[] arg) {
+        return "works";
     }
 }
