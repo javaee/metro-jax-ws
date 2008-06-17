@@ -78,7 +78,7 @@
       <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*"/>
     </copy>
 
-    <antcall target="test" inheritrefs="true"/>  
+<!--    <antcall target="test" inheritrefs="true"/> -->  
   </target>
 
   <target name="compile-mustang" depends="generate-code">
@@ -112,9 +112,7 @@
              optimize="${compile.optimize}">
 		<classpath refid="test.classpath"/>
 	    </javac>
-
-
-
+      
       <junit printsummary="no" haltonfailure="yes" fork="true">
 	    <classpath refid="test.classpath"/>
         <formatter type="xml" if="xmlformatter"/>
@@ -125,7 +123,7 @@
             </fileset>
 		</batchtest>
 	</junit>
-
+    
   </target>
 
 </project> 
