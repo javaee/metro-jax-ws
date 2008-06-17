@@ -38,6 +38,7 @@ package com.sun.xml.ws.api.pipe;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.AttachmentSet;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -60,4 +61,14 @@ public interface StreamSOAPCodec extends Codec {
      * @return a {@link Message} for SOAP envelope
      */
     public @NotNull Message decode(@NotNull XMLStreamReader reader);
+
+    /**
+     * Reads events from {@link XMLStreamReader} and constructs a
+     * {@link Message} for SOAP envelope.
+     *
+     * @param reader that represents SOAP envelope infoset
+     * @param att attachments for the message
+     * @return a {@link Message} for SOAP envelope
+     */
+    public @NotNull Message decode(@NotNull XMLStreamReader reader, AttachmentSet att);
 }

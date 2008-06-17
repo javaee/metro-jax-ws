@@ -244,13 +244,8 @@ public class MtomCodec extends MimeCodec {
             XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), true)
         );
 
-        //TODO: remove this code after {@link StreamSOAPCodec#decode} is modified to
-        //take AttachmentSet.
-        if(codec instanceof com.sun.xml.ws.encoding.StreamSOAPCodec){
-            packet.setMessage(((com.sun.xml.ws.encoding.StreamSOAPCodec)codec).decode(mtomReader, new MimeAttachmentSet(mpp)));
-        }else{
-            packet.setMessage(codec.decode(mtomReader));
-        }
+        packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
+
     }
 
     private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
