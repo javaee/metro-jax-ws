@@ -67,6 +67,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,6 +292,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
             throw new UnsupportedMediaException(contentType, expectedContentTypes);
         }
         String charset = new ContentTypeImpl(contentType).getCharSet();
+        if (charset != null && !Charset.isSupported(charset)) {
+            throw new UnsupportedMediaException(charset);
+        }
         XMLStreamReader reader = XMLStreamReaderFactory.create(null, in, charset, true);
         reader =  new TidyXMLStreamReader(reader, in);
         packet.setMessage(decode(reader, att));
