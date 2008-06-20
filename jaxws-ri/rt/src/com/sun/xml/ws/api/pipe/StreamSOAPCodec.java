@@ -70,5 +70,5 @@ public interface StreamSOAPCodec extends Codec {
      * @param att attachments for the message
      * @return a {@link Message} for SOAP envelope
      */
-    public @NotNull Message decode(@NotNull XMLStreamReader reader, AttachmentSet att);
+    public @NotNull Message decode(@NotNull XMLStreamReader reader, @NotNull AttachmentSet att);
 }
