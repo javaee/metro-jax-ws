@@ -233,7 +233,7 @@ public class WrapperBeanGenerator {
             }
 
             sb.append("\n\n}");
-            LOGGER.info(sb.toString());
+            LOGGER.fine(sb.toString());
         }
 
         return cw.toByteArray();
