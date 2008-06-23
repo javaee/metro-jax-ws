@@ -189,19 +189,19 @@ public final class MimeMultipartParser {
         public Source asSource() {
             return (buf != null)
                 ? new StreamSource(new ByteArrayInputStream(buf))
-                : new StreamSource(part.readOnce());
+                : new StreamSource(part.read());
         }
 
         public InputStream asInputStream() {
             return (buf != null)
-                ? new ByteArrayInputStream(buf) : part.readOnce();
+                ? new ByteArrayInputStream(buf) : part.read();
         }
 
         public void writeTo(OutputStream os) throws IOException {
             if (buf != null) {
                 os.write(buf);
             } else {
-                InputStream in = part.readOnce();
+                InputStream in = part.read();
                 byte[] temp = new byte[8192];
                 int len;
                 while((len=in.read(temp)) != -1) {
