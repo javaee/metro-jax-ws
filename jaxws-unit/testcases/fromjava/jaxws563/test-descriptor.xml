@@ -1,0 +1,18 @@
+<descriptor since="2.1.5">
+  <description>This is a JAXWS 563 test</description>
+  <service basedir="./server">
+  </service>
+
+  <client name="fromjava.jaxws563">
+      <description>
+            Testcase for jaxws issue 563, where schema generated is incorrect.
+        </description>
+
+        Query query = new Query();
+        query.setArg0(new BigInteger("10"));
+        query.setArg1(new BigInteger("20"));
+        Result result = calculatorPort.add(query);
+        assertEquals(30,result.getSum());
+      </client>
+
+</descriptor>
