@@ -52,6 +52,7 @@ import javax.jws.WebParam.Mode;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
+import javax.xml.ws.ProtocolException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -261,11 +262,17 @@ final class EndpointMethodHandler {
 
             if (!(cause instanceof RuntimeException) && cause instanceof Exception) {
                 // Service specific exception
-                LOGGER.log(Level.INFO, cause.getMessage(), cause);
+                LOGGER.log(Level.FINE, cause.getMessage(), cause);
                 responseMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion,
                         javaMethodModel.getCheckedException(cause.getClass()), cause);
             } else {
-                LOGGER.log(Level.SEVERE, cause.getMessage(), cause);
+                if (cause instanceof ProtocolException) {
+                    // Application code may be throwing it intentionally
+                    LOGGER.log(Level.FINE, cause.getMessage(), cause);
+                } else {
+                    // Probably some bug in application code
+                    LOGGER.log(Level.SEVERE, cause.getMessage(), cause);
+                }
                 responseMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, cause);
             }
         } catch (Exception e) {
