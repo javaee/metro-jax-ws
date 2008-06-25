@@ -66,9 +66,14 @@ public class WSDLInternalizationLogic implements InternalizationLogic{
                     //TODO: add support for importing schema using wsdl:import
                 }
                 return atts.getValue("location");
-            }else if(SchemaConstants.NS_XSD.equals(nsURI) && "import".equals(localName)){
+            }
+            /*
+            We don't need to do this anymore, JAXB handles the schema imports, includes etc.
+
+            else if(SchemaConstants.NS_XSD.equals(nsURI) && "import".equals(localName)){
                 return atts.getValue("schemaLocation");
             }
+            */
             return null;
         }
     }
