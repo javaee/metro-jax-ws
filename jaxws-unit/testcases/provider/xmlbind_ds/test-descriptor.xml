@@ -1,5 +1,5 @@
-<!-- Uses internal class so excluding from JDK6 test runs -->
-<descriptor since="2.0" excludeFrom="jdk6">
+<!-- Uses SAAJ internal class so marking with ri-api -->
+<descriptor since="2.0" uses="ri-api">
   <description>This is a Provider XML/HTTP test</description>
 
    <pre-client><![CDATA[

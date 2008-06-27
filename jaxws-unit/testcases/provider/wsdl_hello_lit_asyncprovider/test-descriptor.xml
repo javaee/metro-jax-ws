@@ -1,4 +1,4 @@
-<descriptor since="2.0" excludeFrom="jdk6">
+<descriptor since="2.0" uses="ri-api">
   <description>This is a AsyncProvider test</description>
 
   <client name="wsdl_hello_lit_asyncprovider.test1" sideEffectFree="true"><![CDATA[

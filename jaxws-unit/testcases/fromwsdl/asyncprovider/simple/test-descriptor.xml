@@ -1,4 +1,4 @@
-<descriptor since="2.1.1" excludeFrom="jdk6">
+<descriptor since="2.1.1" uses="ri-api">
   <description>This is a AsyncProvider test</description>
   <client href ="test.bsh" />
   <service basedir="./server">

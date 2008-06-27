@@ -1,4 +1,4 @@
-<descriptor since="2.0" transport="http" uses="servlet ri-api" excludeFrom="jdk6">
+<descriptor since="2.0" transport="http" uses="servlet ri-api">
   <description>httpsessionscope</description>
     
   <service basedir="./server">
