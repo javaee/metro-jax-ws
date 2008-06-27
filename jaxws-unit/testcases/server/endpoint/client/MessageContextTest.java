@@ -58,10 +58,6 @@ import java.util.Map.Entry;
 import java.util.Iterator;
 import javax.xml.ws.WebServiceException;
 
-import com.sun.xml.ws.developer.JAXWSProperties;
-import com.sun.net.httpserver.HttpExchange;
-
-
 /**
  * @author Jitendra Kotamraju
  */
@@ -199,11 +195,6 @@ public class MessageContextTest extends TestCase {
             String pathInfo = (String)msgCtxt.get(MessageContext.PATH_INFO);
             if (pathInfo == null || !pathInfo.equals("/a/b")) {
                 throw new WebServiceException("Unexpected PATH_INFO. Expected: "+"/a/b"+" Got: "+pathInfo);
-            }
-
-            HttpExchange exchange = (HttpExchange)msgCtxt.get(JAXWSProperties.HTTP_EXCHANGE);
-            if (exchange == null ) {
-                throw new WebServiceException("HttpExchange object is not populated");
             }
 
             String replyElement = new String("<p>hello world</p>");
