@@ -1,5 +1,5 @@
 <!-- Uses SAAJ internal class so marking with ri-api -->
-<descriptor since="2.0" uses="ri-api">
+<descriptor since="2.0" uses="ri">
   <description>This is a Provider XML/HTTP test</description>
 
    <pre-client><![CDATA[

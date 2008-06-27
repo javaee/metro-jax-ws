@@ -1,4 +1,4 @@
-<descriptor since="2.0" transport="http" uses="servlet ri-api">
+<descriptor since="2.0" transport="http" uses="servlet ri">
   <description>httpsessionscope</description>
     
   <service basedir="./server">

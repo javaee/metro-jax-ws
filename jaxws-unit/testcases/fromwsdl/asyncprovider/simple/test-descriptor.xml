@@ -1,4 +1,4 @@
-<descriptor since="2.1.1" uses="ri-api">
+<descriptor since="2.1.1" uses="ri">
   <description>This is a AsyncProvider test</description>
   <client href ="test.bsh" />
   <service basedir="./server">
