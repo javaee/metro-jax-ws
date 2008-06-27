@@ -65,7 +65,6 @@ public class SchemaRedefineTest extends TestCase {
 
     public void testSchemaRedefine() throws Exception {
         int port = Util.getFreePort();
-port=1666;
         String address = "http://localhost:"+port+"/redefine";
         Endpoint e = Endpoint.create(new RedefineProvider());
 
