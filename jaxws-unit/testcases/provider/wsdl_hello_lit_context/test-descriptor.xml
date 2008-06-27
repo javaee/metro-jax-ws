@@ -1,4 +1,4 @@
-<descriptor since="2.0" transport="http">
+<descriptor since="2.0" transport="http" uses="multi-endpoint">
   <description>This is a Provider test</description>
   <client name="testMsgVoid" sideEffectFree="true">
   <![CDATA[
