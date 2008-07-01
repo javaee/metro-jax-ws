@@ -1,4 +1,4 @@
-<descriptor since="2.1.4">
+<descriptor since="2.1.4" uses="ri">
   <description>rest</description>
 
   <client name="rest_testAdd" sideEffectFree="true">
