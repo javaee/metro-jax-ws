@@ -59,7 +59,7 @@ import javax.xml.ws.BindingProvider;
 import static javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.MessageContext;
-import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -188,7 +188,7 @@ final class HttpClientTransport {
         // are some bytes left in the InputStream. This confuses JDK and may
         // not reuse underlying sockets. Hopefully JDK fixes it in its code !
         final InputStream temp = is;
-        return new BufferedInputStream(temp) {
+        return new FilterInputStream(temp) {
             // Workaround for "SJSXP XMLStreamReader.next() closes stream".
             // So it doesn't read from the closed stream
             boolean closed;
