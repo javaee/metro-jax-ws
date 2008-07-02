@@ -1,0 +1,17 @@
+<descriptor since="2.1.3">
+    <description>Testcase for issue 397</description>
+    <service basedir="./server">
+        <wsdl href="custom.wsdl"/>
+    </service>
+    <client name="test1">
+        Hello_Type hello = new Hello_Type();
+        hello.setArgument("Hello");
+        hello.setExtra("Works");
+        HelloOutput result = helloPort.sayHello(hello);
+        //System.out.println(result.getArgument());
+        //System.out.println(result.getExtra());
+        assertEquals(result.getArgument(), "Hello World!");
+        assertEquals(result.getExtra(), "Works Fine!");
+
+    </client>
+</descriptor>
