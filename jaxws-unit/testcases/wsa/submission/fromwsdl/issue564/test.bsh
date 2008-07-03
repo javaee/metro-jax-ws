@@ -1,0 +1,92 @@
+/*
+   Testcase for issue 564, where ns declarations on soap:env are not retained if they are used by ReferenceParameters
+   inside wsa:ReplyTo and wsa:FaultTo when the response is sent.
+
+   @author Rama Pulavarthi
+*/
+import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.api.message.Message;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.pipe.Codec;
+import com.sun.xml.ws.api.pipe.Codecs;
+import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
+import com.sun.xml.ws.message.saaj.SAAJMessage;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.Dispatch;
+import javax.xml.ws.Service;
+import javax.xml.ws.soap.SOAPBinding;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+private static final MemberSubmissionAddressingFeature MS_ADDRESSING_FEATURE = new MemberSubmissionAddressingFeature(true);
+private static final QName SERVICE_QNAME=new QName("http://example.com/","AddNumbersService");
+private static final QName PORT_QNAME=new QName("http://example.com/","AddNumbersPort");
+
+String requestStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<S:Envelope xmlns:S=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:user=\"http://foo.bar\" " +
+                "xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\">" +
+                "<S:Header>" +
+                "<wsa:Action>http://example.org/action/echoIn</wsa:Action>" +
+                "<wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>" +
+                "<wsa:MessageID>urn:uuid:1234567890</wsa:MessageID>" +
+                "<wsa:ReplyTo>" +
+                "<wsa:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</wsa:Address>" +
+                "<wsa:ReferenceParameters>" +
+                "<user:foo>bar</user:foo>" +
+                "<user:bar xmlns:user=\"http://foo.bar\">" +
+                "<user:foobar>barfoo</user:foobar>" +
+                "</user:bar>" +
+                "</wsa:ReferenceParameters>" +
+                "</wsa:ReplyTo>" +
+                "<wsa:FaultTo>" +
+                "<wsa:Address>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</wsa:Address>" +
+                "<wsa:ReferenceParameters>" +
+                "<user:foo>bar</user:foo>" +
+                "<user:bar xmlns:user=\"http://foo.bar\">" +
+                "<user:foobar>barfoo</user:foobar>" +
+                "</user:bar>" +
+                "</wsa:ReferenceParameters>" +
+                "</wsa:FaultTo>" +
+                "</S:Header>" +
+                "<S:Body>" +
+                "<addNumbers xmlns=\"http://example.com/\">" +
+                "<number1>10</number1>" +
+                "<number2>10</number2>" +
+                "</addNumbers>" +
+                "</S:Body></S:Envelope>";
+
+    private Dispatch createDispatchWithoutWSDL() throws Exception {
+        Service service = Service.create(SERVICE_QNAME);
+        service.addPort(PORT_QNAME, SOAPBinding.SOAP12HTTP_BINDING, addNumbersPortAddress.toString());
+        return service.createDispatch(PORT_QNAME, Message.class, Service.Mode.MESSAGE);
+    }
+
+    Message createStreamMessage(String msg) throws IOException {
+        Codec codec = Codecs.createSOAPEnvelopeXmlCodec(SOAPVersion.SOAP_12);
+        Packet packet = new Packet();
+        ByteArrayInputStream in = new ByteArrayInputStream(msg.getBytes());
+        codec.decode(in, "application/soap+xml", packet);
+        return packet.getMessage();
+    }
+
+    Message createSAAJMessage(String req) throws Exception {
+        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+        SOAPMessage soapMsg = messageFactory.createMessage(null, new ByteArrayInputStream(req.getBytes()));
+        return new SAAJMessage(soapMsg);
+    }
+
+    /*
+    Test for issue 564
+    */
+    {
+        Dispatch dispatch = createDispatchWithoutWSDL();
+        Message message = createStreamMessage(requestStr);
+        //Message message  = createSAAJMessage(requestStr);
+        dispatch.invoke(message);
+
+    }
+
