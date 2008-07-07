@@ -199,7 +199,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         // SOAP1.1 and SOAP1.2 differ here
         if (binding instanceof SOAPBinding) {
             if (statusCode != HttpURLConnection.HTTP_OK && statusCode != HttpURLConnection.HTTP_INTERNAL_ERROR) {
-                in.close();
+                if (in != null) {
+                    in.close();
+                }
                 throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
             }
         }
@@ -208,7 +210,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
 
     private void checkStatusCodeOneway(InputStream in, int statusCode, String statusMessage) throws IOException {
         if (statusCode != WSHTTPConnection.ONEWAY && statusCode != WSHTTPConnection.OK) {
-            in.close();
+            if (in != null) {
+                in.close();
+            }
             throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode,statusMessage));
         }
     }
