@@ -1,4 +1,4 @@
-<descriptor since="2.1.3">
+<descriptor since="2.1.3" uses="multi-endpoint">
   <description>Handler tests that test Handler Processing on server and client.
       It tests handler invocation order, handler closing order, handling Exception processing in handlers.
   </description>
