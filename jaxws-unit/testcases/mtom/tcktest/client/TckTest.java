@@ -60,6 +60,24 @@ public class TckTest extends TestCase {
         validate(getDataHandler("attach.xml"), doc3.value);
     }
 
+    public void testMtomInOut1() throws Exception {
+        Holder<DataHandler> doc1 = new Holder<DataHandler>();
+	doc1.value = getDataHandler("some.bin");
+        Holder<DataHandler> doc2 = new Holder<DataHandler>();
+        doc2.value = getDataHandler("some.bin");
+        Holder<DataHandler> doc3 = new Holder<DataHandler>();
+        doc3.value = getDataHandler("some.bin");
+        Holder<Image> doc4 = new Holder<Image>();
+        doc4.value = getImage("attach.jpeg");
+        Holder<Image> doc5 = new Holder<Image>();
+        doc5.value = getImage("attach2.jpeg");
+
+    	proxy.mtomInOut(doc1, doc2, doc3, doc4, doc5);
+        validate(getDataHandler("some.bin"), doc1.value);
+        validate(getDataHandler("some.bin"), doc2.value);
+        validate(getDataHandler("some.bin"), doc3.value);
+    }
+
     private void validate(DataHandler exp, DataHandler got) throws Exception {
         InputStream inExp = exp.getInputStream();
         InputStream inGot = got.getInputStream();
