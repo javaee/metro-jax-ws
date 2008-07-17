@@ -116,7 +116,7 @@ public class OnewayTest extends TestCase
     @WebService(targetNamespace="http://echo.org/")
     @SOAPBinding(style=Style.RPC)
     public static class OnewayEndpoint {
-        int prev;
+        volatile int prev;
 
         @Oneway
         public void echoInteger(int arg0) {
