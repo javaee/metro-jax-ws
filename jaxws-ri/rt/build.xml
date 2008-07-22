@@ -78,7 +78,7 @@
       <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*"/>
     </copy>
 
-<!--    <antcall target="test" inheritrefs="true"/> -->  
+    <antcall target="test" inheritrefs="true"/>  
   </target>
 
   <target name="compile-mustang" depends="generate-code">
@@ -103,6 +103,9 @@
      <path id="test.classpath">
         <path refid="runtime.compile.classpath"/>
         <pathelement path="${build.dir}/classes" />
+        <pathelement path="${build.dir}/test-classes" />
+        <!-- so that resources can be found -->
+        <pathelement path="${basedir}/test"/>
      </path>
 
 
@@ -113,16 +116,23 @@
 		<classpath refid="test.classpath"/>
 	    </javac>
       
-      <junit printsummary="no" haltonfailure="yes" fork="true">
+      <junit haltonfailure="yes">
 	    <classpath refid="test.classpath"/>
-        <formatter type="xml" if="xmlformatter"/>
-		<batchtest todir="${build.dir}/test-reports" haltonerror="false">
+         <batchtest todir="${build.dir}/test-reports" haltonerror="false">
 			<fileset dir="${build.dir}/test-classes">
 				<include name="**/AllTests.class" />
                 <include name="**/*Test.class" />
             </fileset>
 		</batchtest>
 	</junit>
+
+      <junitreport todir="${build.dir}/test-reports">
+        <fileset dir="${build.dir}/test-reports">
+            <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+      </junitreport>
+      
     
   </target>
 
