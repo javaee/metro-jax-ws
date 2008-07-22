@@ -44,6 +44,8 @@
 
   <target name="prepare">
     <mkdir dir="${build.dir}/classes/META-INF/services"/>
+    <mkdir dir="${build.dir}/test-classes"/>
+    <mkdir dir="${build.dir}/test-reports"/>
   </target>
 
   <target name="generate-code" depends="prepare"
@@ -72,11 +74,52 @@
     <!-- Copy AnnotationProcessor factory info -->
     <copy todir="${build.dir}/classes/META-INF/services">
       <fileset dir="${basedir}/../etc/" includes="com.sun.*"/>
-    </copy> 
+    </copy>
+
+    <!--
+    Uncomment when tools have tests
+    <antcall target="test" inheritrefs="true"/>  -->
   </target>
 
   <target name="clean">
     <delete dir="${build.dir}"/>
   </target>
+
+    <target name="test" description="tools-whitebox-tests">
+        <path id="test.classpath">
+            <path refid="tools.compile.classpath"/>
+            <pathelement path="${build.dir}/classes"/>
+            <pathelement path="${build.dir}/test-classes"/>
+            <!-- so that resources can be found -->
+            <pathelement path="${basedir}/test"/>
+        </path>
+
+
+        <javac srcdir="${basedir}/test"
+               destdir="${build.dir}/test-classes"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}">
+            <classpath refid="test.classpath"/>
+        </javac>
+
+        <junit haltonfailure="yes">
+            <classpath refid="test.classpath"/>
+            <formatter type="xml"/>
+            <batchtest todir="${build.dir}/test-reports" haltonerror="false">
+                <fileset dir="${build.dir}/test-classes">
+                    <include name="**/AllTests.class"/>
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${build.dir}/test-reports">
+            <fileset dir="${build.dir}/test-reports">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}/test-reports/report/html"/>
+        </junitreport>
+
+    </target>
 
 </project> 
