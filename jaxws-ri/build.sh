@@ -49,6 +49,6 @@ fi
 
 JAVACMD=$JAVA_HOME/bin/java
 
-cp=$JAVA_HOME/lib/tools.jar:./lib/ant.jar:./lib/ant-junit.jar:./lib/ant-launcher.jar:./lib/ant-nodeps.jar:./lib/ant-trax.jar
+cp=$JAVA_HOME/lib/tools.jar:./lib/ant.jar:./lib/ant-junit.jar:./lib/ant-launcher.jar:./lib/ant-nodeps.jar:./lib/ant-trax.jar:./lib/junit.jar
 
 $JAVACMD -Dfile.extension=sh -classpath $cp:$CLASSPATH org.apache.tools.ant.Main -emacs "$@"
