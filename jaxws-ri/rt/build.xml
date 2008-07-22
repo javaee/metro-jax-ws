@@ -118,6 +118,7 @@
       
       <junit haltonfailure="yes">
 	    <classpath refid="test.classpath"/>
+          <formatter type="xml"/>
          <batchtest todir="${build.dir}/test-reports" haltonerror="false">
 			<fileset dir="${build.dir}/test-classes">
 				<include name="**/AllTests.class" />
