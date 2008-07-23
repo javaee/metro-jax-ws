@@ -78,7 +78,10 @@ public class OnewayTest extends TestCase
         int status = getHttpStatus(address);
         assertEquals(202, status);
 
-        assertTrue(verify(address).contains("12345"));
+        // Commenting this out. It's possible that
+        // verifyInteger() could be called before echoInteger()
+        // since 202 is sent before invoking echoInteger
+        //assertTrue(verify(address).contains("12345"));
         
         endpoint.stop();
     }
