@@ -1,4 +1,4 @@
-<descriptor since="2.1.3">
+<descriptor since="2.1.3" uses="ri">
     <description>
         Test for com.sun.xml.ws.api.MessageHandler functionality
     </description>
