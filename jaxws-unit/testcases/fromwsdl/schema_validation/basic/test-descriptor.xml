@@ -1,4 +1,4 @@
-<descriptor since="2.1.3">
+<descriptor since="2.1.3" uses="ri">
     <description>Schema Validaiton fromwsdl tests</description>
     <service basedir="./server">
         <wsdl href="hello_literal.wsdl"/>
