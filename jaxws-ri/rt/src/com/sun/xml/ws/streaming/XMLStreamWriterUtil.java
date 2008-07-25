@@ -75,7 +75,8 @@ public class XMLStreamWriterUtil {
         if (obj == null) {
             try {
                 obj = writer.getProperty("http://java.sun.com/xml/stream/properties/outputstream");
-            } catch(IllegalArgumentException ie) {
+            } catch(Exception ie) {
+                // Catch all exceptions. SJSXP in JDK throws NPE
                 // nothing to do here
             }
         }
@@ -84,7 +85,8 @@ public class XMLStreamWriterUtil {
         if (obj == null) {
             try {
                 obj = writer.getProperty("com.ctc.wstx.outputUnderlyingStream");
-            } catch(IllegalArgumentException ie) {
+            } catch(Exception ie) {
+                // Catch all exceptions. SJSXP in JDK throws NPE
                 // nothing to do here
             }
         }
@@ -93,7 +95,6 @@ public class XMLStreamWriterUtil {
             writer.flush();
             return (OutputStream)obj;
         }
-
         return null;
     }
 
