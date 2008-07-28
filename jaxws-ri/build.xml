@@ -390,7 +390,7 @@
   
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
-      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.1/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+      <get src="http://hudson.sfbay.sun.com/job/jaxb-ri-2.1/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -408,13 +408,13 @@
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-ri/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
          dest="lib/saaj-impl.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
          dest="lib/saaj-impl.src.zip" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
          dest="lib/saaj-api.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
          dest="lib/saaj-api-src.zip" />
   </target>
 
@@ -452,17 +452,17 @@
 
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
+    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
+    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
   <target name="integrate-jaxws21-api-hudson" depends="prepare"
           description="integrate the last successful jaxws 2.1 API from Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 
@@ -476,7 +476,7 @@
 
     <target name="integrate-htmlmacro-hudson" depends="prepare"
              description="integrate the last successful htmlmacro Hudson build">
-       <get src="http://kohsuke.sfbay.sun.com/hudson/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
+       <get src="http://hudson.sfbay.sun.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
             dest="${lib.home}/htmlmacro.zip" />
        <mkdir dir="${lib.home}/htmlmacro" />
        <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>
