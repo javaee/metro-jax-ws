@@ -43,11 +43,14 @@ import com.sun.net.httpserver.HttpsExchange;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
+import com.sun.xml.ws.api.server.PortAddressResolver;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.resources.WsservletMessages;
 
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.WebServiceException;
 import java.io.FilterInputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -164,7 +167,14 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
                     // Ignoring purposefully.
                 }
             }
+
+            // Otherwise, FilterOutpuStream writes byte by byte
+            @Override
+            public void write(byte[] buf, int start, int len) throws IOException {
+                out.write(buf, start, len);
+            }
         };
+
     }
 
     public @NotNull WebServiceContextDelegate getWebServiceContextDelegate() {
@@ -180,7 +190,14 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     }
 
     public @NotNull String getEPRAddress(Packet request, WSEndpoint endpoint) {
-        return WSHttpHandler.getRequestAddress(httpExchange);
+        //return WSHttpHandler.getRequestAddress(httpExchange);
+        
+        PortAddressResolver resolver = adapter.owner.createPortAddressResolver(getBaseAddress());
+        String address = resolver.getAddressFor(endpoint.getServiceName(), endpoint.getPortName().getLocalPart());
+        if(address==null)
+            throw new WebServiceException(WsservletMessages.SERVLET_NO_ADDRESS_AVAILABLE(endpoint.getPortName()));
+        return address;
+
     }
 
     public String getWSDLAddress(@NotNull Packet request, @NotNull WSEndpoint endpoint) {
