@@ -75,7 +75,7 @@ import java.util.logging.Logger;
  * model of the web service.  Used by the runtime marshall/unmarshall
  * web service invocations
  *
- * $author: JAXWS Development Team
+ * @author JAXWS Development Team
  */
 public abstract class AbstractSEIModelImpl implements SEIModel {
 
