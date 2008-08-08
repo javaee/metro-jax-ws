@@ -147,7 +147,8 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     if(LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
-                    UsesJAXBContextFeature f = port.getFeature(UsesJAXBContextFeature.class);
+                    //UsesJAXBContextFeature f = port.getFeature(UsesJAXBContextFeature.class);
+                    UsesJAXBContextFeature f = null;    // TODO to restore the above once it works
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
                     return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
