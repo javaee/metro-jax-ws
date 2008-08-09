@@ -129,10 +129,11 @@ class SOAP11Fault extends SOAPFaultBuilder {
         this.faultstring = fault.getFaultString();
         this.faultactor = fault.getFaultActor();
         if (fault.getDetail() != null) {
+            detail = new DetailType();
             Iterator iter = fault.getDetail().getDetailEntries();
             while(iter.hasNext()){
                 Element fd = (Element)iter.next();
-                detail = new DetailType(fd);
+                detail.getDetails().add(fd);
             }
         }
     }

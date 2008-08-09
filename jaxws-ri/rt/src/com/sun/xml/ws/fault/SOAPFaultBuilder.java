@@ -491,10 +491,8 @@ public abstract class SOAPFaultBuilder {
                 faultCode = getDefaultFaultCode(soapVersion);
             }
         }
-        DetailType detailType = null;
-        if(detailNode != null)
-            detailType = new DetailType(detailNode);
-        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailType);
+
+        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailNode);
         soap12Fault.captureStackTrace(e);
 
         Message msg = JAXBMessage.create(JAXB_CONTEXT, soap12Fault, soapVersion);
