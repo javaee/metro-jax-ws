@@ -183,6 +183,9 @@ public abstract class StreamSOAPCodec implements com.sun.xml.ws.api.pipe.StreamS
 
         // Collect namespaces on soap:Envelope
         Map<String,String> namespaces = new HashMap<String,String>();
+        for(int i=0; i< reader.getNamespaceCount();i++){
+                namespaces.put(reader.getNamespacePrefix(i), reader.getNamespaceURI(i));
+        }
 
         // Move to next element
         XMLStreamReaderUtil.nextElementContent(reader);
