@@ -142,7 +142,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 if(dump) {
                     ByteArrayBuffer buf = new ByteArrayBuffer();
                     codec.encode(request, buf);
-                    dump(buf, "HTTP request", reqHeaders);
+                    dump(buf, "HTTP request - "+request.endpointAddress, reqHeaders);
                     OutputStream out = con.getOutput();
                     if (out != null) {
                         buf.writeTo(out);
@@ -165,7 +165,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     buf.write(response);
                     response.close();
                 }
-                dump(buf,"HTTP response "+con.statusCode, con.getHeaders());
+                dump(buf,"HTTP response - "+request.endpointAddress+" - "+con.statusCode, con.getHeaders());
                 response = buf.newInputStream();
             }
             
