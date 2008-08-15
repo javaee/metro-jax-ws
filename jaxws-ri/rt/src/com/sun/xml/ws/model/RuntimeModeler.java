@@ -146,10 +146,6 @@ public class RuntimeModeler {
      * @param serviceName The ServiceName to use instead of one calculated from the implementation class
      * @param wsdlPort {@link com.sun.xml.ws.api.model.wsdl.WSDLPort}
      */
-    public RuntimeModeler(@NotNull Class sei, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort){
-        this(sei, serviceName, wsdlPort, new WebServiceFeature[0]);
-    }
-
     public RuntimeModeler(@NotNull Class sei, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
         this.portClass = sei;
         this.serviceName = serviceName;

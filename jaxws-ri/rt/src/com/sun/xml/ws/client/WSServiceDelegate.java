@@ -57,6 +57,7 @@ import com.sun.xml.ws.client.HandlerConfigurator.AnnotationConfigurator;
 import com.sun.xml.ws.client.HandlerConfigurator.HandlerResolverImpl;
 import com.sun.xml.ws.client.sei.SEIStub;
 import com.sun.xml.ws.developer.WSBindingProvider;
+import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.model.SOAPSEIModel;
@@ -337,8 +338,8 @@ public class WSServiceDelegate extends WSService {
 
     private <T> T getPort(WSEndpointReference wsepr, QName portName, Class<T> portInterface,
                           WebServiceFeature... features) {
-        addSEI(portName, portInterface);
-        return createEndpointIFBaseProxy(wsepr,portName,portInterface,features);
+        SEIPortInfo spi = addSEI(portName, portInterface, features);
+        return createEndpointIFBaseProxy(wsepr,portName,portInterface,features, spi);
     }
     public <T> T getPort(Class<T> portInterface, WebServiceFeature... features) {
         //get the portType from SEI
@@ -623,7 +624,8 @@ public class WSServiceDelegate extends WSService {
         }
     }
 
-    private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr,QName portName, Class<T> portInterface, WebServiceFeature[] webServiceFeatures) {
+    private <T> T createEndpointIFBaseProxy(@Nullable WSEndpointReference epr,QName portName, Class<T> portInterface,
+                                            WebServiceFeature[] webServiceFeatures, SEIPortInfo eif) {
         //fail if service doesnt have WSDL
         if (wsdlService == null)
             throw new WebServiceException(ClientMessages.INVALID_SERVICE_NO_WSDL(serviceName));
@@ -632,8 +634,6 @@ public class WSServiceDelegate extends WSService {
             throw new WebServiceException(
                 ClientMessages.INVALID_PORT_NAME(portName,buildWsdlPortNames()));
         }
-
-        SEIPortInfo eif = seiContext.get(portName);
 
         BindingImpl binding = eif.createBinding(webServiceFeatures,portInterface);
         SEIStub pis = new SEIStub(this, binding, eif.model, createPipeline(eif, binding), epr);
@@ -674,20 +674,33 @@ public class WSServiceDelegate extends WSService {
      * {@link SEIPortInfo} about a given SEI (linked from the {@link Service}-derived class.)
      */
     //todo: valid port in wsdl
-    private void addSEI(QName portName, Class portInterface) throws WebServiceException {
+    private SEIPortInfo addSEI(QName portName, Class portInterface, WebServiceFeature... features) throws WebServiceException {
+        boolean ownModel = useOwnSEIModel(features);
+        if (ownModel) {
+            // Create a new model and do not cache it
+            return createSEIPortInfo(portName, portInterface, features);
+        }
+
         SEIPortInfo spi = seiContext.get(portName);
-        if (spi != null) return;
+        if (spi == null) {
+            spi = createSEIPortInfo(portName, portInterface, features);
+            seiContext.put(spi.portName, spi);
+            ports.put(spi.portName, spi);
+        }
+        return spi;
+    }
+
+    private SEIPortInfo createSEIPortInfo(QName portName, Class portInterface, WebServiceFeature... features) {
         WSDLPortImpl wsdlPort = getPortModel(wsdlService, portName);
-        RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort);
+        RuntimeModeler modeler = new RuntimeModeler(portInterface, serviceName, wsdlPort, features);
         modeler.setClassLoader(portInterface.getClassLoader());
         modeler.setPortName(portName);
         AbstractSEIModelImpl model = modeler.buildRuntimeModel();
+        return new SEIPortInfo(this, portInterface, (SOAPSEIModel) model, wsdlPort);
+    }
 
-        spi = new SEIPortInfo(this, portInterface, (SOAPSEIModel) model, wsdlPort);
-        seiContext.put(spi.portName, spi);
-        //seiContext.put(spi.sei, spi);
-        ports.put(spi.portName, spi);
-
+    private boolean useOwnSEIModel(WebServiceFeature... features) {
+        return WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class) != null;
     }
 
     public WSDLServiceImpl getWsdlService() {
