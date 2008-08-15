@@ -1,5 +1,5 @@
 /*
- * $Id: NegativeTest.java,v 1.2 2007-09-01 02:28:19 jitu Exp $
+ * $Id: NegativeTest.java,v 1.3 2008-08-15 21:18:08 ramapulavarthi Exp $
  */
 
 /*
@@ -75,7 +75,7 @@ public class NegativeTest extends TestCase {
 
         HTTPResponseInfo rInfo =
             ClientServerTestUtil.sendPOSTRequest( getStub(), message );
-        assertEquals(rInfo.getResponseCode(), 500);
+        assertEquals(500, rInfo.getResponseCode());
         String resp = rInfo.getResponseBody();
         //System.out.println("Resp="+resp);
         MessageFactory messageFactory = MessageFactory.newInstance();
@@ -114,7 +114,7 @@ public class NegativeTest extends TestCase {
 
         HTTPResponseInfo rInfo =
             ClientServerTestUtil.sendPOSTRequest( getStub(), message );
-        assertEquals(rInfo.getResponseCode(), 500);
+        assertEquals(500, rInfo.getResponseCode());
         String resp = rInfo.getResponseBody();
         MessageFactory messageFactory = MessageFactory.newInstance();
         MimeHeaders headers = new MimeHeaders();
@@ -139,7 +139,7 @@ public class NegativeTest extends TestCase {
 "<?xml version='1.0' encoding='UTF-8'?><env:Envelope xmlns:env='http://wrongname.org' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><env:Body><wrongname xmlns='http://example.com/types'><reqInfo>foo</reqInfo></echo></env:Body></env:Envelope>";
 
         HTTPResponseInfo rInfo = ClientServerTestUtil.sendPOSTRequest(getStub(),message);
-        assertEquals(rInfo.getResponseCode(), 500);
+        assertEquals(500, rInfo.getResponseCode());
         String resp = rInfo.getResponseBody();
         MessageFactory messageFactory = MessageFactory.newInstance();
         MimeHeaders headers = new MimeHeaders();
