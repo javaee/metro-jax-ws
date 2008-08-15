@@ -165,7 +165,7 @@ public class WsaActionTest extends TestCase {
     String address= getEndpointAddress();
     String message = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"+
             "<S:Header><To xmlns=\"http://www.w3.org/2005/08/addressing\">"+address+"</To>" +
-            "<Action xmlns=\"http://www.w3.org/2005/08/addressing\">urn:com:example:action</Action>" +
+            "<Action xmlns=\"http://www.w3.org/2005/08/addressing\">urn:com:different:action</Action>" +
             "<ReplyTo xmlns=\"http://www.w3.org/2005/08/addressing\">" +
             "    <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>" +
             "</ReplyTo>" +
@@ -176,8 +176,8 @@ public class WsaActionTest extends TestCase {
 
     HTTPResponseInfo rInfo =
         ClientServerTestUtil.sendPOSTRequest( address, message,"text/xml", "\"urn:com:different:action\"" );
-
-    assertEquals(200, rInfo.getResponseCode());
+    //Service throws wsa:ActionNotSupported fault.
+    assertEquals(500, rInfo.getResponseCode());
     }
 
 }
