@@ -1,0 +1,6 @@
+<descriptor since="2.1.5" transport="http">
+    <description>End to End WSA testcase for issue 608</description>
+    <service basedir="./server">
+        <wsdl href="AddNumbers.wsdl"/>
+    </service>  
+</descriptor>
