@@ -260,7 +260,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         String ct = con.getRequestHeader("Content-Type");
         InputStream in = con.getInput();
         Packet packet = new Packet();
-        packet.soapAction = con.getRequestHeader("SOAPAction");
+        packet.soapAction = fixQuotesAroundSoapAction(con.getRequestHeader("SOAPAction"));
         packet.wasTransportSecure = con.isSecure();
         packet.acceptableMimeTypes = con.getRequestHeader("Accept");
         packet.addSatellite(con);
@@ -277,7 +277,25 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return packet;
     }
 
-
+    /**
+     * Some stacks may send non WS-I BP 1.2 conformant SoapAction.
+     * Make sure SOAPAction is quoted as {@link Packet#soapAction} expectsa quoted soapAction value.
+     *  
+     * @param soapAction SoapAction HTTP Header
+     * @return
+     */
+    private String fixQuotesAroundSoapAction(String soapAction) {
+        if(soapAction != null && (!soapAction.startsWith("\"") || soapAction.endsWith("\"")) ) {
+            LOGGER.warning("Received WS-I BP non-conformant Unquoted SoapAction HTTP header: "+ soapAction);
+            String fixedSoapAction = soapAction;
+            if(!soapAction.startsWith("\""))
+                fixedSoapAction = "\"" + fixedSoapAction;
+            if(!soapAction.endsWith("\""))
+                fixedSoapAction = fixedSoapAction + "\"";
+            return fixedSoapAction;
+        }
+        return soapAction;
+    }
 
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
