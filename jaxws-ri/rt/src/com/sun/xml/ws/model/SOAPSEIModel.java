@@ -39,6 +39,7 @@ import com.sun.xml.ws.api.model.ParameterBinding;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceFeature;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -49,6 +50,10 @@ import java.util.Set;
  * @author Vivek Pandey
  */
 public class SOAPSEIModel extends AbstractSEIModelImpl {
+
+    public SOAPSEIModel(WebServiceFeature[] features) {
+        super(features);
+    }
 
     @Override
     protected void populateMaps() {

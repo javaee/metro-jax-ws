@@ -54,11 +54,13 @@ import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
 import com.sun.xml.ws.developer.JAXBContextFactory;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -79,6 +81,10 @@ import java.util.logging.Logger;
  * @author JAXWS Development Team
  */
 public abstract class AbstractSEIModelImpl implements SEIModel {
+
+    protected AbstractSEIModelImpl(WebServiceFeature[] features) {
+        this.features = features;
+    }
 
     void postProcess() {
         // should be called only once.
@@ -147,8 +153,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
                     if(LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
-                    //UsesJAXBContextFeature f = port.getFeature(UsesJAXBContextFeature.class);
-                    UsesJAXBContextFeature f = null;    // TODO to restore the above once it works
+                    UsesJAXBContextFeature f = WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class);
                     JAXBContextFactory factory = f!=null ? f.getFactory() : null;
                     if(factory==null)   factory=JAXBContextFactory.DEFAULT;
                     return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
@@ -517,6 +522,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
     private WSDLPortImpl port;
+    private final WebServiceFeature[] features;
 
     private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }

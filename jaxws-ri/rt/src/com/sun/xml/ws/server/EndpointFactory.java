@@ -308,7 +308,7 @@ public class EndpointFactory {
         // wsdlPort will be null, means we will generate WSDL. Hence no need to apply
         // bindings or need to look in the WSDL
         if(wsdlPort == null){
-            rap = new RuntimeModeler(implType,serviceName, binding.getBindingId());
+            rap = new RuntimeModeler(implType,serviceName, binding.getBindingId(), binding.getFeatures().toArray());
         } else {
             /*
             This not needed anymore as wsdlFeatures are merged later anyway
@@ -316,7 +316,7 @@ public class EndpointFactory {
             applyEffectiveMtomSetting(wsdlPort.getBinding(), binding);
             */
             //now we got the Binding so lets build the model
-            rap = new RuntimeModeler(implType, serviceName, (WSDLPortImpl)wsdlPort);
+            rap = new RuntimeModeler(implType, serviceName, (WSDLPortImpl)wsdlPort, binding.getFeatures().toArray());
         }
         rap.setPortName(portName);
         return rap.buildRuntimeModel();

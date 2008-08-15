@@ -66,14 +66,7 @@ import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Action;
-import javax.xml.ws.AsyncHandler;
-import javax.xml.ws.FaultAction;
-import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.Response;
-import javax.xml.ws.ResponseWrapper;
-import javax.xml.ws.WebFault;
+import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -95,6 +88,7 @@ import java.util.logging.Logger;
  * @author WS Developement Team
  */
 public class RuntimeModeler {
+    private final WebServiceFeature[] features;
     private BindingID bindingId;
     private Class portClass;
     private AbstractSEIModelImpl model;
@@ -134,10 +128,15 @@ public class RuntimeModeler {
      * @param bindingId The binding identifier to be used when modeling the <code>portClass</code>.
      */
     public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId) {
+        this(portClass, serviceName, bindingId, new WebServiceFeature[0]);
+    }
+
+    public RuntimeModeler(@NotNull Class portClass, @NotNull QName serviceName, @NotNull BindingID bindingId, @NotNull WebServiceFeature... features) {
         this.portClass = portClass;
         this.serviceName = serviceName;
         this.binding = null;
         this.bindingId = bindingId;
+        this.features = features;
     }
 
     /**
@@ -148,17 +147,15 @@ public class RuntimeModeler {
      * @param wsdlPort {@link com.sun.xml.ws.api.model.wsdl.WSDLPort}
      */
     public RuntimeModeler(@NotNull Class sei, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort){
+        this(sei, serviceName, wsdlPort, new WebServiceFeature[0]);
+    }
+
+    public RuntimeModeler(@NotNull Class sei, @NotNull QName serviceName, @NotNull WSDLPortImpl wsdlPort, @NotNull WebServiceFeature... features){
         this.portClass = sei;
         this.serviceName = serviceName;
         this.bindingId = wsdlPort.getBinding().getBindingId();
-
-        //If the bindingId is null lets default to SOAP 1.1 binding id. As it looks like this bindingId
-        //is used latter on from model to generate binding on the WSDL. So defaulting to SOAP 1.1 maybe
-        // safe to do.
-        if(this.bindingId == null)
-            this.bindingId = BindingID.SOAP11_HTTP;
-
         this.binding = wsdlPort;
+        this.features = features;
     }
 
     /**
@@ -213,7 +210,7 @@ public class RuntimeModeler {
      * @return the runtime model for the <code>portClass</code>.
      */
     public AbstractSEIModelImpl buildRuntimeModel() {
-        model = new SOAPSEIModel();
+        model = new SOAPSEIModel(features);
         Class clazz = portClass;
         WebService webService = getPrivClassAnnotation(portClass, WebService.class);
         if (webService == null) {
