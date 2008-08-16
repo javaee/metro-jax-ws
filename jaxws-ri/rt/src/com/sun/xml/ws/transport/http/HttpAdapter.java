@@ -285,7 +285,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @return
      */
     private String fixQuotesAroundSoapAction(String soapAction) {
-        if(soapAction != null && (!soapAction.startsWith("\"") || soapAction.endsWith("\"")) ) {
+        if(soapAction != null && (!soapAction.startsWith("\"") || !soapAction.endsWith("\"")) ) {
             LOGGER.warning("Received WS-I BP non-conformant Unquoted SoapAction HTTP header: "+ soapAction);
             String fixedSoapAction = soapAction;
             if(!soapAction.startsWith("\""))
