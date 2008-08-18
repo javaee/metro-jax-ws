@@ -211,7 +211,8 @@ public class WsgenTool implements AnnotationProcessorFactory {
             if (!options.protocolSet) {
                 bindingID = BindingID.parse(endpointClass);
             }
-            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID);
+            WebServiceFeatureList wsfeatures = new WebServiceFeatureList(endpointClass);
+            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID, wsfeatures.toArray());
             rtModeler.setClassLoader(classLoader);
             if (options.portName != null)
                 rtModeler.setPortName(options.portName);
@@ -219,7 +220,7 @@ public class WsgenTool implements AnnotationProcessorFactory {
 
             final File[] wsdlFileName = new File[1]; // used to capture the generated WSDL file.
             final Map<String,File> schemaFiles = new HashMap<String,File>();
-            WebServiceFeatureList wsfeatures = new WebServiceFeatureList(endpointClass);
+
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
                     new WSDLResolver() {
                         private File toFile(String suggestedFilename) {
