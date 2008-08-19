@@ -35,7 +35,25 @@ public class StreamMessageTest extends TestCase {
             message.writeTo(writer);
             writer.flush();
             baos.writeTo(System.out);
-}
+   }
+
+   public void testMessageWriteTo1() throws Exception {
+
+    String soapMsg = "<S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                    "<S:Header>" +
+                    "</S:Header>" +
+                    "<S:Body>" +
+                    "<GetCountryCodesResponse xmlns='http://www.strikeiron.com'> <GetCountryCodesResult/></GetCountryCodesResponse>" +
+                    "</S:Body>" +
+                    "</S:Envelope>";
+            Message message = createSOAP11StreamMessage(soapMsg);
+            ByteArrayBuffer baos = new ByteArrayBuffer();
+            XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
+            message.writeTo(writer);
+            writer.flush();
+            baos.writeTo(System.out);
+   }
+
     private StreamMessage createSOAP11StreamMessage(String msg) throws IOException {
         Codec codec = Codecs.createSOAPEnvelopeXmlCodec(SOAPVersion.SOAP_11);
         Packet packet = new Packet();
