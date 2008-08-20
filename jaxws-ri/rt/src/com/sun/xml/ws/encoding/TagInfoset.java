@@ -182,12 +182,15 @@ public final class TagInfoset {
      * Writes the start element event.
      */
     public void writeStart(XMLStreamWriter w) throws XMLStreamException {
-        // write start tag. Arrrgggghhh!!
+        // write start tag.
         if(prefix==null) {
             if(nsUri==null)
                 w.writeStartElement(localName);
-            else
-                w.writeStartElement(nsUri,localName);
+            else {
+                //fix Null prefix. otherwise throws XMLStreamException,
+                // if the namespace URI has not been bound to a prefix
+                w.writeStartElement("",localName,nsUri);
+            }
         } else {
             w.writeStartElement(prefix,localName,nsUri);
         }
