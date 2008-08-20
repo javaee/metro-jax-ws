@@ -20,6 +20,10 @@ import java.io.ByteArrayInputStream;
  * @author Rama Pulavarthi
  */
 public class StreamMessageTest extends TestCase {
+    /**
+     * jax-ws issue 610
+     * @throws Exception
+     */
     public void testMessageWriteTo() throws Exception {
 
     String soapMsg = "<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
