@@ -58,12 +58,28 @@ public class XMLStreamReaderToXMLStreamWriterTest extends TestCase {
         }
         builder.append("</a>");
         String str = builder.toString();
+        readAndCompare(str);
+    }
 
+    public void testCharacters1() throws Exception {
+         StringBuilder builder = new StringBuilder();
+         builder.append("<a>");
+         for(int i=0; i < 4096*3; i++) {
+             builder.append('b');
+         }
+         builder.append("</a>");
+         String str = builder.toString();
+         readAndCompare(str);
+     }
+
+    private void readAndCompare(String str) throws Exception {
         XMLStreamReader rdr = XMLStreamReaderFactory.create(null, new StringReader(str), true);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLStreamWriter writer = XMLStreamWriterFactory.create(baos);
         new XMLStreamReaderToXMLStreamWriter().bridge(rdr, writer);
+        writer.close();
         assertEquals(str, baos.toString());
     }
+
 
 }
