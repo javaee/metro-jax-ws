@@ -101,10 +101,11 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         HttpClientTransport con;
         try {
             // get transport headers from message
-            Map<String, List<String>> reqHeaders = (Map<String, List<String>>) request.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
-            //assign empty map if its null
-            if(reqHeaders == null){
-                reqHeaders = new HashMap<String, List<String>>();
+            Map<String, List<String>> reqHeaders = new HashMap<String, List<String>>();
+            Map<String, List<String>> userHeaders = (Map<String, List<String>>) request.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
+            if (userHeaders != null) {
+                // userHeaders may not be modifiable like SingletonMap, just copy them
+                reqHeaders.putAll(userHeaders);
             }
 
             con = new HttpClientTransport(request,reqHeaders);
