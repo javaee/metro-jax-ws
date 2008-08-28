@@ -42,6 +42,7 @@ import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
+import com.sun.xml.ws.transport.Headers;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.ws.client.ClientTransportException;
 import com.sun.xml.ws.resources.ClientMessages;
@@ -101,7 +102,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         HttpClientTransport con;
         try {
             // get transport headers from message
-            Map<String, List<String>> reqHeaders = new HashMap<String, List<String>>();
+            Map<String, List<String>> reqHeaders = new Headers();
             Map<String, List<String>> userHeaders = (Map<String, List<String>>) request.invocationProperties.get(MessageContext.HTTP_REQUEST_HEADERS);
             if (userHeaders != null) {
                 // userHeaders may not be modifiable like SingletonMap, just copy them
