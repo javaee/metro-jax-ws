@@ -230,15 +230,24 @@
     Oneway oneway = new Oneway();
     oneway.setArg0("fred");
     echoPort.oneway(oneway, 33.3F);
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
     assertTrue(echoPort.verifyOneway());
     OnewayHeader onewayHeader = new OnewayHeader();
     echoPort.onewayHeader(onewayHeader, 33.3F);
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
     assertTrue(echoPort.verifyOnewayHeader());
   ]]></client>
 
   <client name="nosei_testOneway2" sideEffectFree="true">
   <![CDATA[
     echoPort.oneway2("fred");
+    // Wait some time so that service is invoked. Otherwise
+    // verifyOneway() method may be executed before oneway() method on endpoint
+    Thread.sleep(1000);
     assertTrue(echoPort.verifyOneway2());
   ]]></client>
 

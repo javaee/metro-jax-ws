@@ -182,7 +182,7 @@ public class EchoImpl {
     }
 
  
-    boolean onewayCalled = false;	
+    volatile boolean onewayCalled = false;	
     @WebMethod
     @Oneway
     public void oneway(String str, @WebParam(name="num2", header=true)float num) {
@@ -195,7 +195,7 @@ public class EchoImpl {
     }
 
 
-    boolean onewayHeaderCalled = false;
+    volatile boolean onewayHeaderCalled = false;
     @WebMethod
     public void onewayHeader(@WebParam(name="oneway1Header", header=true)float num) {
         onewayHeaderCalled = true;
@@ -206,7 +206,7 @@ public class EchoImpl {
 	return onewayHeaderCalled;
     }
 
-    boolean oneway2Called = false;
+    volatile boolean oneway2Called = false;
     @WebMethod
     @Oneway
     public void oneway2(String str) {
