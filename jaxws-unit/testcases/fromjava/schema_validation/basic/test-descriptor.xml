@@ -180,6 +180,7 @@
   <description>testOneway</description>
   <![CDATA[
         echoPort.oneway("bogus");
+        Thread.sleep(1000);    // hoping verifyOneway() is invoked after oneway()
         assertTrue(echoPort.verifyOneway(3));
   ]]></client>
 
