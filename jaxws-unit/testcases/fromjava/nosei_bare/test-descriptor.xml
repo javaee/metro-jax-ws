@@ -172,6 +172,7 @@
   <description>testOneway</description>
   <![CDATA[
         echoPort.oneway("bogus");
+        Thread.sleep(1000);    // hoping verifyOneway() is not called before oneway()
         assertTrue(echoPort.verifyOneway(3));
   ]]></client>
 
