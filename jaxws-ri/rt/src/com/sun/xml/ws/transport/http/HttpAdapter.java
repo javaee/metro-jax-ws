@@ -431,7 +431,12 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         public void close() {
             if(!con.isClosed()) {
                 // close the response channel now
-                con.setStatus(WSHTTPConnection.ONEWAY);
+                if (con.getStatus() == 0) {
+                    // if the appliation didn't set the status code,
+                    // set the default one.
+                    con.setStatus(WSHTTPConnection.ONEWAY);
+                }
+                
                 try {
                     con.getOutput().close(); // no payload
                 } catch (IOException e) {
