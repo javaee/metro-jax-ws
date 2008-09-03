@@ -2,7 +2,7 @@
     <description>XOP test from TCK </description>
 
     <client href ="test.bsh" />
-    <client href ="test1.bsh" since="2.1.5" />
+    <client href ="test1.bsh" since="2.1.6" />
 
     <service basedir="./server">
         <wsdl href="hello.wsdl"/>
