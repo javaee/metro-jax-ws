@@ -33,9 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/*
- * $Id: W3CAddressingWSDLGeneratorExtension.java,v 1.7 2007-05-30 01:21:36 ofung Exp $
- */
 
 package com.sun.xml.ws.wsdl.writer;
 

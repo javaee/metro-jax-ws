@@ -18,12 +18,6 @@
  * [name of copyright owner]
  */
 /*
- * $Id: StringDataContentHandler.java,v 1.2 2007-09-25 23:56:10 jitu Exp $
- * $Revision: 1.2 $
- * $Date: 2007-09-25 23:56:10 $
- */
-
-/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.

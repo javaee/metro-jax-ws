@@ -33,9 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/*
- * $Id: W3CAddressingJavaGeneratorExtension.java,v 1.5 2007-05-30 01:21:38 ofung Exp $
- */
 
 package com.sun.tools.ws.processor.generator;
 
