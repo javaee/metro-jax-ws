@@ -53,6 +53,7 @@ import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -472,8 +473,7 @@ public class MtomCodec extends MimeCodec {
 
         public int next() throws XMLStreamException {
             int event = reader.next();
-            if ((event == XMLStreamConstants.START_ELEMENT) && reader.getLocalName().equals(XOP_LOCALNAME) && reader.getNamespaceURI().equals(XOP_NAMESPACEURI))
-            {
+            if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(XOP_LOCALNAME) && reader.getNamespaceURI().equals(XOP_NAMESPACEURI)) {
                 //its xop reference, take the URI reference
                 String href = reader.getAttributeValue(null, "href");
                 try {
@@ -487,11 +487,7 @@ public class MtomCodec extends MimeCodec {
                     throw new WebServiceException(e);
                 }
                 //move to the </xop:Include>
-                try {
-                    reader.next();
-                } catch (XMLStreamException e) {
-                    throw new WebServiceException(e);
-                }
+                XMLStreamReaderUtil.nextElementContent(reader);
                 return XMLStreamConstants.CHARACTERS;
             }
             if(xopReferencePresent){
@@ -531,12 +527,6 @@ public class MtomCodec extends MimeCodec {
 
         public int getTextCharacters(int sourceStart, char[] target, int targetStart, int length) throws XMLStreamException {
             if(xopReferencePresent){
-                int event = reader.getEventType();
-                if(event != XMLStreamConstants.CHARACTERS){
-                    //its invalid state - delegate it to underlying reader to throw the corrrect exception so that user
-                    // always sees the uniform exception from the XMLStreamReader
-                    throw new XMLStreamException("Invalid state: Expected CHARACTERS found :");
-                }
                 if(target == null){
                     throw new NullPointerException("target char array can't be null") ;
                 }
