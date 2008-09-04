@@ -324,6 +324,34 @@
     </zip>
   </target>
 
+    <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS RI" depends="dist">
+        <zip file="${dist20.home}/lib/jaxws-rt.src.zip">
+            <fileset dir="${basedir}/rt/src"/>
+            <!-- the following is needed as some properties file are generated dynamically -->
+            <fileset dir="${basedir}/rt/build/classes" includes="**/*.properties"/>
+            <fileset dir="${basedir}/rt-fi/src"/>
+            <fileset dir="${basedir}/servlet/src"/>
+            <fileset dir="${basedir}/transports/local/src"/>
+            <fileset dir="${basedir}/rt/build/gen-src/"/>
+        </zip>
+        <zip file="${dist20.home}/lib/jaxws-tools.src.zip">
+            <fileset dir="${basedir}/tools/wscompile/src"/>
+            <fileset dir="${basedir}/tools/wscompile/build/gen-src/"/>
+            <!-- the following is needed as some properties file are generated dynamically -->
+            <fileset dir="${basedir}/tools/wscompile/build/classes" includes="**/*.properties"/>
+            <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
+        </zip>
+        <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
+            <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
+            <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
+            <fileset dir="${basedir}/lib" includes="FastInfoset.src.zip,jaxb-impl.src.zip, jaxb-xjc.src.zip,
+                saaj-impl.src.zip, stax-ex-src.zip, streambuffer.src.zip,
+                jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip, mimepull-src.zip, jaxws-asm-src.zip"/>
+        </zip>
+        <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
+        <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
+    </target>
+
     <target name="libs.src.zip">
         <zip file="${build.home}/jaxws-libs.src.zip">
             <fileset dir="${basedir}/lib" includes="*.zip"/>
