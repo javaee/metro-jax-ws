@@ -237,6 +237,7 @@
         <delete dir="${basedir}/j2se-integration"/>
         <ant dir="${basedir}/rt" target="clean"/>
         <ant dir="${basedir}/rt-fi" target="clean"/>
+        <ant dir="${basedir}/tools/resourcegen" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
         <ant dir="${basedir}/servlet" target="clean"/>        
     </target>
