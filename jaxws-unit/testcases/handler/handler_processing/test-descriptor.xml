@@ -5,8 +5,8 @@
 
     <client name="testAddMimeHeadersInSOAPMessage" since="2.1.5"><![CDATA[
     import handler.handler_processing.common.*;
-    try {
     HandlerTracker tracker = HandlerTracker.getClientInstance();
+    try {
     tracker.clearAll();
     tracker.setHandlerAction(TestConstants.CLIENT_PREFIX + "4",TestConstants.HA_ADD_MIMEHEADER_OUTBOUND);
     reportServicePort.clearHandlerTracker();
