@@ -728,25 +728,15 @@ public final class Packet extends DistributedPropertySet {
      * Overwrites the {@link Message} of the response packet ({@code this}) by the given {@link Message}.
      * Unlike {@link #setMessage(Message)}, fill in the addressing headers correctly, and this process
      * requires the access to the request packet.
-     * TODO fix this
+     * 
      * <p>
      * This method is useful when the caller needs to swap a response message completely to a new one.
      *
      * @see #createServerResponse(Message, AddressingVersion, SOAPVersion, String) 
      */
     public void setResponseMessage(@NotNull Packet request, @Nullable Message responseMessage, @NotNull AddressingVersion addressingVersion, @NotNull SOAPVersion soapVersion, @NotNull String action) {
-        //TODO fix this
-        setMessage(responseMessage);
-
-        // populate WS-A headers only if WS-A is enabled
-        if (addressingVersion == null)
-            return;
-        //populate WS-A headers only if the request has addressing headers
-        String inputAction = request.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
-        if (inputAction == null)
-            return;
-
-        request.populateAddressingHeaders(this, addressingVersion, soapVersion, action);
+       Packet temp = request.createServerResponse(responseMessage, addressingVersion, soapVersion, action);
+       setMessage(temp.getMessage());
     }
 
     private void populateAddressingHeaders(Packet responsePacket, AddressingVersion av, SOAPVersion sv, String action) {
