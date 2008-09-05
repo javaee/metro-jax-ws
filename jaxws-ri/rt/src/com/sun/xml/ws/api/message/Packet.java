@@ -742,7 +742,7 @@ public final class Packet extends DistributedPropertySet {
         if (addressingVersion == null)
             return;
         //populate WS-A headers only if the request has addressing headers
-        String inputAction = this.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
+        String inputAction = request.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
         if (inputAction == null)
             return;
 
