@@ -52,6 +52,7 @@ import com.sun.tools.ws.resources.WsdlMessages;
 import com.sun.tools.xjc.util.NullStream;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.istack.tools.ParallelWorldClassLoader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXParseException;
 
@@ -234,6 +235,19 @@ public class WsimportTool {
         this.options.entityResolver = resolver;
     }
 
+    /*
+     * To take care of JDK6-JDK6u3, where 2.1 API classes are not there
+     */
+    private static boolean useBootClasspath(Class clazz) {
+        try {
+            ParallelWorldClassLoader.toJarUrl(clazz.getResource('/'+clazz.getName().replace('.','/')+".class"));
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
+
+
     protected boolean compileGeneratedClasses(ErrorReceiver receiver, WsimportListener listener){
         List<String> sourceFiles = new ArrayList<String>();
 
@@ -246,14 +260,18 @@ public class WsimportTool {
         if (sourceFiles.size() > 0) {
             String classDir = options.destDir.getAbsolutePath();
             String classpathString = createClasspathString();
-            String[] args = new String[5 + (options.debug ? 1 : 0)
+            boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
+            String[] args = new String[4 + (bootCP ? 1 : 0) + (options.debug ? 1 : 0)
                     + sourceFiles.size()];
             args[0] = "-d";
             args[1] = classDir;
             args[2] = "-classpath";
             args[3] = classpathString;
-            args[4] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
-            int baseIndex = 5;
+            int baseIndex = 4;
+            if (bootCP) {
+                args[baseIndex++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+            }
+
             if (options.debug) {
                 args[baseIndex++] = "-g";
             }
