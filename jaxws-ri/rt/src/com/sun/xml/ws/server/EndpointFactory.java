@@ -61,6 +61,7 @@ import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.model.SOAPSEIModel;
 import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.server.provider.ProviderInvokerTube;
 import com.sun.xml.ws.server.sei.SEIInvokerTube;
@@ -509,7 +510,14 @@ public class EndpointFactory {
             WSDLModelImpl wsdlDoc = RuntimeWSDLParser.parse(
                 new Parser(primaryWsdl), new EntityResolverImpl(metadata),
                     false, container, ServiceFinder.find(WSDLParserExtension.class).toArray());
-            WSDLPortImpl wsdlPort = wsdlDoc.getService(serviceName).get(portName);
+            if(wsdlDoc.getServices().size() == 0) {
+                throw new ServerRtException(ServerMessages.localizableRUNTIME_PARSER_WSDL_NOSERVICE_IN_WSDLMODEL(wsdlUrl));
+            }
+            WSDLServiceImpl wsdlService = wsdlDoc.getService(serviceName);
+            if (wsdlService == null) {
+                throw new ServerRtException(ServerMessages.localizableRUNTIME_PARSER_WSDL_INCORRECTSERVICE(serviceName,wsdlUrl));
+            }
+            WSDLPortImpl wsdlPort = wsdlService.get(portName);
             if (wsdlPort == null) {
                 throw new ServerRtException(ServerMessages.localizableRUNTIME_PARSER_WSDL_INCORRECTSERVICEPORT(serviceName, portName, wsdlUrl));
             }
