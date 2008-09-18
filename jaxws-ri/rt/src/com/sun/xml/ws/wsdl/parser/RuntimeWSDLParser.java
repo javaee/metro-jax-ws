@@ -774,11 +774,10 @@ public class RuntimeWSDLParser {
                         break;
                     }
                 }
-                if (desc == null)
-                    continue;
-
-                WSDLPartImpl wsdlPart = new WSDLPartImpl(reader, part, partIndex, new WSDLPartDescriptorImpl(reader,ParserUtil.getQName(reader, desc), kind));
-                msg.add(wsdlPart);
+                if (desc != null) {
+                    WSDLPartImpl wsdlPart = new WSDLPartImpl(reader, part, partIndex, new WSDLPartDescriptorImpl(reader,ParserUtil.getQName(reader, desc), kind));
+                    msg.add(wsdlPart);
+                }
                 if (reader.getEventType() != XMLStreamConstants.END_ELEMENT)
                     goToEnd(reader);
             } else {
