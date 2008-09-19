@@ -50,9 +50,9 @@ public class W3CEPRTest extends TestCase {
     private QName PORT_QNAME = new QName(NAMESPACEURI, PORT_NAME);
     private static String xmlInterfaceName = "<wsaw:InterfaceName xmlns:wsaw=\"http://www.w3.org/2006/05/addressing/wsdl\" xmlns:myns=\"http://example.com\">myns:AddNumbersPortType</wsaw:InterfaceName>";
 
-    private static String xmlRefParam1 = "<myns1:MyParam1 IsReferenceParameter='true' xmlns:myns1=\"http://example.com/myparam1\">Hello</myns1:MyParam1>";
+    private static String xmlRefParam1 = "<myns1:MyParam1 wsa:IsReferenceParameter='true' xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:myns1=\"http://example.com/myparam1\">Hello</myns1:MyParam1>";
 
-    private static String xmlRefParam2 = "<myns2:MyParam2 IsReferenceParameter='true' xmlns:myns2=\"http://example.com/myparam2\">There</myns2:MyParam2>";
+    private static String xmlRefParam2 = "<myns2:MyParam2 xmlns:myns2=\"http://example.com/myparam2\">There</myns2:MyParam2>";
     private URL wsdlurl = null;
     private String url = null;
 
