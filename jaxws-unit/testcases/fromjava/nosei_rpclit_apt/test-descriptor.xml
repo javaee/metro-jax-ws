@@ -157,6 +157,7 @@
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt13"><![CDATA[
         echoPort.oneway();
+        Thread.sleep(1000);
         assertTrue(echoPort.verifyOneway());
   ]]></client>
   <client name="fromjava.nosei_rpclit_apt14"><![CDATA[

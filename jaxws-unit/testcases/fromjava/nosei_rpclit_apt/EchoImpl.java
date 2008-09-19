@@ -131,7 +131,7 @@ public class EchoImpl {
         return new Bar[] { bar, bar2 };
     }
 
-    boolean onewayCalled = false;
+    volatile boolean onewayCalled = false;
     @WebMethod
     @Oneway
     public void oneway() {
