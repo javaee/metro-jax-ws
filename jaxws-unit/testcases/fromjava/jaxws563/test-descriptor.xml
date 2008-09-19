@@ -1,4 +1,4 @@
-<descriptor since="2.1.5">
+<descriptor since="2.1.6">
   <description>This is a JAXWS 563 test</description>
   <service basedir="./server">
   </service>
