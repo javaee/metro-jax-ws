@@ -241,6 +241,9 @@ final class HttpClientTransport {
             https = true;
 
             boolean verification = false;
+            // TODO The above property needs to be removed in future version as the semantics of this property are not preoperly defined.
+            // One should use JAXWSProperties.HOSTNAME_VERIFIER to control the behavior
+
             // does the client want client hostname verification by the service
             String verificationProperty =
                 (String) context.invocationProperties.get(HOSTNAME_VERIFICATION_PROPERTY);
@@ -248,7 +251,8 @@ final class HttpClientTransport {
                 if (verificationProperty.equalsIgnoreCase("true"))
                     verification = true;
             }
-            if (!verification) {
+            // By default, JAX-WS should not disable any host verification.
+            if (verification) {
                 ((HttpsURLConnection) httpConnection).setHostnameVerifier(new HttpClientVerifier());
             }
 
