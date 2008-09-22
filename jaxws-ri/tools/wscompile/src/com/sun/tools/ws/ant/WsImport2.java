@@ -97,7 +97,15 @@ public class WsImport2 extends MatchingTask {
     /** do not compile generated classes **/
     private boolean xnocompile = false;
 
-    
+    /**
+     * Provides a way to directly pass wsimport commandline options through nested arg
+     * instead of a separate attribute for each option.
+     * @return
+     */
+    public Commandline.Argument createArg() {
+        return cmd.createArgument();
+    }
+
     /**
      * -XadditionalHeaders - maps headers not bound to req/resp messages to Java parameters
      */
@@ -601,8 +609,7 @@ public class WsImport2 extends MatchingTask {
         if((wsdlLocation != null) && (wsdlLocation.length() != 0)){
             cmd.createArgument().setValue("-wsdllocation");
             cmd.createArgument().setValue(wsdlLocation);
-        }
-         
+        }         
     }
 
 
