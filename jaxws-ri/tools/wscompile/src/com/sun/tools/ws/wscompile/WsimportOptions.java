@@ -94,6 +94,12 @@ public class WsimportOptions extends Options {
     public boolean additionalHeaders;
 
     /**
+     * Setting ignoreSSLHostVerification to true disbales the SSL Hostname verification while fetching the wsdls.
+     * -XignoreSSLHostVerification
+     */
+    public boolean disableSSLHostnameVerification;
+
+    /**
      * JAXB's {@link SchemaCompiler} to be used for handling the schema portion.
      * This object is also configured through options.
      */
@@ -187,7 +193,10 @@ public class WsimportOptions extends Options {
         } else if (args[i].equals("-XadditionalHeaders")) {
             additionalHeaders = true;
             return 1;
-        }else if (args[i].equals("-p")) {
+        } else if (args[i].equals("-XdisableSSLHostnameVerification")) {
+            disableSSLHostnameVerification = true;
+            return 1;
+        } else if (args[i].equals("-p")) {
             defaultPackage = requireArgument("-p", args, ++i);
             return 2;
         } else if (args[i].equals("-catalog")) {

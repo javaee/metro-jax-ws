@@ -63,6 +63,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -215,6 +218,12 @@ public class DOMForest {
                 boolean redirect;
                 URL url = JAXWSUtils.getFileOrURL(inputSource.getSystemId());
                 URLConnection conn = url.openConnection();
+                if (conn instanceof HttpsURLConnection) {
+                    if (options.disableSSLHostnameVerification) {
+                        ((HttpsURLConnection) conn).setHostnameVerifier(new HttpClientVerifier());
+                    }
+                }
+
                 do {
                     redirect = false;
                     try {
@@ -286,6 +295,14 @@ public class DOMForest {
 
     public Set<String> getExternalReferences() {
         return externalReferences;
+    }
+
+    // overide default SSL HttpClientVerifier to always return true
+    // effectively overiding Hostname client verification when using SSL
+    private static class HttpClientVerifier implements HostnameVerifier {
+        public boolean verify(String s, SSLSession sslSession) {
+            return true;
+        }
     }
 
     public interface Handler extends ContentHandler {
