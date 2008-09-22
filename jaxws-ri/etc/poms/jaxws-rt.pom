@@ -71,7 +71,7 @@
     <dependency>
       <groupId>com.sun.xml.stream.buffer</groupId>
       <artifactId>streambuffer</artifactId>
-      <version>0.7</version>
+      <version>0.8</version>
     </dependency>
 <!-- If you want to use woodstox StAX parser, uncomment this and comment
      sjsxp
