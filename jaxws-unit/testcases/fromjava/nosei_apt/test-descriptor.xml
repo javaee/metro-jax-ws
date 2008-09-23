@@ -169,6 +169,7 @@
   <description>testOneway</description>
   <![CDATA[
         echoPort.oneway();
+        Thread.sleep(1000);   // so that oneway method is invoked on endpoint
         assertTrue(echoPort.verifyOneway());
   ]]></client>
 
