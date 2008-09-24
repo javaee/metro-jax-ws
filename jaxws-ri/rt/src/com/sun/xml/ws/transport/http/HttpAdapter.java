@@ -449,20 +449,23 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     final class HttpToolkit extends Adapter.Toolkit {
         public void handle(WSHTTPConnection con) throws IOException {
+            boolean invoke = false;
             try {
                 Packet packet = new Packet();
                 try {
                     packet = decodePacket(con, codec);
+                    invoke = true;
                 } catch(ExceptionHasMessage e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     packet.setMessage(e.getFaultMessage());
                 } catch(UnsupportedMediaException e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
-                } catch(ServerRtException e) {
+                } catch(Exception e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    con.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 }
-                if (packet.getMessage() != null && !packet.getMessage().isFault()) {
+                if (invoke) {
                     try {
                         packet = head.process(packet, con.getWebServiceContextDelegate(),
                                 packet.transportBackChannel);
