@@ -221,7 +221,7 @@ valid with Java EE 5 as well.
 <table border="1" width="100%" id="table1">
 	<tr>
 		<td>Runtime Jars</td>
-		<td>FastInfoset.jar, activation.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxws-api.jar, jaxws-rt.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, mimepull.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, sjsxp.jar, stax-ex.jar, streambuffer.jar</td>
+		<td>FastInfoset.jar, activation.jar, http.jar, jaxb-api.jar, jaxb-impl.jar, jaxws-api.jar, jaxws-rt.jar, jsr173_api.jar, jsr181-api.jar, jsr250-api.jar, mimepull.jar, resolver.jar, saaj-api.jar, saaj-impl.jar, woodstox.jar, stax-ex.jar, streambuffer.jar</td>
 	</tr>
 	<tr>
 		<td>Tooltime Jars</td>
@@ -243,18 +243,15 @@ valid with Java EE 5 as well.
 <section title="Bugs Fixed in this release">
 <ul>
 	<li>
-	<a href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&issue_type=ENHANCEMENT&issue_type=DEFECT&component=jax-ws&issue_status=RESOLVED&issue_status=CLOSED&resolution=FIXED&target_milestone=2.1.4&email1=&emailtype1=exact&emailassigned_to1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=fulltext&long_desc=&long_desc_type=fulltext&issue_file_loc=&issue_file_loc_type=fulltext&status_whiteboard=&status_whiteboard_type=fulltext&keywords=&keywords_type=anytokens&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&namedcmd=as91only&newqueryname=&order=Reuse+same+sort+as+last+time">Bug fixes</a></li>
+	<a href="https://jax-ws.dev.java.net/issues/buglist.cgi?Submit+query=Submit+query&issue_type=ENHANCEMENT&issue_type=DEFECT&component=jax-ws&issue_status=RESOLVED&issue_status=CLOSED&resolution=FIXED&target_milestone=2.1.5&email1=&emailtype1=exact&emailassigned_to1=1&email2=&emailtype2=exact&emailreporter2=1&issueidtype=include&issue_id=&changedin=&votes=&chfieldfrom=&chfieldto=Now&chfieldvalue=&short_desc=&short_desc_type=fulltext&long_desc=&long_desc_type=fulltext&issue_file_loc=&issue_file_loc_type=fulltext&status_whiteboard=&status_whiteboard_type=fulltext&keywords=&keywords_type=anytokens&field0-0-0=noop&type0-0-0=noop&value0-0-0=&cmdtype=doit&namedcmd=as91only&newqueryname=&order=Reuse+same+sort+as+last+time">Bug fixes</a></li>
 </ul>
 </section>
-<section title="Changes from JAX-WS 2.1.3 RI">
-<p><a href="changelog.html">Changes from JAX-WS 2.1.3 RI</a></p>
+<section title="Changes from JAX-WS 2.1.4 RI">
+<p><a href="changelog.html">Changes from JAX-WS 2.1.4 RI</a></p>
 </section>
 
 <section title="Known Bugs/Issues">
 <ul>
-	<li>
-        If you use woodstox StAX parser, the MTOM attachment data is inlined. See <a href="https://jax-ws.dev.java.net/issues/show_bug.cgi?id=558">558</a>. Will be fixed in the next release.
-        </li>
 	<li>
         Although JAX-WS customizations are portable across implementations, the names of
         WSDL and schema files generated are not specified. Therefore each vendor may and
