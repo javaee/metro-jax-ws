@@ -58,7 +58,6 @@ import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.ReadableByteChannel;
 import org.jvnet.fastinfoset.FastInfosetSource;
-import org.jvnet.fastinfoset.stax.FastInfosetStreamReader;
 
 /**
  * A codec for encoding/decoding XML infosets to/from fast
@@ -207,8 +206,10 @@ public class FastInfosetCodec implements Codec {
              */
             SerializerVocabulary vocabulary = new SerializerVocabulary();
             serializer.setVocabulary(vocabulary);
-            serializer.setAttributeValueSizeLimit(indexedStringSizeLimit);
-            serializer.setCharacterContentChunkSizeLimit(indexedStringSizeLimit);
+            serializer.setMinAttributeValueSize(0);
+            serializer.setMaxAttributeValueSize(indexedStringSizeLimit);
+            serializer.setMinCharacterContentChunkSize(0);
+            serializer.setMaxCharacterContentChunkSize(indexedStringSizeLimit);
             serializer.setAttributeValueMapMemoryLimit(stringsMemoryLimit);
             serializer.setCharacterContentChunkMapMemoryLimit(stringsMemoryLimit);
         }
