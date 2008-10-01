@@ -94,8 +94,8 @@ public class WsimportOptions extends Options {
     public boolean additionalHeaders;
 
     /**
-     * Setting ignoreSSLHostVerification to true disbales the SSL Hostname verification while fetching the wsdls.
-     * -XignoreSSLHostVerification
+     * Setting disableSSLHostVerification to true disables the SSL Hostname verification while fetching the wsdls.
+     * -XdisableSSLHostVerification
      */
     public boolean disableSSLHostnameVerification;
 
