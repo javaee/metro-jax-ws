@@ -302,7 +302,7 @@
          <a href="http://ant.apache.org/manual/using.html#arg">the relevant
              section</a> in the Ant manual. This nested element can be used to
          specify various options not natively supported in the
-         <tt>xjc</tt>
+         <tt>wsimport</tt>
          Ant task. For example, currently
          there is no native support for
          the following
@@ -316,15 +316,17 @@
 
          </li>
      </ul>
-     This nested element can be used to pass the -X coomand-line options directly like "-XadditionalHeaders".
-
-     <p>To use any of these features from the
+     This nested element can be used to pass the -X coomand-line options directly like "-XadditionalHeaders". To use any of these features from the
          <tt>wsimport&gt;</tt> Ant task, you
          must specify the appropriate nested &lt;
-
          <tt>arg</tt>&gt; elements.
 
+     <h4>xjcarg</h4>
+     <p>The usage is similar to &arg> nested element, except that these arguments are directly passed to the XJC tool (JAXB Schema Compiler), which will be used for compiling the schema referenced in the wsdl.
+        For details about the syntax, see
+         <a href="http://ant.apache.org/manual/using.html#arg">the relevant section</a> in the Ant manual.
      </p>
+
      <h4>xmlcatalog</h4>
 	  <p>The <a href="http://ant.apache.org/manual/CoreTypes/xmlcatalog.html">xmlcatalog</a> element is used to resolve entities when parsing schema documents.</p>
      </div>
