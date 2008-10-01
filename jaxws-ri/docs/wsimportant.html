@@ -22,21 +22,22 @@
         <li>JAXB generated value types (mapped java classes from schema types)
         </li>
     </ul>
-    <p>
+
+</section>
+
+<section title="Using Wsimport Task">
+ <p>
     To use this wsimport task, a <code>&lt;taskdef&gt;</code> element needs to be
-    added to the project as given below:</p> <pre class="ant-example">&lt;taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport"&gt;<br>&nbsp;&lt;classpath
+    added to the project as given below:</p>
+ <pre class="ant-example">&lt;taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport"&gt;<br>&nbsp;&lt;classpath
 &nbsp;&nbsp;&nbsp; path="jaxws.classpath"/&gt;<br>&lt;/taskdef&gt;<br></pre>
 
 <p>where <code>jaxws.classpath</code> is a reference to a <a
         href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
     defined elsewhere in the build environment, and contains the list of
     classes required by the JAX-WS tools.</p>
-</section>
 
-<section title="Wsimport Task Attributes">
-<p>The attributes
-    and elements supported by the Ant task are listed below: <br>
-</p>
+
 <pre>&lt;wsimport
     wsdl="..."
     destdir="directory for generated class files"
@@ -58,7 +59,22 @@
     &lt;xmlcatalog refid=&quot;another catalog file&quot;/&gt;
 &lt;/wsimport&gt;
 </pre>
-<table border="1" cellpadding="2" cellspacing="2">
+ <h3>Environment Variables</h3>
+
+      <ul>
+
+        <li>
+          <a href="http://wiki.apache.org/ant/TheElementsOfAntStyle">ANT_OPTS</a> - command-line arguments that should be passed to the JVM. For
+              example, you can define system properties or set the maximum Java heap
+              size here.
+        </li>
+
+      </ul>
+
+ <h3>Parameter Attributes</h3>
+     <p>
+       <code>wsimport</code> supports the following parameter attributes.</p>
+ <table border="1" cellpadding="2" cellspacing="2">
     <tbody>
         <tr valign="top">
             <td bgcolor="#ffffbd">
@@ -261,10 +277,57 @@
 
     </tbody>
 </table>
-<p>The <code></code><code>binding</code> attributes is like
-    a <a href="http://ant.apache.org/manual/using.html#path">path-like
-    structure</a> and can also be set via nested <code></code> <code>&lt;binding&gt;</code>
-    elements, respectively.</p>
+ <h3>Nested Elements</h3>
+
+ <div class="nested-elements">
+     <p>
+         <code>wsimport</code> supports the following nested element parameters.
+     <h4>binding</h4>
+
+     <p>To specify more than one external binding file at the same time, use a
+         nested
+         <code>&lt;binding&gt;</code> element, which has the same syntax as
+
+         <a href="http://jakarta.apache.org/ant/manual/CoreTypes/fileset.html">
+
+             <code>
+                 &lt;fileset&gt;</code>
+         </a>.
+     </p>
+     <h4>arg</h4>
+
+     <p>Additional command line arguments passed to the <code>wsimport</code>. For details
+         about the syntax, see
+
+         <a href="http://ant.apache.org/manual/using.html#arg">the relevant
+             section</a> in the Ant manual. This nested element can be used to
+         specify various options not natively supported in the
+         <tt>xjc</tt>
+         Ant task. For example, currently
+         there is no native support for
+         the following
+         <tt>wsimport</tt> command-line options:
+
+     </p>
+     <ul>
+
+         <li>
+             <tt>-XdisableSSLHostnameVerification</tt>
+
+         </li>
+     </ul>
+     This nested element can be used to pass the -X coomand-line options directly like "-XadditionalHeaders".
+
+     <p>To use any of these features from the
+         <tt>wsimport&gt;</tt> Ant task, you
+         must specify the appropriate nested &lt;
+
+         <tt>arg</tt>&gt; elements.
+
+     </p>
+     <h4>xmlcatalog</h4>
+	  <p>The <a href="http://ant.apache.org/manual/CoreTypes/xmlcatalog.html">xmlcatalog</a> element is used to resolve entities when parsing schema documents.</p>
+     </div>
 </section>
 
 <section title="Running on JDK 6">
