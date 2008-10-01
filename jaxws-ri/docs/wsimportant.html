@@ -22,6 +22,15 @@
         <li>JAXB generated value types (mapped java classes from schema types)
         </li>
     </ul>
+    <p>
+    To use this wsimport task, a <code>&lt;taskdef&gt;</code> element needs to be
+    added to the project as given below:</p> <pre class="ant-example">&lt;taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport"&gt;<br>&nbsp;&lt;classpath
+&nbsp;&nbsp;&nbsp; path="jaxws.classpath"/&gt;<br>&lt;/taskdef&gt;<br></pre>
+
+<p>where <code>jaxws.classpath</code> is a reference to a <a
+        href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
+    defined elsewhere in the build environment, and contains the list of
+    classes required by the JAX-WS tools.</p>
 </section>
 
 <section title="Wsimport Task Attributes">
@@ -255,15 +264,7 @@
 <p>The <code></code><code>binding</code> attributes is like
     a <a href="http://ant.apache.org/manual/using.html#path">path-like
     structure</a> and can also be set via nested <code></code> <code>&lt;binding&gt;</code>
-    elements, respectively. Before this
-    task can be used, a <code>&lt;taskdef&gt;</code> element needs to be
-    added to the project as given below:</p><pre>&lt;taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport"&gt;<br>&nbsp;&lt;classpath
-&nbsp;&nbsp;&nbsp; path="jaxws.classpath"/&gt;<br>&lt;/taskdef&gt;<br></pre>
-
-<p>where <code>jaxws.classpath</code> is a reference to a <a
-        href="http://ant.apache.org/manual/using.html#path">path-like structure</a>,
-    defined elsewhere in the build environment, and contains the list of
-    classes required by the JAX-WS tools.</p>
+    elements, respectively.</p>
 </section>
 
 <section title="Running on JDK 6">
