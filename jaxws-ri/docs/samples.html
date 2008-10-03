@@ -364,14 +364,14 @@ documentation/samples.
 
     <li>Make sure that the Application Server is configured for port 8080
         (which is the default HTTP port for Glassfish installation) as samples
-        hardcoded with this port info. Otherwise, you need to change samples to use the correct port.
+        hardcoded with this port info. Otherwise, you need to change samples to use the correct port by replacing '8080" with your port in all the files included in the sample.
     </li>
 
     <li>
         'cd ${'$'+HOME}' then invoke 'ant
         install'. This will add ${PRODUCT_NAME} jars in the classpath-prefix
         in domain.xml. This is required so
-        that Glassfish picks-up ${PRODUCT_NAME} jar.
+        that Glassfish picks-up ${PRODUCT_NAME} jars.
     </li>
 
 </ol>
@@ -385,7 +385,7 @@ documentation/samples.
     </li>
     <li>
         Make sure that tomcat is configured for port 8080 as samples hardcoded with this
-            port info. Otherwise, you need to change samples to use the correct port.
+            port info. Otherwise, you need to change samples to use the correct port by replacing '8080" with your port in all the files included in the sample.
     </li>
     <li>
         Run 'ant -f tomcat.xml install'
