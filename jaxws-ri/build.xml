@@ -392,8 +392,20 @@
     </maven-repository-importer>
   </target>
 
-  <target name="push-to-maven" depends="push-to-maven-prepare"
+   <target name="replace-binaries-with-re-build">
+      <!--
+        this target replaces the dist jars with RE BUILD.
+        Here JAXWS_RE_BUILD points to the url of jax-ws binaries where jax-ws jars can be found.
+      -->
+      <get src="${JAXWS_RE_BUILD}/jaxws-rt.jar" dest="${dist20.home}/lib/jaxws-rt.jar"/>
+      <get src="${JAXWS_RE_BUILD}/jaxws-tools.jar" dest="${dist20.home}/lib/jaxws-tools.jar"/>
+      <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
+  </target>
+
+  <target name="push-to-maven" depends="src.zip, replace-binaries-with-re-build"
     description="publish artifacts into the maven repository">
+    <property name="jar.suffix" value="${release.impl.version}" />
+    <antcall target="push-to-maven-prepare"/>
     <echo>importing to CVS...</echo>
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
