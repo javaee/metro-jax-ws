@@ -352,6 +352,7 @@
 
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
+    <property name="jaxb_version" value="${jaxb.impl.version}"/>
     <taskdef resource="maven-repository-importer.properties">
       <classpath>
         <pathelement path="tools/lib/maven-repository-importer.jar" />
@@ -387,7 +388,7 @@
         srczip="lib/jsr181-api.src.zip" />
       <filterset>
         <filter token="API_VERSION" value="${release.spec.version}"/>
-        <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
+        <filter token="JAXB_VERSION" value="${jaxb_version}"/>
       </filterset>
     </maven-repository-importer>
   </target>
@@ -401,7 +402,9 @@
   <target name="push-snapshot-to-maven" depends="dist"
       description="publish snapshot jars into the maven repository">
       <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
-      <antcall target="push-to-maven" />
+      <antcall target="push-to-maven">
+            <param name="jaxb.impl.version"  value="${jaxb.impl.version}-SNAPSHOT"/>
+      </antcall>
   </target>
 
 
