@@ -48,11 +48,7 @@
         </fileset>
     </path>
 
-  <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
-      <classpath refid="jaxws.classpath"/>
-  </taskdef>
-  
-    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+  <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
         <classpath refid="jaxws.classpath"/>
     </taskdef>
 
@@ -67,23 +63,14 @@
     </target>
 
     <target name="build-server-java" depends="setup">
-        <apt
+        <javac
                 fork="true"
-                debug="true"
-                verbose="${verbose}"
+                srcdir="${basedir}/src"
                 destdir="${build.classes.home}"
-                sourcedestdir="${build.classes.home}"
-                sourcepath="${basedir}/src">
-            <classpath>
-                <path refid="jaxws.classpath"/>
-                <pathelement location="${basedir}/src"/>
-            </classpath>
-            <option key="r" value="${build.home}"/>
-            <source dir="${basedir}/src">
-                <include name="**/server/*.java"/>
-                <include name="**/common/*.java"/>
-            </source>
-        </apt>
+                includes="**/server/**,**/common/**">
+            <classpath refid="jaxws.classpath"/>
+        </javac>
+
         <!-- copy handlers descriptor file -->
         <copy todir="${build.classes.home}">
             <fileset dir="${basedir}/src">
