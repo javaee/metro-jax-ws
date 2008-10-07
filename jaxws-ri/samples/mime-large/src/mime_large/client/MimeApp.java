@@ -36,13 +36,16 @@
 
 package mime_large.client;
 
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Holder;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Source;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import java.io.*;
+import java.util.*;
 
+import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.StreamingDataHandler;
 
 /**
@@ -52,6 +55,8 @@ public class MimeApp {
 
     public static void main (String[] args) throws Exception {
         Hello port = new HelloService().getHelloPort ();
+        Map<String, Object> ctxt = ((BindingProvider)port).getRequestContext();
+        ctxt.put(JAXWSProperties.HTTP_CLIENT_STREAMING_CHUNK_SIZE, 8192); 
         //test swaref
         testSwaref (port);
     }
