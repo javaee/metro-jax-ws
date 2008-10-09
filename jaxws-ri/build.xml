@@ -267,10 +267,11 @@
 
     <copy    todir="${dist20.home}/samples">
       <fileset dir="samples" includes="**/common_resources/**"/>
+      <fileset dir="samples" includes="**/certs/**" excludes="**/CVS/**"/>  
     </copy>
 
      <copy todir="${dist20.home}/samples">
-        <fileset dir="samples" includes="**" excludes="**/common_resources/**,**/CVS/**" />
+        <fileset dir="samples" includes="**" excludes="**/certs/**, **/common_resources/**,**/CVS/**" />
         <filterset begintoken="@@" endtoken="@@">
           <filter token="SPEC_VERSION" 
                   value="${release.spec.version}" />
