@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<descriptor since="2.1.5">
+<!--
+skipping this test since we need to pass file.encoding
+system property
+-->
+<descriptor since="2.1.5" skip="true">
     <wsimport-client>-p customization.内容.client</wsimport-client>
     <description>Testcase for issue 397</description>
     <service basedir="./server">
