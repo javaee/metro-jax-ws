@@ -42,8 +42,7 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
 2) Change domain.name property in etc/deploy-targets.xml to your hostname.
 3) By default https port is configured as 8181 for this sample, which is default https port in Glassfish.
     If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
-4) This sample uses the default keystore in Glassfish and Glassfish is preconfigured with HTTPS. Thre is no extra SSL
-   configuration with Glassfish.
+4) This sample uses the default keystore in Glassfish and Glassfish is preconfigured with HTTPS. Thre is no extra SSL configuration with Glassfish.
 
 5) do 'ant clean server", this runs wsimport to compile AddNumbers.wsdl and generate
       server side artifacts and does the deployment
