@@ -58,9 +58,9 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
 ------------------------------------------------------------------------------
 1) set JAXWS_HOME to the JAX-WS installation directory.
    Set JAVA_HOME property.
-   Set CATALINA_HOME property to yuor Tomcat installation.
-2) By default https port is configured as 8181 for this sample. If you are using tomcat, the default https port is 8443.
-   If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
+   Set CATALINA_HOME property to your Tomcat installation.
+2) Change domain.name property in etc/deploy-targets.xml to your hostname.
+   By default https port is configured as 8181 for this sample. If you are using tomcat, the default https port is 8443. If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
 
 4) Tomcat does not have any keystore or trustStore by default. You also need to enable SSL.
 
