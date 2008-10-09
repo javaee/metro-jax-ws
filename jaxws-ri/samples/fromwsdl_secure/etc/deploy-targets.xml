@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
+
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -37,23 +37,116 @@
 <project>
     <property environment="env"/>
     <property name="as.home" value="${env.AS_HOME}"/>
-   <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
-   <property name="lib.sample.home" value="${basedir}/../lib"/>
-   <property name="build.home" value="${basedir}/build"/>
-   <property name="build.war.home" value="${build.home}/war"/>
-   <property name="build.classes.home" value="${build.home}/classes"/>
-    
-    <property name="domain" value="domain1"/>
+    <property name="lib.home" value="${env.JAXWS_HOME}/lib"/>
+    <property name="lib.sample.home" value="${basedir}/../lib"/>
+    <property name="build.home" value="${basedir}/build"/>
+    <property name="build.war.home" value="${build.home}/war"/>
+    <property name="build.classes.home" value="${build.home}/classes"/>
+    <property name="as.domain" value="domain1"/>
+    <property name="verbose" value="false"/>
+    <property name="log" value="false"/>
 
+    <property name="https.port" value="8181"/>
+    <property name="domain.name" value="@@YOUR_HOST_NAME@@"/>
+
+    <target name="setup-certs-props" depends="setup-certs-props-gfv2, setup-certs-props-tomcat">
+        <mkdir dir="${basedir}/etc/certs"/>
+    </target>
+
+    <target name="setup-certs-props-gfv2" unless="tomcat">
+        <property name="key.alias" value="s1as"/>
+        <property name="key.pass" value="changeit"/>
+        <property name="keystore.file" value="${as.home}/domains/${as.domain}/config/keystore.jks"/>
+        <property name="keystore.pass" value="changeit"/>
+        <property name="client.truststore.file" value="${basedir}/etc/certs/client.truststore"/>
+        <!--property name="client.truststore.file" value="${as.home}/domains/${as.domain}/config/cacerts.jks"/-->
+        <property name="client.truststore.pass" value="changeit"/>
+        <property name="cert.alias" value="s1as"/>
+        <property name="cert.file" value="${basedir}/etc/certs/server.certficate"/>        
+    </target>
+
+    <target name="setup-certs-props-tomcat" if="tomcat">
+        <property name="key.alias" value="server"/>
+        <property name="key.pass" value="changeit"/>
+        <property name="keystore.file" value="${env.CATALINA_HOME}/certs/tomcat.keystore"/>
+        <property name="keystore.pass" value="changeit"/>
+        <property name="client.truststore.file" value="${basedir}/etc/certs/client.truststore"/>
+        <property name="client.truststore.pass" value="changeit"/>
+        <property name="cert.alias" value="self"/>
+        <property name="cert.file" value="${basedir}/etc/certs/server.certficate"/>
+
+    </target>
     <target name="deploy" depends="deploy-tomcat, deploy-appserver"/>
 
     <target name="deploy-appserver" unless="tomcat">
         <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
-              todir="${as.home}/domains/${domain}/autodeploy"/>
+              todir="${as.home}/domains/${as.domain}/autodeploy"/>
     </target>
 
     <target name="deploy-tomcat" if="tomcat">
         <copy file="${build.war.home}/jaxws-${ant.project.name}.war"
               todir="${env.CATALINA_HOME}/webapps"/>
+    </target>
+
+
+    <target name="setup-certs-tomcat" depends="setup-certs-props, create-cert-jks-rsa">
+        <copy todir="${env.CATALINA_HOME}">
+            <fileset dir="${basedir}/etc" includes="certs/**"/>
+        </copy>
+    </target>
+
+    <target name="create-cert-jks-rsa" if="tomcat">
+        <echo message="Create certificate in ${keystore.file} ..."/>
+        <exec executable="${env.JAVA_HOME}/bin/keytool">
+            <arg value="-genkey"/>
+            <arg value="-keyalg"/>
+            <arg value="RSA"/>
+            <arg value="-keystore"/>
+            <arg value="${basedir}/etc/certs/tomcat.keystore"/>
+            <arg value="-storepass"/>
+            <arg value="${keystore.pass}"/>
+            <arg value="-alias"/>
+            <arg value="${key.alias}"/>
+            <arg value="-dname"/>
+            <arg value="cn=${domain.name}"/>
+            <arg value="-keypass"/>
+            <arg value="${key.pass}"/>
+        </exec>
+    </target>
+
+    <target name="setup-client-truststore" depends="export-cert-rfc-jks,import-cert-jks">
+    </target>
+
+    <target name="export-cert-rfc-jks" depends="setup-certs-props">
+        <echo message="Export certificate from ${keystore.file} in rfc format ..."/>
+        <exec executable="${env.JAVA_HOME}/bin/keytool">
+            <arg value="-export"/>
+            <arg value="-noprompt"/>
+            <arg value="-rfc"/>
+            <arg value="-keystore"/>
+            <arg value="${keystore.file}"/>
+            <arg value="-storepass"/>
+            <arg value="${keystore.pass}"/>
+            <arg value="-alias"/>
+            <arg value="${key.alias}"/>
+            <arg value="-file"/>
+            <arg value="${cert.file}"/>
+        </exec>
+    </target>
+    <target name="import-cert-jks" depends="setup-certs-props">
+        <echo message="Installing certificate in ${keystore.file} ..."/>
+        <exec executable="${env.JAVA_HOME}/bin/keytool">
+            <arg value="-import"/>
+            <arg value="-noprompt"/>
+            <arg value="-trustcacerts"/>
+            <arg value="-keystore"/>
+            <arg value="${client.truststore.file}"/>
+            <arg value="-storepass"/>
+            <arg value="${client.truststore.pass}"/>
+            <arg value="-alias"/>
+            <arg value="${cert.alias}"/>
+            <arg value="-file"/>
+            <arg value="${cert.file}"/>
+        </exec>
     </target>
 </project>
