@@ -84,10 +84,10 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
 
 6) Restart Tomcat container.
 
-7) do 'ant clean server", this runs wsimport to compile AddNumbers.wsdl and generate
+7) do 'ant -Dtomcat=true clean server", this runs wsimport to compile AddNumbers.wsdl and generate
       server side artifacts and does the deployment
 
-8) run "ant client run"
+8) run "ant -Dtomcat=true client run"
     This creates a client truststore in etc/certs directory  by importing the server certificate and runs wsimport
     on the published wsdl by the deployed endpoint, by passing "javax.net.ssl.trustStore" and "javax.net.ssl.trustStorePassword" jvmargs.
     It then compiles the generated artifacts and the client application then executes it.
