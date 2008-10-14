@@ -6,7 +6,8 @@ On the client-side, notice how the "javax.net.ssl.trustStore" and "javax.net.ssl
 during wsimport and client execution.
 
 For sample of TLS with Mutual auth with Glassfish, see  http://java.sun.com/developer/EJTechTips/2006/tt0527.html#1
-Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Authorized_Users.html#ahidi) for more samples with SSL.
+Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Authorized_Users.html#ahidi) for more samples
+with SSL.
 
 * It has two operations with different MEPs
     * in/out - addNumbers()
@@ -33,24 +34,29 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
       and exception class - AddNumbersFault_Exception
 
 
-* To run with Glassfish V2 installed in developer proofile (default).
+* To run with Glassfish V2 installed in developer profile (default).
 -----------------------------------------------------------------------------
 
 1) set JAXWS_HOME to the JAX-WS installation directory.
    Set JAVA_HOME property.
    Set AS_HOME property
+
 2) Change domain.name property in etc/deploy-targets.xml to your hostname.
+
 3) By default https port is configured as 8181 for this sample, which is default https port in Glassfish.
-    If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
-4) This sample uses the default keystore in Glassfish and Glassfish is preconfigured with HTTPS. Thre is no extra SSL configuration with Glassfish.
+   If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
+
+4) This sample uses the default keystore in Glassfish and Glassfish is preconfigured with HTTPS. Thre is no extra SSL
+   configuration with Glassfish.
 
 5) do 'ant clean server", this runs wsimport to compile AddNumbers.wsdl and generate
       server side artifacts and does the deployment
 
 6) run "ant client run"
     This creates a client truststore in etc/certs directory  by importing the server certificate and runs wsimport
-    on the published wsdl by the deployed endpoint, by passing "javax.net.ssl.trustStore" and "javax.net.ssl.trustStorePassword" jvmargs.
-    It then compiles the generated artifacts and the client application then executes it.
+    on the published wsdl by the deployed endpoint, by passing "javax.net.ssl.trustStore" and
+    "javax.net.ssl.trustStorePassword" jvmargs. It then compiles the generated artifacts and the client application
+    then executes it.
 
 
 * To run with Tomcat 5.5 and later.
@@ -58,8 +64,10 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
 1) set JAXWS_HOME to the JAX-WS installation directory.
    Set JAVA_HOME property.
    Set CATALINA_HOME property to your Tomcat installation.
+   
 2) Change domain.name property in etc/deploy-targets.xml to your hostname.
-   By default https port is configured as 8181 for this sample. If you are using tomcat, the default https port is 8443. If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
+   By default https port is configured as 8181 for this sample. If you are using tomcat, the default https port is 8443.
+   If it is different from 8181, change the property "https.port" in etc/deploy-targets.xml
 
 4) Tomcat does not have any keystore or trustStore by default. You also need to enable SSL.
 
@@ -88,5 +96,6 @@ Refer to the guide (https://jax-ws.dev.java.net/guide/Configuring_SSL_and_Author
 
 8) run "ant -Dtomcat=true client run"
     This creates a client truststore in etc/certs directory  by importing the server certificate and runs wsimport
-    on the published wsdl by the deployed endpoint, by passing "javax.net.ssl.trustStore" and "javax.net.ssl.trustStorePassword" jvmargs.
-    It then compiles the generated artifacts and the client application then executes it.
+    on the published wsdl by the deployed endpoint, by passing "javax.net.ssl.trustStore" and
+    "javax.net.ssl.trustStorePassword" jvmargs. It then compiles the generated artifacts and the client application
+    then executes it.
