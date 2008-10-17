@@ -38,11 +38,10 @@ package com.sun.xml.ws.model;
 import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.ws.util.StringUtils;
-import org.objectweb.asm.*;
-import static org.objectweb.asm.Opcodes.*;
-import org.objectweb.asm.Type;
+import static com.sun.xml.ws.org.objectweb.asm.Opcodes.*;
+import com.sun.xml.ws.org.objectweb.asm.Type;
+import com.sun.xml.ws.org.objectweb.asm.*;
 
-import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.xml.bind.annotation.XmlAttachmentRef;
@@ -50,16 +49,16 @@ import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebServiceException;
+import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
- * Byte code generator for request and response wrapper beans
+ * Byte code generator for request,response wrapper and exception beans
  *
  * @author Jitendra Kotamraju
  */
@@ -72,12 +71,11 @@ public class WrapperBeanGenerator {
     public static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
     public static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
 
-
-    private static byte[] dump(String className,
+    // Creates class's bytes
+    private static byte[] createBeanImage(String className,
                                String rootName, String rootNS,
                                String typeName, String typeNS, String[] propOrder,
                                List<Field> fields) throws Exception {
-
 
         ClassWriter cw = new ClassWriter(0);
         //org.objectweb.asm.util.TraceClassVisitor cw = new org.objectweb.asm.util.TraceClassVisitor(actual, new java.io.PrintWriter(System.out));
@@ -102,16 +100,17 @@ public class WrapperBeanGenerator {
         type.visitEnd();
 
         for(Field field : fields) {
-            LOGGER.info("Descriptor="+field.asmType.getDescriptor()+" sig="+field.getSignature());
             FieldVisitor fv = cw.visitField(ACC_PUBLIC, field.fieldName, field.asmType.getDescriptor(), field.getSignature(), null);
 
-            AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
-            elem.visit("name", field.elementName);
-            elem.visit("namespace", field.elementNS);
-            if (field.reflectType instanceof GenericArrayType) {
-                elem.visit("nillable", true);
+            if (!field.noXmlElem) { // Exception fields do not have any @XmlElement
+                AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+                elem.visit("name", field.elementName);
+                elem.visit("namespace", field.elementNS);
+                if (field.reflectType instanceof GenericArrayType) {
+                    elem.visit("nillable", true);
+                }
+                elem.visitEnd();
             }
-            elem.visitEnd();
 
             for(Annotation ann : field.jaxbAnnotations) {
                 if (ann instanceof XmlMimeType) {
@@ -147,6 +146,96 @@ public class WrapperBeanGenerator {
 
         cw.visitEnd();
 
+        if (LOGGER.isLoggable(Level.INFO)) {
+            // Class's @XmlRootElement
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n");
+            sb.append("@XmlRootElement(name=");
+            sb.append(rootName);
+            sb.append(", namespace=");
+            sb.append(rootNS);
+            sb.append(")");
+
+            // Class's @XmlType
+            sb.append("\n");
+            sb.append("@XmlType(name=");
+            sb.append(typeName);
+            sb.append(", namespace=");
+            sb.append(typeNS);
+            if (propOrder.length > 1) {
+                sb.append(", propOrder={");
+                for(int i=0; i < propOrder.length; i++) {
+                    if (i != 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(propOrder[i]);
+                }
+                sb.append("}");
+            }
+            sb.append(")");
+
+            // class declaration
+            sb.append("\n");
+            sb.append("public class ");
+            sb.append(className);
+            sb.append(" {");
+
+            // fields declaration
+            for(Field field : fields) {
+                sb.append("\n");
+
+                // Field's @XmlRootElement decl
+                if (!field.noXmlElem) {
+                    sb.append("\n    ");
+                    sb.append("@XmlRootElement(name=");
+                    sb.append(field.elementName);
+                    sb.append(", namespace=");
+                    sb.append(field.elementNS);
+                    if (field.reflectType instanceof GenericArrayType) {
+                        sb.append("nillable=true");
+                    }
+                    sb.append(")");
+                }
+
+                // Field's other JAXB annotations
+                for(Annotation ann : field.jaxbAnnotations) {
+                    sb.append("\n    ");
+
+                    if (ann instanceof XmlMimeType) {
+                        sb.append("@XmlMimeType(value=");
+                        sb.append(((XmlMimeType)ann).value());
+                        sb.append(")");
+                    } else if (ann instanceof XmlJavaTypeAdapter) {
+                        sb.append("@XmlJavaTypeAdapter(value=");
+                        sb.append(((XmlMimeType)ann).value());
+                        sb.append(", type=");
+                        sb.append(((XmlJavaTypeAdapter)ann).type());
+                        sb.append(")");
+                    } else if (ann instanceof XmlAttachmentRef) {
+                        sb.append("@XmlAttachmentRef");
+                    } else if (ann instanceof XmlList) {
+                        sb.append("@XmlList");
+                    } else {
+                        throw new WebServiceException("Unknown JAXB annotation " + ann);
+                    }
+                }
+
+                // Field declaration
+                sb.append("\n    ");
+                sb.append("public ");
+                if (field.getSignature() == null) {
+                    sb.append(field.asmType.getDescriptor());
+                } else {
+                    sb.append(field.getSignature());
+                }
+                sb.append(" ");
+                sb.append(field.fieldName);
+            }
+
+            sb.append("\n\n}");
+            LOGGER.fine(sb.toString());
+        }
+
         return cw.toByteArray();
     }
 
@@ -154,26 +243,9 @@ public class WrapperBeanGenerator {
         return name.replace('.', '/');
     }
 
-    public static Class createRequestWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
+    static Class createRequestWrapperBean(String className, Method method, QName reqElemName, ClassLoader cl) {
 
-        String reqName = webMethod != null && webMethod.operationName().length() > 0 ?
-                        webMethod.operationName() : method.getName();
-        String reqNamespace = typeNamespace;
-
-        String requestClassName = className;
-        RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
-        if (reqWrapper != null) {
-            if (reqWrapper.className().length() > 0) {
-                requestClassName = reqWrapper.className();
-            }
-            if (reqWrapper.localName().length() > 0) {
-                reqName = reqWrapper.localName();
-            }
-            if (reqWrapper.targetNamespace().length() > 0) {
-                reqNamespace = reqWrapper.targetNamespace();
-            }
-        }
-        LOGGER.fine("Request Wrapper Class : "+requestClassName);
+        LOGGER.fine("Request Wrapper Class : "+className);
 
         List<Field> fields = collectRequestWrapperMembers(method);
 
@@ -181,34 +253,19 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(requestClassName, reqName, reqNamespace,
-                reqName, reqNamespace, propOrder,
+            image = createBeanImage(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
+                reqElemName.getLocalPart(), reqElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
 
-        return Injector.inject(cl, requestClassName, image);
+        return Injector.inject(cl, className, image);
     }
 
-    public static Class createResponseWrapperBean(String className, Method method, WebMethod webMethod, String typeNamespace, ClassLoader cl) {
-        String resName = webMethod != null && webMethod.operationName().length() > 0 ?
-                        webMethod.operationName()+"Response" : method.getName()+"Response";
-        String resNamespace = typeNamespace;
-        String responseClassName = className;
-        ResponseWrapper responseWrapper = method.getAnnotation(ResponseWrapper.class);
-        if (responseWrapper != null) {
-            if (responseWrapper.className().length() > 0) {
-                responseClassName = responseWrapper.className();
-            }
-            if (responseWrapper.localName().length() > 0) {
-                resName = responseWrapper.localName();
-            }
-            if (responseWrapper.targetNamespace().length() > 0) {
-                resNamespace = responseWrapper.targetNamespace();
-            }
-        }
-        LOGGER.fine("Response Wrapper Class : "+responseClassName);
+    static Class createResponseWrapperBean(String className, Method method, QName resElemName, ClassLoader cl) {
+
+        LOGGER.fine("Response Wrapper Class : "+className);
 
         List<Field> fields = collectResponseWrapperMembers(method);
 
@@ -216,14 +273,14 @@ public class WrapperBeanGenerator {
 
         byte[] image;
         try {
-            image = dump(responseClassName, resName, resNamespace,
-                resName, resNamespace, propOrder,
+            image = createBeanImage(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
+                resElemName.getLocalPart(), resElemName.getNamespaceURI(), propOrder,
                 fields);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
 
-        return Injector.inject(cl, responseClassName, image);
+        return Injector.inject(cl, className, image);
     }
 
     private static String[] getPropOrder(List<Field> fields) {
@@ -407,14 +464,14 @@ public class WrapperBeanGenerator {
         return null;
     }
 
-    public static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
+    static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
 
-        List<Field> fields = collectExceptionProperties(exception, elemNS);
+        List<Field> fields = collectExceptionProperties(exception);
         String[] propOrder = getPropOrder(fields);
         
         byte[] image;
         try {
-            image = dump(className, elemName, elemNS,
+            image = createBeanImage(className, elemName, elemNS,
                 exception.getSimpleName(), typeNS, propOrder,
                 fields);
         } catch(Exception e) {
@@ -424,7 +481,7 @@ public class WrapperBeanGenerator {
         return Injector.inject(cl, className, image);
     }
 
-    private static List<Field> collectExceptionProperties(Class exception, String elementNS) {
+    private static List<Field> collectExceptionProperties(Class exception) {
         List<Field> fields = new ArrayList<Field>();
 
         Method[] methods = exception.getMethods();
@@ -448,13 +505,11 @@ public class WrapperBeanGenerator {
             if (paramTypes.length == 0) {
                 if (name.startsWith("get")) {
                     String fieldName = StringUtils.decapitalize(name.substring(3));
-                    Field field = new Field(fieldName, returnType, asmType,
-                            fieldName, elementNS, Collections.EMPTY_LIST);
+                    Field field = new Field(fieldName, returnType, asmType, true, Collections.<Annotation>emptyList());
                     fields.add(field);
                 } else {
                     String fieldName = StringUtils.decapitalize(name.substring(2));
-                    Field field = new Field(fieldName, returnType, asmType,
-                            fieldName, elementNS, Collections.EMPTY_LIST);
+                    Field field = new Field(fieldName, returnType, asmType, true, Collections.<Annotation>emptyList());
                     fields.add(field);
                 }
             }
@@ -462,7 +517,6 @@ public class WrapperBeanGenerator {
         Collections.sort(fields);
         return fields;
     }
-
 
 
     private static List<Annotation> collectJAXBAnnotations(Annotation[] anns) {
@@ -497,11 +551,24 @@ public class WrapperBeanGenerator {
         private final String elementName;
         private final String elementNS;
         private final List<Annotation> jaxbAnnotations;
+        private final boolean noXmlElem;
 
-        Field(String paramName, java.lang.reflect.Type paramType, Type asmType, String elementName, String elementNS, List<Annotation> jaxbAnnotations) {
+        Field(String paramName, java.lang.reflect.Type paramType, Type asmType, String elementName,
+              String elementNS, List<Annotation> jaxbAnnotations) {
+            this(paramName, paramType, asmType, false, elementName, elementNS, jaxbAnnotations);
+        }
+
+        Field(String paramName, java.lang.reflect.Type paramType, Type asmType, boolean noXmlElem,
+              List<Annotation> jaxbAnnotations) {
+            this(paramName, paramType, asmType, noXmlElem, null,null, jaxbAnnotations);
+        }
+
+        Field(String paramName, java.lang.reflect.Type paramType, Type asmType, boolean noXmlElem,
+              String elementName, String elementNS, List<Annotation> jaxbAnnotations) {
             this.reflectType = paramType;
             this.asmType = asmType;
             this.fieldName = paramName;
+            this.noXmlElem = noXmlElem;
             this.elementName = elementName;
             this.elementNS = elementNS;
             this.jaxbAnnotations = jaxbAnnotations;
