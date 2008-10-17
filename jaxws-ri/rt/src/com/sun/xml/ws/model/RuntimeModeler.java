@@ -282,59 +282,6 @@ public class RuntimeModeler {
         }
     }
 
-<<<<<<< RuntimeModeler.java
-    private Class getRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
-        try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            return createRequestWrapperClass(className, method, webMethod, tns,
-                    classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
-        }
-    }
-
-    private Class createRequestWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
-        logger.info("Creating request wrapper Class "+className);
-        return WrapperBeanGenerator.createRequestWrapperBean(className, method, webMethod, tns, cl);
-    }
-
-    private Class getResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns) {
-        try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            return createResponseWrapperClass(className, method, webMethod, tns,  classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
-        }
-    }
-
-
-    private Class createResponseWrapperClass(String className, Method method, WebMethod webMethod, String tns, ClassLoader cl) {
-        logger.info("Creating response wrapper bean Class "+className);
-        return WrapperBeanGenerator.createResponseWrapperBean(className, method, webMethod, tns, cl);
-
-    }
-
-    private Class getExceptionBeanClass(String className, Class exception, String name, String namespace) {
-        try {
-            if (classLoader == null)
-                return Thread.currentThread().getContextClassLoader().loadClass(className);
-            else
-                return classLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            return createExceptionBeanClass(className, exception, name, namespace, classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
-        }
-    }
-
-    private Class createExceptionBeanClass(String className, Class exception, String name, String namespace, ClassLoader cl) {
-        logger.info("Creating exception bean Class "+className);
-        return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, cl);
-    }
-
-=======
     private Class getRequestWrapperClass(String className, Method method, QName reqElemName) {
         ClassLoader loader =  (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         try {
@@ -366,7 +313,6 @@ public class RuntimeModeler {
         }
     }
 
->>>>>>> 1.19
     protected void setUsesWebMethod(Class clazz, Boolean usesWebMethod) {
 //        System.out.println("class: "+clazz.getName()+" uses WebMethod: "+usesWebMethod);
         classUsesWebMethod.put(clazz, usesWebMethod);
@@ -719,11 +665,6 @@ public class RuntimeModeler {
             responseClassName = beanPackage + capitalize(method.getName()) + RESPONSE;
         }
 
-<<<<<<< RuntimeModeler.java
-        Class requestClass = getRequestWrapperClass(requestClassName, method, webMethod, targetNamespace);
-
-=======
->>>>>>> 1.19
         String reqName = operationName;
         String reqNamespace = targetNamespace;
         if (reqWrapper != null) {
@@ -740,10 +681,6 @@ public class RuntimeModeler {
         String resNamespace = targetNamespace;
         QName resElementName = null;
         if (!isOneway) {
-<<<<<<< RuntimeModeler.java
-            responseClass = getResponseWrapperClass(responseClassName, method, webMethod, targetNamespace);
-=======
->>>>>>> 1.19
             if (resWrapper != null) {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
