@@ -61,7 +61,7 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 
 /**
- * $author: JAXWS Development Team
+ * @author: JAXWS Development Team
  */
 public class DOMUtil {
 

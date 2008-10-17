@@ -87,6 +87,7 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
     private String targetNamespace;
     private QName serviceName;
     private QName portName;
+    private String portAddress;
 
     private enum EPR_ADDRESS_STATE {IN, OUT, DONE}
     private EPR_ADDRESS_STATE eprAddressState = EPR_ADDRESS_STATE.OUT;
@@ -140,10 +141,11 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
             name.equals(WSDLConstants.NS_SOAP12_BINDING_ADDRESS)) {
 
             if(attLocalName.equals("location")) {
+                portAddress = in.getAttributeValue(i);
                 String value = getAddressLocation();
                 if (value != null) {
-                    logger.fine("Fixing service:"+serviceName+ " port:"+portName
-                            + " address with "+value);
+                    logger.fine("Service:"+serviceName+ " port:"+portName
+                            + " current address "+portAddress+" Patching it with "+value);
                     writeAttribute(i, value);
                     return;
                 }
@@ -253,7 +255,7 @@ final class WSDLPatcher extends XMLStreamReaderToXMLStreamWriter {
      */
     private String getAddressLocation() {
         return (portAddressResolver == null || portName == null)
-                ? null : portAddressResolver.getAddressFor(serviceName, portName.getLocalPart());
+                ? null : portAddressResolver.getAddressFor(serviceName, portName.getLocalPart(), portAddress);
     }
 }
     

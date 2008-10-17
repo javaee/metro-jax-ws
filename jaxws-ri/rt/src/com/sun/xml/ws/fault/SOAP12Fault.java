@@ -38,6 +38,7 @@ package com.sun.xml.ws.fault;
 
 
 import com.sun.xml.ws.api.SOAPVersion;
+import com.sun.xml.ws.util.DOMUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -122,6 +123,23 @@ class SOAP12Fault extends SOAPFaultBuilder {
         this.detail = detail;
     }
 
+    SOAP12Fault(CodeType code, ReasonType reason, String node, String role, Element detailObject) {
+        this.code = code;
+        this.reason = reason;
+        this.node = node;
+        this.role = role;
+        if (detailObject != null) {
+            if(detailObject.getNamespaceURI().equals(ns) && detailObject.getLocalName().equals("Detail")){
+                detail = new DetailType();
+                for(Element detailEntry : DOMUtil.getChildElements(detailObject)){
+                    detail.getDetails().add(detailEntry);
+                }
+            }else{
+                detail = new DetailType(detailObject);
+            }
+        }
+    }
+
     SOAP12Fault(SOAPFault fault) {
         code = new CodeType(fault.getFaultCodeAsQName());
         try {
@@ -132,14 +150,19 @@ class SOAP12Fault extends SOAPFaultBuilder {
 
         reason = new ReasonType(fault.getFaultString());
         role = fault.getFaultRole();
-        detail = new DetailType(fault.getDetail());
+        node = fault.getFaultNode();
+        if (fault.getDetail() != null) {
+            detail = new DetailType();
+            Iterator iter = fault.getDetail().getDetailEntries();
+            while(iter.hasNext()){
+                Element fd = (Element)iter.next();
+                detail.getDetails().add(fd);
+            }
+        }
     }
 
     SOAP12Fault(QName code, String reason, Element detailObject) {
-        this.code = new CodeType(code);
-        this.reason = new ReasonType(reason);
-        if(detailObject != null)
-            detail = new DetailType(detailObject);
+        this(new CodeType(code), new ReasonType(reason), null, null, detailObject);
     }
 
     CodeType getCode() {

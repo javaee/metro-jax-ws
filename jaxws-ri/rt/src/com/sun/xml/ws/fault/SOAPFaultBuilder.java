@@ -48,6 +48,7 @@ import com.sun.xml.ws.encoding.soap.SOAP12Constants;
 import com.sun.xml.ws.encoding.soap.SOAPConstants;
 import com.sun.xml.ws.encoding.soap.SerializationException;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
+import com.sun.xml.ws.message.FaultMessage;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.util.DOMUtil;
@@ -60,6 +61,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFault;
+import javax.xml.soap.Detail;
+import javax.xml.soap.DetailEntry;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.WebServiceException;
@@ -87,6 +90,17 @@ public abstract class SOAPFaultBuilder {
     abstract DetailType getDetail();
 
     abstract void setDetail(DetailType detailType);
+
+    public @Nullable QName getFirstDetailEntryName() {
+        DetailType dt = getDetail();
+        if (dt != null) {
+            Node entry = dt.getDetail(0);
+            if (entry != null) {
+                return new QName(entry.getNamespaceURI(), entry.getLocalName());
+            }
+        }
+        return null;
+    }
 
     /**
      * gives the fault string that can be used to create an {@link Exception}
@@ -371,13 +385,16 @@ public abstract class SOAPFaultBuilder {
             }
         }
         Element detailNode = null;
+        QName firstEntry = null;
         if (detail == null && soapFaultException != null) {
             detailNode = soapFaultException.getFault().getDetail();
+            firstEntry = getFirstDetailEntryName((Detail)detailNode);
         } else if(ce != null){
             try {
                 DOMResult dr = new DOMResult();
                 ce.getBridge().marshal(detail,dr);
                 detailNode = (Element)dr.getNode().getFirstChild();
+                firstEntry = getFirstDetailEntryName(detailNode);
             } catch (JAXBException e1) {
                 //Should we throw Internal Server Error???
                 faultString = e.getMessage();
@@ -387,7 +404,23 @@ public abstract class SOAPFaultBuilder {
         SOAP11Fault soap11Fault = new SOAP11Fault(faultCode, faultString, faultActor, detailNode);
         soap11Fault.captureStackTrace(e);
 
-        return JAXBMessage.create(JAXB_CONTEXT, soap11Fault, soapVersion);
+        Message msg = JAXBMessage.create(JAXB_CONTEXT, soap11Fault, soapVersion);
+        return new FaultMessage(msg, firstEntry);
+    }
+
+    private static @Nullable QName getFirstDetailEntryName(@Nullable Detail detail) {
+        if (detail != null) {
+            Iterator<DetailEntry> it = detail.getDetailEntries();
+            if (it.hasNext()) {
+                DetailEntry entry = it.next();
+                return getFirstDetailEntryName(entry);
+            }
+        }
+        return null;
+    }
+
+    private static @NotNull QName getFirstDetailEntryName(@NotNull Element entry) {
+        return new QName(entry.getNamespaceURI(), entry.getLocalName());
     }
 
     private static Message createSOAP12Fault(SOAPVersion soapVersion, Throwable e, Object detail, CheckedExceptionImpl ce, QName faultCode) {
@@ -442,26 +475,28 @@ public abstract class SOAPFaultBuilder {
 
         ReasonType reason = new ReasonType(faultString);
         Element detailNode = null;
+        QName firstEntry = null;
         if (detail == null && soapFaultException != null) {
             detailNode = soapFaultException.getFault().getDetail();
+            firstEntry = getFirstDetailEntryName((Detail)detailNode);
         } else if(detail != null){
             try {
                 DOMResult dr = new DOMResult();
                 ce.getBridge().marshal(detail, dr);
                 detailNode = (Element)dr.getNode().getFirstChild();
+                firstEntry = getFirstDetailEntryName(detailNode);
             } catch (JAXBException e1) {
                 //Should we throw Internal Server Error???
                 faultString = e.getMessage();
                 faultCode = getDefaultFaultCode(soapVersion);
             }
         }
-        DetailType detailType = null;
-        if(detailNode != null)
-            detailType = new DetailType(detailNode);
-        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailType);
+
+        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailNode);
         soap12Fault.captureStackTrace(e);
 
-        return JAXBMessage.create(JAXB_CONTEXT, soap12Fault, soapVersion);
+        Message msg = JAXBMessage.create(JAXB_CONTEXT, soap12Fault, soapVersion);
+        return new FaultMessage(msg, firstEntry);
     }
 
     private static SubcodeType fillSubcodes(SubcodeType parent, QName value){

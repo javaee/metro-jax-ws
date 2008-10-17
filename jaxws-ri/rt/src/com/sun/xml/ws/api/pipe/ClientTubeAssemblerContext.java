@@ -39,6 +39,10 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.addressing.WsaClientTube;
+import com.sun.xml.ws.addressing.W3CWsaServerTube;
+import com.sun.xml.ws.addressing.W3CWsaClientTube;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaServerTube;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaClientTube;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
@@ -187,7 +191,11 @@ public class ClientTubeAssemblerContext {
      */
     public Tube createWsaTube(Tube next) {
         if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding) && wsdlModel!=null)
-            return new WsaClientTube(wsdlModel, binding, next);
+            if(AddressingVersion.fromBinding(binding) == AddressingVersion.MEMBER) {
+                return new MemberSubmissionWsaClientTube(wsdlModel, binding, next);    
+            } else {
+                return new W3CWsaClientTube(wsdlModel, binding, next);
+            }
         else
             return next;
     }
@@ -237,19 +245,11 @@ public class ClientTubeAssemblerContext {
     public Tube createTransportTube() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
-        // wsgen generates a WSDL with the address attribute that says "REPLACE_WITH_ACTUAL_URL".
-        // while it's technically correct to reject such address (since there's no transport registered
-        // with it), it's desirable to allow the user a benefit of doubt, and wait until the runtime
-        // to see if the user configures the endpoint address through request context.
+        // The application may configure the endpoint address through request context
+        // using {@link BindingProvider#ENDPOINT_ADDRESS_PROPERTY}. Let us
+        // defer the creation of actual transport until the service invocation,
         // DeferredTransportPipe is used for this purpose.
-        //
-        // Ideally, we shouldn't have @address at all for such cases, but due to the backward
-        // compatibility and the fact that this attribute is mandatory, we have no option but
-        // to check for REPLACE_WITH_ACTUAL_URL.
-        if(address.toString().equals("") || address.toString().equals("REPLACE_WITH_ACTUAL_URL"))
-            return new DeferredTransportPipe(cl,this);
-
-        return TransportTubeFactory.create(cl, this);
+        return new DeferredTransportPipe(cl,this);
     }
 
     /**

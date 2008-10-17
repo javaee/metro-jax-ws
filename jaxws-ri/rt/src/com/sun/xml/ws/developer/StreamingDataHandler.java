@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.File;
+import java.net.URL;
 
 /**
  * Implementation of {@link org.jvnet.staxex.StreamingDataHandler} to access MIME
@@ -62,77 +63,18 @@ import java.io.File;
  *
  * @author Jitendra Kotamraju
  */
-public class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
-    private final StreamingDataSource ds;
+public abstract class StreamingDataHandler extends org.jvnet.staxex.StreamingDataHandler {
 
-    public StreamingDataHandler(MIMEPart part) {
-        super(new StreamingDataSource(part));
-        ds = (StreamingDataSource)getDataSource();
+    public StreamingDataHandler(Object o, String s) {
+        super(o, s);
     }
 
-    public InputStream readOnce() throws IOException {
-        return ds.readOnce();
+    public StreamingDataHandler(URL url) {
+        super(url);
     }
 
-    public void moveTo(File file) throws IOException {
-        ds.moveTo(file);
-    }
-
-    public void close() throws IOException {
-        ds.close();  
-    }
-
-    private static final class StreamingDataSource implements DataSource {
-        private final MIMEPart part;
-
-        StreamingDataSource(MIMEPart part) {
-            this.part = part;
-        }
-
-        public InputStream getInputStream() throws IOException {
-            return part.read();             //readOnce() ??
-        }
-
-        InputStream readOnce() throws IOException {
-            try {
-                return part.readOnce();
-            } catch(Exception e) {
-                throw new MyIOException(e);
-            }
-        }
-
-        void moveTo(File file) throws IOException {
-            part.moveTo(file);
-        }
-
-        public OutputStream getOutputStream() throws IOException {
-            return null;
-        }
-
-        public String getContentType() {
-            return part.getContentType();
-        }
-
-        public String getName() {
-            return "";
-        }
-
-        public void close() throws IOException {
-            part.close();
-        }
-    }
-
-    private static final class MyIOException extends IOException {
-        private final Exception linkedException;
-
-        MyIOException(Exception linkedException) {
-            this.linkedException = linkedException;
-        }
-
-        @Override
-        public Throwable getCause() {
-            return linkedException;
-        }
+    public StreamingDataHandler(DataSource dataSource) {
+        super(dataSource);
     }
 
 }

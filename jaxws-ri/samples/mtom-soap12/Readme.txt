@@ -27,23 +27,22 @@ the data binding framework(JAXB in this case).
 
 
 * It has the follwoing operations
-    * detail - shows mapping of xs:base64Binary with  
-      xmime:expectedContentTypes="image/jpeg" to Java type java.awt.image
-    * echoData - shows how xs:base64Binary is encoded using MTOM/XOP encoding 
-      instead of inlining in the SOAP message.
+There are 2 operations. The abstract definition of schema element data is
+annotated with xmime:expectedCotentTypes to demonstrates the corresponding
+mapping of it in the generated SEI on the client side.
+    * upload - this operation uploads an Image to the endpoint using MTOM
+    * doanload - this operation downloads binary data using MTOM in streaming
+      fashion
 
 * etc - configuration files
-    * hello.wsdl wsdl file
-    * custom-client.xml client customization file
-    * custom-server.xml server customization file
-    * build.properties, deploy-targets.xml ant script to deploy the endpoint
+    * mtomsample.wsdl wsdl file
+    * deploy-targets.xml ant script to deploy the endpoint
       war file
     * sun-jaxws.xml deployment descriptor for web container
 
 * src source files
     * client/MtomApp.java - client application
-    * client/AttachmentHelper - utility class for handling attachments.
-    * server/HelloImpl.java - server implementation
+    * server/MtomSampleImpl.java - server implementation
 
 * wsimport ant task is run to compile etc/AddNumbers.wsdl
     * generates

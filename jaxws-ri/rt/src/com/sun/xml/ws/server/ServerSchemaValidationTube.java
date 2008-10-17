@@ -140,81 +140,80 @@ public class ServerSchemaValidationTube extends AbstractSchemaValidationTube {
                 URL base = baseURI == null ? null : new URL(baseURI);
                 final URL rel = new URL(base, systemId);
                 final SDDocument doc = docs.get(rel.toExternalForm());
-                return new LSInput() {
+                if (doc != null) {
+                    return new LSInput() {
 
-                    public Reader getCharacterStream() {
-                        return null;
-                    }
-
-                    public void setCharacterStream(Reader characterStream) {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    public InputStream getByteStream() {
-                        ByteArrayBuffer bab = new ByteArrayBuffer();
-                        try {
-                            doc.writeTo(null, resolver, bab);
-                        } catch (IOException ioe) {
-                            throw new WebServiceException(ioe);
+                        public Reader getCharacterStream() {
+                            return null;
                         }
-                        return bab.newInputStream();
-                    }
 
-                    public void setByteStream(InputStream byteStream) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setCharacterStream(Reader characterStream) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public String getStringData() {
-                        return null;
-                    }
+                        public InputStream getByteStream() {
+                            ByteArrayBuffer bab = new ByteArrayBuffer();
+                            try {
+                                doc.writeTo(null, resolver, bab);
+                            } catch (IOException ioe) {
+                                throw new WebServiceException(ioe);
+                            }
+                            return bab.newInputStream();
+                        }
 
-                    public void setStringData(String stringData) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setByteStream(InputStream byteStream) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public String getSystemId() {
-                        return rel.toExternalForm();
-                    }
+                        public String getStringData() {
+                            return null;
+                        }
 
-                    public void setSystemId(String systemId) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setStringData(String stringData) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public String getPublicId() {
-                        return null;
-                    }
+                        public String getSystemId() {
+                            return rel.toExternalForm();
+                        }
 
-                    public void setPublicId(String publicId) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setSystemId(String systemId) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public String getBaseURI() {
-                        return rel.toExternalForm();
-                    }
+                        public String getPublicId() {
+                            return null;
+                        }
 
-                    public void setBaseURI(String baseURI) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setPublicId(String publicId) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public String getEncoding() {
-                        return null;
-                    }
+                        public String getBaseURI() {
+                            return rel.toExternalForm();
+                        }
 
-                    public void setEncoding(String encoding) {
-                        throw new UnsupportedOperationException();
-                    }
+                        public void setBaseURI(String baseURI) {
+                            throw new UnsupportedOperationException();
+                        }
 
-                    public boolean getCertifiedText() {
-                        return false;
-                    }
+                        public String getEncoding() {
+                            return null;
+                        }
 
-                    public void setCertifiedText(boolean certifiedText) {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+                        public void setEncoding(String encoding) {
+                            throw new UnsupportedOperationException();
+                        }
 
+                        public boolean getCertifiedText() {
+                            return false;
+                        }
 
-
+                        public void setCertifiedText(boolean certifiedText) {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
             } catch(Exception e) {
                 LOGGER.log(Level.WARNING, "Exception in LSResourceResolver impl", e);
             }

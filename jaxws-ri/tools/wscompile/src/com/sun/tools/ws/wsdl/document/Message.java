@@ -63,9 +63,12 @@ public class Message extends GlobalEntity {
             errorReceiver.error(part.getLocator(), WsdlMessages.VALIDATION_DUPLICATE_PART_NAME(getName(), part.getName()));
             throw new AbortException();
         }
-
-        _partsByName.put(part.getName(), part);
-        _parts.add(part);
+        
+        if(part.getDescriptor() != null && part.getDescriptorKind() != null) {
+            _partsByName.put(part.getName(), part);
+            _parts.add(part);
+        } else
+            errorReceiver.warning(part.getLocator(), WsdlMessages.PARSING_ELEMENT_OR_TYPE_REQUIRED(part.getName()));
     }
 
     public Iterator<MessagePart> parts() {

@@ -345,11 +345,12 @@ public class WSDLModeler extends WSDLModelerBase {
                         || (!soapBinding.getTransport().equals(
                         SOAPConstants.URI_SOAP_TRANSPORT_HTTP) && !soapBinding.getTransport().equals(
                         SOAP12Constants.URI_SOAP_TRANSPORT_HTTP)))) {
-                    warning(wsdlPort, ModelerMessages.WSDLMODELER_WARNING_IGNORING_SOAP_BINDING_NON_HTTP_TRANSPORT(wsdlPort.getName()));
                     if (!options.isExtensionMode()) {
                         // cannot deal with non-HTTP ports
+                        warning(wsdlPort, ModelerMessages.WSDLMODELER_WARNING_IGNORING_SOAP_BINDING_NON_HTTP_TRANSPORT(wsdlPort.getName()));
                         return false;
                     }
+
                 }
 
                 /**

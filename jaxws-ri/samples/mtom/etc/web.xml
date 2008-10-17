@@ -46,14 +46,14 @@
     </listener>
     <servlet>
         <description>JAX-WS endpoint - mtom.hello</description>
-        <display-name>hello</display-name>
-        <servlet-name>hello</servlet-name>
+        <display-name>Mtom</display-name>
+        <servlet-name>Mtom</servlet-name>
         <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>hello</servlet-name>
-        <url-pattern>/hello</url-pattern>
+        <servlet-name>Mtom</servlet-name>
+        <url-pattern>/mtomsample</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>

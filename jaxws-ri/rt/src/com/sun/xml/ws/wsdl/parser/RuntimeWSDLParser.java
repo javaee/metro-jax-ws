@@ -429,7 +429,7 @@ public class RuntimeWSDLParser {
                 } else {
                     binding.setStyle(Style.DOCUMENT);
                 }
-                XMLStreamReaderUtil.next(reader);
+                goToEnd(reader);
             } else if (WSDLConstants.NS_SOAP12_BINDING.equals(name)) {
                 binding.setBindingId(BindingID.SOAP12_HTTP);
                 String style = reader.getAttributeValue(null, "style");
@@ -438,7 +438,7 @@ public class RuntimeWSDLParser {
                 } else {
                     binding.setStyle(Style.DOCUMENT);
                 }
-                XMLStreamReaderUtil.next(reader);
+                goToEnd(reader);
             } else if (WSDLConstants.QNAME_OPERATION.equals(name)) {
                 parseBindingOperation(reader, binding);
             } else {
@@ -479,7 +479,7 @@ public class RuntimeWSDLParser {
                 if (soapAction != null)
                     bindingOp.setSoapAction(soapAction);
 
-                XMLStreamReaderUtil.next(reader);
+                goToEnd(reader);
             } else {
                 extensionFacade.bindingOperationElements(bindingOp, reader);
             }
@@ -774,11 +774,10 @@ public class RuntimeWSDLParser {
                         break;
                     }
                 }
-                if (desc == null)
-                    continue;
-
-                WSDLPartImpl wsdlPart = new WSDLPartImpl(reader, part, partIndex, new WSDLPartDescriptorImpl(reader,ParserUtil.getQName(reader, desc), kind));
-                msg.add(wsdlPart);
+                if (desc != null) {
+                    WSDLPartImpl wsdlPart = new WSDLPartImpl(reader, part, partIndex, new WSDLPartDescriptorImpl(reader,ParserUtil.getQName(reader, desc), kind));
+                    msg.add(wsdlPart);
+                }
                 if (reader.getEventType() != XMLStreamConstants.END_ELEMENT)
                     goToEnd(reader);
             } else {

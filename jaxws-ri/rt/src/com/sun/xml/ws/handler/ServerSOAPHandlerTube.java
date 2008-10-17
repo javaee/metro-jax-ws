@@ -74,7 +74,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
             // TODO: throw Exception
         }
         this.binding = binding;
-        setUpProcessorOnce();
+        setUpHandlersOnce();
     }
 
     // Handle to LogicalHandlerTube means its used on SERVER-SIDE
@@ -88,7 +88,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
     public ServerSOAPHandlerTube(WSBinding binding, Tube next, HandlerTube cousinTube) {
         super(next, cousinTube);
         this.binding = binding;
-        setUpProcessorOnce();
+        setUpHandlersOnce();
     }
 
     /**
@@ -97,7 +97,8 @@ public class ServerSOAPHandlerTube extends HandlerTube {
     private ServerSOAPHandlerTube(ServerSOAPHandlerTube that, TubeCloner cloner) {
         super(that, cloner);
         this.binding = that.binding;
-        setUpProcessorOnce();
+        this.handlers = that.handlers;
+        this.roles = that.roles;
     }
 
 
@@ -105,7 +106,7 @@ public class ServerSOAPHandlerTube extends HandlerTube {
         return new ServerSOAPHandlerTube(this, cloner);
     }
 
-    private void setUpProcessorOnce() {
+    private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
         List<SOAPHandler> soapSnapShot= handlerConfig.getSoapHandlers();
@@ -113,12 +114,12 @@ public class ServerSOAPHandlerTube extends HandlerTube {
             handlers.addAll(soapSnapShot);
             roles = new HashSet<String>();
             roles.addAll(handlerConfig.getRoles());
-            processor = new SOAPHandlerProcessor(false, this, binding, handlers);
         }
     }
 
     void setUpProcessor() {
-        // Do nothing, Processor is setup in the constructor.
+        if(!handlers.isEmpty())
+            processor = new SOAPHandlerProcessor(false, this, binding, handlers);
     }
     MessageUpdatableContext getContext(Packet packet) {
         SOAPMessageContextImpl context = new SOAPMessageContextImpl(binding, packet,roles);

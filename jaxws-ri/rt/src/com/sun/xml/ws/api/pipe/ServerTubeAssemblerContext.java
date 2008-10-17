@@ -39,6 +39,8 @@ package com.sun.xml.ws.api.pipe;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.addressing.WsaServerTube;
+import com.sun.xml.ws.addressing.W3CWsaServerTube;
+import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaServerTube;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
@@ -218,9 +220,13 @@ public class ServerTubeAssemblerContext {
      * Creates WS-Addressing pipe
      */
     public Tube createWsaTube(Tube next) {
-        if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding))
-            return new WsaServerTube(endpoint, wsdlModel, binding, next);
-        else
+        if (binding instanceof SOAPBinding && AddressingVersion.isEnabled(binding)) {
+            if(AddressingVersion.fromBinding(binding) == AddressingVersion.MEMBER) {
+                return new MemberSubmissionWsaServerTube(endpoint, wsdlModel, binding, next);    
+            } else {
+                return new W3CWsaServerTube(endpoint, wsdlModel, binding, next);
+            }
+        } else
             return next;
     }
 

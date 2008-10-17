@@ -8,7 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/gen-src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="JDK1.5" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="rt" exported="" />
     <orderEntry type="module-library" exported="">
@@ -42,8 +42,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="resourcegen" />
-    <orderEntry type="library" name="APT" level="application" />
-    <orderEntry type="library" name="APT" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/wom.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../lib/wom-src.zip!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">

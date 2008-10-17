@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
  * Provides access to the Addressing headers.
  *
  * @author Kohsuke Kawaguchi
+ * @author Rama Pulavarthi
  * @since 2.1.3
  */
 public class WsaPropertyBag extends PropertySet {
@@ -42,8 +43,10 @@ public class WsaPropertyBag extends PropertySet {
      *      null if the incoming SOAP message didn't have the header.
      */
     @Property(JAXWSProperties.ADDRESSING_TO)
-    public WSEndpointReference getTo() throws XMLStreamException {
-        return getEPR(addressingVersion.toTag);
+    public String getTo() throws XMLStreamException {
+        Header h = packet.getMessage().getHeaders().get(addressingVersion.toTag, false);
+        if (h == null) return null;
+        return h.getStringContent();
     }
 
     /**

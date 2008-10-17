@@ -61,6 +61,7 @@ import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.wsdl.writer.WSDLResolver;
+import com.sun.istack.tools.ParallelWorldClassLoader;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -173,12 +174,27 @@ public class WsgenTool implements AnnotationProcessorFactory {
         }
     }
 
+    /*
+     * To take care of JDK6-JDK6u3, where 2.1 API classes are not there
+     */
+    private static boolean useBootClasspath(Class clazz) {
+        try {
+            ParallelWorldClassLoader.toJarUrl(clazz.getResource('/'+clazz.getName().replace('.','/')+".class"));
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
+
+
     public boolean buildModel(String endpoint, Listener listener) throws BadCommandLineException {
         final ErrorReceiverFilter errReceiver = new ErrorReceiverFilter(listener);
         context = new AnnotationProcessorContext();
         webServiceAP = new WebServiceAP(options, context, errReceiver, out);
 
-        String[] args = new String[9];
+        boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
+
+        String[] args = new String[8 + (bootCP ? 1 :0)];
         args[0] = "-d";
         args[1] = options.destDir.getAbsolutePath();
         args[2] = "-classpath";
@@ -187,7 +203,9 @@ public class WsgenTool implements AnnotationProcessorFactory {
         args[5] = options.sourceDir.getAbsolutePath();
         args[6] = "-XclassesAsDecls";
         args[7] = endpoint;
-        args[8] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+        if (bootCP) {
+            args[8] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+        }
 
         // Workaround for bug 6499165: issue with javac debug option
         workAroundJavacDebug();
@@ -211,7 +229,8 @@ public class WsgenTool implements AnnotationProcessorFactory {
             if (!options.protocolSet) {
                 bindingID = BindingID.parse(endpointClass);
             }
-            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID);
+            WebServiceFeatureList wsfeatures = new WebServiceFeatureList(endpointClass);
+            RuntimeModeler rtModeler = new RuntimeModeler(endpointClass, options.serviceName, bindingID, wsfeatures.toArray());
             rtModeler.setClassLoader(classLoader);
             if (options.portName != null)
                 rtModeler.setPortName(options.portName);
@@ -219,7 +238,7 @@ public class WsgenTool implements AnnotationProcessorFactory {
 
             final File[] wsdlFileName = new File[1]; // used to capture the generated WSDL file.
             final Map<String,File> schemaFiles = new HashMap<String,File>();
-            WebServiceFeatureList wsfeatures = new WebServiceFeatureList(endpointClass);
+
             WSDLGenerator wsdlGenerator = new WSDLGenerator(rtModel,
                     new WSDLResolver() {
                         private File toFile(String suggestedFilename) {

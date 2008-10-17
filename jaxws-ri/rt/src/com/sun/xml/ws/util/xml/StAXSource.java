@@ -93,6 +93,8 @@ public class StAXSource extends SAXSource {
     // this object will be wrapped by the XMLReader exposed to the client
     private final XMLStreamReaderToContentHandler reader;
 
+    private final XMLStreamReader staxReader;
+
     // SAX allows ContentHandler to be changed during the parsing,
     // but JAXB doesn't. So this repeater will sit between those
     // two components.
@@ -200,6 +202,12 @@ public class StAXSource extends SAXSource {
                 // returns, we will abort anyway.
                 throw se;
 
+            } finally {
+                try {
+                    staxReader.close();
+                } catch(XMLStreamException xe) {
+                    //falls through. Not much can be done.
+                }
             }
         }
     };
@@ -208,6 +216,9 @@ public class StAXSource extends SAXSource {
      * Creates a new {@link javax.xml.transform.Source} for the given
      * {@link XMLStreamReader}.
      *
+     * @param reader XMLStreamReader that will be exposed as a Source
+     * @param eagerQuit if true, when the conversion is completed, leave the cursor to the last
+     *                  event that was fired (such as end element)
      * @see #StAXSource(XMLStreamReader, boolean, String[])
      */
     public StAXSource(XMLStreamReader reader, boolean eagerQuit) {
@@ -223,6 +234,10 @@ public class StAXSource extends SAXSource {
      * {@link javax.xml.stream.XMLStreamConstants#START_ELEMENT} event.
      *
      * @param reader XMLStreamReader that will be exposed as a Source
+     * @param eagerQuit if true, when the conversion is completed, leave the cursor to the last
+     *                  event that was fired (such as end element)
+     * @param inscope inscope Namespaces
+     *                array of the even length of the form { prefix0, uri0, prefix1, uri1, ... }
      * @throws IllegalArgumentException iff the reader is null
      * @throws IllegalStateException iff the reader is not pointing at either a
      * START_DOCUMENT or START_ELEMENT event
@@ -230,6 +245,7 @@ public class StAXSource extends SAXSource {
     public StAXSource(XMLStreamReader reader, boolean eagerQuit, @NotNull String[] inscope) {
         if( reader == null )
             throw new IllegalArgumentException();
+        this.staxReader = reader;
 
         int eventType = reader.getEventType();
         if (!(eventType == XMLStreamConstants.START_DOCUMENT)

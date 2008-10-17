@@ -184,21 +184,22 @@ abstract class AsyncMethodHandler extends SEIMethodHandler {
                         if (t instanceof RuntimeException) {
                             if (t instanceof WebServiceException) {
                                 responseImpl.set(null, t);
+                                return;
                             }
                         }  else if (t instanceof Exception) {
                             responseImpl.set(null, t);
+                            return;
                         }
-                            //its RuntimeException or some other exception resulting from user error, wrap it in
-                            // WebServiceException
-                            responseImpl.set(null, new WebServiceException(t));
-                        }
+                        //its RuntimeException or some other exception resulting from user error, wrap it in
+                        // WebServiceException
+                        responseImpl.set(null, new WebServiceException(t));
                     }
+                }
                 
 
                 public void onCompletion(@NotNull Throwable error) {
                     if (error instanceof WebServiceException) {
                         responseImpl.set(null, error);
-
                     } else {
                         //its RuntimeException or some other exception resulting from user error, wrap it in
                         // WebServiceException

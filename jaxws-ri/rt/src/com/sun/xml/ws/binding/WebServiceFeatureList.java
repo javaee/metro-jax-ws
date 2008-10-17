@@ -274,6 +274,14 @@ public final class WebServiceFeatureList implements WSFeatureList {
         this.parent = parent;
     }
 
+    public static @Nullable <F extends WebServiceFeature> F getFeature(@NotNull WebServiceFeature[] features, @NotNull Class<F> featureType) {
+        for(WebServiceFeature f : features) {
+            if (f.getClass() == featureType)
+                return (F)f;
+        }
+        return null;
+    }
+
     /**
      * A Union of this WebServiceFeatureList and the parent.
      */

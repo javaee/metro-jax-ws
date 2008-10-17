@@ -137,6 +137,20 @@ DIV.footer {/* header on each HTML file that shows the revision */
   color: rgb(53, 85, 107);
 }
 
+DIV.nested-elements {/*Any synopsys, nested elements*/
+	margin-left: 2em;
+}
+
+PRE.ant-example {
+	/* same with PRE.code */
+	background-color: rgb(240,240,255);
+	border: 1px solid navy;
+	color: black;
+	font-weight: bold;
+	padding: 0.5em;
+	margin-left: 2em;
+	margin-right: 2em;
+}
 
 .subnavbar {
   display: block;

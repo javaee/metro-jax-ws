@@ -52,6 +52,8 @@ import com.sun.xml.ws.message.MimeAttachmentSet;
 import com.sun.xml.ws.util.ByteArrayDataSource;
 import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
+import com.sun.xml.ws.streaming.MtomStreamWriter;
+import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -66,21 +68,23 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
+import javax.xml.bind.attachment.AttachmentMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.channels.WritableByteChannel;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Mtom messge Codec. It can be used even for non-soap message's mtom encoding.
  *
  * @author Vivek Pandey
+ * @author Jitendra Kotamraju
  */
 public class MtomCodec extends MimeCodec {
     public static final String XOP_XML_MIME_TYPE = "application/xop+xml";
@@ -154,7 +158,7 @@ public class MtomCodec extends MimeCodec {
 
                 //mtom attachments that need to be written after the root part
                 List<ByteArrayBuffer> mtomAttachments = new ArrayList<ByteArrayBuffer>();
-                MtomStreamWriter writer = new MtomStreamWriter(XMLStreamWriterFactory.create(out),out, mtomAttachments);
+                MtomStreamWriterImpl writer = new MtomStreamWriterImpl(XMLStreamWriterFactory.create(out),out, mtomAttachments);
                 packet.getMessage().writeTo(writer);
                 XMLStreamWriterFactory.recycle(writer);
                 writeln(out);
@@ -241,21 +245,17 @@ public class MtomCodec extends MimeCodec {
             XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), true)
         );
 
-        //TODO: remove this code after {@link StreamSOAPCodec#decode} is modified to
-        //take AttachmentSet.
-        if(codec instanceof com.sun.xml.ws.encoding.StreamSOAPCodec){
-            packet.setMessage(((com.sun.xml.ws.encoding.StreamSOAPCodec)codec).decode(mtomReader, new MimeAttachmentSet(mpp)));
-        }else{
-            packet.setMessage(codec.decode(mtomReader));
-        }
+        packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
+
     }
 
-    private class MtomStreamWriter extends XMLStreamWriterFilter implements XMLStreamWriterEx {
+    private class MtomStreamWriterImpl extends XMLStreamWriterFilter implements XMLStreamWriterEx,
+            MtomStreamWriter {
         private final OutputStream out;
         private final Encoded encoded = new Encoded();
         private final List<ByteArrayBuffer> mtomAttachments;
 
-        public MtomStreamWriter(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
+        public MtomStreamWriterImpl(XMLStreamWriter w, OutputStream out, List<ByteArrayBuffer> mtomAttachments) {
             super(w);
             this.out = out;
             this.mtomAttachments = mtomAttachments;
@@ -311,6 +311,57 @@ public class MtomCodec extends MimeCodec {
             }
         }
 
+        @Override
+        public Object getProperty(String name) throws IllegalArgumentException {
+            // Hack for JDK6's SJSXP
+            if (name.equals("sjsxp-outputstream") && writer instanceof Map) {
+                Object obj = ((Map) writer).get("sjsxp-outputstream");
+                if (obj != null) {
+                    return obj;
+                }
+            }
+            return super.getProperty(name);
+        }
+
+        /**
+         * JAXBMessage writes envelope directly to the OutputStream(for SJSXP, woodstox).
+         * While writing, it calls the AttachmentMarshaller methods for adding attachments.
+         * JAXB writes xop:Include in this case.
+         */
+        public AttachmentMarshaller getAttachmentMarshaller() {
+            return new AttachmentMarshaller() {
+
+                public String addMtomAttachment(DataHandler data, String elementNamespace, String elementLocalName) {
+                    // Should we do the threshold processing on DataHandler ? But that would be
+                    // expensive as DataHolder need to read the data again from its source
+                    ByteArrayBuffer bab = new ByteArrayBuffer(data);
+                    mtomAttachments.add(bab);
+                    return "cid:"+bab.contentId;
+                }
+
+                public String addMtomAttachment(byte[] data, int offset, int length, String mimeType, String elementNamespace, String elementLocalName) {
+                    // inline the data based on the threshold
+                    if (mtomFeature.getThreshold() > length) {
+                        return null;                // JAXB inlines the attachment data
+                    }
+                    ByteArrayBuffer bab = new ByteArrayBuffer(new DataHandler(new ByteArrayDataSource(data, offset, length, mimeType)));
+                    mtomAttachments.add(bab);
+                    return "cid:"+bab.contentId;
+                }
+
+                public String addSwaRefAttachment(DataHandler data) {
+                    ByteArrayBuffer bab = new ByteArrayBuffer(data);
+                    mtomAttachments.add(bab);
+                    return "cid:"+bab.contentId;
+                }
+
+                @Override
+                public boolean isXOPPackage() {
+                    return true;
+                }
+            };
+        }
+
         private class MtomNamespaceContextEx implements NamespaceContextEx {
             private NamespaceContext nsContext;
 
@@ -335,6 +386,7 @@ public class MtomCodec extends MimeCodec {
             }
         }
 
+        @Override
         public NamespaceContextEx getNamespaceContext() {
             NamespaceContext nsContext = writer.getNamespaceContext();
             return new MtomNamespaceContextEx(nsContext);
@@ -421,8 +473,7 @@ public class MtomCodec extends MimeCodec {
 
         public int next() throws XMLStreamException {
             int event = reader.next();
-            if ((event == XMLStreamConstants.START_ELEMENT) && reader.getLocalName().equals(XOP_LOCALNAME) && reader.getNamespaceURI().equals(XOP_NAMESPACEURI))
-            {
+            if (event == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equals(XOP_LOCALNAME) && reader.getNamespaceURI().equals(XOP_NAMESPACEURI)) {
                 //its xop reference, take the URI reference
                 String href = reader.getAttributeValue(null, "href");
                 try {
@@ -436,11 +487,7 @@ public class MtomCodec extends MimeCodec {
                     throw new WebServiceException(e);
                 }
                 //move to the </xop:Include>
-                try {
-                    reader.next();
-                } catch (XMLStreamException e) {
-                    throw new WebServiceException(e);
-                }
+                XMLStreamReaderUtil.nextElementContent(reader);
                 return XMLStreamConstants.CHARACTERS;
             }
             if(xopReferencePresent){
@@ -480,12 +527,6 @@ public class MtomCodec extends MimeCodec {
 
         public int getTextCharacters(int sourceStart, char[] target, int targetStart, int length) throws XMLStreamException {
             if(xopReferencePresent){
-                int event = reader.getEventType();
-                if(event != XMLStreamConstants.CHARACTERS){
-                    //its invalid state - delegate it to underlying reader to throw the corrrect exception so that user
-                    // always sees the uniform exception from the XMLStreamReader
-                    throw new XMLStreamException("Invalid state: Expected CHARACTERS found :");
-                }
                 if(target == null){
                     throw new NullPointerException("target char array can't be null") ;
                 }
@@ -533,6 +574,4 @@ public class MtomCodec extends MimeCodec {
     private static final String XOP_LOCALNAME = "Include";
     private static final String XOP_NAMESPACEURI = "http://www.w3.org/2004/08/xop/include";
 
-
-    private static final Charset UTF8 = Charset.forName("UTF-8");
 }

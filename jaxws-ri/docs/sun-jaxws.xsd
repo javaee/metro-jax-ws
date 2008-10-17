@@ -45,7 +45,8 @@
   attributeFormDefault="unqualified"
   version="1.0">
 
-  <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocation="http://java.sun.com/xml/ns/javaee/javaee_web_services_1_2.xsd" />
+  <xsd:import namespace="http://java.sun.com/xml/ns/javaee"
+              schemaLocation="http://java.sun.com/xml/ns/javaee/javaee_web_services_metadata_handler_2_0.xsd" />
 
   <xsd:element name="endpoints">
     <xsd:complexType>
@@ -73,7 +74,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="handler-chains" type="javaee:handler-chainsType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="javaee:handler-chains" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="implementation" type="xsd:string" use="required"/>

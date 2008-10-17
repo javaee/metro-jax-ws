@@ -125,7 +125,7 @@ public class MimeApp {
         return userDir+sepChar+ "common_resources/";
     }
 
-    private static final String sampleXML = "?xml version=\"1.0\" encoding=\"UTF-8\" ?> \n" +
+    private static final String sampleXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> \n" +
             "<NMEAstd>\n" +
             "<DevIdSentenceId>$GPRMC</DevIdSentenceId>\n" +
             "<Time>212949</Time>\n" +

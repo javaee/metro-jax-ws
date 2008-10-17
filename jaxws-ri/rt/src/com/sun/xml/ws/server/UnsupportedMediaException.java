@@ -58,6 +58,10 @@ public final class UnsupportedMediaException extends JAXWSExceptionBase {
         super(ServerMessages.localizableNO_CONTENT_TYPE());
     }
 
+    public UnsupportedMediaException(String charset) {
+        super(ServerMessages.localizableUNSUPPORTED_CHARSET(charset));
+    }
+
     public String getDefaultResourceBundleName() {
         return "com.sun.xml.ws.resources.server";
     }

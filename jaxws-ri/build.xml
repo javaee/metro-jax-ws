@@ -182,14 +182,14 @@
           </classpath>
       </taskdef>
       <htmlmacro  destdir="${build.home}/docs">
-        <documents dir="${docs.home}" includes="*.html *.xsd" excludes="sun-jaxws.xsd"/>
+        <documents dir="${docs.home}" includes="*.html *.xsd *.xml" excludes="sun-jaxws.xsd"/>
         <tags dir="${docs.home}/tags" includes="**/*.tag" />
         <property key="SPEC_VERSION" value="${release.spec.version}"/>
         <property key="IMPL_VERSION" value="${release.impl.version}"/>
         <property key="IMPL_VERSION_SUFFIX" value="${release.impl.version.suffix}"/>
         <!-- Product name so that we can switch between JAX-WS RI and Metro -->
         <property key="PRODUCT_SHORT_NAME" value="JAX-WS RI"/>
-        <property key="PRODUCT_NAME" value="JAX-WS RI ${release.impl.version} ${release.impl.version.suffix}"/>
+        <property key="PRODUCT_NAME" value="JAX-WS RI ${release.impl.version}${release.impl.version.suffix}"/>
         <!-- Used in various places to refer to installation dir -->
         <property key="HOME" value="JAXWS_HOME" />
       </htmlmacro>
@@ -237,6 +237,18 @@
                   value="${release.impl.version.suffix}"/>
         </filterset>
     </copy>
+
+      <copy tofile="${dist20.home}/tomcat.xml" file="${build.home}/../etc/istackontomcat.xml">
+          <filterset begintoken="@@" endtoken="@@">
+            <filter token="SPEC_VERSION"
+                    value="${release.spec.version}" />
+            <filter token="IMPL_VERSION"
+                    value="${release.impl.version}"/>
+            <filter token="IMPL_VERSION_SUFFIX"
+                    value="${release.impl.version.suffix}"/>
+          </filterset>
+      </copy>
+
     <copy    todir="${dist20.home}/bin">
       <fileset dir="${build.home}/bin"
           includes="wsimport.*, wsgen.*"/>
@@ -255,9 +267,11 @@
 
     <copy    todir="${dist20.home}/samples">
       <fileset dir="samples" includes="**/common_resources/**"/>
+      <fileset dir="samples" includes="**/certs/**" excludes="**/CVS/**"/>  
     </copy>
-  	<copy todir="${dist20.home}/samples">
-        <fileset dir="samples" includes="**" excludes="**/common_resources/**,**/CVS/**" />
+
+     <copy todir="${dist20.home}/samples">
+        <fileset dir="samples" includes="**" excludes="**/certs/**, **/common_resources/**,**/CVS/**" />
         <filterset begintoken="@@" endtoken="@@">
           <filter token="SPEC_VERSION" 
                   value="${release.spec.version}" />
@@ -297,6 +311,8 @@
   <target name="src.zip" description="create source zip bundles of the JAX-WS RI" depends="dist">
     <zip file="${dist20.home}/lib/jaxws-rt.src.zip">
       <fileset dir="${basedir}/rt/src" />
+      <!-- the following is needed as some properties file are generated dynamically -->
+      <fileset dir="${basedir}/rt/build/classes" includes="**/*.properties"/>
       <fileset dir="${basedir}/rt-fi/src" />
       <fileset dir="${basedir}/servlet/src"/>
       <fileset dir="${basedir}/transports/local/src"/>
@@ -305,11 +321,27 @@
     <zip file="${dist20.home}/lib/jaxws-tools.src.zip">
       <fileset dir="${basedir}/tools/wscompile/src" />
       <fileset dir="${basedir}/tools/wscompile/build/gen-src/"/>
+      <!-- the following is needed as some properties file are generated dynamically -->
+      <fileset dir="${basedir}/tools/wscompile/build/classes" includes="**/*.properties"/>
+      <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
     </zip>
     <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
       <fileset dir="${basedir}/lib" includes="*src.zip" />
     </zip>
   </target>
+
+    <target name="jdk-jaxws-src.zip" description="create source zip bundles of the JAX-WS RI" depends="src.zip">
+        <delete file="${dist20.home}/lib/jaxws-libs.src.zip"/> <!-- not needed as we create another bundle with all libs -->
+        <zip file="${dist.home}/jdk-jaxws-libs.src.zip">
+            <fileset dir="${dist20.home}/lib" includes="jaxws-rt.src.zip"/>
+            <fileset dir="${dist20.home}/lib" includes="jaxws-tools.src.zip"/>
+            <fileset dir="${basedir}/lib" includes="FastInfoset.src.zip,jaxb-impl.src.zip, jaxb-xjc.src.zip,
+                saaj-impl.src.zip, stax-ex-src.zip, streambuffer.src.zip,
+                jaxws-api-src.zip, jaxb-api-src.zip, jsr181-api.src.zip, saaj-api-src.zip, jsr250-api.src.zip, mimepull-src.zip, jaxws-asm-src.zip"/>
+        </zip>
+        <delete file="${dist20.home}/lib/jaxws-rt.src.zip"/>
+        <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
+    </target>
 
     <target name="libs.src.zip">
         <zip file="${build.home}/jaxws-libs.src.zip">
@@ -337,10 +369,11 @@
     <fail unless="jar.suffix">jar.suffix property needs to be defined</fail>
     <maven-repository-importer
         destdir="build/maven-repo" version="${jar.suffix}">
-      <artifact
+      <!-- only push API at certain key points, and do so with new version number -->
+      <!--artifact
         jar="${dist20.home}/lib/jaxws-api.jar"
         pom="etc/poms/jaxws-api.pom"
-        srczip="lib/jaxws-api-src.zip" />
+        srczip="lib/jaxws-api-src.zip" /-->
       <artifact
         jar="${dist20.home}/lib/jaxws-rt.jar"
         pom="etc/poms/jaxws-rt.pom"
@@ -360,23 +393,41 @@
     </maven-repository-importer>
   </target>
 
-  <target name="push-to-maven" depends="push-to-maven-prepare"
+   <target name="replace-binaries-with-re-build">
+      <!--
+        this target replaces the dist jars with RE BUILD.
+        Here JAXWS_RE_BUILD points to the url of jax-ws binaries where jax-ws jars can be found.
+      -->
+      <get src="${JAXWS_RE_BUILD}/jaxws-rt.jar" dest="${dist20.home}/lib/jaxws-rt.jar"/>
+      <get src="${JAXWS_RE_BUILD}/jaxws-tools.jar" dest="${dist20.home}/lib/jaxws-tools.jar"/>
+      <get src="${JAXWS_RE_BUILD}/jsr181-api.jar" dest="${dist20.home}/lib/jsr181-api.jar"/>
+  </target>
+
+  <target name="push-to-maven" depends="src.zip, replace-binaries-with-re-build"
     description="publish artifacts into the maven repository">
+    <property name="jar.suffix" value="${release.impl.version}" />
+    <antcall target="push-to-maven-prepare"/>
     <echo>importing to CVS...</echo>
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
-  <target name="push-snapshot-to-maven" depends="dist"
+  <target name="push-snapshot-to-maven" depends="src.zip"
       description="publish snapshot jars into the maven repository">
       <property name="jar.suffix" value="${release.impl.version}-SNAPSHOT" />
-      <antcall target="push-to-maven" />
+      <antcall target="push-to-maven-prepare"/>
+      <echo>importing to CVS...</echo>
+      <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
   </target>
 
 
   
     <target name="integrate-jaxb-hudson" depends="prepare"
             description="integrate the last successful JAXB Hudson build">
+<<<<<<< build.xml
       <get src="http://kohsuke.sfbay.sun.com/hudson/job/jaxb-ri-2.2/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+=======
+      <get src="http://hudson.sfbay.sun.com/job/jaxb-ri-2.1/lastSuccessfulBuild/artifact/jaxb2-sources/jaxb-ri/jaxb-ri.zip"
+>>>>>>> 1.95
            dest="${build.home}/jaxb-ri.zip" />
       <mkdir dir="${build.home}/jaxb" />
       <unzip src="${build.home}/jaxb-ri.zip" dest="${build.home}/jaxb"/>
@@ -403,13 +454,13 @@
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/dist/lib/saaj-impl.jar"
+    <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
          dest="lib/saaj-impl.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
+    <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.2.src.zip"
          dest="lib/saaj-impl.src.zip" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
          dest="lib/saaj-api.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
+    <get src="http://hudson.sfbay.sun.com/job/saaj-api/lastSuccessfulBuild/artifact/build/saaj-api-src.zip"
          dest="lib/saaj-api-src.zip" />
   </target>
 
@@ -431,25 +482,33 @@
 
   <target name="integrate-mimepull" depends="prepare"
           description="integrate the last successful mimepull Hudson build">
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.1-SNAPSHOT/mimepull-1.1-SNAPSHOT.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT.jar"
          dest="lib/mimepull.jar" />
-    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.1-SNAPSHOT/mimepull-1.1-SNAPSHOT-sources.jar"
+    <get src="http://kohsuke.sfbay/hudson/job/mimepull/org.jvnet$mimepull/lastSuccessfulBuild/artifact/org.jvnet/mimepull/1.3-SNAPSHOT/mimepull-1.3-SNAPSHOT-sources.jar"
          dest="lib/mimepull-src.zip" />
   </target>
 
+    <target name="integrate-wom" depends="prepare"
+            description="integrate the last successful wom Hudson build">
+      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT.jar"
+           dest="lib/wom.jar" />
+      <get src="http://kohsuke.sfbay/hudson/job/wom/org.jvnet$wom/lastSuccessfulBuild/artifact/org.jvnet/wom/1.0-SNAPSHOT/wom-1.0-SNAPSHOT-sources.jar"
+           dest="lib/wom-src.zip" />
+    </target>
+
   <target name="integrate-sjsxp-hudson" depends="prepare"
           description="integrate the last successful sjsxp Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
+    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-1_0_1/sjsxp.jar"
          dest="lib/sjsxp.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
+    <get src="http://hudson.sfbay.sun.com/job/zephyr/lastSuccessfulBuild/artifact/dist/sjsxp-src-1_0_1.zip"
          dest="lib/sjsxp-src.zip" />
   </target>
 
   <target name="integrate-jaxws21-api-hudson" depends="prepare"
           description="integrate the last successful jaxws 2.1 API from Hudson build">
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 
@@ -463,7 +522,7 @@
 
     <target name="integrate-htmlmacro-hudson" depends="prepare"
              description="integrate the last successful htmlmacro Hudson build">
-       <get src="http://kohsuke.sfbay.sun.com/hudson/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
+       <get src="http://hudson.sfbay.sun.com/job/htmlmacro/lastSuccessfulBuild/artifact/htmlmacro/build/htmlmacro.zip"
             dest="${lib.home}/htmlmacro.zip" />
        <mkdir dir="${lib.home}/htmlmacro" />
        <unzip src="${lib.home}/htmlmacro.zip" dest="${lib.home}/htmlmacro"/>

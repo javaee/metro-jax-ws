@@ -8,12 +8,12 @@ import java.io.File;
  * This feature represents the use of StreamingAttachment attachments with a
  * web service.
  *
- * <pre>
+ * <p>
  * for e.g.: To keep all MIME attachments in memory, do the following
  *
- * <p>
- * @WebService
- * @MIME(memoryThreshold=-1L)
+ * <pre>
+ * &#64;WebService
+ * &#64;MIME(memoryThreshold=-1L)
  * public class HelloService {
  * }
  * </pre>

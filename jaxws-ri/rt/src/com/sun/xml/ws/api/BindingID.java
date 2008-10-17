@@ -46,6 +46,7 @@ import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
 import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.developer.JAXWSProperties;
 
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceException;
@@ -239,6 +240,8 @@ public abstract class BindingID {
     public static @NotNull BindingID parse(String lexical) {
         if(lexical.equals(XML_HTTP.toString()))
             return XML_HTTP;
+        if(lexical.equals(REST_HTTP.toString()))
+            return REST_HTTP;
         if(belongsTo(lexical,SOAP11_HTTP.toString()))
             return customize(lexical,SOAP11_HTTP);
         if(belongsTo(lexical,SOAP12_HTTP.toString()))
@@ -345,6 +348,15 @@ public abstract class BindingID {
      * Constant that represents REST.
      */
     public static final BindingID XML_HTTP = new Impl(SOAPVersion.SOAP_11, HTTPBinding.HTTP_BINDING,false) {
+        public Codec createEncoder(WSBinding binding) {
+            return new XMLHTTPBindingCodec(binding);
+        }
+    };
+
+    /**
+     * Constant that represents REST.
+     */
+    private static final BindingID REST_HTTP = new Impl(SOAPVersion.SOAP_11, JAXWSProperties.REST_BINDING,true) {
         public Codec createEncoder(WSBinding binding) {
             return new XMLHTTPBindingCodec(binding);
         }

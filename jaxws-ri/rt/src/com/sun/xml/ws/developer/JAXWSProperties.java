@@ -44,6 +44,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.BindingType;
+import javax.xml.ws.http.HTTPBinding;
 import java.net.HttpURLConnection;
 
 public interface JAXWSProperties {
@@ -67,6 +69,17 @@ public interface JAXWSProperties {
     public static final String CONNECT_TIMEOUT =
         "com.sun.xml.ws.connect.timeout";
 
+    /**
+     * Set this property on the {@link BindingProvider#getRequestContext()} to
+     * enable {@link HttpURLConnection#httpConnection.setReadTimeout(int)}
+     *
+     *<p>
+     * int timeout = ...;
+     * Map<String, Object> ctxt = ((BindingProvider)proxy).getRequestContext();
+     * ctxt.put(REQUEST_TIMEOUT, timeout);
+     */
+     public static final String REQUEST_TIMEOUT =
+        "com.sun.xml.ws.request.timeout";
 
     /**
      * Set this property on the {@link BindingProvider#getRequestContext()} to
@@ -202,4 +215,30 @@ public interface JAXWSProperties {
      * @since 2.1.3
      */
     public static final String HTTP_REQUEST_URL = "com.sun.xml.ws.transport.http.servlet.requestURL";
+
+    /**
+     * Binding to represent RESTful services. {@link HTTPBinding#HTTP_BINDING} works
+     * only for Dispatch/Provider services, but this binding works with even SEI based
+     * services. It would be XML, NOT SOAP on the wire. Hence, the SEI parameters
+     * shouldn't be mapped to headers.
+     *
+     * <p>
+     * Note that, this only solves limited RESTful usecases.
+     *
+     * <p>To enable restful binding on the service, specify the binding id via
+     * {@link BindingType} or DD
+     * <pre>
+     * &#64;WebService
+     * &#64;BindingType(JAXWSProperties.REST_BINDING)
+     * </pre>
+     *
+     * <p>To enable restful binding on the client side, specify the binding id via
+     * {@link BindingTypeFeature}
+     * <pre>
+     * proxy = echoImplService.getEchoImplPort(new BindingTypeFeature(JAXWSProperties.REST_BINDING));
+     * </pre>
+     *
+     * @since 2.1.4
+     */
+    public static final String REST_BINDING = "http://jax-ws.dev.java.net/rest";
 }

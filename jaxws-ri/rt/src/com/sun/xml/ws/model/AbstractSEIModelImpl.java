@@ -52,17 +52,20 @@ import com.sun.xml.ws.model.wsdl.WSDLPartImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.util.Pool;
+import com.sun.xml.ws.developer.UsesJAXBContextFeature;
+import com.sun.xml.ws.developer.JAXBContextFactory;
+import com.sun.xml.ws.binding.WebServiceFeatureList;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,9 +78,13 @@ import java.util.logging.Logger;
  * model of the web service.  Used by the runtime marshall/unmarshall
  * web service invocations
  *
- * $author: JAXWS Development Team
+ * @author JAXWS Development Team
  */
 public abstract class AbstractSEIModelImpl implements SEIModel {
+
+    protected AbstractSEIModelImpl(WebServiceFeature[] features) {
+        this.features = features;
+    }
 
     void postProcess() {
         // should be called only once.
@@ -132,15 +139,11 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
 
     private JAXBRIContext createJAXBContext() {
         final List<TypeReference> types = getAllTypeReferences();
-        final Class[] cls = new Class[types.size() + additionalClasses.size()];
-        int i = 0;
-        for(Class additionalClass:additionalClasses){
-            cls[i++] = additionalClass;
-        }
+        final List<Class> cls = new ArrayList<Class>(types.size() + additionalClasses.size());
 
-        for (TypeReference type : types) {
-            cls[i++] = (Class) type.type;
-        }
+        cls.addAll(additionalClasses);
+        for (TypeReference type : types)
+            cls.add((Class) type.type);
 
         try {
             //jaxbContext = JAXBRIContext.newInstance(cls, types, targetNamespace, false);
@@ -148,9 +151,12 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
             jaxbContext = AccessController.doPrivileged(new PrivilegedExceptionAction<JAXBRIContext>() {
                 public JAXBRIContext run() throws Exception {
                     if(LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+ Arrays.asList(cls)+" and types="+types);
+                        LOGGER.log(Level.FINE,"Creating JAXBContext with classes="+cls+" and types="+types);
                     }
-                    return JAXBRIContext.newInstance(cls, types, null, targetNamespace, false, null);
+                    UsesJAXBContextFeature f = WebServiceFeatureList.getFeature(features, UsesJAXBContextFeature.class);
+                    JAXBContextFactory factory = f!=null ? f.getFactory() : null;
+                    if(factory==null)   factory=JAXBContextFactory.DEFAULT;
+                    return factory.createJAXBContext(AbstractSEIModelImpl.this,cls,types);
                 }
             });
             createBridgeMap(types);
@@ -516,6 +522,7 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
     private String targetNamespace = "";
     private List<String> knownNamespaceURIs = null;
     private WSDLPortImpl port;
+    private final WebServiceFeature[] features;
 
     private static final Logger LOGGER = Logger.getLogger(AbstractSEIModelImpl.class.getName());
 }

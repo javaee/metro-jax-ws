@@ -40,8 +40,8 @@ import com.sun.istack.NotNull;
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_ANONYMOUS_ADDRESS_SUPPORTED;
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
-import com.sun.xml.ws.addressing.model.InvalidMapException;
-import com.sun.xml.ws.addressing.model.MapRequiredException;
+import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
+import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Arun Gupta
  */
-public final class WsaServerTube extends WsaTube {
+public class WsaServerTube extends WsaTube {
     private WSEndpoint endpoint;
     // store the replyTo/faultTo of the message currently being processed.
     // both will be set to non-null in processRequest
@@ -114,10 +114,10 @@ public final class WsaServerTube extends WsaTube {
         try {
             replyTo = hl.getReplyTo(addressingVersion, soapVersion);
             faultTo = hl.getFaultTo(addressingVersion, soapVersion);
-        } catch (InvalidMapException e) {
+        } catch (InvalidAddressingHeaderException e) {
             LOGGER.log(Level.WARNING,
-                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getMapQName()+ ", Reason: "+ e.getSubsubcode(),e);
-            SOAPFault soapFault = helper.newInvalidMapFault(e, addressingVersion);
+                    addressingVersion.getInvalidMapText()+", Problem header:" + e.getProblemHeader()+ ", Reason: "+ e.getSubsubcode(),e);
+            SOAPFault soapFault = helper.createInvalidAddressingHeaderFault(e, addressingVersion);
             // WS-A fault processing for one-way methods
             if ((wsdlPort!=null) && request.getMessage().isOneWay(wsdlPort)) {
                 Packet response = request.createServerResponse(null, wsdlPort, null, binding);
@@ -126,7 +126,7 @@ public final class WsaServerTube extends WsaTube {
 
             Message m = Messages.create(soapFault);
             if (soapVersion == SOAPVersion.SOAP_11) {
-                FaultDetailHeader s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getMapQName());
+                FaultDetailHeader s11FaultDetailHeader = new FaultDetailHeader(addressingVersion, addressingVersion.problemHeaderQNameTag.getLocalPart(), e.getProblemHeader());
                 m.getHeaders().add(s11FaultDetailHeader);
             }
 
@@ -241,7 +241,7 @@ public final class WsaServerTube extends WsaTube {
     }
 
     @Override
-    public void validateAction(Packet packet) {
+    protected void validateAction(Packet packet) {
         //There may not be a WSDL operation.  There may not even be a WSDL.
         //For instance this may be a RM CreateSequence message.
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
@@ -264,9 +264,8 @@ public final class WsaServerTube extends WsaTube {
         }
     }
 
-    @Override
-    public void checkCardinality(Packet packet) {
-        super.checkCardinality(packet);
+    protected void checkMessageAddressingProperties(Packet packet) {
+        super.checkMessageAddressingProperties(packet);
 
         // wsaw:Anonymous validation
         WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
@@ -280,7 +279,7 @@ public final class WsaServerTube extends WsaTube {
             try {
                 new EndpointAddress(URI.create(replyTo.getAddress()));
             } catch (Exception e) {
-                throw new InvalidMapException(addressingVersion.replyToTag, addressingVersion.invalidAddressTag);
+                throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, addressingVersion.invalidAddressTag);
             } 
         }
         //for now only validate ReplyTo
@@ -289,31 +288,13 @@ public final class WsaServerTube extends WsaTube {
             try {
                 new EndpointAddress(URI.create(faultTo.getAddress()));
             } catch (IllegalArgumentException e) {
-                throw new InvalidMapException(addressingVersion.faultToTag, addressingVersion.invalidAddressTag);
+                throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, addressingVersion.invalidAddressTag);
             }
         }
         */
 
     }
-
-    protected void checkMandatoryHeaders(
-        Packet packet, boolean foundAction, boolean foundTo, boolean foundMessageId, boolean foundRelatesTo) {
-        super.checkMandatoryHeaders(packet, foundAction, foundTo, foundMessageId, foundRelatesTo);
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-        // no need to check for for non-application messages
-        if (wbo == null)
-            return;
-
-        // if no wsa:To header is found
-        if (!foundTo)
-            throw new MapRequiredException(addressingVersion.toTag);
-
-        // if two-way and no wsa:MessageID is found
-        if (!wbo.getOperation().isOneWay() && !foundMessageId)
-            throw new MapRequiredException(addressingVersion.messageIDTag);
-    }
-
-
+    
     final void checkAnonymousSemantics(WSDLBoundOperation wbo, WSEndpointReference replyTo, WSEndpointReference faultTo) {
         // no check if Addressing is not enabled or is Member Submission
         if (addressingVersion == null || addressingVersion == AddressingVersion.MEMBER)
@@ -339,17 +320,17 @@ public final class WsaServerTube extends WsaTube {
             break;
         case prohibited:
             if (replyToValue != null && replyToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidMapException(addressingVersion.replyToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
+                throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
 
             if (faultToValue != null && faultToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidMapException(addressingVersion.faultToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
+                throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
             break;
         case required:
             if (replyToValue != null && !replyToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidMapException(addressingVersion.replyToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
+                throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
 
             if (faultToValue != null && !faultToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidMapException(addressingVersion.faultToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
+                throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
             break;
         default:
             // cannot reach here

@@ -319,10 +319,6 @@ public class Apt extends Task {
             cmd.createArgument().setValue(getTarget());
         }
         
-        for (Jvmarg jvmarg : jvmargs) {
-            cmd.createArgument().setValue("-J" + jvmarg.getValue());
-        }
-
         for (Option option : options) {
             cmd.createArgument().setValue("-A" + option.getKey() + "=" + option.getValue());
         }

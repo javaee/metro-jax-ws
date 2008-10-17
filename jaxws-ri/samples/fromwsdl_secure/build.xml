@@ -40,7 +40,7 @@
 <project basedir="." default="help" name="fromwsdl_secure">
 
     <import file="etc/deploy-targets.xml"/>
-    
+    <property name="service.wsdl.location" value="https://${domain.name}:${https.port}/jaxws-fromwsdl_secure/addnumbers?wsdl"/>
     <path id="jaxws.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
         <fileset dir="${lib.home}">
@@ -92,7 +92,8 @@
         </war>
     </target>
 
-    <target name="generate-client" depends="setup">
+    <target name="generate-client" depends="setup, setup-client-truststore">
+        <echo message="Importing wsdl: ${service.wsdl.location}"/>
         <wsimport
                 fork="true"
                 debug="true"
@@ -100,9 +101,9 @@
                 keep="true"
                 destdir="${build.classes.home}"
                 package="fromwsdl_secure.client"
-                wsdl="https://localhost:8443/jaxws-fromwsdl_secure/addnumbers?wsdl">
-            <jvmarg value="-Djavax.net.ssl.trustStore=${basedir}/etc/certs/client.keystore"/>
-            <jvmarg value="-Djavax.net.ssl.trustStorePassword=client" />
+                wsdl="${service.wsdl.location}">
+            <jvmarg value="-Djavax.net.ssl.trustStore=${client.truststore.file}"/>
+            <jvmarg value="-Djavax.net.ssl.trustStorePassword=${client.truststore.pass}" />
         </wsimport>
     </target>
 
@@ -116,7 +117,7 @@
         </javac>
     </target>
 
-    <target name="run">
+    <target name="run" depends="setup-certs-props">
         <java fork="true" classname="fromwsdl_secure.client.AddNumbersClient">
             <classpath>
                 <path refid="jaxws.classpath"/>
@@ -124,8 +125,8 @@
                 <pathelement location="${basedir}/etc"/>
             </classpath>
             <jvmarg value="-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=${log}"/>
-            <jvmarg value="-Djavax.net.ssl.trustStore=${basedir}/etc/certs/client.keystore"/>
-            <jvmarg value="-Djavax.net.ssl.trustStorePassword=client" />
+            <jvmarg value="-Djavax.net.ssl.trustStore=${client.truststore.file}"/>
+            <jvmarg value="-Djavax.net.ssl.trustStorePassword=${client.truststore.pass}" />
         </java>
     </target>
 

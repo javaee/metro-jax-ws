@@ -67,6 +67,16 @@ public class SAAJMessageTest extends TestCase {
             "</addNumbers>" +
             "</S:Body></S:Envelope>";
 
+    String FAULT_MESSAGE = "<S:Envelope xmlns:S='http://schemas.xmlsoap.org/soap/envelope/'>"+
+            "<S:Header>" +
+            "<wsa:Action xmlns:wsa='http://www.w3.org/2005/08/addressing'>http://example.com/addNumbers</wsa:Action>" +
+            "</S:Header>" +
+            "<S:Body><S:Fault>" +
+            "<faultCode>S:Client</faultCode>" +
+            "<faultString>Fault Test</faultString>" +
+            "<detail xmlns:ns1='urn:fault'><ns1:entry></ns1:entry></detail>" +
+            "</S:Fault></S:Body></S:Envelope>";
+
     public void test1() throws Exception {
         MessageFactory factory = MessageFactory.newInstance();
         SOAPMessage message = factory.createMessage();
@@ -93,4 +103,16 @@ public class SAAJMessageTest extends TestCase {
         writer.close();
 
     }
+
+    public void testFirstDetailEntryName() throws Exception {
+        MessageFactory factory = MessageFactory.newInstance();
+        SOAPMessage message = factory.createMessage();
+        Source src = new StreamSource(new ByteArrayInputStream(FAULT_MESSAGE.getBytes()));
+        message.getSOAPPart().setContent(src);
+
+        SAAJMessage saajMsg = new SAAJMessage(message);
+        QName exp = new QName("urn:fault", "entry");
+        assertEquals(exp, saajMsg.getFirstDetailEntryName());
+    }
+
 }

@@ -52,6 +52,7 @@ import com.sun.xml.ws.message.RootElementSniffer;
 import com.sun.xml.ws.message.stream.StreamMessage;
 import com.sun.xml.ws.streaming.XMLStreamWriterUtil;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.streaming.MtomStreamWriter;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -60,6 +61,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.util.JAXBResult;
 import javax.xml.namespace.QName;
@@ -308,7 +310,11 @@ public final class JAXBMessage extends AbstractMessageImpl {
 
     public void writePayloadTo(XMLStreamWriter sw) throws XMLStreamException {
         try {
-            AttachmentMarshallerImpl am = new AttachmentMarshallerImpl(attachmentSet);
+            // MtomCodec sets its own AttachmentMarshaller
+            AttachmentMarshaller am = (sw instanceof MtomStreamWriter)
+                    ? ((MtomStreamWriter)sw).getAttachmentMarshaller()
+                    : new AttachmentMarshallerImpl(attachmentSet);
+
             // Get output stream and use JAXB UTF-8 writer
             OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
             if (os != null) {
@@ -316,7 +322,8 @@ public final class JAXBMessage extends AbstractMessageImpl {
             } else {
                 bridge.marshal(jaxbObject,sw,am);   
             }
-            am.cleanup();
+            //cleanup() is not needed since JAXB doesn't keep ref to AttachmentMarshaller
+            //am.cleanup();
         } catch (JAXBException e) {
             // bug 6449684, spec 4.3.4
             throw new WebServiceException(e);

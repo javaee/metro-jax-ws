@@ -40,8 +40,6 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.encoding.soap.DeserializationException;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.message.jaxb.JAXBMessage;
 import com.sun.xml.ws.model.JavaMethodImpl;
@@ -52,6 +50,8 @@ import javax.jws.WebParam.Mode;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.Holder;
+import javax.xml.ws.ProtocolException;
+import javax.xml.ws.WebServiceException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -242,9 +242,9 @@ final class EndpointMethodHandler {
         try {
             argumentsBuilder.readRequest(reqMsg,args);
         } catch (JAXBException e) {
-            throw new DeserializationException("failed.to.read.response",e);
+            throw new WebServiceException(e);
         } catch (XMLStreamException e) {
-            throw new DeserializationException("failed.to.read.response",e);
+            throw new WebServiceException(e);
         }
         // Some transports(like HTTP) may want to send response before envoking endpoint method
         // Doing this here so that after closing the response stream, cannot read
@@ -261,11 +261,17 @@ final class EndpointMethodHandler {
 
             if (!(cause instanceof RuntimeException) && cause instanceof Exception) {
                 // Service specific exception
-                LOGGER.log(Level.INFO, cause.getMessage(), cause);
+                LOGGER.log(Level.FINE, cause.getMessage(), cause);
                 responseMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion,
                         javaMethodModel.getCheckedException(cause.getClass()), cause);
             } else {
-                LOGGER.log(Level.SEVERE, cause.getMessage(), cause);
+                if (cause instanceof ProtocolException) {
+                    // Application code may be throwing it intentionally
+                    LOGGER.log(Level.FINE, cause.getMessage(), cause);
+                } else {
+                    // Probably some bug in application code
+                    LOGGER.log(Level.SEVERE, cause.getMessage(), cause);
+                }
                 responseMessage = SOAPFaultBuilder.createSOAPFaultMessage(soapVersion, null, cause);
             }
         } catch (Exception e) {

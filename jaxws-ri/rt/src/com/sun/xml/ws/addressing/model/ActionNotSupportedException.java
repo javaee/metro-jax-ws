@@ -42,7 +42,7 @@ import javax.xml.ws.WebServiceException;
  * @author Arun Gupta
  */
 public class ActionNotSupportedException extends WebServiceException {
-    String action;
+    private String action;
 
     protected ActionNotSupportedException() {
         super();

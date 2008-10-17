@@ -326,33 +326,6 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         this.style = style;
     }
 
-    public @Nullable QName getPayloadName() {
-        if(style.equals(Style.RPC)){
-            return name;
-        }else{
-            if(emptyPayload)
-                return null;
-            
-            if(payloadName != null)
-                return payloadName;
-
-            QName inMsgName = operation.getInput().getMessage().getName();
-            WSDLMessageImpl message = messages.get(inMsgName);
-            for(WSDLPartImpl part:message.parts()){
-                ParameterBinding binding = getInputBinding(part.getName());
-                if(binding.isBody()){
-                    payloadName = part.getDescriptor().name();
-                    return payloadName;
-                }
-            }
-
-            //Its empty payload
-            emptyPayload = true;
-        }
-        //empty body
-        return null;
-    }
-
     public @Nullable QName getReqPayloadName() {
         if (emptyRequestPayload)
             return null;
@@ -448,10 +421,8 @@ public final class WSDLBoundOperationImpl extends AbstractExtensibleImpl impleme
         return owner;
     }
 
-    private QName payloadName;
     private QName requestPayloadName;
     private QName responsePayloadName;
-    private boolean emptyPayload;
     private boolean emptyRequestPayload;
     private boolean emptyResponsePayload;
     private Map<QName, WSDLMessageImpl> messages;

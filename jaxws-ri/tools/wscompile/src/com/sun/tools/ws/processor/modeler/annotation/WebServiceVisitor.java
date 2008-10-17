@@ -452,8 +452,19 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
 
     protected boolean shouldProcessMethod(MethodDeclaration method, WebMethod webMethod) {
         builder.log("should process method: "+method.getSimpleName()+" hasWebMethods: "+ hasWebMethods+" ");
+        /*
+        Fix for https://jax-ws.dev.java.net/issues/show_bug.cgi?id=577
         if (hasWebMethods && webMethod == null) {
             builder.log("webMethod == null");
+            return false;
+        }
+        */
+        Collection<Modifier> modifiers = method.getModifiers();
+        boolean staticFinal = modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.FINAL);
+        if (staticFinal) {
+            if (webMethod != null) {
+                builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_WEBSERVICE_METHOD_IS_STATIC_OR_FINAL(method.getDeclaringType(), method));
+            }
             return false;
         }
         boolean retval = (endpointReferencesInterface ||

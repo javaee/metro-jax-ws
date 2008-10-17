@@ -208,7 +208,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
             }
-            canOverwriteResponse = builder.canOverWriteClass(requestClassName);
+            canOverwriteResponse = builder.canOverWriteClass(responseClassName);
             if (!canOverwriteResponse) {
                 builder.log("Class " + responseClassName + " exists. Not overwriting.");
             }

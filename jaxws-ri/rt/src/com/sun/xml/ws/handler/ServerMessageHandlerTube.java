@@ -31,7 +31,7 @@ public class ServerMessageHandlerTube extends HandlerTube{
         super(next, cousinTube);
         this.seiModel = seiModel;
         this.binding = binding;
-        setUpProcessorOnce();
+        setUpHandlersOnce();
     }
 
     /**
@@ -41,10 +41,11 @@ public class ServerMessageHandlerTube extends HandlerTube{
         super(that, cloner);
         this.seiModel = that.seiModel;
         this.binding = that.binding;
-        setUpProcessorOnce();
+        this.handlers = that.handlers;
+        this.roles = that.roles;
     }
 
-    private void setUpProcessorOnce() {
+    private void setUpHandlersOnce() {
         handlers = new ArrayList<Handler>();
         HandlerConfiguration handlerConfig = ((BindingImpl) binding).getHandlerConfig();
         List<MessageHandler> msgHandlersSnapShot= handlerConfig.getMessageHandlers();
@@ -52,7 +53,6 @@ public class ServerMessageHandlerTube extends HandlerTube{
             handlers.addAll(msgHandlersSnapShot);
             roles = new HashSet<String>();
             roles.addAll(handlerConfig.getRoles());
-            processor = new SOAPHandlerProcessor(false, this, binding, handlers);
         }
     }
 
@@ -98,7 +98,9 @@ public class ServerMessageHandlerTube extends HandlerTube{
     }
 
     void setUpProcessor() {
-        // Do nothing, Processor is setup in the constructor.
+        if(!handlers.isEmpty()) {
+            processor = new SOAPHandlerProcessor(false, this, binding, handlers);
+        }
     }
 
     void closeHandlers(MessageContext mc) {

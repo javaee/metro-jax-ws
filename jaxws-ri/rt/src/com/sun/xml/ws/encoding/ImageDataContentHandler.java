@@ -17,11 +17,6 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-/*
- * $Id: ImageDataContentHandler.java,v 1.2 2007-10-17 23:20:36 jitu Exp $
- * $Revision: 1.2 $
- * $Date: 2007-10-17 23:20:36 $
- */
 
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.

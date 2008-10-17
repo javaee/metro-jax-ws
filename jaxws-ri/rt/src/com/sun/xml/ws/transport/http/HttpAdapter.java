@@ -260,7 +260,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         String ct = con.getRequestHeader("Content-Type");
         InputStream in = con.getInput();
         Packet packet = new Packet();
-        packet.soapAction = con.getRequestHeader("SOAPAction");
+        packet.soapAction = fixQuotesAroundSoapAction(con.getRequestHeader("SOAPAction"));
         packet.wasTransportSecure = con.isSecure();
         packet.acceptableMimeTypes = con.getRequestHeader("Accept");
         packet.addSatellite(con);
@@ -277,7 +277,25 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         return packet;
     }
 
-
+    /**
+     * Some stacks may send non WS-I BP 1.2 conformant SoapAction.
+     * Make sure SOAPAction is quoted as {@link Packet#soapAction} expectsa quoted soapAction value.
+     *  
+     * @param soapAction SoapAction HTTP Header
+     * @return
+     */
+    private String fixQuotesAroundSoapAction(String soapAction) {
+        if(soapAction != null && (!soapAction.startsWith("\"") || !soapAction.endsWith("\"")) ) {
+            LOGGER.warning("Received WS-I BP non-conformant Unquoted SoapAction HTTP header: "+ soapAction);
+            String fixedSoapAction = soapAction;
+            if(!soapAction.startsWith("\""))
+                fixedSoapAction = "\"" + fixedSoapAction;
+            if(!soapAction.endsWith("\""))
+                fixedSoapAction = fixedSoapAction + "\"";
+            return fixedSoapAction;
+        }
+        return soapAction;
+    }
 
 
     private void encodePacket(@NotNull Packet packet, @NotNull WSHTTPConnection con, @NotNull Codec codec) throws IOException {
@@ -413,7 +431,12 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         public void close() {
             if(!con.isClosed()) {
                 // close the response channel now
-                con.setStatus(WSHTTPConnection.ONEWAY);
+                if (con.getStatus() == 0) {
+                    // if the appliation didn't set the status code,
+                    // set the default one.
+                    con.setStatus(WSHTTPConnection.ONEWAY);
+                }
+                
                 try {
                     con.getOutput().close(); // no payload
                 } catch (IOException e) {
@@ -426,20 +449,23 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     final class HttpToolkit extends Adapter.Toolkit {
         public void handle(WSHTTPConnection con) throws IOException {
+            boolean invoke = false;
             try {
                 Packet packet = new Packet();
                 try {
                     packet = decodePacket(con, codec);
+                    invoke = true;
                 } catch(ExceptionHasMessage e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     packet.setMessage(e.getFaultMessage());
                 } catch(UnsupportedMediaException e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     con.setStatus(WSHTTPConnection.UNSUPPORTED_MEDIA);
-                } catch(ServerRtException e) {
+                } catch(Exception e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    con.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 }
-                if (packet.getMessage() != null && !packet.getMessage().isFault()) {
+                if (invoke) {
                     try {
                         packet = head.process(packet, con.getWebServiceContextDelegate(),
                                 packet.transportBackChannel);
