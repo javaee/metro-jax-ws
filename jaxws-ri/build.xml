@@ -441,9 +441,9 @@
 
   <target name="integrate-saaj-hudson" depends="prepare"
           description="integrate the last successful SAAJ RI Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/saaj-ri/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
+    <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/build/lib/saaj-impl.jar"
          dest="lib/saaj-impl.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/saaj-ri/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.src.zip"
+    <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.2.src.zip"
          dest="lib/saaj-impl.src.zip" />
     <get src="http://hudson.sfbay.sun.com/job/saaj-api/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
          dest="lib/saaj-api.jar" />
