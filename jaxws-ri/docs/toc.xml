@@ -42,7 +42,7 @@
   </banner>
   <!-- this portion is excuted as the footer -->
   <footer>
-    $Revision: 1.6.4.1 $<br/>      $Date: 2008-10-17 22:41:51 $<br/>
+    Last revised: $Date: 2008-10-20 21:37:03 $<br/>
     <a href="Copyright.html">Copyright&#169; 2006 Sun Microsystems, Inc. All rights reserved.</a>
   </footer>
     
