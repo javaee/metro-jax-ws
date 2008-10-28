@@ -40,7 +40,6 @@ import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.streaming.XMLStreamWriterFactory;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.RuntimeVersion;
-import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.ParserUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import com.sun.xml.ws.server.ServerRtException;
@@ -118,6 +117,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
                     boolean hasPortType = false;
                     boolean hasService = false;
                     Set<String> importedDocs = new HashSet<String>();
+                    Set<QName> allServices = new HashSet<QName>();
 
                     // if WSDL, parse more
                     while (XMLStreamReaderUtil.nextContent(reader) != XMLStreamConstants.END_DOCUMENT) {
@@ -135,6 +135,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
                         } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
                             String sn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
                             QName sqn = new QName(tns,sn);
+                            allServices.add(sqn);
                             if(serviceName.equals(sqn)) {
                                 hasService = true;
                             }
@@ -152,7 +153,7 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
                         }
                     }
                     return new WSDLImpl(
-                        rootName,systemId,src,tns,hasPortType,hasService,importedDocs);
+                        rootName,systemId,src,tns,hasPortType,hasService,importedDocs,allServices);
                 } else {
                     return new MetadataDocument(rootName,systemId,src);
                 }
@@ -291,13 +292,15 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
         private final String targetNamespace;
         private final boolean hasPortType;
         private final boolean hasService;
+        private final Set<QName> allServices;
 
         public WSDLImpl(QName rootName, URL url, SDDocumentSource source, String targetNamespace, boolean hasPortType,
-                        boolean hasService, Set<String> imports) {
+                        boolean hasService, Set<String> imports, Set<QName> allServices) {
             super(rootName, url, source, imports);
             this.targetNamespace = targetNamespace;
             this.hasPortType = hasPortType;
             this.hasService = hasService;
+            this.allServices = allServices;
         }
 
         public String getTargetNamespace() {
@@ -310,6 +313,10 @@ public class MetadataDocument extends SDDocumentSource implements SDDocument {
 
         public boolean hasService() {
             return hasService;
+        }
+
+        public Set<QName> getAllServices() {
+            return allServices;
         }
 
         public boolean isWSDL() {

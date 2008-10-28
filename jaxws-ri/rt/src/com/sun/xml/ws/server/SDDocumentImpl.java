@@ -117,6 +117,7 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
                     boolean hasPortType = false;
                     boolean hasService = false;
                     Set<String> importedDocs = new HashSet<String>();
+                    Set<QName> allServices = new HashSet<QName>();
 
                     // if WSDL, parse more
                     while (XMLStreamReaderUtil.nextContent(reader) != XMLStreamConstants.END_DOCUMENT) {
@@ -134,6 +135,7 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
                         } else if (WSDLConstants.QNAME_SERVICE.equals(name)) {
                             String sn = ParserUtil.getMandatoryNonEmptyAttribute(reader, WSDLConstants.ATTR_NAME);
                             QName sqn = new QName(tns,sn);
+                            allServices.add(sqn);
                             if(serviceName.equals(sqn)) {
                                 hasService = true;
                             }
@@ -151,7 +153,7 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
                         }
                     }
                     return new WSDLImpl(
-                        rootName,systemId,src,tns,hasPortType,hasService,importedDocs);
+                        rootName,systemId,src,tns,hasPortType,hasService,importedDocs,allServices);
                 } else {
                     return new SDDocumentImpl(rootName,systemId,src);
                 }
@@ -323,13 +325,15 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
         private final String targetNamespace;
         private final boolean hasPortType;
         private final boolean hasService;
+        private final Set<QName> allServices;
 
         public WSDLImpl(QName rootName, URL url, SDDocumentSource source, String targetNamespace, boolean hasPortType,
-                        boolean hasService, Set<String> imports) {
+                        boolean hasService, Set<String> imports,Set<QName> allServices) {
             super(rootName, url, source, imports);
             this.targetNamespace = targetNamespace;
             this.hasPortType = hasPortType;
             this.hasService = hasService;
+            this.allServices = allServices;
         }
 
         public String getTargetNamespace() {
@@ -342,6 +346,10 @@ public class SDDocumentImpl extends SDDocumentSource implements SDDocument {
 
         public boolean hasService() {
             return hasService;
+        }
+
+        public Set<QName> getAllServices() {
+            return allServices;
         }
 
         public boolean isWSDL() {
