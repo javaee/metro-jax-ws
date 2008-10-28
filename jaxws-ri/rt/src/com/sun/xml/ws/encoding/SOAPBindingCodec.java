@@ -241,7 +241,9 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
         }
         
         xmlAccept = clientAcceptedContentTypes;
-        
+
+        if(!(binding instanceof SOAPBindingImpl))
+            throw new WebServiceException("Expecting a SOAP binding but found "+binding);
         this.binding = (SOAPBindingImpl)binding;
     }
     
