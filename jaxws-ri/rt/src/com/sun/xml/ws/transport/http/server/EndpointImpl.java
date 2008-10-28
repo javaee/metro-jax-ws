@@ -281,6 +281,7 @@ public class EndpointImpl extends Endpoint {
     private @Nullable SDDocumentSource getPrimaryWsdl() {
         Class implType = implementor.getClass();
         // Takes care of @WebService, @WebServiceProvider's wsdlLocation
+        EndpointFactory.verifyImplementorClass(implType);
         String wsdlLocation = EndpointFactory.getWsdlLocation(implType);
         if (wsdlLocation != null) {
             ClassLoader cl = implType.getClassLoader();
