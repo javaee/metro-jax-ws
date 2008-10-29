@@ -37,6 +37,8 @@
 package com.sun.xml.ws.addressing.model;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+import com.sun.xml.ws.api.message.Packet;
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
@@ -47,15 +49,21 @@ import javax.xml.namespace.QName;
  * @author Rama Pulavarthi
  */
 public class MissingAddressingHeaderException extends WebServiceException {
-    private QName name;
+    private final QName name;
+    private final Packet packet;
 
     /**
      *
      * @param name QName of the missing WS-Addressing Header
      */
     public MissingAddressingHeaderException(@NotNull QName name) {
+        this(name,null);
+    }
+
+    public MissingAddressingHeaderException(@NotNull QName name, @Nullable Packet p) {
         super("Missing WS-Addressing header: "+name);
         this.name = name;
+        this.packet = p;
     }
 
     /**
@@ -66,5 +74,15 @@ public class MissingAddressingHeaderException extends WebServiceException {
      */
     public QName getMissingHeaderQName() {
         return name;
+    }
+
+    /**
+     * The {@link Packet} in which a header was missing.
+     *
+     * <p>
+     * This object can be used to deep-inspect the problematic SOAP message.
+     */
+    public Packet getPacket() {
+        return packet;
     }
 }

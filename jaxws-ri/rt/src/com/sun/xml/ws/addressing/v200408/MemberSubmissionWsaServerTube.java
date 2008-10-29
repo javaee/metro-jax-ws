@@ -77,7 +77,7 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
         
         // if no wsa:To header is found
         if (!foundTo)
-            throw new MissingAddressingHeaderException(addressingVersion.toTag);
+            throw new MissingAddressingHeaderException(addressingVersion.toTag,packet);
 
         //we can find Req/Response or Oneway only with WSDLModel
         if (wsdlPort != null) {
@@ -86,13 +86,13 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
             // Unlike W3C version, we cannot assume default value as anonymous if not present.
             // For protocol messages, don't check as they do not have any corresponding wsdl operations
             if (wbo != null && !wbo.getOperation().isOneWay() && !foundReplyTo) {
-                throw new MissingAddressingHeaderException(addressingVersion.replyToTag);
+                throw new MissingAddressingHeaderException(addressingVersion.replyToTag,packet);
             }
         }
         if (!validation.equals(MemberSubmissionAddressing.Validation.LAX)) {
             // wsa:MessageId is required if wsa:ReplyTo is present.
             if ((foundReplyTo || foundFaultTo) && !foundMessageId)
-                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
+                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag,packet);
         }
     }
 }

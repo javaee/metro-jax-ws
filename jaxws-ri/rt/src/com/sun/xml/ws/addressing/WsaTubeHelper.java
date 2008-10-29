@@ -54,8 +54,6 @@ import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.istack.Nullable;
 import org.w3c.dom.Element;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.soap.Detail;
 import javax.xml.soap.SOAPConstants;
