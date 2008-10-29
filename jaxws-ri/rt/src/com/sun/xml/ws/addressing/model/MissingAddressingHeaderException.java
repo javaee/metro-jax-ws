@@ -54,6 +54,7 @@ public class MissingAddressingHeaderException extends WebServiceException {
      * @param name QName of the missing WS-Addressing Header
      */
     public MissingAddressingHeaderException(@NotNull QName name) {
+        super("Missing WS-Addressing header: "+name);
         this.name = name;
     }
 
