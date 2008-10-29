@@ -36,6 +36,8 @@
 
 package com.sun.xml.ws.addressing.model;
 
+import com.sun.xml.ws.resources.AddressingMessages;
+
 import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 
@@ -58,6 +60,7 @@ public class InvalidAddressingHeaderException extends WebServiceException {
      *      represents the reason why the Addressing header in question is invalid. 
      */
     public InvalidAddressingHeaderException(QName problemHeader, QName subsubcode) {
+        super(AddressingMessages.INVALID_ADDRESSING_HEADER_EXCEPTION(problemHeader,subsubcode));
         this.problemHeader = problemHeader;
         this.subsubcode = subsubcode;
     }

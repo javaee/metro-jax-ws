@@ -39,6 +39,7 @@ package com.sun.xml.ws.addressing.model;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.resources.AddressingMessages;
 
 import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
@@ -61,7 +62,7 @@ public class MissingAddressingHeaderException extends WebServiceException {
     }
 
     public MissingAddressingHeaderException(@NotNull QName name, @Nullable Packet p) {
-        super("Missing WS-Addressing header: "+name);
+        super(AddressingMessages.MISSING_HEADER_EXCEPTION(name));
         this.name = name;
         this.packet = p;
     }
