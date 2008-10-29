@@ -36,11 +36,14 @@
 
 package com.sun.xml.ws.addressing.model;
 
+import com.sun.istack.NotNull;
+
 import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 
 /**
- * This is used to create exception when a particular WS-Addressing header is missing in the message
+ * This exception signals that a particular WS-Addressing header is missing in a SOAP message.
+ *
  * @author Rama Pulavarthi
  */
 public class MissingAddressingHeaderException extends WebServiceException {
@@ -50,10 +53,16 @@ public class MissingAddressingHeaderException extends WebServiceException {
      *
      * @param name QName of the missing WS-Addressing Header
      */
-    public MissingAddressingHeaderException(QName name) {
+    public MissingAddressingHeaderException(@NotNull QName name) {
         this.name = name;
     }
 
+    /**
+     * Gets the QName of the missing WS-Addressing Header.
+     *
+     * @return
+     *      never null.
+     */
     public QName getMissingHeaderQName() {
         return name;
     }
