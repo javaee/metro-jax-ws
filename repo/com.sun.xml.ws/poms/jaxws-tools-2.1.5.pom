@@ -1,0 +1,68 @@
+                <project xmlns="http://maven.apache.org/POM/4.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.xml.ws</groupId>
+  <artifactId>jaxws-tools</artifactId>
+  <version>2.1.5</version>
+  <url>https://jax-ws.dev.java.net//</url>
+  <name>JAX-WS (JSR-224) Reference Implementation Tools</name>
+  <description>
+        Open source Reference Implementation of JSR-224: Java API for XML Web Services
+  </description>
+  <organization>
+        <name>Sun Microsystems, Inc</name>
+        <url>http://www.sun.com/</url>
+  </organization>
+  <scm>
+        <connection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</connection>
+        <developerConnection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</developerConnection>
+        <url>https://jax-ws-sources.dev.java.net/source/browse/jax-ws-sources/jaxws-ri/</url>
+  </scm>
+  <issueManagement>
+    <system>issueZilla</system>
+    <url>https://jax-ws.dev.java.net/servlets/ProjectIssues</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>JAX-WS RI Users List</name>
+      <post>users@jax-ws.dev.java.net</post>
+      <archive>https://jax-ws.dev.java.net/servlets/SummarizeList?listName=users</archive>
+    </mailingList>
+    <mailingList>
+      <name>JAX-WS Implementation Dev List</name>
+      <post>dev@jax-ws.dev.java.net</post>
+      <archive>https://jax-ws.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+    </mailingList>
+  </mailingLists>
+  <licenses>
+        <license>
+            <name>
+                COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
+            </name>
+            <url>http://www.opensource.org/licenses/cddl1.php</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>
+                GPLv2 with classpath exception
+            </name>
+            <url>http://www.gnu.org/software/classpath/license.html</url>
+            <distribution>repo</distribution>
+        </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>2.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+      <version>2.1.9</version>
+    </dependency>
+  </dependencies>
+</project>
