@@ -1,0 +1,128 @@
+<definitions
+        name="HelloTest"
+        targetNamespace="urn:test"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="urn:test:types"
+        xmlns:tns="urn:test">
+
+    <types>
+        <xsd:schema
+                targetNamespace="urn:test:types"
+                attributeFormDefault="unqualified"
+                elementFormDefault="unqualified">
+
+            <xsd:element name="getFib">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="address" type="xsd:string"/>
+                        <xsd:element name="num" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getFibOneway">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="address" type="xsd:string"/>
+                        <xsd:element name="num" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getFibResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="ret" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getFibVerifyOneway">
+                <xsd:complexType>
+                    <xsd:sequence>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getFibVerifyOnewayResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="ret" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+    </types>
+
+    <message name="FibRequest">
+        <part name="parameters" element="types:getFib"/>
+    </message>
+
+    <message name="FibResponse">
+        <part name="parameters" element="types:getFibResponse"/>
+    </message>
+
+    <message name="FibOnewayRequest">
+        <part name="parameters" element="types:getFibOneway"/>
+    </message>
+
+    <message name="FibVerifyOnewayRequest">
+        <part name="parameters" element="types:getFibVerifyOneway"/>
+    </message>
+
+    <message name="FibVerifyOnewayResponse">
+        <part name="parameters" element="types:getFibVerifyOnewayResponse"/>
+    </message>
+
+    <portType name="fib">
+        <operation name="getFib">
+            <input message="tns:FibRequest"/>
+            <output message="tns:FibResponse"/>
+        </operation>
+        <operation name="getFibOneway">
+            <input message="tns:FibOnewayRequest"/>
+        </operation>
+        <operation name="getFibVerifyOneway">
+            <input message="tns:FibVerifyOnewayRequest"/>
+            <output message="tns:FibVerifyOnewayResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="FibBinding" type="tns:fib">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="getFib">
+            <soap:operation soapAction="urn:test:hello"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="getFibOneway">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <soap:operation soapAction=""/>
+        </operation>
+        <operation name="getFibVerifyOneway">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <soap:operation soapAction=""/>
+        </operation>
+    </binding>
+
+    <service name="Fib">
+        <port name="FibPort" binding="tns:FibBinding">
+            <soap:address location="http://test.org/hello"/>
+        </port>
+    </service>
+
+</definitions>
