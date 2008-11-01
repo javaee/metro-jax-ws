@@ -236,6 +236,7 @@ abstract class EndpointArgumentsBuilder {
         }
         
         public void readRequest(Message msg, Object[] args) throws JAXBException, XMLStreamException {
+            boolean foundAttachment = false;
             // TODO not to loop
             for (Attachment att : msg.getAttachments()) {
                 String part = getWSDLPartName(att);
@@ -243,9 +244,13 @@ abstract class EndpointArgumentsBuilder {
                     continue;
                 }
                 if(part.equals(pname) || part.equals(pname1)){
+                    foundAttachment = true;
                     mapAttachment(att, args);
                     break;
                 }
+            }
+            if (!foundAttachment) {
+                throw new WebServiceException("Missing Attachment for "+pname);
             }
         }
         
