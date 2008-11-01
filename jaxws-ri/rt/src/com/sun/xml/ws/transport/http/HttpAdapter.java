@@ -270,6 +270,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         if (dump) {
             ByteArrayBuffer buf = new ByteArrayBuffer();
             buf.write(in);
+            in.close();
             dump(buf, "HTTP request", con.getRequestHeaders());
             in = buf.newInputStream();
         }
