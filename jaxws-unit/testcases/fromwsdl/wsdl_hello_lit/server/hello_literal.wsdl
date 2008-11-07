@@ -87,6 +87,21 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
+            
+            <xsd:element name="echoAnyType">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="0" name="inObject" nillable="true" type="xsd:anyType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="echoAnyTypeResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element minOccurs="0" name="RetAnyTypeResult" nillable="true" type="xsd:anyType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
 
         </xsd:schema>
     </types>
@@ -155,6 +170,13 @@
         <part name="response" element="types:testKeywordResponse"/>
     </message>
 
+    <message name="EchoAnyType_InputMessage">
+        <part name="request" element="types:echoAnyType"/>
+    </message>
+
+    <message name="EchoAnyType_OutputMessage">
+        <part name="response" element="types:echoAnyTypeResponse"/>
+    </message>
 
     <portType name="Hello">
         <operation name="hello">
@@ -180,7 +202,7 @@
         </operation>
 
         <operation name="echoArray2">
-            <input message="tns:echoArrayRequest2"/>
+            <input message="tns:echoArrayRequest2"/>                                           
             <output message="tns:echoArrayResponse2"/>
         </operation>
 
@@ -197,6 +219,11 @@
         <operation name="testKeyword">
             <input message="tns:testKeywordRequest"/>
             <output message="tns:testKeywordResponse"/>
+        </operation>
+
+        <operation name="echoAnyType">
+            <input message="tns:EchoAnyType_InputMessage"/>
+            <output message="tns:EchoAnyType_OutputMessage"/>
         </operation>
     </portType>
 
@@ -283,6 +310,17 @@
                 <soap:body/>
             </output>
         </operation>
+
+        <operation name="echoAnyType">
+            <soap:operation soapAction="urn:test:echoAnyType"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
     </binding>
 
     <service name="Hello">

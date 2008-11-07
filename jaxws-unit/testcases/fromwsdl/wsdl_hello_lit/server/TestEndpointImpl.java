@@ -92,4 +92,8 @@ public class TestEndpointImpl implements Hello {
     public String testKeyword(String _this) {
         return _this + " World!";
     }
+
+    public Object echoAnyType(Object in) {
+        return in;
+    }
 }
