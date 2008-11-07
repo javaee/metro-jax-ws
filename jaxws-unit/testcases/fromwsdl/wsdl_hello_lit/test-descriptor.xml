@@ -16,7 +16,6 @@
         assertEquals(arg, response.getArgument());
         assertEquals(extra, response.getExtra());
     </client>
-
     <client name="fromwsdl.doclit2">
         <description>
             Test Keywords.
@@ -144,5 +143,25 @@
         }
     </client>
 
+    <client name="fromwsdl.echoAnyType">
+        <description>
+            Test echoAnyType
+        </description>
+        <![CDATA[
+        import javax.xml.parsers.DocumentBuilderFactory;
+        import javax.xml.parsers.ParserConfigurationException;
+        import org.w3c.dom.Document;
+        import org.w3c.dom.Element;
+        import java.io.ByteArrayInputStream;
+
+        String s = "<foo xmlns=\"http://example.com\"><my:bar xmlns:my=\"urn:.my.example.com\">Hello World</my:bar></foo>";
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        Document d = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(s.getBytes()));
+        Element in = d.getDocumentElement();
+        Element out = (Element) helloPort.echoAnyType(in);
+
+        ]]>
+    </client>
 
 </descriptor>
