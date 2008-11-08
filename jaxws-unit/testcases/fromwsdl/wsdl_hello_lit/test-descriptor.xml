@@ -161,6 +161,7 @@
         Element in = d.getDocumentElement();
         Element out = (Element) helloPort.echoAnyType(in);
         assertTrue(out != null);
+        assertEquals("echoAnyTypeResponse", out.getLocalName());
         ]]>
     </client>
 
