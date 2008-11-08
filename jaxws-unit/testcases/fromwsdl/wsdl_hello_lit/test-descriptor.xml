@@ -160,7 +160,7 @@
         Document d = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(s.getBytes()));
         Element in = d.getDocumentElement();
         Element out = (Element) helloPort.echoAnyType(in);
-        assertTrue(out != null)
+        assertTrue(out != null);
         ]]>
     </client>
 
