@@ -45,6 +45,8 @@ import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.encoding.SOAPBindingCodec;
 import com.sun.xml.ws.encoding.XMLHTTPBindingCodec;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
+import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
@@ -106,6 +108,17 @@ public abstract class BindingID {
      */
     public final @NotNull WSBinding createBinding() {
         return BindingImpl.create(this);
+    }
+
+    /**
+     * Returns wsdl:binding@transport attribute. Sub classes
+     * are expected to override this method to provide their transport
+     * attribute.
+     *
+     * @return wsdl:binding@transport attribute
+     */
+    public @NotNull String getTransport() {
+        return SOAPNamespaceConstants.TRANSPORT_HTTP;
     }
 
     public final @NotNull WSBinding createBinding(WebServiceFeature... features) {

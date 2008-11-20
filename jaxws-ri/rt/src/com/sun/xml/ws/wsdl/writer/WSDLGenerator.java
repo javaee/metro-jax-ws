@@ -722,14 +722,14 @@ public class WSDLGenerator {
                 SOAPVersion soapVersion = sBinding.getSOAPVersion();
                 if (soapVersion == SOAPVersion.SOAP_12){
                     com.sun.xml.ws.wsdl.writer.document.soap12.SOAPBinding soapBinding = binding.soap12Binding();
-                    soapBinding.transport(SOAP12_HTTP_TRANSPORT);
+                    soapBinding.transport(this.binding.getBindingId().getTransport());
                     if (sBinding.getStyle().equals(Style.DOCUMENT))
                         soapBinding.style(DOCUMENT);
                     else
                         soapBinding.style(RPC);
                 } else {
                 com.sun.xml.ws.wsdl.writer.document.soap.SOAPBinding soapBinding = binding.soapBinding();
-                    soapBinding.transport(SOAP_HTTP_TRANSPORT);
+                    soapBinding.transport(this.binding.getBindingId().getTransport());
                     if (sBinding.getStyle().equals(Style.DOCUMENT))
                         soapBinding.style(DOCUMENT);
                     else
