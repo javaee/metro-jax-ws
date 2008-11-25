@@ -500,11 +500,11 @@
          dest="lib/sjsxp-src.zip" />
   </target>
 
-  <target name="integrate-jaxws21-api-hudson" depends="prepare"
-          description="integrate the last successful jaxws 2.1 API from Hudson build">
-    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
+  <target name="integrate-jaxws22-api-hudson" depends="prepare"
+          description="integrate the last successful jaxws 2.2 API from Hudson build">
+    <get src="http://hudson.sfbay/view/jax-ws%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api.jar"
          dest="lib/jaxws-api.jar" />
-    <get src="http://hudson.sfbay.sun.com/job/jsr224-2.1-final/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
+    <get src="http://hudson.sfbay/view/jax-ws%202.2/job/jsr224-2.2/lastSuccessfulBuild/artifact/jsr224/api/build/lib/jaxws-api-src.zip"
          dest="lib/jaxws-api-src.zip" />
   </target>
 
