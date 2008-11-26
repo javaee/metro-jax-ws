@@ -53,6 +53,8 @@ import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
+import com.sun.xml.ws.api.model.wsdl.WSDLExtensible;
+import com.sun.xml.ws.api.model.wsdl.WSDLExtension;
 import com.sun.xml.ws.resources.AddressingMessages;
 import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.spi.ProviderImpl;
@@ -99,7 +101,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  * @see AddressingVersion#anonymousEpr
  */
-public final class WSEndpointReference {
+public final class WSEndpointReference  implements WSDLExtension {
     private final XMLStreamBuffer infoset;
     /**
      * Version of the addressing spec.
@@ -115,6 +117,7 @@ public final class WSEndpointReference {
     private @NotNull Header[] referenceParameters;
     private @NotNull String address;
 
+    private @NotNull QName rootElement;
     /**
      * Creates from the spec version of {@link EndpointReference}.
      *
@@ -128,6 +131,7 @@ public final class WSEndpointReference {
             epr.writeTo(new XMLStreamBufferResult(xsb));
             this.infoset = xsb;
             this.version = version;
+            this.rootElement = new QName("EndpointReference", version.nsUri);
             parse();
         } catch (XMLStreamException e) {
             throw new WebServiceException(ClientMessages.FAILED_TO_PARSE_EPR(epr),e);
@@ -152,6 +156,7 @@ public final class WSEndpointReference {
         try {
             this.infoset = infoset;
             this.version = version;
+            this.rootElement = new QName("EndpointReference", version.nsUri);
             parse();
         } catch (XMLStreamException e) {
             // this can never happen because XMLStreamBuffer never has underlying I/O error.
@@ -195,6 +200,7 @@ public final class WSEndpointReference {
         this.infoset = createBufferFromAddress(address,version);
         this.version = version;
         this.address = address;
+        this.rootElement = new QName("EndpointReference", version.nsUri);
         this.referenceParameters = EMPTY_ARRAY;
     }
 
@@ -617,6 +623,8 @@ public final class WSEndpointReference {
             throw new WebServiceException(AddressingMessages.WRONG_ADDRESSING_VERSION(
                 version.nsUri, xsr.getNamespaceURI()));
 
+        this.rootElement = new QName(xsr.getNamespaceURI(), rootLocalName);
+
         // since often EPR doesn't have a reference parameter, create array lazily
         List<Header> marks=null;
 
@@ -793,6 +801,14 @@ public final class WSEndpointReference {
         } catch (TransformerException e) {
             return e.toString();
         }
+    }
+
+    /**
+     * Gets the QName of the EndpointReference element.
+     * @return
+     */
+    public QName getName() {
+        return rootElement;  
     }
 
     /**

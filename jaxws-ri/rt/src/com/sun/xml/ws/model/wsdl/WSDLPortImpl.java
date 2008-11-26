@@ -102,6 +102,7 @@ public final class WSDLPortImpl extends AbstractFeaturedObjectImpl implements WS
      */
     public void setEPR(@NotNull WSEndpointReference epr) {
         assert epr!=null;
+        this.addExtension(epr);
         this.epr = epr;
     }
 
