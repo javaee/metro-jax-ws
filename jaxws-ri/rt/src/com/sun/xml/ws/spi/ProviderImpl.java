@@ -72,6 +72,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.spi.Provider;
 import javax.xml.ws.spi.ServiceDelegate;
+import javax.xml.ws.spi.Invoker;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.net.URL;
 import java.security.AccessController;
@@ -114,6 +115,21 @@ public class ProviderImpl extends Provider {
         return endpoint;
     }
 
+    public Endpoint createEndpoint(String bindingId, Object implementor, WebServiceFeature... features) {
+        //TODO Implement in 2.2
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Endpoint createAndPublishEndpoint(String address, Object implementor, WebServiceFeature... features) {
+        //TODO Implement in 2.2
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Endpoint createEndpoint(String bindingId, Class implementorClass, Invoker invoker, WebServiceFeature... features) {
+        //TODO Implement in 2.2
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+    
     public EndpointReference readEndpointReference(final Source eprInfoset) {
         // EPR constructors are private, so we need privilege escalation.
         // this unmarshalling can only access instances of a fixed, known set of classes,

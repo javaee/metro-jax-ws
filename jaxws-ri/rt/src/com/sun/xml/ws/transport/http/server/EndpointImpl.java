@@ -56,6 +56,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.ws.*;
+import javax.xml.ws.spi.http.HttpContext;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -162,6 +163,11 @@ public class EndpointImpl extends Endpoint {
         }
         createEndpoint();
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
+    }
+
+    public void publish(HttpContext serverContext) {
+        //TODO Implement in 2.2
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void stop() {
