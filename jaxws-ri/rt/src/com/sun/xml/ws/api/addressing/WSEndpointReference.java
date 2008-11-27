@@ -91,6 +91,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Internal representation of the EPR.
@@ -840,6 +842,74 @@ public final class WSEndpointReference  implements WSDLExtension {
     }
 
     private static final OutboundReferenceParameterHeader[] EMPTY_ARRAY = new OutboundReferenceParameterHeader[0];
+
+    private Map<QName, EPRExtension> rootEprExtensions;
+    private static final Map<QName, EPRExtension> EMPTY_EXTENSIONS_MAP = new HashMap<QName, EPRExtension>();
+
+    /**
+     * Represents an extensibility element inside an EndpointReference
+     */
+    public class EPRExtension {
+        XMLStreamBuffer xsb;
+
+        private EPRExtension(XMLStreamBuffer xsb) {
+            this.xsb = xsb;
+
+        }
+
+        public XMLStreamReader readAsXMLStreamReader() throws XMLStreamException {
+            return xsb.readAsXMLStreamReader();
+        }
+    }
+
+    /**
+     * Returns the first extensibility element inside EPR root element with input QName.
+     */
+    public @NotNull EPRExtension getEPRExtension(final QName extnQName) throws XMLStreamException {
+        if (rootEprExtensions == null)
+            parseEPRExtensions();
+        return rootEprExtensions.get(extnQName);
+    }
+
+    private void parseEPRExtensions() throws XMLStreamException {
+        StreamReaderBufferProcessor xsr = infoset.readAsXMLStreamReader();
+
+        // parser should be either at the start element or the start document
+        if (xsr.getEventType() == XMLStreamReader.START_DOCUMENT)
+            xsr.nextTag();
+        assert xsr.getEventType() == XMLStreamReader.START_ELEMENT;
+
+        String rootLocalName = xsr.getLocalName();
+        if (!xsr.getNamespaceURI().equals(version.nsUri))
+            throw new WebServiceException(AddressingMessages.WRONG_ADDRESSING_VERSION(
+                    version.nsUri, xsr.getNamespaceURI()));
+
+        // since often EPR doesn't have extensions, create array lazily
+        Map<QName, EPRExtension> marks = null;
+        XMLStreamBuffer mark;
+        String localName;
+        String ns;
+        while ((mark = xsr.nextTagAndMark()) != null) {
+            localName = xsr.getLocalName();
+            ns = xsr.getNamespaceURI();
+            if (version.nsUri.equals(ns)) {
+                //EPR extensions do not use the same namespace of the Addressing Version.
+                //Not an extension -  SKIP
+                XMLStreamReaderUtil.skipElement(xsr);
+            } else {
+                if (marks == null)
+                    marks = new HashMap<QName, EPRExtension>();
+                marks.put(new QName(ns, localName), new EPRExtension(mark));
+                XMLStreamReaderUtil.skipElement(xsr);
+            }
+        }
+        // hit to </EndpointReference> by now
+        if (marks == null) {
+            this.rootEprExtensions = EMPTY_EXTENSIONS_MAP;
+        } else {
+            this.rootEprExtensions = marks;
+        }
+    }
 
     /**
      * Parses the metadata inside this EPR and obtains it in a easy-to-process form.
