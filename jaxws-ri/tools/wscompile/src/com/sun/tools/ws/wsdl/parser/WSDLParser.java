@@ -69,6 +69,7 @@ import com.sun.tools.ws.wsdl.framework.Entity;
 import com.sun.tools.ws.wsdl.framework.ParserListener;
 import com.sun.tools.ws.wsdl.framework.TWSDLParserContextImpl;
 import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.policy.PolicyWSDLParserExtension;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -118,7 +119,7 @@ public class WSDLParser {
         register(new SOAP12ExtensionHandler(extensionHandlers));
         register(new MemberSubmissionAddressingExtensionHandler(extensionHandlers, errReceiver));
         register(new W3CAddressingExtensionHandler(extensionHandlers, errReceiver));
-
+        register(new PolicyExtensionHandler());
         for (TWSDLExtensionHandler te : ServiceFinder.find(TWSDLExtensionHandler.class)) {
             register(te);
         }
