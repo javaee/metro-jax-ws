@@ -261,10 +261,12 @@ public final class XMLMessage {
         private final DataSource dataSource;
         private boolean consumed;
         private Message delegate;
+        private final HeaderList headerList;
 
         public XmlContent(String ct, InputStream in) {
             super(SOAPVersion.SOAP_11);
             dataSource = createDataSource(ct, in);
+            this.headerList = new HeaderList();
         }
 
         private Message getMessage() {
@@ -297,7 +299,7 @@ public final class XMLMessage {
         }
 
         public @NotNull HeaderList getHeaders() {
-            return null;
+            return headerList;
         }
 
         public String getPayloadLocalPart() {
