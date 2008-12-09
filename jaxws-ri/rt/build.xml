@@ -75,7 +75,7 @@
     </javac>
     <!-- Copy AnnotationProcessor factory info -->
     <copy todir="${build.dir}/classes/META-INF/services">
-      <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*"/>
+      <fileset dir="${basedir}/etc/" includes="javax.xml.ws.*, com.sun.xml.ws.*"/>
     </copy>
 
     <antcall target="test" inheritrefs="true"/>  
