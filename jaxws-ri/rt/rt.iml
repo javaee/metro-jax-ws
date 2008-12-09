@@ -9,7 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
-    <orderEntry type="jdk" jdkName="JDK1.5" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -193,7 +193,17 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="APT" level="application" />
-    <orderEntryProperties />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/policy.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../lib/policy-src.zip!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
     <favoriteGoals>
