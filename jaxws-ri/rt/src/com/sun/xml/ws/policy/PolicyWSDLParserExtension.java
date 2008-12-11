@@ -57,6 +57,7 @@ import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModelContext;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
+import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,8 +81,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.ws.WebServiceException;
 
 /**
+ * This class parses the Policy Attachments in the WSDL and creates a PolicyMap thaty captures the policies configured on
+ * different PolicySubjects in the wsdl.
+ *
+ * After, it is finished it sets the PolicyMap on the WSDLModel.
  *
  * @author Jakub Podlesak (jakub.podlesak at sun.com)
+ * @author Rama Pulavarthi
  */
 final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     
@@ -167,9 +173,6 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     // anonymous policies count
     private int anonymousPoliciesCount;
     
-    // are we parsing config file?
-    private boolean isForConfigFile = false;
-    
     // policy queue -- needed for evaluating the right order policy of policy models expansion
     private PolicyRecord expandQueueHead = null;
     
@@ -204,8 +207,6 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     private Map<WSDLObject, Collection<PolicyRecordHandler>> handlers4BindingFaultOpMap = null;
     
     private PolicyMapBuilder policyBuilder = new PolicyMapBuilder();
-    
-    private PolicyMapMutator[] externalMutators;
     
     private boolean isPolicyProcessed(final String policyUri) {
         return modelsNeeded.containsKey(policyUri);
@@ -348,31 +349,10 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
      * Creates a new instance of PolicyWSDLParserExtension
      */
     public PolicyWSDLParserExtension() {
-        this(false, (PolicyMapMutator[])null);
-    }
-    
-    
-    /**
-     * Creates a new instance of PolicyWSDLParserExtension.
-     * Allows you to register several instances of {@link com.sun.xml.ws.policy.PolicyMapMutator}
-     * to the newly populated {@link com.sun.xml.ws.policy.PolicyMap} to make changes to the map later.
-     */
-    public PolicyWSDLParserExtension(PolicyMapMutator... externalMutators) {
-        this(false, externalMutators);
-    }
-    
-    /**
-     * Creates a new instance of PolicyWSDLParserExtension
-     */
 
-    private PolicyWSDLParserExtension(boolean isForConfigFile, PolicyMapMutator... externalMutators) {
-        this.isForConfigFile = isForConfigFile;
-        if (null != externalMutators) {
-            this.externalMutators = new PolicyMapMutator[externalMutators.length];
-            System.arraycopy(externalMutators, 0, this.externalMutators, 0, externalMutators.length);
-        }
     }
-
+    
+    
     private PolicyRecordHandler readSinglePolicy(final PolicyRecord policyRec, final boolean inner) {
         PolicyRecordHandler handler = null;
         String policyId = policyRec.policyModel.getPolicyId();
@@ -1030,27 +1010,14 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
             LOGGER.logSevereException(e);
         }
         // End-preparation of policy map builder
-        
-        // finally register a wrapper for getting WSDL policy map
-        
-        final EffectivePolicyModifier modifier = EffectivePolicyModifier.createEffectivePolicyModifier();
-        final PolicyMapExtender extender = PolicyMapExtender.createPolicyMapExtender();
-        
+
+        // finally register the PolicyMap on the WSDLModel
         try {
-            if (null != externalMutators && externalMutators.length > 0) {
-                PolicyMapMutator[] mutators = new PolicyMapMutator[externalMutators.length+2];
-                mutators[0] = modifier;
-                mutators[1] = extender;
-                System.arraycopy(externalMutators, 0, mutators, 2, externalMutators.length);
-                context.getWSDLModel().addExtension(new WSDLPolicyMapWrapper(policyBuilder.getPolicyMap(mutators), modifier, extender));
-            } else {
-                context.getWSDLModel().addExtension(new WSDLPolicyMapWrapper(policyBuilder.getPolicyMap(modifier, extender), modifier, extender));
-            }
+            ((WSDLModelImpl)context.getWSDLModel()).setPolicyMap(policyBuilder.getPolicyMap());
         } catch(PolicyException e) {
             LOGGER.logSevereException(e);
             throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1018_POLICY_EXCEPTION_WHILE_FINISHING_PARSING_WSDL(), e));
         }
-        
         LOGGER.exiting();
     }
     

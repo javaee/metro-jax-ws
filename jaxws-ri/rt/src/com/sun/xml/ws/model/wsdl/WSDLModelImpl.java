@@ -45,6 +45,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
+import com.sun.xml.ws.policy.PolicyMap;
 
 import javax.jws.WebParam.Mode;
 import javax.xml.namespace.QName;
@@ -66,6 +67,7 @@ public final class WSDLModelImpl extends AbstractExtensibleImpl implements WSDLM
     private final Map<QName, WSDLBoundPortTypeImpl> bindings = new HashMap<QName, WSDLBoundPortTypeImpl>();
     private final Map<QName, WSDLServiceImpl> services = new LinkedHashMap<QName, WSDLServiceImpl>();
 
+    private PolicyMap policyMap;
     private final Map<QName,WSDLBoundPortType> unmBindings
         = Collections.<QName,WSDLBoundPortType>unmodifiableMap(bindings);
 
@@ -230,6 +232,23 @@ public final class WSDLModelImpl extends AbstractExtensibleImpl implements WSDLM
         }
     }
 
+    /**
+     * Gives the PolciMap associated with the WSDLModel
+     * //TODO expose it as API on WSDLModel, when Policy API is finalized.
+     * @return
+     */
+    public PolicyMap getPolicyMap() {
+        return policyMap;
+    }
+
+    /**
+     * Set PolicyMap for the WSDLModel.
+     * @param policyMap
+     */
+    public void setPolicyMap(PolicyMap policyMap) {
+        this.policyMap = policyMap;
+    }
+    
     /**
      * Invoked at the end of the model construction to fix up references, etc.
      */

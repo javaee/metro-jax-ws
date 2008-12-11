@@ -41,6 +41,7 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
@@ -56,6 +57,7 @@ import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
 import com.sun.xml.ws.resources.ServerMessages;
+import com.sun.xml.ws.resources.PolicyMessages;
 import com.sun.xml.ws.server.provider.ProviderInvokerTube;
 import com.sun.xml.ws.server.sei.SEIInvokerTube;
 import com.sun.xml.ws.util.HandlerAnnotationInfo;
@@ -64,6 +66,11 @@ import com.sun.xml.ws.util.ServiceConfigurationError;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
+import com.sun.xml.ws.policy.WSDLPolicyMapWrapper;
+import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeature;
+import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -172,9 +179,18 @@ public class EndpointFactory {
         WebServiceFeatureList features=((BindingImpl)binding).getFeatures();
         features.parseAnnotations(implType);
 
+        //Check if PolicyMap is registered on WSDLModel,and add PolicyFeature to expose the PolicyMap to the EndpointInterceptors
+        if(wsdlPort != null) {
+            WSDLModelImpl wsdlModel = wsdlPort.getOwner().getParent();
+            PolicyMap policyMap = wsdlModel.getPolicyMap();
+            if(policyMap != null)
+                features.add(new PolicyFeature(policyMap,wsdlModel));
+        }
+
+        WSEndpointInfo endpointInfo = new WSEndpointInfo(serviceName,portName,implType,container,wsdlPort);
         // load Endpoint Interceptors so that can parse custom configuration files to add new features
         for(EndpointInterceptor interceptor : ServiceFinder.find(EndpointInterceptor.class).toArray()) {
-            for(WebServiceFeature f: interceptor.postCreateBinding(wsdlPort,implType,features)) {
+            for(WebServiceFeature f: interceptor.postCreateBinding(endpointInfo,features)) {
                 features.add(f);
             }
         }

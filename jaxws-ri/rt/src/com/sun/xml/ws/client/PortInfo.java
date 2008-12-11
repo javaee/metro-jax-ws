@@ -40,11 +40,20 @@ import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.WSService;
+import com.sun.xml.ws.api.server.EndpointInterceptor;
 import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
+import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeature;
+import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyException;
+import com.sun.xml.ws.resources.PolicyMessages;
+import com.sun.xml.ws.util.ServiceFinder;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
@@ -101,18 +110,41 @@ public class PortInfo implements WSPortInfo {
      */
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
         WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);
-        if (portModel != null)
-            // merge features from WSDL
-            r.mergeFeatures(portModel, portInterface==null/*if dispatch, true*/, false);
+        if(portModel != null) {
+            WSDLModel wsdlmodel = portModel.getOwner().getParent();
+            PolicyMap policyMap = ((WSDLModelImpl) wsdlmodel).getPolicyMap();
+            if(policyMap != null)
+                r.add(new PolicyFeature(policyMap,wsdlmodel));
+        }
 
         // merge features from interceptor
         for( WebServiceFeature wsf : owner.serviceInterceptor.preCreateBinding(this,portInterface,r) )
             r.add(wsf);
 
+        if (portModel != null) {
+            PolicyFeature pf = r.get(PolicyFeature.class);
+            if(pf != null)
+                updateWSDLModelWithPolicyConfiguration(portModel.getOwner().getParent(),pf.getPolicyMap());
+
+            // merge features from WSDL
+            r.mergeFeatures(portModel, portInterface==null/*if dispatch, true*/, false);
+        }
+
         BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
         owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);
 
         return bindingImpl;
+    }
+
+
+    private void updateWSDLModelWithPolicyConfiguration(@NotNull WSDLModel wsdlModel, PolicyMap map) {
+        try {
+            for (ModelConfiguratorProvider configurator : ServiceFinder.find(ModelConfiguratorProvider.class).toArray()) {
+                configurator.configure(wsdlModel, map);
+            }
+        } catch (PolicyException e) {
+            throw new WebServiceException(PolicyMessages.WSP_1023_ERROR_WHILE_CONFIGURING_MODEL(), e);
+        }
     }
 
     //This method is used for Dispatch client only

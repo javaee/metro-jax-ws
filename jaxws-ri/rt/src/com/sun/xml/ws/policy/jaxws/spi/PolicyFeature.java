@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,45 +34,61 @@
  * holder.
  */
 
-package com.sun.xml.ws.api.server;
+package com.sun.xml.ws.policy.jaxws.spi;
 
-import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.istack.NotNull;
-
+import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.policy.PolicyMap;
 import javax.xml.ws.WebServiceFeature;
-import java.util.List;
-import java.util.Collections;
 
 /**
- * Interception point for inner working of {@link WSEndpoint}.
- * <p/>
- * <p/>
- * System-level code could hook an implementation of this to
- * {@link WSEndpoint} to augument its behavior before the WSEndpoint is created.
+ * Store a policy map on the endpoint.
  *
- * @author Rama Pulavarthi
- * @since 2.2
+ * This feature should be set on the binding. It does not make sense to set a
+ * policy map per port because the map contains the policies for all ports in a
+ * WSDL document.
  */
-public abstract class EndpointInterceptor {
+public class PolicyFeature extends WebServiceFeature {
+
+    private static final String featureId = PolicyMap.class.getName();
+    private final PolicyMap policyMap;
+    private final WSDLModel wsdlModel;    
 
     /**
-     * Called before {@link com.sun.xml.ws.api.WSBinding} is created, to allow interceptors
-     * to add {@link WebServiceFeature}s to the created {@link com.sun.xml.ws.api.WSBinding}.
+     * Creates a new instance of PolicyFeature and sets this feature to enabled.
      *
-     * @param endpointInfo    Information about the Endpoint being created
-     * @param defaultFeatures The list of features that are currently scheduled to be set for
-     *                        the newly created {@link com.sun.xml.ws.api.WSBinding}.
-     * @return A set of features to be added to the newly created {@link com.sun.xml.ws.api.WSBinding}.
-     *         Can be empty but never null.
-     *         <tt>defaultFeatures</tt> will take precedence over what this method
-     *         would return (because it includes user-specified ones which will
-     *         take the at-most priority), but features you return from this method
-     *         will take precedence over {@link com.sun.xml.ws.api.BindingID}'s
-     *         {@link com.sun.xml.ws.api.BindingID#createBuiltinFeatureList() implicit features}.
+     * @param map A PolicyMap
+     * @param model The associated WSDL model
      */
-    public List<WebServiceFeature> postCreateBinding(@NotNull WSEndpointInfo endpointInfo, @NotNull WSFeatureList defaultFeatures) {
-        return Collections.emptyList();
+    public PolicyFeature(PolicyMap map, WSDLModel model) {
+        this.policyMap = map;
+        this.wsdlModel = model;
+        this.enabled = true;
     }
 
+    /**
+     * Returns the ID of this feature.
+     *
+     * @return The ID of this feature
+     */
+    public String getID() {
+        return this.featureId;
+    }
 
+    /**
+     * Returns the PolicyMap stored with this feature instance.
+     *
+     * @return The PolicyMap stored with this feature instance
+     */
+    public PolicyMap getPolicyMap() {
+        return this.policyMap;
+    }
+    
+    /**
+     * Returns the WSDLModel stored with this feature instance.
+     *
+     * @return The WSDLModel stored with this feature instance
+     */
+    public WSDLModel getWsdlModel() {
+        return this.wsdlModel;
+    }
 }
