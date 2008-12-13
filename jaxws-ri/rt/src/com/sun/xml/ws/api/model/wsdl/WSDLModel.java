@@ -160,6 +160,7 @@ public interface WSDLModel extends WSDLExtensible {
          * @param resolver  {@link XMLEntityResolver}, works at XML infoset level
          * @param isClientSide  true - its invoked on the client, false means its invoked on the server
          * @param container - container in which the parser is run
+         * @param policyResolver - PolicyResolver for resolving effective Policy
          * @param extensions var args of {@link com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension}s
          * @return A {@link WSDLModel} built from the given wsdlLocation}
          * @throws java.io.IOException
