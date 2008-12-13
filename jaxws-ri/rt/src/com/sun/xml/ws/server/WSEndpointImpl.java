@@ -67,6 +67,7 @@ import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
+import com.sun.xml.ws.policy.PolicyMap;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -111,7 +112,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final SOAPVersion soapVersion;
     private final Engine engine;
     private final @NotNull Codec masterCodec;
-
+    private final @NotNull PolicyMap endpointPolicy;
     private final Pool<Tube> tubePool;
 
     /**
@@ -130,7 +131,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                    Container container, SEIModel seiModel, WSDLPort port,
                    Class<T> implementationClass,
                    @Nullable ServiceDefinitionImpl serviceDef,
-                   InvokerTube terminalTube, boolean isSynchronous) {
+                   InvokerTube terminalTube, boolean isSynchronous, PolicyMap endpointPolicy) {
         this.serviceName = serviceName;
         this.portName = portName;
         this.binding = binding;
@@ -140,6 +141,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         this.implementationClass = implementationClass;
         this.serviceDef = serviceDef;
         this.seiModel = seiModel;
+        this.endpointPolicy = endpointPolicy;
         if (serviceDef != null) {
             serviceDef.setOwner(this);
         }

@@ -35,20 +35,10 @@
  */
 package com.sun.xml.ws.policy;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundFault;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
-import com.sun.xml.ws.api.model.wsdl.WSDLFault;
-import com.sun.xml.ws.api.model.wsdl.WSDLInput;
-import com.sun.xml.ws.api.model.wsdl.WSDLMessage;
-import com.sun.xml.ws.api.model.wsdl.WSDLObject;
-import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
-import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
+import com.sun.xml.ws.api.model.wsdl.*;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtensionContext;
+import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.resources.PolicyMessages;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
@@ -1011,16 +1001,35 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         }
         // End-preparation of policy map builder
 
+        LOGGER.exiting();
+    }
+
+
+    // time to read possible config file and do alternative selection (on client side)
+    @Override
+    public void postFinished(final WSDLParserExtensionContext context) {
         // finally register the PolicyMap on the WSDLModel
+        WSDLModel wsdlModel = context.getWSDLModel();
+        PolicyMap effectiveMap;
         try {
-            ((WSDLModelImpl)context.getWSDLModel()).setPolicyMap(policyBuilder.getPolicyMap());
-        } catch(PolicyException e) {
+            if(context.isClientSide())
+                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ClientContext(policyBuilder.getPolicyMap()));
+            else
+                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ServerContext(policyBuilder.getPolicyMap(), null));
+            ((WSDLModelImpl) wsdlModel).setPolicyMap(effectiveMap);
+        } catch (PolicyException e) {
             LOGGER.logSevereException(e);
             throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1018_POLICY_EXCEPTION_WHILE_FINISHING_PARSING_WSDL(), e));
         }
+        try {
+            PolicyUtil.configureModel(wsdlModel,effectiveMap);
+        } catch (PolicyException e) {
+            LOGGER.logSevereException(e);
+            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1032_FAILED_CONFIGURE_WSDL_MODEL(), e));
+        }
         LOGGER.exiting();
     }
-    
+
     /**
      * Reads policy reference element <wsp:PolicyReference/> and returns referenced policy URI as String
      */

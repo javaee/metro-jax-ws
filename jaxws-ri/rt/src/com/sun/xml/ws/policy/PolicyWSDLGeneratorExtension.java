@@ -37,6 +37,8 @@ package com.sun.xml.ws.policy;
 
 import com.sun.xml.txw2.TypedXmlWriter;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.policy.PolicyResolverFactory;
+import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.model.CheckedException;
 import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -115,7 +117,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             }
             policyMap = PolicyMap.createPolicyMap(Arrays.asList(extenders));
 
-                final TypedXmlWriter root = context.getRoot();
+            final TypedXmlWriter root = context.getRoot();
             // TODO: resolve policy version and add default policy namespace
             // root._namespace(PolicyConstants.POLICY_V1_2_NAMESPACE_URI, PolicyConstants.POLICY_NAMESPACE_PREFIX);
             root._namespace(PolicyConstants.WSU_NAMESPACE_URI, PolicyConstants.WSU_NAMESPACE_PREFIX);
@@ -129,6 +131,9 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             } catch (PolicyException e) {
                 throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1048_MAP_UPDATE_FAILED(), e));
             }
+            //Now Resolve PolicyMap with configuration files.
+            policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(policyMap,context.getEndpointClass()));            
+
         } finally {
             LOGGER.exiting();
         }
@@ -405,8 +410,10 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
      * Adds a PolicyReference element that points to the policy of the element,
      * if the policy does not have any id or name. Writes policy inside the element otherwise.
      *
-     * @param policy to be referenced or marshalled
-     * @param element A TXW element to which we shall add the PolicyReference
+     * @param subject
+     *      PolicySubject to be referenced or marshalled
+     * @param writer
+     *      A TXW on to which we shall add the PolicyReference
      */
     private void writePolicyOrReferenceIt(final PolicySubject subject, final TypedXmlWriter writer) {
         final Policy policy;

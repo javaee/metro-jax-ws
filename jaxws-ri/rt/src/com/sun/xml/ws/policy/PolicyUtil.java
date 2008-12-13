@@ -33,49 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.wsdl.parser;
+
+package com.sun.xml.ws.policy;
 
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtensionContext;
-import com.sun.xml.ws.api.policy.PolicyResolver;
+import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.privateutil.PolicyUtils;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.namespace.QName;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Provides implementation of {@link WSDLParserExtensionContext}
- *
- * @author Vivek Pandey
- * @author Fabian Ritzmann
+ * @author Rama Pulavarthi
  */
-final class WSDLParserExtensionContextImpl implements WSDLParserExtensionContext {
-    private final boolean isClientSide;
-    private final WSDLModel wsdlModel;
-    private final Container container;
-    private final PolicyResolver policyResolver;
+public class PolicyUtil {
+    private static ModelConfiguratorProvider[] configurators = PolicyUtils.ServiceProvider.load(ModelConfiguratorProvider.class);
+
+    public static void configureModel(final WSDLModel model, PolicyMap policyMap) throws PolicyException {
+        for (ModelConfiguratorProvider configurator : configurators) {
+                configurator.configure(model, policyMap);
+            }
+    }
 
     /**
-     * Construct {@link WSDLParserExtensionContextImpl} with information that whether its on client side
-     * or server side.
+     * TODO implement this by updating Policy SPI
+     * @param policyMap
+     * @param serviceName
+     * @param portName
+     * @return
      */
-    protected WSDLParserExtensionContextImpl(WSDLModel model, boolean isClientSide, Container container, PolicyResolver policyResolver) {
-        this.wsdlModel = model;
-        this.isClientSide = isClientSide;
-        this.container = container;
-        this.policyResolver = policyResolver;
-    }
-
-    public boolean isClientSide() {
-        return isClientSide;
-    }
-
-    public WSDLModel getWSDLModel() {
-        return wsdlModel;
-    }
-
-    public Container getContainer() {
-        return this.container;
-    }
-
-    public PolicyResolver getPolicyResolver() {
-        return policyResolver;
+    public static List<WebServiceFeature> getPortScopedFeatures(PolicyMap policyMap, QName serviceName, QName portName) {
+       List<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
+       final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName,portName);
+       for (ModelConfiguratorProvider configurator : configurators) {
+           //TODO create policy SPI
+             //WebServiceFeature f = configurator.getFeature(key, policyMap);
+            //features.add(f);
+       }
+       return features; 
     }
 }

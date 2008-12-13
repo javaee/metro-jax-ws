@@ -33,49 +33,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.xml.ws.wsdl.parser;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtensionContext;
-import com.sun.xml.ws.api.policy.PolicyResolver;
+package com.sun.xml.ws.api.policy;
+
+import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.policy.DefaultPolicyResolver;
 
 /**
- * Provides implementation of {@link WSDLParserExtensionContext}
+ * PolicyResolverFactory provides a way to override Effective Policy Resolution for a Service or Client.
+ * JAX-WS provides DEFAULT_POLICY_RESOLVER implementation that
+ *      on server-side validates that Policy has single alternative in the scope of each subject
+ *      on client-side updates with the effective policy by doing alternative selection.
  *
- * @author Vivek Pandey
- * @author Fabian Ritzmann
+ * Extensions can override this to consult other forms of configuration to give the effective PolicyMap.
+ * 
+ * @author Rama Pulavarthi
  */
-final class WSDLParserExtensionContextImpl implements WSDLParserExtensionContext {
-    private final boolean isClientSide;
-    private final WSDLModel wsdlModel;
-    private final Container container;
-    private final PolicyResolver policyResolver;
+public class PolicyResolverFactory {
+
+    public static PolicyResolver create(){
+        for (PolicyResolverFactory factory : ServiceFinder.find(PolicyResolverFactory.class)) {
+            PolicyResolver policyResolver = factory.create();
+            if (policyResolver != null) {
+                return policyResolver;
+            }
+        }
+        // return default policy resolver. 
+        return DEFAULT_POLICY_RESOLVER;
+
+    }
 
     /**
-     * Construct {@link WSDLParserExtensionContextImpl} with information that whether its on client side
-     * or server side.
+     * JAX-WS provided DEFAULT_POLICY_RESOLVER implementation that
+     *      on server-side validates that Policy has single alternative in the scope of each subject
+     *      on client-side updates with the effective policy by doing alternative selection.
      */
-    protected WSDLParserExtensionContextImpl(WSDLModel model, boolean isClientSide, Container container, PolicyResolver policyResolver) {
-        this.wsdlModel = model;
-        this.isClientSide = isClientSide;
-        this.container = container;
-        this.policyResolver = policyResolver;
-    }
+    public static final PolicyResolver DEFAULT_POLICY_RESOLVER =  new DefaultPolicyResolver();
 
-    public boolean isClientSide() {
-        return isClientSide;
-    }
-
-    public WSDLModel getWSDLModel() {
-        return wsdlModel;
-    }
-
-    public Container getContainer() {
-        return this.container;
-    }
-
-    public PolicyResolver getPolicyResolver() {
-        return policyResolver;
-    }
+    
 }

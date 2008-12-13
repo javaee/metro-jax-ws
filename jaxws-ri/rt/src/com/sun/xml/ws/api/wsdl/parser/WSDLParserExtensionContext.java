@@ -38,6 +38,7 @@ package com.sun.xml.ws.api.wsdl.parser;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.policy.PolicyResolver;
 
 /**
  * Provides contextual information for {@link WSDLParserExtension}s.
@@ -65,4 +66,11 @@ public interface WSDLParserExtensionContext {
      * @return The container in which this service or client is running.
      */
     @NotNull Container getContainer();
+
+
+    /**
+     * Provides the PolicyResolver
+     */
+    @NotNull
+    PolicyResolver getPolicyResolver();
 }
