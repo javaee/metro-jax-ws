@@ -2,4 +2,3 @@ com.sun.xml.ws.addressing.policy.AddressingModelConfiguratorProvider
 com.sun.xml.ws.encoding.policy.MtomModelConfiguratorProvider
 com.sun.xml.ws.encoding.policy.FastInfosetModelConfiguratorProvider
 com.sun.xml.ws.encoding.policy.SelectOptimalEncodingModelConfiguratorProvider
-com.sun.xml.ws.rm.policy.spi_impl.RmModelConfigurationProvider
