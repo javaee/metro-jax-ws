@@ -62,6 +62,7 @@ import com.sun.xml.ws.streaming.TidyXMLStreamReader;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.policy.PolicyWSDLParserExtension;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -269,10 +270,10 @@ public class RuntimeWSDLParser {
         this.context = new WSDLParserExtensionContextImpl(wsdlDoc, isClientSide, container, policyResolver);
 
         // register handlers for default extensions
+        register(new PolicyWSDLParserExtension());
         register(new MemberSubmissionAddressingWSDLParserExtension());
         register(new W3CAddressingWSDLParserExtension());
         register(new W3CAddressingMetadataWSDLParserExtension());
-
         for (WSDLParserExtension e : extensions)
             register(e);
 
