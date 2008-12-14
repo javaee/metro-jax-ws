@@ -80,6 +80,7 @@ import com.sun.xml.ws.wsdl.writer.document.soap.Header;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
 import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.policy.PolicyWSDLGeneratorExtension;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;
@@ -221,7 +222,7 @@ public class WSDLGenerator {
 
         // register handlers for default extensions
         register(new W3CAddressingWSDLGeneratorExtension());
-
+        register(new PolicyWSDLGeneratorExtension());
         for (WSDLGeneratorExtension w : extensions)
             register(w);
 
