@@ -132,7 +132,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                 throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1048_MAP_UPDATE_FAILED(), e));
             }
             //Now Resolve PolicyMap with configuration files.
-            policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(policyMap,context.getEndpointClass()));            
+            policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(policyMap,context.getContainer(), context.getEndpointClass()));            
 
         } finally {
             LOGGER.exiting();

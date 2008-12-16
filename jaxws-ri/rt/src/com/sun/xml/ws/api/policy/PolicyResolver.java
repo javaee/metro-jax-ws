@@ -37,6 +37,7 @@
 package com.sun.xml.ws.api.policy;
 
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.api.server.Container;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -71,8 +72,9 @@ public interface PolicyResolver {
     PolicyMap resolve(ClientContext context);
 
    public class ServerContext {
-        private PolicyMap policyMap;
-        private Class endpointClass;
+       private PolicyMap policyMap;
+       private Class endpointClass;
+       private Container container;
 
         /**
          * The abstraction of PolicyMap is not finalized, and will change in few months. It is highly discouraged to use
@@ -84,18 +86,28 @@ public interface PolicyResolver {
          *  @param policyMap
          *      PolicyMap created from PolicyAttachments in WSDL or Feature annotations on endpoint implementation class.
          */
-        public ServerContext(@Nullable PolicyMap policyMap, Class endpointClass) {
+        public ServerContext(@Nullable PolicyMap policyMap, Container container, Class endpointClass) {
             this.policyMap = policyMap;
             this.endpointClass = endpointClass;
+            this.container = container;
         }
 
         public @Nullable PolicyMap getPolicyMap() {
             return policyMap;
         }
+
+        public @Nullable Class getEndpointClass() {
+           return endpointClass;
+        }
+
+        public Container getContainer() {
+           return container;
+        }
     }
 
     public class ClientContext {
         private PolicyMap policyMap;
+        private Container container;
 
         /**
          * The abstraction of PolicyMap is not finalized, and will change in few months. It is highly discouraged to use
@@ -105,12 +117,17 @@ public interface PolicyResolver {
          *
          * @param policyMap PolicyMap created from PolicyAttachemnts in WSDL
          */
-        public ClientContext(@Nullable PolicyMap policyMap) {
+        public ClientContext(@Nullable PolicyMap policyMap, Container container) {
             this.policyMap = policyMap;
+            this.container = container;
         }
 
         public @Nullable PolicyMap getPolicyMap() {
             return policyMap;
+        }
+
+        public Container getContainer() {
+           return container;
         }
     }
 }

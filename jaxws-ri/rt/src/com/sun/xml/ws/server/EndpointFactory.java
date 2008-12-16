@@ -184,7 +184,7 @@ public class EndpointFactory {
                  features.mergeFeatures(wsdlPort,true,true);
             } else {
                 //No WSDL, so try to merge features from Policy configuration
-                policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(null,implType));
+                policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(null,container, implType));
                 for(WebServiceFeature f: PolicyUtil.getPortScopedFeatures(policyMap,serviceName,portName)){
                     features.add(f);
                 }

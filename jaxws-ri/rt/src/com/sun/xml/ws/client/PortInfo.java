@@ -107,7 +107,7 @@ public class PortInfo implements WSPortInfo {
        if(portModel != null) {
             return ((WSDLModelImpl) portModel.getOwner().getParent()).getPolicyMap();
        } else {
-           return PolicyResolverFactory.create().resolve(new PolicyResolver.ClientContext(null));
+           return PolicyResolverFactory.create().resolve(new PolicyResolver.ClientContext(null,owner.getContainer()));
        }
     }
     /**

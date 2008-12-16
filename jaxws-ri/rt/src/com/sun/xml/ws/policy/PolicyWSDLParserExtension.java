@@ -1013,9 +1013,9 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         PolicyMap effectiveMap;
         try {
             if(context.isClientSide())
-                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ClientContext(policyBuilder.getPolicyMap()));
+                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ClientContext(policyBuilder.getPolicyMap(),context.getContainer()));
             else
-                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ServerContext(policyBuilder.getPolicyMap(), null));
+                effectiveMap = context.getPolicyResolver().resolve(new PolicyResolver.ServerContext(policyBuilder.getPolicyMap(), context.getContainer(),null));
             ((WSDLModelImpl) wsdlModel).setPolicyMap(effectiveMap);
         } catch (PolicyException e) {
             LOGGER.logSevereException(e);
