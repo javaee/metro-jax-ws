@@ -326,7 +326,7 @@
       <zipfileset dir="${basedir}/tools/etc/" includes="com.sun.*" prefix="META-INF/services"/>
     </zip>
     <zip file="${dist20.home}/lib/jaxws-libs.src.zip">
-      <fileset dir="${basedir}/lib" includes="*src.zip" />
+      <fileset dir="${basedir}/lib" includes="*src.zip" excludes="jaxws-asm-src.zip,junit-src.zip,htmlmacro.src.zip"/>
     </zip>
   </target>
 
