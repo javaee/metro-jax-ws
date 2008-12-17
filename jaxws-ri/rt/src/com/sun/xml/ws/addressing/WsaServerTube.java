@@ -59,6 +59,7 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
+import com.sun.xml.ws.binding.BindingImpl;
 
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
@@ -229,7 +230,7 @@ public class WsaServerTube extends WsaTube {
         // we need to assemble a pipeline to talk to this endpoint.
         // TODO: what to pass as WSService?
         Tube transport = TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(),
-            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSPortInfo) null, binding,endpoint.getContainer()));
+            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSPortInfo) null, binding,endpoint.getContainer(),((BindingImpl)binding).createCodec(),null));
 
         packet.endpointAddress = adrs;
         String action = packet.getMessage().isFault() ?

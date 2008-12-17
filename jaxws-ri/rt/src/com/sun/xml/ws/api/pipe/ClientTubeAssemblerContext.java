@@ -84,11 +84,11 @@ public class ClientTubeAssemblerContext {
     private final @NotNull Container container;
     private @NotNull Codec codec;
 
-    //Nullable only to maintain comaptibility with old constructors of thsi class.
+    //Nullable only to maintain comaptibility with old constructors of this class.
     private final @Nullable WSPortInfo portInfo;
 
     /**
-     *
+     * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
      * @deprecated
      *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec, SEIModel)}
      */
@@ -97,9 +97,9 @@ public class ClientTubeAssemblerContext {
     }
 
     /**
-     *
+     * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
      * @deprecated
-     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container)}.
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec, SEIModel)}.
      */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
@@ -108,17 +108,10 @@ public class ClientTubeAssemblerContext {
         this(address, wsdlModel, rootOwner, binding, container, ((BindingImpl)binding).createCodec() );
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
-                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
-                                      @NotNull Container container) {
-        // WSBinding is actually BindingImpl
-        this(address, wsdlModel, portInfo, binding, container, ((BindingImpl)binding).createCodec() );
-    }
-
     /**
-     *
+     * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
      * @deprecated
-     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec)}.
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec,SEIModel)}.
      */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
@@ -126,14 +119,8 @@ public class ClientTubeAssemblerContext {
         this(address, wsdlModel, rootOwner, binding, container, codec, null);
     }
 
-    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
-                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
-                                      @NotNull Container container, Codec codec) {
-        this(address, wsdlModel, portInfo, binding, container, codec, null);
-    }
-
     /**
-     *
+     * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
      * @deprecated
      *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec, SEIModel)}.
      */
@@ -143,7 +130,9 @@ public class ClientTubeAssemblerContext {
         this(address, wsdlModel, rootOwner, null/* no info on which port it is, so pass null*/, binding, container, codec,seiModel);
     }
 
-
+    /**
+     * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
+     */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec, SEIModel seiModel) {
