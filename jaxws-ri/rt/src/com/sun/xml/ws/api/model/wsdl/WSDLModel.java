@@ -44,6 +44,7 @@ import com.sun.xml.ws.api.wsdl.parser.XMLEntityResolver;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.policy.PolicyResolverFactory;
 import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
+import com.sun.xml.ws.policy.PolicyMap;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
@@ -114,6 +115,17 @@ public interface WSDLModel extends WSDLExtensible {
      * @return an empty Map if the wsdl document has no wsdl:service
      */
     @NotNull Map<QName, ? extends WSDLService> getServices();
+
+    /**
+     * Gives the PolicyMap associated with the WSDLModel
+     *
+     * @return PolicyMap
+     *
+     * @deprecated
+     * Do not use this method as the PolicyMap API is not final yet and might change in next few months.
+     */
+    public PolicyMap getPolicyMap();
+
 
     /**
      * Main purpose of this class is to  parsing of a WSDL and get the {@link WSDLModel} from it.

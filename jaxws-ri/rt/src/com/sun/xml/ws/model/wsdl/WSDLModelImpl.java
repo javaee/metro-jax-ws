@@ -233,9 +233,9 @@ public final class WSDLModelImpl extends AbstractExtensibleImpl implements WSDLM
     }
 
     /**
-     * Gives the PolciMap associated with the WSDLModel
-     * //TODO expose it as API on WSDLModel, when Policy API is finalized.
-     * @return
+     * Gives the PolicyMap associated with the WSDLModel
+     *
+     * @return PolicyMap
      */
     public PolicyMap getPolicyMap() {
         return policyMap;
