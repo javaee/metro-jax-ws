@@ -40,7 +40,7 @@
         <data xmlns="http://www.netbeans.org/ns/profiler/1" profile-file-target="" profile-target="" version="0.4"/>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!--Do not use Project Properties customizer when editing this file manually.-->
-            <name>JAXWS-RI-2.1</name>
+            <name>JAXWS-RI-2.2</name>
             <folders>
                 <source-folder>
                     <label>rt/src</label>
@@ -66,6 +66,16 @@
                     <label>rt-fi/src</label>
                     <type>java</type>
                     <location>rt-fi/src</location>
+                </source-folder>
+                <source-folder>
+                    <label>rt/build/gen-src</label>
+                    <type>java</type>
+                    <location>rt/build/gen-src</location>
+                </source-folder>
+                <source-folder>
+                    <label>tools/wscompile/build/gen-src</label>
+                    <type>java</type>
+                    <location>tools/wscompile/build/gen-src</location>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -198,6 +208,14 @@
                         <label>rt-fi/src</label>
                         <location>rt-fi/src</location>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>rt/build/gen-src</label>
+                        <location>rt/build/gen-src</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>tools/wscompile/build/gen-src</label>
+                        <location>tools/wscompile/build/gen-src</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -219,7 +237,9 @@
                 <package-root>servlet/src</package-root>
                 <package-root>transports/local/src</package-root>
                 <package-root>rt-fi/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <package-root>rt/build/gen-src</package-root>
+                <package-root>tools/wscompile/build/gen-src</package-root>
+                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
