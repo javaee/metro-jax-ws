@@ -121,6 +121,10 @@ public class PortInfo implements WSPortInfo {
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
         WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);
         if (portModel != null)
+            // could have merged features from this.policyMap, but some features are set in WSDLModel which are not there in PolicyMap
+            // for ex: <wsaw:UsingAddressing> wsdl extn., and since the policyMap features are merged into WSDLModel anyway during postFinished(),
+            // So, using here WsdlModel for merging is right.
+
             // merge features from WSDL
             r.mergeFeatures(portModel, portInterface==null/*if dispatch, true*/, false);
         else {
