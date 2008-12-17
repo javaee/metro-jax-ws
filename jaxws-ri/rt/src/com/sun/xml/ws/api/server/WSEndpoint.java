@@ -51,6 +51,7 @@ import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.policy.PolicyMap;
 import org.xml.sax.EntityResolver;
 
 import javax.xml.namespace.QName;
@@ -386,6 +387,17 @@ public abstract class WSEndpoint<T> {
      *      Always the same value.
      */
     public abstract @Nullable SEIModel getSEIModel();
+
+    /**
+     * Gives the PolicMap that captures the Policy for the endpoint
+     *
+     * @return PolicyMap
+     *
+     * @deprecated
+     * Do not use this method as the PolicyMap API is not final yet and might change in next few months.
+     */
+
+    public abstract PolicyMap getPolicyMap();
 
 
     /**

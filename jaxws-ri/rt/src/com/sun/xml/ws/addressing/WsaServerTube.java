@@ -45,6 +45,7 @@ import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -228,7 +229,7 @@ public class WsaServerTube extends WsaTube {
         // we need to assemble a pipeline to talk to this endpoint.
         // TODO: what to pass as WSService?
         Tube transport = TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(),
-            new ClientTubeAssemblerContext(adrs, wsdlPort, null, binding,endpoint.getContainer()));
+            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSPortInfo) null, binding,endpoint.getContainer()));
 
         packet.endpointAddress = adrs;
         String action = packet.getMessage().isFault() ?

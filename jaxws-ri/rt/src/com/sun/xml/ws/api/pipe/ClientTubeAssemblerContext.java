@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.client.ClientPipelineHook;
+import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.helper.PipeAdapter;
@@ -83,10 +84,23 @@ public class ClientTubeAssemblerContext {
     private final @NotNull Container container;
     private @NotNull Codec codec;
 
+    //Nullable only to maintain comaptibility with old constructors of thsi class.
+    private final @Nullable WSPortInfo portInfo;
+
+    /**
+     *
+     * @deprecated
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec, SEIModel)}
+     */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel, @NotNull WSService rootOwner, @NotNull WSBinding binding) {
         this(address, wsdlModel, rootOwner, binding, Container.NONE);
     }
 
+    /**
+     *
+     * @deprecated
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container)}.
+     */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container) {
@@ -95,23 +109,61 @@ public class ClientTubeAssemblerContext {
     }
 
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
+                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
+                                      @NotNull Container container) {
+        // WSBinding is actually BindingImpl
+        this(address, wsdlModel, portInfo, binding, container, ((BindingImpl)binding).createCodec() );
+    }
+
+    /**
+     *
+     * @deprecated
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec)}.
+     */
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec) {
         this(address, wsdlModel, rootOwner, binding, container, codec, null);
     }
 
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
+                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
+                                      @NotNull Container container, Codec codec) {
+        this(address, wsdlModel, portInfo, binding, container, codec, null);
+    }
+
+    /**
+     *
+     * @deprecated
+     *      Use {@link #ClientTubeAssemblerContext(EndpointAddress, WSDLPort, WSPortInfo, WSBinding, Container, Codec, SEIModel)}.
+     */
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
                                       @NotNull WSService rootOwner, @NotNull WSBinding binding,
+                                      @NotNull Container container, Codec codec, SEIModel seiModel) {
+        this(address, wsdlModel, rootOwner, null/* no info on which port it is, so pass null*/, binding, container, codec,seiModel);
+    }
+
+
+    public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
+                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
+                                      @NotNull Container container, Codec codec, SEIModel seiModel) {
+        this(address, wsdlModel, portInfo.getOwner(), portInfo, binding, container, codec,seiModel);
+
+    }
+
+    //common constructor
+    private ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
+                                       @NotNull WSService rootOwner, @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec, SEIModel seiModel) {
         this.address = address;
         this.wsdlModel = wsdlModel;
         this.rootOwner = rootOwner;
+        this.portInfo = portInfo;
         this.binding = binding;
         this.container = container;
         this.codec = codec;
         this.seiModel = seiModel;
     }
-
 
     /**
      * The endpoint address. Always non-null. This parameter is taken separately
@@ -138,6 +190,14 @@ public class ClientTubeAssemblerContext {
      */
     public @NotNull WSService getService() {
         return rootOwner;
+    }
+
+    /**
+     * The pipeline is created for this {@link com.sun.xml.ws.api.client.WSPortInfo}.
+     * Nullable incase of backwards compatible usages of this class.
+     */
+    public @NotNull WSPortInfo getPortInfo() {
+        return portInfo;
     }
 
     /**

@@ -447,7 +447,7 @@ public class WSServiceDelegate extends WSService {
                 new ClientTubeAssemblerContext(
                         portInfo.targetEndpoint,
                         portInfo.portModel,
-                        this, binding, container,((BindingImpl)binding).createCodec(),seiModel));
+                        portInfo, binding, container,((BindingImpl)binding).createCodec(),seiModel));
     }
 
     /**

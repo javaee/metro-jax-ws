@@ -167,6 +167,10 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         wsdlProperties = (port==null) ? null : new WSDLProperties(port);
     }
 
+    public PolicyMap getPolicyMap() {
+            return endpointPolicy;
+    }
+
     public @NotNull Class<T> getImplementationClass() {
         return implementationClass;
     }

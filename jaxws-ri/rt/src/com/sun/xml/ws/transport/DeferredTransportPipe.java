@@ -71,7 +71,7 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
 
     public DeferredTransportPipe(ClassLoader classLoader, ClientPipeAssemblerContext context) {
         this(classLoader, new ClientTubeAssemblerContext(context.getAddress(), context.getWsdlModel(),
-                context.getService(), context.getBinding(), context.getContainer()));
+                context.getPortInfo(), context.getBinding(), context.getContainer()));
     }
 
     public DeferredTransportPipe(ClassLoader classLoader, ClientTubeAssemblerContext context) {
@@ -102,7 +102,7 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
         ClientTubeAssemblerContext newContext = new ClientTubeAssemblerContext(
             request.endpointAddress,
             context.getWsdlModel(),
-            context.getService(),
+            context.getPortInfo(),
             context.getBinding(),
             context.getContainer(),
             context.getCodec().copy()
