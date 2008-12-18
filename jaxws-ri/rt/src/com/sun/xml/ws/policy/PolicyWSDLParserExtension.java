@@ -77,6 +77,7 @@ import javax.xml.ws.WebServiceException;
  * After, it is finished it sets the PolicyMap on the WSDLModel.
  *
  * @author Jakub Podlesak (jakub.podlesak at sun.com)
+ * @author Fabian Ritzmann
  * @author Rama Pulavarthi
  */
 final public class PolicyWSDLParserExtension extends WSDLParserExtension {
@@ -959,7 +960,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
                                             ,faultName)
                                         );
                                 }
-                                if (fault != null && getHandlers4FaultMap().containsKey(fault)) {
+                                if (getHandlers4FaultMap().containsKey(fault)) {
                                     messageSet.add(
                                         new BuilderHandlerMessageScope(
                                             getPolicyURIs(getHandlers4FaultMap().get(fault), modelContext)
