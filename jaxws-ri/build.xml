@@ -343,13 +343,7 @@
         <delete file="${dist20.home}/lib/jaxws-tools.src.zip"/>
     </target>
 
-    <target name="libs.src.zip">
-        <zip file="${build.home}/jaxws-libs.src.zip">
-            <fileset dir="${basedir}/lib" includes="*.zip"/>
-        </zip>
-    </target>
-
-    <target name="hudson" depends="clean, dist.zip, src.zip, libs.src.zip, javadocs, doc-src-zip" />
+    <target name="hudson" depends="clean, dist.zip, src.zip,javadocs, doc-src-zip" />
 
     <target name="push-to-maven-prepare"
     description="prepare a repository image for the push-to-maven target">
