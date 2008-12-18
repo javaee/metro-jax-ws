@@ -49,18 +49,19 @@ import com.sun.xml.ws.policy.DefaultPolicyResolver;
  * 
  * @author Rama Pulavarthi
  */
-public class PolicyResolverFactory {
+public abstract class PolicyResolverFactory {
+
+    public abstract PolicyResolver doCreate();
 
     public static PolicyResolver create(){
         for (PolicyResolverFactory factory : ServiceFinder.find(PolicyResolverFactory.class)) {
-            PolicyResolver policyResolver = factory.create();
+            PolicyResolver policyResolver = factory.doCreate();
             if (policyResolver != null) {
                 return policyResolver;
             }
         }
-        // return default policy resolver. 
+         // return default policy resolver.
         return DEFAULT_POLICY_RESOLVER;
-
     }
 
     /**
