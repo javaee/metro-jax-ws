@@ -104,11 +104,16 @@ public class PortInfo implements WSPortInfo {
     }
 
     public PolicyMap createPolicyMap() {
+       PolicyMap map;
        if(portModel != null) {
-            return ((WSDLModelImpl) portModel.getOwner().getParent()).getPolicyMap();
+            map = ((WSDLModelImpl) portModel.getOwner().getParent()).getPolicyMap();
        } else {
-           return PolicyResolverFactory.create().resolve(new PolicyResolver.ClientContext(null,owner.getContainer()));
+           map = PolicyResolverFactory.create().resolve(new PolicyResolver.ClientContext(null,owner.getContainer()));
        }
+       //still map is null, create a empty map
+       if(map == null)
+           map = PolicyUtil.createEmptyPolicyMap();
+       return map;
     }
     /**
      * Creates {@link BindingImpl} for this {@link PortInfo}.

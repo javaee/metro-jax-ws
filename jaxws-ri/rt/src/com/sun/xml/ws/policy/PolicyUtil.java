@@ -40,6 +40,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.ArrayList;
@@ -72,5 +73,18 @@ public class PolicyUtil {
             //features.add(f);
        }
        return features; 
+    }
+
+    /**
+     * Creates a PolicyMap with no entries.
+     * @return
+     */
+    public static PolicyMap createEmptyPolicyMap(){
+        PolicyMapBuilder builder = new PolicyMapBuilder();
+        try {
+            return builder.getPolicyMap();
+        } catch (PolicyException e) {
+            throw new WebServiceException(e);
+        }
     }
 }
