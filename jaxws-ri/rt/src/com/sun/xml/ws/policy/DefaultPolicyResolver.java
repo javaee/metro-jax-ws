@@ -49,13 +49,15 @@ public class DefaultPolicyResolver implements PolicyResolver {
 
     public PolicyMap resolve(ServerContext context) {
         PolicyMap map = context.getPolicyMap();
-        validateServerPolicyMap(map);
+        if(map != null)
+            validateServerPolicyMap(map);
         return map;
     }
 
     public PolicyMap resolve(ClientContext context) {
         PolicyMap map = context.getPolicyMap();
-        map =  doAlternativeSelection(map);
+        if(map != null)
+            map =  doAlternativeSelection(map);
         return map;
     }
     
