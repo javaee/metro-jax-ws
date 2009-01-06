@@ -50,6 +50,9 @@ import javax.xml.ws.FaultAction;
 import java.util.Map;
 
 /**
+ * This Java Generator extension generates @Action annotation on web methods if an explicit wsam:Action value is specified
+ * in the wsdl definitions.
+ *
  * @author Arun Gupta
  */
 public class W3CAddressingJavaGeneratorExtension extends TJavaGeneratorExtension {

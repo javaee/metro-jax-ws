@@ -80,9 +80,9 @@ public class SeiGenerator extends GeneratorBase{
         extensionHandlers = new ArrayList<TJavaGeneratorExtension>();
 
         // register handlers for default extensions
-        //spec does not require generation of these annotations
-        // and we can infer from wsdl anyway, so lets disable it
-        //register(new W3CAddressingJavaGeneratorExtension());
+
+        // 2.2 Spec requires generation of @Action when wsam:Action is explicitly stated in wsdl
+        register(new W3CAddressingJavaGeneratorExtension());
         
         for (TJavaGeneratorExtension j : extensions)
             register(j);
