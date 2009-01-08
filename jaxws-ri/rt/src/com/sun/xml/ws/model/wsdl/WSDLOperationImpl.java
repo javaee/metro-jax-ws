@@ -68,7 +68,6 @@ public final class WSDLOperationImpl extends AbstractExtensibleImpl implements W
         this.name = name;
         this.faults = new ArrayList<WSDLFaultImpl>();
         this.faultMap = new QNameMap<WSDLFaultImpl>();
-        this.faultActionMap = new HashMap<String,String>();
         this.owner = owner;
     }
 
