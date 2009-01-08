@@ -124,10 +124,11 @@ public final class WSDLOperationImpl extends AbstractExtensibleImpl implements W
         }
         return null;
     }
-
+    /*
     public Map<String,String> getFaultActionMap() {
         return faultActionMap;
     }
+    */
 
     WSDLPortType getOwner() {
         return owner;

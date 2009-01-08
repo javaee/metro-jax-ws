@@ -75,4 +75,17 @@ public interface WSDLFault extends WSDLObject, WSDLExtensible {
      */
     @NotNull
     QName getQName();
+
+    /**
+     * Gives the Action Message Addressing Property value for
+     * {@link this} message.
+     * {@link this} message.
+     * <p/>
+     * This method provides the correct value irrespective of
+     * whether the Action is explicitly specified in the WSDL or
+     * implicitly derived using the rules defined in WS-Addressing.
+     *
+     * @return Action
+     */
+    String getAction();
 }
