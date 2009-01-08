@@ -160,11 +160,7 @@ public abstract class WsaTubeHelper {
                 return action;
 
             WSDLOperationImpl impl = (WSDLOperationImpl)o;
-            Map<String,String> map = impl.getFaultActionMap();
-            if (map == null)
-                return action;
-
-            action = map.get(fault.getName());
+            action = fault.getAction();
 
             return action;
         } catch (SOAPException e) {

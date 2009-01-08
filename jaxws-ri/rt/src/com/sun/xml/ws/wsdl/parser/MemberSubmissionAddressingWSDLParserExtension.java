@@ -84,49 +84,16 @@ public class MemberSubmissionAddressingWSDLParserExtension extends W3CAddressing
     }
 
     @Override
-    public boolean portTypeOperationInput(WSDLOperation o, XMLStreamReader reader) {
-        WSDLOperationImpl impl = (WSDLOperationImpl)o;
-
-        String action = ParserUtil.getAttribute(reader, AddressingVersion.MEMBER.wsdlActionTag);
-        if (action != null) {
-            impl.getInput().setAction(action);
-            impl.getInput().setDefaultAction(false);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean portTypeOperationOutput(WSDLOperation o, XMLStreamReader reader) {
-        WSDLOperationImpl impl = (WSDLOperationImpl)o;
-
-        String action = ParserUtil.getAttribute(reader, AddressingVersion.MEMBER.wsdlActionTag);
-        if (action != null) {
-            impl.getOutput().setAction(action);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean portTypeOperationFault(WSDLOperation o, XMLStreamReader reader) {
-        WSDLOperationImpl impl = (WSDLOperationImpl)o;
-
-        String action = ParserUtil.getAttribute(reader, AddressingVersion.MEMBER.wsdlActionTag);
-        if (action != null) {
-            String name = ParserUtil.getMandatoryNonEmptyAttribute(reader, "name");
-            impl.getFaultActionMap().put(name, action);
-        }
-
-        return false;
-    }
-
-    @Override
     protected void patchAnonymousDefault(WSDLBoundPortTypeImpl binding) {
     }
 
     @Override
     protected String getNamespaceURI() {
         return AddressingVersion.MEMBER.wsdlNsUri;
+    }
+
+    @Override
+    protected QName getWsdlActionTag() {
+        return  AddressingVersion.MEMBER.wsdlActionTag;
     }
 }

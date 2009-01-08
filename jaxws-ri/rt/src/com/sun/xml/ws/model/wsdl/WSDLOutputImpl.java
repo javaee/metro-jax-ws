@@ -53,7 +53,7 @@ public final class WSDLOutputImpl extends AbstractExtensibleImpl implements WSDL
     private WSDLOperationImpl operation;
     private WSDLMessageImpl message;
     private String action;
-
+    private boolean defaultAction = true;
     public WSDLOutputImpl(XMLStreamReader xsr,String name, QName messageName, WSDLOperationImpl operation) {
         super(xsr);
         this.name = name;
@@ -71,6 +71,14 @@ public final class WSDLOutputImpl extends AbstractExtensibleImpl implements WSDL
 
     public String getAction() {
         return action;
+    }
+
+    public boolean isDefaultAction() {
+        return defaultAction;
+    }
+
+    public void setDefaultAction(boolean defaultAction) {
+        this.defaultAction = defaultAction;
     }
 
     @NotNull
