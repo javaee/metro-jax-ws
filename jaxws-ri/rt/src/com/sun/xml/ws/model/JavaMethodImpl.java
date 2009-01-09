@@ -352,9 +352,7 @@ public final class JavaMethodImpl implements JavaMethod {
         //so far, the inputAction, outputAction and fault actions are set from the @Action and @FaultAction
         //set the values from WSDLModel, if such annotations are not present or defaulted
         if(inputAction.equals("")) {
-                inputAction = wsdlOperation.getOperation().getInput().getAction();
-                //set soapAction value from newly set inputAction
-                binding.setSOAPAction(inputAction);
+                inputAction = wsdlOperation.getOperation().getInput().getAction();                
         } else if(!inputAction.equals(wsdlOperation.getOperation().getInput().getAction()))
                 //TODO input action might be from @Action or WebMethod(action)
                 LOGGER.warning("Input Action from WSDL definitions and @Action for operation .... did not match, and willc ause problems in dispatching the requests");
