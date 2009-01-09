@@ -48,10 +48,13 @@ import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Action;
+import javax.xml.ws.WebServiceException;
+import javax.jws.WebMethod;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Build this runtime model using java SEI and annotations
@@ -60,8 +63,8 @@ import java.util.List;
  */
 public final class JavaMethodImpl implements JavaMethod {
 
-    private String inputAction;
-    private String outputAction;
+    private String inputAction = "";
+    private String outputAction = "";
     private final List<CheckedExceptionImpl> exceptions = new ArrayList<CheckedExceptionImpl>();
     private final Method method;
     /*package*/ final List<ParameterImpl> requestParams = new ArrayList<ParameterImpl>();
@@ -85,10 +88,30 @@ public final class JavaMethodImpl implements JavaMethod {
         this.owner = owner;
         this.method = method;
         this.seiMethod = seiMethod;
-        Action action = method.getAnnotation(Action.class);
+        setWsaActions();
+    }
+
+    private void setWsaActions() {
+        Action action = seiMethod.getAnnotation(Action.class);
         if(action != null) {
             inputAction = action.input();
             outputAction = action.output();
+        }
+
+        //@Action(input) =="", get it from @WebMethod(action)
+        WebMethod webMethod = seiMethod.getAnnotation(WebMethod.class);
+        String soapAction = "";
+        if (webMethod != null )
+            soapAction = webMethod.action();
+        if(!soapAction.equals("")) {
+            //non-empty soapAction
+            if(inputAction.equals(""))
+                // set input action to non-empty soapAction
+                inputAction = soapAction;
+            else if(!inputAction.equals(soapAction)){
+                //both are explicitly set via annotations, make sure @Action == @WebMethod.action
+                throw new WebServiceException("@Action and @WebMethod(action=\"\" does not match");
+            }
         }
     }
 
@@ -325,6 +348,27 @@ public final class JavaMethodImpl implements JavaMethod {
         // TODO: replace this with proper error handling
         if(wsdlOperation ==null)
             throw new Error("Undefined operation name "+operationName);
+
+        //so far, the inputAction, outputAction and fault actions are set from the @Action and @FaultAction
+        //set the values from WSDLModel, if such annotations are not present or defaulted
+        if(inputAction.equals("")) {
+                inputAction = wsdlOperation.getOperation().getInput().getAction();
+                //set soapAction value from newly set inputAction
+                binding.setSOAPAction(inputAction);
+        } else if(!inputAction.equals(wsdlOperation.getOperation().getInput().getAction()))
+                //TODO input action might be from @Action or WebMethod(action)
+                LOGGER.warning("Input Action from WSDL definitions and @Action for operation .... did not match, and willc ause problems in dispatching the requests");
+
+        if(outputAction.equals(""))
+            outputAction = wsdlOperation.getOperation().getOutput().getAction();
+
+        for(CheckedExceptionImpl ce: exceptions) {
+            if(ce.getFaultAction().equals("")) {
+                QName detailQName = ce.getDetailType().tagName;
+                ce.setFaultAction(wsdlOperation.getOperation().getFault(detailQName).getAction());
+            } 
+        }
+
     }
 
     final void fillTypes(List<TypeReference> types) {
@@ -341,6 +385,8 @@ public final class JavaMethodImpl implements JavaMethod {
             p.fillTypes(types);
         }
     }
+
+    private static final Logger LOGGER = Logger.getLogger(com.sun.xml.ws.model.JavaMethodImpl.class.getName());
 
 }
 

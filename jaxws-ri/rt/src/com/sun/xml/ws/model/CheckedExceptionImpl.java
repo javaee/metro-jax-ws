@@ -61,7 +61,7 @@ public final class CheckedExceptionImpl implements CheckedException {
     private final ExceptionType exceptionType;
     private final JavaMethodImpl javaMethod;
     private String messageName;
-    private String faultAction;
+    private String faultAction = "";
 
     /**
      * @param jm {@link JavaMethodImpl} that throws this exception
