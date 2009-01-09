@@ -357,16 +357,17 @@ public final class JavaMethodImpl implements JavaMethod {
                 //TODO input action might be from @Action or WebMethod(action)
                 LOGGER.warning("Input Action from WSDL definitions and @Action for operation .... did not match, and willc ause problems in dispatching the requests");
 
-        if(outputAction.equals(""))
-            outputAction = wsdlOperation.getOperation().getOutput().getAction();
+        if (!mep.isOneWay()) {
+            if (outputAction.equals(""))
+                outputAction = wsdlOperation.getOperation().getOutput().getAction();
 
-        for(CheckedExceptionImpl ce: exceptions) {
-            if(ce.getFaultAction().equals("")) {
-                QName detailQName = ce.getDetailType().tagName;
-                ce.setFaultAction(wsdlOperation.getOperation().getFault(detailQName).getAction());
-            } 
+            for (CheckedExceptionImpl ce : exceptions) {
+                if (ce.getFaultAction().equals("")) {
+                    QName detailQName = ce.getDetailType().tagName;
+                    ce.setFaultAction(wsdlOperation.getOperation().getFault(detailQName).getAction());
+                }
+            }
         }
-
     }
 
     final void fillTypes(List<TypeReference> types) {
