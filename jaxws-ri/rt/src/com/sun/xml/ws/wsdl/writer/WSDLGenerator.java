@@ -222,6 +222,7 @@ public class WSDLGenerator {
 
         // register handlers for default extensions
         register(new W3CAddressingWSDLGeneratorExtension());
+        register(new W3CAddressingMetadataWSDLGeneratorExtension());
         register(new PolicyWSDLGeneratorExtension());
         for (WSDLGeneratorExtension w : extensions)
             register(w);
