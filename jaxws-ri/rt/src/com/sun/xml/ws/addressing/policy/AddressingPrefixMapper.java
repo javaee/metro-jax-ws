@@ -37,6 +37,8 @@ package com.sun.xml.ws.addressing.policy;
 
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.policy.spi.PrefixMapper;
+import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +55,7 @@ public class AddressingPrefixMapper implements PrefixMapper {
         prefixMap.put(AddressingVersion.MEMBER.nsUri, "wsa");
         prefixMap.put(AddressingVersion.W3C.policyNsUri, "wsapw3c");
         prefixMap.put(AddressingVersion.W3C.nsUri, "wsaw3c");
+        prefixMap.put(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME,"wsam");
     }
         
     public Map<String, String> getPrefixMap() {
