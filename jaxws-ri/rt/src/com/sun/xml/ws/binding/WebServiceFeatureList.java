@@ -108,7 +108,7 @@ public final class WebServiceFeatureList implements WSFeatureList {
                 continue;
             } else if (a instanceof Addressing) {
                 Addressing addAnn = (Addressing) a;
-                ftr = new AddressingFeature(addAnn.enabled(), addAnn.required());
+                ftr = new AddressingFeature(addAnn.enabled(), addAnn.required(),addAnn.responses());
             } else if (a instanceof MTOM) {
                 MTOM mtomAnn = (MTOM) a;
                 ftr = new MTOMFeature(mtomAnn.enabled(), mtomAnn.threshold());
