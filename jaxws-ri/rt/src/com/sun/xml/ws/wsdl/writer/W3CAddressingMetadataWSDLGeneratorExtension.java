@@ -164,7 +164,7 @@ public class W3CAddressingMetadataWSDLGeneratorExtension extends
 
         return new StringBuilder(tns).append(delim).append(
                 method.getOwner().getPortTypeName().getLocalPart()).append(
-                delim).append(method.getOperationName()).append(delim).append("Fault").append(delim).append(ce.getExceptionClass().getName()).toString();
+                delim).append(method.getOperationName()).append(delim).append("Fault").append(delim).append(ce.getExceptionClass().getSimpleName()).toString();
     }
 
     private static final Logger LOGGER =
