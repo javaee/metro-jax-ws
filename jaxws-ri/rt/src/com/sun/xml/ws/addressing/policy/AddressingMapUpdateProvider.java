@@ -158,7 +158,7 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
         }
         if (responses.length == 0 || (anon_resp && nonanon_resp)) {
             // both are supported.
-            assertions.add(new AddressingAssertion(addressingData));
+            assertions.add(new AddressingAssertion(addressingData,AssertionSet.createAssertionSet(null)));
         } else {
             final AssertionData nestedAsserData;
             if (anon_resp) {
