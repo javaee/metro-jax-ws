@@ -50,15 +50,21 @@ import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
+import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
+
 import java.util.Iterator;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.AddressingFeature;
 
 /**
+ * This Policy extension configures the WSDLModel with AddressingFeature when Addressing assertions are present in the
+ * PolicyMap.
  *
  * @author japod
+ * @author Rama Pulavarthi
  */
 public class AddressingModelConfiguratorProvider implements ModelConfiguratorProvider{
 
@@ -112,24 +118,29 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
                 } //end foreach addr assertion
                 
                 // Deal with WS-Addressing 1.0 Metadata assertions
-                if (policy != null && policy.contains(new QName("http://www.w3.org/2007/05/addressing/metadata", "Addressing"))) {
+                if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
                     for (AssertionSet assertions : policy) {
                         for (PolicyAssertion assertion : assertions) {
                             if (assertion.getName().equals(new QName("http://www.w3.org/2007/05/addressing/metadata", "Addressing"))) {
-                                //TODO take care of nested assertions later.
-                                /*
                                 NestedPolicy nestedPolicy = assertion.getNestedPolicy();
                                 boolean requiresAnonymousResponses = false;
                                 boolean requiresNonAnonymousResponses = false;
                                 if (nestedPolicy != null) {
-                                    requiresAnonymousResponses = nestedPolicy.contains(new QName("http://www.w3.org/2007/05/addressing/metadata", "AnonymousResponses"));
-                                    requiresNonAnonymousResponses = nestedPolicy.contains(new QName("http://www.w3.org/2007/05/addressing/metadata", "NonAnonymousResponses"));
+                                    requiresAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
+                                    requiresNonAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
                                 }
-                                WSDLBoundPortTypeImpl binding = (WSDLBoundPortTypeImpl) port.getBinding();
-                                */
-                                // Set addressing properties here:
-                                // binding.set...
-                                final WebServiceFeature feature = new AddressingFeature(true, !assertion.isOptional());
+                                if(requiresAnonymousResponses && requiresNonAnonymousResponses) {
+                                    throw new WebServiceException("Only one among AnonymousResponses and NonAnonymousResponses can be nested in an Addressing assertion");
+                                }
+
+                                final WebServiceFeature feature;
+                                if(requiresAnonymousResponses) {
+                                    feature  = new AddressingFeature(true, !assertion.isOptional(), new AddressingFeature.Responses[] {AddressingFeature.Responses.ANONYMOUS});
+                                } else if(requiresNonAnonymousResponses){
+                                    feature = new AddressingFeature(true, !assertion.isOptional(), new AddressingFeature.Responses[] {AddressingFeature.Responses.NON_ANONYMOUS});
+                                } else {
+                                    feature = new AddressingFeature(true, !assertion.isOptional());
+                                }
                                 port.addFeature(feature);
                                 if (LOGGER.isLoggable(Level.FINE)) {
                                     LOGGER.fine("Added addressing feature \"" + feature + "\" to port \"" + port + "\"");
