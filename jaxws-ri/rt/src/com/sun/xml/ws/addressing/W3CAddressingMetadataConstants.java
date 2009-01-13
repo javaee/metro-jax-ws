@@ -46,4 +46,18 @@ public class W3CAddressingMetadataConstants {
     public static final String WSAM_NAMESPACE_NAME = "http://www.w3.org/2007/05/addressing/metadata";
     public static final String WSAM_PREFIX_NAME = "wsam";
     public static final QName  WSAM_ACTION_QNAME = new QName(WSAM_NAMESPACE_NAME,"Action",WSAM_PREFIX_NAME);
+
+    public static final String WSAM_ADDRESSING_ASSERTION_NAME="Addressing";
+    public static final String WSAM_ANONNYMOUS_NESTED_ASSERTION_NAME="AnonymousResponses";
+    public static final String WSAM_NONANONNYMOUS_NESTED_ASSERTION_NAME="NonAnonymousResponses";
+
+    public static final QName WSAM_ADDRESSING_ASSSSERTION = new QName(WSAM_NAMESPACE_NAME,
+                    WSAM_ADDRESSING_ASSERTION_NAME, WSAM_PREFIX_NAME );
+
+    public static final QName WSAM_ANONYMOUS_NESTED_ASSSSERTION = new QName(WSAM_NAMESPACE_NAME,
+                        WSAM_ANONNYMOUS_NESTED_ASSERTION_NAME, WSAM_PREFIX_NAME );
+
+    public static final QName WSAM_NONANONYMOUS_NESTED_ASSSSERTION = new QName(WSAM_NAMESPACE_NAME,
+                        WSAM_NONANONNYMOUS_NESTED_ASSERTION_NAME, WSAM_PREFIX_NAME );
+
 }
