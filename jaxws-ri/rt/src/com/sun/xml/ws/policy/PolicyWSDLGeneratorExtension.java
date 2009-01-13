@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -133,7 +133,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                     extenders[i].disconnect();
                 }
             } catch (PolicyException e) {
-                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1048_MAP_UPDATE_FAILED(), e));
+                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1017_MAP_UPDATE_FAILED(), e));
             }
             //Now Resolve PolicyMap with configuration files.
             policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(policyMap,context.getContainer(), context.getEndpointClass()));            
@@ -148,29 +148,29 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         try {
             LOGGER.entering();
             if (policyMap == null) {
-                LOGGER.fine(PolicyMessages.WSP_1020_NOT_MARSHALLING_ANY_POLICIES_POLICY_MAP_IS_NULL());
+                LOGGER.fine(PolicyMessages.WSP_1009_NOT_MARSHALLING_ANY_POLICIES_POLICY_MAP_IS_NULL());
             } else {
                 subjects.addAll(policyMap.getPolicySubjects());
                 final PolicyModelGenerator generator = PolicyModelGenerator.getGenerator();
                 Set<String> policyIDsOrNamesWritten = new HashSet<String>();
                 for (PolicySubject subject : subjects) {
                     if (subject.getSubject() == null) {
-                        LOGGER.fine(PolicyMessages.WSP_1019_NOT_MARSHALLING_WSDL_SUBJ_NULL(subject));
+                        LOGGER.fine(PolicyMessages.WSP_1008_NOT_MARSHALLING_WSDL_SUBJ_NULL(subject));
                     } else {
                         final Policy policy;
                         try {
                             policy = subject.getEffectivePolicy(merger);
                         } catch (PolicyException e) {
-                            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1029_FAILED_TO_RETRIEVE_EFFECTIVE_POLICY_FOR_SUBJECT(subject.toString()), e));
+                            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1011_FAILED_TO_RETRIEVE_EFFECTIVE_POLICY_FOR_SUBJECT(subject.toString()), e));
                         }
                         if ((null == policy.getIdOrName()) || (policyIDsOrNamesWritten.contains(policy.getIdOrName()))) {
-                            LOGGER.fine(PolicyMessages.WSP_1047_POLICY_ID_NULL_OR_DUPLICATE(policy));
+                            LOGGER.fine(PolicyMessages.WSP_1016_POLICY_ID_NULL_OR_DUPLICATE(policy));
                         } else {
                             try {
                                 final PolicySourceModel policyInfoset = generator.translate(policy);
                                 marshaller.marshal(policyInfoset, definitions);
                             } catch (PolicyException e) {
-                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1051_FAILED_TO_MARSHALL_POLICY(policy.getIdOrName()), e));
+                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1018_FAILED_TO_MARSHALL_POLICY(policy.getIdOrName()), e));
                             }
                             policyIDsOrNamesWritten.add(policy.getIdOrName());
                         }
@@ -377,11 +377,11 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                                     writePolicyOrReferenceIt(subject, xmlWriter);
                                 }
                             } catch (NoSuchMethodException e) {
-                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1011_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
+                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1003_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
                             } catch (IllegalAccessException e) {
-                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1011_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
+                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1003_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
                             } catch (InvocationTargetException e) {
-                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1011_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
+                                throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1003_UNABLE_TO_CHECK_ELEMENT_NAME(clazz.getName(), wsdlName), e));
                             }
                         }
                     }
@@ -424,7 +424,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         try {
             policy = subject.getEffectivePolicy(merger);
         } catch (PolicyException e) {
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1029_FAILED_TO_RETRIEVE_EFFECTIVE_POLICY_FOR_SUBJECT(subject.toString()), e));
+            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1011_FAILED_TO_RETRIEVE_EFFECTIVE_POLICY_FOR_SUBJECT(subject.toString()), e));
         }
         if (policy != null) {
             if (null == policy.getIdOrName()) {
@@ -433,7 +433,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                     final PolicySourceModel policyInfoset = generator.translate(policy);
                     marshaller.marshal(policyInfoset, writer);
                 } catch (PolicyException pe) {
-                    throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1010_UNABLE_TO_MARSHALL_POLICY_OR_POLICY_REFERENCE(), pe));
+                    throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1002_UNABLE_TO_MARSHALL_POLICY_OR_POLICY_REFERENCE(), pe));
                 }
             } else {
                 final TypedXmlWriter policyReference = writer._element(policy.getNamespaceVersion().asQName(XmlToken.PolicyReference), TypedXmlWriter.class);

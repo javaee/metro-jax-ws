@@ -69,7 +69,7 @@ abstract class BuilderHandler{
     
     final void populate(final PolicyMapExtender policyMapExtender) throws PolicyException {
         if (null == policyMapExtender) {
-            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1015_POLICY_MAP_EXTENDER_CAN_NOT_BE_NULL()));
+            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1006_POLICY_MAP_EXTENDER_CAN_NOT_BE_NULL()));
         }
         
         doPopulate(policyMapExtender);
@@ -79,10 +79,10 @@ abstract class BuilderHandler{
     
     final Collection<Policy> getPolicies() throws PolicyException {
         if (null == policyURIs) {
-            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1013_POLICY_URIS_CAN_NOT_BE_NULL()));
+            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1004_POLICY_URIS_CAN_NOT_BE_NULL()));
         }
         if (null == policyStore) {
-            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1021_NO_POLICIES_DEFINED()));
+            throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1010_NO_POLICIES_DEFINED()));
         }
         
         final Collection<Policy> result = new ArrayList<Policy>(policyURIs.size());
@@ -90,7 +90,7 @@ abstract class BuilderHandler{
         for (String policyURI : policyURIs) {
             final PolicySourceModel sourceModel = policyStore.get(policyURI);
             if (sourceModel == null) {
-                throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1014_POLICY_REFERENCE_DOES_NOT_EXIST(policyURI)));
+                throw LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1005_POLICY_REFERENCE_DOES_NOT_EXIST(policyURI)));
             } else {
                 result.add(PolicyModelTranslator.getTranslator().translate(sourceModel));
             }

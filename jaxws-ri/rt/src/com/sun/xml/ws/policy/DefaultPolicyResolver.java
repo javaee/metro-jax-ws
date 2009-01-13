@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,7 +80,7 @@ public class DefaultPolicyResolver implements PolicyResolver {
                     for (PolicyAssertion assertion : assertionSet) {
                         PolicyAssertionValidator.Fitness validationResult = validationProcessor.validateServerSide(assertion);
                         if (validationResult != PolicyAssertionValidator.Fitness.SUPPORTED) {
-                            throw new PolicyException(PolicyMessages.WSP_1046_SERVER_SIDE_ASSERTION_VALIDATION_FAILED(
+                            throw new PolicyException(PolicyMessages.WSP_1015_SERVER_SIDE_ASSERTION_VALIDATION_FAILED(
                                     assertion.getName(),
                                     validationResult));
                         }

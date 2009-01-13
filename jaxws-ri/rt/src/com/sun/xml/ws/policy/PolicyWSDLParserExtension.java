@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -736,7 +736,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
                     final PolicyRecord prefetchedRecord = getPolicyRecordsPassedBy().get(currentUri);
                     if (null == prefetchedRecord) {
                         if (urlsRead.contains(getBaseUrl(currentUri))) { // big problem --> unresolvable policy
-                            LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1042_CAN_NOT_FIND_POLICY(currentUri)));
+                            LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1014_CAN_NOT_FIND_POLICY(currentUri)));
                         } else {
                             if (readExternalFile(getBaseUrl(currentUri))) {
                                 getUnresolvedUris(false).add(currentUri);
@@ -1020,13 +1020,13 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
             ((WSDLModelImpl) wsdlModel).setPolicyMap(effectiveMap);
         } catch (PolicyException e) {
             LOGGER.logSevereException(e);
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1018_POLICY_EXCEPTION_WHILE_FINISHING_PARSING_WSDL(), e));
+            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1007_POLICY_EXCEPTION_WHILE_FINISHING_PARSING_WSDL(), e));
         }
         try {
             PolicyUtil.configureModel(wsdlModel,effectiveMap);
         } catch (PolicyException e) {
             LOGGER.logSevereException(e);
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1032_FAILED_CONFIGURE_WSDL_MODEL(), e));
+            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1012_FAILED_CONFIGURE_WSDL_MODEL(), e));
         }
         LOGGER.exiting();
     }
@@ -1207,7 +1207,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
                 policyRec.uri = policyRec.policyModel.getPolicyName();
             }
         } catch(Exception e) {
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1033_EXCEPTION_WHEN_READING_POLICY_ELEMENT(elementCode.toString()), e));
+            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1013_EXCEPTION_WHEN_READING_POLICY_ELEMENT(elementCode.toString()), e));
         }
         urlsRead.add(baseUrl);
         return policyRec;
