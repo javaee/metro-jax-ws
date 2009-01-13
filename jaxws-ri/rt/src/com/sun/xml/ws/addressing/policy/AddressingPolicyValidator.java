@@ -78,7 +78,7 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
     }
 
     public Fitness validateServerSide(PolicyAssertion assertion) {
-        if (supportedAssertions.contains(assertion.getName()))
+        if (!supportedAssertions.contains(assertion.getName()))
             return Fitness.UNKNOWN;
 
         //Make sure wsam:Addressing contains only one of the allowed nested assertions.
