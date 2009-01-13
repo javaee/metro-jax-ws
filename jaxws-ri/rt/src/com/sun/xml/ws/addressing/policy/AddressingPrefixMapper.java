@@ -43,8 +43,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * This supplies the prefixes for the namespaces under Addressing domain.
+ * 
  * @author Fabian Ritzmann
+ * @author Rama Pulavarthi
  */
 public class AddressingPrefixMapper implements PrefixMapper {
 
@@ -55,7 +57,7 @@ public class AddressingPrefixMapper implements PrefixMapper {
         prefixMap.put(AddressingVersion.MEMBER.nsUri, "wsa");
         prefixMap.put(AddressingVersion.W3C.policyNsUri, "wsapw3c");
         prefixMap.put(AddressingVersion.W3C.nsUri, "wsaw3c");
-        prefixMap.put(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME,"wsam");
+        prefixMap.put(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME,W3CAddressingMetadataConstants.WSAM_PREFIX_NAME);
     }
         
     public Map<String, String> getPrefixMap() {

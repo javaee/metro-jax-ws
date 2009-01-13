@@ -62,9 +62,9 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
     static {
         supportedAssertions.add(new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing"));
         supportedAssertions.add(new QName(AddressingVersion.W3C.policyNsUri, "UsingAddressing"));
-        supportedAssertions.add(new QName("http://www.w3.org/2007/05/addressing/metadata", "Addressing"));
-        supportedAssertions.add(new QName("http://www.w3.org/2007/05/addressing/metadata", "AnonymousResponses"));
-        supportedAssertions.add(new QName("http://www.w3.org/2007/05/addressing/metadata", "NonAnonymousResponses"));
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
     }
 
     /**
@@ -106,7 +106,7 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
     }
 
     public String[] declareSupportedDomains() {
-        return new String[]{AddressingVersion.MEMBER.policyNsUri, AddressingVersion.W3C.policyNsUri, "http://www.w3.org/2007/05/addressing/metadata"};
+        return new String[]{AddressingVersion.MEMBER.policyNsUri, AddressingVersion.W3C.policyNsUri, W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME};
     }
 
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(AddressingPolicyValidator.class);
