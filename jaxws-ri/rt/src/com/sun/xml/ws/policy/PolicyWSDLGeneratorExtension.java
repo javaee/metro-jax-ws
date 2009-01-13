@@ -70,6 +70,8 @@ import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelMarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
+import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -119,7 +121,9 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
 
             final TypedXmlWriter root = context.getRoot();
             // TODO: resolve policy version and add default policy namespace
-            // root._namespace(PolicyConstants.POLICY_V1_2_NAMESPACE_URI, PolicyConstants.POLICY_NAMESPACE_PREFIX);
+            //TODO is this correct, check again?
+            root._namespace(NamespaceVersion.getLatestVersion().toString(), NamespaceVersion.getLatestVersion().getDefaultNamespacePrefix());
+
             root._namespace(PolicyConstants.WSU_NAMESPACE_URI, PolicyConstants.WSU_NAMESPACE_PREFIX);
             final WSBinding binding = context.getBinding();
 
