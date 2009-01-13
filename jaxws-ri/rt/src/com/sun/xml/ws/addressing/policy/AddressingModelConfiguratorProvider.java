@@ -121,7 +121,7 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
                 if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
                     for (AssertionSet assertions : policy) {
                         for (PolicyAssertion assertion : assertions) {
-                            if (assertion.getName().equals(new QName("http://www.w3.org/2007/05/addressing/metadata", "Addressing"))) {
+                            if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
                                 NestedPolicy nestedPolicy = assertion.getNestedPolicy();
                                 boolean requiresAnonymousResponses = false;
                                 boolean requiresNonAnonymousResponses = false;
