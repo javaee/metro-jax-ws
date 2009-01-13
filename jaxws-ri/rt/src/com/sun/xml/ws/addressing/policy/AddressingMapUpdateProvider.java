@@ -61,9 +61,10 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.soap.AddressingFeature;
 
 /**
- * Generate an addressing policy.
+ * Generate an addressing policy and updates the PolicyMap if AddressingFeature is enabled.
  *
  * @author Fabian Ritzmann
+ * @author Rama Pulavarthi
  */
 public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
 
@@ -83,7 +84,7 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
         /**
          * Creates an assertion with no nested alternatives.
          *
-         * @param assertionData         
+         * @param assertionData
          */
         AddressingAssertion(AssertionData assertionData) {
             super(assertionData, null, null);
@@ -95,7 +96,7 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
      * Puts an addressing policy into the PolicyMap if the addressing feature was set.
      */
     public void update(final PolicyMapExtender policyMapMutator, final PolicyMap policyMap, final SEIModel model, final WSBinding wsBinding)
-        throws PolicyException {
+            throws PolicyException {
         LOGGER.entering(policyMapMutator, policyMap, model, wsBinding);
 
         if (policyMap != null) {
@@ -137,18 +138,17 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
 
     /**
      * Create a policy with an WSAM Addressing assertion.
-     *
      */
     private Policy createWsamAddressingPolicy(final QName bindingName, AddressingFeature af) {
         final ArrayList<AssertionSet> assertionSets = new ArrayList<AssertionSet>(1);
         final ArrayList<PolicyAssertion> assertions = new ArrayList<PolicyAssertion>(1);
         final AssertionData addressingData =
-            AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
+                AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
         if (!af.isRequired()) {
             addressingData.setOptionalAttribute(true);
         }
         AddressingFeature.Responses[] responses = af.getResponses();
-        boolean nonanon_resp = false,anon_resp = false;
+        boolean nonanon_resp = false, anon_resp = false;
         for (AddressingFeature.Responses r : responses) {
             if (r == AddressingFeature.Responses.ANONYMOUS) {
                 anon_resp = true;
@@ -156,18 +156,18 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
                 nonanon_resp = true;
             }
         }
-        if(responses.length ==0 || (anon_resp && nonanon_resp ) ) {
+        if (responses.length == 0 || (anon_resp && nonanon_resp)) {
             // both are supported.
             assertions.add(new AddressingAssertion(addressingData));
         } else {
             final AssertionData nestedAsserData;
-            if(anon_resp) {
-                nestedAsserData =  AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
+            if (anon_resp) {
+                nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
             } else {
                 nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
             }
-            PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData,null);
-            assertions.add(new AddressingAssertion(addressingData,AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
+            PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
+            assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
         }
 
         assertionSets.add(AssertionSet.createAssertionSet(assertions));
@@ -199,16 +199,16 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
     /**
      * Create a policy with an WSAW UsingAddressing assertion.
      *
-     * @param bindingName The wsdl:binding element name. Used to generate a (locally) unique ID for the policy.
+     * @param bindingName   The wsdl:binding element name. Used to generate a (locally) unique ID for the policy.
      * @param assertionName The fully qualified name of the addressing policy assertion.
-     * @param isRequired True, if the addressing feature was set to required, false otherwise.
+     * @param isRequired    True, if the addressing feature was set to required, false otherwise.
      * @return A policy that contains one policy assertion that corresponds to the given assertion name.
      */
     private Policy createWsawAddressingPolicy(final QName bindingName, final QName assertionName, final boolean isRequired) {
         final ArrayList<AssertionSet> assertionSets = new ArrayList<AssertionSet>(1);
         final ArrayList<PolicyAssertion> assertions = new ArrayList<PolicyAssertion>(1);
         final AssertionData addressingData =
-            AssertionData.createAssertionData(assertionName);
+                AssertionData.createAssertionData(assertionName);
         if (!isRequired) {
             addressingData.setOptionalAttribute(true);
         }
