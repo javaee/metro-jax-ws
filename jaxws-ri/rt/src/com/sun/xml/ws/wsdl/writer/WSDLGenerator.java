@@ -846,9 +846,9 @@ public class WSDLGenerator {
 
     protected void generateSOAP12BindingOperation(JavaMethodImpl method, Binding binding) {
         BindingOperationType operation = binding.operation().name(method.getOperationName());
+        extension.addBindingOperationExtension(operation, method);
         String targetNamespace = model.getTargetNamespace();
         QName requestMessage = new QName(targetNamespace, method.getOperationName());
-
         ArrayList<ParameterImpl> bodyParams = new ArrayList<ParameterImpl>();
         ArrayList<ParameterImpl> headerParams = new ArrayList<ParameterImpl>();
         splitParameters(bodyParams, headerParams, method.getRequestParameters());
@@ -857,7 +857,7 @@ public class WSDLGenerator {
 
         // input
         TypedXmlWriter input = operation.input();
-
+        extension.addBindingOperationInputExtension(input, method);
         com.sun.xml.ws.wsdl.writer.document.soap12.BodyType body = input._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
         boolean isRpc = soapBinding.getStyle().equals(Style.RPC);
         if (soapBinding.getUse().equals(Use.LITERAL)) {
@@ -900,6 +900,7 @@ public class WSDLGenerator {
             splitParameters(bodyParams, headerParams, method.getResponseParameters());
             unwrappable = unwrappable ? headerParams.size() == 0 : unwrappable;
             TypedXmlWriter output = operation.output();
+            extension.addBindingOperationOutputExtension(output, method);
             body = output._element(com.sun.xml.ws.wsdl.writer.document.soap12.Body.class);
             body.use(LITERAL);
             if (headerParams.size() > 0) {
@@ -935,9 +936,10 @@ public class WSDLGenerator {
         }
         for (CheckedExceptionImpl exception : method.getCheckedExceptions()) {
             Fault fault = operation.fault().name(exception.getMessageName());
+            extension.addBindingOperationFaultExtension(fault, method, exception);
             com.sun.xml.ws.wsdl.writer.document.soap12.SOAPFault soapFault = fault._element(com.sun.xml.ws.wsdl.writer.document.soap12.SOAPFault.class).name(exception.getMessageName());
-            soapFault.use(LITERAL);                
-        }            
+            soapFault.use(LITERAL);
+        }
     }
 
     /**
