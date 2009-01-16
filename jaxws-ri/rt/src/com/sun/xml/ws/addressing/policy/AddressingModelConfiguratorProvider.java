@@ -40,7 +40,6 @@ import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.model.wsdl.WSDLBoundPortTypeImpl;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.NestedPolicy;
 import com.sun.xml.ws.policy.Policy;
@@ -71,8 +70,7 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(AddressingModelConfiguratorProvider.class);
 
     private static final QName[] ADDRESSING_ASSERTIONS = {
-        new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing"),
-        new QName(AddressingVersion.W3C.policyNsUri, "UsingAddressing")};
+        new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing")};
 
     /**
      * Creates a new instance of AddressingModelConfiguratorProvider

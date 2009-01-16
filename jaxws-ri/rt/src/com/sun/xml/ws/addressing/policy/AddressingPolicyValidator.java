@@ -41,12 +41,11 @@ import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.NestedPolicy;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.spi.PolicyAssertionValidator;
-import com.sun.xml.ws.policy.spi.PolicyAssertionValidator.Fitness;
 import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
 
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceException;
+
 
 /**
  * This class validates the Addressing assertions.
@@ -61,7 +60,6 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
 
     static {
         supportedAssertions.add(new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing"));
-        supportedAssertions.add(new QName(AddressingVersion.W3C.policyNsUri, "UsingAddressing"));
         supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
         supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
         supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);

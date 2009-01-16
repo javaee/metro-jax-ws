@@ -55,8 +55,6 @@ public class AddressingPrefixMapper implements PrefixMapper {
     static {
         prefixMap.put(AddressingVersion.MEMBER.policyNsUri, "wsap");
         prefixMap.put(AddressingVersion.MEMBER.nsUri, "wsa");
-        prefixMap.put(AddressingVersion.W3C.policyNsUri, "wsapw3c");
-        prefixMap.put(AddressingVersion.W3C.nsUri, "wsaw3c");
         prefixMap.put(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME,W3CAddressingMetadataConstants.WSAM_PREFIX_NAME);
     }
         
