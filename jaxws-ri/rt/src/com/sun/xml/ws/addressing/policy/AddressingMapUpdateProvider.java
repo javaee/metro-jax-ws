@@ -139,27 +139,17 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
         if (!af.isRequired()) {
             addressingData.setOptionalAttribute(true);
         }
-        AddressingFeature.Responses[] responses = af.getResponses();
-        boolean nonanon_resp = false, anon_resp = false;
-        for (AddressingFeature.Responses r : responses) {
-            if (r == AddressingFeature.Responses.ANONYMOUS) {
-                anon_resp = true;
-            } else if (r == AddressingFeature.Responses.NON_ANONYMOUS) {
-                nonanon_resp = true;
-            }
-        }
-        if (responses.length == 0 || (anon_resp && nonanon_resp)) {
-            // both are supported.
-            assertions.add(new AddressingAssertion(addressingData,AssertionSet.createAssertionSet(null)));
-        } else {
-            final AssertionData nestedAsserData;
-            if (anon_resp) {
-                nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
-            } else {
-                nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
-            }
+        AddressingFeature.Responses responses = af.getResponses();        
+        if (responses == AddressingFeature.Responses.ANONYMOUS) {
+            AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
             PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
             assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
+        } else if (responses == AddressingFeature.Responses.NON_ANONYMOUS) {
+            final AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
+            PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
+            assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
+        } else {
+            assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(null)));
         }
 
         assertionSets.add(AssertionSet.createAssertionSet(assertions));

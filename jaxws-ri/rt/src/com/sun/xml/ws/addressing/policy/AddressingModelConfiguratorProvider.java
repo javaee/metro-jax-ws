@@ -133,9 +133,9 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
 
                                 final WebServiceFeature feature;
                                 if(requiresAnonymousResponses) {
-                                    feature  = new AddressingFeature(true, !assertion.isOptional(), new AddressingFeature.Responses[] {AddressingFeature.Responses.ANONYMOUS});
+                                    feature  = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.ANONYMOUS);
                                 } else if(requiresNonAnonymousResponses){
-                                    feature = new AddressingFeature(true, !assertion.isOptional(), new AddressingFeature.Responses[] {AddressingFeature.Responses.NON_ANONYMOUS});
+                                    feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.NON_ANONYMOUS);
                                 } else {
                                     feature = new AddressingFeature(true, !assertion.isOptional());
                                 }
