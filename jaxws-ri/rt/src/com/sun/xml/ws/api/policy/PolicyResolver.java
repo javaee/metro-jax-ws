@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,8 +39,6 @@ package com.sun.xml.ws.api.policy;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.istack.Nullable;
-
-import javax.xml.namespace.QName;
 
 /**
  * PolicyResolver  will be used to resolve the PolicyMap created by configuration understood by JAX-WS.
@@ -85,6 +83,8 @@ public interface PolicyResolver {
          *
          *  @param policyMap
          *      PolicyMap created from PolicyAttachments in WSDL or Feature annotations on endpoint implementation class.
+         * @param container
+         * @param endpointClass
          */
         public ServerContext(@Nullable PolicyMap policyMap, Container container, Class endpointClass) {
             this.policyMap = policyMap;
@@ -116,6 +116,7 @@ public interface PolicyResolver {
          * In presence of WSDL, JAX-WS by default creates PolicyMap from Policy Attachemnts in WSDL.
          *
          * @param policyMap PolicyMap created from PolicyAttachemnts in WSDL
+         * @param container 
          */
         public ClientContext(@Nullable PolicyMap policyMap, Container container) {
             this.policyMap = policyMap;
