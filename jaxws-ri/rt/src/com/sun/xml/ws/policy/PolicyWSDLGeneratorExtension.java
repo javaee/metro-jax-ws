@@ -74,7 +74,6 @@ import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -119,7 +118,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             }
             // Read policy config file
             policyMap = PolicyResolverFactory.create().resolve(
-                    new PolicyResolver.ServerContext(policyMap, context.getContainer(), context.getEndpointClass(), extenders));
+                    new PolicyResolver.ServerContext(policyMap, context.getContainer(), context.getEndpointClass(), false, extenders));
 
             final WSBinding binding = context.getBinding();
             try {
