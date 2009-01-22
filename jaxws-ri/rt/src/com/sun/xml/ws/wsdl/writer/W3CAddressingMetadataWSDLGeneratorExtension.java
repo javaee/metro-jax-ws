@@ -135,7 +135,7 @@ public class W3CAddressingMetadataWSDLGeneratorExtension extends
         // TODO: is this the correct way to find the separator ?
         try {
             URI uri = new URI(tns);
-            if (uri.getScheme().equalsIgnoreCase("urn"))
+            if ((uri.getScheme() != null) && uri.getScheme().equalsIgnoreCase("urn"))
                 delim = ":";
         } catch (URISyntaxException e) {
             LOGGER.warning("TargetNamespace of WebService is not a valid URI");
