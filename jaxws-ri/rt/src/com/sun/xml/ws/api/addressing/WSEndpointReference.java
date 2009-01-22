@@ -46,6 +46,7 @@ import com.sun.xml.stream.buffer.sax.SAXBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamReaderBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamWriterBufferCreator;
 import com.sun.xml.ws.addressing.EndpointReferenceUtil;
+import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.message.Header;
@@ -313,9 +314,9 @@ public final class WSEndpointReference  implements WSDLExtension {
 
         //Write Interface info
         if (portType != null) {
-            writer.writeStartElement(AddressingVersion.W3C.getWsdlPrefix(),
+            writer.writeStartElement(W3CAddressingMetadataConstants.WSAM_PREFIX_NAME,
                     AddressingVersion.W3C.eprType.portTypeName,
-                    AddressingVersion.W3C.wsdlNsUri);
+                    W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME);
             String portTypePrefix = portType.getPrefix();
             if (portTypePrefix == null || portTypePrefix.equals("")) {
                 //TODO check prefix again
@@ -328,9 +329,9 @@ public final class WSEndpointReference  implements WSDLExtension {
         if (service != null) {
             //Write service and Port info
             if (!(service.getNamespaceURI().equals("") || service.getLocalPart().equals(""))) {
-                writer.writeStartElement(AddressingVersion.W3C.getWsdlPrefix(),
+                writer.writeStartElement(W3CAddressingMetadataConstants.WSAM_PREFIX_NAME,
                         AddressingVersion.W3C.eprType.serviceName,
-                        AddressingVersion.W3C.wsdlNsUri);
+                        W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME);
                 String servicePrefix = service.getPrefix();
                 if (servicePrefix == null || servicePrefix.equals("")) {
                     //TODO check prefix again
