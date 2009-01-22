@@ -88,10 +88,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Internal representation of the EPR.
@@ -259,14 +256,14 @@ public final class WSEndpointReference  implements WSDLExtension {
                                @Nullable List<Element> metadata,
                                @Nullable String wsdlAddress,
                                @Nullable List<Element> referenceParameters,
-                               List<Element> elements, Map<QName, String> attributes) {
+                               @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
        this(
             createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress, elements, attributes),
             version );
     }
 
     private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
-                                                        List<Element> metadata, String wsdlAddress,List<Element> elements, Map<QName, String> attributes) {
+                                                        List<Element> metadata, String wsdlAddress, @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
 
         StreamWriterBufferCreator writer = new StreamWriterBufferCreator();
 
@@ -276,9 +273,11 @@ public final class WSEndpointReference  implements WSDLExtension {
             writer.writeNamespace(version.getPrefix(),version.nsUri);
 
             //add extensibile attributes on the EPR element
-            for( Map.Entry<QName,String> entry:attributes.entrySet()) {
-                QName qname = entry.getKey();
-                writer.writeAttribute(qname.getPrefix(),qname.getNamespaceURI(),qname.getLocalPart(),entry.getValue());
+            if (attributes != null) {
+                for (Map.Entry<QName, String> entry : attributes.entrySet()) {
+                    QName qname = entry.getKey();
+                    writer.writeAttribute(qname.getPrefix(), qname.getNamespaceURI(), qname.getLocalPart(), entry.getValue());
+                }
             }
 
             writer.writeStartElement(version.getPrefix(),version.eprType.address, version.nsUri);
@@ -320,9 +319,11 @@ public final class WSEndpointReference  implements WSDLExtension {
             }
 
             //write extensibility elements in the EPR element
-            for (Element e : elements)
-                DOMUtil.serializeNode(e, writer);
-
+            if (elements != null) {
+                for (Element e : elements)
+                    DOMUtil.serializeNode(e, writer);
+            }
+            
             writer.writeEndElement();
             writer.writeEndDocument();
             writer.flush();
