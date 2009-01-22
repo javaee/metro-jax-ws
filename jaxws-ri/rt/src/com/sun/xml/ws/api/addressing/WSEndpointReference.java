@@ -241,12 +241,32 @@ public final class WSEndpointReference  implements WSDLExtension {
                                @Nullable List<Element> metadata,
                                @Nullable String wsdlAddress,
                                @Nullable List<Element> referenceParameters) {
+       this(version, address, service, port, portType, metadata, wsdlAddress, referenceParameters, null, null);
+    }
+
+    /**
+     * Creates an EPR from individual components.
+     *
+     * <p>
+     * This version takes various information about metadata, and creates an EPR that has
+     * the necessary embedded WSDL.
+     */
+    public WSEndpointReference(@NotNull AddressingVersion version,
+                               @NotNull String address,
+                               @Nullable QName service,
+                               @Nullable QName port,
+                               @Nullable QName portType,
+                               @Nullable List<Element> metadata,
+                               @Nullable String wsdlAddress,
+                               @Nullable List<Element> referenceParameters,
+                               List<Element> elements, Map<QName, String> attributes) {
        this(
-            createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress),
+            createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress, elements, attributes),
             version );
     }
 
-    private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType, List<Element> metadata, String wsdlAddress) {
+    private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
+                                                        List<Element> metadata, String wsdlAddress,List<Element> elements, Map<QName, String> attributes) {
 
         StreamWriterBufferCreator writer = new StreamWriterBufferCreator();
 

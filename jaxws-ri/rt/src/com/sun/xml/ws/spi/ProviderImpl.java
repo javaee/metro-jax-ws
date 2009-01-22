@@ -78,6 +78,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The entry point to the JAX-WS RI from the JAX-WS API.
@@ -165,6 +166,12 @@ public class ProviderImpl extends Provider {
     }
 
     public W3CEndpointReference createW3CEndpointReference(String address, QName serviceName, QName portName, List<Element> metadata, String wsdlDocumentLocation, List<Element> referenceParameters) {
+        return createW3CEndpointReference(address, serviceName, portName, metadata, wsdlDocumentLocation, referenceParameters, null, null);
+    }
+
+    public W3CEndpointReference createW3CEndpointReference(String address, QName serviceName, QName portName,
+            List<Element> metadata, String wsdlDocumentLocation, List<Element> referenceParameters,
+            List<Element> elements, Map<QName, String> attributes) {
         Container container = ContainerResolver.getInstance().getContainer();
         if (address == null) {
             if (serviceName == null || portName == null) {
@@ -221,7 +228,8 @@ public class ProviderImpl extends Provider {
         }
         return new WSEndpointReference(
             AddressingVersion.fromSpecClass(W3CEndpointReference.class),
-            address, serviceName, portName, null, metadata, wsdlDocumentLocation, referenceParameters).toSpec(W3CEndpointReference.class);
+            address, serviceName, portName, null, metadata, wsdlDocumentLocation, referenceParameters, elements, attributes).toSpec(W3CEndpointReference.class);
+
     }
 
     private static JAXBContext getEPRJaxbContext() {
