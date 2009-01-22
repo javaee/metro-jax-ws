@@ -445,7 +445,7 @@
              dest="lib/saaj-impl.jar"/>
         <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/zip-dist/saaj1.3.2.src.zip"
              dest="lib/saaj-impl.src.zip"/>
-        <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/zip-dist/saaj-api.jar"
+        <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/build/lib/saaj-api.jar"
              dest="lib/saaj-api.jar"/>
         <get src="http://hudson.sfbay/job/saaj-ri-1.3.2.FCS/lastSuccessfulBuild/artifact/zip-dist/saaj-api-src.zip"
              dest="lib/saaj-api-src.zip"/>
