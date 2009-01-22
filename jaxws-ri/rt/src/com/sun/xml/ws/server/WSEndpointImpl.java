@@ -304,17 +304,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             refParams = Arrays.asList(referenceParameters);
         }
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
-        if (av == AddressingVersion.W3C) {
-            // Supress writing ServiceName and EndpointName in W3C EPR,
-            // Until the ns for those metadata elements is resolved.
-            return new WSEndpointReference(
-                    AddressingVersion.W3C,
-                    address,null /*serviceName*/,null /*portName*/, null /*portType*/, null, null /*wsdlAddress*/, refParams).toSpec(clazz);
-        } else {
-            return new WSEndpointReference(
-                    AddressingVersion.MEMBER,
-                    address, serviceName, portName, portType, null, wsdlAddress, refParams).toSpec(clazz);
-        }
+        return new WSEndpointReference(
+                    av, address, serviceName, portName, portType, null, wsdlAddress, refParams).toSpec(clazz);        
     }
 
     public @NotNull QName getPortName() {

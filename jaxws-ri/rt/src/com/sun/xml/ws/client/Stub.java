@@ -357,17 +357,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             wsdlAddress = eprAddress +"?wsdl";
         }
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
-        if (av == AddressingVersion.W3C) {
-            // Supress writing ServiceName and EndpointName in W3C EPR,
-            // Until the ns for those metadata elements is resolved.
-            return new WSEndpointReference(
-                    AddressingVersion.W3C,
-                    eprAddress, null /*getServiceName()*/, null/*getPortName()*/, null /* portTypeName*/, null, null /*wsdlAddress*/, null).toSpec(clazz);
-        } else {
-            return new WSEndpointReference(
-                    AddressingVersion.MEMBER,
+        return new WSEndpointReference(
+                    av,
                     eprAddress, getServiceName(), getPortName(), portTypeName, null, wsdlAddress, null).toSpec(clazz);
-        }
     }
 
 //
