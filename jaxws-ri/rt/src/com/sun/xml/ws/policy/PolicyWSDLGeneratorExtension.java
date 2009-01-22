@@ -117,16 +117,11 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             for (int i = 0; i < policyMapUpdateProviders.length; i++) {
                 extenders[i] = PolicyMapExtender.createPolicyMapExtender();
             }
-            policyMap = PolicyMap.createPolicyMap(Arrays.asList(extenders));
+            // Read policy config file
+            policyMap = PolicyResolverFactory.create().resolve(
+                    new PolicyResolver.ServerContext(policyMap, context.getContainer(), context.getEndpointClass(), extenders));
 
-            final TypedXmlWriter root = context.getRoot();
-            // TODO: resolve policy version and add default policy namespace
-            //TODO is this correct, check again?
-            root._namespace(NamespaceVersion.getLatestVersion().toString(), NamespaceVersion.getLatestVersion().getDefaultNamespacePrefix());
-
-            root._namespace(PolicyConstants.WSU_NAMESPACE_URI, PolicyConstants.WSU_NAMESPACE_PREFIX);
             final WSBinding binding = context.getBinding();
-
             try {
                 for (int i = 0; i < policyMapUpdateProviders.length; i++) {
                     policyMapUpdateProviders[i].update(extenders[i], policyMap, seiModel, binding);
@@ -135,8 +130,10 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             } catch (PolicyException e) {
                 throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1017_MAP_UPDATE_FAILED(), e));
             }
-            //Now Resolve PolicyMap with configuration files.
-            policyMap = PolicyResolverFactory.create().resolve(new PolicyResolver.ServerContext(policyMap,context.getContainer(), context.getEndpointClass()));            
+            final TypedXmlWriter root = context.getRoot();
+            root._namespace(NamespaceVersion.v1_2.toString(), NamespaceVersion.v1_2.getDefaultNamespacePrefix());
+            root._namespace(NamespaceVersion.v1_5.toString(), NamespaceVersion.v1_5.getDefaultNamespacePrefix());
+            root._namespace(PolicyConstants.WSU_NAMESPACE_URI, PolicyConstants.WSU_NAMESPACE_PREFIX);
 
         } finally {
             LOGGER.exiting();

@@ -37,8 +37,10 @@
 package com.sun.xml.ws.api.policy;
 
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyMapMutator;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.istack.Nullable;
+import javax.xml.ws.WebServiceException;
 
 /**
  * PolicyResolver  will be used to resolve the PolicyMap created by configuration understood by JAX-WS.
@@ -55,8 +57,11 @@ public interface PolicyResolver {
      *
      * @return  
      *      A PolicyMap with single policy alternative that gets created after consulting various configuration models.
+     * 
+     * @throws WebServiceException
+     *      If resolution failed
      */
-    PolicyMap resolve(ServerContext context);
+    PolicyMap resolve(ServerContext context) throws WebServiceException;
 
     /**
      * Creates a PolicyResolver
@@ -66,13 +71,18 @@ public interface PolicyResolver {
      *
      * @return
      *      A PolicyMap with single policy alternative that gets created after consulting various configuration models.
+     *
+     * @throws WebServiceException
+     *      If resolution failed
      */
-    PolicyMap resolve(ClientContext context);
+    PolicyMap resolve(ClientContext context) throws WebServiceException;
 
    public class ServerContext {
-       private PolicyMap policyMap;
-       private Class endpointClass;
-       private Container container;
+       private final PolicyMap policyMap;
+       private final Class endpointClass;
+       private final Container container;
+       private final boolean hasWsdl;
+       private final PolicyMapMutator[] mutators;
 
         /**
          * The abstraction of PolicyMap is not finalized, and will change in few months. It is highly discouraged to use
@@ -81,15 +91,44 @@ public interface PolicyResolver {
          * In presence of WSDL, JAX-WS by default creates PolicyMap from Policy Attachemnts in WSDL.
          * In absense of WSDL, JAX-WS creates PolicyMap from WebServiceFeatures configured on the endpoint implementation
          *
-         *  @param policyMap
+         * @param policyMap
          *      PolicyMap created from PolicyAttachments in WSDL or Feature annotations on endpoint implementation class.
          * @param container
          * @param endpointClass
+         * @param mutators
+         *      List of PolicyMapMutators that are run eventually when a PolicyMap is created
          */
-        public ServerContext(@Nullable PolicyMap policyMap, Container container, Class endpointClass) {
+        public ServerContext(@Nullable PolicyMap policyMap, Container container,
+                             Class endpointClass, final PolicyMapMutator... mutators) {
             this.policyMap = policyMap;
             this.endpointClass = endpointClass;
             this.container = container;
+            this.hasWsdl = true;
+            this.mutators = mutators;
+        }
+
+        /**
+         * The abstraction of PolicyMap is not finalized, and will change in few months. It is highly discouraged to use
+         * PolicyMap until it is finalized.
+         *
+         * In presence of WSDL, JAX-WS by default creates PolicyMap from Policy Attachemnts in WSDL.
+         * In absense of WSDL, JAX-WS creates PolicyMap from WebServiceFeatures configured on the endpoint implementation
+         *
+         * @param policyMap
+         *      PolicyMap created from PolicyAttachments in WSDL or Feature annotations on endpoint implementation class.
+         * @param container
+         * @param endpointClass
+         * @param hasWsdl Set to true, if this service is bundled with WSDL, false otherwise
+         * @param mutators
+         *      List of PolicyMapMutators that are run eventually when a PolicyMap is created
+         */
+        public ServerContext(@Nullable PolicyMap policyMap, Container container,
+                             Class endpointClass, boolean hasWsdl, final PolicyMapMutator... mutators) {
+            this.policyMap = policyMap;
+            this.endpointClass = endpointClass;
+            this.container = container;
+            this.hasWsdl = hasWsdl;
+            this.mutators = mutators;
         }
 
         public @Nullable PolicyMap getPolicyMap() {
@@ -102,6 +141,18 @@ public interface PolicyResolver {
 
         public Container getContainer() {
            return container;
+        }
+
+        /**
+         * Return true, if this service is bundled with WSDL, false otherwise
+         * @return
+         */
+        public boolean hasWsdl() {
+            return hasWsdl;
+        }
+
+        public PolicyMapMutator[] getMutators() {
+            return mutators;
         }
     }
 
