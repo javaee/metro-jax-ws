@@ -274,6 +274,13 @@ public final class WSEndpointReference  implements WSDLExtension {
             writer.writeStartDocument();
             writer.writeStartElement(version.getPrefix(),"EndpointReference", version.nsUri);
             writer.writeNamespace(version.getPrefix(),version.nsUri);
+
+            //add extensibile attributes on the EPR element
+            for( Map.Entry<QName,String> entry:attributes.entrySet()) {
+                QName qname = entry.getKey();
+                writer.writeAttribute(qname.getPrefix(),qname.getNamespaceURI(),qname.getLocalPart(),entry.getValue());
+            }
+
             writer.writeStartElement(version.getPrefix(),version.eprType.address, version.nsUri);
             writer.writeCharacters(address);
             writer.writeEndElement();
@@ -311,6 +318,11 @@ public final class WSEndpointReference  implements WSDLExtension {
 
                 break;
             }
+
+            //write extensibility elements in the EPR element
+            for (Element e : elements)
+                DOMUtil.serializeNode(e, writer);
+
             writer.writeEndElement();
             writer.writeEndDocument();
             writer.flush();
