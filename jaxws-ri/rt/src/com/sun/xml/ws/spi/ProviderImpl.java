@@ -184,7 +184,7 @@ public class ProviderImpl extends Provider {
                                 //just ignore the exception
                             }
                             break;
-                        }                                                                              *
+                        }
                     }
                 }
                 //address is still null? may be its not run in a JavaEE Container
