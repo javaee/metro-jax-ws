@@ -43,7 +43,7 @@ public class W3CEPRTest extends TestCase {
             (String) bp.getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
     }
 
-   private static final String NAMESPACEURI = "http://example.com";
+   private static final String NAMESPACEURI = "http://example.com/";
     private static final String SERVICE_NAME = "AddNumbersService";
     private static final String PORT_NAME = "AddNumbersPort";
     private QName SERVICE_QNAME = new QName(NAMESPACEURI, SERVICE_NAME);
