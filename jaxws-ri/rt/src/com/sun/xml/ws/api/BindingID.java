@@ -116,6 +116,7 @@ public abstract class BindingID {
      * attribute.
      *
      * @return wsdl:binding@transport attribute
+     * @since JAX-WS RI 2.1.6
      */
     public @NotNull String getTransport() {
         return SOAPNamespaceConstants.TRANSPORT_HTTP;
