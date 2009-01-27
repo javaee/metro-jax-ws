@@ -21,6 +21,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.Detail;
+import javax.xml.soap.SOAPElement;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -35,48 +39,28 @@ import java.io.OutputStream;
 public class JAXBTest extends TestCase {
 
     public void testJAXBElementMarshalling() throws Exception {
-    JAXBRIContext jc = (JAXBRIContext) JAXBContext.newInstance(whitebox.jaxb.client.DetailType.class);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document doc = dbf.newDocumentBuilder().newDocument();
-        Element e = doc.createElementNS("http://www.example1.com/faults","myFirstDetail");
-        e.setTextContent("foo bar");
-        doc.appendChild(e);
-
+        JAXBRIContext jc = (JAXBRIContext) JAXBContext.newInstance(whitebox.jaxb.client.DetailType.class);
         DetailType dt = new DetailType();
-        dt.getDetails().add(e);
+        SOAPFault sf = createFault();
+        dt.getDetails().add(sf.getDetail());
+
+
         Marshaller m = jc.createMarshaller();
-        m.marshal(dt,System.out);
-
-
-//        XMLStreamWriter sw = XMLOutputFactory.newInstance().createXMLStreamWriter(System.out);
-//        m.setProperty(Marshaller.JAXB_FRAGMENT,true);
-//        // Get output stream and use JAXB UTF-8 writer
-//        OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
-//        ((MarshallerImpl)m).marshal(dt,os,sw.getNamespaceContext());
-//        sw.flush();
-
-//        Transformer transformer = TransformerFactory.newInstance().newTransformer();;
-//        DOMSource source = new DOMSource(doc);
-//        StreamResult result = new StreamResult(System.out);
-//        transformer.transform(source, result);
-
-
+        m.marshal(dt, System.out);
         XMLStreamBufferResult sbr = new XMLStreamBufferResult();
-        m.setProperty(Marshaller.JAXB_FRAGMENT,true);
-        // Get output stream and use JAXB UTF-8 writer
-        //OutputStream os = XMLStreamWriterUtil.getOutputStream(sw);
-        ((MarshallerImpl)m).marshal(dt,sbr);
+        m.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        m.marshal(dt, sbr);
         XMLStreamBuffer infoset = sbr.getXMLStreamBuffer();
         XMLStreamReader reader = infoset.readAsXMLStreamReader();
-        if(reader.getEventType()== START_DOCUMENT)
-                XMLStreamReaderUtil.nextElementContent(reader);
+        if (reader.getEventType() == START_DOCUMENT)
+            XMLStreamReaderUtil.nextElementContent(reader);
         verifyDetail(reader);
 
-   }
+    }
 
-   private void verifyDetail(XMLStreamReader rdr) throws Exception {
+    private void verifyDetail(XMLStreamReader rdr) throws Exception {
         boolean detail = false;
-        while(rdr.hasNext()) {
+        while (rdr.hasNext()) {
             int event = rdr.next();
             if (event == XMLStreamReader.START_ELEMENT) {
                 if (rdr.getName().getLocalPart().equals("detail") || rdr.getName().getLocalPart().equals("Detail")) {
@@ -91,9 +75,17 @@ public class JAXBTest extends TestCase {
             fail("There is no detail element in the fault");
         }
     }
-    private static final QName DETAIL1_QNAME =  new QName("http://www.example1.com/faults", "myFirstDetail");
 
+    private static final QName DETAIL1_QNAME = new QName("http://www.example1.com/faults", "myFirstDetail");
 
+    private static SOAPFault createFault() throws Exception {
+        SOAPFactory fac = SOAPFactory.newInstance();
+        SOAPFault sf = fac.createFault("This is a fault.", new QName("http://schemas.xmlsoap.org/wsdl/soap/http", "Client"));
+        Detail d = sf.addDetail();
+        SOAPElement de = d.addChildElement(DETAIL1_QNAME);
+        de.addAttribute(new QName("", "msg1"), "This is the first detail message.");
+        return sf;
+    }
 
 
 }
