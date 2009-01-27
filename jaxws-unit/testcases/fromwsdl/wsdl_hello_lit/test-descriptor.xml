@@ -151,13 +151,13 @@
         import javax.xml.namespace.QName;
         
         String str = "\u0938\u094D\u0935\u093E\u0917\u0924";
-        assertEquals(str, (String)helloPort.retAnyType(str));
+        assertEquals(str, (String)helloPort.echoAnyType(str));
 
         QName qname = new QName("http://example.org/","local");
-        assertEquals(qname, (QName) helloPort.retAnyType(qname));
+        assertEquals(qname, (QName) helloPort.echoAnyType(qname));
 
         short sh =255;
-        assertEquals((Short)sh,(Short) helloPort.retAnyType(sh));
+        assertEquals((Short)sh,(Short) helloPort.echoAnyType(sh));
         ]]>
     </client>
 
