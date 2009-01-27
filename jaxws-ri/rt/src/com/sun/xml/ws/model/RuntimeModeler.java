@@ -53,7 +53,6 @@ import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.transport.http.client.HttpTransportPipe;
 
 import javax.jws.Oneway;
 import javax.jws.WebMethod;
@@ -287,8 +286,11 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            logger.info("Dynamically creating request wrapper Class "+ className);
-            return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
+            if (generateWrapperBeans) {
+                logger.info("Dynamically creating request wrapper Class " + className);
+                return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
+            }
+            throw new RuntimeModelerException(e);
         }
     }
 
@@ -297,8 +299,11 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            logger.info("Dynamically creating response wrapper bean Class "+ className);
-            return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
+            if (generateWrapperBeans) {
+                logger.info("Dynamically creating response wrapper bean Class " + className);
+                return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
+            }
+            throw new RuntimeModelerException(e);
         }
     }
 
@@ -308,8 +313,11 @@ public class RuntimeModeler {
         try {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
-            logger.info("Dynamically creating exception bean Class "+ className);
-            return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
+            if (generateWrapperBeans) {
+                logger.info("Dynamically creating exception bean Class " + className);
+                return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
+            }
+            throw new RuntimeModelerException(e);
         }
     }
 
@@ -1444,5 +1452,23 @@ public class RuntimeModeler {
      * Support for legacy WebMethod computation.
      */
     public static final boolean legacyWebMethod = getProperty(RuntimeModeler.class.getName()+".legacyWebMethod");
+
+
+    /**
+     * Controls whether wrapper beans should be generated dynamically.
+     *
+     * By default in JDK, they are not generated.
+     */
+    public static final boolean generateWrapperBeans;
+    static {
+        boolean wrapperGeneratorExists = false;
+        try {
+            Class.forName("com.sun.xml." + "ws.model.WrapperBeanGenerator");
+            wrapperGeneratorExists = true;
+        } catch (ClassNotFoundException cnfe) {
+            wrapperGeneratorExists = getProperty(RuntimeModeler.class.getName()+".generateWrappers");
+        }
+        generateWrapperBeans = wrapperGeneratorExists;
+    }
 
 }
