@@ -270,8 +270,8 @@ public final class XMLMessage {
         }
 
         private Message getMessage() {
-            assert !consumed;
             if (delegate == null) {
+                assert !consumed;
                 InputStream in = null;
                 try {
                     in = dataSource.getInputStream();
