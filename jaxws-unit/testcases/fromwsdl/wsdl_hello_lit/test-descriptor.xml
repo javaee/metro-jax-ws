@@ -148,20 +148,16 @@
             Test echoAnyType
         </description>
         <![CDATA[
-        import javax.xml.parsers.DocumentBuilderFactory;
-        import javax.xml.parsers.ParserConfigurationException;
-        import org.w3c.dom.Document;
-        import org.w3c.dom.Element;
-        import java.io.ByteArrayInputStream;
+        import javax.xml.namespace.QName;
+        
+        String str = "\u0938\u094D\u0935\u093E\u0917\u0924";
+        assertEquals(str, (String)helloPort.retAnyType(str));
 
-        String s = "<inObject><my:bar xmlns:my=\"urn:.my.example.com\">Hello World</my:bar></inObject>";
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        Document d = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(s.getBytes()));
-        Element in = d.getDocumentElement();
-        Element out = (Element) helloPort.echoAnyType(in);
-        assertTrue(out != null);
-        assertEquals("echoAnyTypeResponse", out.getLocalName());
+        QName qname = new QName("http://example.org/","local");
+        assertEquals(qname, (QName) helloPort.retAnyType(qname));
+
+        short sh =255;
+        assertEquals((Short)sh,(Short) helloPort.retAnyType(sh));
         ]]>
     </client>
 
