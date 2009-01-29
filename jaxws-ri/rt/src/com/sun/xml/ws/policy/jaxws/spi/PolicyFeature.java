@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,8 @@ import javax.xml.ws.WebServiceFeature;
  * This feature should be set on the binding. It does not make sense to set a
  * policy map per port because the map contains the policies for all ports in a
  * WSDL document.
+ *
+ * @author Fabian Ritzmann
  */
 public class PolicyFeature extends WebServiceFeature {
 
@@ -71,7 +73,7 @@ public class PolicyFeature extends WebServiceFeature {
      * @return The ID of this feature
      */
     public String getID() {
-        return this.featureId;
+        return featureId;
     }
 
     /**
