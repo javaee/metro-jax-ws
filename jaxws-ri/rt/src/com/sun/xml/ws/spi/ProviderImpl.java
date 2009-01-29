@@ -106,6 +106,11 @@ public class ProviderImpl extends Provider {
          return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
 
+    public ServiceDelegate createServiceDelegate( URL wsdlDocumentLocation, QName serviceName, Class serviceClass,
+                                                  WebServiceFeature ... features) {
+        throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
+    }
+
     @Override
     public Endpoint createAndPublishEndpoint(String address,
                                              Object implementor) {
@@ -166,10 +171,10 @@ public class ProviderImpl extends Provider {
     }
 
     public W3CEndpointReference createW3CEndpointReference(String address, QName serviceName, QName portName, List<Element> metadata, String wsdlDocumentLocation, List<Element> referenceParameters) {
-        return createW3CEndpointReference(address, serviceName, portName, metadata, wsdlDocumentLocation, referenceParameters, null, null);
+        return createW3CEndpointReference(address, null, serviceName, portName, metadata, wsdlDocumentLocation, referenceParameters, null, null);
     }
 
-    public W3CEndpointReference createW3CEndpointReference(String address, QName serviceName, QName portName,
+    public W3CEndpointReference createW3CEndpointReference(String address, QName interfaceName, QName serviceName, QName portName,
             List<Element> metadata, String wsdlDocumentLocation, List<Element> referenceParameters,
             List<Element> elements, Map<QName, String> attributes) {
         Container container = ContainerResolver.getInstance().getContainer();
