@@ -54,7 +54,11 @@ public interface PolicyMapUpdateProvider {
    * A callback method that allows to retrieve policy related information from provided parameters and modify the associated policy map
    * accordingly via provided policy map mutator object, which is associated with the policy map.
    *
-   * TODO: clarify with jax-ws guys, what information is to be provided by jax-ws on generated wsdl doc
+   * @param policyMapMutator Allows to modify the policy map
+   * @param policyMap Modify the content of this map
+   * @param model The WSDL model of the service
+   * @param wsBinding The binding of the service
+   * @throws PolicyException Throw this exception if an error occurs
    */
   void update(PolicyMapExtender policyMapMutator, PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException;
 }

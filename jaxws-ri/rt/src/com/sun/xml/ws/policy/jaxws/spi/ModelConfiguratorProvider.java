@@ -54,6 +54,7 @@ public interface ModelConfiguratorProvider {
      *
      * @param model which is to be configured
      * @param map provides policies as a source of information on proper configuration
+     * @throws PolicyException Throw this exception if an error occured
      */
     void configure(WSDLModel model, PolicyMap map) throws PolicyException;
 }
