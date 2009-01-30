@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -112,7 +112,7 @@ public class PortInfo implements WSPortInfo {
        }
        //still map is null, create a empty map
        if(map == null)
-           map = PolicyUtil.createEmptyPolicyMap();
+           map = PolicyMap.createPolicyMap(null);
        return map;
     }
     /**
@@ -122,6 +122,8 @@ public class PortInfo implements WSPortInfo {
      *      User-specified features.
      * @param portInterface
      *      Null if this is for dispatch. Otherwise the interface the proxy is going to implement
+     * @return
+     *      The initialized BindingImpl
      */
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
         WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);

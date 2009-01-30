@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@ import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.WebServiceException;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.ArrayList;
@@ -73,18 +72,5 @@ public class PolicyUtil {
             //features.add(f);
        }
        return features; 
-    }
-
-    /**
-     * Creates a PolicyMap with no entries.
-     * @return
-     */
-    public static PolicyMap createEmptyPolicyMap(){
-        PolicyMapBuilder builder = new PolicyMapBuilder();
-        try {
-            return builder.getPolicyMap();
-        } catch (PolicyException e) {
-            throw new WebServiceException(e);
-        }
     }
 }
