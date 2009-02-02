@@ -59,10 +59,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 /**
  * A list of {@link Header}s on a {@link Message}.
@@ -118,7 +116,7 @@ import java.util.Set;
  *
  * <p>
  * Intuitively speaking, at the end of the day, if a header is not
- * understood but {@link Header#isIgnorable(SOAPVersion, Set)} is false, a bad thing
+ * understood but {@link Header#isIgnorable(SOAPVersion, java.util.Set)} is false, a bad thing
  * will happen. The actual implementation of the checking is more complicated,
  * for that see {@link ClientMUTube}/{@link ServerMUTube}.
  *
@@ -126,6 +124,7 @@ import java.util.Set;
  */
 public final class HeaderList extends ArrayList<Header> {
 
+    private static final long serialVersionUID = -6358045781349627237L;
     /**
      * Bit set to keep track of which headers are understood.
      * <p>
@@ -141,13 +140,11 @@ public final class HeaderList extends ArrayList<Header> {
      * Lazily allocated.
      */
     private BitSet moreUnderstoodBits = null;
-
     private String to = null;
     private String action = null;
     private WSEndpointReference replyTo = null;
     private WSEndpointReference faultTo = null;
     private String messageId;
-
 
     /**
      * Creates an empty {@link HeaderList}.
@@ -161,8 +158,9 @@ public final class HeaderList extends ArrayList<Header> {
     public HeaderList(HeaderList that) {
         super(that);
         this.understoodBits = that.understoodBits;
-        if(that.moreUnderstoodBits!=null)
-            this.moreUnderstoodBits = (BitSet)that.moreUnderstoodBits.clone();
+        if (that.moreUnderstoodBits != null) {
+            this.moreUnderstoodBits = (BitSet) that.moreUnderstoodBits.clone();
+        }
         this.to = that.to;
         this.action = that.action;
         this.replyTo = that.replyTo;
@@ -171,8 +169,9 @@ public final class HeaderList extends ArrayList<Header> {
     }
 
     /**
-     * The number of total headers.
+     * The total number of headers.
      */
+    @Override
     public int size() {
         return super.size();
     }
@@ -181,8 +180,9 @@ public final class HeaderList extends ArrayList<Header> {
      * Adds all the headers.
      */
     public void addAll(Header... headers) {
-        for (Header header : headers)
+        for (Header header : headers) {
             add(header);
+        }
     }
 
     /**
@@ -193,6 +193,7 @@ public final class HeaderList extends ArrayList<Header> {
      *
      * @see #understood(int)
      */
+    @Override
     public Header get(int index) {
         return super.get(index);
     }
@@ -202,13 +203,18 @@ public final class HeaderList extends ArrayList<Header> {
      * <a href="#MU">"understood"</a>.
      */
     public void understood(int index) {
-        assert index<size();    // check that index is in range
-        if(index<32)
-            understoodBits |= 1<<index;
-        else {
-            if(moreUnderstoodBits==null)
+        // check that index is in range
+        if (index >= size()) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+
+        if (index < 32) {
+            understoodBits |= 1 << index;
+        } else {
+            if (moreUnderstoodBits == null) {
                 moreUnderstoodBits = new BitSet();
-            moreUnderstoodBits.set(index-32);
+            }
+            moreUnderstoodBits.set(index - 32);
         }
     }
 
@@ -217,13 +223,18 @@ public final class HeaderList extends ArrayList<Header> {
      * was <a href="#MU">"understood"</a>.
      */
     public boolean isUnderstood(int index) {
-        assert index<size();    // check that index is in range
-        if(index<32)
-            return understoodBits == (understoodBits|(1<<index));
-        else {
-            if(moreUnderstoodBits==null)
+        // check that index is in range
+        if (index >= size()) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+
+        if (index < 32) {
+            return understoodBits == (understoodBits | (1 << index));
+        } else {
+            if (moreUnderstoodBits == null) {
                 return false;
-            return moreUnderstoodBits.get(index-32);
+            }
+            return moreUnderstoodBits.get(index - 32);
         }
     }
 
@@ -231,7 +242,7 @@ public final class HeaderList extends ArrayList<Header> {
      * Marks the specified {@link Header} as <a href="#MU">"understood"</a>.
      *
      * @deprecated
-     * By the deifnition of {@link ArrayList}, this operation requires
+     * By the definition of {@link ArrayList}, this operation requires
      * O(n) search of the array, and thus inherently inefficient.
      *
      * Because of this, if you are developing a {@link Pipe} for
@@ -243,8 +254,8 @@ public final class HeaderList extends ArrayList<Header> {
      */
     public void understood(@NotNull Header header) {
         int sz = size();
-        for( int i=0; i<sz; i++ ) {
-            if(get(i)==header) {
+        for (int i = 0; i < sz; i++) {
+            if (get(i) == header) {
                 understood(i);
                 return;
             }
@@ -260,13 +271,16 @@ public final class HeaderList extends ArrayList<Header> {
      *      be marked as <a href="#MU">"understood"</a>.
      * @return null if not found.
      */
-    public @Nullable Header get(@NotNull String nsUri, @NotNull String localName, boolean markAsUnderstood) {
+    public
+    @Nullable
+    Header get(@NotNull String nsUri, @NotNull String localName, boolean markAsUnderstood) {
         int len = size();
-        for( int i=0; i<len; i++ ) {
+        for (int i = 0; i < len; i++) {
             Header h = get(i);
-            if(h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
-                if(markAsUnderstood)
+            if (h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
+                if (markAsUnderstood) {
                     understood(i);
+                }
                 return h;
             }
         }
@@ -278,7 +292,7 @@ public final class HeaderList extends ArrayList<Header> {
      *      Use {@link #get(String, String, boolean)}
      */
     public Header get(String nsUri, String localName) {
-        return get(nsUri,localName,true);
+        return get(nsUri, localName, true);
     }
 
     /**
@@ -290,16 +304,20 @@ public final class HeaderList extends ArrayList<Header> {
      * @return null
      *      if not found.
      */
-    public @Nullable Header get(@NotNull QName name, boolean markAsUnderstood) {
-        return get(name.getNamespaceURI(),name.getLocalPart(),markAsUnderstood);
+    public
+    @Nullable
+    Header get(@NotNull QName name, boolean markAsUnderstood) {
+        return get(name.getNamespaceURI(), name.getLocalPart(), markAsUnderstood);
     }
 
     /**
      * @deprecated
      *      Use {@link #get(QName)}
      */
-    public @Nullable Header get(@NotNull QName name) {
-        return get(name,true);
+    public
+    @Nullable
+    Header get(@NotNull QName name) {
+        return get(name, true);
     }
 
     /**
@@ -307,7 +325,7 @@ public final class HeaderList extends ArrayList<Header> {
      *      Use {@link #getHeaders(String, String, boolean)}
      */
     public Iterator<Header> getHeaders(final String nsUri, final String localName) {
-        return getHeaders(nsUri,localName,true);
+        return getHeaders(nsUri, localName, true);
     }
 
     /**
@@ -320,26 +338,32 @@ public final class HeaderList extends ArrayList<Header> {
      *      from {@link Iterator#next()}.
      * @return empty iterator if not found.
      */
-    public @NotNull Iterator<Header> getHeaders(@NotNull final String nsUri, @NotNull final String localName, final boolean markAsUnderstood) {
+    public
+    @NotNull
+    Iterator<Header> getHeaders(@NotNull final String nsUri, @NotNull final String localName, final boolean markAsUnderstood) {
         return new Iterator<Header>() {
+
             int idx = 0;
             Header next;
+
             public boolean hasNext() {
-                if(next==null)
+                if (next == null) {
                     fetch();
-                return next!=null;
+                }
+                return next != null;
             }
 
             public Header next() {
-                if(next==null) {
+                if (next == null) {
                     fetch();
-                    if(next==null)
+                    if (next == null) {
                         throw new NoSuchElementException();
+                    }
                 }
 
-                if(markAsUnderstood) {
-                    assert get(idx-1)==next;
-                    understood(idx-1);
+                if (markAsUnderstood) {
+                    assert get(idx - 1) == next;
+                    understood(idx - 1);
                 }
 
                 Header r = next;
@@ -348,9 +372,9 @@ public final class HeaderList extends ArrayList<Header> {
             }
 
             private void fetch() {
-                while(idx<size()) {
+                while (idx < size()) {
                     Header h = get(idx++);
-                    if(h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
+                    if (h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
                         next = h;
                         break;
                     }
@@ -366,16 +390,20 @@ public final class HeaderList extends ArrayList<Header> {
     /**
      * @see #getHeaders(String, String, boolean)
      */
-    public @NotNull Iterator<Header> getHeaders(@NotNull QName headerName, final boolean markAsUnderstood) {
-        return getHeaders(headerName.getNamespaceURI(),headerName.getLocalPart(),markAsUnderstood);
+    public
+    @NotNull
+    Iterator<Header> getHeaders(@NotNull QName headerName, final boolean markAsUnderstood) {
+        return getHeaders(headerName.getNamespaceURI(), headerName.getLocalPart(), markAsUnderstood);
     }
 
     /**
      * @deprecated
      *      use {@link #getHeaders(String, boolean)}.
      */
-    public @NotNull Iterator<Header> getHeaders(@NotNull final String nsUri) {
-        return getHeaders(nsUri,true);
+    public
+    @NotNull
+    Iterator<Header> getHeaders(@NotNull final String nsUri) {
+        return getHeaders(nsUri, true);
     }
 
     /**
@@ -389,26 +417,32 @@ public final class HeaderList extends ArrayList<Header> {
      * @return
      *      empty iterator if not found.
      */
-    public @NotNull Iterator<Header> getHeaders(@NotNull final String nsUri, final boolean markAsUnderstood) {
+    public
+    @NotNull
+    Iterator<Header> getHeaders(@NotNull final String nsUri, final boolean markAsUnderstood) {
         return new Iterator<Header>() {
+
             int idx = 0;
             Header next;
+
             public boolean hasNext() {
-                if(next==null)
+                if (next == null) {
                     fetch();
-                return next!=null;
+                }
+                return next != null;
             }
 
             public Header next() {
-                if(next==null) {
+                if (next == null) {
                     fetch();
-                    if(next==null)
+                    if (next == null) {
                         throw new NoSuchElementException();
+                    }
                 }
 
-                if(markAsUnderstood) {
-                    assert get(idx-1)==next;
-                    understood(idx-1);
+                if (markAsUnderstood) {
+                    assert get(idx - 1) == next;
+                    understood(idx - 1);
                 }
 
                 Header r = next;
@@ -417,9 +451,9 @@ public final class HeaderList extends ArrayList<Header> {
             }
 
             private void fetch() {
-                while(idx<size()) {
+                while (idx < size()) {
                     Header h = get(idx++);
-                    if(h.getNamespaceURI().equals(nsUri)) {
+                    if (h.getNamespaceURI().equals(nsUri)) {
                         next = h;
                         break;
                     }
@@ -444,14 +478,16 @@ public final class HeaderList extends ArrayList<Header> {
      * @return null if header not found
      */
     private Header getFirstHeader(QName name, boolean markUnderstood, SOAPVersion sv) {
-        if (sv == null)
+        if (sv == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_SOAP_VERSION());
+        }
 
         Iterator<Header> iter = getHeaders(name.getNamespaceURI(), name.getLocalPart(), markUnderstood);
         while (iter.hasNext()) {
             Header h = iter.next();
-            if (h.getRole(sv).equals(sv.implicitRole))
+            if (h.getRole(sv).equals(sv.implicitRole)) {
                 return h;
+            }
         }
 
         return null;
@@ -469,10 +505,12 @@ public final class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing To header, anonymous URI if no header is present
      */
     public String getTo(AddressingVersion av, SOAPVersion sv) {
-        if (to != null)
+        if (to != null) {
             return to;
-        if (av == null)
+        }
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
         Header h = getFirstHeader(av.toTag, true, sv);
         if (h != null) {
@@ -496,10 +534,12 @@ public final class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing Action header, null if no header is present
      */
     public String getAction(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (action!= null)
+        if (action != null) {
             return action;
-        if (av == null)
+        }
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
         Header h = getFirstHeader(av.actionTag, true, sv);
         if (h != null) {
@@ -521,10 +561,12 @@ public final class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing ReplyTo header, null if no header is present
      */
     public WSEndpointReference getReplyTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (replyTo!=null)
+        if (replyTo != null) {
             return replyTo;
-        if (av == null)
+        }
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
         Header h = getFirstHeader(av.replyToTag, true, sv);
         if (h != null) {
@@ -552,11 +594,13 @@ public final class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing FaultTo header, null if no header is present
      */
     public WSEndpointReference getFaultTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (faultTo != null)
+        if (faultTo != null) {
             return faultTo;
+        }
 
-        if (av == null)
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
         Header h = getFirstHeader(av.faultToTag, true, sv);
         if (h != null) {
@@ -582,11 +626,13 @@ public final class HeaderList extends ArrayList<Header> {
      * @return Value of WS-Addressing MessageID header, null if no header is present
      */
     public String getMessageID(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
-        if (messageId != null)
+        if (messageId != null) {
             return messageId;
+        }
 
-        if (av == null)
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
         Header h = getFirstHeader(av.messageIDTag, true, sv);
         if (h != null) {
@@ -647,16 +693,17 @@ public final class HeaderList extends ArrayList<Header> {
      * @param packet request packet
      */
     public void fillRequestAddressingHeaders(WSDLPort wsdlPort, @NotNull WSBinding binding, Packet packet) {
-        if (binding == null)
+        if (binding == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
+        }
 
         AddressingVersion addressingVersion = binding.getAddressingVersion();
         //seiModel is passed as null as it is not needed.
         WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, null, binding);
 
         // wsa:Action
-        String action = wsaHelper.getEffectiveInputAction(packet);
-        if (action == null || action.equals("")) {
+        String effectiveInputAction = wsaHelper.getEffectiveInputAction(packet);
+        if (effectiveInputAction == null || effectiveInputAction.equals("")) {
             throw new WebServiceException(ClientMessages.INVALID_SOAP_ACTION());
         }
         boolean oneway = !packet.expectReply;
@@ -665,17 +712,16 @@ public final class HeaderList extends ArrayList<Header> {
             // as anonymous ReplyTo MUST NOT be added in that case. BindingProvider need to
             // disable AddressingFeature and MemberSubmissionAddressingFeature and hand-craft
             // the SOAP message with non-anonymous ReplyTo/FaultTo.
-            if (!oneway && packet.getMessage() != null && packet.getMessage().getOperation(wsdlPort) != null && packet.getMessage().getOperation(wsdlPort).getAnonymous() == WSDLBoundOperation.ANONYMOUS.prohibited)
-            {
+            if (!oneway && packet.getMessage() != null && packet.getMessage().getOperation(wsdlPort) != null && packet.getMessage().getOperation(wsdlPort).getAnonymous() == WSDLBoundOperation.ANONYMOUS.prohibited) {
                 throw new WebServiceException(AddressingMessages.WSAW_ANONYMOUS_PROHIBITED());
             }
         }
         if (!binding.isFeatureEnabled(OneWayFeature.class)) {
             // standard oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, action);
+            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), oneway, effectiveInputAction);
         } else {
             // custom oneway
-            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), action);
+            fillRequestAddressingHeaders(packet, addressingVersion, binding.getSOAPVersion(), binding.getFeature(OneWayFeature.class), effectiveInputAction);
         }
     }
 
@@ -712,17 +758,21 @@ public final class HeaderList extends ArrayList<Header> {
      * @throws IllegalArgumentException if any of the parameters is null.
      */
     private void fillCommonAddressingHeaders(Packet packet, @NotNull AddressingVersion av, @NotNull SOAPVersion sv, @NotNull String action) {
-        if (packet == null)
+        if (packet == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_PACKET());
+        }
 
-        if (av == null)
+        if (av == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
 
-        if (sv == null)
+        if (sv == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_SOAP_VERSION());
+        }
 
-        if (action == null)
+        if (action == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_ACTION());
+        }
 
         // wsa:To
         StringHeader h = new StringHeader(av.toTag, packet.endpointAddress.toString());
@@ -745,41 +795,140 @@ public final class HeaderList extends ArrayList<Header> {
      * @return
      *      always true. Don't use the return value.      
      */
+    @Override
     public boolean add(Header header) {
         return super.add(header);
     }
 
     /**
-     * @deprecated
-     *      {@link HeaderList} is monotonic and you can't remove anything.
+     * Removes the first {@link Header} of the specified name.
+     *
+     * @param nsUri namespace URI of the header to remove
+     * @param localName local part of the FQN of the header to remove
+     *
+     * @return null if not found.
      */
-    // to allow this, we need to implement the resizing of understoodBits
+    public
+    @Nullable
+    Header remove(@NotNull String nsUri, @NotNull String localName) {
+        int len = size();
+        for (int i = 0; i < len; i++) {
+            Header h = get(i);
+            if (h.getLocalPart().equals(localName) && h.getNamespaceURI().equals(nsUri)) {
+                return remove(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Removes the first {@link Header} of the specified name.
+     *
+     * @param name fully qualified name of the header to remove
+     *
+     * @return null if not found.
+     */
+    public
+    @Nullable
+    Header remove(@NotNull QName name) {
+        return remove(name.getNamespaceURI(), name.getLocalPart());
+    }
+
+    /**
+     * Removes the first {@link Header} of the specified name.
+     *
+     * @param index index of the header to remove
+     *
+     * @return removed header
+     */
+    @Override
     public Header remove(int index) {
-        throw new UnsupportedOperationException();
+        removeUnderstoodBit(index);
+        return super.remove(index);
     }
 
     /**
-     * @deprecated
-     *      {@link HeaderList} is monotonic and you can't remove anything.
+     * Removes the "understood" bit for header on the position specified by {@code index} parameter
+     * from the set of understood header bits.
+     * 
+     * @param index position of the bit to remove
      */
+    private void removeUnderstoodBit(int index) {
+        assert index < size();
+
+        if (index < 32) {
+            /**
+             * Let
+             *   R be the bit to be removed
+             *   M be a more significant "upper" bit than bit R
+             *   L be a less significant "lower" bit than bit R
+             *
+             * Then following 3 lines of code produce these results:
+             *
+             *   old understoodBits = MMMMMMMMMMMMRLLLLLLLLLLLLLLLLLLL
+             *
+             *   shiftedUpperBits   = 0MMMMMMMMMMMM0000000000000000000
+             *
+             *   lowerBits          = 0000000000000LLLLLLLLLLLLLLLLLLL
+             *
+             *   new understoodBits = 0MMMMMMMMMMMMLLLLLLLLLLLLLLLLLLL
+             *
+             * The R bit is removed and all the upper bits are shifted right (unsigned)
+             */
+            int shiftedUpperBits = understoodBits >>> -31 + index << index;
+            int lowerBits = understoodBits << -index >>> 31 - index >>> 1;
+            understoodBits = shiftedUpperBits | lowerBits;
+
+            if (moreUnderstoodBits != null && moreUnderstoodBits.cardinality() > 0) {
+                if (moreUnderstoodBits.get(0)) {
+                    understoodBits |= 0x80000000;
+                }
+
+                moreUnderstoodBits.clear(0);
+                for (int i = moreUnderstoodBits.nextSetBit(1); i > 0; i = moreUnderstoodBits.nextSetBit(i + 1)) {
+                    moreUnderstoodBits.set(i - 1);
+                    moreUnderstoodBits.clear(i);
+                }
+            }
+        } else if (moreUnderstoodBits != null && moreUnderstoodBits.cardinality() > 0) {
+            index -= 32;
+            moreUnderstoodBits.clear(index);
+            for (int i = moreUnderstoodBits.nextSetBit(index); i >= 1; i = moreUnderstoodBits.nextSetBit(i + 1)) {
+                moreUnderstoodBits.set(i - 1);
+                moreUnderstoodBits.clear(i);
+            }
+        }
+
+        // remove bit set if the new size will be < 33 => we fit all bits into int
+        if (size() - 1 <= 33  && moreUnderstoodBits != null) {
+            moreUnderstoodBits = null;
+        }
+    }
+
+    /**
+     * Removes a single instance of the specified element from this
+     * header list, if it is present.  More formally,
+     * removes a header <tt>h</tt> such that <tt>(o==null ? h==null :
+     * o.equals(h))</tt>, if the header list contains one or more such
+     * headers.  Returns <tt>true</tt> if the list contained the
+     * specified element (or equivalently, if the list changed as a
+     * result of the call).<p>
+     *
+     * @param o element to be removed from this list, if present.
+     * @return <tt>true</tt> if the list contained the specified element.
+     * @see #remove(javax.xml.namespace.QName)
+     */
+    @Override
     public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
+        if (o != null) {
+            for (int index = 0; index < this.size(); index++)
+            if (o.equals(this.get(index))) {
+                remove(index);
+                return true;
+            }
+        }
 
-    /**
-     * @deprecated
-     *      {@link HeaderList} is monotonic and you can't remove anything.
-     */
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @deprecated
-     *      {@link HeaderList} is monotonic and you can't remove anything.
-     */
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     /**
@@ -791,15 +940,16 @@ public final class HeaderList extends ArrayList<Header> {
      *      Can be null, in which case null will be returned.
      */
     public static HeaderList copy(HeaderList original) {
-        if(original==null)
+        if (original == null) {
             return null;
-        else
+        } else {
             return new HeaderList(original);
+        }
     }
 
     public void readResponseAddressingHeaders(WSDLPort wsdlPort, WSBinding binding) {
         // read Action
-        String action = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
-        // TODO: validate client-inbound Action
+        String wsaAction = getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
+    // TODO: validate client-inbound Action
     }
 }
