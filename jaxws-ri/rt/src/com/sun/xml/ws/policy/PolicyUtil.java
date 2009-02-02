@@ -74,6 +74,7 @@ public class PolicyUtil {
                 final Collection<WebServiceFeature> features = getPortScopedFeatures(policyMap, service.getName(), port.getName());
                 for (WebServiceFeature feature : features) {
                     port.addFeature(feature);
+                    port.getBinding().addFeature(feature);
                 }
             }
         }
