@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,9 +36,6 @@
 
 package com.sun.xml.ws.addressing.policy;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.NestedPolicy;
@@ -51,7 +48,9 @@ import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
@@ -78,78 +77,66 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
     public AddressingModelConfiguratorProvider() {
     }
 
-    /**
-     * process addressing policy assertions and if found and are not optional then addressing is enabled on the
-     * {@link com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType}
-     *
-     * @param model must be non-null
-     * @param policyMap must be non-null
-     */
-    public void configure(final WSDLModel model, final PolicyMap policyMap) throws PolicyException {
-        LOGGER.entering(model, policyMap);
-        if ((null==model) || (null==policyMap)) {
-            LOGGER.exiting();
-            return;
-        }
-        for (WSDLService service:model.getServices().values()) {
-            for (WSDLPort port : service.getPorts()) {
-                final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(service.getName(),port.getName());
-                final Policy policy = policyMap.getEndpointEffectivePolicy(key);
-                for (QName addressingAssertionQName : ADDRESSING_ASSERTIONS) {
-                    if (null!=policy && policy.contains(addressingAssertionQName)) {
-                        final Iterator <AssertionSet> assertions = policy.iterator();
-                        while(assertions.hasNext()){
-                            final AssertionSet assertionSet = assertions.next();
-                            final Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
-                            while(policyAssertion.hasNext()){
-                                final PolicyAssertion assertion = policyAssertion.next();
-                                if(assertion.getName().equals(addressingAssertionQName)){
-                                    final WebServiceFeature feature = AddressingVersion.getFeature(addressingAssertionQName.getNamespaceURI(), true, !assertion.isOptional());
-                                    port.addFeature(feature);
-                                    if (LOGGER.isLoggable(Level.FINE)) {
-                                        LOGGER.fine("Added addressing feature \"" + feature + "\" to port \"" + port + "\"");
-                                    }
-                                } // end-if non optional wsa assertion found
-                            } // next assertion
-                        } // next alternative
-                    } // end-if policy contains wsa assertion
-                } //end foreach addr assertion
-                
-                // Deal with WS-Addressing 1.0 Metadata assertions
-                if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
-                    for (AssertionSet assertions : policy) {
-                        for (PolicyAssertion assertion : assertions) {
-                            if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
-                                NestedPolicy nestedPolicy = assertion.getNestedPolicy();
-                                boolean requiresAnonymousResponses = false;
-                                boolean requiresNonAnonymousResponses = false;
-                                if (nestedPolicy != null) {
-                                    requiresAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
-                                    requiresNonAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
-                                }
-                                if(requiresAnonymousResponses && requiresNonAnonymousResponses) {
-                                    throw new WebServiceException("Only one among AnonymousResponses and NonAnonymousResponses can be nested in an Addressing assertion");
-                                }
-
-                                final WebServiceFeature feature;
-                                if(requiresAnonymousResponses) {
-                                    feature  = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.ANONYMOUS);
-                                } else if(requiresNonAnonymousResponses){
-                                    feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.NON_ANONYMOUS);
-                                } else {
-                                    feature = new AddressingFeature(true, !assertion.isOptional());
-                                }
-                                port.addFeature(feature);
+    public Collection<WebServiceFeature> getFeatures(final PolicyMapKey key, final PolicyMap policyMap) throws PolicyException {
+        LOGGER.entering(key, policyMap);
+        final Collection<WebServiceFeature> features = new LinkedList<WebServiceFeature>();
+        if ((key != null) && (policyMap != null)) {
+            final Policy policy = policyMap.getEndpointEffectivePolicy(key);
+            for (QName addressingAssertionQName : ADDRESSING_ASSERTIONS) {
+                if ((policy != null) && policy.contains(addressingAssertionQName)) {
+                    final Iterator <AssertionSet> assertions = policy.iterator();
+                    while(assertions.hasNext()){
+                        final AssertionSet assertionSet = assertions.next();
+                        final Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
+                        while(policyAssertion.hasNext()){
+                            final PolicyAssertion assertion = policyAssertion.next();
+                            if(assertion.getName().equals(addressingAssertionQName)){
+                                final WebServiceFeature feature = AddressingVersion.getFeature(addressingAssertionQName.getNamespaceURI(), true, !assertion.isOptional());
                                 if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine("Added addressing feature \"" + feature + "\" to port \"" + port + "\"");
+                                    LOGGER.fine("Added addressing feature \"" + feature + "\" for element \"" + key + "\"");
                                 }
+                                features.add(feature);
+                            } // end-if non optional wsa assertion found
+                        } // next assertion
+                    } // next alternative
+                } // end-if policy contains wsa assertion
+            } //end foreach addr assertion
+
+            // Deal with WS-Addressing 1.0 Metadata assertions
+            if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+                for (AssertionSet assertions : policy) {
+                    for (PolicyAssertion assertion : assertions) {
+                        if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+                            NestedPolicy nestedPolicy = assertion.getNestedPolicy();
+                            boolean requiresAnonymousResponses = false;
+                            boolean requiresNonAnonymousResponses = false;
+                            if (nestedPolicy != null) {
+                                requiresAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
+                                requiresNonAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
                             }
+                            if(requiresAnonymousResponses && requiresNonAnonymousResponses) {
+                                throw new WebServiceException("Only one among AnonymousResponses and NonAnonymousResponses can be nested in an Addressing assertion");
+                            }
+
+                            final WebServiceFeature feature;
+                            if(requiresAnonymousResponses) {
+                                feature  = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.ANONYMOUS);
+                            } else if(requiresNonAnonymousResponses){
+                                feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.NON_ANONYMOUS);
+                            } else {
+                                feature = new AddressingFeature(true, !assertion.isOptional());
+                            }
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine("Added addressing feature \"" + feature + "\" for element \"" + key + "\"");
+                            }
+                            features.add(feature);
                         }
                     }
                 }
-                
-            } // end foreach port
-        } // end foreach service
-        LOGGER.exiting();
+            }
+        }
+        LOGGER.exiting(features);
+        return features;
     }
+
 }

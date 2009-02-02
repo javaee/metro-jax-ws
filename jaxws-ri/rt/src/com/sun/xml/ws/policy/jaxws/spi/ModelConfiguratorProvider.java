@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,25 +36,30 @@
 
 package com.sun.xml.ws.policy.jaxws.spi;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.policy.PolicyMapKey;
+import java.util.Collection;
+import javax.xml.ws.WebServiceFeature;
 
 /**
  * The service provider implementing this interface will be discovered and called to configure
  * wsdl model based on PolicyMap bound to it.
  *
  * @author japod
+ * @author Fabian Ritzmann
  */
 public interface ModelConfiguratorProvider {
-    
+
     /**
      * A callback method that allows to retrieve policy related information from provided PolicyMap
-     * and to configure the WSDLModel accordingly.
+     * and return a list of corresponding WebServiceFeatures.
      *
-     * @param model which is to be configured
-     * @param map provides policies as a source of information on proper configuration
-     * @throws PolicyException Throw this exception if an error occured
+     * @param key Identifies the policy in the policy map
+     * @param policyMap Provides policies as a source of information on proper configuration
+     * @return A list of features that correspond to the policy identified by the policy map key. May be empty but not null.
+     * @throws PolicyException If an error occurred
      */
-    void configure(WSDLModel model, PolicyMap map) throws PolicyException;
+    public Collection<WebServiceFeature> getFeatures(PolicyMapKey key, PolicyMap policyMap) throws PolicyException;
+    
 }

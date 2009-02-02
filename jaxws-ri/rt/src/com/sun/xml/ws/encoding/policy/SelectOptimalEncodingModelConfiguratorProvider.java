@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,11 +36,7 @@
 
 package com.sun.xml.ws.encoding.policy;
 
-import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.client.SelectOptimalEncodingFeature;
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
@@ -48,15 +44,19 @@ import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import static com.sun.xml.ws.encoding.policy.EncodingConstants.SELECT_OPTIMAL_ENCODING_ASSERTION;
+import javax.xml.ws.WebServiceFeature;
         
 /**
  * A configurator provider for FastInfoset policy assertions.
  *
  * @author Paul.Sandoz@Sun.Com
+ * @author Fabian Ritzmann
  */
 public class SelectOptimalEncodingModelConfiguratorProvider implements ModelConfiguratorProvider{        
     public static final QName enabled = new QName("enabled");
@@ -64,41 +64,30 @@ public class SelectOptimalEncodingModelConfiguratorProvider implements ModelConf
     /**
      * Process SelectOptimalEncoding policy assertions.
      *
-     * @param model the WSDL model.
-     * @param policyMap the policy map.
+     * @param key Key that identifies the endpoint scope.
+     * @param policyMap The policy map.
+     * @throws PolicyException If retrieving the policy triggered an exception.
      */
-    public void configure(@NotNull WSDLModel model, @NotNull PolicyMap policyMap) throws PolicyException {
-        assert model != null;
-        assert policyMap != null;
-        
-        for (WSDLService service:model.getServices().values()) {
-            for (WSDLPort port : service.getPorts()) {
-                configure(port, policyMap);
-            } // end foreach port
-        } // end foreach service
-    }
-    
-    public void configure(@NotNull WSDLPort port, @NotNull PolicyMap policyMap) throws PolicyException {
-        assert port != null;
-        assert policyMap != null;
-        
-        PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(port.getOwner().getName(),port.getName());
-        Policy policy = policyMap.getEndpointEffectivePolicy(key);
-        if (null!=policy && policy.contains(SELECT_OPTIMAL_ENCODING_ASSERTION)) {
-            Iterator <AssertionSet> assertions = policy.iterator();
-            while(assertions.hasNext()){
-                AssertionSet assertionSet = assertions.next();
-                Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
-                while(policyAssertion.hasNext()){
-                    PolicyAssertion assertion = policyAssertion.next();
-                    if(SELECT_OPTIMAL_ENCODING_ASSERTION.equals(assertion.getName())){
-                        String value = assertion.getAttributeValue(enabled);
-                        boolean isSelectOptimalEncodingEnabled = value == null || Boolean.valueOf(value.trim());
-                        port.addFeature(
-                                new SelectOptimalEncodingFeature(isSelectOptimalEncodingEnabled));
-                    } 
-                } 
-            } 
+    public Collection<WebServiceFeature> getFeatures(PolicyMapKey key, PolicyMap policyMap) throws PolicyException {
+        final Collection<WebServiceFeature> features = new LinkedList<WebServiceFeature>();
+        if ((key != null) && (policyMap != null)) {
+            Policy policy = policyMap.getEndpointEffectivePolicy(key);
+            if (null!=policy && policy.contains(SELECT_OPTIMAL_ENCODING_ASSERTION)) {
+                Iterator <AssertionSet> assertions = policy.iterator();
+                while(assertions.hasNext()){
+                    AssertionSet assertionSet = assertions.next();
+                    Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
+                    while(policyAssertion.hasNext()){
+                        PolicyAssertion assertion = policyAssertion.next();
+                        if(SELECT_OPTIMAL_ENCODING_ASSERTION.equals(assertion.getName())){
+                            String value = assertion.getAttributeValue(enabled);
+                            boolean isSelectOptimalEncodingEnabled = value == null || Boolean.valueOf(value.trim());
+                            features.add(new SelectOptimalEncodingFeature(isSelectOptimalEncodingEnabled));
+                        }
+                    }
+                }
+            }
         }
+        return features;
     }
 }

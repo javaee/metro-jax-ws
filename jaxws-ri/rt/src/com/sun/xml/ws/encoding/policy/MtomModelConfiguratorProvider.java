@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,9 +36,6 @@
 
 package com.sun.xml.ws.encoding.policy;
 
-import com.sun.xml.ws.api.model.wsdl.WSDLModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
@@ -46,7 +43,10 @@ import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 
 import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SERIALIZATION_ASSERTION;
@@ -54,6 +54,7 @@ import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SE
 /**
  *
  * @author japod
+ * @author Fabian Ritzmann
  */
 public class MtomModelConfiguratorProvider implements ModelConfiguratorProvider{
     /**
@@ -66,31 +67,28 @@ public class MtomModelConfiguratorProvider implements ModelConfiguratorProvider{
      * process Mtom policy assertions and if found and is not optional then mtom is enabled on the
      * {@link WSDLBoundPortType}
      *
-     * @param model must be non-null
-     * @param policyMap must be non-null
+     * @param key Key that identifies the endpoint scope
+     * @param policyMap Must be non-null
+     * @throws PolicyException If retrieving the policy triggered an exception
      */
-    public void configure(WSDLModel model, PolicyMap policyMap) throws PolicyException {
-        if ((null==model) ||(null==policyMap)) {
-            return;
+    public Collection<WebServiceFeature> getFeatures(PolicyMapKey key, PolicyMap policyMap) throws PolicyException {
+        final Collection<WebServiceFeature> features = new LinkedList<WebServiceFeature>();
+        if ((key != null) && (policyMap != null)) {
+            Policy policy = policyMap.getEndpointEffectivePolicy(key);
+            if (null!=policy && policy.contains(OPTIMIZED_MIME_SERIALIZATION_ASSERTION)) {
+                Iterator <AssertionSet> assertions = policy.iterator();
+                while(assertions.hasNext()){
+                    AssertionSet assertionSet = assertions.next();
+                    Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
+                    while(policyAssertion.hasNext()){
+                        PolicyAssertion assertion = policyAssertion.next();
+                        if(OPTIMIZED_MIME_SERIALIZATION_ASSERTION.equals(assertion.getName())){
+                            features.add(new MTOMFeature(true));
+                        } // end-if non optional mtom assertion found
+                    } // next assertion
+                } // next alternative
+            } // end-if policy contains mtom assertion
         }
-        for (WSDLService service:model.getServices().values()) {
-            for (WSDLPort port : service.getPorts()) {
-                PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(service.getName(),port.getName());
-                Policy policy = policyMap.getEndpointEffectivePolicy(key);
-                if (null!=policy && policy.contains(OPTIMIZED_MIME_SERIALIZATION_ASSERTION)) {
-                    Iterator <AssertionSet> assertions = policy.iterator();
-                    while(assertions.hasNext()){
-                        AssertionSet assertionSet = assertions.next();
-                        Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
-                        while(policyAssertion.hasNext()){
-                            PolicyAssertion assertion = policyAssertion.next();
-                            if(OPTIMIZED_MIME_SERIALIZATION_ASSERTION.equals(assertion.getName())){
-                                port.getBinding().addFeature(new MTOMFeature(true));
-                            } // end-if non optional mtom assertion found
-                        } // next assertion
-                    } // next alternative
-                } // end-if policy contains mtom assertion
-            } // end foreach port
-        } // end foreach service
+        return features;
     }
 }

@@ -33,44 +33,78 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.xml.ws.policy;
 
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.wsdl.WSDLService;
+
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
-import javax.xml.ws.WebServiceFeature;
+
 import javax.xml.namespace.QName;
-import java.util.List;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Rama Pulavarthi
+ * @author Fabian Ritzmann
  */
 public class PolicyUtil {
+
+    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(PolicyUtil.class);
     private static ModelConfiguratorProvider[] configurators = PolicyUtils.ServiceProvider.load(ModelConfiguratorProvider.class);
 
+    /**
+     * Iterates through the ports in the WSDL model, for each policy in the policy
+     * map that is attached at endpoint scope computes a list of corresponding
+     * WebServiceFeatures and sets them on the port.
+     *
+     * @param model The WSDL model
+     * @param policyMap The policy map
+     * @throws PolicyException If the list of WebServiceFeatures could not be computed
+     */
     public static void configureModel(final WSDLModel model, PolicyMap policyMap) throws PolicyException {
-        for (ModelConfiguratorProvider configurator : configurators) {
-                configurator.configure(model, policyMap);
+        LOGGER.entering(model, policyMap);
+        for (WSDLService service : model.getServices().values()) {
+            for (WSDLPort port : service.getPorts()) {
+                final Collection<WebServiceFeature> features = getPortScopedFeatures(policyMap, service.getName(), port.getName());
+                for (WebServiceFeature feature : features) {
+                    port.addFeature(feature);
+                }
             }
+        }
+        LOGGER.exiting();
     }
 
     /**
-     * TODO implement this by updating Policy SPI
-     * @param policyMap
-     * @param serviceName
-     * @param portName
-     * @return
+     * Returns the list of features that correspond to the policies in the policy
+     * map for a give port
+     *
+     * @param policyMap The service policies
+     * @param serviceName The service name
+     * @param portName The service port name
+     * @return List of features for the given port corresponding to the policies in the map
      */
-    public static List<WebServiceFeature> getPortScopedFeatures(PolicyMap policyMap, QName serviceName, QName portName) {
-       List<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
-       final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName,portName);
-       for (ModelConfiguratorProvider configurator : configurators) {
-           //TODO create policy SPI
-             //WebServiceFeature f = configurator.getFeature(key, policyMap);
-            //features.add(f);
-       }
-       return features; 
+    public static Collection<WebServiceFeature> getPortScopedFeatures(PolicyMap policyMap, QName serviceName, QName portName) {
+        LOGGER.entering(policyMap, serviceName, portName);
+        Collection<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
+        try {
+            final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName, portName);
+            for (ModelConfiguratorProvider configurator : configurators) {
+                Collection<WebServiceFeature> additionalFeatures = configurator.getFeatures(key, policyMap);
+                if (additionalFeatures != null) {
+                    features.addAll(additionalFeatures);
+                }
+            }
+        } catch (PolicyException e) {
+            throw new WebServiceException(e);
+        }
+        LOGGER.exiting(features);
+        return features;
     }
+
 }
