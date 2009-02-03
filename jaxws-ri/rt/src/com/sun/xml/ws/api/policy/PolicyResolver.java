@@ -40,6 +40,8 @@ import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapMutator;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.istack.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
 import javax.xml.ws.WebServiceException;
 
 /**
@@ -82,7 +84,7 @@ public interface PolicyResolver {
        private final Class endpointClass;
        private final Container container;
        private final boolean hasWsdl;
-       private final PolicyMapMutator[] mutators;
+       private final Collection<PolicyMapMutator> mutators;
 
         /**
          * The abstraction of PolicyMap is not finalized, and will change in few months. It is highly discouraged to use
@@ -104,7 +106,7 @@ public interface PolicyResolver {
             this.endpointClass = endpointClass;
             this.container = container;
             this.hasWsdl = true;
-            this.mutators = mutators;
+            this.mutators = Arrays.asList(mutators);
         }
 
         /**
@@ -128,7 +130,7 @@ public interface PolicyResolver {
             this.endpointClass = endpointClass;
             this.container = container;
             this.hasWsdl = hasWsdl;
-            this.mutators = mutators;
+            this.mutators = Arrays.asList(mutators);
         }
 
         public @Nullable PolicyMap getPolicyMap() {
@@ -151,7 +153,7 @@ public interface PolicyResolver {
             return hasWsdl;
         }
 
-        public PolicyMapMutator[] getMutators() {
+        public Collection<PolicyMapMutator> getMutators() {
             return mutators;
         }
     }
