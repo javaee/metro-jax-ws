@@ -41,7 +41,6 @@ import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_ANONYMOUS_AD
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
-import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
@@ -101,6 +100,7 @@ public class WsaServerTube extends WsaTube {
         return new WsaServerTube(this, cloner);
     }
 
+    @Override
     public @NotNull NextAction processRequest(Packet request) {
         Message msg = request.getMessage();
         if(msg==null)   return doInvoke(next,request); // hmm?
@@ -246,9 +246,9 @@ public class WsaServerTube extends WsaTube {
     protected void validateAction(Packet packet) {
         //There may not be a WSDL operation.  There may not even be a WSDL.
         //For instance this may be a RM CreateSequence message.
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
+        WSDLBoundOperation wsdlBoundOperation = getWSDLBoundOperation(packet);
 
-        if (wbo == null)
+        if (wsdlBoundOperation == null)
             return;
 
         String gotA = packet.getMessage().getHeaders().getAction(addressingVersion, soapVersion);
@@ -266,12 +266,13 @@ public class WsaServerTube extends WsaTube {
         }
     }
 
+    @Override
     protected void checkMessageAddressingProperties(Packet packet) {
         super.checkMessageAddressingProperties(packet);
 
         // wsaw:Anonymous validation
-        WSDLBoundOperation wbo = getWSDLBoundOperation(packet);
-        checkAnonymousSemantics(wbo, replyTo, faultTo);
+        WSDLBoundOperation wsdlBoundOperation = getWSDLBoundOperation(packet);
+        checkAnonymousSemantics(wsdlBoundOperation, replyTo, faultTo);
          // check if addresses are valid
         checkNonAnonymousAddresses(replyTo,faultTo);
     }

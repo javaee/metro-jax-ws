@@ -22,10 +22,12 @@ public class W3CWsaServerTube extends WsaServerTube{
         super(that, cloner);
     }
 
+    @Override
     protected Packet validateInboundHeaders(Packet packet) {
         return super.validateInboundHeaders(packet);
     }
 
+    @Override
     public W3CWsaServerTube copy(TubeCloner cloner) {
         return new W3CWsaServerTube(this, cloner);
     }

@@ -38,7 +38,6 @@ package com.sun.xml.ws.api.pipe;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import com.sun.xml.ws.addressing.WsaServerTube;
 import com.sun.xml.ws.addressing.W3CWsaServerTube;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionWsaServerTube;
 import com.sun.xml.ws.api.addressing.AddressingVersion;

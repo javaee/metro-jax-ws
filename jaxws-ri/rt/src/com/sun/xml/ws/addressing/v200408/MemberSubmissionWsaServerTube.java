@@ -64,6 +64,7 @@ public class MemberSubmissionWsaServerTube extends WsaServerTube {
         this.validation = that.validation;
     }
 
+    @Override
     public MemberSubmissionWsaServerTube copy(TubeCloner cloner) {
         return new MemberSubmissionWsaServerTube(this, cloner);
     }
