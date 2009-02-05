@@ -48,6 +48,7 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.WSHTTPConnection;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.resources.WsservletMessages;
+import com.sun.xml.ws.util.ReadAllStream;
 
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.WebServiceException;
@@ -75,6 +76,7 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     private int status;
     private final HttpAdapter adapter;
     private boolean outputWritten;
+    private LWHSInputStream in;
 
 
     public ServerConnectionImpl(@NotNull HttpAdapter adapter, @NotNull HttpExchange httpExchange) {
@@ -129,23 +131,41 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     }
 
     public @NotNull InputStream getInput() {
-
-        // Light weight http server's InputStream.close() throws exception if
-        // all the bytes are not read. Work around until it is fixed.
-        return new FilterInputStream(httpExchange.getRequestBody()) {
-            // Workaround for "SJSXP XMLStreamReader.next() closes stream".
-            boolean closed;
-
-            @Override
-            public void close() throws IOException {
-                if (!closed) {
-                    while (read() != -1);
-                    super.close();
-                    closed = true;
-                }
-            }
-        };
+        if (in == null) {
+            in = new LWHSInputStream(httpExchange.getRequestBody());
+        }
+        return in;
     }
+
+    // Light weight http server's InputStream.close() throws exception if
+    // all the bytes are not read. Work around until it is fixed.
+    private static class LWHSInputStream extends FilterInputStream {
+        // Workaround for "SJSXP XMLStreamReader.next() closes stream".
+        boolean closed;
+        
+        LWHSInputStream(InputStream in) {
+            super(in);
+        }
+
+        void readAll() throws IOException {
+            if (!closed) {
+                ReadAllStream all = new ReadAllStream();
+                all.readAll(in, 4000000);
+                in.close();
+                in = all;
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (!closed) {
+                super.close();
+                closed = true;
+            }
+        }
+
+    }
+
 
     public @NotNull OutputStream getOutput() throws IOException {
         assert !outputWritten;
@@ -161,6 +181,9 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         return new FilterOutputStream(httpExchange.getResponseBody()) {
             @Override
             public void close() throws IOException {
+                // lwhs closes input stream, when you close the output stream
+                // This causes problems for streaming in one-way cases
+                in.readAll();
                 try {
                     super.close();
                 } catch(IOException ioe) {
