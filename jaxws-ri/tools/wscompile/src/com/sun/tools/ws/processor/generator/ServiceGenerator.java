@@ -36,31 +36,43 @@
 
 package com.sun.tools.ws.processor.generator;
 
-import com.sun.codemodel.*;
+import com.sun.codemodel.ClassType;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JCatchBlock;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.codemodel.JCommentPart;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JDocComment;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JInvocation;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
+import com.sun.codemodel.JTryBlock;
+import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 import com.sun.tools.ws.processor.model.Model;
+import com.sun.tools.ws.processor.model.ModelProperties;
 import com.sun.tools.ws.processor.model.Port;
 import com.sun.tools.ws.processor.model.Service;
-import com.sun.tools.ws.processor.model.ModelProperties;
 import com.sun.tools.ws.processor.model.java.JavaInterface;
+import com.sun.tools.ws.resources.GeneratorMessages;
 import com.sun.tools.ws.wscompile.ErrorReceiver;
 import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.wscompile.WsimportOptions;
-import com.sun.tools.ws.resources.GeneratorMessages;
 import com.sun.tools.ws.wsdl.document.PortType;
 import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.xml.ws.util.JAXWSUtils;
+import org.xml.sax.Locator;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceFeature;
-import java.io.IOException;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
-
-import org.xml.sax.Locator;
 
 
 /**
@@ -99,6 +111,9 @@ public class ServiceGenerator extends GeneratorBase {
         String wsdlLocationName = serviceFieldName + "_WSDL_LOCATION";
         JFieldVar urlField = cls.field(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, URL.class, wsdlLocationName);
 
+        String serviceName = serviceFieldName + "_QNAME";
+        cls.field(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, QName.class, serviceName,
+            JExpr._new(cm.ref(QName.class)).arg(service.getName().getNamespaceURI()).arg(service.getName().getLocalPart()));
 
         cls.field(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, Logger.class, "logger", cm.ref(Logger.class).staticInvoke("getLogger").arg(JExpr.dotclass(cm.ref(className)).invoke("getName")));
 
@@ -107,7 +122,6 @@ public class ServiceGenerator extends GeneratorBase {
         inv = JExpr._new(qNameCls);
         inv.arg("namespace");
         inv.arg("localpart");
-
 
         JBlock staticBlock = cls.init();
         JVar urlVar = staticBlock.decl(cm.ref(URL.class), "url", JExpr._null());
@@ -135,13 +149,37 @@ public class ServiceGenerator extends GeneratorBase {
             comment.add(doc);
         }
 
-        JMethod constructor = cls.constructor(JMod.PUBLIC);
-        constructor.param(URL.class, "wsdlLocation");
-        constructor.param(QName.class, "serviceName");
-        constructor.body().directStatement("super(wsdlLocation, serviceName);");
+        JMethod constructor1 = cls.constructor(JMod.PUBLIC);
+        String constructor1Str = String.format("super(%s, %s);", wsdlLocationName, serviceName);
+        constructor1.body().directStatement(constructor1Str);
 
-        constructor = cls.constructor(JMod.PUBLIC);
-        constructor.body().directStatement("super(" + wsdlLocationName + ", new QName(\"" + service.getName().getNamespaceURI() + "\", \"" + service.getName().getLocalPart() + "\"));");
+        JMethod constructor2 = cls.constructor(JMod.PUBLIC);
+        constructor2.varParam(WebServiceFeature.class, "features");
+        String constructor2Str = String.format("super(%s, %s, features);", wsdlLocationName, serviceName);
+        constructor2.body().directStatement(constructor2Str);
+
+        JMethod constructor3 = cls.constructor(JMod.PUBLIC);
+        constructor3.param(URL.class, "wsdlLocation");
+        String constructor3Str = String.format("super(wsdlLocation, %s);", serviceName);
+        constructor3.body().directStatement(constructor3Str);
+
+        JMethod constructor4 = cls.constructor(JMod.PUBLIC);
+        constructor4.param(URL.class, "wsdlLocation");
+        constructor4.varParam(WebServiceFeature.class, "features");
+        String constructor4Str = String.format("super(wsdlLocation, %s, features);", serviceName);
+        constructor4.body().directStatement(constructor4Str);       
+
+        JMethod constructor5 = cls.constructor(JMod.PUBLIC);
+        constructor5.param(URL.class, "wsdlLocation");
+        constructor5.param(QName.class, "serviceName");
+        constructor5.body().directStatement("super(wsdlLocation, serviceName);");
+
+        JMethod constructor6 = cls.constructor(JMod.PUBLIC);
+        constructor6.param(URL.class, "wsdlLocation");
+        constructor6.param(QName.class, "serviceName");
+        constructor6.varParam(WebServiceFeature.class, "features");
+        constructor6.body().directStatement("super(wsdlLocation, serviceName, features);");
+
 
         //@WebService
         JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));
