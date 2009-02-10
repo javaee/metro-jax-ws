@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions
+    name="MTOMTestService"
+    targetNamespace="http://example.org/mtom"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:tns="http://example.org/mtom"
+    xmlns:s="http://example.org/mtom"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+          <schema xmlns="http://www.w3.org/2001/XMLSchema"
+               targetNamespace="http://example.org/mtom"
+               xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+               elementFormDefault="qualified">
+                 <complexType name="XDoc">
+                     <sequence>
+                         <element name="doc1" type="base64Binary" xmime:expectedContentTypes="text/xml"/>
+                     </sequence>
+                 </complexType>
+                <element name="XDocIn" type="s:XDoc"/>
+                <element name="XDocOut" type="s:XDoc"/>
+
+          </schema>
+    </types>
+
+    <message name="XDocInRequest">
+        <part name="data" element="s:XDocIn"/>
+    </message>
+    <message name="XDocInResponse">
+        <part name="result" element="s:XDocOut"/>
+    </message>
+
+     <portType name="Hello">
+          <operation name="XDoc">
+               <input message="tns:XDocInRequest"/>
+               <output message="tns:XDocInResponse"/>
+          </operation>
+     </portType>
+
+     <binding name="MTOMBinding" type="tns:Hello">
+          <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+         <operation name="XDoc">
+               <soap:operation soapAction=""/>
+               <input>
+                    <soap:body use="literal"/>
+               </input>
+               <output>
+                    <soap:body use="literal"/>
+               </output>
+          </operation>
+     </binding>
+
+     <binding name="ProviderBinding" type="tns:Hello">
+          <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+         <operation name="XDoc">
+               <soap:operation soapAction=""/>
+               <input>
+                    <soap:body use="literal"/>
+               </input>
+               <output>
+                    <soap:body use="literal"/>
+               </output>
+          </operation>
+     </binding>
+
+    <service name="HelloService">
+        <port name="HelloPort" binding="tns:MTOMBinding">
+            <soap:address location="http://foo:9999/bar"/>
+        </port>
+        <port name="HelloProviderPort" binding="tns:ProviderBinding">
+            <soap:address location="http://foo:9999/bar"/>
+        </port>
+    </service>
+</definitions>

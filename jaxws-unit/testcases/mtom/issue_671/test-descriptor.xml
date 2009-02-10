@@ -1,0 +1,7 @@
+<descriptor since="2.0">
+    <description>XOP test for issue 671</description>
+
+   <service basedir="./server">
+        <wsdl href="hello.wsdl"/>
+    </service>
+</descriptor>
