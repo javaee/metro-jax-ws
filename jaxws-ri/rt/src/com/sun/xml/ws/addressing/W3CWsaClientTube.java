@@ -37,7 +37,6 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
@@ -56,6 +55,7 @@ public class W3CWsaClientTube extends WsaClientTube {
         super(that, cloner);
     }
 
+    @Override
     public W3CWsaClientTube copy(TubeCloner cloner) {
         return new W3CWsaClientTube(this, cloner);
     }
