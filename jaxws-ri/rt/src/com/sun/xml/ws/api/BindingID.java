@@ -119,7 +119,9 @@ public abstract class BindingID {
      * @since JAX-WS RI 2.1.6
      */
     public @NotNull String getTransport() {
-        return SOAPNamespaceConstants.TRANSPORT_HTTP;
+        return getSOAPVersion() == SOAPVersion.SOAP_11
+                ? SOAPNamespaceConstants.TRANSPORT_HTTP
+                : SOAP12NamespaceConstants.TRANSPORT_HTTP;
     }
 
     public final @NotNull WSBinding createBinding(WebServiceFeature... features) {
