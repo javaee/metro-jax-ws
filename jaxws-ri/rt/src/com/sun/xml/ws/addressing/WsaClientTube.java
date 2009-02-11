@@ -72,11 +72,13 @@ public class WsaClientTube extends WsaTube {
         return new WsaClientTube(this, cloner);
     }
 
+    @Override
     public @NotNull NextAction processRequest(Packet request) {
         expectReply = request.expectReply;
         return doInvoke(next,request);
    }
 
+    @Override
     public @NotNull NextAction processResponse(Packet response) {
         // if one-way then, no validation
         if (response.getMessage() != null) {
