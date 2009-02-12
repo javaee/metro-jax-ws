@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -98,6 +97,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         throw new IllegalStateException("HttpTransportPipe's processResponse shouldn't be called.");
     }
 
+    @Override
     public Packet process(Packet request) {
         HttpClientTransport con;
         try {
