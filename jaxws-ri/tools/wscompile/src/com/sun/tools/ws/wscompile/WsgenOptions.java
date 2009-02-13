@@ -39,13 +39,16 @@ package com.sun.tools.ws.wscompile;
 
 import com.sun.mirror.apt.Filer;
 import com.sun.tools.ws.resources.WscompileMessages;
+import com.sun.tools.ws.api.WsgenExtension;
+import com.sun.tools.ws.api.WsgenProtocol;
 import com.sun.xml.ws.api.BindingID;
+import com.sun.xml.ws.util.ServiceFinder;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
 
 import javax.jws.WebService;
 import javax.xml.namespace.QName;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Vivek Pandey
@@ -76,7 +79,9 @@ public class WsgenOptions extends Options {
      * protocol value
      */
     public String protocol = "soap1.1";
-    public String transport;
+
+    public Set<String> protocols = new LinkedHashSet<String>();
+    public Map<String, String> nonstdProtocols = new LinkedHashMap<String, String>();
 
     /**
      * -XwsgenReport
@@ -102,8 +107,22 @@ public class WsgenOptions extends Options {
     private static final String SOAP11 = "soap1.1";
     public static final String X_SOAP12 = "Xsoap1.2";
 
+    public WsgenOptions() {
+        protocols.add(SOAP11);
+        protocols.add(X_SOAP12);
+        nonstdProtocols.put(X_SOAP12, SOAPBindingImpl.X_SOAP12HTTP_BINDING);
+        ServiceFinder<WsgenExtension> extn = ServiceFinder.find(WsgenExtension.class);
+        for(WsgenExtension ext : extn) {
+            Class clazz = ext.getClass();
+            WsgenProtocol pro = (WsgenProtocol)clazz.getAnnotation(WsgenProtocol.class);
+            protocols.add(pro.token());
+            nonstdProtocols.put(pro.token(), pro.lexical());
+        }
+    }
+
     @Override
     protected int parseArguments(String[] args, int i) throws BadCommandLineException {
+
         int j = super.parseArguments(args, i);
         if (args[i].equals(SERVICENAME_OPTION)) {
             serviceName = QName.valueOf(requireArgument(SERVICENAME_OPTION, args, ++i));
@@ -142,10 +161,8 @@ public class WsgenOptions extends Options {
                 index = value.indexOf('/');
                 if (index == -1) {
                     protocol = value;
-                    transport = HTTP;
                 } else {
                     protocol = value.substring(0, index);
-                    transport = value.substring(index + 1);
                 }
                 protocolSet = true;
             }
@@ -178,13 +195,9 @@ public class WsgenOptions extends Options {
     public void validate() throws BadCommandLineException {
         if(nonclassDestDir == null)
             nonclassDestDir = destDir;
-        if (!protocol.equalsIgnoreCase(SOAP11) &&
-                !protocol.equalsIgnoreCase(X_SOAP12)) {
-            throw new BadCommandLineException(WscompileMessages.WSGEN_INVALID_PROTOCOL(protocol, SOAP11 + ", " + X_SOAP12));
-        }
 
-        if (transport != null && !transport.equalsIgnoreCase(HTTP)) {
-            throw new BadCommandLineException(WscompileMessages.WSGEN_INVALID_TRANSPORT(transport, HTTP));
+        if (!protocols.contains(protocol)) {
+            throw new BadCommandLineException(WscompileMessages.WSGEN_INVALID_PROTOCOL(protocol, protocols));
         }
 
         if (endpoints.isEmpty()) {
@@ -192,6 +205,10 @@ public class WsgenOptions extends Options {
         }
         if (protocol == null || protocol.equalsIgnoreCase(X_SOAP12) && !isExtensionMode()) {
             throw new BadCommandLineException(WscompileMessages.WSGEN_SOAP_12_WITHOUT_EXTENSION());
+        }
+        
+        if (nonstdProtocols.containsKey(protocol) && !isExtensionMode()) {
+            throw new BadCommandLineException(WscompileMessages.WSGEN_PROTOCOL_WITHOUT_EXTENSION(protocol));            
         }
 
         validateEndpointClass();
@@ -255,12 +272,13 @@ public class WsgenOptions extends Options {
         }
     }
 
-    public static BindingID getBindingID(String protocol) {
+    BindingID getBindingID(String protocol) {
         if (protocol.equals(SOAP11))
             return BindingID.SOAP11_HTTP;
         if (protocol.equals(X_SOAP12))
             return BindingID.SOAP12_HTTP;
-        return null;
+        String lexical = nonstdProtocols.get(protocol);
+        return (lexical != null) ? BindingID.parse(lexical) : null;
     }
 
 

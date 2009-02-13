@@ -42,6 +42,8 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessorFactory;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.tools.ws.ToolVersion;
+import com.sun.tools.ws.api.WsgenExtension;
+import com.sun.tools.ws.api.WsgenProtocol;
 import com.sun.tools.ws.processor.modeler.annotation.AnnotationProcessorContext;
 import com.sun.tools.ws.processor.modeler.annotation.WebServiceAP;
 import com.sun.tools.ws.processor.modeler.wsdl.ConsoleErrorReporter;
@@ -56,6 +58,7 @@ import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.binding.WebServiceFeatureList;
+import com.sun.xml.ws.binding.SOAPBindingImpl;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.RuntimeModeler;
 import com.sun.xml.ws.util.ServiceFinder;
@@ -121,13 +124,13 @@ public class WsgenTool implements AnnotationProcessorFactory {
                 return false;
             }
         }catch (Options.WeAreDone done){
-            usage(done.getOptions());
+            usage((WsgenOptions)done.getOptions());
         }catch (BadCommandLineException e) {
             if(e.getMessage()!=null) {
                 System.out.println(e.getMessage());
                 System.out.println();
             }
-            usage(e.getOptions());
+            usage((WsgenOptions)e.getOptions());
             return false;
         }catch(AbortException e){
             //error might have been reported
@@ -225,7 +228,7 @@ public class WsgenTool implements AnnotationProcessorFactory {
                 throw new BadCommandLineException(WscompileMessages.WSGEN_CLASS_NOT_FOUND(endpoint));
             }
 
-            BindingID bindingID = WsgenOptions.getBindingID(options.protocol);
+            BindingID bindingID = options.getBindingID(options.protocol);
             if (!options.protocolSet) {
                 bindingID = BindingID.parse(endpointClass);
             }
@@ -358,8 +361,12 @@ public class WsgenTool implements AnnotationProcessorFactory {
         }
     }
 
-    protected void usage(Options options) {
-        System.out.println(WscompileMessages.WSGEN_HELP("WSGEN"));
+    protected void usage(WsgenOptions options) {
+        // Just don't see any point in passing WsgenOptions
+        // BadCommandLineException also shouldn't have options
+        if (options == null)
+            options = this.options;
+        System.out.println(WscompileMessages.WSGEN_HELP("WSGEN", options.protocols, options.nonstdProtocols.keySet()));
         System.out.println(WscompileMessages.WSGEN_USAGE_EXAMPLES());
     }
 

@@ -147,9 +147,9 @@ final class WSHttpHandler implements HttpHandler {
         strBuf.append((msg instanceof HttpsExchange) ? "https" : "http");
         strBuf.append("://");
 
-        List<String> hostHeader = msg.getRequestHeaders().get("Host");
+        String hostHeader = msg.getRequestHeaders().getFirst("Host");
         if (hostHeader != null) {
-            strBuf.append(hostHeader.get(0));   // Uses Host header
+            strBuf.append(hostHeader);   // Uses Host header
         } else {
             strBuf.append(msg.getLocalAddress().getHostName());
             strBuf.append(":");

@@ -39,7 +39,6 @@ package com.sun.xml.ws.addressing.v200408;
 import com.sun.xml.ws.addressing.WsaClientTube;
 import com.sun.xml.ws.addressing.model.MissingAddressingHeaderException;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
@@ -75,7 +74,7 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
         
         // if no wsa:To header is found
         if (!foundTo) {
-            throw new MissingAddressingHeaderException(addressingVersion.toTag);
+            throw new MissingAddressingHeaderException(addressingVersion.toTag,packet);
         }
 
         if (!validation.equals(MemberSubmissionAddressing.Validation.LAX)) {
@@ -88,7 +87,7 @@ public class MemberSubmissionWsaClientTube extends WsaClientTube {
                 // Don't check for AddressingFaults as
                 // Faults for requests with duplicate MessageId will have no wsa:RelatesTo
                 if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {
-                    throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+                    throw new MissingAddressingHeaderException(addressingVersion.relatesToTag,packet);
                 }
             }
         }

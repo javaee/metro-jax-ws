@@ -167,5 +167,11 @@ public interface SDDocument {
          * TODO: does this info need to be exposed?
          */
         boolean hasService();
+
+        /**
+         * All &lt;service> names that were in this WSDL, or empty set if there was none.
+         * Used for error diagnostics.
+         */
+        Set<QName> getAllServices();
     }
 }

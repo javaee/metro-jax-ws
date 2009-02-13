@@ -464,8 +464,11 @@ public class EndpointFactory {
         }
         SDDocument.WSDL wsdlDoc = (SDDocument.WSDL)primaryDoc;
         if (!wsdlDoc.hasService()) {
-            throw new WebServiceException("Not a primary WSDL="+primaryWsdl.getSystemId()+
-                    " since it doesn't have Service "+serviceName);
+            if(wsdlDoc.getAllServices().isEmpty())
+                throw new WebServiceException("Not a primary WSDL="+primaryWsdl.getSystemId()+
+                        " since it doesn't have Service "+serviceName);
+            else
+                throw new WebServiceException("WSDL "+primaryDoc.getSystemId()+" has the following services "+wsdlDoc.getAllServices()+" but not "+serviceName+". Maybe you forgot to specify a service name in @WebService/@WebServiceProvider?");
         }
     }
 

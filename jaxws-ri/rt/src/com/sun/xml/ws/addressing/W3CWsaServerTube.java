@@ -45,7 +45,7 @@ public class W3CWsaServerTube extends WsaServerTube{
         if (wbo != null) {
             // if two-way and no wsa:MessageID is found
             if (!wbo.getOperation().isOneWay() && !foundMessageId) {
-                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag);
+                throw new MissingAddressingHeaderException(addressingVersion.messageIDTag,packet);
             }
         }
 

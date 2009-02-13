@@ -36,6 +36,8 @@
 
 package com.sun.xml.ws.addressing.model;
 
+import com.sun.xml.ws.resources.AddressingMessages;
+
 import javax.xml.ws.WebServiceException;
 
 /**
@@ -44,11 +46,8 @@ import javax.xml.ws.WebServiceException;
 public class ActionNotSupportedException extends WebServiceException {
     private String action;
 
-    protected ActionNotSupportedException() {
-        super();
-    }
-
     public ActionNotSupportedException(String action) {
+        super(AddressingMessages.ACTION_NOT_SUPPORTED_EXCEPTION(action));
         this.action = action;
     }
 

@@ -163,8 +163,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
                 m.getHeaders().add(s11FaultDetailHeader);
             }
 
-            Packet response = packet.createServerResponse(m, wsdlPort, null,  binding);
-            return response;
+            return packet.createServerResponse(m, wsdlPort, null,  binding);
         }
 
         return packet;
@@ -235,7 +234,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             // no WS-A headers are found
             if (addressingRequired)
                 // if WS-A is required, then throw an exception looking for wsa:Action header
-                throw new MissingAddressingHeaderException(addressingVersion.actionTag);
+                throw new MissingAddressingHeaderException(addressingVersion.actionTag,packet);
             else
                 // else no need to process
                 return;
@@ -390,7 +389,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
             boolean foundFaultTo, boolean foundMessageId, boolean foundRelatesTo) {
         // if no wsa:Action header is found
         if (!foundAction)
-            throw new MissingAddressingHeaderException(addressingVersion.actionTag);
+            throw new MissingAddressingHeaderException(addressingVersion.actionTag,packet);
         validateSOAPAction(packet);
     }
     private static final Logger LOGGER = Logger.getLogger(WsaTube.class.getName());

@@ -73,7 +73,7 @@ public class W3CWsaClientTube extends WsaClientTube {
             // Don't check for AddressingFaults as
             // Faults for requests with duplicate MessageId will have no wsa:RelatesTo
             if (!packet.getMessage().isFault() || !action.equals(addressingVersion.getDefaultFaultAction())) {
-                throw new MissingAddressingHeaderException(addressingVersion.relatesToTag);
+                throw new MissingAddressingHeaderException(addressingVersion.relatesToTag,packet);
             }
         }
         
