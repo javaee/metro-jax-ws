@@ -59,7 +59,7 @@
           <argument value="-W"/>
           <argument line="*.jar -kb"/>
           <argument value="-m"/>
-          <argument value="deploying new jars to the java.net maven repository"/>
+          <argument value="deploying new jars of JAX-WS RI ${jar.suffix}  to the java.net maven repository"/>
           
           <argument value="@{dest}"/>
           <argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
