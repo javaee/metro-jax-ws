@@ -382,10 +382,13 @@
         jar="${dist20.home}/lib/jaxws-tools.jar"
         pom="etc/poms/jaxws-tools.pom"
         srczip="${dist20.home}/lib/jaxws-tools.src.zip" />
-      <artifact
+      <!--
+        Don't push unless there is some change in 181 api, moreover this is not snapshot for it to be pushed daily.
+        <artifact
         jar="lib/jsr181-api.jar"
         pom="etc/poms/jsr181.pom"
         srczip="lib/jsr181-api.src.zip" />
+        -->
       <filterset>
         <filter token="API_VERSION" value="${release.spec.version}"/>
         <filter token="JAXB_VERSION" value="${jaxb.impl.version}"/>
