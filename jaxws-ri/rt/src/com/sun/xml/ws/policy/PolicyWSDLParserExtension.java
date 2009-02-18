@@ -40,9 +40,9 @@ import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtension;
 import com.sun.xml.ws.api.wsdl.parser.WSDLParserExtensionContext;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.resources.PolicyMessages;
+import com.sun.xml.ws.policy.SafePolicyReader.PolicyRecord;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
-import com.sun.xml.ws.policy.sourcemodel.PolicyModelUnmarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModelContext;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
@@ -51,7 +51,6 @@ import com.sun.xml.ws.model.wsdl.WSDLModelImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,9 +61,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
@@ -104,58 +101,6 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         }
     }
     
-    final static class PolicyRecord {
-        PolicyRecord next;
-        String uri;
-        PolicySourceModel policyModel;
-        Set<String> unresolvedURIs;
-        
-        PolicyRecord() {
-            // nothing to initialize
-        }
-        
-        PolicyRecord insert(final PolicyRecord insertedRec) {
-            if (null==insertedRec.unresolvedURIs || insertedRec.unresolvedURIs.isEmpty()) {
-                insertedRec.next = this;
-                return insertedRec;
-            }
-            final PolicyRecord head = this;
-            PolicyRecord oneBeforeCurrent = null;
-            PolicyRecord current;
-            for (current = head ; null != current.next ; ) {
-                if ((null != current.unresolvedURIs) && current.unresolvedURIs.contains(insertedRec.uri)) {
-                    if (null == oneBeforeCurrent) {
-                        insertedRec.next = current;
-                        return insertedRec;
-                    } else { // oneBeforeCurrent != null
-                        oneBeforeCurrent.next = insertedRec;
-                        insertedRec.next = current;
-                        return head;
-                    } // end-if-else oneBeforeCurrent == null
-                }// end-if current record depends on inserted one
-                if (insertedRec.unresolvedURIs.remove(current.uri) && (insertedRec.unresolvedURIs.isEmpty())) {
-                    insertedRec.next = current.next;
-                    current.next = insertedRec;
-                    return head;
-                } // end-if one of unresolved URIs resolved by current record and thus unresolvedURIs empty
-                oneBeforeCurrent = current;
-                current = current.next;
-            } // end for (current = head; null!=current.next; )
-            insertedRec.next = null;
-            current.next = insertedRec;
-            return head;
-        }
-        
-        @Override
-        public String toString() {
-            String result = uri;
-            if (null!=next) {
-                result += "->" + next.toString();
-            }
-            return result;
-        }
-    }
-    
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(PolicyWSDLParserExtension.class);
     
     //anonymous policy id prefix
@@ -164,6 +109,8 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     // anonymous policies count
     private int anonymousPoliciesCount;
     
+    private final SafePolicyReader policyReader = new SafePolicyReader();
+
     // policy queue -- needed for evaluating the right order policy of policy models expansion
     private PolicyRecord expandQueueHead = null;
     
@@ -174,9 +121,6 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     
     // container for URIs of policies referenced
     private List<String> unresolvedUris = null;
-    
-    // urls of xml docs policies were read from
-    final Set<String> urlsRead = new HashSet<String>();
     
     // structures for policies really needed to build a map
     private final LinkedList<String> urisNeeded = new LinkedList<String>();
@@ -351,8 +295,8 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
             policyId = policyRec.policyModel.getPolicyName();
         }
         if (policyId != null) {           // policy id defined, keep the policy
-            handler = new PolicyRecordHandler(HandlerType.PolicyUri,policyRec.uri);
-            getPolicyRecordsPassedBy().put(policyRec.uri, policyRec);
+            handler = new PolicyRecordHandler(HandlerType.PolicyUri, policyRec.getUri());
+            getPolicyRecordsPassedBy().put(policyRec.getUri(), policyRec);
             policyRecToExpandQueue(policyRec);
         } else if (inner) { // no id given to the policy --> keep as an annonymous policy model
             final String anonymousId = AnonymnousPolicyIdPrefix.append(anonymousPoliciesCount++).toString();
@@ -386,13 +330,6 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         return (fragmentIdx == -1) ? policyUri : policyUri.substring(0, fragmentIdx);
     }
     
-    private String relativeToAbsoluteUrl(final String relativeUri, final String baseUri) {
-        if ('#' != relativeUri.charAt(0)) {  // TODO: escaped char could be an issue?
-            return relativeUri; // absolute already
-        }
-        return (null == baseUri) ? relativeUri : baseUri + relativeUri;
-    }
-    
     // adding current url even to locally referenced policies
     // in order to distinguish imported policies
     private void processReferenceUri(
@@ -411,18 +348,18 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         addHandlerToMap(map, element,
                 new PolicyRecordHandler(
                 HandlerType.PolicyUri,
-                relativeToAbsoluteUrl(policyUri, reader.getLocation().getSystemId())));
+                SafePolicyReader.relativeToAbsoluteUrl(policyUri, reader.getLocation().getSystemId())));
     }
     
     private boolean processSubelement(
             final WSDLObject element, final XMLStreamReader reader, final Map<WSDLObject, Collection<PolicyRecordHandler>> map) {
         if (NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.PolicyReference) {     // "PolicyReference" element interests us
-            processReferenceUri(readPolicyReferenceElement(reader), element, reader, map);
+            processReferenceUri(policyReader.readPolicyReferenceElement(reader), element, reader, map);
             return true;
         } else if (NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.Policy) {   // policy could be defined here
             final PolicyRecordHandler handler =
                     readSinglePolicy(
-                    skipPolicyElement(
+                    policyReader.readPolicyElement(
                     reader,
                     (null == reader.getLocation().getSystemId()) ? // baseUrl
                         "" : reader.getLocation().getSystemId()),
@@ -480,7 +417,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         LOGGER.entering();
         if (NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.Policy) {     // Only "Policy" element interests me
             readSinglePolicy(
-                    skipPolicyElement(
+                    policyReader.readPolicyElement(
                     reader,
                     (null == reader.getLocation().getSystemId()) ? // baseUrl
                         "" : reader.getLocation().getSystemId()),
@@ -696,7 +633,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
             reader = XMLInputFactory.newInstance().createXMLStreamReader(ios);
             while (reader.hasNext()) {
                 if (reader.isStartElement() && NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.Policy) {
-                    readSinglePolicy(skipPolicyElement(reader, fileUrl), false);
+                    readSinglePolicy(policyReader.readPolicyElement(reader, fileUrl), false);
                 }
                 reader.next();
             }
@@ -713,21 +650,20 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
     
     @Override
     public void finished(final WSDLParserExtensionContext context) {
-        LOGGER.entering();
+        LOGGER.entering(context);
         // need to make sure proper beginning order of internal policies within unresolvedUris list
         if (null != expandQueueHead) { // any policies found
             final List<String> externalUris = getUnresolvedUris(false); // protect list of possible external policies
             getUnresolvedUris(true); // cleaning up the list only
             final LinkedList<String> baseUnresolvedUris = new LinkedList<String>();
             for (PolicyRecord currentRec = expandQueueHead ; null != currentRec ; currentRec = currentRec.next) {
-                baseUnresolvedUris.addFirst(currentRec.uri);
+                baseUnresolvedUris.addFirst(currentRec.getUri());
             }
             getUnresolvedUris(false).addAll(baseUnresolvedUris);
             expandQueueHead = null; // cut the queue off
             getUnresolvedUris(false).addAll(externalUris);
         }
-//        final Set<String> urlsRead = new HashSet<String>();
-//        urlsRead.add("");
+
         while (!getUnresolvedUris(false).isEmpty()) {
             final List<String> urisToBeSolvedList = getUnresolvedUris(false);
             getUnresolvedUris(true); // just cleaning up the list
@@ -735,7 +671,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
                 if (!isPolicyProcessed(currentUri)) {
                     final PolicyRecord prefetchedRecord = getPolicyRecordsPassedBy().get(currentUri);
                     if (null == prefetchedRecord) {
-                        if (urlsRead.contains(getBaseUrl(currentUri))) { // big problem --> unresolvable policy
+                        if (policyReader.getUrlsRead().contains(getBaseUrl(currentUri))) { // --> unresolvable policy
                             LOGGER.logSevereException(new PolicyException(PolicyMessages.WSP_1014_CAN_NOT_FIND_POLICY(currentUri)));
                         } else {
                             if (readExternalFile(getBaseUrl(currentUri))) {
@@ -1031,28 +967,7 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         LOGGER.exiting();
     }
 
-    /**
-     * Reads policy reference element <wsp:PolicyReference/> and returns referenced policy URI as String
-     */
-    private String readPolicyReferenceElement(final XMLStreamReader reader) {
-        try {
-            if (NamespaceVersion.resolveAsToken(reader.getName()) == XmlToken.PolicyReference) {     // "PolicyReference" element interests me
-                for (int i = 0; i < reader.getAttributeCount(); i++) {
-                    if (XmlToken.resolveToken(reader.getAttributeName(i).getLocalPart()) == XmlToken.Uri) {
-                        final String uriValue = reader.getAttributeValue(i);
-                        reader.next();
-                        return uriValue;
-                    }
-                }
-            }
-            reader.next();
-            return null;
-        } catch(XMLStreamException e) {
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1001_XML_EXCEPTION_WHEN_PROCESSING_POLICY_REFERENCE(), e));
-        }
-    }
-    
-    
+
     /**
      * Reads policy reference URIs from PolicyURIs attribute and returns them 
      * as a String array returns null if there is no such attribute. This method 
@@ -1071,145 +986,4 @@ final public class PolicyWSDLParserExtension extends WSDLParserExtension {
         return (policyUriBuffer.length() > 0) ? policyUriBuffer.toString().split("[\\n ]+") : null;
     }
     
-    
-    /**
-     *  skips current element (should be in START_ELEMENT state) and returns its content as String
-     */
-    private PolicyRecord skipPolicyElement(final XMLStreamReader reader, final String baseUrl){
-        if ((null == reader) || (!reader.isStartElement())) {
-            return null;
-        }
-        final StringBuffer elementCode = new StringBuffer();
-        final PolicyRecord policyRec = new PolicyRecord();
-        final QName elementName = reader.getName();
-        boolean insidePolicyReferenceAttr;
-        int depth = 0;
-        try{
-            do {
-                switch (reader.getEventType()) {
-                    case XMLStreamConstants.START_ELEMENT:  // process start of next element
-                        QName curName = reader.getName();
-                        insidePolicyReferenceAttr = NamespaceVersion.resolveAsToken(curName) == XmlToken.PolicyReference;
-                        if (elementName.equals(curName)) {  // it is our element !
-                            depth++;                        // we are then deeper
-                        }
-                        final StringBuffer xmlnsCode = new StringBuffer();    // take care about namespaces as well
-                        final Set<String> tmpNsSet = new HashSet<String>();
-                        if ((null == curName.getPrefix()) || ("".equals(curName.getPrefix()))) {           // no prefix
-                            elementCode
-                                    .append('<')                     // start tag
-                                    .append(curName.getLocalPart());
-                            xmlnsCode
-                                    .append(" xmlns=\"")
-                                    .append(curName.getNamespaceURI())
-                                    .append('"');
-                            
-                        } else {                                    // prefix presented
-                            elementCode
-                                    .append('<')                     // start tag
-                                    .append(curName.getPrefix())
-                                    .append(':')
-                                    .append(curName.getLocalPart());
-                            xmlnsCode
-                                    .append(" xmlns:")
-                                    .append(curName.getPrefix())
-                                    .append("=\"")
-                                    .append(curName.getNamespaceURI())
-                                    .append('"');
-                            tmpNsSet.add(curName.getPrefix());
-                        }
-                        final int attrCount = reader.getAttributeCount();     // process element attributes
-                        final StringBuffer attrCode = new StringBuffer();
-                        for (int i=0; i < attrCount; i++) {
-                            boolean uriAttrFlg = false;
-                            if (insidePolicyReferenceAttr && "URI".equals(
-                                    reader.getAttributeName(i).getLocalPart())) { // PolicyReference found
-                                uriAttrFlg = true;
-                                if (null == policyRec.unresolvedURIs) { // first such URI found
-                                    policyRec.unresolvedURIs = new HashSet<String>(); // initialize URIs set
-                                }
-                                policyRec.unresolvedURIs.add(  // add the URI
-                                        relativeToAbsoluteUrl(reader.getAttributeValue(i), baseUrl));
-                            } // end-if PolicyReference attribute found
-                            if ("xmlns".equals(reader.getAttributePrefix(i)) && tmpNsSet.contains(reader.getAttributeLocalName(i))) {
-                                continue; // do not append already defined ns
-                            }
-                            if ((null == reader.getAttributePrefix(i)) || ("".equals(reader.getAttributePrefix(i)))) {  // no attribute prefix
-                                attrCode
-                                        .append(' ')
-                                        .append(reader.getAttributeLocalName(i))
-                                        .append("=\"")
-                                        .append(uriAttrFlg ? relativeToAbsoluteUrl(reader.getAttributeValue(i), baseUrl) : reader.getAttributeValue(i))
-                                        .append('"');
-                            } else {                                        // prefix`presented
-                                attrCode
-                                        .append(' ')
-                                        .append(reader.getAttributePrefix(i))
-                                        .append(':')
-                                        .append(reader.getAttributeLocalName(i))
-                                        .append("=\"")
-                                        .append(uriAttrFlg ? relativeToAbsoluteUrl(reader.getAttributeValue(i), baseUrl) : reader.getAttributeValue(i))
-                                        .append('"');
-                                if (!tmpNsSet.contains(reader.getAttributePrefix(i))) {
-                                    xmlnsCode
-                                            .append(" xmlns:")
-                                            .append(reader.getAttributePrefix(i))
-                                            .append("=\"")
-                                            .append(reader.getAttributeNamespace(i))
-                                            .append('"');
-                                    tmpNsSet.add(reader.getAttributePrefix(i));
-                                } // end if prefix already processed
-                            }
-                        } // end foreach attr
-                        elementCode
-                                .append(xmlnsCode)          // complete the start element tag
-                                .append(attrCode)
-                                .append('>');
-                        break;
-                        //case XMLStreamConstants.ATTRIBUTE:   Unreachable (I hope ;-)
-                        //    break;
-                        //case XMLStreamConstants.NAMESPACE:   Unreachable (I hope ;-)
-                        //    break;
-                    case XMLStreamConstants.END_ELEMENT:
-                        curName = reader.getName();
-                        if (elementName.equals(curName)) {  // it is our element !
-                            depth--;                        // go up
-                        }
-                        elementCode
-                                .append("</")                     // append appropriate XML code
-                                .append("".equals(curName.getPrefix())?"":curName.getPrefix()+':')
-                                .append(curName.getLocalPart())
-                                .append('>');                        // complete the end element tag
-                        break;
-                    case XMLStreamConstants.CHARACTERS:
-                        elementCode.append(reader.getText());           // append text data
-                        break;
-                    case XMLStreamConstants.CDATA:
-                        elementCode
-                                .append("<![CDATA[")                // append CDATA delimiters
-                                .append(reader.getText())
-                                .append("]]>");
-                        break;
-                    case XMLStreamConstants.COMMENT:    // Ignore any comments
-                        break;
-                    case XMLStreamConstants.SPACE:      // Ignore spaces as well
-                        break;
-                }
-                if (reader.hasNext() && depth>0) {
-                    reader.next();
-                }
-            } while (XMLStreamConstants.END_DOCUMENT!=reader.getEventType() && depth>0);
-            policyRec.policyModel = PolicyModelUnmarshaller.getXmlUnmarshaller().unmarshalModel(
-                    new StringReader(elementCode.toString()));
-            if (null != policyRec.policyModel.getPolicyId()) {
-                policyRec.uri = baseUrl + "#" + policyRec.policyModel.getPolicyId();
-            } else if (policyRec.policyModel.getPolicyName() != null) {
-                policyRec.uri = policyRec.policyModel.getPolicyName();
-            }
-        } catch(Exception e) {
-            throw LOGGER.logSevereException(new WebServiceException(PolicyMessages.WSP_1013_EXCEPTION_WHEN_READING_POLICY_ELEMENT(elementCode.toString()), e));
-        }
-        urlsRead.add(baseUrl);
-        return policyRec;
-    }    
 }
