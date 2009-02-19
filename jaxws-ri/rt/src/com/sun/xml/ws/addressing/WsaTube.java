@@ -111,9 +111,7 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
     }
 
     @Override
-    public
-    @NotNull
-    NextAction processException(Throwable t) {
+    public @NotNull NextAction processException(Throwable t) {
         return super.processException(t);
     }
 
