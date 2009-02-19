@@ -37,6 +37,7 @@
 package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_ANONYMOUS_ADDRESS_SUPPORTED;
 import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
@@ -141,8 +142,8 @@ public class WsaServerTube extends WsaTube {
         if (faultTo == null)    faultTo = replyTo;
 
         wbo = getWSDLBoundOperation(request);
-        if(wbo != null && wbo.getAnonymous()== WSDLBoundOperation.ANONYMOUS.required)
-            isAnonymousRequired = true;
+        isAnonymousRequired = isAnonymousRequired(wbo);
+
         Packet p = validateInboundHeaders(request);
         // if one-way message and WS-A header processing fault has occurred,
         // then do no further processing
@@ -166,6 +167,15 @@ public class WsaServerTube extends WsaTube {
                 request.transportBackChannel != null)
             request.transportBackChannel.close();
         return doInvoke(next,p);
+    }
+
+    protected boolean isAnonymousRequired(@Nullable WSDLBoundOperation wbo) {
+        //this requirement can only be specified in W3C case, Override this in W3C case.
+        return false;
+    }
+
+    protected void checkAnonymousSemantics(WSDLBoundOperation wbo, WSEndpointReference replyTo, WSEndpointReference faultTo) {
+        //this requirement can only be specified in W3C case, Override this in W3C case.
     }
 
     @Override
@@ -298,49 +308,6 @@ public class WsaServerTube extends WsaTube {
 
     }
     
-    final void checkAnonymousSemantics(WSDLBoundOperation wbo, WSEndpointReference replyTo, WSEndpointReference faultTo) {
-        // no check if Addressing is not enabled or is Member Submission
-        if (addressingVersion == null || addressingVersion == AddressingVersion.MEMBER)
-            return;
-
-        if (wbo == null)
-            return;
-
-        WSDLBoundOperation.ANONYMOUS anon = wbo.getAnonymous();
-
-        String replyToValue = null;
-        String faultToValue = null;
-
-        if (replyTo != null)
-            replyToValue = replyTo.getAddress();
-
-        if (faultTo != null)
-            faultToValue = faultTo.getAddress();
-
-        switch (anon) {
-        case optional:
-            // no check is required
-            break;
-        case prohibited:
-            if (replyToValue != null && replyToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
-
-            if (faultToValue != null && faultToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
-            break;
-        case required:
-            if (replyToValue != null && !replyToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
-
-            if (faultToValue != null && !faultToValue.equals(addressingVersion.anonymousUri))
-                throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
-            break;
-        default:
-            // cannot reach here
-            throw new WebServiceException(AddressingMessages.INVALID_WSAW_ANONYMOUS(anon.toString()));
-        }
-    }
-
     /**
      * @deprecated
      *      Use {@link JAXWSProperties#ADDRESSING_MESSAGEID}.
