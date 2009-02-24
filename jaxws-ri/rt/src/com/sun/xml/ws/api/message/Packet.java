@@ -48,21 +48,22 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.addressing.AddressingVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
-import com.sun.xml.ws.client.BindingProviderProperties;
-import com.sun.xml.ws.client.ContentNegotiation;
-import com.sun.xml.ws.client.HandlerConfiguration;
-import com.sun.xml.ws.client.ResponseContext;
+import com.sun.xml.ws.client.*;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.message.RelatesToHeader;
 import com.sun.xml.ws.message.StringHeader;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.server.WSEndpointImpl;
+import com.sun.xml.ws.wsdl.DispatchException;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -75,6 +76,7 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -185,6 +187,7 @@ public final class Packet extends DistributedPropertySet {
         this.contentNegotiation = that.contentNegotiation;
         this.wasTransportSecure = that.wasTransportSecure;
         this.endpointAddress = that.endpointAddress;
+        this.wsdlOperation = that.wsdlOperation;
         // copy other properties that need to be copied. is there any?
     }
 
@@ -227,6 +230,39 @@ public final class Packet extends DistributedPropertySet {
      */
     public void setMessage(Message message) {
         this.message = message;
+    }
+
+    private QName wsdlOperation;
+
+    /**
+     * Returns the QName of the wsdl operation associated with this packet.
+     * <p/>
+     * Information such as Payload QName, wsa:Action header, SOAPAction HTTP header are used depending on the features
+     * enabled on the particular port.
+     *
+     * @return null if there is no WSDL model or  
+     *              runtime cannot uniquely identify the wsdl operation from the information in the packet.
+     */
+    @Property(MessageContext.WSDL_OPERATION)
+    public final @Nullable QName getWSDLOperation(){
+        if(wsdlOperation != null)
+            return wsdlOperation;
+
+        OperationDispatcher opDispatcher = null;
+        if(endpoint != null) {
+            opDispatcher = ((WSEndpointImpl)endpoint).getOperationDispatcher();
+        } else if (proxy != null) {
+            opDispatcher = ((Stub)proxy).getOperationDispatcher();
+        }
+        //OpDispatcher is null when there is no WSDLModel
+        if(opDispatcher != null) {
+            try {
+                wsdlOperation = opDispatcher.getWSDLOperationQName(this);
+            } catch (DispatchException e) {
+                //TODO log exception.
+            }
+        }
+        return wsdlOperation;
     }
 
     /**

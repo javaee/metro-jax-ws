@@ -34,30 +34,46 @@
  * holder.
  */
 
-package com.sun.xml.ws.server.sei;
+package com.sun.xml.ws.wsdl;
 
 import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
+
+import javax.xml.namespace.QName;
 
 /**
- * This interface needs to be implemented if a new dispatching
- * mechanism needs to be plugged in. The dispatcher is plugged in the
- * constructor of {@link EndpointMethodDispatcherGetter}.
+ * Extensions if this class will be used for dispatching the request message to the correct endpoint method by
+ * identifying the wsdl operation associated with the request.
  *
- * @author Arun Gupta
- * @see EndpointMethodDispatcherGetter
+ * @See OperationDispatcher
+ * 
+ * @author Rama Pulavarthi
  */
-interface EndpointMethodDispatcher {
+public abstract class WSDLOperationFinder {
+    protected final WSDLPort wsdlModel;
+    protected final WSBinding binding;
+    protected final SEIModel seiModel;
+
+    public WSDLOperationFinder(@NotNull WSDLPort wsdlModel, @NotNull WSBinding binding, @Nullable SEIModel seiModel) {
+        this.wsdlModel = wsdlModel;
+        this.binding = binding;
+        this.seiModel= seiModel;
+    }
+
     /**
-     * Returns the {@link EndpointMethodHandler} for the <code>request</code>
-     * {@link Packet}.
+     * This methods returns the QName of the WSDL operation correponding to a request Packet.
+     * An implementation should return null when it cannot dispatch to a unique method based on the information it processes.
+     * In such case, other OperationFinders are queried to resolve a WSDL operation.
+     * It should throw an instance of DispatchException if it finds incorrect information in the packet.
      *
-     * @param request request packet
-     * @return
-     *      non-null {@link EndpointMethodHandler} that will route the request packet.
-     *      null to indicate that the request packet be processed by the next available
-     *      {@link EndpointMethodDispatcher}.
-     * @throws DispatchException
-     *      If the request is invalid, and processing shall be aborted with a specific fault.
+     * @param request  Request Packet that is used to find the associated WSDLOperation
+     * @return QName of the WSDL Operation that this request correponds to.
+     *          null when it cannot find a unique operation to dispatch to.
+     * @throws DispatchException When the information in the Packet is invalid
      */
-    EndpointMethodHandler getEndpointMethodHandler(Packet request) throws DispatchException;
+    public abstract QName getWSDLOperationQName(Packet request) throws DispatchException;
 }

@@ -34,22 +34,46 @@
  * holder.
  */
 
-package com.sun.xml.ws.server.sei;
+package com.sun.xml.ws.wsdl;
 
-import com.sun.xml.ws.api.message.Message;
+import com.sun.istack.NotNull;
+
+import javax.xml.namespace.QName;
 
 /**
- * {@link Exception} that demands a specific fault message to be sent back.
+ * This class models the Operation Signature as defined by WS-I BP ( 1.2 or 2.0) to use wsa:Action and payload QName to
+ * identify the corresponding wsdl operation from a request SOAP Message. 
  *
- * TODO: think about a way to generalize it, as it seems to be useful
- * in other places.
- *
- * @author Kohsuke Kawaguchi
+ * @author Rama Pulavarthi
  */
-final class DispatchException extends Exception {
-    final Message fault;
-
-    public DispatchException(Message fault) {
-        this.fault = fault;
+public class ActionBasedOperationSignature {
+    private final String action;
+    private final QName payloadQName;
+    public ActionBasedOperationSignature(@NotNull String action, @NotNull QName payloadQName) {
+        this.action = action;
+        this.payloadQName = payloadQName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ActionBasedOperationSignature that = (ActionBasedOperationSignature) o;
+
+        if (!action.equals(that.action)) return false;
+        if (!payloadQName.equals(that.payloadQName)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = action.hashCode();
+        result = 31 * result + payloadQName.hashCode();
+        return result;
+    }
+
+
+
 }

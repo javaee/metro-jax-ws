@@ -34,46 +34,23 @@
  * holder.
  */
 
-package com.sun.xml.ws.server.sei;
+package com.sun.xml.ws.wsdl;
 
-import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.model.AbstractSEIModelImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Gets the list of {@link EndpointMethodDispatcher}s for {@link SEIInvokerTube}.
- * a request {@link Packet}. If WS-Addressing is enabled on the endpoint, then
- * only {@link ActionBasedDispatcher} is added to the list. Otherwise,
- * {@link PayloadQNameBasedDispatcher} is added to the list.
+ * {@link Exception} that demands a specific fault message to be sent back.
  *
- * <p>
- * {@link Message} payload's QName to obtain the handler. If no handler is
- * registered corresponding to that QName, then uses Action Message
- * Addressing Property value to get the handler. 
+ * TODO: think about a way to generalize it, as it seems to be useful
+ * in other places.
  *
- * @author Arun Gupta
+ * @author Kohsuke Kawaguchi
  */
-final class EndpointMethodDispatcherGetter {
-    private final List<EndpointMethodDispatcher> dispatcherList;
+public final class DispatchException extends Exception {
+    public final Message fault;
 
-    EndpointMethodDispatcherGetter(AbstractSEIModelImpl model, WSBinding binding, SEIInvokerTube invokerTube) {
-        dispatcherList = new ArrayList<EndpointMethodDispatcher>();
-
-        if (binding.getAddressingVersion() != null) {
-            dispatcherList.add(new ActionBasedDispatcher(model, binding, invokerTube));
-        }
-
-        // even when action based dispatching is in place,
-        // we still need this because clients are alowed not to use addressing headers
-        dispatcherList.add(new PayloadQNameBasedDispatcher(model, binding, invokerTube));
-        dispatcherList.add(new SOAPActionBasedDispatcher(model, binding, invokerTube));
+    public DispatchException(Message fault) {
+        this.fault = fault;
     }
 
-    List<EndpointMethodDispatcher> getDispatcherList() {
-        return dispatcherList;
-    }
 }

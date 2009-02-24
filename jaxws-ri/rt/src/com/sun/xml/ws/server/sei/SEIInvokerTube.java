@@ -44,11 +44,17 @@ import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.client.sei.MethodHandler;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
+import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.server.InvokerTube;
+import com.sun.xml.ws.server.WSEndpointImpl;
 import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
+import com.sun.xml.ws.wsdl.DispatchException;
+import com.sun.xml.ws.util.QNameMap;
 
+import javax.xml.namespace.QName;
 import java.util.List;
+import java.util.Map;
 import java.text.MessageFormat;
 
 /**
@@ -62,18 +68,19 @@ public class SEIInvokerTube extends InvokerTube {
      * For each method on the port interface we have
      * a {@link MethodHandler} that processes it.
      */
-    private final SOAPVersion soapVersion;
     private final WSBinding binding;
     private final AbstractSEIModelImpl model;
-    private final List<EndpointMethodDispatcher> dispatcherList;
 
+    //store WSDL Operation to EndpointMethodHandler map
+    private final QNameMap<EndpointMethodHandler> wsdlOpMap;
     public SEIInvokerTube(AbstractSEIModelImpl model,Invoker invoker, WSBinding binding) {
         super(invoker);
-        this.soapVersion = binding.getSOAPVersion();
         this.binding = binding;
         this.model = model;
-        EndpointMethodDispatcherGetter methodDispatcherGetter = new EndpointMethodDispatcherGetter(model, binding, this);
-        dispatcherList = methodDispatcherGetter.getDispatcherList();
+        wsdlOpMap = new QNameMap<EndpointMethodHandler>();
+        for(JavaMethodImpl jm: model.getJavaMethods()) {
+            wsdlOpMap.put(jm.getOperation().getName(),new EndpointMethodHandler(this,jm,binding));
+        }
     }
 
     /**
@@ -82,26 +89,15 @@ public class SEIInvokerTube extends InvokerTube {
      * that traverses through the Pipeline to transport.
      */
     public @NotNull NextAction processRequest(@NotNull Packet req) {
-        for (EndpointMethodDispatcher dispatcher : dispatcherList) {
-            EndpointMethodHandler handler;
-            try {
-                handler = dispatcher.getEndpointMethodHandler(req);
-            } catch(DispatchException e) {
-                return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
-            }
-            if (handler != null) {
-                Packet res = handler.invoke(req);
-                assert res!=null;
-                return doReturnWith(res);
-            }
+        QName wsdlOp;
+        try {
+            wsdlOp = ((WSEndpointImpl) getEndpoint()).getOperationDispatcher().getWSDLOperationQName(req);
+            Packet res = wsdlOpMap.get(wsdlOp).invoke(req);
+            assert res != null;
+            return doReturnWith(res);
+        } catch (DispatchException e) {
+            return doReturnWith(req.createServerResponse(e.fault, model.getPort(), null, binding));
         }
-        String err = MessageFormat.format("Request=[SOAPAction={0},Payload='{'{1}'}'{2}]",
-                req.soapAction,req.getMessage().getPayloadNamespaceURI(),
-                req.getMessage().getPayloadLocalPart());
-        String faultString = ServerMessages.DISPATCH_CANNOT_FIND_METHOD(err);
-        Message faultMsg = SOAPFaultBuilder.createSOAPFaultMessage(
-            binding.getSOAPVersion(), faultString, binding.getSOAPVersion().faultCodeClient);
-        return doReturnWith(req.createServerResponse(faultMsg, model.getPort(), null, binding));
     }
 
     public @NotNull NextAction processResponse(@NotNull Packet response) {

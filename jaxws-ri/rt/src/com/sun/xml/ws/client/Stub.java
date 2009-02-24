@@ -57,6 +57,7 @@ import com.sun.xml.ws.resources.ClientMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -131,6 +132,8 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     private final @Nullable WSDLProperties wsdlProperties;
 
+    protected OperationDispatcher operationDispatcher = null;
+
     /**
      * @param master                 The created stub will send messages to this pipe.
      * @param binding                As a {@link BindingProvider}, this object will
@@ -156,6 +159,16 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         this.engine = new Engine(toString());
         this.endpointReference = epr;
         wsdlProperties = (wsdlPort==null) ? null : new WSDLProperties(wsdlPort);
+    }
+
+    /**
+     * Nullable when there is no associated WSDL Model
+     * @return
+     */
+    public @Nullable OperationDispatcher getOperationDispatcher() {
+        if(operationDispatcher == null && wsdlPort != null)
+            operationDispatcher = new OperationDispatcher(wsdlPort,binding,null);
+        return operationDispatcher;
     }
 
     /**

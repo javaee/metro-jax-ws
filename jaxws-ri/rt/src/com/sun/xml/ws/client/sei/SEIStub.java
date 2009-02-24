@@ -37,6 +37,7 @@
 package com.sun.xml.ws.client.sei;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Header;
@@ -53,6 +54,7 @@ import com.sun.xml.ws.client.Stub;
 import com.sun.xml.ws.client.WSServiceDelegate;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.SOAPSEIModel;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 
 import javax.xml.namespace.QName;
 import java.lang.reflect.InvocationHandler;
@@ -105,6 +107,16 @@ public final class SEIStub extends Stub implements InvocationHandler {
 
     public final SOAPVersion soapVersion;
 
+    /**
+     * Nullable when there is no associated WSDL Model
+     * @return
+     */
+    public @Nullable
+    OperationDispatcher getOperationDispatcher() {
+        if(operationDispatcher == null && wsdlPort != null)
+            operationDispatcher = new OperationDispatcher(wsdlPort,binding,seiModel);
+        return operationDispatcher;
+    }
 
     /**
      * For each method on the port interface we have

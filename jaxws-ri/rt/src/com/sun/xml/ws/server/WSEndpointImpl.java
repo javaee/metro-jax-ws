@@ -68,6 +68,7 @@ import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.wsdl.OperationDispatcher;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -114,7 +115,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @NotNull Codec masterCodec;
     private final @NotNull PolicyMap endpointPolicy;
     private final Pool<Tube> tubePool;
-
+    private final OperationDispatcher operationDispatcher;
     /**
      * Set to true once we start shutting down this endpoint.
      * Used to avoid running the clean up processing twice.
@@ -150,6 +151,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);
         assert assembler!=null;
 
+        this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
+
         ServerTubeAssemblerContext context = new ServerPipeAssemblerContext(seiModel, port, this, terminalTube, isSynchronous);
         this.masterTubeline = assembler.createServer(context);
 
@@ -165,6 +168,14 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         terminalTube.setEndpoint(this);
         engine = new Engine(toString());
         wsdlProperties = (port==null) ? null : new WSDLProperties(port);
+    }
+
+    /**
+     * Nullable when there is no associated WSDL Model
+     * @return
+     */
+    public @Nullable OperationDispatcher getOperationDispatcher() {
+        return operationDispatcher;
     }
 
     public PolicyMap getPolicyMap() {
