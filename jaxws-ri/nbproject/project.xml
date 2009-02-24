@@ -237,15 +237,9 @@
                 <package-root>servlet/src</package-root>
                 <package-root>transports/local/src</package-root>
                 <package-root>rt-fi/src</package-root>
-<<<<<<< project.xml
-                <package-root>rt/build/gen-src</package-root>
-                <package-root>tools/wscompile/build/gen-src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
-=======
                 <package-root>rt/build/gen-src</package-root>
                 <package-root>tools/wscompile/build/gen-src</package-root>
                 <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
->>>>>>> 1.18
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
