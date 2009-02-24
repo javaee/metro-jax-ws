@@ -129,17 +129,20 @@ public class ClientTubeAssemblerContext {
 
     /**
      * This constructor should be used only by JAX-WS Runtime and is not meant for external consumption.
+     * WSPortInfo is null, when ClientTubeAssemblerContext is created for sending non-anonymous responses.
+     * In all other cases, it should in general be non-null.
      */
     public ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
-                                      @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
+                                      @Nullable WSPortInfo portInfo, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec, SEIModel seiModel) {
-        this(address, wsdlModel, portInfo.getOwner(), portInfo, binding, container, codec,seiModel);
+        this(address, wsdlModel, (portInfo==null? null: portInfo.getOwner()), portInfo, binding, container, codec,seiModel);
 
     }
 
     //common constructor
+    //WSService is null, when ClientTubeAssemblerContext is created for sending non-anonymous responses.
     private ClientTubeAssemblerContext(@NotNull EndpointAddress address, @Nullable WSDLPort wsdlModel,
-                                       @NotNull WSService rootOwner, @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
+                                       @Nullable WSService rootOwner, @NotNull WSPortInfo portInfo, @NotNull WSBinding binding,
                                       @NotNull Container container, Codec codec, SEIModel seiModel) {
         this.address = address;
         this.wsdlModel = wsdlModel;
