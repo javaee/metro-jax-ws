@@ -111,11 +111,11 @@ final class PayloadQNameBasedOperationFinder extends WSDLOperationFinder {
                 }
             }
         } else {
-              for(WSDLBoundOperation wsdlOp: wsdlModel.getBinding().getBindingOperations()) {
+            for (WSDLBoundOperation wsdlOp : wsdlModel.getBinding().getBindingOperations()) {
                 QName name = wsdlOp.getReqPayloadName();
                 if (name == null)
                     name = EMPTY_PAYLOAD;
-                  methodHandlers.put(EMPTY_PAYLOAD,wsdlOp.getName());
+                methodHandlers.put(name, wsdlOp.getName());
             }
         }
     }
