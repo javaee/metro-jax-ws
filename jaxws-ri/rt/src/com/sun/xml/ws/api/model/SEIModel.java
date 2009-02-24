@@ -121,12 +121,19 @@ public interface SEIModel {
      * Gives a {@link JavaMethod} for a given {@link QName}. The {@link QName} will
      * be equivalent to the SOAP Body or Header block or can simply be the name of an
      * infoset that corresponds to the payload.
-     *
      * @param name
      * @return the <code>JavaMethod</code> associated with the
      *         operation named name
      */
     public JavaMethod getJavaMethod(QName name);
+
+    /**
+     * Gives the JavaMethod associated with the wsdl operation
+     * @param operationName QName of the wsdl operation
+     * @return
+     */
+    public JavaMethod getJavaMethodForWsdlOperation(QName operationName);
+
 
     /**
      * Gives all the {@link JavaMethod} for a wsdl:port for which this {@link SEIModel} is

@@ -60,6 +60,7 @@ public class SOAPSEIModel extends AbstractSEIModelImpl {
         int emptyBodyCount = 0;
         for(JavaMethodImpl jm : getJavaMethods()){
             put(jm.getMethod(), jm);
+            putOp(jm.getOperation().getName(),jm);
             boolean bodyFound = false;
             for(ParameterImpl p:jm.getRequestParameters()){
                 ParameterBinding binding = p.getBinding();

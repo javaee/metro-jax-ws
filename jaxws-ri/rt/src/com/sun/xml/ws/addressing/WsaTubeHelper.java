@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLOperation;
 import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.SEIModel;
+import com.sun.xml.ws.api.model.JavaMethod;
 import com.sun.xml.ws.model.wsdl.WSDLOperationImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
@@ -65,6 +66,7 @@ import javax.xml.ws.WebServiceException;
 import java.util.Map;
 
 /**
+ * @author Rama Pulavarthi
  * @author Arun Gupta
  */
 public abstract class WsaTubeHelper {
@@ -89,7 +91,8 @@ public abstract class WsaTubeHelper {
             action = addVer.getDefaultFaultAction();
         if (wsdlPort == null)
             return action;
-        WSDLBoundOperation wbo = requestPacket.getMessage().getOperation(wsdlPort);
+        QName wsdlOp = requestPacket.getWSDLOperation();
+        WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
         return getFaultAction(wbo,responsePacket);
     }
 
@@ -115,7 +118,9 @@ public abstract class WsaTubeHelper {
 
             String ns = detail.getFirstChild().getNamespaceURI();
             String name = detail.getFirstChild().getLocalName();
-            JavaMethodImpl jm = (JavaMethodImpl) requestPacket.getMessage().getMethod(seiModel);
+
+            QName wsdlOp = requestPacket.getWSDLOperation();
+            JavaMethodImpl jm = (JavaMethodImpl) seiModel.getJavaMethodForWsdlOperation(wsdlOp);
             for (CheckedExceptionImpl ce : jm.getCheckedExceptions()) {
                 if (ce.getDetailType().tagName.getLocalPart().equals(name) &&
                         ce.getDetailType().tagName.getNamespaceURI().equals(ns)) {
@@ -170,8 +175,9 @@ public abstract class WsaTubeHelper {
         String action = null;
 
         if (wsdlPort != null) {
-            WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
-            if (wbo != null) {
+            QName wsdlOp = packet.getWSDLOperation();
+            if (wsdlOp != null) {
+                WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
                 WSDLOperation op = wbo.getOperation();
                 action = op.getInput().getAction();
             }
@@ -194,8 +200,9 @@ public abstract class WsaTubeHelper {
         String action = null;
 
         if (wsdlPort != null) {
-            WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
-            if (wbo != null) {
+            QName wsdlOp = packet.getWSDLOperation();
+            if (wsdlOp != null) {
+                WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
                 WSDLOperation op = wbo.getOperation();
                 action = op.getInput().getAction();
             } else
@@ -209,11 +216,10 @@ public abstract class WsaTubeHelper {
     public boolean isInputActionDefault(Packet packet) {
         if (wsdlPort == null)
             return false;
-
-        WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
-        if (wbo == null)
+        QName wsdlOp = packet.getWSDLOperation();
+        if(wsdlOp == null)
             return false;
-
+        WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
         WSDLOperation op = wbo.getOperation();
         return ((WSDLOperationImpl) op).getInput().isDefaultAction();
 
@@ -228,7 +234,8 @@ public abstract class WsaTubeHelper {
         if (wsdlPort == null)
             return action;
 
-        WSDLBoundOperation op = packet.getMessage().getOperation(wsdlPort);
+        QName opName = packet.getWSDLOperation();
+        WSDLBoundOperation op = wsdlPort.getBinding().get(opName);
         if (op == null)
             return action;
 
@@ -240,14 +247,16 @@ public abstract class WsaTubeHelper {
     public String getOutputAction(Packet packet) {
         //String action = AddressingVersion.UNSET_OUTPUT_ACTION;
         String action = null;
-        if(seiModel!= null) {
-            JavaMethodImpl jm = (JavaMethodImpl) packet.getMessage().getMethod(seiModel);
-            if(jm != null && jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
+        QName wsdlOp = packet.getWSDLOperation();
+
+        if (seiModel != null) {
+            JavaMethodImpl jm = (JavaMethodImpl) seiModel.getJavaMethodForWsdlOperation(wsdlOp);
+            if (jm != null && jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
                 return jm.getOutputAction();
             }
         }
         if (wsdlPort != null) {
-            WSDLBoundOperation wbo = wsdlPort.getBinding().getOperation(packet.getMessage().getPayloadNamespaceURI(), packet.getMessage().getPayloadLocalPart());
+            WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
             return getOutputAction(wbo);
         }
         return action;

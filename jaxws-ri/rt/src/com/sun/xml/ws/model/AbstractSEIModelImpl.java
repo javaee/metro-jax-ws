@@ -250,6 +250,11 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         return nameToJM.get(name);
     }
 
+    public JavaMethod getJavaMethodForWsdlOperation(QName operationName) {
+        return wsdlOpToJM.get(operationName);
+    }
+
+
     /**
      * @return the <code>QName</code> associated with the
      * JavaMethod jm.
@@ -436,6 +441,9 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         methodToJM.put(method, jm);
     }
 
+    void putOp(QName opName, JavaMethodImpl jm) {
+        wsdlOpToJM.put(opName, jm);
+    }
     public String getWSDLLocation() {
         return wsdlLocation;
     }
@@ -516,6 +524,11 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
      * Payload QName to the method that handles it.
      */
     private Map<QName,JavaMethodImpl> nameToJM = new HashMap<QName, JavaMethodImpl>();
+    /**
+     * Wsdl Operation QName to the method that handles it.
+     */
+    private Map<QName, JavaMethodImpl> wsdlOpToJM = new HashMap<QName, JavaMethodImpl>();
+
     private List<JavaMethodImpl> javaMethods = new ArrayList<JavaMethodImpl>();
     private final Map<TypeReference, Bridge> bridgeMap = new HashMap<TypeReference, Bridge>();
     protected final QName emptyBodyName = new QName("");
