@@ -90,7 +90,7 @@ public final class LocalTransportFactory extends TransportTubeFactory {
             if (endpoints.size() > 1) {
                 for (WSEndpoint rei : endpoints) {
                     //TODO: for now just compare local part
-                    if(rei.getPort().getName().getLocalPart().equals(adrs.getQuery())) {
+                    if(rei.getPortName().getLocalPart().equals(adrs.getQuery())) {
                         endpoint = rei;
                         break;
                     }
