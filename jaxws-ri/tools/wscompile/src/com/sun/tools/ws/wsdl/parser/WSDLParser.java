@@ -117,6 +117,8 @@ public class WSDLParser {
         register(new MIMEExtensionHandler(extensionHandlers));
         register(new JAXWSBindingExtensionHandler(extensionHandlers));
         register(new SOAP12ExtensionHandler(extensionHandlers));
+        register(new MemberSubmissionAddressingExtensionHandler(extensionHandlers, errReceiver));
+        register(new W3CAddressingExtensionHandler(extensionHandlers, errReceiver));
         register(new W3CAddressingMetadataExtensionHandler(extensionHandlers, errReceiver));
         register(new PolicyExtensionHandler());
         for (TWSDLExtensionHandler te : ServiceFinder.find(TWSDLExtensionHandler.class)) {
