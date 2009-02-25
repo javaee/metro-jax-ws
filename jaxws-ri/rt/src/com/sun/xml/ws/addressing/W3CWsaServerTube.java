@@ -66,7 +66,7 @@ public class W3CWsaServerTube extends WsaServerTube{
     }
 
     private AddressingFeature.Responses getResponseRequirement(@Nullable WSDLBoundOperation wbo) {
-        if (af.getResponses() != AddressingFeature.Responses.ALL && wbo != null) {
+        if (af.getResponses() == AddressingFeature.Responses.ALL && wbo != null) {
             //wsaw wsdl binding case will have some value set on wbo
             WSDLBoundOperation.ANONYMOUS anon = wbo.getAnonymous();
             if (wbo.getAnonymous() == WSDLBoundOperation.ANONYMOUS.required)
