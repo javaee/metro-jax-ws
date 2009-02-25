@@ -89,12 +89,15 @@ public abstract class WsaTubeHelper {
             return action;
         else
             action = addVer.getDefaultFaultAction();
-        if (wsdlPort == null)
-            return action;
-        QName wsdlOp = requestPacket.getWSDLOperation();
-        WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
-        return getFaultAction(wbo,responsePacket);
-    }
+        if (wsdlPort != null) {
+            QName wsdlOp = requestPacket.getWSDLOperation();
+            if (wsdlOp != null) {
+                WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
+                return getFaultAction(wbo, responsePacket);
+            }
+        }
+        return action;
+    }                        
 
     String getFaultActionFromSEIModel(Packet requestPacket, Packet responsePacket) {
         String action = null;
@@ -235,12 +238,11 @@ public abstract class WsaTubeHelper {
             return action;
 
         QName opName = packet.getWSDLOperation();
-        WSDLBoundOperation op = wsdlPort.getBinding().get(opName);
-        if (op == null)
+        if(opName == null)
             return action;
 
+        WSDLBoundOperation op = wsdlPort.getBinding().get(opName);
         action = op.getSOAPAction();
-
         return action;
     }
 
@@ -248,16 +250,17 @@ public abstract class WsaTubeHelper {
         //String action = AddressingVersion.UNSET_OUTPUT_ACTION;
         String action = null;
         QName wsdlOp = packet.getWSDLOperation();
-
-        if (seiModel != null) {
-            JavaMethodImpl jm = (JavaMethodImpl) seiModel.getJavaMethodForWsdlOperation(wsdlOp);
-            if (jm != null && jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
-                return jm.getOutputAction();
+        if (wsdlOp != null) {
+            if (seiModel != null) {
+                JavaMethodImpl jm = (JavaMethodImpl) seiModel.getJavaMethodForWsdlOperation(wsdlOp);
+                if (jm != null && jm.getOutputAction() != null && !jm.getOutputAction().equals("")) {
+                    return jm.getOutputAction();
+                }
             }
-        }
-        if (wsdlPort != null) {
-            WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
-            return getOutputAction(wbo);
+            if (wsdlPort != null) {
+                WSDLBoundOperation wbo = wsdlPort.getBinding().get(wsdlOp);
+                return getOutputAction(wbo);
+            }
         }
         return action;
     }

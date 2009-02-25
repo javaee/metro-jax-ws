@@ -61,7 +61,7 @@ public class W3CWsaServerTube extends WsaServerTube{
 
     @Override
     protected boolean isAnonymousRequired(@Nullable WSDLBoundOperation wbo) {
-        return (getResponseRequirement(wbo) ==  AddressingFeature.Responses.ANONYMOUS);
+        return (wbo!= null)? (getResponseRequirement(wbo) ==  AddressingFeature.Responses.ANONYMOUS):false;
 
     }
 

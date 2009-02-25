@@ -353,7 +353,10 @@ abstract class WsaTube extends AbstractFilterTubeImpl {
         //we can find Req/Response or Oneway only with WSDLModel        
         if(wsdlPort == null)
             return null;
-        return wsdlPort.getBinding().get(packet.getWSDLOperation());
+        QName opName = packet.getWSDLOperation();
+        if(opName != null)
+            return wsdlPort.getBinding().get(opName);
+        return null;
     }
 
     protected void validateSOAPAction(Packet packet) {
