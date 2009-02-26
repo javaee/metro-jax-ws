@@ -91,6 +91,7 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
                     } else if (nestedAsser.getName().equals(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION)) {
                         requiresNonAnonymousResponses = true;
                     } else {
+                        LOGGER.warning("Found unsupported assertion:\n" + nestedAsser + "\nnested into assertion:\n" + assertion);
                         return Fitness.UNSUPPORTED;
                     }
                 }
