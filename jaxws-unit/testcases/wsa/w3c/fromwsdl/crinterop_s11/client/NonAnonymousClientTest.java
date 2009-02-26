@@ -42,11 +42,9 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.Endpoint;
-
-import static testutil.WsaUtils.S12_NS;
-import static testutil.WsaUtils.invoke12;
-import static testutil.WsaUtils.invoke;
-import static testutil.WsaUtils.S11_NS;
+import static testutil.W3CWsaUtils.invoke;
+import static testutil.W3CWsaUtils.invokeAsync;
+import static testutil.W3CWsaUtils.S11_NS;
 import testutil.XMLTestCase;
 import static testutil.WsaW3CSOAPMessages.USER_FAULT_CODE;
 import static wsa.w3c.fromwsdl.crinterop_s11.client.BindingProviderUtil.*;
@@ -101,13 +99,13 @@ public class NonAnonymousClientTest extends XMLTestCase {
             //Lets see we get a response in 60 s
             SOAPMessage m = respMsgExchanger.exchange(null, TestConstants.CLIENT_MAX_TIMEOUT, TimeUnit.SECONDS);
             m.writeTo(System.out);
-        }        
+        }
     }
 
     /**
      * SOAP 1.1 two-way message with a non-anonymous ReplyTo address and a none FaultTo.
      */
-    public void xtest1152() throws Exception {
+    public void test1152() throws Exception {
         try {
             invoke(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
                     MESSAGES.getNonAnonymousReplyToNoneFaultToMessage(),
@@ -125,7 +123,7 @@ public class NonAnonymousClientTest extends XMLTestCase {
     /**
      * SOAP 1.1 two-way message with a non-anonymous ReplyTo and FaultTo address.
      */
-    public void xtest1194() throws Exception {
+    public void test1194() throws Exception {
         try {
             invoke(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
                     MESSAGES.getNonAnonymousReplyToMessage(),
