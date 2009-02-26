@@ -38,10 +38,14 @@ package wsa.w3c.fromwsdl.crinterop_s11.client;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Exchanger;
+import java.util.Iterator;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPBody;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.Endpoint;
+import javax.xml.namespace.QName;
+
 import static testutil.W3CWsaUtils.invoke;
 import static testutil.W3CWsaUtils.invokeAsync;
 import static testutil.W3CWsaUtils.S11_NS;
@@ -85,21 +89,21 @@ public class NonAnonymousClientTest extends XMLTestCase {
      * SOAP 1.1 two-way message with a non-anonymous ReplyTo address.
      */
     public void test1150() throws Exception {
-        try {
-            invoke(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
-                    MESSAGES.getNonAnonymousReplyToMessage(),
-                    S11_NS,
-                    getNonAnonymousEndpointAddress(),
-                    getNonAnonymousClientAddress(),
-                    ECHO_IN_ACTION,
-                    "test1150");
-            fail("WebServiceException must be thrown");
-        } catch (WebServiceException e) {
-            assertEquals("No response returned.", e.getMessage());
-            //Lets see we get a response in 60 s
-            SOAPMessage m = respMsgExchanger.exchange(null, TestConstants.CLIENT_MAX_TIMEOUT, TimeUnit.SECONDS);
-            m.writeTo(System.out);
-        }
+        invokeAsync(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
+                MESSAGES.getNonAnonymousReplyToMessage(),
+                S11_NS,
+                getNonAnonymousEndpointAddress(),
+                getNonAnonymousClientAddress(),
+                ECHO_IN_ACTION,
+                "test1150");
+        //Lets see we get a response in 60 s
+        SOAPMessage m = respMsgExchanger.exchange(null, TestConstants.CLIENT_MAX_TIMEOUT, TimeUnit.SECONDS);
+//        System.out.println("****************************");
+//        m.writeTo(System.out);
+//        System.out.println("\n****************************");
+        SOAPBody sb = m.getSOAPBody();
+        Iterator itr = sb.getChildElements(new QName("http://example.org/echo","echoOut"));
+        assertTrue(itr.hasNext());
     }
 
     /**
@@ -124,24 +128,22 @@ public class NonAnonymousClientTest extends XMLTestCase {
      * SOAP 1.1 two-way message with a non-anonymous ReplyTo and FaultTo address.
      */
     public void test1194() throws Exception {
-        try {
-            invoke(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
+        invokeAsync(createDispatchForNonAnonymousWithWSDLWithoutAddressing(),
                     MESSAGES.getNonAnonymousReplyToMessage(),
                     S11_NS,
                     getNonAnonymousEndpointAddress(),
                     getNonAnonymousClientAddress(),
                     ECHO_IN_ACTION,
                     "fault-test1194");
-            fail("1194: WebServiceException must be thrown");
-        } catch (WebServiceException e) {
-            assertEquals("No response returned.", e.getMessage());
-            //Lets see we get a response in 60 s
-            SOAPMessage m = respMsgExchanger.exchange(null, TestConstants.CLIENT_MAX_TIMEOUT, TimeUnit.SECONDS);
-            //m.writeTo(System.out);
-            SOAPFault f = m.getSOAPBody().getFault();
-            assertNotNull(f);
-            assertEquals(USER_FAULT_CODE, f.getFaultCodeAsQName());
-        }
+        //Lets see we get a response in 60 s
+        SOAPMessage m = respMsgExchanger.exchange(null, TestConstants.CLIENT_MAX_TIMEOUT, TimeUnit.SECONDS);
+//        System.out.println("****************************");
+//        m.writeTo(System.out);
+//        System.out.println("\n****************************");
+        SOAPFault f = m.getSOAPBody().getFault();
+        assertNotNull(f);
+        assertEquals(USER_FAULT_CODE, f.getFaultCodeAsQName());
+
     }
 
 }
