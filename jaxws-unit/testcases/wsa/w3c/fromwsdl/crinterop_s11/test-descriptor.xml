@@ -1,0 +1,6 @@
+<descriptor since="2.1.5">
+    <description>End to End WSA Interop tests </description>
+    <service basedir="./server">
+        <wsdl href="wsaTestService.wsdl"/>
+    </service>  
+</descriptor>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+             xmlns:s0="http://example.org/notify"
+             xmlns:s1="http://example.org/echo"
+             xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+             xmlns:service="http://example.org"
+             xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+             xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             targetNamespace="http://example.org">
+
+    <types>
+        <xs:schema targetNamespace="http://example.org/notify"
+                   elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:element name='notify' type='xs:string'/>
+        </xs:schema>
+
+        <xs:schema targetNamespace="http://example.org/echo"
+                   elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:element name='echoIn' type='xs:string'/>
+            <xs:element name='echoOut' type='xs:string'/>
+        </xs:schema>
+    </types>
+
+    <message name="wsaNotifyMessage">
+        <part name="wsaNotifyMessagePart" element="s0:notify"/>
+    </message>
+
+    <message name="wsaEchoInMessage">
+        <part name="wsaEchoInPart" element="s1:echoIn"/>
+    </message>
+
+    <message name="wsaEchoOutMessage">
+        <part name="wsaEchoOutPart" element="s1:echoOut"/>
+    </message>
+
+    <portType name="wsaTestPortType">
+        <operation name="notify">
+            <input message="service:wsaNotifyMessage" wsaw:Action="http://example.org/action/notify"/>
+        </operation>
+
+        <operation name="echo">
+            <input message="service:wsaEchoInMessage" wsaw:Action="http://example.org/action/echoIn"/>
+            <output message="service:wsaEchoOutMessage" wsaw:Action="http://example.org/action/echoOut"/>
+        </operation>
+    </portType>
+
+    <binding name="wsaTestSoap11Binding" type="service:wsaTestPortType">
+        <wsaw:UsingAddressing wsdl:required="true"/>
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="notify">
+            <soap:operation style="document" soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+        </operation>
+
+        <operation name="echo">
+            <soap:operation style="document" soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+    </binding>
+
+    <service name="wsaTestService">
+        <port name="wsaTestPort" binding="service:wsaTestSoap11Binding">
+            <soap:address location="http://localhost:8080/jaxrpc-wsa_fromwsdl_crinterop_s11/cr?wsdl"/>
+        </port>
+    </service>
+</definitions>
+
