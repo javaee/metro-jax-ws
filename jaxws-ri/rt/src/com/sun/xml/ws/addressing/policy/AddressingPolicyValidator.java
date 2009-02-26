@@ -60,9 +60,9 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
 
     static {
         supportedAssertions.add(new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing"));
-        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
-        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
-        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION);
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION);
+        supportedAssertions.add(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION);
     }
 
     /**
@@ -80,15 +80,15 @@ public class AddressingPolicyValidator implements PolicyAssertionValidator {
             return Fitness.UNKNOWN;
 
         //Make sure wsam:Addressing contains only one of the allowed nested assertions.
-        if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+        if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION)) {
             NestedPolicy nestedPolicy = assertion.getNestedPolicy();
             if (nestedPolicy != null) {
                 boolean requiresAnonymousResponses = false;
                 boolean requiresNonAnonymousResponses = false;
                 for (PolicyAssertion nestedAsser : nestedPolicy.getAssertionSet()) {
-                    if (nestedAsser.getName().equals(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION)) {
+                    if (nestedAsser.getName().equals(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION)) {
                         requiresAnonymousResponses = true;
-                    } else if (nestedAsser.getName().equals(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION)) {
+                    } else if (nestedAsser.getName().equals(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION)) {
                         requiresNonAnonymousResponses = true;
                     } else {
                         LOGGER.warning("Found unsupported assertion:\n" + nestedAsser + "\nnested into assertion:\n" + assertion);

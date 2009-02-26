@@ -112,7 +112,7 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
     private void addWsamAddressing(PolicyMapExtender policyMapMutator, PolicyMap policyMap, SEIModel model, AddressingFeature addressingFeature) throws PolicyException {
         final PolicyMapKey endpointKey = PolicyMap.createWsdlEndpointScopeKey(model.getServiceQName(), model.getPortName());
         final Policy existingPolicy = policyMap.getEndpointEffectivePolicy(endpointKey);
-        if ((existingPolicy == null) || !existingPolicy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+        if ((existingPolicy == null) || !existingPolicy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION)) {
             final QName bindingName = model.getBoundPortTypeName();
             final Policy addressingPolicy = createWsamAddressingPolicy(bindingName, addressingFeature);
             final PolicySubject addressingPolicySubject = new PolicySubject(bindingName, addressingPolicy);
@@ -135,17 +135,17 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
         final ArrayList<AssertionSet> assertionSets = new ArrayList<AssertionSet>(1);
         final ArrayList<PolicyAssertion> assertions = new ArrayList<PolicyAssertion>(1);
         final AssertionData addressingData =
-                AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION);
+                AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION);
         if (!af.isRequired()) {
             addressingData.setOptionalAttribute(true);
         }
         AddressingFeature.Responses responses = af.getResponses();        
         if (responses == AddressingFeature.Responses.ANONYMOUS) {
-            AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
+            AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION);
             PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
             assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
         } else if (responses == AddressingFeature.Responses.NON_ANONYMOUS) {
-            final AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
+            final AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION);
             PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
             assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
         } else {

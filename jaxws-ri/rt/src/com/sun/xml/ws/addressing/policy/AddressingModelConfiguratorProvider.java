@@ -103,16 +103,16 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
             } //end foreach addr assertion
 
             // Deal with WS-Addressing 1.0 Metadata assertions
-            if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+            if (policy != null && policy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION)) {
                 for (AssertionSet assertions : policy) {
                     for (PolicyAssertion assertion : assertions) {
-                        if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSSSERTION)) {
+                        if (assertion.getName().equals(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION)) {
                             NestedPolicy nestedPolicy = assertion.getNestedPolicy();
                             boolean requiresAnonymousResponses = false;
                             boolean requiresNonAnonymousResponses = false;
                             if (nestedPolicy != null) {
-                                requiresAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSSSERTION);
-                                requiresNonAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSSSERTION);
+                                requiresAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION);
+                                requiresNonAnonymousResponses = nestedPolicy.contains(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION);
                             }
                             if(requiresAnonymousResponses && requiresNonAnonymousResponses) {
                                 throw new WebServiceException("Only one among AnonymousResponses and NonAnonymousResponses can be nested in an Addressing assertion");
