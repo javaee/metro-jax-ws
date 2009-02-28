@@ -64,7 +64,7 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
     /*
      * Supports javax.jws.*, javax.jws.soap.* and javax.xml.ws.* annotations.
      */
-    static Collection<String> supportedAnnotations;
+    static final Collection<String> supportedAnnotations;
     static {
         Collection<String> types = new HashSet<String>();
         types.add("javax.jws.HandlerChain");
