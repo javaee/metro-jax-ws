@@ -47,6 +47,7 @@ import javax.jws.WebResult;
 import javax.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
@@ -66,10 +67,15 @@ public class WrapperBeanGenerator {
 
     private static final Logger LOGGER = Logger.getLogger(WrapperBeanGenerator.class.getName());
 
-    public static final String PD                           = ".";
-    public static final String JAXWS                        = "jaxws";
-    public static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
-    public static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
+    private static final String PD                           = ".";
+    private static final String JAXWS                        = "jaxws";
+    private static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
+    private static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
+
+    private static final Class[] jaxbAnns = new Class[] {
+        XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
+        XmlList.class, XmlElement.class
+    };
 
     // Creates class's bytes
     private static byte[] createBeanImage(String className,
@@ -128,6 +134,13 @@ public class WrapperBeanGenerator {
                 } else if (ann instanceof XmlList) {
                     AnnotationVisitor list = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlList;", true);
                     list.visitEnd();
+                } else if (ann instanceof XmlElement) {
+                    AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+                    elem.visit("name", ((XmlElement)ann).name());
+                    elem.visit("namespace", ((XmlElement)ann).namespace());
+                    elem.visit("nillable", ((XmlElement)ann).nillable());
+                    elem.visit("required", ((XmlElement)ann).required());
+                    elem.visitEnd();
                 } else {
                     throw new WebServiceException("Unknown JAXB annotation " + ann);
                 }
@@ -215,6 +228,8 @@ public class WrapperBeanGenerator {
                         sb.append("@XmlAttachmentRef");
                     } else if (ann instanceof XmlList) {
                         sb.append("@XmlList");
+                    } else if (ann instanceof XmlElement) {
+                        sb.append("@XmlElement(TODO)");
                     } else {
                         throw new WebServiceException("Unknown JAXB annotation " + ann);
                     }
@@ -520,9 +535,8 @@ public class WrapperBeanGenerator {
 
 
     private static List<Annotation> collectJAXBAnnotations(Annotation[] anns) {
-        Class[] known = { XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class, XmlList.class };
         List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        for(Class c : known) {
+        for(Class c : jaxbAnns) {
             Annotation a = findAnnotation(anns, c);
             if (a != null) {
                 jaxbAnnotation.add(a);
@@ -532,12 +546,23 @@ public class WrapperBeanGenerator {
     }
 
 
-    private List<Annotation> collectJAXBAnnotations(Method method) {
-        Class[] known = { XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class, XmlList.class };
+//    private List<Annotation> collectJAXBAnnotations(Method method) {
+//        Class[] known = { XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class, XmlList.class };
+//        List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
+//        for(Class c : known) {
+//            Annotation ann = method.getAnnotation(c);
+//            if(ann != null) {
+//                jaxbAnnotation.add(ann);
+//            }
+//        }
+//        return jaxbAnnotation;
+//    }
+
+    private List<Annotation> collectJAXBAnnotations(Method decl) {
         List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        for(Class c : known) {
-            Annotation ann = method.getAnnotation(c);
-            if(ann != null) {
+        for(Class jaxbClass : jaxbAnns) {
+            Annotation ann = decl.getAnnotation(jaxbClass);
+            if (ann != null) {
                 jaxbAnnotation.add(ann);
             }
         }

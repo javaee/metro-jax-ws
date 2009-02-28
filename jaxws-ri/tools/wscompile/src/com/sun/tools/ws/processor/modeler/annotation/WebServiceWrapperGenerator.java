@@ -62,6 +62,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebFault;
+import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -79,7 +80,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     private Set<String> processedExceptions;
     private JCodeModel cm;
     private final MakeSafeTypeVisitor makeSafeVisitor;
-    private final Class[] jaxbAnns = new Class[] {
+    private static final Class[] jaxbAnns = new Class[] {
         XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
         XmlList.class, XmlElement.class
     };
@@ -441,6 +442,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 field.annotate(XmlAttachmentRef.class);
             }else if(ann instanceof XmlList){
                 field.annotate(XmlList.class);
+            }else {
+                throw new WebServiceException("Unknown JAXB annotation " + ann);
             }
         }
     }
