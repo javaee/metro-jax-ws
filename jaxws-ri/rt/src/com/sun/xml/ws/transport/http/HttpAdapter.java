@@ -512,6 +512,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * @throws IOException when I/O errors happen
      */
     public void publishWSDL(@NotNull WSHTTPConnection con) throws IOException {
+        con.getInput().close();
+        
         SDDocument doc = wsdls.get(con.getQueryString());
         if (doc == null) {
             writeNotFoundErrorPage(con,"Invalid Request");
@@ -613,6 +615,8 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         if (!publishStatusPage) return;
 
         // TODO: resurrect the ability to localize according to the current request.
+
+        con.getInput().close();
 
         // standard browsable page
         con.setStatus(WSHTTPConnection.OK);
