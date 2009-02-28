@@ -75,11 +75,14 @@ import java.lang.annotation.Annotation;
  * @author  WS Development Team
  */
 public class WebServiceWrapperGenerator extends WebServiceVisitor {
-    protected Set<String> wrapperNames;
-    protected Set<String> processedExceptions;
-    protected JCodeModel cm;
-    protected MakeSafeTypeVisitor makeSafeVisitor;
-
+    private Set<String> wrapperNames;
+    private Set<String> processedExceptions;
+    private JCodeModel cm;
+    private final MakeSafeTypeVisitor makeSafeVisitor;
+    private final Class[] jaxbAnns = new Class[] {
+        XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
+        XmlList.class, XmlElement.class
+    };
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
@@ -348,43 +351,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
-    private List<Annotation> collectJAXBAnnotations(ParameterDeclaration param) {
+    private List<Annotation> collectJAXBAnnotations(Declaration decl) {
         List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        Annotation ann = param.getAnnotation(XmlAttachmentRef.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlMimeType.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlJavaTypeAdapter.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlList.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-        return jaxbAnnotation;
-    }
-
-    private List<Annotation> collectJAXBAnnotations(MethodDeclaration method) {
-        List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        Annotation ann = method.getAnnotation(XmlAttachmentRef.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlMimeType.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlJavaTypeAdapter.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlList.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
+        for(Class jaxbClass : jaxbAnns) {
+            Annotation ann = decl.getAnnotation(jaxbClass);
+            if (ann != null) {
+                jaxbAnnotation.add(ann);
+            }
+        }
         return jaxbAnnotation;
     }
 
