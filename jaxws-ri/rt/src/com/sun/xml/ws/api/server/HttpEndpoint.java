@@ -1,6 +1,7 @@
 package com.sun.xml.ws.api.server;
 
 import com.sun.istack.NotNull;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 
 /**
  * Light-weight http server transport for {@link WSEndpoint}.
@@ -19,7 +20,7 @@ public abstract class HttpEndpoint {
      * @return transport object for the endpoint
      */
     public static HttpEndpoint create(@NotNull WSEndpoint endpoint) {
-        return new com.sun.xml.ws.transport.http.server.HttpEndpoint(endpoint, null);
+        return new com.sun.xml.ws.transport.http.server.HttpEndpoint(null, HttpAdapter.createAlone(endpoint));
     }
 
     /**

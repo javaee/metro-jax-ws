@@ -38,17 +38,13 @@ package com.sun.xml.ws.transport.http.server;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.HttpAdapterList;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.WSEndpointImpl;
 
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.ws.EndpointReference;
 import java.util.concurrent.Executor;
-import java.io.IOException;
 
 import org.w3c.dom.Element;
 
@@ -68,9 +64,9 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
     private final HttpAdapter adapter;
     private final Executor executor;
 
-    public HttpEndpoint(WSEndpoint endpoint, Executor executor) {
+    public HttpEndpoint(Executor executor, HttpAdapter adapter) {
         this.executor = executor;
-        this.adapter = HttpAdapter.createAlone(endpoint);
+        this.adapter = adapter;
     }
 
     public void publish(String address) {
@@ -86,6 +82,10 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
 
         this.httpContext = (HttpContext)serverContext;
         publish(httpContext);
+    }
+
+    HttpAdapterList getAdapterOwner() {
+        return adapter.owner;
     }
 
     /**

@@ -47,6 +47,8 @@ import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.transport.http.HttpAdapterList;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.istack.NotNull;
 
 import java.net.MalformedURLException;
@@ -109,6 +111,7 @@ public class EndpointImpl extends Endpoint {
     private Executor executor;
     private Map<String, Object> properties = Collections.emptyMap(); // always non-null
     private boolean stopped;
+    private @Nullable EndpointContext endpointContext;
 
 
     public EndpointImpl(@NotNull BindingID bindingId, @NotNull Object impl) {
@@ -123,7 +126,7 @@ public class EndpointImpl extends Endpoint {
      * @deprecated This is a backdoor method. Don't use it unless you know what you are doing.
      */
     public EndpointImpl(WSEndpoint wse, Object serverContext) {
-        actualEndpoint = new HttpEndpoint(wse, executor);
+        actualEndpoint = new HttpEndpoint(executor, getAdapter(wse, ""));
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
         binding = wse.getBinding();
         implementor = null; // this violates the semantics, but hey, this is a backdoor.
@@ -152,7 +155,7 @@ public class EndpointImpl extends Endpoint {
             throw new IllegalArgumentException("Incorrect WebService address=" + address +
                     ". The address's path should start with /");
         }
-        createEndpoint();
+        createEndpoint("");
         ((HttpEndpoint) actualEndpoint).publish(address);
     }
 
@@ -161,7 +164,7 @@ public class EndpointImpl extends Endpoint {
         if (!com.sun.net.httpserver.HttpContext.class.isAssignableFrom(serverContext.getClass())) {
             throw new IllegalArgumentException(serverContext.getClass() + " is not a supported context.");
         }
-        createEndpoint();
+        createEndpoint("");
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
     }
 
@@ -213,7 +216,7 @@ public class EndpointImpl extends Endpoint {
     * Checks the permission of "publishEndpoint" before accessing HTTP classes.
     * Also it checks if there is an available HTTP server implementation.
     */
-    private void createEndpoint() {
+    private void createEndpoint(String urlPattern) {
         // Checks permission for "publishEndpoint"
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
@@ -239,7 +242,7 @@ public class EndpointImpl extends Endpoint {
                 (EntityResolver) null
         );
         // Don't load HttpEndpoint class before as it may load HttpServer classes
-        actualEndpoint = new HttpEndpoint(wse, executor);
+        actualEndpoint = new HttpEndpoint(executor, getAdapter(wse, urlPattern));
     }
 
     private <T> T getProperty(Class<T> type, String key) {
@@ -320,6 +323,28 @@ public class EndpointImpl extends Endpoint {
             throw new WebServiceException("Endpoint is not published yet");
         }
         return ((HttpEndpoint)actualEndpoint).getEndpointReference(clazz,referenceParameters);
+    }
+
+    @Override
+    public void setEndpointContext(EndpointContext ctxt) {
+        this.endpointContext = ctxt;
+    }
+
+    private HttpAdapter getAdapter(WSEndpoint endpoint, String urlPattern) {
+        HttpAdapterList adapterList = null;
+        if (endpointContext != null) {
+            for(Endpoint e : endpointContext.getEndpoints()) {
+                if (e.isPublished() && e != this) {
+                    adapterList = ((HttpEndpoint)(((EndpointImpl)e).actualEndpoint)).getAdapterOwner();
+                    break;
+                }
+            }
+            assert adapterList != null;
+        }
+        if (adapterList == null) {
+            adapterList = new ServerAdapterList();
+        }
+        return adapterList.createAdapter("", urlPattern, endpoint);
     }
 }
 
