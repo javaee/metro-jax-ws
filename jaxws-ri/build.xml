@@ -738,6 +738,8 @@
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
                 <fileset file="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/lib" includes="ant.jar"/>
             </auxclasspath>
             <sourcepath>
                 <pathelement location="${basedir}/rt/src"/>
@@ -757,6 +759,8 @@
             <auxclasspath>
                 <fileset dir="${build.home}/lib" includes="*.jar" excludes="jaxws-rt.jar, jaxws-tools.jar"/>
                 <fileset file="${java.home}/../lib/tools.jar"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset dir="${basedir}/lib" includes="ant.jar"/>
             </auxclasspath>
             <sourcepath>
                 <pathelement location="${basedir}/rt/src"/>
