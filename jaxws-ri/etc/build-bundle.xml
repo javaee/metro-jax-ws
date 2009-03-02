@@ -103,9 +103,11 @@
 
     <path id="all-source-path">
         <pathelement path="${basedir}/rt/src"/>
+        <pathelement path="${basedir}/rt/build/gen-src"/>
         <pathelement path="${basedir}/rt-fi/src"/>
         <pathelement path="${basedir}/servlet/src"/>
         <pathelement path="${basedir}/tools/wscompile/src"/>
+        <pathelement path="${basedir}/tools/wscompile/build/gen-src"/>
     </path>
 
 
@@ -119,7 +121,11 @@
                 windowtitle="${Name} Generated Documentation"
                 doctitle="${Name}"
                 bottom="Copyright &#169; 2005 Sun Microsystems, Inc. All Rights Reserved.">
-            <classpath refid="runtime.compile.classpath"/>
+            <classpath>
+                <path refid="runtime.compile.classpath"/>
+                <fileset dir="${basedir}/servlet/lib" includes="servlet.jar"/>
+                <fileset file="${java.home}/../lib/tools.jar"/>
+            </classpath>
         </javadoc>
     </target>
 
