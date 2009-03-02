@@ -1,0 +1,13 @@
+<descriptor since="2.2">
+  <description>xmlelement</description>
+
+  <client name="xmlElement_echoInt" sideEffectFree="true">
+  <description>testInt</description>
+  <![CDATA[
+    assertEquals(1, echoPort.echoInt(1));
+  ]]></client>
+    
+  <service basedir="./server">
+  </service>
+
+</descriptor>
