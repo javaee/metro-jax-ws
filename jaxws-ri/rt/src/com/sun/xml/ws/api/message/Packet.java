@@ -266,6 +266,16 @@ public final class Packet extends DistributedPropertySet {
     }
 
     /**
+     * Set the wsdl operation to avoid lookup from other data.
+     * This is useful in SEI based clients, where the WSDL operation can be known from the associated JavaMethod
+     *
+     * @param wsdlOp QName
+     */
+    public void setWSDLOperation(QName wsdlOp) {
+        this.wsdlOperation = wsdlOp;
+    }
+    
+    /**
      * True if this message came from a transport (IOW inbound),
      * and in paricular from a "secure" transport. A transport
      * needs to set this flag appropriately.

@@ -104,7 +104,7 @@ final class SyncMethodHandler extends SEIMethodHandler {
         req.soapAction = soapAction;
         req.expectReply = !isOneWay;
         req.getMessage().assertOneWay(isOneWay);
-
+        req.setWSDLOperation(this.javaMethod.getOperation().getName());
         // process the message
         Packet reply = owner.doProcess(req,rc,receiver);
 
