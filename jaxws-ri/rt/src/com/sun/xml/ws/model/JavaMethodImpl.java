@@ -110,7 +110,7 @@ public final class JavaMethodImpl implements JavaMethod {
                 inputAction = soapAction;
             else if(!inputAction.equals(soapAction)){
                 //both are explicitly set via annotations, make sure @Action == @WebMethod.action
-                throw new WebServiceException("@Action and @WebMethod(action=\"\" does not match");
+                throw new WebServiceException("@Action and @WebMethod(action=\"\" does not match on operation "+ method.getName());
             }
         }
     }
