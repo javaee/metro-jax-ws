@@ -69,6 +69,11 @@ import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.gmbal.ManagedObjectManager;
+import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -90,6 +95,8 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
+@ManagedObject
+@Description("DUMMY")
 public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     // Register JAX-WS JMX MBeans
     static {
@@ -116,6 +123,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @NotNull PolicyMap endpointPolicy;
     private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
+    private final ManagedObjectManager managedObjectManager;
+
     /**
      * Set to true once we start shutting down this endpoint.
      * Used to avoid running the clean up processing twice.
@@ -147,6 +156,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             serviceDef.setOwner(this);
         }
 
+ 	managedObjectManager = createManagedObjectManager(serviceName, portName);
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);
         assert assembler!=null;
@@ -194,6 +204,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return container;
     }
 
+    @ManagedAttribute
+    @Description("port")
     public WSDLPort getPort() {
         return port;
     }
@@ -330,5 +342,33 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
     public @NotNull QName getServiceName() {
         return serviceName;
+    }
+
+    public @NotNull ManagedObjectManager getManagedObjectManager() {
+	return managedObjectManager;
+    }
+
+    private ManagedObjectManager createManagedObjectManager(
+        QName serviceName, QName portName) {
+
+	ManagedObjectManager managedObjectManager = null;
+	// TBD: for now the root is "metro"
+	// It may become com.sun.metro
+	managedObjectManager = ManagedObjectManagerFactory.createStandalone("metro");
+
+	managedObjectManager.stripPrefix(
+	    "com.sun.xml.ws",
+	    "com.sun.xml.ws.rx.runtime");
+
+	// TBD: We include the service+portName to uniquely identify
+	// the managed objects under it (since there can be multiple
+	// services in the container.
+	// The existing format below is temporary and will change.
+	managedObjectManager.createRoot(
+            this, 
+	    serviceName.toString().replace(':', '-')
+	    + portName.toString().replace(':', '-'));
+
+	return managedObjectManager;
     }
 }

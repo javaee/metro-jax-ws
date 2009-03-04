@@ -52,6 +52,8 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.policy.PolicyMap;
+import org.glassfish.gmbal.ManagedObjectManager;
+import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.xml.sax.EntityResolver;
 
 import javax.xml.namespace.QName;
@@ -399,6 +401,10 @@ public abstract class WSEndpoint<T> {
 
     public abstract PolicyMap getPolicyMap();
 
+    /**
+     * Get the ManagedObjectManager for this endpoint.
+     */
+     public abstract @NotNull ManagedObjectManager getManagedObjectManager();
 
     /**
      * Creates an endpoint from deployment or programmatic configuration
