@@ -96,7 +96,7 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 @ManagedObject
-@Description("DUMMY")
+@Description("Web Service endpoint")
 public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     // Register JAX-WS JMX MBeans
     static {
