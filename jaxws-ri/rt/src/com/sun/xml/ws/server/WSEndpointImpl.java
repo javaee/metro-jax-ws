@@ -304,6 +304,12 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                 break;
             }
         }
+
+	try {
+	    managedObjectManager.close();
+	} catch (java.io.IOException e) {
+	    logger.log(Level.WARNING, "TBD", e);
+	}
     }
 
     public ServiceDefinitionImpl getServiceDefinition() {
