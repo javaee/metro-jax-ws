@@ -134,29 +134,4 @@ final class WSHttpHandler implements HttpHandler {
     }
 
 
-    /**
-     * Computes the Endpoint's address from the request. Use "Host" header
-     * so that it has correct address(IP address or someother hostname) through
-     * which the application reached the endpoint.
-     *
-     * @return
-     *      a string like "http://foo.bar:1234/abc/def"
-     */
-    static @NotNull String getRequestAddress(HttpExchange msg) {
-        StringBuilder strBuf = new StringBuilder();
-        strBuf.append((msg instanceof HttpsExchange) ? "https" : "http");
-        strBuf.append("://");
-
-        String hostHeader = msg.getRequestHeaders().getFirst("Host");
-        if (hostHeader != null) {
-            strBuf.append(hostHeader);   // Uses Host header
-        } else {
-            strBuf.append(msg.getLocalAddress().getHostName());
-            strBuf.append(":");
-            strBuf.append(msg.getLocalAddress().getPort());
-        }
-        strBuf.append(msg.getRequestURI().getPath());
-
-        return strBuf.toString();
-    }
 }

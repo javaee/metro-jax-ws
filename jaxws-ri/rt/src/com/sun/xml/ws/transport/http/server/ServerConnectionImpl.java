@@ -142,23 +142,26 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
     private static class LWHSInputStream extends FilterInputStream {
         // Workaround for "SJSXP XMLStreamReader.next() closes stream".
         boolean closed;
+        boolean readAll;
         
         LWHSInputStream(InputStream in) {
             super(in);
         }
 
         void readAll() throws IOException {
-            if (!closed) {
+            if (!closed && !readAll) {
                 ReadAllStream all = new ReadAllStream();
                 all.readAll(in, 4000000);
                 in.close();
                 in = all;
+                readAll = true;
             }
         }
 
         @Override
         public void close() throws IOException {
             if (!closed) {
+                readAll();
                 super.close();
                 closed = true;
             }
@@ -271,7 +274,28 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
 
     @Override @NotNull
     public String getBaseAddress() {
-        return WSHttpHandler.getRequestAddress(httpExchange);
+        /*
+         * Computes the Endpoint's address from the request. Use "Host" header
+         * so that it has correct address(IP address or someother hostname)
+         * through which the application reached the endpoint.
+         *
+         */
+        StringBuilder strBuf = new StringBuilder();
+        strBuf.append((httpExchange instanceof HttpsExchange) ? "https" : "http");
+        strBuf.append("://");
+
+        String hostHeader = httpExchange.getRequestHeaders().getFirst("Host");
+        if (hostHeader != null) {
+            strBuf.append(hostHeader);   // Uses Host header
+        } else {
+            strBuf.append(httpExchange.getLocalAddress().getHostName());
+            strBuf.append(":");
+            strBuf.append(httpExchange.getLocalAddress().getPort());
+        }
+        //Do not include URL pattern here
+        //strBuf.append(httpExchange.getRequestURI().getPath());
+
+        return strBuf.toString();
     }
 
     @Override

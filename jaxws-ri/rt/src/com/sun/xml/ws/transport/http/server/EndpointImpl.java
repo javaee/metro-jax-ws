@@ -155,7 +155,7 @@ public class EndpointImpl extends Endpoint {
             throw new IllegalArgumentException("Incorrect WebService address=" + address +
                     ". The address's path should start with /");
         }
-        createEndpoint("");
+        createEndpoint(url.getPath());
         ((HttpEndpoint) actualEndpoint).publish(address);
     }
 
@@ -336,10 +336,10 @@ public class EndpointImpl extends Endpoint {
             for(Endpoint e : endpointContext.getEndpoints()) {
                 if (e.isPublished() && e != this) {
                     adapterList = ((HttpEndpoint)(((EndpointImpl)e).actualEndpoint)).getAdapterOwner();
+                    assert adapterList != null;
                     break;
                 }
             }
-            assert adapterList != null;
         }
         if (adapterList == null) {
             adapterList = new ServerAdapterList();
