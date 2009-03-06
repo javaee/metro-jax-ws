@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://echo.org/"  xmlns:tns="http://echo.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xs:schema targetNamespace="http://echo.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+      <xs:element name="echoFoo" type="tns:echoFoo"/>
+      <xs:complexType name="echoFoo">
+        <xs:sequence>
+          <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+
+      <xs:element name="echoFooResponse" type="tns:echoFooResponse"/>
+      <xs:complexType name="echoFooResponse">
+        <xs:sequence>
+          <xs:element name="return" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </types>
+  <message name="echoFoo">
+    <part name="parameters" element="tns:echoFoo"/>
+  </message>
+  <message name="echoFooResponse">
+    <part name="parameters" element="tns:echoFooResponse"/>
+  </message>
+  <portType name="echo">
+    <operation name="echoFoo">
+      <input message="tns:echoFoo"/>
+      <output message="tns:echoFooResponse"/>
+    </operation>
+  </portType>
+  <binding name="EchoPortBinding" type="tns:echo">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="echoFoo">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="EchoService">
+    <port name="fooPort" binding="tns:EchoPortBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+    <port name="barPort" binding="tns:EchoPortBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/>
+    </port>
+  </service>
+</definitions>
