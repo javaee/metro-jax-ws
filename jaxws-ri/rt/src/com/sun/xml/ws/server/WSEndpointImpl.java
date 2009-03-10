@@ -95,8 +95,6 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-@ManagedObject
-@Description("Web Service endpoint")
 public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     // Register JAX-WS JMX MBeans
     static {
@@ -204,8 +202,6 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return container;
     }
 
-    @ManagedAttribute
-    @Description("port")
     public WSDLPort getPort() {
         return port;
     }
@@ -374,9 +370,10 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         // TBD: We include the service+portName to uniquely identify
         // the managed objects under it (since there can be multiple
         // services in the container.
-        // The existing format below is temporary and will change.
+        // The existing format and MetroEndpoint class below is temporary
+	// and will change.
         managedObjectManager.createRoot(
-                this,
+	    new MetroEndpoint(serviceName, portName),
             serviceName.toString().replace(':', '-')
             + portName.toString().replace(':', '-'));
 
@@ -389,14 +386,33 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     public static boolean monitoring;
 
     static {
-        boolean b = true;
+        boolean b = false;
         try {
-            String name = System.getProperty(WSEndpointImpl.class.getName()+".monitoring");
-            if (name != null && name.equalsIgnoreCase("false")) {
-                b = false;
+            String name = System.getProperty("com.sun.xml.ws.monitoring");
+            if (name != null && name.equalsIgnoreCase("true")) {
+                b = true;
             }
         } catch (Exception e) {
         }
         monitoring = b;
     }
+}
+
+@ManagedObject
+@Description("Metro Web Service endpoint")
+class MetroEndpoint {
+    private final QName serviceName;
+    private final QName portName;
+
+    MetroEndpoint(QName serviceName, QName portName) {
+	this.serviceName = serviceName;
+	this.portName = portName;
+    }
+    @ManagedAttribute
+    @Description("Service Name")
+    QName getServiceName() { return serviceName; }
+
+    @ManagedAttribute
+    @Description("Port Name")
+    QName getPortName() { return portName; }
 }
