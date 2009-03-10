@@ -378,10 +378,12 @@ public final class WSEndpointReference  implements WSDLExtension {
                 writer.writeEndElement();
             }
         }
+        /*
         //Inline the wsdl
         if (wsdlAddress != null) {
             writeWsdl(writer, service, wsdlAddress);
         }
+        */
         //Add the extra metadata Elements
         if (metadata != null)
             for (Element e : metadata) {
