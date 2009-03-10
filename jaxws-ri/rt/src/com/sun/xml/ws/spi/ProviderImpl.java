@@ -208,6 +208,7 @@ public class ProviderImpl extends Provider {
             throw new IllegalStateException(ProviderApiMessages.NULL_SERVICE());
         }
         //Validate Service and Port in WSDL
+        String wsdlTargetNamespace = null;
         if (wsdlDocumentLocation != null) {
             try {
                 EntityResolver er = XmlUtil.createDefaultCatalogResolver();
@@ -226,6 +227,10 @@ public class ProviderImpl extends Provider {
                             throw new IllegalStateException(ProviderApiMessages.NOTFOUND_PORT_IN_WSDL(
                                     portName,serviceName,wsdlDocumentLocation));
                     }
+                    wsdlTargetNamespace = serviceName.getNamespaceURI();
+                } else {
+                    QName firstService = wsdlDoc.getFirstServiceName();
+                    wsdlTargetNamespace = firstService.getNamespaceURI();
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(ProviderApiMessages.ERROR_WSDL(wsdlDocumentLocation),e);
@@ -233,7 +238,7 @@ public class ProviderImpl extends Provider {
         }
         return new WSEndpointReference(
             AddressingVersion.fromSpecClass(W3CEndpointReference.class),
-            address, serviceName, portName, null, metadata, wsdlDocumentLocation, referenceParameters, elements, attributes).toSpec(W3CEndpointReference.class);
+            address, serviceName, portName, interfaceName, metadata, wsdlDocumentLocation, wsdlTargetNamespace,referenceParameters, elements, attributes).toSpec(W3CEndpointReference.class);
 
     }
 

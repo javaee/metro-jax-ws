@@ -60,4 +60,8 @@ public class W3CAddressingMetadataConstants {
     public static final QName WSAM_NONANONYMOUS_NESTED_ASSERTION = new QName(WSAM_NAMESPACE_NAME,
                         WSAM_NONANONYMOUS_NESTED_ASSERTION_NAME, WSAM_PREFIX_NAME );
 
+    public static final String WSAM_WSDLI_ATTRIBUTE_NAMESPACE="http://www.w3.org/ns/wsdl-instance";
+    public static final String WSAM_WSDLI_ATTRIBUTE_PREFIX="wsdli";
+    public static final String WSAM_WSDLI_ATTRIBUTE_LOCALNAME="wsdlLocation";
+
 }

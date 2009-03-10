@@ -63,11 +63,7 @@ import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.xml.sax.*;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 import javax.xml.bind.JAXBContext;
@@ -238,7 +234,7 @@ public final class WSEndpointReference  implements WSDLExtension {
                                @Nullable List<Element> metadata,
                                @Nullable String wsdlAddress,
                                @Nullable List<Element> referenceParameters) {
-       this(version, address, service, port, portType, metadata, wsdlAddress, referenceParameters, null, null);
+       this(version, address, service, port, portType, metadata, wsdlAddress, null, referenceParameters, null, null);
     }
 
     /**
@@ -247,6 +243,7 @@ public final class WSEndpointReference  implements WSDLExtension {
      * <p>
      * This version takes various information about metadata, and creates an EPR that has
      * the necessary embedded WSDL.
+     * @since JAX-WS 2.2
      */
     public WSEndpointReference(@NotNull AddressingVersion version,
                                @NotNull String address,
@@ -255,15 +252,16 @@ public final class WSEndpointReference  implements WSDLExtension {
                                @Nullable QName portType,
                                @Nullable List<Element> metadata,
                                @Nullable String wsdlAddress,
+                               @Nullable String wsdlTargetNamepsace,
                                @Nullable List<Element> referenceParameters,
                                @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
        this(
-            createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress, elements, attributes),
+            createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress,wsdlTargetNamepsace, elements, attributes),
             version );
     }
 
     private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
-                                                        List<Element> metadata, String wsdlAddress, @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
+                                                        List<Element> metadata, String wsdlAddress, String wsdlTargetNamespace, @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
 
         StreamWriterBufferCreator writer = new StreamWriterBufferCreator();
 
@@ -292,7 +290,7 @@ public final class WSEndpointReference  implements WSDLExtension {
 
             switch(version) {
             case W3C:
-                writeW3CMetaData(writer, service, port, portType, metadata, wsdlAddress);
+                writeW3CMetaData(writer, service, port, portType, metadata, wsdlAddress, wsdlTargetNamespace);
                 break;
 
             case MEMBER:
@@ -338,12 +336,14 @@ public final class WSEndpointReference  implements WSDLExtension {
                                          QName service,
                                          QName port,
                                          QName portType, List<Element> metadata,
-                                         String wsdlAddress) throws XMLStreamException {
+                                         String wsdlAddress, String wsdlTargetNamespace) throws XMLStreamException {
 
         writer.writeStartElement(AddressingVersion.W3C.getPrefix(),
                 AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart(), AddressingVersion.W3C.nsUri);
         writer.writeNamespace(AddressingVersion.W3C.getWsdlPrefix(),
                 AddressingVersion.W3C.wsdlNsUri);
+        //write wsdliLication as defined in WS-Addressing 1.0 Metadata spec
+        writeWsdliLocation(writer, service, wsdlAddress,wsdlTargetNamespace);
 
         //Write Interface info
         if (portType != null) {
@@ -391,6 +391,30 @@ public final class WSEndpointReference  implements WSDLExtension {
 
     }
 
+    /**
+     * @param writer the writer should be at the start of element. 
+     * @param service Namespace URI of servcie is used as targetNamespace of wsdl if wsdlTargetNamespace is not null
+     * @param wsdlAddress  wsdl location
+     * @param wsdlTargetNamespace  targetnamespace of wsdl to be put in wsdliLocation
+     *
+     */
+    private static void writeWsdliLocation(StreamWriterBufferCreator writer, QName service,String wsdlAddress,String wsdlTargetNamespace) throws XMLStreamException {
+        String wsdliLocation = "";
+        if(wsdlTargetNamespace != null) {
+           wsdliLocation = wsdlTargetNamespace + " ";
+        } else if (service != null) {
+            wsdliLocation = service.getNamespaceURI() + " ";
+        } else {
+            throw new WebServiceException("WSDL target Namespace cannot be resolved");
+        }
+        wsdliLocation += wsdlAddress;
+        //writer.writeNamespace("wsdli","http://www.w3.org/ns/wsdl-instance");
+        writer.writeAttribute(W3CAddressingMetadataConstants.WSAM_WSDLI_ATTRIBUTE_PREFIX,
+                W3CAddressingMetadataConstants.WSAM_WSDLI_ATTRIBUTE_NAMESPACE,
+                W3CAddressingMetadataConstants.WSAM_WSDLI_ATTRIBUTE_LOCALNAME,
+                wsdliLocation);
+
+    }
     private static void writeMSMetaData(StreamWriterBufferCreator writer,
                                         QName service,
                                         QName port,
