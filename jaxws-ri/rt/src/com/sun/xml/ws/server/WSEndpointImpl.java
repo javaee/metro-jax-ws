@@ -123,7 +123,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @NotNull PolicyMap endpointPolicy;
     private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
-    private final ManagedObjectManager managedObjectManager;
+    private final @Nullable ManagedObjectManager managedObjectManager;
 
     /**
      * Set to true once we start shutting down this endpoint.
@@ -305,11 +305,13 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             }
         }
 
-	try {
-	    managedObjectManager.close();
-	} catch (java.io.IOException e) {
-	    logger.log(Level.WARNING, "TBD", e);
-	}
+        try {
+            if (managedObjectManager != null) {
+                managedObjectManager.close();
+            }
+        } catch (java.io.IOException e) {
+            logger.log(Level.WARNING, "TBD", e);
+        }
     }
 
     public ServiceDefinitionImpl getServiceDefinition() {
@@ -350,31 +352,51 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return serviceName;
     }
 
-    public @NotNull ManagedObjectManager getManagedObjectManager() {
-	return managedObjectManager;
+    public @Nullable ManagedObjectManager getManagedObjectManager() {
+	    return managedObjectManager;
     }
 
-    private ManagedObjectManager createManagedObjectManager(
+    private @Nullable ManagedObjectManager createManagedObjectManager(
         QName serviceName, QName portName) {
+        if (!monitoring) {
+            return null;
+        }
 
-	ManagedObjectManager managedObjectManager = null;
-	// TBD: for now the root is "metro"
-	// It may become com.sun.metro
-	managedObjectManager = ManagedObjectManagerFactory.createStandalone("metro");
+        ManagedObjectManager managedObjectManager = null;
+        // TBD: for now the root is "metro"
+        // It may become com.sun.metro
+        managedObjectManager = ManagedObjectManagerFactory.createStandalone("metro");
 
-	managedObjectManager.stripPrefix(
-	    "com.sun.xml.ws",
-	    "com.sun.xml.ws.rx.runtime");
+        managedObjectManager.stripPrefix(
+            "com.sun.xml.ws",
+            "com.sun.xml.ws.rx.runtime");
 
-	// TBD: We include the service+portName to uniquely identify
-	// the managed objects under it (since there can be multiple
-	// services in the container.
-	// The existing format below is temporary and will change.
-	managedObjectManager.createRoot(
-            this, 
-	    serviceName.toString().replace(':', '-')
-	    + portName.toString().replace(':', '-'));
+        // TBD: We include the service+portName to uniquely identify
+        // the managed objects under it (since there can be multiple
+        // services in the container.
+        // The existing format below is temporary and will change.
+        managedObjectManager.createRoot(
+                this,
+            serviceName.toString().replace(':', '-')
+            + portName.toString().replace(':', '-'));
 
-	return managedObjectManager;
+        return managedObjectManager;
+    }
+
+    /**
+     * Controls monitoring
+     */
+    public static boolean monitoring;
+
+    static {
+        boolean b = true;
+        try {
+            String name = System.getProperty(WSEndpointImpl.class.getName()+".monitoring");
+            if (name != null && name.equalsIgnoreCase("false")) {
+                b = false;
+            }
+        } catch (Exception e) {
+        }
+        monitoring = b;
     }
 }
