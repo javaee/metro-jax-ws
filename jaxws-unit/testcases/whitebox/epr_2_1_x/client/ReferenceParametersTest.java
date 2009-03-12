@@ -17,7 +17,7 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package whitebox.epr.client;
+package whitebox.epr_2_1_x.client;
 
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;

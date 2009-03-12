@@ -1,4 +1,4 @@
-package whitebox.epr.client;
+package whitebox.epr_2_1_x.client;
 
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import junit.framework.TestCase;
@@ -15,8 +15,8 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class ClientEpr extends TestCase {
-    public ClientEpr(String name) {
+public class ClientEprTest extends TestCase {
+    public ClientEprTest(String name) {
         super(name);
     }
 

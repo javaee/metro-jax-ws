@@ -1,4 +1,4 @@
-package whitebox.epr.client;
+package whitebox.epr_2_1_x.client;
 
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import com.sun.xml.ws.util.DOMUtil;
@@ -27,8 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-public class EprMarshalUnmarshalTester extends TestCase {
-    public EprMarshalUnmarshalTester(String name) {
+public class EprMarshalUnmarshalTest extends TestCase {
+    public EprMarshalUnmarshalTest(String name) {
         super(name);
     }
 
