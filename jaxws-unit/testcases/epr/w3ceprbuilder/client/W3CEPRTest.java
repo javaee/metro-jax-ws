@@ -8,6 +8,7 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -22,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
-
+import testutil.EprUtil;
 /**
  * Tests W3CEndpointReferenceBuilder
  * @author Rama Pulavarthi
@@ -56,7 +57,7 @@ public class W3CEPRTest extends TestCase {
 
     private static String xmlRefParam2 = "<myns2:MyParam2 xmlns:myns2=\"http://example.com/myparam2\">There</myns2:MyParam2>";
 
-    public void xtestW3CEprBuilder_withWSDL_ServiceName() throws Exception {
+    public void testW3CEprBuilder_withWSDL_ServiceName() throws Exception {
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
         builder = builder.address(getEndpointAddress());
         builder = builder.serviceName(SERVICE_QNAME);
@@ -69,19 +70,25 @@ public class W3CEPRTest extends TestCase {
         document = (Document) domsrc.getNode();
         builder = builder.referenceParameter(document.getDocumentElement());
         W3CEndpointReference epr = builder.build();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        epr.writeTo(new StreamResult(baos));
-        baos.writeTo(System.out);        
+         DOMResult result= new DOMResult();
+        epr.writeTo(result);
+        assertTrue(EprUtil.validateEPR(result.getNode(), W3CEndpointReference.class, getEndpointAddress(), SERVICE_QNAME, PORT_QNAME,null, getEndpointAddress()+"?wsdl"));
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        epr.writeTo(new StreamResult(baos));
+//        baos.writeTo(System.out);
     }
 
-    public void xtestW3CEprBuilder_withWSDL() throws Exception {
+    public void testW3CEprBuilder_withWSDL() throws Exception {
         W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
         builder = builder.address(getEndpointAddress());
         builder = builder.wsdlDocumentLocation(getEndpointAddress()+"?wsdl");
         W3CEndpointReference epr = builder.build();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        epr.writeTo(new StreamResult(baos));
-        baos.writeTo(System.out);
+        DOMResult result= new DOMResult();
+        epr.writeTo(result);
+        assertTrue(EprUtil.validateEPR(result.getNode(), W3CEndpointReference.class, getEndpointAddress(), null, null, null, getEndpointAddress()+"?wsdl"));
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        epr.writeTo(new StreamResult(baos));
+//        baos.writeTo(System.out);
     }
 
     public void testW3CEprBuilder_withWSDL_InterfaceName() throws Exception {
@@ -90,9 +97,12 @@ public class W3CEPRTest extends TestCase {
         builder = builder.wsdlDocumentLocation(getEndpointAddress()+"?wsdl");
         builder = builder.interfaceName(INTERFACE_NAME);
         W3CEndpointReference epr = builder.build();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        epr.writeTo(new StreamResult(baos));
-        baos.writeTo(System.out);
+        DOMResult result= new DOMResult();
+        epr.writeTo(result);
+        assertTrue(EprUtil.validateEPR(result.getNode(), W3CEndpointReference.class, getEndpointAddress(), null, null, INTERFACE_NAME, getEndpointAddress()+"?wsdl"));
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        epr.writeTo(new StreamResult(baos));
+//        baos.writeTo(System.out);
     }
 
     public DOMSource makeDOMSource(String msg) {
