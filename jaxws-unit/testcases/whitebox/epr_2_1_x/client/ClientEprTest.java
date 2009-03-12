@@ -18,9 +18,11 @@ import java.io.IOException;
 public class ClientEprTest extends TestCase {
     public ClientEprTest(String name) {
         super(name);
+        Hello hello = new HelloService().getHelloPort();
+        endpointAddress = (String)((BindingProvider)hello).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
     }
 
-    private static final String endpointAddress = "http://helloservice.org/Hello";
+    private String endpointAddress = "http://helloservice.org/Hello";
     private static final QName serviceName = new QName("http://helloservice.org/wsdl", "HelloService");
     private static final QName portName = new QName("http://helloservice.org/wsdl", "HelloPort");
     private static final QName portTypeName = new QName("http://helloservice.org/wsdl", "Hello");
@@ -34,7 +36,7 @@ public class ClientEprTest extends TestCase {
     }
 
     public void testEprWithDispatchWithWSDL() throws Exception{
-        Service service = Service.create(getClass().getResource("../config/HelloService.wsdl"), serviceName);
+        Service service = new HelloService();
         Dispatch dispatch = service.createDispatch(portName, Source.class, Service.Mode.PAYLOAD);
         w3cEprGettertest(dispatch, true);
         msEprGettertest(dispatch, true);

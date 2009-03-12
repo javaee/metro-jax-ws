@@ -30,6 +30,9 @@ import java.io.IOException;
 public class EprMarshalUnmarshalTest extends TestCase {
     public EprMarshalUnmarshalTest(String name) {
         super(name);
+        Hello hello = new HelloService().getHelloPort();
+        endpointAddress = (String)((BindingProvider)hello).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
+
     }
 
     public void testMSEprMarshalling1() throws Exception {
@@ -117,7 +120,7 @@ public class EprMarshalUnmarshalTest extends TestCase {
         return null;
     }
 
-    private static final String endpointAddress = "http://helloservice.org/Hello";
+    private String endpointAddress = "http://helloservice.org/Hello";
     private static final QName serviceName = new QName("http://helloservice.org/wsdl", "HelloService");
     private static final QName portName = new QName("http://helloservice.org/wsdl", "HelloPort");
     private static final QName portTypeName = new QName("http://helloservice.org/wsdl", "Hello");
