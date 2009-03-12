@@ -343,7 +343,8 @@ public final class WSEndpointReference  implements WSDLExtension {
         writer.writeNamespace(AddressingVersion.W3C.getWsdlPrefix(),
                 AddressingVersion.W3C.wsdlNsUri);
         //write wsdliLication as defined in WS-Addressing 1.0 Metadata spec
-        writeWsdliLocation(writer, service, wsdlAddress,wsdlTargetNamespace);
+        if(wsdlAddress != null)
+            writeWsdliLocation(writer, service, wsdlAddress,wsdlTargetNamespace);
 
         //Write Interface info
         if (portType != null) {
