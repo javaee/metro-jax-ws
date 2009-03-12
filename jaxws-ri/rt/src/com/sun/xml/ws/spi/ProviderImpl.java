@@ -108,7 +108,10 @@ public class ProviderImpl extends Provider {
 
     public ServiceDelegate createServiceDelegate( URL wsdlDocumentLocation, QName serviceName, Class serviceClass,
                                                   WebServiceFeature ... features) {
-        throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
+        if (features.length > 0) {
+            throw new WebServiceException("Doesn't support any Service specific features");
+        }
+        return new WSServiceDelegate(wsdlDocumentLocation, serviceName, serviceClass);
     }
 
     @Override
