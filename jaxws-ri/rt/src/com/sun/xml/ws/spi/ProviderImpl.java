@@ -122,18 +122,20 @@ public class ProviderImpl extends Provider {
     }
 
     public Endpoint createEndpoint(String bindingId, Object implementor, WebServiceFeature... features) {
-        //TODO Implement in 2.2
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Endpoint endpoint = new EndpointImpl(
+            BindingID.parse(implementor.getClass()), implementor, features);
+        return endpoint;
     }
 
     public Endpoint createAndPublishEndpoint(String address, Object implementor, WebServiceFeature... features) {
-        //TODO Implement in 2.2
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Endpoint endpoint = new EndpointImpl(
+            BindingID.parse(implementor.getClass()), implementor, features);
+        endpoint.publish(address);
+        return endpoint;
     }
 
     public Endpoint createEndpoint(String bindingId, Class implementorClass, Invoker invoker, WebServiceFeature... features) {
-        //TODO Implement in 2.2
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("Haven't yet implemented");
     }
     
     public EndpointReference readEndpointReference(final Source eprInfoset) {

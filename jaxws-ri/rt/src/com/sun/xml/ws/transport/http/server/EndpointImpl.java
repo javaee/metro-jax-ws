@@ -114,8 +114,9 @@ public class EndpointImpl extends Endpoint {
     private @Nullable EndpointContext endpointContext;
 
 
-    public EndpointImpl(@NotNull BindingID bindingId, @NotNull Object impl) {
-        binding = BindingImpl.create(bindingId);
+    public EndpointImpl(@NotNull BindingID bindingId, @NotNull Object impl,
+                        WebServiceFeature ... features) {
+        binding = BindingImpl.create(bindingId, features);
         implementor = impl;
     }
 
@@ -262,7 +263,6 @@ public class EndpointImpl extends Endpoint {
         List<SDDocumentSource> r = new ArrayList<SDDocumentSource>();
 
         if (metadata != null) {
-            Transformer transformer = XmlUtil.newTransformer();
             for (Source source : metadata) {
                 try {
                     XMLStreamBufferResult xsbr = XmlUtil.identityTransform(source, new XMLStreamBufferResult());
