@@ -1,0 +1,8 @@
+<descriptor since="2.2" uses="ri">
+    <description>Tests RuntimeWSDLParser.java</description>
+    <service basedir="./server">
+        <wsdl href="HelloService.wsdl"/>
+    </service>
+    
+</descriptor>
+
