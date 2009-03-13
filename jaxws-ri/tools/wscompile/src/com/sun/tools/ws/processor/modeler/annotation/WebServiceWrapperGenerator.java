@@ -408,19 +408,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 }
                 annotateParameterWithJAXBAnnotations(field, memInfo.getJaxbAnnotations());                
             }
-
-            // copy adapter if needed
-            XmlJavaTypeAdapter xjta = memInfo.getDecl().getAnnotation(XmlJavaTypeAdapter.class);
-            if(xjta!=null) {
-                JAnnotationUse xjtaA = field.annotate(XmlJavaTypeAdapter.class);
-                try {
-                    xjta.value();
-                    throw new AssertionError();
-                } catch (MirroredTypeException e) {
-                    xjtaA.param("value",getType(e.getTypeMirror()));
-                }
-                // XmlJavaTypeAdapter.type() is for package only. No need to copy.
-            }
         }
         for (MemberInfo memInfo : members) {
             writeMember(cls, memInfo.getParamType(),
@@ -436,8 +423,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }else if(ann instanceof XmlJavaTypeAdapter){
                 JAnnotationUse jaxbAnn = field.annotate(XmlJavaTypeAdapter.class);
                 XmlJavaTypeAdapter ja = (XmlJavaTypeAdapter) ann;
-                jaxbAnn.param("value", ja.value());
-                jaxbAnn.param("type", ja.type());
+                try {
+                    ja.value();
+                    throw new AssertionError();
+                } catch (MirroredTypeException e) {
+                    jaxbAnn.param("value",getType(e.getTypeMirror()));
+                }
+                // XmlJavaTypeAdapter.type() is for package only. No need to copy.
             }else if(ann instanceof XmlAttachmentRef){
                 field.annotate(XmlAttachmentRef.class);
             }else if(ann instanceof XmlList){
