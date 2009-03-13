@@ -48,7 +48,6 @@ public class FaultInfo {
     public TypeMoniker beanTypeMoniker;
     public boolean isWSDLException;
     public QName elementName;
-    public List<MemberInfo> members;
 
     /** Creates a new instance of FaultInfo */
     public FaultInfo() {
@@ -94,15 +93,5 @@ public class FaultInfo {
     public TypeMoniker getBeanTypeMoniker() {
         return beanTypeMoniker;
     }
-    public List<MemberInfo> getMembers() {
-        return members;
-    }
-    public void setMembers(List<MemberInfo> members) {
-        this.members = members;
-    }
-    public void addMember(MemberInfo member) {
-        if (members == null)
-            members = new ArrayList<MemberInfo>();
-        members.add(member);
-    }
+
 }

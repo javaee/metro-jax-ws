@@ -226,11 +226,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
         ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
         WrapperInfo reqWrapperInfo = new WrapperInfo(requestClassName);
-        reqWrapperInfo.setMembers(reqMembers);
+        //reqWrapperInfo.setMembers(reqMembers);
         WrapperInfo resWrapperInfo = null;
         if (!isOneway) {
             resWrapperInfo = new WrapperInfo(responseClassName);
-            resWrapperInfo.setMembers(resMembers);
+            //resWrapperInfo.setMembers(resMembers);
         }
         seiContext.setReqWrapperOperation(method, reqWrapperInfo);
         if (!isOneway)
@@ -442,6 +442,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 field.annotate(XmlAttachmentRef.class);
             }else if(ann instanceof XmlList){
                 field.annotate(XmlList.class);
+            }else if(ann instanceof XmlElement){
+                // Already written
             }else {
                 throw new WebServiceException("Unknown JAXB annotation " + ann);
             }
@@ -511,7 +513,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             MemberInfo member = new MemberInfo(erasureType, key, null, method);
             members.add(member);
         }
-        faultInfo.setMembers(members);
+        //faultInfo.setMembers(members);
 
         boolean canOverWriteBean = builder.canOverWriteClass(className);
         if (!canOverWriteBean) {

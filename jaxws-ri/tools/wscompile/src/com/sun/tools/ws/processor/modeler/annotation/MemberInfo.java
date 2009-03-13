@@ -46,7 +46,7 @@ import java.lang.annotation.Annotation;
  *
  * @author  WS Development Team
  */
-public final class MemberInfo implements Comparable<MemberInfo> {
+final class MemberInfo implements Comparable<MemberInfo> {
     private final TypeMirror paramType;
     private final String paramName;
     private final QName elementName;
