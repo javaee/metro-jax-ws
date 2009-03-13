@@ -1,12 +1,12 @@
-<descriptor since="2.2">
+<descriptor since="2.1.7">
   <description>xml_java_type_adapter</description>
 
   <client name="textHexBinary" sideEffectFree="true">
   <description>textHexBinary</description>
   <![CDATA[
-    bin = echoPort.echo("binary", new byte[] {'a', 'b' }));
-    assertEquals(bin[0], 'a');
-    assertEquals(bin[1], 'b');
+    // Use only [a-f] characters for 2nd parmeter ??
+    str = echoPort.echo("binary", "cafebabe");
+    assertEquals("CAFEBABE", str);
   ]]></client>
 
   <service basedir="./server">
