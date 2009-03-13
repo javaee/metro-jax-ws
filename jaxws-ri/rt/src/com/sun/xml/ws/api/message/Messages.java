@@ -74,6 +74,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.WebServiceException;
 
@@ -154,6 +156,16 @@ public abstract class Messages {
      *      The SOAP version of the message. Must not be null.
      */
     public static Message createUsingPayload(Source payload, SOAPVersion ver) {
+        if (payload instanceof DOMSource) {
+            if (((DOMSource)payload).getNode() == null) {
+                return new EmptyMessageImpl(ver);
+            }
+        } else if (payload instanceof StreamSource) {
+            StreamSource ss = (StreamSource)payload;
+            if (ss.getInputStream() == null && ss.getReader() == null && ss.getSystemId() == null) {
+                return new EmptyMessageImpl(ver);
+            }
+        }
         return new PayloadSourceMessage(payload, ver);
     }
 
