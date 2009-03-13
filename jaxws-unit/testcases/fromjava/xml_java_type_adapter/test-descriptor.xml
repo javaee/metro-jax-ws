@@ -1,0 +1,15 @@
+<descriptor since="2.2">
+  <description>xml_java_type_adapter</description>
+
+  <client name="textHexBinary" sideEffectFree="true">
+  <description>textHexBinary</description>
+  <![CDATA[
+    bin = echoPort.echo("binary", new byte[] {'a', 'b' }));
+    assertEquals(bin[0], 'a');
+    assertEquals(bin[1], 'b');
+  ]]></client>
+
+  <service basedir="./server">
+  </service>
+
+</descriptor>
