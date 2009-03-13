@@ -62,6 +62,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.WebFault;
+import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -75,11 +76,14 @@ import java.lang.annotation.Annotation;
  * @author  WS Development Team
  */
 public class WebServiceWrapperGenerator extends WebServiceVisitor {
-    protected Set<String> wrapperNames;
-    protected Set<String> processedExceptions;
-    protected JCodeModel cm;
-    protected MakeSafeTypeVisitor makeSafeVisitor;
-
+    private Set<String> wrapperNames;
+    private Set<String> processedExceptions;
+    private JCodeModel cm;
+    private final MakeSafeTypeVisitor makeSafeVisitor;
+    private static final Class[] jaxbAnns = new Class[] {
+        XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
+        XmlList.class, XmlElement.class
+    };
 
     public WebServiceWrapperGenerator(ModelBuilder builder, AnnotationProcessorContext context) {
         super(builder, context);
@@ -348,43 +352,14 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
-    private List<Annotation> collectJAXBAnnotations(ParameterDeclaration param) {
+    private List<Annotation> collectJAXBAnnotations(Declaration decl) {
         List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        Annotation ann = param.getAnnotation(XmlAttachmentRef.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlMimeType.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlJavaTypeAdapter.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = param.getAnnotation(XmlList.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-        return jaxbAnnotation;
-    }
-
-    private List<Annotation> collectJAXBAnnotations(MethodDeclaration method) {
-        List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        Annotation ann = method.getAnnotation(XmlAttachmentRef.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlMimeType.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlJavaTypeAdapter.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
-
-        ann = method.getAnnotation(XmlList.class);
-        if(ann != null)
-            jaxbAnnotation.add(ann);
+        for(Class jaxbClass : jaxbAnns) {
+            Annotation ann = decl.getAnnotation(jaxbClass);
+            if (ann != null) {
+                jaxbAnnotation.add(ann);
+            }
+        }
         return jaxbAnnotation;
     }
 
@@ -433,19 +408,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                 }
                 annotateParameterWithJAXBAnnotations(field, memInfo.getJaxbAnnotations());                
             }
-
-            // copy adapter if needed
-            XmlJavaTypeAdapter xjta = memInfo.getDecl().getAnnotation(XmlJavaTypeAdapter.class);
-            if(xjta!=null) {
-                JAnnotationUse xjtaA = field.annotate(XmlJavaTypeAdapter.class);
-                try {
-                    xjta.value();
-                    throw new AssertionError();
-                } catch (MirroredTypeException e) {
-                    xjtaA.param("value",getType(e.getTypeMirror()));
-                }
-                // XmlJavaTypeAdapter.type() is for package only. No need to copy.
-            }
         }
         for (MemberInfo memInfo : members) {
             writeMember(cls, memInfo.getParamType(),
@@ -461,12 +423,21 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }else if(ann instanceof XmlJavaTypeAdapter){
                 JAnnotationUse jaxbAnn = field.annotate(XmlJavaTypeAdapter.class);
                 XmlJavaTypeAdapter ja = (XmlJavaTypeAdapter) ann;
-                jaxbAnn.param("value", ja.value());
-                jaxbAnn.param("type", ja.type());
+                try {
+                    ja.value();
+                    throw new AssertionError();
+                } catch (MirroredTypeException e) {
+                    jaxbAnn.param("value",getType(e.getTypeMirror()));
+                }
+                // XmlJavaTypeAdapter.type() is for package only. No need to copy.
             }else if(ann instanceof XmlAttachmentRef){
                 field.annotate(XmlAttachmentRef.class);
             }else if(ann instanceof XmlList){
                 field.annotate(XmlList.class);
+            }else if(ann instanceof XmlElement){
+                // Already written
+            }else {
+                throw new WebServiceException("Unknown JAXB annotation " + ann);
             }
         }
     }
