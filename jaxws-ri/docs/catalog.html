@@ -1,10 +1,45 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
 <HTML><HEAD><TITLE>XML Entity and URI Resolvers</TITLE>
 <META content="MSHTML 6.00.2900.2769" name=GENERATOR>
 <META http-equiv=Content-Type content="text/html; charset=ISO-8859-1">
 <META content="DocBook XSL Stylesheets V1.48" name=generator>
 <META 
-content="&#13;&#10;    $Id: catalog.html,v 1.4 2007-04-13 00:32:18 jitu Exp $&#13;&#10;    " 
+content="&#13;&#10;    $Id: catalog.html,v 1.5 2009-03-13 04:10:18 ramapulavarthi Exp $&#13;&#10;    " 
 name=cvsinfo>
 <STYLE type=text/css>PRE.programlisting {
 	BORDER-TOP-WIDTH: 1px; PADDING-RIGHT: 4px; PADDING-LEFT: 4px; BORDER-BOTTOM-WIDTH: 1px; BORDER-BOTTOM-COLOR: #d3d3d3; MARGIN: 0em; BORDER-TOP-COLOR: #d3d3d3; PADDING-TOP: 0px; FONT-FAMILY: monospace; BACKGROUND-COLOR: #d5dee3; whitespace: pre
@@ -114,14 +149,14 @@ problems for end users:</P>
   href="#ftn.d0e109" 
   name=d0e109>1</A>]</SUP>. Relying on remote resources makes XML processing 
   susceptible to both planned and unplanned network downtime.</P>
-  <P>The URL “http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd” isn't 
+  <P>The URL ï¿½http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtdï¿½ isn't 
   very useful if I'm on an airplane at 35,000 feet.</P>
   <LI>
   <P>If they're relative URLs, they're only useful in the context where the were 
   initially created.</P>
-  <P>The URL “../../xml/dtd/docbookx.xml” isn't useful <SPAN 
+  <P>The URL ï¿½../../xml/dtd/docbookx.xmlï¿½ isn't useful <SPAN 
   class=emphasis><I>anywhere</I></SPAN> on my system. Neither, for that matter, 
-  is “/export/home/fred/docbook412/docbookx.xml”.</P></LI></OL></DIV>
+  is ï¿½/export/home/fred/docbook412/docbookx.xmlï¿½.</P></LI></OL></DIV>
 <P>One way to avoid these problems is to use an entity resolver (a standard part 
 of SAX) or a URI Resolver (a standard part of JAXP). A resolver can examine the 
 URIs of the resources being requested and determine how best to satisfy those 
@@ -130,7 +165,7 @@ requests.</P>
 standard format for mapping system identifiers and URIs. The <A 
 href="http://www.oasis-open.org/committees/entity/" target=_top>OASIS Entity 
 Resolution Technical Committee</A> is defining an XML representation for just 
-such a mapping. These “catalog files” can be used to map public and system 
+such a mapping. These ï¿½catalog filesï¿½ can be used to map public and system 
 identifiers and other URIs to local files (or just other URIs).</P>
 <DIV class=section>
 <DIV class=titlepage>
@@ -138,7 +173,7 @@ identifiers and other URIs to local files (or just other URIs).</P>
 <H3 class=title><A name=d0e142></A>Resolver Classes Version 1.1</H3></DIV></DIV>
 <P>The Resolver classes that are described in this article greatly simplify the 
 task of using Catalog files to perform entity resolution. Many users will want 
-to simply use these classes directly “out of the box” with their applications 
+to simply use these classes directly ï¿½out of the boxï¿½ with their applications 
 (such as Xalan and Saxon), but developers may also be interested in the <A 
 href="file:///C:/Documents%20and%20Settings/Vivek/apidocs/index.html" 
 target=_top>JavaDoc API Documentation</A>.</P>
@@ -192,7 +227,7 @@ in several ways:</P>
   <LI>
   <P>These problems aren't limited to editing applications. If I write a special 
   stylesheet for formatting our collaborative document, it will include some 
-  reference to the “main” stylesheet:</P><PRE class=programlisting>&lt;xsl:import href="/path/to/real/stylesheet.xsl"/&gt;
+  reference to the ï¿½mainï¿½ stylesheet:</P><PRE class=programlisting>&lt;xsl:import href="/path/to/real/stylesheet.xsl"/&gt;
 </PRE>
   <P>But this won't work on my colleague's machine because she has the main 
   stylesheet installed somewhere else.</P></LI></OL></DIV>
@@ -275,7 +310,7 @@ the XML version of DocBook V4.1.2, if you have a local copy.</P>
 <DIV class=itemizedlist>
 <UL type=disc>
   <LI>
-  <P>The application just “knows”. Sure, it sounds a little silly, but this is 
+  <P>The application just ï¿½knowsï¿½. Sure, it sounds a little silly, but this is 
   currently the mechanism being used for namespaces. Applications know what the 
   semantics of namespaced elements are because they recognize the namespace 
   URI.</P>
@@ -314,8 +349,8 @@ identifier for DocBook, <SPAN class=emphasis><I>I'll get DocBook</I></SPAN>
 regardless of the (possibly bogus) system identifier! Likewise, my local copy of 
 DocBook will be used if the system identifier contains the DocBook URN.</P>
 <P>The delegate entry instructs the resolver to use the catalog 
-“<TT>http://www.example.com/catalog</TT>” for any public identifier that begins 
-with “-//Example//”. The advantage of delegate in this case is that I don't have 
+ï¿½<TT>http://www.example.com/catalog</TT>ï¿½ for any public identifier that begins 
+with ï¿½-//Example//ï¿½. The advantage of delegate in this case is that I don't have 
 to parse that catalog file unless I encounter a public identifier that I 
 reasonably expect to find there.</P></DIV>
 <DIV class=section>
@@ -336,12 +371,12 @@ target=_top>Technical Resolution TR9401</A> format is the standard.</P>
 <P>OASIS XML Catalogs are being defined by the <A 
 href="http://www.oasis-open.org/committees/entity/" target=_top>Entity 
 Resolution Technical Committee</A>. This article describes the 01 Aug 2001 
-draft. Note that this draft is labelled to reflect that it is “not an official 
+draft. Note that this draft is labelled to reflect that it is ï¿½not an official 
 committee work product and may not reflect the consensus opinion of the 
-committee.”</P>
+committee.ï¿½</P>
 <P>The document element for OASIS XML Catalogs is <TT 
 class=sgmltag-element>catalog</TT>. The official namespace name for OASIS XML 
-Catalogs is “<TT>urn:oasis:names:tc:entity:xmlns:xml:catalog</TT>”.</P>
+Catalogs is ï¿½<TT>urn:oasis:names:tc:entity:xmlns:xml:catalog</TT>ï¿½.</P>
 <P>There are eight elements that can occur in an XML Catalog: <TT 
 class=sgmltag-element>group</TT>, <TT class=sgmltag-element>public</TT>, <TT 
 class=sgmltag-element>system</TT>, <TT class=sgmltag-element>uri</TT>, <TT 
@@ -364,16 +399,16 @@ class=sgmltag-element>nextCatalog</TT>:</P>
   been specified, and the catalog only contains a mapping for the public 
   identifier (e.g., a matching <TT class=sgmltag-element>public</TT> catalog 
   entry). If the current value of <TT class=sgmltag-attribute>prefer</TT> is 
-  “public”, the URI supplied in the matching <TT 
+  ï¿½publicï¿½, the URI supplied in the matching <TT 
   class=sgmltag-element>public</TT> catalog entry will be used. If it is 
-  “system”, the system identifier in the document will be used. (If the catalog 
+  ï¿½systemï¿½, the system identifier in the document will be used. (If the catalog 
   contained a matching <TT class=sgmltag-element>system</TT> catalog entry 
   giving a mapping for the system identifier, that mapping would have been used, 
   the public identifier would never have been considered, and the setting of 
   override would have been irrelevant.)</P>
   <P>Generally, the purpose of catalogs is to override the system identifiers in 
   XML documents, so <TT class=sgmltag-attribute>prefer</TT> should usually be 
-  “public” in your catalogs.</P>
+  ï¿½publicï¿½ in your catalogs.</P>
   <P>The <TT class=sgmltag-attribute>xml:base</TT> URI is used to resolve 
   relative URIs in the catalog as described in the <A 
   href="http://www.w3.org/TR/xmlbase" target=_top>XML Base</A> 
@@ -486,7 +521,7 @@ BASE, CATALOG, OVERRIDE, DELEGATE, PUBLIC, and SYSTEM:</P>
   class=sgmltag-element>catalog</TT></A> or <A 
   href="#group"><TT 
   class=sgmltag-element>group</TT></A> element.</P>
-  <P>An override value of “yes” is equivalent to “prefer="public"”.</P>
+  <P>An override value of ï¿½yesï¿½ is equivalent to ï¿½prefer="public"ï¿½.</P>
   <DT><SPAN class=term>DELEGATE <I><TT>pubid-prefix</TT></I> 
   <I><TT>cataloguri</TT></I></SPAN> 
   <DD>
