@@ -126,7 +126,7 @@ public class WSDLGenerator {
     /**
      * the part name for unwrappable response messages
      */
-    private static final String RESULT           = "result";
+    private static final String RESULT           = "parameters";
     /**
      * the part name for response messages that are not unwrappable
      */
