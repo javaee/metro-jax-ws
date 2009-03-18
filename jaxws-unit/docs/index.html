@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.71 2009-03-18 05:42:19 kohsuke Exp $</div>      
+    <div align="right">$Id: index.html,v 1.72 2009-03-18 18:06:48 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -729,13 +729,14 @@ helloPort.sayHelloTo("duke");
       <pre>injected ports: addNumbersPort</pre> 
     
     <p>The only exception to this "don't create your ports" rule is when you need
-      <tt>Dispatch</tt> objects, where you'd need to use the pre-defined variable "endpointAddress" 
-      <span style="color:red; font-weight:bold">(not fully cooked. Feedback welcome)</span>  : 
-      <pre class="script">
+      <tt>Dispatch</tt> objects, where you'd need to use the pre-defined variable "Address", for ex: helloPortAddress 
+      <span style="color:red; font-weight:bold">(not fully cooked. Feedback welcome)</span>  :
+    
+    <p>Junit based tests can use System property to access the endpoint address, for ex: System.getProperty("helloPortAddress")  
+    <pre class="script">
 // create dispatch
 helloService.addPort(new QName("foo","bar"), javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
-</pre>  
-                 
+</pre>               
     <a name="More_on_Script_Execution_Environment"></a>
     <h4>
       <a name="More_on_Script_Execution_Environment">
