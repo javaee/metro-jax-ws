@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.70 2009-03-18 04:16:38 kohsuke Exp $</div>      
+    <div align="right">$Id: index.html,v 1.71 2009-03-18 05:42:19 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -889,7 +889,8 @@ class FooBarSgervice {
     <p>Those three attributes can be combined, and they can be specified either on &lt;descript&gt; element (in which case the entire test is subject to the constraints), or on individual &lt;client&gt; element (in which case only that client test is subject to the constraints.)
     <p>See
       <a href="https://istack-commons.dev.java.net/source/browse/istack-commons/istack-commons/test/src/com/sun/istack/test/VersionNumber.java?only_with_tag=HEAD&amp;view=markup">this document</a> for more formal definition of what can be a valid version number, and how they are ordered.
-                 
+    
+    <p>Similarly, Junit based tests can specify version requirements by using annotation @com.sun.xml.ws.test.VersionRequirement(since="2.1.*", until="2.2",excludeFrom="") on the TestClass.              
     <a name="Resources"></a>
     <h3>
       <a name="Resources">
