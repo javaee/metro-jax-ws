@@ -1,5 +1,5 @@
 <descriptor until="2.1.*" uses="ri">
-    <description>Tests RuntimeWSDLParser.java</description>
+    <description>Tests EPR related API and behavior defined in spec</description>
     <service basedir="./server">
         <wsdl href="HelloService.wsdl"/>
     </service>

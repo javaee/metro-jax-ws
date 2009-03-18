@@ -17,10 +17,9 @@
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
  */
-package whitebox.epr_2_1_x.client;
+package epr.epr_spec.client;
 
 import com.sun.xml.ws.addressing.W3CAddressingConstants;
-import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Messages;
@@ -42,7 +41,6 @@ import org.w3c.dom.Document;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -50,7 +48,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import javax.xml.ws.EndpointReference;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;

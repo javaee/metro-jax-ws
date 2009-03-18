@@ -1,4 +1,4 @@
-package whitebox.epr_2_1_x.client;
+package epr.epr_spec.client;
 
 import com.sun.xml.bind.marshaller.XMLWriter;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;

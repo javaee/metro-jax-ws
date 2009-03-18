@@ -1,4 +1,4 @@
-package whitebox.epr_2_1_x.client;
+package epr.epr_spec.client;
 
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import junit.framework.TestCase;
