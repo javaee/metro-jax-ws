@@ -358,31 +358,42 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             return null;
         }
 
-        ManagedObjectManager managedObjectManager = null;
-        // TBD: for now the root is "metro"
-        // It may become com.sun.metro
-        managedObjectManager = ManagedObjectManagerFactory.createStandalone("metro");
+	ManagedObjectManager managedObjectManager = null;
 
-        managedObjectManager.stripPrefix(
-            "com.sun.xml.ws",
-            "com.sun.xml.ws.rx.runtime");
+	try {
+	    // TBD: Decide final root name.
+	    // Most likely it will be "metro" when running inside GlassFish,
+	    // (under the AMX node), and "com.sun.metro" otherwise.
+	    managedObjectManager =
+		ManagedObjectManagerFactory.createStandalone("metro");
 
-        // TBD: We include the service+portName to uniquely identify
-        // the managed objects under it (since there can be multiple
-        // services in the container.
-        // The existing format and MetroEndpoint class below is temporary
-	// and will change.
-        managedObjectManager.createRoot(
-	    new MetroEndpoint(serviceName, portName),
-            serviceName.toString().replace(':', '-')
-            + portName.toString().replace(':', '-'));
+	    managedObjectManager.stripPrefix(
+	        "com.sun.xml.ws",
+		"com.sun.xml.ws.rx.runtime");
 
-        return managedObjectManager;
+	    // TBD: We include the service+portName to uniquely identify
+	    // the managed objects under it (since there can be multiple
+	    // services in the container).
+	    // The existing format and MetroEndpoint class below is temporary
+	    // and will change.
+	    managedObjectManager.createRoot(
+		new MetroEndpoint(serviceName, portName),
+		serviceName.toString().replace(':', '-')
+		+ portName.toString().replace(':', '-')
+		+ "-" 
+		+ String.valueOf(unique++)); // TBD: only append unique
+	                                     // if clash. Waiting for GMBAL RFE
+
+	} catch (Throwable t) {
+	    // TBD: logging
+	    // After logging. we let the service start up anyway,
+	    // but it won't have monitoring.
+	    t.printStackTrace(System.out);
+	}
+	
+	return managedObjectManager;
     }
 
-    /**
-     * Controls monitoring
-     */
     public static boolean monitoring;
 
     static {
@@ -396,6 +407,15 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         }
         monitoring = b;
     }
+
+    // Necessary because same serviceName+portName can live in
+    // different apps at different addresses.  We do not know the
+    // address until the first request comes in, which is after
+    // monitoring is setup.
+
+    // TBD: Add address field to MetroEndpoint class below and fill it
+    // in on first request.  That will make it easier for users.
+    public static long unique = 1;
 }
 
 @ManagedObject
