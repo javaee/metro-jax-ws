@@ -174,23 +174,27 @@ final class ServerConnectionImpl extends WSHTTPConnection implements WebServiceC
         assert !outputWritten;
         outputWritten = true;
 
-        List<String> lenHeader = httpExchange.getResponseHeaders().get("Content-Length");
-        int length = (lenHeader != null) ? Integer.parseInt(lenHeader.get(0)) : 0;
+        String lenHeader = httpExchange.getResponseHeaders().getFirst("Content-Length");
+        int length = (lenHeader != null) ? Integer.parseInt(lenHeader) : 0;
         httpExchange.sendResponseHeaders(getStatus(), length);
 
         // Light weight http server's OutputStream.close() throws exception if
         // all the bytes are not read on the client side(StreamMessage on the client
         // side doesn't read all bytes.
         return new FilterOutputStream(httpExchange.getResponseBody()) {
+            boolean closed;
             @Override
             public void close() throws IOException {
-                // lwhs closes input stream, when you close the output stream
-                // This causes problems for streaming in one-way cases
-                in.readAll();
-                try {
-                    super.close();
-                } catch(IOException ioe) {
-                    // Ignoring purposefully.
+                if (!closed) {
+                    closed = true;
+                    // lwhs closes input stream, when you close the output stream
+                    // This causes problems for streaming in one-way cases
+                    in.readAll();
+                    try {
+                        super.close();
+                    } catch(IOException ioe) {
+                        // Ignoring purposefully.
+                    }
                 }
             }
 
