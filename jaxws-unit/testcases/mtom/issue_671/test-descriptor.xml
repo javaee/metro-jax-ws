@@ -1,4 +1,4 @@
-<descriptor since="2.0">
+<descriptor since="2.0" uses="multi-endpoint">
     <description>XOP test for issue 671</description>
 
    <service basedir="./server">
