@@ -125,9 +125,9 @@ public class ProviderImpl extends Provider {
     }
 
     public Endpoint createEndpoint(String bindingId, Object implementor, WebServiceFeature... features) {
-        Endpoint endpoint = new EndpointImpl(
-            BindingID.parse(implementor.getClass()), implementor, features);
-        return endpoint;
+        return new EndpointImpl(
+            (bindingId != null) ? BindingID.parse(bindingId) : BindingID.parse(implementor.getClass()),
+            implementor, features);
     }
 
     public Endpoint createAndPublishEndpoint(String address, Object implementor, WebServiceFeature... features) {
@@ -138,7 +138,9 @@ public class ProviderImpl extends Provider {
     }
 
     public Endpoint createEndpoint(String bindingId, Class implementorClass, Invoker invoker, WebServiceFeature... features) {
-        throw new UnsupportedOperationException("Haven't yet implemented");
+        return new EndpointImpl(
+            (bindingId != null) ? BindingID.parse(bindingId) : BindingID.parse(implementorClass),
+            implementorClass, invoker, features);
     }
     
     public EndpointReference readEndpointReference(final Source eprInfoset) {

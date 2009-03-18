@@ -42,6 +42,7 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.HttpAdapterList;
 import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.WSEndpointImpl;
+import com.sun.xml.ws.resources.ServerMessages;
 
 import javax.xml.ws.EndpointReference;
 import java.util.concurrent.Executor;
@@ -76,12 +77,18 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
     }
 
     public void publish(Object serverContext) {
-        if (!(serverContext instanceof HttpContext)) {
-            throw new ServerRtException("not.HttpContext.type", serverContext.getClass());
+        if (serverContext instanceof javax.xml.ws.spi.http.HttpContext) {
+            setHandler((javax.xml.ws.spi.http.HttpContext)serverContext);
+            return;
         }
-
-        this.httpContext = (HttpContext)serverContext;
-        publish(httpContext);
+        if (serverContext instanceof HttpContext) {
+            this.httpContext = (HttpContext)serverContext;
+            setHandler(httpContext);
+            return;
+        }
+        throw new ServerRtException(ServerMessages.NOT_KNOW_HTTP_CONTEXT_TYPE(
+                serverContext.getClass(), HttpContext.class,
+                javax.xml.ws.spi.http.HttpContext.class));
     }
 
     HttpAdapterList getAdapterOwner() {
@@ -114,8 +121,12 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
         adapter.getEndpoint().dispose();
     }
 
-    private void publish (HttpContext context) {
+    private void setHandler(HttpContext context) {
         context.setHandler(new WSHttpHandler(adapter, executor));
+    }
+
+    private void setHandler(javax.xml.ws.spi.http.HttpContext context) {
+        context.setHandler(new PortableHttpHandler(adapter, executor));
     }
 
     public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, Element...referenceParameters) {
