@@ -8,6 +8,7 @@ import static com.sun.xml.ws.api.addressing.AddressingVersion.W3C;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.developer.MemberSubmissionEndpointReference;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.test.VersionRequirement;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.xml.sax.helpers.DefaultHandler;
@@ -28,6 +29,7 @@ import java.io.StringWriter;
  *
  * @author Kohsuke Kawaguchi
  */
+    @VersionRequirement(since="2.1.8")
     public class WSEndpointReferenceTest extends XMLTestCase {
     public void testCreateViaSpec() throws Exception {
         W3CEndpointReference spec = new W3CEndpointReference(new StreamSource(
