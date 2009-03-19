@@ -16,6 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
@@ -67,7 +68,9 @@ import java.io.StringWriter;
 
     public void testEchoStAX() throws Exception {
         StringWriter w = new StringWriter();
-        createEPR().writeTo("root", XMLOutputFactory.newInstance().createXMLStreamWriter(w));
+        XMLStreamWriter xmlwriter = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
+        createEPR().writeTo("root", xmlwriter);
+        xmlwriter.close();
         XMLAssert.assertXMLIdentical(compareXML(w.toString(),getReferenceInfoset()),true);
     }
 
