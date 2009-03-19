@@ -1,100 +1,22 @@
 package com.sun.xml.ws.model;
 
-import com.sun.xml.bind.Util;
-import com.sun.xml.bind.v2.runtime.reflect.Accessor;
-
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
+import javax.xml.ws.WebServiceException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Collections;
-import java.util.WeakHashMap;
-import java.util.HashMap;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A {@link ClassLoader} used to "inject" optimized accessor classes
+ * A {@link ClassLoader} used to "inject" wrapper and exception bean classes
  * into the VM.
  *
- * <p>
- * Its parent class loader needs to be set to the one that can see the user
- * class.
- *
- * @author Kohsuke Kawaguchi
+ * @author Jitendra kotamraju
  */
 final class Injector {
 
-    /**
-     * {@link Injector}s keyed by their parent {@link ClassLoader}.
-     *
-     * We only need one injector per one user class loader.
-     */
-    private static final Map<ClassLoader,WeakReference<Injector>> injectors =
-        Collections.synchronizedMap(new WeakHashMap<ClassLoader,WeakReference<Injector>>());
-
-    private static final Logger logger = Util.getClassLogger();
-
-    /**
-     * Injects a new class into the given class loader.
-     *
-     * @return null
-     *      if it fails to inject.
-     */
-    static Class inject( ClassLoader cl, String className, byte[] image ) {
-        Injector injector = get(cl);
-        if(injector!=null)
-            return injector.inject(className,image);
-        else
-            return null;
-    }
-
-    /**
-     * Returns the already injected class, or null.
-     */
-    static Class find( ClassLoader cl, String className ) {
-        Injector injector = get(cl);
-        if(injector!=null)
-            return injector.find(className);
-        else
-            return null;
-    }
-
-    /**
-     * Gets or creates an {@link Injector} for the given class loader.
-     *
-     * @return null
-     *      if it fails.
-     */
-    private static Injector get(ClassLoader cl) {
-        Injector injector = null;
-        WeakReference<Injector> wr = injectors.get(cl);
-        if(wr!=null)
-            injector = wr.get();
-        if(injector==null)
-            try {
-                injectors.put(cl,new WeakReference<Injector>(injector = new Injector(cl)));
-            } catch (SecurityException e) {
-                logger.log(Level.FINE,"Unable to set up a back-door for the injector",e);
-                return null;
-            }
-        return injector;
-    }
-
-    /**
-     * Injected classes keyed by their names.
-     */
-    private final Map<String,Class> classes = new HashMap<String,Class>();
-
-    private final ClassLoader parent;
-
-    /**
-     * True if this injector is capable of injecting accessors.
-     * False otherwise, which happens if this classloader can't see {@link com.sun.xml.bind.v2.runtime.reflect.Accessor}.
-     */
-    private final boolean loadable;
+    private static final Logger LOGGER = Logger.getLogger(Injector.class.getName());
 
     private static final Method defineClass;
     private static final Method resolveClass;
@@ -118,52 +40,26 @@ final class Injector {
         });
     }
 
-    private Injector(ClassLoader parent) {
-        this.parent = parent;
-        assert parent!=null;
-
-        boolean loadable = false;
-
+    static synchronized Class inject(ClassLoader cl, String className, byte[] image) {
+        // To avoid race conditions let us check if the classloader
+        // already contains the class
         try {
-            loadable = parent.loadClass(Accessor.class.getName())==Accessor.class;
+            return cl.loadClass(className);
         } catch (ClassNotFoundException e) {
-            ; // not loadable
+            // nothing to do
         }
-
-        this.loadable = loadable;
-    }
-
-
-    private synchronized Class inject(String className, byte[] image) {
-        if(!loadable)   // this injector cannot inject anything
-            return null;
-
-        Class c = classes.get(className);
-        if(c==null) {
-            // we need to inject a class into the
-            try {
-                c = (Class)defineClass.invoke(parent,className.replace('/','.'),image,0,image.length);
-                resolveClass.invoke(parent,c);
-            } catch (IllegalAccessException e) {
-                logger.log(Level.FINE,"Unable to inject "+className,e);
-                return null;
-            } catch (InvocationTargetException e) {
-                logger.log(Level.FINE,"Unable to inject "+className,e);
-                return null;
-            } catch (SecurityException e) {
-                logger.log(Level.FINE,"Unable to inject "+className,e);
-                return null;
-            } catch (LinkageError e) {
-                logger.log(Level.FINE,"Unable to inject "+className,e);
-                return null;
-            }
-            classes.put(className,c);
+        try {
+            Class c = (Class)defineClass.invoke(cl,className.replace('/','.'),image,0,image.length);
+            resolveClass.invoke(cl, c);
+            return c;
+        } catch (IllegalAccessException e) {
+            LOGGER.log(Level.FINE,"Unable to inject "+className,e);
+            throw new WebServiceException(e);
+        } catch (InvocationTargetException e) {
+            LOGGER.log(Level.FINE,"Unable to inject "+className,e);
+            throw new WebServiceException(e);
         }
-        return c;
     }
 
-    private synchronized Class find(String className) {
-        return classes.get(className);
-    }
 }
 
