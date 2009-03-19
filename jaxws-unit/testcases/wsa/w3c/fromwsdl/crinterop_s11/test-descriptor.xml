@@ -1,4 +1,4 @@
-<descriptor since="2.1.5">
+<descriptor since="2.1.5" uses="ri">
     <description>End to End WSA Interop tests </description>
     <service basedir="./server">
         <wsdl href="wsaTestService.wsdl"/>
