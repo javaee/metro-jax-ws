@@ -75,6 +75,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.Service;
@@ -1065,6 +1066,12 @@ public final class WSEndpointReference  implements WSDLExtension {
                             XMLStreamReaderUtil.skipElement(xsr);
                     }
                 } while (XMLStreamReaderUtil.nextElementContent(xsr) == XMLStreamReader.START_ELEMENT);
+
+                if(wsdliLocation != null) {
+                    String wsdlLocation = wsdliLocation.trim();
+                    wsdlLocation = wsdlLocation.substring(wsdliLocation.lastIndexOf(" "));
+                    wsdlSource = new StreamSource(wsdlLocation);    
+                }
             } else if (version == AddressingVersion.MEMBER) {
                 do {
                     localName = xsr.getLocalName();
