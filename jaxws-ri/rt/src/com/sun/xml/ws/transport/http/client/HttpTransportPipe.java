@@ -179,7 +179,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             checkStatusCode(response, con.statusCode, con.statusMessage); // throws ClientTransportException
 
             String contentType = con.getContentType();
-            if (contentType == null) {
+            if (contentType == null && binding instanceof SOAPBinding) {
                 throw new WebServiceException("No Content-type in the header!");
             }
 
