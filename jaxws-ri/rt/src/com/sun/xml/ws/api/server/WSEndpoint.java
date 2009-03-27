@@ -52,6 +52,10 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.policy.PolicyMap;
+import org.glassfish.gmbal.AMXMetadata;
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.xml.sax.EntityResolver;
@@ -116,6 +120,9 @@ import java.util.concurrent.Executor;
  *
  * @author Kohsuke Kawaguchi
  */
+@ManagedObject
+@Description("Metro Web Service endpoint")
+@AMXMetadata(type="Service", pathPart="Service")
 public abstract class WSEndpoint<T> {
 
     /**
@@ -132,6 +139,8 @@ public abstract class WSEndpoint<T> {
      *
      * @return same as wsdl:service QName if WSDL exists or generated
      */
+    @ManagedAttribute
+    @Description("Service Name")
     public abstract @NotNull QName getServiceName();
 
     /**
@@ -139,6 +148,8 @@ public abstract class WSEndpoint<T> {
      *
      * @return same as wsdl:port QName if WSDL exists or generated
      */
+    @ManagedAttribute
+    @Description("Port Name")
     public abstract @NotNull QName getPortName();
 
     /**
@@ -156,6 +167,8 @@ public abstract class WSEndpoint<T> {
      * @return
      *      always same object.
      */
+    @ManagedAttribute
+    @Description("Binding")
     public abstract @NotNull WSBinding getBinding();
 
     /**
@@ -182,6 +195,8 @@ public abstract class WSEndpoint<T> {
      * @return
      *      Possibly null, but always the same value.
      */
+    @ManagedAttribute
+    @Description("port")
     public abstract @Nullable WSDLPort getPort();
 
     /**
@@ -356,6 +371,8 @@ public abstract class WSEndpoint<T> {
      * @return
      *      Possibly null, but always the same value.
      */
+    @ManagedAttribute
+    @Description("Service Definition")
     public abstract @Nullable ServiceDefinition getServiceDefinition();
 
     /**
@@ -388,6 +405,8 @@ public abstract class WSEndpoint<T> {
      *      maybe null. See above for more discussion.
      *      Always the same value.
      */
+    @ManagedAttribute
+    @Description("SEI Model")
     public abstract @Nullable SEIModel getSEIModel();
 
     /**
@@ -481,9 +500,15 @@ public abstract class WSEndpoint<T> {
         @Nullable SDDocumentSource primaryWsdl,
         @Nullable Collection<? extends SDDocumentSource> metadata,
         @Nullable EntityResolver resolver,
-        boolean isTransportSynchronous) {
-        return EndpointFactory.createEndpoint(
-            implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous);
+        boolean isTransportSynchronous) 
+    {
+        final ManagedObjectManager managedObjectManager =
+            createManagedObjectManager();
+	final WSEndpoint<T> endpoint = 
+            EndpointFactory.createEndpoint(
+                implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous, managedObjectManager);
+        setMOMRoot(serviceName, portName, managedObjectManager, endpoint);
+        return endpoint;
     }
 
     /**
@@ -544,4 +569,76 @@ public abstract class WSEndpoint<T> {
         return EndpointFactory.getDefaultPortName(serviceName, endpointClass);
     }
 
+    private static @Nullable ManagedObjectManager createManagedObjectManager(){
+        if (!monitoring) {
+            return null;
+        }
+	try {
+	    // TBD: Decide final root name.
+	    // Most likely it will be "metro" when running inside GlassFish,
+	    // (under the AMX node), and "com.sun.metro" otherwise.
+	    final ManagedObjectManager managedObjectManager =
+		ManagedObjectManagerFactory.createStandalone("metro");
+
+	    managedObjectManager.stripPrefix(
+		"com.sun.xml.ws.server",
+		"com.sun.xml.ws.rx.rm.runtime.sequence");
+
+	    return managedObjectManager;
+	} catch (Throwable t) {
+	    // TBD: logging
+	    // After logging. we let the service start up anyway,
+	    // but it won't have monitoring.
+	    t.printStackTrace(System.out);
+	}
+	return null;
+    }
+
+    private static void setMOMRoot(final QName serviceName, final QName portName, final ManagedObjectManager managedObjectManager, final WSEndpoint root) {
+        if (!monitoring) {
+            return;
+        }
+	try {
+	    // TBD: We include the service+portName to uniquely identify
+	    // the managed objects under it (since there can be multiple
+	    // services in the container).
+	    // The existing format and Endpoint class below is temporary
+	    // and will change.
+	    managedObjectManager.createRoot(
+		root,
+		serviceName.toString().replace(':', '-')
+		+ portName.toString().replace(':', '-')
+		+ "-" 
+		+ String.valueOf(unique++)); // TBD: only append unique
+	                                     // if clash. Waiting for GMBAL RFE
+	} catch (Throwable t) {
+	    // TBD: logging
+	    // After logging. we let the service start up anyway,
+	    // but it won't have monitoring.
+	    t.printStackTrace(System.out);
+	}
+    }
+
+    private static boolean monitoring;
+
+    static {
+        boolean b = false;
+        try {
+            String name = System.getProperty("com.sun.xml.ws.monitoring");
+            if (name != null && name.equalsIgnoreCase("true")) {
+                b = true;
+            }
+        } catch (Exception e) {
+        }
+        monitoring = b;
+    }
+
+    // Necessary because same serviceName+portName can live in
+    // different apps at different addresses.  We do not know the
+    // address until the first request comes in, which is after
+    // monitoring is setup.
+
+    // TBD: Add address field to Service class below and fill it
+    // in on first request.  That will make it easier for users.
+    private static long unique = 1;
 }

@@ -69,11 +69,7 @@ import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
-import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
-import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -139,7 +135,9 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                    Container container, SEIModel seiModel, WSDLPort port,
                    Class<T> implementationClass,
                    @Nullable ServiceDefinitionImpl serviceDef,
-                   InvokerTube terminalTube, boolean isSynchronous, PolicyMap endpointPolicy) {
+                   InvokerTube terminalTube, boolean isSynchronous,
+                   PolicyMap endpointPolicy,
+                   final @Nullable ManagedObjectManager managedObjectManager) {
         this.serviceName = serviceName;
         this.portName = portName;
         this.binding = binding;
@@ -150,6 +148,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         this.serviceDef = serviceDef;
         this.seiModel = seiModel;
         this.endpointPolicy = endpointPolicy;
+        this.managedObjectManager = managedObjectManager;
+
         if (serviceDef != null) {
             serviceDef.setOwner(this);
         }
@@ -175,13 +175,6 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         terminalTube.setEndpoint(this);
         engine = new Engine(toString());
         wsdlProperties = (port==null) ? null : new WSDLProperties(port);
-
-        managedObjectManager = 
-            createManagedObjectManager(
-                serviceName, portName,
-                new Service(serviceName, portName, binding, seiModel, port,
-                            serviceDef, soapVersion, masterCodec, endpointPolicy));
-
     }
 
     /**
@@ -357,142 +350,5 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     public @Nullable ManagedObjectManager getManagedObjectManager() {
 	    return managedObjectManager;
     }
-
-    private @Nullable ManagedObjectManager createManagedObjectManager(
-        final QName serviceName, final QName portName, final Service service) {
-        if (!monitoring) {
-            return null;
-        }
-
-	ManagedObjectManager managedObjectManager = null;
-
-	try {
-	    // TBD: Decide final root name.
-	    // Most likely it will be "metro" when running inside GlassFish,
-	    // (under the AMX node), and "com.sun.metro" otherwise.
-	    managedObjectManager =
-		ManagedObjectManagerFactory.createStandalone("metro");
-
-	    managedObjectManager.stripPrefix(
-		"com.sun.xml.ws.server",
-		"com.sun.xml.ws.rx.rm.runtime.sequence");
-
-	    // TBD: We include the service+portName to uniquely identify
-	    // the managed objects under it (since there can be multiple
-	    // services in the container).
-	    // The existing format and Endpoint class below is temporary
-	    // and will change.
-	    managedObjectManager.createRoot(
-		service,
-		serviceName.toString().replace(':', '-')
-		+ portName.toString().replace(':', '-')
-		+ "-" 
-		+ String.valueOf(unique++)); // TBD: only append unique
-	                                     // if clash. Waiting for GMBAL RFE
-
-	} catch (Throwable t) {
-	    // TBD: logging
-	    // After logging. we let the service start up anyway,
-	    // but it won't have monitoring.
-	    t.printStackTrace(System.out);
-	}
-	
-	return managedObjectManager;
-    }
-
-    public static boolean monitoring;
-
-    static {
-        boolean b = false;
-        try {
-            String name = System.getProperty("com.sun.xml.ws.monitoring");
-            if (name != null && name.equalsIgnoreCase("true")) {
-                b = true;
-            }
-        } catch (Exception e) {
-        }
-        monitoring = b;
-    }
-
-    // Necessary because same serviceName+portName can live in
-    // different apps at different addresses.  We do not know the
-    // address until the first request comes in, which is after
-    // monitoring is setup.
-
-    // TBD: Add address field to Service class below and fill it
-    // in on first request.  That will make it easier for users.
-    public static long unique = 1;
 }
 
-// The following "Service" class is separate because you should not
-// register a ManagedObject in that object's constructor.  We create
-// the ManagedObjectManager inside the constructor of WSEndpointImpl
-// and need to register the root at that point.  That data is
-// available in WSEndpointImpl, but we are inside the constructor.  So
-// we create this object to register after its constructor returns.
-
-@ManagedObject
-@Description("Metro Web Service endpoint")
-class Service {
-    private final @NotNull QName serviceName;
-    private final @NotNull QName portName;
-    private final WSBinding binding;
-    private final SEIModel seiModel;
-    private final WSDLPort port;
-    private final ServiceDefinitionImpl serviceDef;
-    private final SOAPVersion soapVersion;
-    private final @NotNull Codec masterCodec;
-    private final @NotNull PolicyMap endpointPolicy;
-
-    Service(final QName serviceName, final QName portName,
-            final WSBinding binding, final SEIModel seiModel,
-            final WSDLPort port, final ServiceDefinitionImpl serviceDef,
-            final SOAPVersion soapVersion, final Codec masterCodec,
-            final PolicyMap endpointPolicy)
-    {
-	this.serviceName =  serviceName;
-	this.portName =  portName;
-	this.binding = binding;
-	this.seiModel = seiModel;
-	this.port = port;
-	this.serviceDef =  serviceDef;
-	this.soapVersion =  soapVersion;
-	this.masterCodec =  masterCodec;
-	this.endpointPolicy =  endpointPolicy;
-    }
-    @ManagedAttribute
-    @Description("Service Name")
-    QName getServiceName() { return serviceName; }
-
-    @ManagedAttribute
-    @Description("Port Name")
-    QName getPortName() { return portName; }
-
-    @ManagedAttribute
-    @Description("Binding")
-    WSBinding getBinding() { return binding; }
-
-    @ManagedAttribute
-    @Description("SEI Model")
-    SEIModel getSEIModel() { return seiModel; }
-
-    @ManagedAttribute
-    @Description("port")
-    WSDLPort getPort() { return port; }
-
-    @ManagedAttribute
-    @Description("Service Definition")
-    ServiceDefinitionImpl getServiceDefinition() { return serviceDef; }
-
-    @ManagedAttribute
-    @Description("SOAP Version")
-    SOAPVersion getSOAPVersion() { return soapVersion; }
-
-    @ManagedAttribute
-    @Description("Master Codec")
-    Codec getMasterCodec() { return masterCodec; }
-
-    @ManagedAttribute
-    @Description("Endpoint Policy")
-    PolicyMap getEndpointPolicy() { return endpointPolicy; }
-}
