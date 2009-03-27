@@ -41,22 +41,28 @@ import com.sun.xml.ws.api.EndpointAddress;
 
 import javax.xml.namespace.QName;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Abstracts wsdl:service/wsdl:port
  *
  * @author Vivek Pandey
  */
+@ManagedData
 public interface WSDLPort extends WSDLFeaturedObject, WSDLExtensible {
     /**
      * Gets wsdl:port@name attribute value as local name and wsdl:definitions@targetNamespace
      * as the namespace uri.
      */
+    @ManagedAttribute
     QName getName();
 
     /**
      * Gets {@link WSDLBoundPortType} associated with the {@link WSDLPort}.
      */
     @NotNull
+    @ManagedAttribute
     WSDLBoundPortType getBinding();
 
     /**
@@ -65,6 +71,7 @@ public interface WSDLPort extends WSDLFeaturedObject, WSDLExtensible {
      * @return
      *      always non-null.
      */
+    @ManagedAttribute
     EndpointAddress getAddress();
 
     /**
@@ -74,5 +81,6 @@ public interface WSDLPort extends WSDLFeaturedObject, WSDLExtensible {
      *      always non-null.
      */
     @NotNull
+    @ManagedAttribute
     WSDLService getOwner();
 }

@@ -48,6 +48,10 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.handler.Handler;
 import java.util.List;
 
+import org.glassfish.gmbal.Description;
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * JAX-WS implementation of {@link Binding}.
  *
@@ -60,6 +64,7 @@ import java.util.List;
  *
  * @author Kohsuke Kawaguchi
  */
+@ManagedData
 public interface WSBinding extends Binding {
     /**
      * Gets the SOAP version of this binding.
@@ -77,6 +82,7 @@ public interface WSBinding extends Binding {
      *      returns null. See {@link Message} for how a non-SOAP
      *      binding shall be handled by {@link Tube}s.
      */
+    @ManagedAttribute
     SOAPVersion getSOAPVersion();
     /**
      * Gets the WS-Addressing version of this binding.
@@ -91,6 +97,7 @@ public interface WSBinding extends Binding {
      *          This might be little slow as it has to go over all the features on binding.
      *          Its advisable to cache the addressingVersion wherever possible and reuse it.
      */
+    @ManagedAttribute
     AddressingVersion getAddressingVersion();
 
     /**
@@ -104,6 +111,7 @@ public interface WSBinding extends Binding {
      * @return
      *      Always non-null same value.
      */
+    @ManagedAttribute
     @NotNull BindingID getBindingId();
 
     @NotNull List<Handler> getHandlerChain();
@@ -130,5 +138,6 @@ public interface WSBinding extends Binding {
     /**
      * Returns a list of features associated with {@link WSBinding}.
      */
+    //@ManagedAttribute
     @NotNull WSFeatureList getFeatures();
 }

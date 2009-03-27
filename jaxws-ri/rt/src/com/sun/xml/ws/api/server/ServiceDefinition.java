@@ -39,6 +39,9 @@ package com.sun.xml.ws.api.server;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Root of the unparsed WSDL and other resources referenced from it.
  * This object represents the description of the service
@@ -68,6 +71,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLModel;
  *
  * @author Kohsuke Kawaguchi
  */
+@ManagedData
 public interface ServiceDefinition extends Iterable<SDDocument> {
     /**
      * Gets the "primary" {@link SDDocument} that represents a WSDL.
@@ -78,6 +82,7 @@ public interface ServiceDefinition extends Iterable<SDDocument> {
      * @return
      *      always non-null.
      */
+    @ManagedAttribute
     @NotNull SDDocument getPrimary();
 
     /**

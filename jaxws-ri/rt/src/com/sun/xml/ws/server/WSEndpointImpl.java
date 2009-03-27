@@ -154,7 +154,6 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             serviceDef.setOwner(this);
         }
 
- 	managedObjectManager = createManagedObjectManager(serviceName, portName);
         TubelineAssembler assembler = TubelineAssemblerFactory.create(
                 Thread.currentThread().getContextClassLoader(), binding.getBindingId(), container);
         assert assembler!=null;
@@ -176,6 +175,13 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         terminalTube.setEndpoint(this);
         engine = new Engine(toString());
         wsdlProperties = (port==null) ? null : new WSDLProperties(port);
+
+        managedObjectManager = 
+            createManagedObjectManager(
+                serviceName, portName,
+                new Service(serviceName, portName, binding, seiModel, port,
+                            serviceDef, soapVersion, masterCodec, endpointPolicy));
+
     }
 
     /**
@@ -353,7 +359,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     }
 
     private @Nullable ManagedObjectManager createManagedObjectManager(
-        QName serviceName, QName portName) {
+        final QName serviceName, final QName portName, final Service service) {
         if (!monitoring) {
             return null;
         }
@@ -368,16 +374,16 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 		ManagedObjectManagerFactory.createStandalone("metro");
 
 	    managedObjectManager.stripPrefix(
-	        "com.sun.xml.ws",
-		"com.sun.xml.ws.rx.runtime");
+		"com.sun.xml.ws.server",
+		"com.sun.xml.ws.rx.rm.runtime.sequence");
 
 	    // TBD: We include the service+portName to uniquely identify
 	    // the managed objects under it (since there can be multiple
 	    // services in the container).
-	    // The existing format and MetroEndpoint class below is temporary
+	    // The existing format and Endpoint class below is temporary
 	    // and will change.
 	    managedObjectManager.createRoot(
-		new MetroEndpoint(serviceName, portName),
+		service,
 		serviceName.toString().replace(':', '-')
 		+ portName.toString().replace(':', '-')
 		+ "-" 
@@ -413,20 +419,46 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     // address until the first request comes in, which is after
     // monitoring is setup.
 
-    // TBD: Add address field to MetroEndpoint class below and fill it
+    // TBD: Add address field to Service class below and fill it
     // in on first request.  That will make it easier for users.
     public static long unique = 1;
 }
 
+// The following "Service" class is separate because you should not
+// register a ManagedObject in that object's constructor.  We create
+// the ManagedObjectManager inside the constructor of WSEndpointImpl
+// and need to register the root at that point.  That data is
+// available in WSEndpointImpl, but we are inside the constructor.  So
+// we create this object to register after its constructor returns.
+
 @ManagedObject
 @Description("Metro Web Service endpoint")
-class MetroEndpoint {
-    private final QName serviceName;
-    private final QName portName;
+class Service {
+    private final @NotNull QName serviceName;
+    private final @NotNull QName portName;
+    private final WSBinding binding;
+    private final SEIModel seiModel;
+    private final WSDLPort port;
+    private final ServiceDefinitionImpl serviceDef;
+    private final SOAPVersion soapVersion;
+    private final @NotNull Codec masterCodec;
+    private final @NotNull PolicyMap endpointPolicy;
 
-    MetroEndpoint(QName serviceName, QName portName) {
-	this.serviceName = serviceName;
-	this.portName = portName;
+    Service(final QName serviceName, final QName portName,
+            final WSBinding binding, final SEIModel seiModel,
+            final WSDLPort port, final ServiceDefinitionImpl serviceDef,
+            final SOAPVersion soapVersion, final Codec masterCodec,
+            final PolicyMap endpointPolicy)
+    {
+	this.serviceName =  serviceName;
+	this.portName =  portName;
+	this.binding = binding;
+	this.seiModel = seiModel;
+	this.port = port;
+	this.serviceDef =  serviceDef;
+	this.soapVersion =  soapVersion;
+	this.masterCodec =  masterCodec;
+	this.endpointPolicy =  endpointPolicy;
     }
     @ManagedAttribute
     @Description("Service Name")
@@ -435,4 +467,32 @@ class MetroEndpoint {
     @ManagedAttribute
     @Description("Port Name")
     QName getPortName() { return portName; }
+
+    @ManagedAttribute
+    @Description("Binding")
+    WSBinding getBinding() { return binding; }
+
+    @ManagedAttribute
+    @Description("SEI Model")
+    SEIModel getSEIModel() { return seiModel; }
+
+    @ManagedAttribute
+    @Description("port")
+    WSDLPort getPort() { return port; }
+
+    @ManagedAttribute
+    @Description("Service Definition")
+    ServiceDefinitionImpl getServiceDefinition() { return serviceDef; }
+
+    @ManagedAttribute
+    @Description("SOAP Version")
+    SOAPVersion getSOAPVersion() { return soapVersion; }
+
+    @ManagedAttribute
+    @Description("Master Codec")
+    Codec getMasterCodec() { return masterCodec; }
+
+    @ManagedAttribute
+    @Description("Endpoint Policy")
+    PolicyMap getEndpointPolicy() { return endpointPolicy; }
 }
