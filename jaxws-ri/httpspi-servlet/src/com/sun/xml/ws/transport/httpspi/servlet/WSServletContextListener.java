@@ -36,11 +36,6 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.resources.WsservletMessages;
-import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
-import com.sun.xml.ws.transport.http.HttpAdapter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
@@ -56,7 +51,7 @@ import java.util.logging.Logger;
 
 /**
  * Parses {@code sun-jaxws.xml} and sets up
- * {@link HttpAdapter}s for all deployed endpoints.
+ * {@link EndpointAdapter}s for all deployed endpoints.
  *
  * <p>
  * This code is the entry point at the server side in the servlet deployment.
@@ -100,12 +95,12 @@ public final class WSServletContextListener
         }
         try {
             // Parse the descriptor file and build endpoint infos
-            DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
-                classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList());
+            DeploymentDescriptorParser<EndpointAdapter> parser = new DeploymentDescriptorParser<EndpointAdapter>(
+                classLoader, (ResourceLoader) new ServletResourceLoader(context), new EndpointAdapterFactory() );
             URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
             if(sunJaxWsXml==null)
-                throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
-            List<ServletAdapter> adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
+                throw new WebServiceException("Runtime descriptor "+JAXWS_RI_RUNTIME+" is mising");
+            List<EndpointAdapter> adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
 
             delegate = createDelegate(adapters, context);
 
@@ -121,7 +116,7 @@ public final class WSServletContextListener
     /**
      * Creates {@link WSServletDelegate} that does the real work.
      */
-    protected WSServletDelegate createDelegate(List<ServletAdapter> adapters, ServletContext context) {
+    protected WSServletDelegate createDelegate(List<EndpointAdapter> adapters, ServletContext context) {
         return new WSServletDelegate(adapters,context);
     }
 

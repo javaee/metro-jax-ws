@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,64 +36,48 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.spi.http.HttpContext;
-import javax.xml.ws.EndpointContext;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Set;
 
 /**
- * @author Jitendra Kotamraju
-*/
-public final class EndpointAdapter {
-    private final Endpoint endpoint;
-    private final String urlPattern;
-    private final EndpointHttpContext httpContext;
-    private final EndpointContext appContext;
-
-    public EndpointAdapter(Endpoint endpoint, String urlPattern, EndpointContext appContext) {
-        this.endpoint = endpoint;
-        this.urlPattern = urlPattern;
-        this.appContext = appContext;
-        httpContext = new EndpointHttpContext(urlPattern, appContext);
-    }
-
-    public Endpoint getEndpoint() {
-        return endpoint;
-    }
-
-    public HttpContext getContext() {
-        return httpContext;
-    }
-
-    public void publish() {
-        endpoint.publish(httpContext);
-    }
-
-    public void dispose() {
-        endpoint.stop();
-    }
-
-    public String getUrlPattern() {
-        return urlPattern;
-    }
-
-    public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        httpContext.handle(context, request, response);
-    }
+ * Used to locate resources for {@link DeploymentDescriptorParser}.
+ *
+ * <p>
+ * This allows {@link DeploymentDescriptorParser} to be used outside a servlet container,
+ * but it still needs to work with a layout similar to the web application.
+ * If this can be abstracted away better, that would be nice.
+ *
+ * @author Kohsuke Kawaguchi
+ */
+public interface ResourceLoader {
+    /**
+     * Returns the actual location of the resource from the 'path'
+     * that represents a virtual locaion of a file inside a web application.
+     *
+     * @param path
+     *      Desiganates an absolute path within an web application, such as:
+     *      '/WEB-INF/web.xml' or some such.
+     *
+     * @return
+     *      the actual location, if found, or null if not found.
+     */
+    URL getResource(String path) throws MalformedURLException;
 
     /**
-     * Returns the "/abc/def/ghi" portion if
-     * the URL pattern is "/abc/def/ghi/*".
+     * Gets the catalog XML file that should be consulted when
+     * loading resources from this {@link ResourceLoader}.
      */
-    public String getValidPath() {
-        if (urlPattern.endsWith("/*")) {
-            return urlPattern.substring(0, urlPattern.length() - 2);
-        } else {
-            return urlPattern;
-        }
-    }
-    
+    URL getCatalogFile() throws MalformedURLException;
+
+    /**
+     * Returns the list of files in the given directory.
+     *
+     * @return
+     *      null if the path is invalid. empty if the path didn't contain
+     *      any entry in it.
+     *
+     * @see javax.servlet.http.ServletContext#getResourcePaths(String)
+     */
+    Set<String> getResourcePaths(String path);
 }

@@ -36,33 +36,23 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import com.sun.xml.ws.resources.WsservletMessages;
-import com.sun.xml.ws.transport.http.HttpAdapter;
-import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
-import com.sun.xml.ws.util.localization.Localizable;
-import com.sun.xml.ws.util.localization.Localizer;
-
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.soap.MimeHeaders;
 import javax.xml.ws.Binding;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.http.HTTPBinding;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Called by {@link WSServlet} to choose {@link HttpAdapter}
+ * Called by {@link WSServlet} to choose {@link EndpointAdapter}
  * and sends a request to it.
  *
  * <p>
@@ -72,110 +62,92 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
-public class WSServletDelegate {
+class WSServletDelegate {
 
     /**
-     * All {@link ServletAdapter}s that are deployed in the current web appliation.
+     * All {@link EndpointAdapter}s that are deployed in the current web appliation.
      */
-    public final List<ServletAdapter> adapters;
+    public final List<EndpointAdapter> adapters;
 
-    private final Map<String, ServletAdapter> fixedUrlPatternEndpoints = new HashMap<String, ServletAdapter>();
-    private final List<ServletAdapter> pathUrlPatternEndpoints = new ArrayList<ServletAdapter>();
-    private final Map<Locale,Localizer> localizerMap = new HashMap<Locale,Localizer>();
+    private final Map<String, EndpointAdapter> fixedUrlPatternEndpoints = new HashMap<String, EndpointAdapter>();
+    private final List<EndpointAdapter> pathUrlPatternEndpoints = new ArrayList<EndpointAdapter>();
 
-    public WSServletDelegate(List<ServletAdapter> adapters, ServletContext context) {
+    public WSServletDelegate(List<EndpointAdapter> adapters, ServletContext context) {
         this.adapters = adapters;
 
-        for(ServletAdapter info : adapters)
+        for(EndpointAdapter info : adapters)
             registerEndpointUrlPattern(info);
 
-        localizerMap.put(defaultLocalizer.getLocale(), defaultLocalizer);
-
         if (logger.isLoggable(Level.INFO)) {
-            logger.info(WsservletMessages.SERVLET_INFO_INITIALIZE());
+            logger.info("Initializing Servlet for "+fixedUrlPatternEndpoints);
         }
 
-        // compatibility.
-        String publishStatusPageParam =
-            context.getInitParameter(WSServlet.JAXWS_RI_PROPERTY_PUBLISH_STATUS_PAGE);
-        if(publishStatusPageParam!=null)
-            HttpAdapter.publishStatusPage = Boolean.parseBoolean(publishStatusPageParam);
     }
 
     public void destroy() {
         if (logger.isLoggable(Level.INFO)) {
-            logger.info(WsservletMessages.SERVLET_INFO_DESTROY());
+            logger.info("Destroying Servlet for "+fixedUrlPatternEndpoints);
         }
 
-        for(ServletAdapter a : adapters) {
+        for(EndpointAdapter a : adapters) {
             try {
-                a.getEndpoint().dispose();
+                a.dispose();
             } catch(Throwable e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response, ServletContext context)
-        throws ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response, ServletContext context) {
 
         try {
-            ServletAdapter target = getTarget(request);
+            EndpointAdapter target = getTarget(request);
             if (target != null) {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest(
-                        WsservletMessages.SERVLET_TRACE_GOT_REQUEST_FOR_ENDPOINT(target.name));
+                    logger.finest("Got request for endpoint "+target.getUrlPattern());
                 }
                 target.handle(context, request, response);
             } else {
-                Localizer localizer = getLocalizerFor(request);
-                writeNotFoundErrorPage(localizer, response, "Invalid Request");
+                writeNotFoundErrorPage(response, "Invalid Request");
             }
-        } catch (JAXWSExceptionBase e) {
-            logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
+        } catch (WebServiceException e) {
+            logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (Throwable e) {
-            if (e instanceof Localizable) {
-                logger.log(
-                    Level.SEVERE,
-                    defaultLocalizer.localize((Localizable) e),
-                    e);
-            } else {
-                logger.log(Level.SEVERE, "caught throwable", e);
-            }
-
+            logger.log(Level.SEVERE, "caught throwable", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * processes web service requests by finding the {@link ServletAdapter}
-     * created by the {@link WSServletContextListener} and creating a
-     * {@link ServletConnectionImpl}.
+     * processes web service requests by finding the {@link EndpointAdapter}
+     * created by the {@link WSServletContextListener}
      *
      * @param request the HTTP request object
      * @param response the HTTP response object
+     * @param context servlet context
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response, ServletContext context) throws ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response, ServletContext context) {
         doGet(request, response,context);
     }
 
     /**
      * Handles HTTP PUT for XML/HTTP binding based endpoints
+     *
+     * @param request the HTTP request object
+     * @param response the HTTP response object
+     * @param context servlet context
      */
-    public void doPut(HttpServletRequest request, HttpServletResponse response, ServletContext context)
-        throws ServletException {
+    public void doPut(HttpServletRequest request, HttpServletResponse response, ServletContext context) {
         // TODO: unify this into doGet.
         try {
-            ServletAdapter target = getTarget(request);
+            EndpointAdapter target = getTarget(request);
             if (target != null) {
                 if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest(
-                        WsservletMessages.SERVLET_TRACE_GOT_REQUEST_FOR_ENDPOINT(target.name));
+                    logger.finest("Got request for endpoint "+target.getUrlPattern());
                 }
             } else {
-                Localizer localizer = getLocalizerFor(request);
-                writeNotFoundErrorPage(localizer, response, "Invalid request");
+                writeNotFoundErrorPage(response, "Invalid request");
                 return;
             }
             Binding binding = target.getEndpoint().getBinding();
@@ -184,18 +156,12 @@ public class WSServletDelegate {
             } else {
                 response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
-        } catch (JAXWSExceptionBase e) {
-            logger.log(Level.SEVERE, defaultLocalizer.localize(e), e);
+        } catch (WebServiceException e) {
+            logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (Throwable e) {
-            if (e instanceof Localizable) {
-                logger.log(
-                    Level.SEVERE,
-                    defaultLocalizer.localize((Localizable) e),
-                    e);
-            } else {
-                logger.log(Level.SEVERE, "caught throwable", e);
-            }
+            logger.log(Level.SEVERE, "caught throwable", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -203,9 +169,12 @@ public class WSServletDelegate {
 
     /**
      * Handles HTTP DELETE for XML/HTTP binding based endpoints
+     *
+     * @param request the HTTP request object
+     * @param response the HTTP response object
+     * @param context servlet context
      */
-    public void doDelete(HttpServletRequest request, HttpServletResponse response, ServletContext context)
-        throws ServletException {
+    public void doDelete(HttpServletRequest request, HttpServletResponse response, ServletContext context) {
 
         // At preseent, there is no difference for between PUT and DELETE processing
         doPut(request, response, context);
@@ -213,7 +182,6 @@ public class WSServletDelegate {
 
 
     private void writeNotFoundErrorPage(
-        Localizer localizer,
         HttpServletResponse response,
         String message)
         throws IOException {
@@ -222,39 +190,24 @@ public class WSServletDelegate {
         PrintWriter out = response.getWriter();
         out.println("<html>");
         out.println("<head><title>");
-        out.println(WsservletMessages.SERVLET_HTML_TITLE());
+        out.println("Web Services");
         out.println("</title></head>");
         out.println("<body>");
-        out.println(WsservletMessages.SERVLET_HTML_NOT_FOUND(message));
+        out.println("Not found "+message);
         out.println("</body>");
         out.println("</html>");
     }
 
-    protected static MimeHeaders getHeaders(HttpServletRequest req) {
-        Enumeration enums = req.getHeaderNames();
-        MimeHeaders headers = new MimeHeaders();
-
-        while (enums.hasMoreElements()) {
-            String headerName = (String) enums.nextElement();
-            String headerValue = req.getHeader(headerName);
-            headers.addHeader(headerName, headerValue);
-        }
-
-        return headers;
-    }
-
-    private void registerEndpointUrlPattern(ServletAdapter a) {
-        String urlPattern = a.urlPattern;
+    private void registerEndpointUrlPattern(EndpointAdapter a) {
+        String urlPattern = a.getUrlPattern();
         if (urlPattern.indexOf("*.") != -1) {
             // cannot deal with implicit mapping right now
-            logger.warning(
-                WsservletMessages.SERVLET_WARNING_IGNORING_IMPLICIT_URL_PATTERN(a.name));
+            logger.warning("Ignoring implicit url-pattern "+urlPattern);
         } else if (urlPattern.endsWith("/*")) {
             pathUrlPatternEndpoints.add(a);
         } else {
             if (fixedUrlPatternEndpoints.containsKey(urlPattern)) {
-                logger.warning(
-                    WsservletMessages.SERVLET_WARNING_DUPLICATE_ENDPOINT_URL_PATTERN(a.name));
+                logger.warning("Ignoring duplicate url-pattern "+urlPattern);
             } else {
                 fixedUrlPatternEndpoints.put(urlPattern, a);
             }
@@ -262,9 +215,11 @@ public class WSServletDelegate {
     }
 
     /**
-     * Determines which {@link ServletAdapter} serves the given request.
+     * Determines which {@link EndpointAdapter} serves the given request.
+     *
+     * @param request the HTTP request object
      */
-    protected ServletAdapter getTarget(HttpServletRequest request) {
+    protected EndpointAdapter getTarget(HttpServletRequest request) {
 
         /*System.err.println("----");
         System.err.println("CONTEXT PATH   : " + request.getContextPath());
@@ -278,9 +233,9 @@ public class WSServletDelegate {
         String path =
             request.getRequestURI().substring(
                 request.getContextPath().length());
-        ServletAdapter result = fixedUrlPatternEndpoints.get(path);
+        EndpointAdapter result = fixedUrlPatternEndpoints.get(path);
         if (result == null) {
-            for (ServletAdapter candidate : pathUrlPatternEndpoints) {
+            for (EndpointAdapter candidate : pathUrlPatternEndpoints) {
                 String noSlashStar = candidate.getValidPath();
                 if (path.equals(noSlashStar) || path.startsWith(noSlashStar+"/") || path.startsWith(noSlashStar+"?")) {
                     result = candidate;
@@ -292,25 +247,7 @@ public class WSServletDelegate {
         return result;
     }
 
-    protected Localizer getLocalizerFor(ServletRequest request) {
-        Locale locale = request.getLocale();
-        if (locale.equals(defaultLocalizer.getLocale())) {
-            return defaultLocalizer;
-        }
-
-        synchronized (localizerMap) {
-            Localizer localizer = localizerMap.get(locale);
-            if (localizer == null) {
-                localizer = new Localizer(locale);
-                localizerMap.put(locale, localizer);
-            }
-            return localizer;
-        }
-    }
-
-    private static final Localizer defaultLocalizer = new Localizer();
     private static final Logger logger =
-        Logger.getLogger(
-            com.sun.xml.ws.util.Constants.LoggingDomain + ".servlet.http");
+        Logger.getLogger(WSServletDelegate.class.getName());
 
 }

@@ -36,50 +36,27 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.streaming.XMLStreamReaderFactory;
-import com.sun.xml.ws.binding.WebServiceFeatureList;
-import com.sun.xml.ws.handler.HandlerChainsModel;
-import com.sun.xml.ws.resources.ServerMessages;
-import com.sun.xml.ws.resources.WsservletMessages;
-import com.sun.xml.ws.server.EndpointFactory;
-import com.sun.xml.ws.server.ServerRtException;
-import com.sun.xml.ws.streaming.Attributes;
-import com.sun.xml.ws.streaming.TidyXMLStreamReader;
-import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
-import com.sun.xml.ws.util.HandlerAnnotationInfo;
-import com.sun.xml.ws.util.exception.LocatableWebServiceException;
-import com.sun.xml.ws.util.xml.XmlUtil;
-import org.xml.sax.EntityResolver;
-
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import static javax.xml.stream.XMLStreamConstants.*;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
-import javax.xml.transform.Source;
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,21 +64,13 @@ import java.util.logging.Logger;
 /**
  * Parses {@code sun-jaxws.xml}
  *
- * <p>
- * Since {@code sun-jaxws.xml} captures more information than what {@link WSEndpoint}
- * represents (in particular URL pattern and name), this class
- * takes a parameterization 'A' so that the user of this parser can choose to
- * create another type that wraps {@link WSEndpoint}.
- *
- * {@link HttpAdapter} and its derived type is used for this often,
- * but it can be anything.
- *
  * @author Jitendra Kotamraju
  */
 public class DeploymentDescriptorParser<A> {
     private final ClassLoader classLoader;
     private final ResourceLoader loader;
     private final AdapterFactory<A> adapterFactory;
+    private static final XMLInputFactory xif = XMLInputFactory.newInstance();
 
     /**
      * Endpoint names that are declared.
@@ -112,7 +81,7 @@ public class DeploymentDescriptorParser<A> {
     /**
      * WSDL/schema documents collected from /WEB-INF/wsdl. Keyed by the system ID.
      */
-    private final Map<String,Source> docs = new HashMap<String,Source>();
+    private final List<Source> docs = new ArrayList<Source>();
 
     /**
      *
@@ -121,9 +90,9 @@ public class DeploymentDescriptorParser<A> {
      * @param loader
      *      Used to locate resources, in particular WSDL.
      * @param adapterFactory
-     *      Creates {@link HttpAdapter} (or its derived class.)
+     *      Creates {@link EndpointAdapter} (or its derived class.)
      */
-    public DeploymentDescriptorParser(ClassLoader cl, ResourceLoader loader, AdapterFactory<A> adapterFactory) throws MalformedURLException {
+    public DeploymentDescriptorParser(ClassLoader cl, ResourceLoader loader, AdapterFactory<A> adapterFactory) throws IOException {
         classLoader = cl;
         this.loader = loader;
         this.adapterFactory = adapterFactory;
@@ -134,21 +103,24 @@ public class DeploymentDescriptorParser<A> {
 
     /**
      * Parses the {@code sun-jaxws.xml} file and configures
-     * a set of {@link HttpAdapter}s.
+     * a set of {@link EndpointAdapter}s.
      */
     public List<A> parse(String systemId, InputStream is) {
         XMLStreamReader reader = null;
         try {
-            reader = new TidyXMLStreamReader(
-                XMLStreamReaderFactory.create(systemId,is,true), is);
-            XMLStreamReaderUtil.nextElementContent(reader);
+            synchronized(xif) {
+                reader = xif.createXMLStreamReader(systemId, is);
+            }
+            nextElementContent(reader);
             return parseAdapters(reader);
+        } catch(XMLStreamException xe) {
+            throw new WebServiceException(xe);
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (XMLStreamException e) {
-                    throw new ServerRtException("runtime.parser.xmlReader",e);
+                    // ignore
                 }
             }
             try {
@@ -159,9 +131,18 @@ public class DeploymentDescriptorParser<A> {
         }
     }
 
+    private static int nextElementContent(XMLStreamReader reader) throws XMLStreamException {
+        do {
+            int state = reader.next();
+            if (state == START_ELEMENT || state == END_ELEMENT || state == END_DOCUMENT) {
+                return state;
+            }
+        } while(true);
+    }
+
     /**
      * Parses the {@code sun-jaxws.xml} file and configures
-     * a set of {@link HttpAdapter}s.
+     * a set of {@link EndpointAdapter}s.
      */
     public List<A> parse(File f) throws IOException {
         FileInputStream in = new FileInputStream(f);
@@ -175,7 +156,7 @@ public class DeploymentDescriptorParser<A> {
     /**
      * Get all the WSDL & schema documents recursively.
      */
-    private void collectDocs(String dirPath) throws MalformedURLException {
+    private void collectDocs(String dirPath) throws IOException {
         Set<String> paths = loader.getResourcePaths(dirPath);
         if (paths != null) {
             for (String path : paths) {
@@ -185,83 +166,70 @@ public class DeploymentDescriptorParser<A> {
                     collectDocs(path);
                 } else {
                     URL res = loader.getResource(path);
-                    docs.put(res.toString(),SDDocumentSource.create(res));
+                    String systemId = res.toExternalForm();
+                    InputStream is = res.openStream();
+                    Source source = new StreamSource(is, systemId);
+                    docs.add(source);
                 }
             }
         }
     }
 
-
-    private List<A> parseAdapters(XMLStreamReader reader) {
+    private List<A> parseAdapters(XMLStreamReader reader) throws XMLStreamException {
         if (!reader.getName().equals(QNAME_ENDPOINTS)) {
             failWithFullName("runtime.parser.invalidElement", reader);
         }
 
         List<A> adapters = new ArrayList<A>();
 
-        Attributes attrs = XMLStreamReaderUtil.getAttributes(reader);
-        String version = getMandatoryNonEmptyAttribute(reader, attrs, ATTR_VERSION);
+        String version = getMandatoryNonEmptyAttribute(reader, ATTR_VERSION);
         if (!version.equals(ATTRVALUE_VERSION_1_0)) {
-            failWithLocalName("runtime.parser.invalidVersionNumber",
-                reader, version);
+            failWithLocalName("sun-jaxws.xml's version attribut runtime.parser.invalidVersionNumber",
+                    reader, version);
         }
 
-        while (XMLStreamReaderUtil.nextElementContent(reader) !=
-            XMLStreamConstants.END_ELEMENT) if (reader.getName().equals(QNAME_ENDPOINT)) {
+        while (nextElementContent(reader) != XMLStreamConstants.END_ELEMENT) {
+            if (reader.getName().equals(QNAME_ENDPOINT)) {
 
-            attrs = XMLStreamReaderUtil.getAttributes(reader);
-            String name = getMandatoryNonEmptyAttribute(reader, attrs, ATTR_NAME);
-            if (!names.add(name)) {
-                logger.warning(
-                        WsservletMessages.SERVLET_WARNING_DUPLICATE_ENDPOINT_NAME(/*name*/));
+                String name = getMandatoryNonEmptyAttribute(reader, ATTR_NAME);
+                if (!names.add(name)) {
+                    logger.warning("sun-jaxws.xml contains duplicate endpoint names. "+
+                            "The first duplicate name is = "+name);
+                }
+
+                String implementationName =
+                    getMandatoryNonEmptyAttribute(reader, ATTR_IMPLEMENTATION);
+                Class<?> implementorClass = getImplementorClass(implementationName, reader);
+
+                QName serviceName = getQNameAttribute(reader, ATTR_SERVICE);
+                QName portName = getQNameAttribute(reader, ATTR_PORT);
+
+                //get enable-mtom attribute value
+                String enable_mtom = getAttribute(reader, ATTR_ENABLE_MTOM);
+                String mtomThreshold = getAttribute(reader, ATTR_MTOM_THRESHOLD_VALUE);
+                String bindingId = getAttribute(reader, ATTR_BINDING);
+                if (bindingId != null) {
+                    // Convert short-form tokens to API's binding ids
+                    bindingId = getBindingIdForToken(bindingId);
+                }
+                String urlPattern =
+                        getMandatoryNonEmptyAttribute(reader, ATTR_URL_PATTERN);
+
+                //boolean handlersSetInDD = setHandlersAndRoles(binding, reader, serviceName, portName);
+
+                ensureNoContent(reader);
+                adapters.add(adapterFactory.createAdapter(name, urlPattern,
+                        implementorClass, serviceName, portName, bindingId,
+                        docs));
+
+            } else {
+                failWithLocalName("runtime.parser.invalidElement", reader);
             }
-
-            String implementationName =
-                    getMandatoryNonEmptyAttribute(reader, attrs, ATTR_IMPLEMENTATION);
-            Class<?> implementorClass = getImplementorClass(implementationName,reader);
-            EndpointFactory.verifyImplementorClass(implementorClass);
-
-            SDDocumentSource primaryWSDL = getPrimaryWSDL(reader, attrs, implementorClass);
-
-            QName serviceName = getQNameAttribute(attrs, ATTR_SERVICE);
-            if (serviceName == null)
-                serviceName = EndpointFactory.getDefaultServiceName(implementorClass);
-
-            QName portName = getQNameAttribute(attrs, ATTR_PORT);
-            if (portName == null)
-                portName = EndpointFactory.getDefaultPortName(serviceName, implementorClass);
-
-            //get enable-mtom attribute value
-            String enable_mtom = getAttribute(attrs, ATTR_ENABLE_MTOM);
-            String mtomThreshold = getAttribute(attrs, ATTR_MTOM_THRESHOLD_VALUE);
-            String bindingId = getAttribute(attrs, ATTR_BINDING);
-            if (bindingId != null)
-                // Convert short-form tokens to API's binding ids
-                bindingId = getBindingIdForToken(bindingId);
-            WSBinding binding = createBinding(bindingId,implementorClass,
-                    enable_mtom,mtomThreshold);
-            String urlPattern =
-                    getMandatoryNonEmptyAttribute(reader, attrs, ATTR_URL_PATTERN);
-
-            // TODO use 'docs' as the metadata. If wsdl is non-null it's the primary.
-
-            boolean handlersSetInDD = setHandlersAndRoles(binding, reader, serviceName, portName);
-
-            ensureNoContent(reader);
-            WSEndpoint<?> endpoint = WSEndpoint.create(
-                    implementorClass, !handlersSetInDD,
-                    null,
-                    serviceName, portName, container, binding,
-                    primaryWSDL, docs.values(), createEntityResolver(),false
-            );
-            adapters.add(adapterFactory.createAdapter(name, urlPattern, endpoint));
-        } else {
-            failWithLocalName("runtime.parser.invalidElement", reader);
         }
         return adapters;
     }
 
-    /**
+    /*
      * @param ddBindingId
      *      binding id explicitlyspecified in the DeploymentDescriptor or parameter
      * @param implClass
@@ -272,7 +240,7 @@ public class DeploymentDescriptorParser<A> {
      *      threshold value specified in DD
      * @return
      *      is returned with only MTOMFeature set resolving the various precendece rules
-     */
+     *
     private static WSBinding createBinding(String ddBindingId,Class implClass,
                                           String mtomEnabled, String mtomThreshold) {
         // Features specified through DD
@@ -309,6 +277,7 @@ public class DeploymentDescriptorParser<A> {
 
         return bindingID.createBinding(features.toArray());
     }
+    */
 
     private static boolean checkMtomConflict(MTOMFeature lhs, MTOMFeature rhs) {
         if(lhs==null || rhs==null)  return false;
@@ -344,26 +313,25 @@ public class DeploymentDescriptorParser<A> {
      * Creates a new "Adapter".
      *
      * <P>
-     * Normally 'A' would be {@link HttpAdapter} or some derived class.
+     * Normally 'A' would be {@link EndpointAdapter} or some derived class.
      * But the parser doesn't require that to be of any particular type.
      */
     public static interface AdapterFactory<A> {
         A createAdapter(String name, String urlPattern, Class implType,
             QName serviceName, QName portName, String bindingId,
-            List<Source> metadata, EntityResolver resolver,
-            WebServiceFeature... features);
+            List<Source> metadata, WebServiceFeature... features);
     }
 
-    /**
+    /*
      * Checks the deployment descriptor or {@link @WebServiceProvider} annotation
      * to see if it points to any WSDL. If so, returns the {@link SDDocumentSource}.
      *
      * @return
      *      The pointed WSDL, if any. Otherwise null.
-     */
-    private SDDocumentSource getPrimaryWSDL(XMLStreamReader xsr, Attributes attrs, Class<?> implementorClass) {
+     *
+    private SDDocumentSource getPrimaryWSDL(XMLStreamReader xsr, Class<?> implementorClass) {
 
-        String wsdlFile = getAttribute(attrs, ATTR_WSDL);
+        String wsdlFile = getAttribute(xsr, ATTR_WSDL);
         if (wsdlFile == null) {
             wsdlFile = EndpointFactory.getWsdlLocation(implementorClass);
         }
@@ -394,10 +362,11 @@ public class DeploymentDescriptorParser<A> {
 
         return null;
     }
+    */
 
-    /**
+    /*
      * Creates an {@link org.xml.sax.EntityResolver} that consults {@code /WEB-INF/jax-ws-catalog.xml}.
-     */
+     *
     private EntityResolver createEntityResolver() {
         try {
             return XmlUtil.createEntityResolver(loader.getCatalogFile());
@@ -405,17 +374,18 @@ public class DeploymentDescriptorParser<A> {
             throw new WebServiceException(e);
         }
     }
+    */
 
-    protected String getAttribute(Attributes attrs, String name) {
-        String value = attrs.getValue(name);
+    protected String getAttribute(XMLStreamReader reader, String name) {
+        String value = reader.getAttributeValue(null, name);
         if (value != null) {
             value = value.trim();
         }
         return value;
     }
 
-    protected QName getQNameAttribute(Attributes attrs, String name) {
-        String value = getAttribute(attrs, name);
+    protected QName getQNameAttribute(XMLStreamReader reader, String name) {
+        String value = reader.getAttributeValue(null, name);
         if (value == null || value.equals("")) {
             return null;
         } else {
@@ -423,8 +393,8 @@ public class DeploymentDescriptorParser<A> {
         }
     }
 
-    protected String getNonEmptyAttribute(XMLStreamReader reader, Attributes attrs, String name) {
-        String value = getAttribute(attrs, name);
+    protected String getNonEmptyAttribute(XMLStreamReader reader, String name) {
+        String value = reader.getAttributeValue(null, name);
         if (value != null && value.equals("")) {
             failWithLocalName(
                 "runtime.parser.invalidAttributeValue",
@@ -434,34 +404,32 @@ public class DeploymentDescriptorParser<A> {
         return value;
     }
 
-    protected String getMandatoryAttribute(XMLStreamReader reader, Attributes attrs, String name) {
-        String value = getAttribute(attrs, name);
+    protected String getMandatoryAttribute(XMLStreamReader reader, String name) {
+        String value = reader.getAttributeValue(null, name);
         if (value == null) {
             failWithLocalName("runtime.parser.missing.attribute", reader, name);
         }
         return value;
     }
 
-    protected String getMandatoryNonEmptyAttribute(XMLStreamReader reader, Attributes attributes,
-                                                   String name) {
-        String value = getAttribute(attributes, name);
+    protected String getMandatoryNonEmptyAttribute(XMLStreamReader reader, String name) {
+        String value = reader.getAttributeValue(null, name);
         if (value == null) {
-            failWithLocalName("runtime.parser.missing.attribute", reader, name);
+            failWithLocalName("Missing attribute", reader, name);
         } else if (value.equals("")) {
-            failWithLocalName(
-                "runtime.parser.invalidAttributeValue",
+            failWithLocalName("Invalid attribute value",
                 reader,
                 name);
         }
         return value;
     }
 
-    /**
+    /*
      * Parses the handler and role information and sets it
      * on the {@link WSBinding}.
      * @return true if <handler-chains> element present in DD
      *         false otherwise.
-     */
+     *
     protected boolean setHandlersAndRoles(WSBinding binding, XMLStreamReader reader, QName serviceName, QName portName) {
 
         if (XMLStreamReaderUtil.nextElementContent(reader) ==
@@ -484,10 +452,11 @@ public class DeploymentDescriptorParser<A> {
         XMLStreamReaderUtil.nextContent(reader);
         return true;
     }
+    */
 
     protected static void ensureNoContent(XMLStreamReader reader) {
         if (reader.getEventType() != XMLStreamConstants.END_ELEMENT) {
-            fail("runtime.parser.unexpectedContent", reader);
+            fail("While parsing sun-jaxws.xml, found unexpected content at line=", reader);
         }
     }
 
@@ -498,28 +467,21 @@ public class DeploymentDescriptorParser<A> {
     }
 
     protected static void failWithFullName(String key, XMLStreamReader reader) {
-        throw new ServerRtException(
-            key,
-            reader.getLocation().getLineNumber(),
-            reader.getName());
+        String msg = key + reader.getLocation().getLineNumber() +
+                reader.getName();
+        throw new WebServiceException(msg);
     }
 
     protected static void failWithLocalName(String key, XMLStreamReader reader) {
-        throw new ServerRtException(
-            key,
-            reader.getLocation().getLineNumber(),
-            reader.getLocalName());
+        String msg = key + reader.getLocation().getLineNumber() +
+                reader.getLocalName();
+        throw new WebServiceException(msg);
     }
 
-    protected static void failWithLocalName(
-        String key,
-        XMLStreamReader reader,
-        String arg) {
-        throw new ServerRtException(
-            key,
-            reader.getLocation().getLineNumber(),
-            reader.getLocalName(),
-            arg);
+    protected static void failWithLocalName(String key, XMLStreamReader reader, String arg) {
+        String msg = key + reader.getLocation().getLineNumber() +
+                reader.getLocalName() + arg;
+        throw new WebServiceException(msg);
     }
 
     protected Class loadClass(String name) {

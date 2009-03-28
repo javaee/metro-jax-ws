@@ -36,47 +36,33 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
-import com.sun.xml.ws.transport.http.server.ServerAdapterList;
-import com.sun.xml.ws.transport.http.servlet.WSServletContextListener;
-import com.sun.xml.ws.api.server.Invoker;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.SDDocumentSource;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
 
-import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.spi.Provider;
-import javax.xml.ws.EndpointContext;
 import javax.xml.ws.EndpointContext;
 import javax.xml.ws.WebServiceFeature;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import java.util.*;
+import javax.xml.ws.spi.Provider;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
-
-import org.xml.sax.EntityResolver;
 /**
  * @author Jitendra Kotamraju
 */
-public final class EndpointAdapterFactory implements DeploymentDescriptorParser.NewAdapterFactory<EndpointAdapter> {
+public final class EndpointAdapterFactory implements DeploymentDescriptorParser.AdapterFactory<EndpointAdapter> {
     private static final Logger LOGGER = Logger.getLogger(EndpointAdapterFactory.class.getName());
 
-    private final ServletContext context;
     private final EndpointContext appContext;
 
-    public EndpointAdapterFactory(ServletContext context, EndpointContext appContext) {
-        this.context = context;
-        this.appContext = appContext;
+    public EndpointAdapterFactory() {
+        this.appContext = new EndpointContextImpl();
     }
 
-    public EndpointAdapter createAdapter(String urlPattern, Class implType,
+    public EndpointAdapter createAdapter(String name, String urlPattern, Class implType,
         QName serviceName, QName portName, String bindingId,
-        List<Source> metadata, EntityResolver resolver,
-        WebServiceFeature... features) {
+        List<Source> metadata, WebServiceFeature... features) {
 
         LOGGER.info("Creating Endpoint using JAX-WS 2.2 HTTP SPI");
         InvokerImpl endpointInvoker = new InvokerImpl(implType);
@@ -108,8 +94,9 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
         }
 
         // Set DD's handlers
-        endpoint.getBinding().setHandlerChain(binding.getHandlerChain());
+        // endpoint.getBinding().setHandlerChain(binding.getHandlerChain());
 
         return new EndpointAdapter(endpoint, urlPattern, appContext);
     }
+
 }
