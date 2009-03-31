@@ -342,7 +342,7 @@ public class SOAPBindingCodec extends MimeCodec implements com.sun.xml.ws.api.pi
 
     public void decode(InputStream in, String contentType, Packet packet) throws IOException {
         if (contentType == null) {
-            throw new UnsupportedMediaException();
+            contentType = xmlMimeType;
         }
 
         preDecode(packet);
