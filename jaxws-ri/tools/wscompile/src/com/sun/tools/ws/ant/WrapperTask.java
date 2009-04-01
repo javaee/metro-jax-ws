@@ -74,14 +74,19 @@ public abstract class WrapperTask extends ProtectedTask {
             if(doEndorsedMagic) {
                 return Invoker.createClassLoader(cl);
             } else {
-                // check if we are indeed loading JAX-WS 2.1 API
-                if(Invoker.checkIfLoading21API())
+                // check if we are indeed loading JAX-WS 2.2 API
+                if(Invoker.checkIfLoading22API())
                     return cl;
 
                 if(Service.class.getClassLoader()==null)
                     throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(getTaskName()));
-                else
-                    throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_20_API(Which.which(Service.class)));
+                else {
+                    // check if we are indeed loading JAX-WS 2.1 API
+                    if(Invoker.checkIfLoading21API())
+                       throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_21_API(Which.which(Service.class)));
+                    else
+                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_20_API(Which.which(Service.class)));
+                }
             }
         } catch (ToolsJarNotFoundException e) {
             throw new ClassNotFoundException(e.getMessage(),e);

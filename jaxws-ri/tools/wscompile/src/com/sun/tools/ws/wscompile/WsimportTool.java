@@ -58,6 +58,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.EndpointReference;
+import javax.xml.ws.EndpointContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -269,7 +270,8 @@ public class WsimportTool {
             args[3] = classpathString;
             int baseIndex = 4;
             if (bootCP) {
-                args[baseIndex++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+                //TODO Do we need JAXB 2.2 API in bootclasspath, if so look for JAXBPermission added in 2.2
+                args[baseIndex++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointContext.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
             }
 
             if (options.debug) {

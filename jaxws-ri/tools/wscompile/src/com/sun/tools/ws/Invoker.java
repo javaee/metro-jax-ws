@@ -44,8 +44,10 @@ import com.sun.xml.bind.util.Which;
 
 import javax.xml.ws.Service;
 import javax.xml.ws.WebServiceFeature;
+import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -144,12 +146,28 @@ public final class Invoker {
     }
 
     /**
+    * Returns true if the RI appears to be loading the JAX-WS 2.2 API.
+    */
+   public static boolean checkIfLoading22API() {
+       try {
+           Service.class.getConstructor(java.net.URL.class, QName.class, WebServiceFeature[].class);
+           // yup. things look good.
+           return true;
+       } catch (NoSuchMethodException e) {
+       } catch (LinkageError e) {
+       }
+       // nope
+       return false;
+   }
+
+
+    /**
      * Creates a classloader that can load JAXB/WS 2.1 API and tools.jar,
      * and then return a classloader that can RI classes, which can see all those APIs and tools.jar.  
      */
-    public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, MalformedURLException, ToolsJarNotFoundException {
+    public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
 
-        URL[] urls = findIstackAPIs(cl);
+        URL[] urls = findIstack22APIs(cl);
         if(urls.length==0)
             return cl;  // we seem to be able to load everything already. no need for the hack
 
@@ -176,7 +194,7 @@ public final class Invoker {
     /**
      * Creates a classloader for loading JAXB/WS 2.1 jar and tools.jar
      */
-    private static URL[] findIstackAPIs(ClassLoader cl) throws ClassNotFoundException, MalformedURLException, ToolsJarNotFoundException {
+    private static URL[] findIstack21APIs(ClassLoader cl) throws ClassNotFoundException, MalformedURLException, ToolsJarNotFoundException {
         List<URL> urls = new ArrayList<URL>();
 
         if(Service.class.getClassLoader()==null) {
@@ -186,6 +204,29 @@ public final class Invoker {
                 throw new ClassNotFoundException("There's no JAX-WS 2.1 API in the classpath");
             urls.add(ParallelWorldClassLoader.toJarUrl(res));
 
+            res = cl.getResource("javax/xml/bind/annotation/XmlSeeAlso.class");
+            if(res==null)
+                throw new ClassNotFoundException("There's no JAXB 2.1 API in the classpath");
+            urls.add(ParallelWorldClassLoader.toJarUrl(res));
+        }
+
+        findToolsJar(cl, urls);
+
+        return urls.toArray(new URL[urls.size()]);
+    }
+    /**
+     * Creates a classloader for loading JAXB/WS 2.2 jar and tools.jar
+     */
+    private static URL[] findIstack22APIs(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
+        List<URL> urls = new ArrayList<URL>();
+
+        if(Service.class.getClassLoader()==null) {
+            // JAX-WS API is loaded from bootstrap classloader
+            URL res = cl.getResource("javax/xml/ws/EndpointContext.class");
+            if(res==null)
+                throw new ClassNotFoundException("There's no JAX-WS 2.2 API in the classpath");
+            urls.add(ParallelWorldClassLoader.toJarUrl(res));
+            //TODO do we need to laod JAXB 2.2 API? if so look for JAXBPermission added in 2.2
             res = cl.getResource("javax/xml/bind/annotation/XmlSeeAlso.class");
             if(res==null)
                 throw new ClassNotFoundException("There's no JAXB 2.1 API in the classpath");
