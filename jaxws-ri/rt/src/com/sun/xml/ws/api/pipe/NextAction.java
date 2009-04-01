@@ -130,9 +130,22 @@ public final class NextAction {
         set(SUSPEND, next, null, null);
     }
 
+    public Tube getNext() {
+        return next;
+    }
+
+    public Packet getPacket() {
+        return packet;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
     /**
      * Dumps the contents to assist debugging.
      */
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(super.toString()).append(" [");
