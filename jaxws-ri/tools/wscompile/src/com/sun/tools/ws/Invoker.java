@@ -150,7 +150,7 @@ public final class Invoker {
     */
    public static boolean checkIfLoading22API() {
        try {
-           Service.class.getConstructor(java.net.URL.class, QName.class, WebServiceFeature[].class);
+           Service.class.getMethod("create",java.net.URL.class, QName.class, WebServiceFeature[].class);
            // yup. things look good.
            return true;
        } catch (NoSuchMethodException e) {
