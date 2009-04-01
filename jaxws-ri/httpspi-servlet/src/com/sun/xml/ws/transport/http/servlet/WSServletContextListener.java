@@ -34,8 +34,10 @@
  * holder.
  */
 
-package com.sun.xml.ws.transport.httpspi.servlet;
+package com.sun.xml.ws.transport.http.servlet;
 
+
+import com.sun.xml.ws.transport.httpspi.servlet.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
@@ -101,6 +103,9 @@ public final class WSServletContextListener
             if(sunJaxWsXml==null)
                 throw new WebServiceException("Runtime descriptor "+JAXWS_RI_RUNTIME+" is mising");
             List<EndpointAdapter> adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
+            for(EndpointAdapter adapter : adapters) {
+                adapter.publish();
+            }
 
             delegate = createDelegate(adapters, context);
 

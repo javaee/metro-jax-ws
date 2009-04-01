@@ -34,7 +34,9 @@
  * holder.
  */
 
-package com.sun.xml.ws.transport.httpspi.servlet;
+package com.sun.xml.ws.transport.http.servlet;
+
+import com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

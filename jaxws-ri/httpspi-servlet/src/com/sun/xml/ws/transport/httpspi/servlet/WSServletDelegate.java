@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
-class WSServletDelegate {
+public class WSServletDelegate {
 
     /**
      * All {@link EndpointAdapter}s that are deployed in the current web appliation.

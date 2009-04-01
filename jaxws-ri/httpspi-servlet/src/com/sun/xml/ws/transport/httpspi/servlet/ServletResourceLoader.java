@@ -46,7 +46,7 @@ import java.util.Set;
  *
  * @author Kohsuke Kawaguchi
  */
-final class ServletResourceLoader implements ResourceLoader {
+public final class ServletResourceLoader implements ResourceLoader {
     private final ServletContext context;
 
     public ServletResourceLoader(ServletContext context) {

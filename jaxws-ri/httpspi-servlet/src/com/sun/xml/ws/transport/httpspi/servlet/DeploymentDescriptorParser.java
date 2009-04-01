@@ -217,6 +217,7 @@ public class DeploymentDescriptorParser<A> {
 
                 //boolean handlersSetInDD = setHandlersAndRoles(binding, reader, serviceName, portName);
 
+                nextElementContent(reader);
                 ensureNoContent(reader);
                 adapters.add(adapterFactory.createAdapter(name, urlPattern,
                         implementorClass, serviceName, portName, bindingId,
