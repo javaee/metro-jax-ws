@@ -37,7 +37,6 @@
 package com.sun.xml.ws.transport.http.server;
 
 import com.sun.net.httpserver.HttpContext;
-import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.transport.http.HttpAdapterList;
 import com.sun.xml.ws.server.ServerRtException;
@@ -108,13 +107,15 @@ public final class HttpEndpoint extends com.sun.xml.ws.api.server.HttpEndpoint {
     }
 
     public void stop() {
-        if (address == null) {
-            // Application created its own HttpContext
-            // httpContext.setHandler(null);
-            httpContext.getServer().removeContext(httpContext);
-        } else {
-            // Remove HttpContext created by JAXWS runtime 
-            ServerMgr.getInstance().removeContext(httpContext);
+        if (httpContext != null) {
+            if (address == null) {
+                // Application created its own HttpContext
+                // httpContext.setHandler(null);
+                httpContext.getServer().removeContext(httpContext);
+            } else {
+                // Remove HttpContext created by JAXWS runtime
+                ServerMgr.getInstance().removeContext(httpContext);
+            }
         }
 
         // Invoke WebService Life cycle method
