@@ -82,13 +82,28 @@ public final class Invoker {
             if(Arrays.asList(args).contains("-Xendorsed"))
                 cl = createClassLoader(cl); // perform JDK6 workaround hack
             else {
-                if(!checkIfLoading21API()) {
-                    if(Service.class.getClassLoader()==null)
-                        System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED());
-                    else
-                        System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_20_API(Which.which(Service.class)));
+                // check if we are indeed loading JAX-WS 2.2 API
+                if (!Invoker.checkIfLoading22API()) {
+
+                    // check if we are indeed loading JAX-WS 2.1 API
+                    if (Invoker.checkIfLoading21API()) {
+                        if (Service.class.getClassLoader() == null)
+                            System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED("2.1", "2.2"));
+                        else {
+                            System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.1", Which.which(Service.class),"2.2"));
+                        }
+                    }
+
+                    // Loading JAX-WS 2.0 API
+                    if (Service.class.getClassLoader() == null)
+                        System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED("2.0", "2.2"));
+                    else {
+                        System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.0", Which.which(Service.class),"2.2"));   
+                    }
+
                     return -1;
                 }
+
                 //find and load tools.jar
                 List<URL> urls = new ArrayList<URL>();
                 findToolsJar(cl, urls);

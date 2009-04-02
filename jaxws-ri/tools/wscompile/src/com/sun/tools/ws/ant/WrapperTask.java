@@ -58,7 +58,7 @@ public abstract class WrapperTask extends ProtectedTask {
 
     /**
      * Set to true to perform the endorsed directory override so that
-     * Ant tasks can run on JavaSE 6. 
+     * Ant tasks can run on JavaSE 6.
      */
     public void setXendorsed(boolean f) {
         this.doEndorsedMagic = f;
@@ -71,25 +71,31 @@ public abstract class WrapperTask extends ProtectedTask {
     protected ClassLoader createClassLoader() throws ClassNotFoundException, IOException {
         try {
             ClassLoader cl = getClass().getClassLoader();
-            if(doEndorsedMagic) {
+            if (doEndorsedMagic) {
                 return Invoker.createClassLoader(cl);
             } else {
                 // check if we are indeed loading JAX-WS 2.2 API
-                if(Invoker.checkIfLoading22API())
+                if (Invoker.checkIfLoading22API())
                     return cl;
 
-                if(Service.class.getClassLoader()==null)
-                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(getTaskName()));
+                // check if we are indeed loading JAX-WS 2.1 API
+                if (Invoker.checkIfLoading21API()) {
+                    if (Service.class.getClassLoader() == null)
+                        throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED("2.1", "2.2", getTaskName()));
+                    else {
+                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.1", Which.which(Service.class), "2.2"));
+                    }
+                }
+
+                // Loading JAX-WS 2.0 API
+                if (Service.class.getClassLoader() == null)
+                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED("2.0", "2.2", getTaskName()));
                 else {
-                    // check if we are indeed loading JAX-WS 2.1 API
-                    if(Invoker.checkIfLoading21API())
-                       throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_21_API(Which.which(Service.class)));
-                    else
-                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_20_API(Which.which(Service.class)));
+                    throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.0", Which.which(Service.class), "2.2"));
                 }
             }
         } catch (ToolsJarNotFoundException e) {
-            throw new ClassNotFoundException(e.getMessage(),e);
+            throw new ClassNotFoundException(e.getMessage(), e);
         }
     }
 }
