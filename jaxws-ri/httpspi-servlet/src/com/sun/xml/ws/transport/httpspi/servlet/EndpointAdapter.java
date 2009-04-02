@@ -38,7 +38,6 @@ package com.sun.xml.ws.transport.httpspi.servlet;
 
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.spi.http.HttpContext;
-import javax.xml.ws.EndpointContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,13 +50,11 @@ public final class EndpointAdapter {
     private final Endpoint endpoint;
     private final String urlPattern;
     private final EndpointHttpContext httpContext;
-    private final EndpointContext appContext;
 
-    public EndpointAdapter(Endpoint endpoint, String urlPattern, EndpointContext appContext) {
+    public EndpointAdapter(Endpoint endpoint, String urlPattern) {
         this.endpoint = endpoint;
         this.urlPattern = urlPattern;
-        this.appContext = appContext;
-        httpContext = new EndpointHttpContext(urlPattern, appContext);
+        httpContext = new EndpointHttpContext(urlPattern);
     }
 
     public Endpoint getEndpoint() {

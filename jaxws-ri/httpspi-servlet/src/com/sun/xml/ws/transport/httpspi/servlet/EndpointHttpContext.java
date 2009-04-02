@@ -37,7 +37,6 @@
 package com.sun.xml.ws.transport.httpspi.servlet;
 
 import javax.xml.ws.spi.http.HttpContext;
-import javax.xml.ws.EndpointContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,11 +48,9 @@ import java.io.IOException;
 */
 public final class EndpointHttpContext extends HttpContext {
     private final String urlPattern;
-    private final EndpointContext appContext;
 
-    public EndpointHttpContext(String urlPattern, EndpointContext appContext) {
+    public EndpointHttpContext(String urlPattern) {
         this.urlPattern = urlPattern;
-        this.appContext = appContext;
     }
 
     void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {

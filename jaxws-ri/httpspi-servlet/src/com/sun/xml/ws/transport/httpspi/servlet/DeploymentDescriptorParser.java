@@ -81,7 +81,7 @@ public class DeploymentDescriptorParser<A> {
     /**
      * WSDL/schema documents collected from /WEB-INF/wsdl. Keyed by the system ID.
      */
-    private final List<Source> docs = new ArrayList<Source>();
+    private final List<URL> docs = new ArrayList<URL>();
 
     /**
      *
@@ -113,6 +113,8 @@ public class DeploymentDescriptorParser<A> {
             }
             nextElementContent(reader);
             return parseAdapters(reader);
+        } catch(IOException e) {
+            throw new WebServiceException(e);
         } catch(XMLStreamException xe) {
             throw new WebServiceException(xe);
         } finally {
@@ -166,16 +168,13 @@ public class DeploymentDescriptorParser<A> {
                     collectDocs(path);
                 } else {
                     URL res = loader.getResource(path);
-                    String systemId = res.toExternalForm();
-                    InputStream is = res.openStream();
-                    Source source = new StreamSource(is, systemId);
-                    docs.add(source);
+                    docs.add(res);
                 }
             }
         }
     }
 
-    private List<A> parseAdapters(XMLStreamReader reader) throws XMLStreamException {
+    private List<A> parseAdapters(XMLStreamReader reader) throws IOException, XMLStreamException {
         if (!reader.getName().equals(QNAME_ENDPOINTS)) {
             failWithFullName("runtime.parser.invalidElement", reader);
         }
@@ -219,9 +218,16 @@ public class DeploymentDescriptorParser<A> {
 
                 nextElementContent(reader);
                 ensureNoContent(reader);
+
+                List<Source> metadata = new ArrayList<Source>();
+                for(URL url : docs) {
+                    Source source = new StreamSource(url.openStream(), url.toExternalForm());
+                    metadata.add(source);
+                }
+
                 adapters.add(adapterFactory.createAdapter(name, urlPattern,
                         implementorClass, serviceName, portName, bindingId,
-                        docs));
+                        metadata));
 
             } else {
                 failWithLocalName("runtime.parser.invalidElement", reader);

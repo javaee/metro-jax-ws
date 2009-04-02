@@ -36,25 +36,23 @@
 
 package com.sun.xml.ws.transport.httpspi.servlet;
 
-import javax.xml.ws.spi.http.HttpContext;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.EndpointContext;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * @author Jitendra Kotamraju
  */
 public class EndpointContextImpl extends EndpointContext {
 
-    private final Map<Endpoint, HttpContext> map = new HashMap<Endpoint, HttpContext>();
+    private final Set<Endpoint> set = new HashSet<Endpoint>();
 
-    public void add(EndpointAdapter adapter) {
-        map.put(adapter.getEndpoint(), adapter.getContext());
+    void add(Endpoint endpoint) {
+        set.add(endpoint);
     }
 
     public Set<Endpoint> getEndpoints() {
-        return map.keySet();
+        return set;
     }
 }

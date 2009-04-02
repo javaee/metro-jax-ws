@@ -40,7 +40,6 @@ package com.sun.xml.ws.transport.httpspi.servlet;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.ws.Endpoint;
-import javax.xml.ws.EndpointContext;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.spi.Provider;
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ import java.util.logging.Logger;
 public final class EndpointAdapterFactory implements DeploymentDescriptorParser.AdapterFactory<EndpointAdapter> {
     private static final Logger LOGGER = Logger.getLogger(EndpointAdapterFactory.class.getName());
 
-    private final EndpointContext appContext;
+    private final EndpointContextImpl appContext;
 
     public EndpointAdapterFactory() {
         this.appContext = new EndpointContextImpl();
@@ -67,7 +66,7 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
         LOGGER.info("Creating Endpoint using JAX-WS 2.2 HTTP SPI");
         InvokerImpl endpointInvoker = new InvokerImpl(implType);
         Endpoint endpoint = Provider.provider().createEndpoint(bindingId, implType, endpointInvoker, features);
-
+        appContext.add(endpoint);
         endpoint.setEndpointContext(appContext);
 
         // Use DD's service name, port names as WSDL_SERVICE and WSDL_PORT
@@ -96,7 +95,7 @@ public final class EndpointAdapterFactory implements DeploymentDescriptorParser.
         // Set DD's handlers
         // endpoint.getBinding().setHandlerChain(binding.getHandlerChain());
 
-        return new EndpointAdapter(endpoint, urlPattern, appContext);
+        return new EndpointAdapter(endpoint, urlPattern);
     }
 
 }
