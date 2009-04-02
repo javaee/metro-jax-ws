@@ -152,34 +152,38 @@ public class ServiceGenerator extends GeneratorBase {
         JMethod constructor1 = cls.constructor(JMod.PUBLIC);
         String constructor1Str = String.format("super(%s, %s);", wsdlLocationName, serviceName);
         constructor1.body().directStatement(constructor1Str);
-
-        JMethod constructor2 = cls.constructor(JMod.PUBLIC);
-        constructor2.varParam(WebServiceFeature.class, "features");
-        String constructor2Str = String.format("super(%s, %s, features);", wsdlLocationName, serviceName);
-        constructor2.body().directStatement(constructor2Str);
+        if (options.target.isLaterThan(Options.Target.V2_2)) {
+            JMethod constructor2 = cls.constructor(JMod.PUBLIC);
+            constructor2.varParam(WebServiceFeature.class, "features");
+            String constructor2Str = String.format("super(%s, %s, features);", wsdlLocationName, serviceName);
+            constructor2.body().directStatement(constructor2Str);
+        }
 
         JMethod constructor3 = cls.constructor(JMod.PUBLIC);
         constructor3.param(URL.class, "wsdlLocation");
         String constructor3Str = String.format("super(wsdlLocation, %s);", serviceName);
         constructor3.body().directStatement(constructor3Str);
 
-        JMethod constructor4 = cls.constructor(JMod.PUBLIC);
-        constructor4.param(URL.class, "wsdlLocation");
-        constructor4.varParam(WebServiceFeature.class, "features");
-        String constructor4Str = String.format("super(wsdlLocation, %s, features);", serviceName);
-        constructor4.body().directStatement(constructor4Str);       
+        if (options.target.isLaterThan(Options.Target.V2_2)) {
+            JMethod constructor4 = cls.constructor(JMod.PUBLIC);
+            constructor4.param(URL.class, "wsdlLocation");
+            constructor4.varParam(WebServiceFeature.class, "features");
+            String constructor4Str = String.format("super(wsdlLocation, %s, features);", serviceName);
+            constructor4.body().directStatement(constructor4Str);
+        }
 
         JMethod constructor5 = cls.constructor(JMod.PUBLIC);
         constructor5.param(URL.class, "wsdlLocation");
         constructor5.param(QName.class, "serviceName");
         constructor5.body().directStatement("super(wsdlLocation, serviceName);");
 
-        JMethod constructor6 = cls.constructor(JMod.PUBLIC);
-        constructor6.param(URL.class, "wsdlLocation");
-        constructor6.param(QName.class, "serviceName");
-        constructor6.varParam(WebServiceFeature.class, "features");
-        constructor6.body().directStatement("super(wsdlLocation, serviceName, features);");
-
+        if (options.target.isLaterThan(Options.Target.V2_2)) {
+            JMethod constructor6 = cls.constructor(JMod.PUBLIC);
+            constructor6.param(URL.class, "wsdlLocation");
+            constructor6.param(QName.class, "serviceName");
+            constructor6.varParam(WebServiceFeature.class, "features");
+            constructor6.body().directStatement("super(wsdlLocation, serviceName, features);");
+        }
 
         //@WebService
         JAnnotationUse webServiceClientAnn = cls.annotate(cm.ref(WebServiceClient.class));

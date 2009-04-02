@@ -91,7 +91,7 @@ public class Options {
     public boolean nocompile;
 
     public enum Target {
-        V2_0, V2_1;
+        V2_0, V2_1, V2_2;
 
         /**
          * Returns true if this version is equal or later than the given one.
@@ -110,6 +110,8 @@ public class Options {
                 return Target.V2_0;
             else if (token.equals("2.1"))
                 return Target.V2_1;
+            else if (token.equals("2.2"))
+                return Target.V2_2;
             return null;
         }
 
@@ -122,13 +124,15 @@ public class Options {
                 return "2.0";
             case V2_1:
                 return "2.1";
+            case V2_2:
+                return "2.2";
             default:
                 return null;
             }
         }
     }
 
-    public Target target = Target.V2_1;
+    public Target target = Target.V2_2;
 
     /**
      * strictly follow the compatibility rules specified in JAXWS spec
