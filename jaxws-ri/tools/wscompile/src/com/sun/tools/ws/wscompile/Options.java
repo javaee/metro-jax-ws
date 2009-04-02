@@ -38,6 +38,7 @@
 package com.sun.tools.ws.wscompile;
 
 import com.sun.tools.ws.resources.WscompileMessages;
+import com.sun.tools.ws.Invoker;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,9 +131,20 @@ public class Options {
                 return null;
             }
         }
+
+        private static final Target LOADED_API_VERSION;
+
+        static {
+            if (Invoker.checkIfLoading22API()) {
+                LOADED_API_VERSION = Target.V2_2;
+            } else {
+
+                LOADED_API_VERSION = Target.V2_1;
+            }
+        }
     }
 
-    public Target target = Target.V2_2;
+    public Target target = Target.LOADED_API_VERSION;
 
     /**
      * strictly follow the compatibility rules specified in JAXWS spec
