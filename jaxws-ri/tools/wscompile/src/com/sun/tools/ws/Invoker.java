@@ -175,7 +175,7 @@ public final class Invoker {
 
 
     /**
-     * Creates a classloader that can load JAXB/WS 2.1 API and tools.jar,
+     * Creates a classloader that can load JAXB/WS 2.2 API and tools.jar,
      * and then return a classloader that can RI classes, which can see all those APIs and tools.jar.  
      */
     public static ClassLoader createClassLoader(ClassLoader cl) throws ClassNotFoundException, IOException, ToolsJarNotFoundException {
