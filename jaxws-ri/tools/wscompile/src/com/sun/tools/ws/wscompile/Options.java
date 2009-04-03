@@ -132,19 +132,30 @@ public class Options {
             }
         }
 
+        public static Target getDefault() {
+            return V2_2;
+        }
+
+        public static Target getLoadedAPIVersion() {
+            return LOADED_API_VERSION;
+        }
+        
         private static final Target LOADED_API_VERSION;
 
         static {
+            // check if we are indeed loading JAX-WS 2.2 API
             if (Invoker.checkIfLoading22API()) {
                 LOADED_API_VERSION = Target.V2_2;
-            } else {
-
+            } // check if we are indeed loading JAX-WS 2.1 API
+            else if (Invoker.checkIfLoading21API()) {
                 LOADED_API_VERSION = Target.V2_1;
+            } else {
+                LOADED_API_VERSION = Target.V2_0;
             }
         }
     }
 
-    public Target target = Target.LOADED_API_VERSION;
+    public Target target = Target.V2_2;
 
     /**
      * strictly follow the compatibility rules specified in JAXWS spec

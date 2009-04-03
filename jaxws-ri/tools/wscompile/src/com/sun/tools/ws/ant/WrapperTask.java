@@ -38,6 +38,7 @@ package com.sun.tools.ws.ant;
 
 import com.sun.istack.tools.ProtectedTask;
 import com.sun.tools.ws.Invoker;
+import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.ws.resources.WscompileMessages;
 import com.sun.tools.xjc.api.util.ToolsJarNotFoundException;
 import com.sun.xml.bind.util.Which;
@@ -68,30 +69,38 @@ public abstract class WrapperTask extends ProtectedTask {
         return getClass().getName()+'2';
     }
 
+    private String targetVersionAttribute;
+
+
+    @Override
+    public void setDynamicAttribute(String name, String value) throws BuildException {
+        super.setDynamicAttribute(name,value);
+        if(name.equals("target"))
+            targetVersionAttribute = value;
+    }
+
     protected ClassLoader createClassLoader() throws ClassNotFoundException, IOException {
         try {
             ClassLoader cl = getClass().getClassLoader();
             if (doEndorsedMagic) {
                 return Invoker.createClassLoader(cl);
             } else {
-                // check if we are indeed loading JAX-WS 2.2 API
-                if (Invoker.checkIfLoading22API())
-                    return cl;
-
-                // check if we are indeed loading JAX-WS 2.1 API
-                if (Invoker.checkIfLoading21API()) {
-                    if (Service.class.getClassLoader() == null)
-                        throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED("2.1", "2.2", getTaskName()));
-                    else {
-                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.1", Which.which(Service.class), "2.2"));
-                    }
+                Options.Target targetVersion;
+                if (targetVersionAttribute != null) {
+                    targetVersion = Options.Target.parse(targetVersionAttribute);
+                } else {
+                    targetVersion = Options.Target.getDefault();
                 }
-
-                // Loading JAX-WS 2.0 API
-                if (Service.class.getClassLoader() == null)
-                    throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED("2.0", "2.2", getTaskName()));
-                else {
-                    throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.0", Which.which(Service.class), "2.2"));
+                Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
+                //Check if the target version is supported by the loaded API version
+                if (targetVersion == loadedVersion) {
+                    return cl;
+                } else {
+                    if (Service.class.getClassLoader() == null)
+                        throw new BuildException(WscompileMessages.WRAPPER_TASK_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion(), getTaskName()));
+                    else {
+                        throw new BuildException(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API(loadedVersion.getVersion(), Which.which(Service.class), targetVersion.getVersion()));
+                    }
                 }
             }
         } catch (ToolsJarNotFoundException e) {

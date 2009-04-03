@@ -39,6 +39,7 @@ package com.sun.tools.ws;
 import com.sun.istack.tools.MaskingClassLoader;
 import com.sun.istack.tools.ParallelWorldClassLoader;
 import com.sun.tools.ws.resources.WscompileMessages;
+import com.sun.tools.ws.wscompile.Options;
 import com.sun.tools.xjc.api.util.ToolsJarNotFoundException;
 import com.sun.xml.bind.util.Which;
 
@@ -82,25 +83,22 @@ public final class Invoker {
             if(Arrays.asList(args).contains("-Xendorsed"))
                 cl = createClassLoader(cl); // perform JDK6 workaround hack
             else {
-                // check if we are indeed loading JAX-WS 2.2 API
-                if (!Invoker.checkIfLoading22API()) {
+                int targetArgIndex = Arrays.binarySearch(args, "-target");
+                Options.Target targetVersion;
+                if (targetArgIndex != -1) {
+                    targetVersion = Options.Target.parse(args[targetArgIndex+1]);
+                } else {
+                    targetVersion = Options.Target.getDefault();
+                }
+                Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
 
-                    // check if we are indeed loading JAX-WS 2.1 API
-                    if (Invoker.checkIfLoading21API()) {
-                        if (Service.class.getClassLoader() == null)
-                            System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED("2.1", "2.2"));
-                        else {
-                            System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.1", Which.which(Service.class),"2.2"));
-                        }
-                    }
-
-                    // Loading JAX-WS 2.0 API
+                //Check if the target version is supported by the loaded API version
+                if (targetVersion != loadedVersion) {
                     if (Service.class.getClassLoader() == null)
-                        System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED("2.0", "2.2"));
+                        System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion()));
                     else {
-                        System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API("2.0", Which.which(Service.class),"2.2"));   
+                        System.err.println(WscompileMessages.WRAPPER_TASK_LOADING_INCORRECT_API(loadedVersion.getVersion(), Which.which(Service.class), targetVersion.getVersion()));
                     }
-
                     return -1;
                 }
 
