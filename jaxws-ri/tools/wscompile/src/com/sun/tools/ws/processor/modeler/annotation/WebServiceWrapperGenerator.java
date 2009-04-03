@@ -394,20 +394,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         for (MemberInfo memInfo : members) {
             JType type = getType(memInfo.getParamType());
             JFieldVar field = cls.field(JMod.PRIVATE, type, memInfo.getParamName());
-            QName elementName = memInfo.getElementName();
-            if (elementName != null) {
-                if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {
-                    JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
-                    xmlElementAnn.param("name", elementName.getLocalPart());
-                    xmlElementAnn.param("namespace", elementName.getNamespaceURI());
-                    if(memInfo.getParamType() instanceof ArrayType){
-                        xmlElementAnn.param("nillable", true);
-                    }
-                } else {
-                    field.annotate(XmlValue.class);
-                }
-                annotateParameterWithJAXBAnnotations(field, memInfo.getJaxbAnnotations());                
-            }
+            annotateParameterWithJAXBAnnotations(memInfo, field);
         }
         for (MemberInfo memInfo : members) {
             writeMember(cls, memInfo.getParamType(),
@@ -415,8 +402,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
-    private void annotateParameterWithJAXBAnnotations(JFieldVar field, Annotation[] jaxbAnnotations) {
-        for(Annotation ann : jaxbAnnotations){
+    private void annotateParameterWithJAXBAnnotations(MemberInfo memInfo, JFieldVar field) {
+        Annotation[] jaxbAnnotations = memInfo.getJaxbAnnotations();
+        for(Annotation ann : jaxbAnnotations) {
+            XmlElement elem = null;
             if(ann instanceof XmlMimeType){
                 JAnnotationUse jaxbAnn = field.annotate(XmlMimeType.class);
                 jaxbAnn.param("value", ((XmlMimeType)ann).value());
@@ -435,9 +424,31 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             }else if(ann instanceof XmlList){
                 field.annotate(XmlList.class);
             }else if(ann instanceof XmlElement){
-                // Already written
+                elem = (XmlElement)ann;
+                // will write it below
             }else {
-                throw new WebServiceException("Unknown JAXB annotation " + ann);
+                throw new WebServiceException("SEI Parameter cannot have this JAXB annotation: " + ann);
+            }
+
+            QName elementName = memInfo.getElementName();
+            if (elementName != null) {
+                if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {
+                    JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
+                    xmlElementAnn.param("name", elementName.getLocalPart());
+                    xmlElementAnn.param("namespace", elementName.getNamespaceURI());
+                    boolean nillable = memInfo.getParamType() instanceof ArrayType;
+                    if (!nillable && elem != null) {
+                        nillable = elem.nillable();
+                    }
+                    if (nillable) {
+                        xmlElementAnn.param("nillable", true);
+                    }
+                    if (elem != null && elem.required()) {
+                         xmlElementAnn.param("required", true);                        
+                    }
+                } else {
+                    field.annotate(XmlValue.class);
+                }
             }
         }
     }
