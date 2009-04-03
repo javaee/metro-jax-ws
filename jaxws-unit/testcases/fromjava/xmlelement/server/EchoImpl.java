@@ -1,5 +1,5 @@
 
-package fromjava.xmlelement;
+package fromjava.xmlelement.server;
 
 import javax.jws.*;
 
@@ -19,6 +19,16 @@ public class EchoImpl {
 
     @XmlElement(required=true)
     public int echoInt(@XmlElement(nillable=true) int a) {
+        return a;
+    }
+
+    @XmlElement(required=true)
+    public String echoString(@XmlElement(nillable=true) String a) {
+        return a;
+    }
+
+    @XmlElement(nillable=true)
+    public Integer echoInteger(@XmlElement(required=true) Integer a) {
         return a;
     }
 }
