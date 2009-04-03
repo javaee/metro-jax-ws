@@ -83,7 +83,7 @@ public final class Invoker {
             if(Arrays.asList(args).contains("-Xendorsed"))
                 cl = createClassLoader(cl); // perform JDK6 workaround hack
             else {
-                int targetArgIndex = Arrays.binarySearch(args, "-target");
+                int targetArgIndex = Arrays.asList(args).indexOf("-target"); 
                 Options.Target targetVersion;
                 if (targetArgIndex != -1) {
                     targetVersion = Options.Target.parse(args[targetArgIndex+1]);
@@ -93,7 +93,7 @@ public final class Invoker {
                 Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
 
                 //Check if the target version is supported by the loaded API version
-                if (targetVersion != loadedVersion) {
+                if (!loadedVersion.isLaterThan(targetVersion)) {
                     if (Service.class.getClassLoader() == null)
                         System.err.println(WscompileMessages.INVOKER_NEED_ENDORSED(loadedVersion.getVersion(), targetVersion.getVersion()));
                     else {

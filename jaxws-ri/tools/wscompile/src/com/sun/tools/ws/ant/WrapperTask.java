@@ -93,7 +93,7 @@ public abstract class WrapperTask extends ProtectedTask {
                 }
                 Options.Target loadedVersion = Options.Target.getLoadedAPIVersion();
                 //Check if the target version is supported by the loaded API version
-                if (targetVersion == loadedVersion) {
+                if (loadedVersion.isLaterThan(targetVersion)) {
                     return cl;
                 } else {
                     if (Service.class.getClassLoader() == null)
