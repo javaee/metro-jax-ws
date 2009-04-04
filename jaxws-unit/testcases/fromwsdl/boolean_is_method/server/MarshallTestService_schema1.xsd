@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://marshalltestservice.org/wsdl" xmlns:tns="http://marshalltestservice.org/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="javaBeanTest" type="tns:javaBeanTest"/>
+
+  <xs:element name="javaBeanTestResponse" type="tns:javaBeanTestResponse"/>
+
+  <xs:complexType name="javaBeanTest">
+    <xs:sequence>
+      <xs:element name="arg0" type="tns:javaBean" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="javaBean">
+    <xs:sequence>
+      <xs:element name="myBoolean" type="xs:boolean"/>
+      <xs:element name="myBoolean1" type="xs:boolean" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="javaBeanTestResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:javaBean" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+
