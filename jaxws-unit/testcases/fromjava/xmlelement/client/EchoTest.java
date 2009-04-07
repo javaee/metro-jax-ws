@@ -26,6 +26,26 @@ public class EchoTest extends TestCase {
         assertTrue(getRequired(f));
     }
 
+    public void testEchoName() throws Exception {
+        Field f = EchoName.class.getDeclaredField("input");
+        assertNotNull(f);
+    }
+
+    public void testEchoNameResponse() throws Exception {
+        Field f = EchoNameResponse.class.getDeclaredField("result");
+        assertNotNull(f);
+    }
+
+    public void testEchoWebParamName() throws Exception {
+        Field f = EchoWebParamName.class.getDeclaredField("input");
+        assertNotNull(f);
+    }
+
+    public void testEchoWebParamNameResponse() throws Exception {
+        Field f = EchoWebParamNameResponse.class.getDeclaredField("result");
+        assertNotNull(f);
+    }
+
     private boolean getNillable(Field f) {
         XmlElement elem = f.getAnnotation(XmlElement.class);
         return elem.nillable();
