@@ -197,19 +197,6 @@ public abstract class AbstractSEIModelImpl implements SEIModel {
         }
     }
 
-    /**
-     * @return the <code>Method</code> for a given WSDLOperation <code>qname</code>
-     */
-    public Method getDispatchMethod(QName qname) {
-        //handle the empty body
-        if (qname == null)
-            qname = emptyBodyName;
-        JavaMethodImpl jm = getJavaMethod(qname);
-        if (jm != null) {
-            return jm.getMethod();
-        }
-        return null;
-    }
 
     /**
      * @return true if <code>name</code> is the name
