@@ -179,10 +179,6 @@ public class HttpTransportPipe extends AbstractTubeImpl {
             checkStatusCode(response, con.statusCode, con.statusMessage); // throws ClientTransportException
 
             String contentType = con.getContentType();
-            if (contentType == null) {
-                throw new WebServiceException("No Content-type in the header!");
-            }
-
             // TODO check if returned MIME type is the same as that which was sent
             // or is acceptable if an Accept header was used
             Packet reply = request.createClientResponse(null);
