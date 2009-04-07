@@ -52,8 +52,6 @@ import com.sun.xml.ws.api.model.soap.SOAPBinding;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
-import com.sun.xml.ws.encoding.soap.streaming.SOAP12NamespaceConstants;
-import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 import com.sun.xml.ws.model.AbstractSEIModelImpl;
 import com.sun.xml.ws.model.CheckedExceptionImpl;
 import com.sun.xml.ws.model.JavaMethodImpl;
@@ -81,6 +79,7 @@ import com.sun.xml.ws.wsdl.writer.document.soap.SOAPAddress;
 import com.sun.xml.ws.wsdl.writer.document.soap.SOAPFault;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.PolicyWSDLGeneratorExtension;
+import com.sun.xml.ws.encoding.soap.streaming.SOAPNamespaceConstants;
 
 import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;
@@ -164,14 +163,7 @@ public class WSDLGenerator {
      * The namespace prefix to use for the targetNamespace
      */
     private static final String TNS_PREFIX       = "tns";
-    /**
-     * The URI for the SOAP 1.1 HTTP Transport.  Used to create soapBindings
-     */
-    private static final String SOAP_HTTP_TRANSPORT = SOAPNamespaceConstants.TRANSPORT_HTTP;
-    /**
-     * The URI for the SOAP 1.2 HTTP Transport.  Used to create soapBindings
-     */
-    private static final String SOAP12_HTTP_TRANSPORT = SOAP12NamespaceConstants.TRANSPORT_HTTP;
+
     /**
      * Constant String "document" used to specify <code>document</code> style
      * soapBindings
@@ -233,6 +225,8 @@ public class WSDLGenerator {
     /**
      * Sets the endpoint address string to be written.
      * Defaults to {@link #REPLACE_WITH_ACTUAL_URL}.
+     *
+     * @param address wsdl:port/soap:address/[@location] value
      */
     public void setEndpointAddress(String address) {
         this.endpointAddress = address;
@@ -944,12 +938,6 @@ public class WSDLGenerator {
         }
     }
 
-    /**
-     * 
-     * @param bodyParams 
-     * @param headerParams 
-     * @param params 
-     */    
     protected void splitParameters(List<ParameterImpl> bodyParams, List<ParameterImpl>headerParams, List<ParameterImpl>params) {
         for (ParameterImpl parameter : params) {
             if (isBodyParameter(parameter)) {
@@ -960,12 +948,6 @@ public class WSDLGenerator {
         }
     }
 
-    /**
-     * 
-     * @param writer 
-     * @param parameters 
-     * @param message 
-     */    
     protected void generateSOAPHeaders(TypedXmlWriter writer, List<ParameterImpl> parameters, QName message) {
 
         for (ParameterImpl headerParam : parameters) {
@@ -976,12 +958,6 @@ public class WSDLGenerator {
         }
     }
 
-    /**
-     * 
-     * @param writer 
-     * @param parameters 
-     * @param message 
-     */
     protected void generateSOAP12Headers(TypedXmlWriter writer, List<ParameterImpl> parameters, QName message) {
 
         for (ParameterImpl headerParam : parameters) {
@@ -1017,11 +993,6 @@ public class WSDLGenerator {
         }
     }
 
-    /**
-     * 
-     * @param operation 
-     * @param method 
-     */    
     protected void generateInputMessage(Operation operation, JavaMethodImpl method) {
         ParamType paramType = operation.input();
         extension.addOperationInputExtension(paramType, method);
@@ -1029,11 +1000,6 @@ public class WSDLGenerator {
         paramType.message(new QName(model.getTargetNamespace(), method.getRequestMessageName()));
     }
 
-    /**
-     * 
-     * @param operation 
-     * @param method 
-     */
     protected void generateOutputMessage(Operation operation, JavaMethodImpl method) {
         ParamType paramType = operation.output();
         extension.addOperationOutputExtension(paramType, method);
