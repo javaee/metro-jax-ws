@@ -31,4 +31,18 @@ public class EchoImpl {
     public Integer echoInteger(@XmlElement(required=true) Integer a) {
         return a;
     }
+
+    @XmlElement(name="result")
+    public String echoName(@XmlElement(name="input") String a) {
+        return a;
+    }
+
+    @WebResult(name="result")
+    @XmlElement(name="result")
+    public String echoWebParamName(
+            @WebParam(name="input")
+            @XmlElement(name="input") String a) {
+        return a;
+    }
+      
 }
