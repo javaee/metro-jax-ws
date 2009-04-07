@@ -64,6 +64,7 @@ import javax.jws.soap.SOAPBinding;
 import static javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import java.lang.annotation.Annotation;
@@ -714,25 +715,21 @@ public class RuntimeModeler {
         }
 
         // return value
-        String resultName = RETURN;
-        String resultTNS = "";
-        QName resultQName = null;
+
+
         WebResult webResult = method.getAnnotation(WebResult.class);
+        XmlElement xmlElem = method.getAnnotation(XmlElement.class);
+        QName resultQName = getReturnQName(method, webResult, xmlElem);
         Class returnType = method.getReturnType();
         boolean isResultHeader = false;
         if (webResult != null) {
-            if (webResult.name().length() > 0)
-                resultName = webResult.name();
-            resultTNS = webResult.targetNamespace();
             isResultHeader = webResult.header();
-            if (resultTNS.length() == 0 && webResult.header()) {
-                // headers must have a namespace
-                resultTNS = targetNamespace;
+            if (isResultHeader && xmlElem != null) {
+                throw new RuntimeModelerException("@XmlElement cannot be specified on method "+method+" as the return value is bound to header");
             }
-            resultQName = new QName(resultTNS, resultName);
-        } else if (!isOneway && !returnType.getName().equals("void") && !javaMethod.isAsync()) {
-            if(resultQName == null){
-                resultQName = new QName(resultTNS, RETURN);
+            if (resultQName.getNamespaceURI().length() == 0 && webResult.header()) {
+                // headers must have a namespace
+                resultQName = new QName(targetNamespace, resultQName.getLocalPart());
             }
         }
 
@@ -764,7 +761,7 @@ public class RuntimeModeler {
         for (Class clazzType : parameterTypes) {
             String partName=null;
             String paramName = "arg"+pos;
-            String paramNamespace = "";
+            //String paramNamespace = "";
             boolean isHeader = false;
 
             if(javaMethod.isAsync() && AsyncHandler.class.isAssignableFrom(clazzType)){
@@ -779,28 +776,32 @@ public class RuntimeModeler {
                 }
             }
             Mode paramMode = isHolder ? Mode.INOUT : Mode.IN;
+            WebParam webParam = null;
+            xmlElem = null;
             for (Annotation annotation : pannotations[pos]) {
-                if (annotation.annotationType() == WebParam.class) {
-                    WebParam webParam = (WebParam) annotation;
-                    if (webParam.name().length() > 0)
-                        paramName = webParam.name();
-                    isHeader = webParam.header();
-                    if(webParam.partName().length() > 0)
-                        partName = webParam.partName();
-                    else
-                        partName = paramName;
-                    if (isHeader) // headers cannot be in empty namespace
-                        paramNamespace = targetNamespace;
-                    if (!webParam.targetNamespace().equals("")) {
-                        paramNamespace = webParam.targetNamespace();
-                    }
-                    paramMode = webParam.mode();
-                    if (isHolder && paramMode == Mode.IN)
-                        paramMode = Mode.INOUT;
-                    break;
-                }
+                if (annotation.annotationType() == WebParam.class)
+                    webParam = (WebParam)annotation;
+                else if (annotation.annotationType() == XmlElement.class)
+                    xmlElem = (XmlElement)annotation;
             }
-            QName paramQName = new QName(paramNamespace, paramName);
+
+            QName paramQName = getParameterQName(method, webParam, xmlElem, paramName);
+            if (webParam != null) {
+                isHeader = webParam.header();
+                if (isHeader && xmlElem != null) {
+                    throw new RuntimeModelerException("@XmlElement cannot be specified on method "+method+" parameter that is bound to header");
+                }
+                if(webParam.partName().length() > 0)
+                    partName = webParam.partName();
+                else
+                    partName = paramName;
+                if (isHeader) { // headers cannot be in empty namespace
+                    paramQName = new QName(targetNamespace, paramQName.getLocalPart());
+                }
+                paramMode = webParam.mode();
+                if (isHolder && paramMode == Mode.IN)
+                    paramMode = Mode.INOUT;
+            }
             typeRef =
                 new TypeReference(paramQName, clazzType, pannotations[pos]);
             ParameterImpl param = new ParameterImpl(javaMethod, typeRef, paramMode, pos++);
@@ -1447,6 +1448,87 @@ public class RuntimeModeler {
         );
         return Boolean.FALSE;
     }
+
+    private static QName getReturnQName(Method method, WebResult webResult, XmlElement xmlElem) {
+        String webResultName = null;
+        if (webResult != null && webResult.name().length() > 0) {
+            webResultName = webResult.name();
+        }
+        String xmlElemName = null;
+        if (xmlElem != null && !xmlElem.name().equals("##default")) {
+            xmlElemName = xmlElem.name();
+        }
+        if (xmlElemName != null && webResultName != null && !xmlElemName.equals(webResultName)) {
+            throw new RuntimeModelerException("@XmlElement(name)="+xmlElemName+" and @WebResult(name)="+webResultName+" are different for method " +method);
+        }
+        String localPart = RETURN;
+        if (webResultName != null) {
+            localPart = webResultName;
+        } else if (xmlElemName != null) {
+            localPart =  xmlElemName;
+        }
+
+        String webResultNS = null;
+        if (webResult != null && webResult.targetNamespace().length() > 0) {
+            webResultNS = webResult.targetNamespace();
+        }
+        String xmlElemNS = null;
+        if (xmlElem != null && !xmlElem.namespace().equals("##default")) {
+            xmlElemNS = xmlElem.namespace();
+        }
+        if (xmlElemNS != null && webResultNS != null && !xmlElemNS.equals(webResultNS)) {
+            throw new RuntimeModelerException("@XmlElement(namespace)="+xmlElemNS+" and @WebResult(targetNamespace)="+webResultNS+" are different for method " +method);
+        }
+        String ns = "";
+        if (webResultNS != null) {
+            ns = webResultNS;
+        } else if (xmlElemNS != null) {
+            ns =  xmlElemNS;
+        }
+
+        return new QName(ns, localPart);
+    }
+
+    private static QName getParameterQName(Method method, WebParam webParam, XmlElement xmlElem, String paramDefault) {
+        String webParamName = null;
+        if (webParam != null && webParam.name().length() > 0) {
+            webParamName = webParam.name();
+        }
+        String xmlElemName = null;
+        if (xmlElem != null && !xmlElem.name().equals("##default")) {
+            xmlElemName = xmlElem.name();
+        }
+        if (xmlElemName != null && webParamName != null && !xmlElemName.equals(webParamName)) {
+            throw new RuntimeModelerException("@XmlElement(name)="+xmlElemName+" and @WebParam(name)="+webParamName+" are different for method " +method);
+        }
+        String localPart = paramDefault;
+        if (webParamName != null) {
+            localPart = webParamName;
+        } else if (xmlElemName != null) {
+            localPart =  xmlElemName;
+        }
+
+        String webParamNS = null;
+        if (webParam != null && webParam.targetNamespace().length() > 0) {
+            webParamNS = webParam.targetNamespace();
+        }
+        String xmlElemNS = null;
+        if (xmlElem != null && !xmlElem.namespace().equals("##default")) {
+            xmlElemNS = xmlElem.namespace();
+        }
+        if (xmlElemNS != null && webParamNS != null && !xmlElemNS.equals(webParamNS)) {
+            throw new RuntimeModelerException("@XmlElement(namespace)="+xmlElemNS+" and @WebParam(targetNamespace)="+webParamNS+" are different for method " +method);
+        }
+        String ns = "";
+        if (webParamNS != null) {
+            ns = webParamNS;
+        } else if (xmlElemNS != null) {
+            ns =  xmlElemNS;
+        }
+
+        return new QName(ns, localPart);
+    }
+
 
     /**
      * Support for legacy WebMethod computation.

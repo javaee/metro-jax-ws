@@ -404,7 +404,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     private void annotateParameterWithJAXBAnnotations(MemberInfo memInfo, JFieldVar field) {
         Annotation[] jaxbAnnotations = memInfo.getJaxbAnnotations();
-        XmlElement elem = null;
+        XmlElement elemAnn = null;
         for(Annotation ann : jaxbAnnotations) {
             if (ann instanceof XmlMimeType) {
                 JAnnotationUse jaxbAnn = field.annotate(XmlMimeType.class);
@@ -424,8 +424,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             } else if (ann instanceof XmlList){
                 field.annotate(XmlList.class);
             } else if (ann instanceof XmlElement) {
-                assert elem == null;    // more than one @XmlElement ann ??
-                elem = (XmlElement)ann;
+                assert elemAnn == null;    // more than one @XmlElement ann ??
+                elemAnn = (XmlElement)ann;
                 // will write it below
             } else {
                 throw new WebServiceException("SEI Parameter cannot have this JAXB annotation: " + ann);
@@ -435,14 +435,18 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         if (elementName != null) {
             if (soapStyle.equals(SOAPStyle.RPC) || wrapped) {
                 JAnnotationUse xmlElementAnn = field.annotate(XmlElement.class);
-                xmlElementAnn.param("name", elementName.getLocalPart());
-                xmlElementAnn.param("namespace", elementName.getNamespaceURI());
+                String name = (elemAnn != null && !elemAnn.name().equals("##default"))
+                        ? elemAnn.name() : elementName.getLocalPart();
+                xmlElementAnn.param("name", name);
+                String ns = (elemAnn != null && !elemAnn.namespace().equals("##default"))
+                        ? elemAnn.namespace() : elementName.getNamespaceURI();
+                xmlElementAnn.param("namespace", ns);
                 boolean nillable = memInfo.getParamType() instanceof ArrayType
-                        || (elem != null && elem.nillable());
+                        || (elemAnn != null && elemAnn.nillable());
                 if (nillable) {
                     xmlElementAnn.param("nillable", true);
                 }
-                if (elem != null && elem.required()) {
+                if (elemAnn != null && elemAnn.required()) {
                      xmlElementAnn.param("required", true);
                 }
             } else {
