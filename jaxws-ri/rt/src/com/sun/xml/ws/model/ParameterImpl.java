@@ -82,10 +82,6 @@ public class ParameterImpl implements Parameter {
         this.parent = parent;
     }
 
-    //public ParameterImpl(TypeReference type, Mode mode, int index) {
-    //    this(null, type, mode, index);
-    //}
-
     public AbstractSEIModelImpl getOwner() {
         return parent.owner;
     }
@@ -206,21 +202,6 @@ public class ParameterImpl implements Parameter {
         return index == -1;
     }
 
-    /**
-     * Creates a holder if applicable else gives the object as it is. To be
-     * called on the inbound message.
-     * 
-     * @param value
-     * @return the non-holder value if its Response or IN otherwise creates a
-     *         holder with the passed value and returns it back.
-     * 
-     */
-    public Object createHolderValue(Object value) {
-        if (isResponse() || isIN()) {
-            return value;
-        }
-        return new Holder(value);
-    }
 
     /**
      * Gets the holder value if applicable. To be called for inbound client side
@@ -235,14 +216,6 @@ public class ParameterImpl implements Parameter {
         return obj;
     }
 
-    public static void setHolderValue(Object obj, Object value) {
-        if (obj instanceof Holder)
-            ((Holder) obj).value = value;
-        else
-            // TODO: this can't be correct
-            obj = value;
-    }
-
     public String getPartName() {
         if(partName == null)
             return name.getLocalPart();
@@ -252,7 +225,6 @@ public class ParameterImpl implements Parameter {
     public void setPartName(String partName) {
         this.partName = partName;
     }
-
 
     void fillTypes(List<TypeReference> types) {
         types.add(getTypeReference());
