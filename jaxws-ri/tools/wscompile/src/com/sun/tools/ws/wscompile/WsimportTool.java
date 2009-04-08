@@ -261,7 +261,8 @@ public class WsimportTool {
         if (sourceFiles.size() > 0) {
             String classDir = options.destDir.getAbsolutePath();
             String classpathString = createClasspathString();
-            boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
+            //TODO Do we need JAXB 2.2 API in bootclasspath, if so look for JAXBPermission added in 2.2
+            boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(XmlSeeAlso.class);
             String[] args = new String[4 + (bootCP ? 1 : 0) + (options.debug ? 1 : 0)
                     + sourceFiles.size()];
             args[0] = "-d";
