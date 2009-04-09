@@ -239,10 +239,9 @@ public final class Invoker {
             if(res==null)
                 throw new ClassNotFoundException("There's no JAX-WS 2.2 API in the classpath");
             urls.add(ParallelWorldClassLoader.toJarUrl(res));
-            //TODO do we need to laod JAXB 2.2 API? if so look for JAXBPermission added in 2.2
-            res = cl.getResource("javax/xml/bind/annotation/XmlSeeAlso.class");
+            res = cl.getResource("javax/xml/bind/JAXBPermission.class");
             if(res==null)
-                throw new ClassNotFoundException("There's no JAXB 2.1 API in the classpath");
+                throw new ClassNotFoundException("There's no JAXB 2.2 API in the classpath");
             urls.add(ParallelWorldClassLoader.toJarUrl(res));
         }
 

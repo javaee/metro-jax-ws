@@ -57,6 +57,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.JAXBPermission;
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.EndpointContext;
 import java.io.File;
@@ -261,8 +262,7 @@ public class WsimportTool {
         if (sourceFiles.size() > 0) {
             String classDir = options.destDir.getAbsolutePath();
             String classpathString = createClasspathString();
-            //TODO Do we need JAXB 2.2 API in bootclasspath, if so look for JAXBPermission added in 2.2
-            boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(XmlSeeAlso.class);
+            boolean bootCP = useBootClasspath(EndpointContext.class) || useBootClasspath(JAXBPermission.class);
             String[] args = new String[4 + (bootCP ? 1 : 0) + (options.debug ? 1 : 0)
                     + sourceFiles.size()];
             args[0] = "-d";
@@ -272,8 +272,7 @@ public class WsimportTool {
             int baseIndex = 4;
             //javac is not working in osgi as the url starts with a bundle
             if (bootCP) {
-                //TODO Do we need JAXB 2.2 API in bootclasspath, if so look for JAXBPermission added in 2.2
-                args[baseIndex++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointContext.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+                args[baseIndex++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointContext.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(JAXBPermission.class);
             }
 
             if (options.debug) {
