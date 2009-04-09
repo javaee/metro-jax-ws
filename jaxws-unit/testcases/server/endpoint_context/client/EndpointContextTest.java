@@ -35,24 +35,20 @@
  */
 package server.endpoint_context.client;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import testutil.ClientServerTestUtil;
 
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.ws.Endpoint;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
-import java.io.*;
-import java.util.*;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.soap.SOAPBinding;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -62,15 +58,13 @@ import javax.xml.ws.soap.SOAPBinding;
  */
 public class EndpointContextTest extends TestCase {
 
-    // endpoint has wsdlLocation="...". It publishes the same wsdl, metadata
-    // docs
     public void testEndpointContext() throws Exception {
-        int port1 = Util.getFreePort();
-        String address1 = "http://localhost:"+port1+"/foo";
+        int port = Util.getFreePort();
+
+        String address1 = "http://localhost:"+port+"/foo";
         Endpoint endpoint1 = getEndpoint(new FooService());
 
-        int port2 = Util.getFreePort();
-        String address2 = "http://localhost:"+port2+"/bar";
+        String address2 = "http://localhost:"+port+"/bar";
         Endpoint endpoint2 = getEndpoint(new BarService());
 
         EndpointContext ctxt = new MyEndpointContext(endpoint1, endpoint2);
@@ -107,23 +101,6 @@ public class EndpointContextTest extends TestCase {
         return endpoint;
     }
 
-
-/*
-    public void testHtmlPage() throws Exception {
-        int port = Util.getFreePort();
-        String address = "http://localhost:"+port+"/echo";
-        Endpoint endpoint = Endpoint.create(new RpcLitEndpointWsdlLocation());
-        endpoint.publish(address);
-        URL pubUrl = new URL(address);
-        URLConnection con = pubUrl.openConnection();
-        InputStream is = con.getInputStream();
-        int ch;
-        while((ch=is.read()) != -1);
-        assertTrue(con.getContentType().contains("text/html"));
-        endpoint.stop();
-    }
-*/
-
     public boolean isPatched(InputStream in, String address1, String address2)
 		throws IOException {
         boolean address1Patched = false;
@@ -132,6 +109,7 @@ public class EndpointContextTest extends TestCase {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
         String str;
         while ((str=rdr.readLine()) != null) {
+            //System.out.println(str);
             if (str.indexOf(address1) != -1) {
                 address1Patched = true;
             }
@@ -141,7 +119,6 @@ public class EndpointContextTest extends TestCase {
         }
         return address1Patched && address2Patched;
     }
-
 
     @WebServiceProvider(serviceName="EchoService", portName="fooPort",
         targetNamespace="http://echo.org/")
