@@ -127,8 +127,8 @@ public class WrapperBeanGenerator {
                     mime.visit("value", ((XmlMimeType)ann).value());
                     mime.visitEnd();
                 } else if (ann instanceof XmlJavaTypeAdapter) {
-                    AnnotationVisitor ada = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlJavaTypeAdapter;", true);
-                    ada.visit("value", ((XmlJavaTypeAdapter)ann).value());
+                    AnnotationVisitor ada = fv.visitAnnotation("Ljavax/xml/bind/annotation/adapters/XmlJavaTypeAdapter;", true);
+                    ada.visit("value", getASMType(((XmlJavaTypeAdapter)ann).value()));
                     // XmlJavaTypeAdapter.type() is for package only. No need to copy.
                     // ada.visit("type", ((XmlJavaTypeAdapter)ann).type());
                     ada.visitEnd();
@@ -220,7 +220,7 @@ public class WrapperBeanGenerator {
                         sb.append(")");
                     } else if (ann instanceof XmlJavaTypeAdapter) {
                         sb.append("@XmlJavaTypeAdapter(value=");
-                        sb.append(((XmlMimeType)ann).value());
+                        sb.append(((XmlJavaTypeAdapter)ann).value());
                         sb.append(", type=");
                         sb.append(((XmlJavaTypeAdapter)ann).type());
                         sb.append(")");
