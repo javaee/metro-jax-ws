@@ -594,7 +594,11 @@ public class WrapperBeanGenerator {
             this.asmType = asmType;
             this.fieldName = paramName;
             this.noXmlElem = noXmlElem;
-            this.xmlElem = new FieldXmlElement(elementName, elementNS, reflectType instanceof GenericArrayType);
+            boolean nillable = reflectType instanceof GenericArrayType;
+            if (!nillable && reflectType instanceof Class) {
+                nillable = ((Class)reflectType).isArray();
+            }
+            this.xmlElem = new FieldXmlElement(elementName, elementNS, nillable);
             this.jaxbAnnotations = jaxbAnnotations;
         }
 
