@@ -653,6 +653,7 @@ public class RuntimeModeler {
      */
     protected void processDocWrappedMethod(JavaMethodImpl javaMethod, String methodName,
                                            WebMethod webMethod, String operationName, Method method, WebService webService) {
+        boolean methodHasHeaderParams = false;
         boolean isOneway = method.isAnnotationPresent(Oneway.class);
         RequestWrapper reqWrapper = method.getAnnotation(RequestWrapper.class);
         ResponseWrapper resWrapper = method.getAnnotation(ResponseWrapper.class);
@@ -676,11 +677,19 @@ public class RuntimeModeler {
 
         String reqName = operationName;
         String reqNamespace = targetNamespace;
+        String reqPartName = "parameters";
         if (reqWrapper != null) {
             if (reqWrapper.targetNamespace().length() > 0)
                 reqNamespace = reqWrapper.targetNamespace();
             if (reqWrapper.localName().length() > 0)
                 reqName = reqWrapper.localName();
+            try {
+                if (reqWrapper.partName().length() > 0)
+                    reqPartName = reqWrapper.partName();
+            } catch(LinkageError e) {
+                //2.1 API dopes n't have this method
+                //Do nothing, just default to "", WSDL generation can use its logic
+            }
         }
         QName reqElementName = new QName(reqNamespace, reqName);
         Class requestClass = getRequestWrapperClass(requestClassName, method, reqElementName);
@@ -689,12 +698,20 @@ public class RuntimeModeler {
         String resName = operationName+"Response";
         String resNamespace = targetNamespace;
         QName resElementName = null;
+        String resPartName = "parameters";
         if (!isOneway) {
             if (resWrapper != null) {
                 if (resWrapper.targetNamespace().length() > 0)
                     resNamespace = resWrapper.targetNamespace();
                 if (resWrapper.localName().length() > 0)
                     resName = resWrapper.localName();
+                try {
+                    if (resWrapper.partName().length() > 0)
+                        resPartName = resWrapper.partName();
+                } catch (LinkageError e) {
+                    //2.1 API does n't have this method
+                    //Do nothing, just default to "", WSDL generation can use its logic
+                }
             }
             resElementName = new QName(resNamespace, resName);
             responseClass = getResponseWrapperClass(responseClassName, method, resElementName);
@@ -704,6 +721,7 @@ public class RuntimeModeler {
                 new TypeReference(reqElementName, requestClass);
         WrapperParameter requestWrapper = new WrapperParameter(javaMethod, typeRef,
             Mode.IN, 0);
+        requestWrapper.setPartName(reqPartName);
         requestWrapper.setBinding(ParameterBinding.BODY);
         javaMethod.addParameter(requestWrapper);
         WrapperParameter responseWrapper = null;
@@ -724,6 +742,7 @@ public class RuntimeModeler {
         boolean isResultHeader = false;
         if (webResult != null) {
             isResultHeader = webResult.header();
+            methodHasHeaderParams = isResultHeader || methodHasHeaderParams;
             if (isResultHeader && xmlElem != null) {
                 throw new RuntimeModelerException("@XmlElement cannot be specified on method "+method+" as the return value is bound to header");
             }
@@ -824,6 +843,15 @@ public class RuntimeModeler {
                 }
             }
         }
+
+        //If the method has any parameter or return type that is bound to a header, use "result" as part name to avoid
+        // name collison of same input part name and output part name ("parameters") shown up as param names on the
+        // client mapping.
+        if(methodHasHeaderParams) {
+            resPartName = "result";
+        }
+        if(responseWrapper != null)
+            responseWrapper.setPartName(resPartName);
         processExceptions(javaMethod, method);
     }
 
@@ -1101,7 +1129,7 @@ public class RuntimeModeler {
                     checkedException.setFaultAction(fa.value());
                     break;
                 }
-            }            
+            }
             javaMethod.addException(checkedException);
         }
     }
@@ -1245,7 +1273,7 @@ public class RuntimeModeler {
             }
             javaMethod.addParameter(param);
         }
-        validateDocBare(javaMethod);        
+        validateDocBare(javaMethod);
         processExceptions(javaMethod, method);
     }
 

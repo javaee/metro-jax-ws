@@ -428,13 +428,9 @@ public class WSDLGenerator {
             if (isDoclit) {
                 if (isHeaderParameter(param))
                     unwrappable = false;
-                if (param.isWrapperStyle()) {
-                    part = message.part().name(PARAMETERS);
-                    part.element(param.getName());
-                } else {
-                    part = message.part().name(param.getPartName());
-                    part.element(param.getName());
-                }
+
+                part = message.part().name(param.getPartName());
+                part.element(param.getName());
             } else {
                 if (param.isWrapperStyle()) {
                     for (ParameterImpl childParam : ((WrapperParameter)param).getWrapperChildren()) {
