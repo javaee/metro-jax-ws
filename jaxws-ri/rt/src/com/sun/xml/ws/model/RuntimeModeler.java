@@ -688,7 +688,7 @@ public class RuntimeModeler {
                     reqPartName = reqWrapper.partName();
             } catch(LinkageError e) {
                 //2.1 API dopes n't have this method
-                //Do nothing, just default to "", WSDL generation can use its logic
+                //Do nothing, just default to "parameters"
             }
         }
         QName reqElementName = new QName(reqNamespace, reqName);
@@ -710,7 +710,7 @@ public class RuntimeModeler {
                         resPartName = resWrapper.partName();
                 } catch (LinkageError e) {
                     //2.1 API does n't have this method
-                    //Do nothing, just default to "", WSDL generation can use its logic
+                    //Do nothing, just default to "parameters"
                 }
             }
             resElementName = new QName(resNamespace, resName);
