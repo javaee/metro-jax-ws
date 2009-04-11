@@ -67,11 +67,6 @@ public class WrapperBeanGenerator {
 
     private static final Logger LOGGER = Logger.getLogger(WrapperBeanGenerator.class.getName());
 
-    private static final String PD                           = ".";
-    private static final String JAXWS                        = "jaxws";
-    private static final String JAXWS_PACKAGE_PD             = JAXWS+PD;
-    private static final String PD_JAXWS_PACKAGE_PD          = PD+JAXWS+PD;
-
     private static final Class[] jaxbAnns = new Class[] {
         XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
         XmlList.class, XmlElement.class
@@ -354,7 +349,6 @@ public class WrapperBeanGenerator {
         // Collect all OUT, INOUT parameters as fields
         Annotation[][] paramAnns = method.getParameterAnnotations();
         java.lang.reflect.Type[] paramTypes = method.getGenericParameterTypes();
-        Type[] asmTypes = Type.getArgumentTypes(method);
         for(int i=0; i < paramTypes.length; i++) {
             WebParam webParam = findAnnotation(paramAnns[i], WebParam.class);
             if (webParam != null) {
@@ -613,9 +607,7 @@ public class WrapperBeanGenerator {
         }
 
         boolean isXmlElem() {
-            if (noXmlElem)
-                return false;
-            return (!fieldName.equals(xmlElem.name) || !xmlElem.nillable || !xmlElem.required);
+            return !noXmlElem && (!fieldName.equals(xmlElem.name) || !xmlElem.nillable || !xmlElem.required);
         }
 
         public int compareTo(Field o) {
