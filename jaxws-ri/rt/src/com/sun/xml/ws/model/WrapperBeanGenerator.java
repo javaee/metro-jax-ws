@@ -155,18 +155,13 @@ public class WrapperBeanGenerator {
             // Class's @XmlRootElement
             StringBuilder sb = new StringBuilder();
             sb.append("\n");
-            sb.append("@XmlRootElement(name=");
-            sb.append(rootName);
-            sb.append(", namespace=");
-            sb.append(rootNS);
-            sb.append(")");
+            sb.append("@XmlRootElement(name=").append(rootName)
+                    .append(", namespace=").append(rootNS).append(")");
 
             // Class's @XmlType
             sb.append("\n");
-            sb.append("@XmlType(name=");
-            sb.append(typeName);
-            sb.append(", namespace=");
-            sb.append(typeNS);
+            sb.append("@XmlType(name=").append(typeName)
+                    .append(", namespace=").append(typeNS);
             if (propOrder.length > 1) {
                 sb.append(", propOrder={");
                 for(int i=0; i < propOrder.length; i++) {
@@ -181,9 +176,7 @@ public class WrapperBeanGenerator {
 
             // class declaration
             sb.append("\n");
-            sb.append("public class ");
-            sb.append(className);
-            sb.append(" {");
+            sb.append("public class ").append(className).append(" {");
 
             // fields declaration
             for(Field field : fields) {
@@ -192,10 +185,8 @@ public class WrapperBeanGenerator {
                 // Field's @XmlRootElement decl
                 if (!field.noXmlElem) {
                     sb.append("\n    ");
-                    sb.append("@XmlRootElement(name=");
-                    sb.append(field.xmlElem.name);
-                    sb.append(", namespace=");
-                    sb.append(field.xmlElem.ns);
+                    sb.append("@XmlElement(name=").append(field.xmlElem.name)
+                            .append(", namespace=").append(field.xmlElem.ns);
                     if (field.xmlElem.nillable) {
                         sb.append(", nillable=true");
                     }
@@ -210,15 +201,9 @@ public class WrapperBeanGenerator {
                     sb.append("\n    ");
 
                     if (ann instanceof XmlMimeType) {
-                        sb.append("@XmlMimeType(value=");
-                        sb.append(((XmlMimeType)ann).value());
-                        sb.append(")");
+                        sb.append("@XmlMimeType(value=").append(((XmlMimeType)ann).value()).append(")");
                     } else if (ann instanceof XmlJavaTypeAdapter) {
-                        sb.append("@XmlJavaTypeAdapter(value=");
-                        sb.append(((XmlJavaTypeAdapter)ann).value());
-                        sb.append(", type=");
-                        sb.append(((XmlJavaTypeAdapter)ann).type());
-                        sb.append(")");
+                        sb.append("@XmlJavaTypeAdapter(value=").append(getASMType(((XmlJavaTypeAdapter)ann).value())).append(")");
                     } else if (ann instanceof XmlAttachmentRef) {
                         sb.append("@XmlAttachmentRef");
                     } else if (ann instanceof XmlList) {
@@ -631,7 +616,7 @@ public class WrapperBeanGenerator {
 
     // TODO MOVE Names to runtime (instead of doing the following)
 
-    /**
+    /*
      * See if its a java keyword name, if so then mangle the name
      */
     private static @NotNull String getJavaReservedVarialbeName(@NotNull String name) {
