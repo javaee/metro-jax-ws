@@ -598,17 +598,25 @@ public class WSDLGenerator {
 //            System.out.println("param: "+parameter.getIndex()+" name: "+parameter.getName().getLocalPart());
             if (parameter.getIndex() < 0)
                 continue;
+
+            // This should be safe change. if it affects compatibility,
+            // remove the following single statement and uncomment the code in block below.
+            partName = parameter.getPartName();
+            /*
             if (isWrapperStyle && isBodyParameter(parameter)) {
-//                System.out.println("isWrapper and is body");
+               System.out.println("isWrapper and is body");
                 if (method.getRequestParameters().contains(parameter))
                     partName = PARAMETERS;
                 else {
+                    //Rama: don't understand this logic "Response" below,
+
                     // really make sure this is a wrapper style wsdl we are creating
                     partName = RESPONSE;
                 }
             } else {
                partName = parameter.getPartName();
-            }
+            }*/
+
             if (!partNames.contains(partName)) {
                 if (i++ > 0)
                     paramOrder.append(' ');
