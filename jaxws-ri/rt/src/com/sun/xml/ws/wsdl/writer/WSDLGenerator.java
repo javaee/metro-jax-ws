@@ -456,17 +456,9 @@ public class WSDLGenerator {
 
             for (ParameterImpl param : method.getResponseParameters()) {
                 if (isDoclit) {
-                    if (param.isWrapperStyle()) {
-                        // if its not really wrapper style dont use the same name as input message
-                        if (unwrappable)
-                            part = message.part().name(RESULT);
-                        else
-                            part = message.part().name(UNWRAPPABLE_RESULT);
-                        part.element(param.getName());
-                    } else {
-                        part = message.part().name(param.getPartName());
-                        part.element(param.getName());
-                    }
+                    part = message.part().name(param.getPartName());
+                    part.element(param.getName());
+
                 } else {
                     if (param.isWrapperStyle()) {
                         for (ParameterImpl childParam : ((WrapperParameter)param).getWrapperChildren()) {
@@ -766,8 +758,6 @@ public class WSDLGenerator {
                             parts.append(parameter.getPartName());
                         }
                         body.parts(parts.toString());
-                    } else if (param.isWrapperStyle()) {
-                        body.parts(PARAMETERS);
                     } else {
                        body.parts(param.getPartName());
                     }
@@ -808,15 +798,7 @@ public class WSDLGenerator {
                                 parts += parameter.getPartName();
                             }
                         } else {
-                            if (param.isWrapperStyle()) {
-                                // if its not really wrapper style dont use the same name as input message
-                                if (unwrappable)
-                                    parts = RESULT;
-                                else
-                                    parts = UNWRAPPABLE_RESULT;
-                            } else {
-                                parts = param.getPartName();
-                            }
+                            parts = param.getPartName();
                         }
                     }
                 }
@@ -866,8 +848,6 @@ public class WSDLGenerator {
                             parts.append(parameter.getPartName());
                         }
                         body.parts(parts.toString());
-                    } else if (param.isWrapperStyle()) {
-                        body.parts(PARAMETERS);
                     } else {
                        body.parts(param.getPartName());
                     }
@@ -907,12 +887,6 @@ public class WSDLGenerator {
                             parts += parameter.getPartName();
                         }
                         body.parts(parts);
-                    } else if (param.isWrapperStyle()) {
-                        // if its not really wrapper style dont use the same name as input message
-                        if (unwrappable)
-                            body.parts(RESULT);
-                        else
-                            body.parts(UNWRAPPABLE_RESULT);
                     } else {
                         body.parts(param.getPartName());
                     }

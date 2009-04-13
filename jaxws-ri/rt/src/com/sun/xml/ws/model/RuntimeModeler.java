@@ -807,6 +807,7 @@ public class RuntimeModeler {
             QName paramQName = getParameterQName(method, webParam, xmlElem, paramName);
             if (webParam != null) {
                 isHeader = webParam.header();
+                methodHasHeaderParams = isHeader || methodHasHeaderParams;
                 if (isHeader && xmlElem != null) {
                     throw new RuntimeModelerException("@XmlElement cannot be specified on method "+method+" parameter that is bound to header");
                 }
