@@ -123,7 +123,7 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
     protected abstract T getHolderValueType(T type);
     protected abstract boolean isVoidType(T type);
 
-    protected void collectWrapperBeanMembers(M method, boolean wrapped,
+    public void collectWrapperBeanMembers(M method, boolean wrapped,
         String typeNamespace, List<A> requestMembers, List<A> responseMembers) {
 
         List<Annotation> jaxbRespAnnotations = collectJAXBAnnotations(method);
