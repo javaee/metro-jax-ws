@@ -48,7 +48,11 @@ import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -146,6 +150,7 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
         T returnType = getSafeType(nav.getReturnType(method));
         // TODO shouldn't we use isVoidType(returnType) in the following ??
         if (!isVoidType(nav.getReturnType(method)) && !isResultHeader) {
+            processXmlElement(jaxbRespAnnotations, responseElementName, responseNamespace, returnType);
             responseMembers.add(factory.createWrapperBeanMember(returnType, responseName,
                 new QName(responseNamespace, responseElementName), jaxbRespAnnotations));
         }
@@ -180,6 +185,7 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
             //care of mangling java identifiers
             propertyName = getJavaReservedVarialbeName(propertyName);
 
+            processXmlElement(jaxbAnnotation, paramName, paramNamespace, paramType);
             A member = factory.createWrapperBeanMember(paramType, propertyName,
                 new QName(paramNamespace, paramName), jaxbAnnotation);
             if (holderType != null) {
@@ -192,6 +198,61 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
             }
         }
     }
+
+    public void processXmlElement(List<Annotation> jaxb, String elemName, String elemNS, T type) {
+        XmlElement elemAnn = null;
+        for (Annotation a : jaxb) {
+            if (a.annotationType() == XmlElement.class) {
+                elemAnn = (XmlElement) a;
+                jaxb.remove(a);
+                break;
+            }
+        }
+        String name = (elemAnn != null && !elemAnn.name().equals("##default"))
+                ? elemAnn.name() : elemName;
+
+        String ns = (elemAnn != null && !elemAnn.namespace().equals("##default"))
+                ? elemAnn.namespace() : elemNS;
+
+        boolean nillable = nav.isArray(type)
+                || (elemAnn != null && elemAnn.nillable());
+
+        boolean required = elemAnn != null && elemAnn.required();
+        XmlElementHandler handler = new XmlElementHandler(name, ns, nillable, required);
+        XmlElement elem = (XmlElement) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{XmlElement.class}, handler);
+        jaxb.add(elem);
+    }
+
+    private static class XmlElementHandler implements InvocationHandler {
+        private String name;
+        private String namespace;
+        private boolean nillable;
+        private boolean required;
+
+        XmlElementHandler(String name, String namespace, boolean nillable,
+                          boolean required) {
+            this.name = name;
+            this.namespace = namespace;
+            this.nillable = nillable;
+            this.required = required;
+        }
+
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            String methodName = method.getName();
+            if (methodName.equals("name")) {
+                return name;
+            } else if (methodName.equals("namespace")) {
+                return namespace;
+            } else if (methodName.equals("nillable")) {
+                return nillable;
+            } else if (methodName.equals("required")) {
+                return required;
+            } else {
+                throw new WebServiceException("Not handling "+methodName);
+            }
+        }
+    }
+
 
     //TODO MOVE Names.java to runtime (instead of doing the following)
     /*

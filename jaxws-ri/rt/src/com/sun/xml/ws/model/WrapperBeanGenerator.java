@@ -141,16 +141,16 @@ public class WrapperBeanGenerator {
             FieldVisitor fv = cw.visitField(ACC_PUBLIC, field.fieldName, field.asmType.getDescriptor(), field.getSignature(), null);
 
             if (!field.noXmlElem) { // Exception fields do not have any @XmlElement
-                AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
-                elem.visit("name", field.xmlElem.name);
-                elem.visit("namespace", field.xmlElem.ns);
-                if (field.xmlElem.nillable) {
-                    elem.visit("nillable", true);
-                }
-                if (field.xmlElem.required) {
-                    elem.visit("required", true);
-                }
-                elem.visitEnd();
+//                AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+//                elem.visit("name", field.xmlElem.name);
+//                elem.visit("namespace", field.xmlElem.ns);
+//                if (field.xmlElem.nillable) {
+//                    elem.visit("nillable", true);
+//                }
+//                if (field.xmlElem.required) {
+//                    elem.visit("required", true);
+//                }
+//                elem.visitEnd();
             }
 
             for(Annotation ann : field.jaxbAnnotations) {
@@ -170,6 +170,18 @@ public class WrapperBeanGenerator {
                 } else if (ann instanceof XmlList) {
                     AnnotationVisitor list = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlList;", true);
                     list.visitEnd();
+                } else if (ann instanceof XmlElement) {
+                    AnnotationVisitor elem = fv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+                    XmlElement xmlElem = (XmlElement)ann;
+                    elem.visit("name", xmlElem.name());
+                    elem.visit("namespace", xmlElem.namespace());
+                    if (xmlElem.nillable()) {
+                        elem.visit("nillable", true);
+                    }
+                    if (xmlElem.required()) {
+                        elem.visit("required", true);
+                    }
+                    elem.visitEnd();
                 } else {
                     throw new WebServiceException("Unknown JAXB annotation " + ann);
                 }
@@ -188,7 +200,7 @@ public class WrapperBeanGenerator {
 
         cw.visitEnd();
 
-        if (LOGGER.isLoggable(Level.INFO)) {
+        if (LOGGER.isLoggable(Level.FINE)) {
             // Class's @XmlRootElement
             StringBuilder sb = new StringBuilder();
             sb.append("\n");
@@ -221,16 +233,16 @@ public class WrapperBeanGenerator {
 
                 // Field's @XmlRootElement decl
                 if (!field.noXmlElem) {
-                    sb.append("\n    ");
-                    sb.append("@XmlElement(name=").append(field.xmlElem.name)
-                            .append(", namespace=").append(field.xmlElem.ns);
-                    if (field.xmlElem.nillable) {
-                        sb.append(", nillable=true");
-                    }
-                    if (field.xmlElem.required) {
-                        sb.append(", required=true");
-                    }
-                    sb.append(")");
+//                    sb.append("\n    ");
+//                    sb.append("@XmlElement(name=").append(field.xmlElem.name)
+//                            .append(", namespace=").append(field.xmlElem.ns);
+//                    if (field.xmlElem.nillable) {
+//                        sb.append(", nillable=true");
+//                    }
+//                    if (field.xmlElem.required) {
+//                        sb.append(", required=true");
+//                    }
+//                    sb.append(")");
                 }
 
                 // Field's other JAXB annotations
@@ -245,6 +257,17 @@ public class WrapperBeanGenerator {
                         sb.append("@XmlAttachmentRef");
                     } else if (ann instanceof XmlList) {
                         sb.append("@XmlList");
+                    } else if (ann instanceof XmlElement) {
+//                        sb.append("\n    ");
+//                        sb.append("@XmlElement(name=").append(field.xmlElem.name)
+//                                .append(", namespace=").append(field.xmlElem.ns);
+//                        if (field.xmlElem.nillable) {
+//                            sb.append(", nillable=true");
+//                        }
+//                        if (field.xmlElem.required) {
+//                            sb.append(", required=true");
+//                        }
+//                        sb.append(")");
                     } else {
                         throw new WebServiceException("Unknown JAXB annotation " + ann);
                     }
@@ -414,36 +437,12 @@ public class WrapperBeanGenerator {
         return fields;
     }
 
-    private static void adjustXmlElement(List<Annotation> list, Field f) {
-        XmlElement elemAnn = null;
-        for(Annotation a : list) {
-            if (a.annotationType() == XmlElement.class) {
-                elemAnn = (XmlElement)a;
-                list.remove(a);
-                break;
-            }
-        }
-
-        f.xmlElem.name = (elemAnn != null && !elemAnn.name().equals("##default"))
-                ? elemAnn.name() : f.xmlElem.name;
-
-        f.xmlElem.ns = (elemAnn != null && !elemAnn.namespace().equals("##default"))
-                ? elemAnn.namespace() : f.xmlElem.ns;
-
-        f.xmlElem.nillable = f.xmlElem.nillable
-                || (elemAnn != null && elemAnn.nillable());
-
-        f.xmlElem.required = elemAnn != null && elemAnn.required();
-
-    }
-
     private static class Field implements Comparable<Field> {
         private final java.lang.reflect.Type reflectType;
         private final Type asmType;
         private final String fieldName;
         private final List<Annotation> jaxbAnnotations;
         private final boolean noXmlElem;
-        private final FieldXmlElement xmlElem;
 
         Field(String paramName, java.lang.reflect.Type paramType, Type asmType, String elementName,
               String elementNS, List<Annotation> jaxbAnnotations) {
@@ -460,13 +459,8 @@ public class WrapperBeanGenerator {
             this.reflectType = paramType;
             this.asmType = asmType;
             this.fieldName = paramName;
-            this.noXmlElem = noXmlElem;
-            boolean nillable = reflectType instanceof GenericArrayType;
-            if (!nillable && reflectType instanceof Class) {
-                nillable = ((Class)reflectType).isArray();
-            }
-            this.xmlElem = new FieldXmlElement(elementName, elementNS, nillable);
             this.jaxbAnnotations = jaxbAnnotations;
+            this.noXmlElem = noXmlElem;
         }
 
         String getSignature() {
@@ -479,25 +473,8 @@ public class WrapperBeanGenerator {
             return FieldSignature.vms(reflectType);
         }
 
-        boolean isXmlElem() {
-            return !noXmlElem && (!fieldName.equals(xmlElem.name) || !xmlElem.nillable || !xmlElem.required);
-        }
-
         public int compareTo(Field o) {
             return fieldName.compareTo(o.fieldName);
-        }
-
-        static class FieldXmlElement {
-            String name;
-            String ns;
-            boolean nillable;
-            boolean required;
-
-            FieldXmlElement(String name, String ns, boolean nillable) {
-                this.name = name;
-                this.ns = ns;
-                this.nillable = nillable;
-            }
         }
 
     }
