@@ -80,6 +80,18 @@ public class WsImport2 extends MatchingTask {
         return xdebug;
     }
 
+    /**
+     * Set to true to perform the endorsed directory override so that
+     * Ant tasks can run on JavaSE 6.
+     * This is used only when fork is true. With fork=false which is default, it is handled way before in the WrapperTask.
+     */
+    private boolean xendorsed = false;
+    public void setXendorsed(boolean xendorsed) {
+        this.xendorsed = xendorsed;
+    }
+    public boolean isXendorsed() {
+        return xendorsed;
+    }
 
     public void setXdebug(boolean xdebug) {
         this.xdebug = xdebug;
@@ -502,6 +514,7 @@ public class WsImport2 extends MatchingTask {
             cmd.createClasspath(getProject()).append(classpath);
         }
         cmd.setClassname("com.sun.tools.ws.WsImport");
+
         //setupWsimportArgs();
         //cmd.createArgument(true).setLine(forkCmd.toString());
     }
@@ -537,6 +550,10 @@ public class WsImport2 extends MatchingTask {
 
         if(isXadditionalHeaders()){
             cmd.createArgument().setValue("-XadditionalHeaders");
+        }
+
+        if(isXendorsed()){
+            cmd.createArgument().setValue("-Xendorsed");
         }
 
         // keep option

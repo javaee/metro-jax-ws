@@ -55,15 +55,11 @@ import java.io.IOException;
  */
 public abstract class WrapperTask extends ProtectedTask {
 
-    private boolean doEndorsedMagic = false;
-
     /**
      * Set to true to perform the endorsed directory override so that
      * Ant tasks can run on JavaSE 6.
      */
-    public void setXendorsed(boolean f) {
-        this.doEndorsedMagic = f;
-    }
+    private boolean doEndorsedMagic = false;
 
     protected String getCoreClassName() {
         return getClass().getName()+'2';
@@ -77,6 +73,9 @@ public abstract class WrapperTask extends ProtectedTask {
         super.setDynamicAttribute(name,value);
         if(name.equals("target"))
             targetVersionAttribute = value;
+        else if(name.equals("xendorsed"))
+            this.doEndorsedMagic = Boolean.valueOf(value);
+
     }
 
     protected ClassLoader createClassLoader() throws ClassNotFoundException, IOException {
