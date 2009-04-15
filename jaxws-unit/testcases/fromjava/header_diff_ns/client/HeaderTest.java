@@ -59,7 +59,7 @@ public class HeaderTest extends XMLTestCase {
      * Testcase for issue 733
      */
     public void testHeader() throws IOException, XPathExpressionException {
-        String expr= "/*[name()='definitions']/*[name()='message'][@name='addNumbers']/*[name()='part'][@name='arg1']/@element";
+        String expr= "/*[name()='definitions']/*[name()='message'][@name='addNumbers']/*[name()='part'][@name='valueheader']/@element";
         String result = evaluateXpath(expr);
         assertNotNull(result);
         System.out.println(":::::::::"+result);
