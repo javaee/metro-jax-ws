@@ -148,6 +148,22 @@ public class WsGen2 extends MatchingTask {
         return cmd.createVmArgument();
     }
 
+
+    /********************  -Xendorsed option **********************/
+
+    /**
+     * Set to true to perform the endorsed directory override so that
+     * Ant tasks can run on JavaSE 6.
+     * This is used only when fork is true. With fork=false which is default, it is handled way before in the WrapperTask.
+     */
+    private boolean xendorsed = false;
+    public void setXendorsed(boolean xendorsed) {
+        this.xendorsed = xendorsed;
+    }
+    public boolean isXendorsed() {
+        return xendorsed;
+    }
+
     /********************  -extensions option **********************/
     protected boolean extension;
 
@@ -399,7 +415,12 @@ public class WsGen2 extends MatchingTask {
         if (getExtension()) {
             cmd.createArgument().setValue("-extension");
         }
-        
+
+        //-Xendorsed option
+        if(isXendorsed()){
+            cmd.createArgument().setValue("-Xendorsed");
+        }
+
         // keep option
         if (getKeep()) {
             cmd.createArgument().setValue("-keep");
