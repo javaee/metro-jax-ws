@@ -815,7 +815,7 @@ public class RuntimeModeler {
                     partName = webParam.partName();
                 else
                     partName = paramName;
-                if (isHeader) { // headers cannot be in empty namespace
+                if (isHeader && paramQName.getNamespaceURI().equals("")) { // headers cannot be in empty namespace
                     paramQName = new QName(targetNamespace, paramQName.getLocalPart());
                 }
                 paramMode = webParam.mode();
