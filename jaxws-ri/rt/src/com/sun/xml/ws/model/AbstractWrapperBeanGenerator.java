@@ -39,6 +39,7 @@ import com.sun.istack.NotNull;
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
 import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.util.StringUtils;
 
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -66,7 +67,7 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
-public abstract class AbstractWrapperBeanGenerator<T,M,A> {
+public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractWrapperBeanGenerator.class.getName());
 
@@ -79,12 +80,20 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
         XmlList.class, XmlElement.class
     };
 
+    private static final Set<String> skipProperties = new HashSet<String>();
+    static{
+        skipProperties.add("getCause");
+        skipProperties.add("getLocalizedMessage");
+        skipProperties.add("getClass");
+        skipProperties.add("getStackTrace");
+    }
+
     private final AnnotationReader<T,?,?,M> annReader;
-    private final Navigator<T,?,?,M> nav;
+    private final Navigator<T,C,?,M> nav;
     private final BeanMemberFactory<T,A> factory;
 
     protected AbstractWrapperBeanGenerator(AnnotationReader<T,?,?,M> annReader,
-            Navigator<T,?,?,M> nav, BeanMemberFactory<T,A> factory) {
+            Navigator<T,C,?,M> nav, BeanMemberFactory<T,A> factory) {
         this.annReader = annReader;
         this.nav = nav;
         this.factory = factory;
@@ -199,7 +208,7 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
         }
     }
 
-    public void processXmlElement(List<Annotation> jaxb, String elemName, String elemNS, T type) {
+    private void processXmlElement(List<Annotation> jaxb, String elemName, String elemNS, T type) {
         XmlElement elemAnn = null;
         for (Annotation a : jaxb) {
             if (a.annotationType() == XmlElement.class) {
@@ -222,6 +231,7 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
         XmlElement elem = (XmlElement) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[]{XmlElement.class}, handler);
         jaxb.add(elem);
     }
+
 
     private static class XmlElementHandler implements InvocationHandler {
         private String name;
@@ -252,6 +262,54 @@ public abstract class AbstractWrapperBeanGenerator<T,M,A> {
             }
         }
     }
+
+    Collection<A> collectExceptionBeanMembers(C exception) {
+        Set<A> fields = new TreeSet<A>();
+        getExceptionProperties(exception, fields);
+        return fields;
+    }
+
+
+    private void getExceptionProperties(C exception, Set<A> fields) {
+        C sc = nav.getSuperClass(exception);
+        if (sc != null) {
+            getExceptionProperties(sc, fields);
+        }
+        Collection<? extends M> methods = nav.getDeclaredMethods(exception);
+
+        for (M method : methods) {
+/*
+            TODO implement these in Navigator
+
+             if (!nav.isPublicMethod(method)
+                 || (nav.isStaticMethod(method) && nav.isFinalMethod(method))
+                 || nav.isTransientMethod(method) ) { // no final static, transient, non-public
+                 continue;
+             }
+*/
+            if (!nav.isPublicMethod(method)) {
+                continue;
+            }
+
+            String name = nav.getMethodName(method);
+
+            if (!(name.startsWith("get") || name.startsWith("is")) || skipProperties.contains(name) ||
+                    name.equals("get") || name.equals("is")) {
+                // Don't bother with invalid propertyNames.
+                continue;
+            }
+
+            T returnType = nav.getReturnType(method);
+            if (nav.getMethodParameters(method).length == 0) {
+                String fieldName = name.startsWith("get")
+                        ? StringUtils.decapitalize(name.substring(3))
+                        : StringUtils.decapitalize(name.substring(2));
+                fields.add(factory.createWrapperBeanMember(returnType, fieldName, null, Collections.<Annotation>emptyList()));
+            }
+        }
+
+    }
+
 
 
     //TODO MOVE Names.java to runtime (instead of doing the following)

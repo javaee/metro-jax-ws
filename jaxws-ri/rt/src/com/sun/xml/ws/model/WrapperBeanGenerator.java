@@ -42,7 +42,6 @@ import com.sun.xml.bind.v2.model.nav.Navigator;
 import com.sun.xml.ws.org.objectweb.asm.*;
 import static com.sun.xml.ws.org.objectweb.asm.Opcodes.*;
 import com.sun.xml.ws.org.objectweb.asm.Type;
-import com.sun.xml.ws.util.StringUtils;
 
 import javax.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.bind.annotation.XmlElement;
@@ -74,9 +73,9 @@ public class WrapperBeanGenerator {
             new RuntimeWrapperBeanGenerator(new RuntimeInlineAnnotationReader(),
                     Navigator.REFLECTION, FIELD_FACTORY);
 
-    private static final class RuntimeWrapperBeanGenerator extends AbstractWrapperBeanGenerator<java.lang.reflect.Type, java.lang.reflect.Method, Field> {
+    private static final class RuntimeWrapperBeanGenerator extends AbstractWrapperBeanGenerator<java.lang.reflect.Type, Class, java.lang.reflect.Method, Field> {
 
-        protected RuntimeWrapperBeanGenerator(AnnotationReader<java.lang.reflect.Type, ?, ?, Method> annReader, Navigator<java.lang.reflect.Type, ?, ?, Method> nav, BeanMemberFactory<java.lang.reflect.Type, Field> beanMemberFactory) {
+        protected RuntimeWrapperBeanGenerator(AnnotationReader<java.lang.reflect.Type, ?, ?, Method> annReader, Navigator<java.lang.reflect.Type, Class, ?, Method> nav, BeanMemberFactory<java.lang.reflect.Type, Field> beanMemberFactory) {
             super(annReader, nav, beanMemberFactory);
         }
 
@@ -110,8 +109,8 @@ public class WrapperBeanGenerator {
     // Creates class's bytes
     private static byte[] createBeanImage(String className,
                                String rootName, String rootNS,
-                               String typeName, String typeNS, String[] propOrder,
-                               List<Field> fields) throws Exception {
+                               String typeName, String typeNS,
+                               Collection<Field> fields) throws Exception {
 
         ClassWriter cw = new ClassWriter(0);
         //org.objectweb.asm.util.TraceClassVisitor cw = new org.objectweb.asm.util.TraceClassVisitor(actual, new java.io.PrintWriter(System.out));
@@ -126,10 +125,10 @@ public class WrapperBeanGenerator {
         AnnotationVisitor type = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
         type.visit("name", typeName);
         type.visit("namespace", typeNS);
-        if (propOrder.length > 1) {
+        if (fields.size() > 1) {
             AnnotationVisitor propVisitor = type.visitArray("propOrder");
-            for(String prop : propOrder) {
-                propVisitor.visit("propOrder", prop);
+            for(Field field : fields) {
+                propVisitor.visit("propOrder", field.fieldName);
             }
             propVisitor.visitEnd();
         }
@@ -196,15 +195,13 @@ public class WrapperBeanGenerator {
             sb.append("\n");
             sb.append("@XmlType(name=").append(typeName)
                     .append(", namespace=").append(typeNS);
-            if (propOrder.length > 1) {
+            if (fields.size() > 1) {
                 sb.append(", propOrder={");
-                for(int i=0; i < propOrder.length; i++) {
-                    if (i != 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(propOrder[i]);
+                for(Field field : fields) {
+                    sb.append(" ");
+                    sb.append(field.fieldName);
                 }
-                sb.append("}");
+                sb.append(" }");
             }
             sb.append(")");
 
@@ -277,12 +274,10 @@ public class WrapperBeanGenerator {
         RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
                 reqElemName.getNamespaceURI(), requestMembers, responseMembers);
 
-        String[] propOrder = getPropOrder(requestMembers);
-
         byte[] image;
         try {
             image = createBeanImage(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
-                reqElemName.getLocalPart(), reqElemName.getNamespaceURI(), propOrder,
+                reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
                 requestMembers);
         } catch(Exception e) {
             throw new WebServiceException(e);
@@ -300,12 +295,10 @@ public class WrapperBeanGenerator {
         RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
                 resElemName.getNamespaceURI(), requestMembers, responseMembers);
 
-        String[] propOrder = getPropOrder(responseMembers);
-
         byte[] image;
         try {
             image = createBeanImage(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
-                resElemName.getLocalPart(), resElemName.getNamespaceURI(), propOrder,
+                resElemName.getLocalPart(), resElemName.getNamespaceURI(),
                 responseMembers);
         } catch(Exception e) {
             throw new WebServiceException(e);
@@ -314,13 +307,6 @@ public class WrapperBeanGenerator {
         return Injector.inject(cl, className, image);
     }
 
-    private static String[] getPropOrder(List<Field> fields) {
-        String[] propOrder = new String[fields.size()];
-        for(int i=0; i < fields.size(); i++) {
-            propOrder[i] = fields.get(i).fieldName;
-        }
-        return propOrder;
-    }
 
     private static Type getASMType(java.lang.reflect.Type t) {
         assert t!=null;
@@ -357,56 +343,18 @@ public class WrapperBeanGenerator {
 
     static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
 
-        List<Field> fields = collectExceptionProperties(exception);
-        String[] propOrder = getPropOrder(fields);
-        
+        Collection<Field> fields = RUNTIME_GENERATOR.collectExceptionBeanMembers(exception);
+
         byte[] image;
         try {
             image = createBeanImage(className, elemName, elemNS,
-                exception.getSimpleName(), typeNS, propOrder,
+                exception.getSimpleName(), typeNS,
                 fields);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
 
         return Injector.inject(cl, className, image);
-    }
-
-    private static List<Field> collectExceptionProperties(Class exception) {
-        List<Field> fields = new ArrayList<Field>();
-
-        Method[] methods = exception.getMethods();
-        for (Method method : methods) {
-            int mod = method.getModifiers();
-            if (!Modifier.isPublic(mod)
-                || (Modifier.isFinal(mod) && Modifier.isStatic(mod))
-                || Modifier.isTransient(mod)) { // no final static, transient, non-public
-                continue;
-            }
-            String name = method.getName();
-            if (!(name.startsWith("get") || name.startsWith("is")) || skipProperties.contains(name) ||
-                name.equals("get") || name.equals("is")) {
-                // Don't bother with invalid propertyNames.
-                continue;
-            }
-
-            java.lang.reflect.Type[] paramTypes = method.getGenericParameterTypes();
-            java.lang.reflect.Type returnType = method.getGenericReturnType();
-            Type asmType = Type.getReturnType(method);
-            if (paramTypes.length == 0) {
-                if (name.startsWith("get")) {
-                    String fieldName = StringUtils.decapitalize(name.substring(3));
-                    Field field = new Field(fieldName, returnType, asmType, Collections.<Annotation>emptyList());
-                    fields.add(field);
-                } else {
-                    String fieldName = StringUtils.decapitalize(name.substring(2));
-                    Field field = new Field(fieldName, returnType, asmType, Collections.<Annotation>emptyList());
-                    fields.add(field);
-                }
-            }
-        }
-        Collections.sort(fields);
-        return fields;
     }
 
     private static class Field implements Comparable<Field> {
@@ -437,14 +385,6 @@ public class WrapperBeanGenerator {
             return fieldName.compareTo(o.fieldName);
         }
 
-    }
-
-    private static final Set<String> skipProperties = new HashSet<String>();
-    static{
-        skipProperties.add("getCause");
-        skipProperties.add("getLocalizedMessage");
-        skipProperties.add("getClass");
-        skipProperties.add("getStackTrace");
     }
 
 }

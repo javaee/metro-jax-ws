@@ -38,9 +38,14 @@ package com.sun.tools.ws.processor.modeler.annotation;
 import static com.sun.codemodel.ClassType.CLASS;
 import com.sun.codemodel.*;
 import com.sun.codemodel.writer.ProgressCodeWriter;
-import com.sun.mirror.declaration.*;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.InterfaceDeclaration;
+import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.*;
+import com.sun.tools.jxc.apt.InlineAnnotationReaderImpl;
+import com.sun.tools.jxc.model.nav.APTNavigator;
 import com.sun.tools.ws.processor.generator.GeneratorBase;
 import com.sun.tools.ws.processor.generator.GeneratorConstants;
 import com.sun.tools.ws.processor.generator.Names;
@@ -51,28 +56,26 @@ import com.sun.tools.ws.util.ClassNameInfo;
 import com.sun.tools.ws.wscompile.FilerCodeWriter;
 import com.sun.tools.ws.wscompile.WsgenOptions;
 import com.sun.tools.ws.wsdl.document.soap.SOAPStyle;
-import com.sun.tools.jxc.apt.InlineAnnotationReaderImpl;
-import com.sun.tools.jxc.model.nav.APTNavigator;
-import com.sun.xml.ws.util.StringUtils;
-import com.sun.xml.ws.model.AbstractWrapperBeanGenerator;
 import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.xml.bind.api.impl.NameConverter;
-import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
 import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
 import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.model.AbstractWrapperBeanGenerator;
+import com.sun.xml.ws.util.StringUtils;
 
-import javax.jws.*;
+import javax.jws.Oneway;
+import javax.jws.WebMethod;
+import javax.jws.WebService;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
-import javax.xml.ws.*;
+import javax.xml.ws.RequestWrapper;
+import javax.xml.ws.ResponseWrapper;
+import javax.xml.ws.WebFault;
+import javax.xml.ws.WebServiceException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 
 /**
@@ -93,9 +96,9 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             new APTWrapperBeanGenerator(InlineAnnotationReaderImpl.theInstance,
                    new APTNavigator(builder.getAPEnv()) , FIELD_FACTORY);
 
-    private final class APTWrapperBeanGenerator extends AbstractWrapperBeanGenerator<TypeMirror, MethodDeclaration, MemberInfo> {
+    private final class APTWrapperBeanGenerator extends AbstractWrapperBeanGenerator<TypeMirror, TypeDeclaration, MethodDeclaration, MemberInfo> {
 
-        protected APTWrapperBeanGenerator(AnnotationReader<TypeMirror, ?, ?, MethodDeclaration> annReader, Navigator<TypeMirror, ?, ?, MethodDeclaration> nav, BeanMemberFactory<TypeMirror, MemberInfo> beanMemberFactory) {
+        protected APTWrapperBeanGenerator(AnnotationReader<TypeMirror, ?, ?, MethodDeclaration> annReader, Navigator<TypeMirror, TypeDeclaration, ?, MethodDeclaration> nav, BeanMemberFactory<TypeMirror, MemberInfo> beanMemberFactory) {
             super(annReader, nav, beanMemberFactory);
         }
 
@@ -453,7 +456,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         for (String key : propertyToTypeMap.keySet()) {
             MethodDeclaration method = propertyToTypeMap.get(key);
             TypeMirror erasureType =  getSafeType(method.getReturnType());
-            MemberInfo member = new MemberInfo(erasureType, key, null, Collections.EMPTY_LIST);
+            MemberInfo member = new MemberInfo(erasureType, key, null, Collections.<Annotation>emptyList());
             members.add(member);
         }
         //faultInfo.setMembers(members);
