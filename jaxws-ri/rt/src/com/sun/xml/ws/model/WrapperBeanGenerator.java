@@ -35,31 +35,32 @@
  */
 package com.sun.xml.ws.model;
 
-import com.sun.istack.NotNull;
-import com.sun.xml.bind.api.JAXBRIContext;
-import com.sun.xml.ws.util.StringUtils;
+import com.sun.xml.ws.model.AbstractWrapperBeanGenerator.BeanMemberFactory;
+import com.sun.xml.bind.v2.model.annotation.AnnotationReader;
+import com.sun.xml.bind.v2.model.annotation.RuntimeInlineAnnotationReader;
+import com.sun.xml.bind.v2.model.nav.Navigator;
+import com.sun.xml.ws.org.objectweb.asm.*;
 import static com.sun.xml.ws.org.objectweb.asm.Opcodes.*;
 import com.sun.xml.ws.org.objectweb.asm.Type;
-import com.sun.xml.ws.org.objectweb.asm.*;
+import com.sun.xml.ws.util.StringUtils;
 
-import javax.jws.WebParam;
-import javax.jws.WebResult;
 import javax.xml.bind.annotation.XmlAttachmentRef;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
-import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Byte code generator for request,response wrapper and exception beans
+ * Runtime Wrapper and exception bean generator implementation.
+ * It uses ASM to generate request, response and exception beans.
  *
  * @author Jitendra Kotamraju
  */
@@ -67,10 +68,46 @@ public class WrapperBeanGenerator {
 
     private static final Logger LOGGER = Logger.getLogger(WrapperBeanGenerator.class.getName());
 
-    private static final Class[] jaxbAnns = new Class[] {
-        XmlAttachmentRef.class, XmlMimeType.class, XmlJavaTypeAdapter.class,
-        XmlList.class, XmlElement.class
-    };
+    private static final FieldFactory FIELD_FACTORY = new FieldFactory();
+
+    private static final AbstractWrapperBeanGenerator RUNTIME_GENERATOR =
+            new RuntimeWrapperBeanGenerator(new RuntimeInlineAnnotationReader(),
+                    Navigator.REFLECTION, FIELD_FACTORY);
+
+    private static final class RuntimeWrapperBeanGenerator extends AbstractWrapperBeanGenerator<java.lang.reflect.Type, java.lang.reflect.Method, Field> {
+
+        protected RuntimeWrapperBeanGenerator(AnnotationReader<java.lang.reflect.Type, ?, ?, Method> annReader, Navigator<java.lang.reflect.Type, ?, ?, Method> nav, BeanMemberFactory<java.lang.reflect.Type, Field> beanMemberFactory) {
+            super(annReader, nav, beanMemberFactory);
+        }
+
+        protected java.lang.reflect.Type getSafeType(java.lang.reflect.Type type) {
+            return type;
+        }
+
+        protected java.lang.reflect.Type getHolderValueType(java.lang.reflect.Type paramType) {
+            if (paramType instanceof ParameterizedType) {
+                ParameterizedType p = (ParameterizedType)paramType;
+                if (p.getRawType().equals(Holder.class)) {
+                    return p.getActualTypeArguments()[0];
+                }
+            }
+            return null;
+        }
+
+        protected boolean isVoidType(java.lang.reflect.Type type) {
+            return type == Void.TYPE;
+        }
+
+    }
+
+    private static final class FieldFactory implements BeanMemberFactory<java.lang.reflect.Type, Field> {
+        public Field createWrapperBeanMember(java.lang.reflect.Type paramType,
+                String paramName, QName elementName, List<Annotation> jaxb) {
+            return new Field(paramName, paramType, getASMType(paramType),
+                    elementName.getLocalPart(), elementName.getNamespaceURI(),
+                    jaxb);
+        }
+    }
 
     // Creates class's bytes
     private static byte[] createBeanImage(String className,
@@ -240,15 +277,18 @@ public class WrapperBeanGenerator {
 
         LOGGER.fine("Request Wrapper Class : "+className);
 
-        List<Field> fields = collectRequestWrapperMembers(method);
+        List<Field> requestMembers = new ArrayList<Field>();
+        List<Field> responseMembers = new ArrayList<Field>();
+        RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
+                reqElemName.getNamespaceURI(), requestMembers, responseMembers);
 
-        String[] propOrder = getPropOrder(fields);
+        String[] propOrder = getPropOrder(requestMembers);
 
         byte[] image;
         try {
             image = createBeanImage(className, reqElemName.getLocalPart(), reqElemName.getNamespaceURI(),
                 reqElemName.getLocalPart(), reqElemName.getNamespaceURI(), propOrder,
-                fields);
+                requestMembers);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
@@ -260,15 +300,18 @@ public class WrapperBeanGenerator {
 
         LOGGER.fine("Response Wrapper Class : "+className);
 
-        List<Field> fields = collectResponseWrapperMembers(method);
+        List<Field> requestMembers = new ArrayList<Field>();
+        List<Field> responseMembers = new ArrayList<Field>();
+        RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
+                resElemName.getNamespaceURI(), requestMembers, responseMembers);
 
-        String[] propOrder = getPropOrder(fields);
+        String[] propOrder = getPropOrder(responseMembers);
 
         byte[] image;
         try {
             image = createBeanImage(className, resElemName.getLocalPart(), resElemName.getNamespaceURI(),
                 resElemName.getLocalPart(), resElemName.getNamespaceURI(), propOrder,
-                fields);
+                responseMembers);
         } catch(Exception e) {
             throw new WebServiceException(e);
         }
@@ -282,131 +325,6 @@ public class WrapperBeanGenerator {
             propOrder[i] = fields.get(i).fieldName;
         }
         return propOrder;
-    }
-
-    private static List<Field> collectRequestWrapperMembers(Method method) {
-
-        List<Field> fields = new ArrayList<Field>();
-        Annotation[][] paramAnns = method.getParameterAnnotations();
-        java.lang.reflect.Type[] paramTypes = method.getGenericParameterTypes();
-        Type[] asmTypes = Type.getArgumentTypes(method);
-        for(int i=0; i < paramTypes.length; i++) {
-            WebParam webParam = findAnnotation(paramAnns[i], WebParam.class);
-            if (webParam != null && webParam.header()) {
-                continue;
-            }
-            List<Annotation> jaxb = collectJAXBAnnotations(paramAnns[i]);
-
-            java.lang.reflect.Type paramType =  getHolderValueType(paramTypes[i]);
-            Type asmType = isHolder(paramTypes[i]) ? getASMType(paramType) : asmTypes[i];
-
-            String paramNamespace = "";
-            String paramName =  "arg"+i;
-            WebParam.Mode mode = WebParam.Mode.IN;
-            if (webParam != null) {
-                mode = webParam.mode();
-                if (webParam.name().length() > 0)
-                    paramName = webParam.name();
-                if (webParam.targetNamespace().length() > 0)
-                    paramNamespace = webParam.targetNamespace();
-            }
-
-            String fieldName = JAXBRIContext.mangleNameToVariableName(paramName);
-            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-            //care of mangling java reserved keywords
-            fieldName = getJavaReservedVarialbeName(fieldName);
-
-            Field memInfo = new Field(fieldName, paramType, asmType, paramName, paramNamespace, jaxb);
-
-            if (mode.equals(WebParam.Mode.IN) || mode.equals(WebParam.Mode.INOUT)) {
-                fields.add(memInfo);
-            }
-
-            adjustXmlElement(jaxb, memInfo);
-        }
-        return fields;
-    }
-
-    private static List<Field> collectResponseWrapperMembers(Method method) {
-
-        List<Field> fields = new ArrayList<Field>();
-
-        // Collect all OUT, INOUT parameters as fields
-        Annotation[][] paramAnns = method.getParameterAnnotations();
-        java.lang.reflect.Type[] paramTypes = method.getGenericParameterTypes();
-        for(int i=0; i < paramTypes.length; i++) {
-            WebParam webParam = findAnnotation(paramAnns[i], WebParam.class);
-            if (webParam != null) {
-                if (webParam.header() || webParam.mode() == WebParam.Mode.IN) {
-                    continue;
-                }
-            }
-            if (!isHolder(paramTypes[i])) {
-                continue;
-            }
-
-            List<Annotation> jaxb = collectJAXBAnnotations(paramAnns[i]);
-
-            java.lang.reflect.Type paramType = getHolderValueType(paramTypes[i]);
-            Type asmType = getASMType(paramType);
-
-            String paramNamespace = "";
-            String paramName =  "arg"+i;
-
-            if (webParam != null) {
-                if (webParam.name().length() > 0)
-                    paramName = webParam.name();
-                if (webParam.targetNamespace().length() > 0)
-                    paramNamespace = webParam.targetNamespace();
-            }
-
-            String fieldName = JAXBRIContext.mangleNameToVariableName(paramName);
-            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-            //care of mangling java reserved keywords
-            fieldName = getJavaReservedVarialbeName(fieldName);
-            Field f = new Field(fieldName, paramType, asmType, paramName, paramNamespace, jaxb);
-            fields.add(f);
-            adjustXmlElement(jaxb, f);
-        }
-
-        WebResult webResult = method.getAnnotation(WebResult.class);
-        java.lang.reflect.Type returnType = method.getGenericReturnType();
-        Type asmType = Type.getReturnType(method);
-        if (!((webResult != null && webResult.header()) || returnType == Void.TYPE)) {
-            String fieldElementName = "return";
-            String fieldName = "_return";
-            String fieldNamespace = "";
-
-            if (webResult != null) {
-                if (webResult.name().length() > 0) {
-                    fieldElementName = webResult.name();
-                    fieldName = JAXBRIContext.mangleNameToVariableName(webResult.name());
-                    //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-                    //care of mangling java identifiers
-                    fieldName = getJavaReservedVarialbeName(fieldName);
-                }
-                if (webResult.targetNamespace().length() > 1) {
-                    fieldNamespace = webResult.targetNamespace();
-                }
-            }
-
-            List<Annotation> jaxb = collectJAXBAnnotations(method.getAnnotations());
-
-            Field f = new Field(fieldName, returnType, asmType, fieldElementName, fieldNamespace, jaxb);
-            fields.add(f);
-            adjustXmlElement(jaxb, f);
-        }
-        return fields;
-    }
-
-    private static boolean isHolder(java.lang.reflect.Type type) {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType p = (ParameterizedType)type;
-            if (p.getRawType().equals(Holder.class)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static Type getASMType(java.lang.reflect.Type t) {
@@ -441,24 +359,6 @@ public class WrapperBeanGenerator {
         throw new IllegalArgumentException("Not creating ASM Type for type = "+t);
     }
 
-    private static java.lang.reflect.Type getHolderValueType(java.lang.reflect.Type paramType) {
-        if (paramType instanceof ParameterizedType) {
-            ParameterizedType p = (ParameterizedType)paramType;
-            if (p.getRawType().equals(Holder.class)) {
-                return p.getActualTypeArguments()[0];
-            }
-        }
-        return paramType;
-    }
-
-    private static <T extends Annotation> T findAnnotation(Annotation[] anns, Class<T> annotationClass) {
-        for(Annotation a : anns) {
-            if (a.annotationType() == annotationClass) {
-                return (T)a;
-            }
-        }
-        return null;
-    }
 
     static Class createExceptionBean(String className, Class exception, String typeNS, String elemName, String elemNS, ClassLoader cl) {
 
@@ -512,18 +412,6 @@ public class WrapperBeanGenerator {
         }
         Collections.sort(fields);
         return fields;
-    }
-
-
-    private static List<Annotation> collectJAXBAnnotations(Annotation[] anns) {
-        List<Annotation> jaxbAnnotation = new ArrayList<Annotation>();
-        for(Class c : jaxbAnns) {
-            Annotation a = findAnnotation(anns, c);
-            if (a != null) {
-                jaxbAnnotation.add(a);
-            }
-        }
-        return jaxbAnnotation;
     }
 
     private static void adjustXmlElement(List<Annotation> list, Field f) {
@@ -612,75 +500,6 @@ public class WrapperBeanGenerator {
             }
         }
 
-    }
-
-    // TODO MOVE Names to runtime (instead of doing the following)
-
-    /*
-     * See if its a java keyword name, if so then mangle the name
-     */
-    private static @NotNull String getJavaReservedVarialbeName(@NotNull String name) {
-        String reservedName = reservedWords.get(name);
-        return reservedName == null ? name : reservedName;
-    }
-
-    private static final Map<String, String> reservedWords;
-
-    static {
-        reservedWords = new HashMap<String, String>();
-        reservedWords.put("abstract", "_abstract");
-        reservedWords.put("assert", "_assert");
-        reservedWords.put("boolean", "_boolean");
-        reservedWords.put("break", "_break");
-        reservedWords.put("byte", "_byte");
-        reservedWords.put("case", "_case");
-        reservedWords.put("catch", "_catch");
-        reservedWords.put("char", "_char");
-        reservedWords.put("class", "_class");
-        reservedWords.put("const", "_const");
-        reservedWords.put("continue", "_continue");
-        reservedWords.put("default", "_default");
-        reservedWords.put("do", "_do");
-        reservedWords.put("double", "_double");
-        reservedWords.put("else", "_else");
-        reservedWords.put("extends", "_extends");
-        reservedWords.put("false", "_false");
-        reservedWords.put("final", "_final");
-        reservedWords.put("finally", "_finally");
-        reservedWords.put("float", "_float");
-        reservedWords.put("for", "_for");
-        reservedWords.put("goto", "_goto");
-        reservedWords.put("if", "_if");
-        reservedWords.put("implements", "_implements");
-        reservedWords.put("import", "_import");
-        reservedWords.put("instanceof", "_instanceof");
-        reservedWords.put("int", "_int");
-        reservedWords.put("interface", "_interface");
-        reservedWords.put("long", "_long");
-        reservedWords.put("native", "_native");
-        reservedWords.put("new", "_new");
-        reservedWords.put("null", "_null");
-        reservedWords.put("package", "_package");
-        reservedWords.put("private", "_private");
-        reservedWords.put("protected", "_protected");
-        reservedWords.put("public", "_public");
-        reservedWords.put("return", "_return");
-        reservedWords.put("short", "_short");
-        reservedWords.put("static", "_static");
-        reservedWords.put("strictfp", "_strictfp");
-        reservedWords.put("super", "_super");
-        reservedWords.put("switch", "_switch");
-        reservedWords.put("synchronized", "_synchronized");
-        reservedWords.put("this", "_this");
-        reservedWords.put("throw", "_throw");
-        reservedWords.put("throws", "_throws");
-        reservedWords.put("transient", "_transient");
-        reservedWords.put("true", "_true");
-        reservedWords.put("try", "_try");
-        reservedWords.put("void", "_void");
-        reservedWords.put("volatile", "_volatile");
-        reservedWords.put("while", "_while");
-        reservedWords.put("enum", "_enum");
     }
 
     private static final Set<String> skipProperties = new HashSet<String>();
