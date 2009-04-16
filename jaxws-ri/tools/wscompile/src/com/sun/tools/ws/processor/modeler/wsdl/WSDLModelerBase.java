@@ -570,12 +570,16 @@ public abstract class WSDLModelerBase implements Modeler {
     }
 
     protected String makePackageQualified(String s) {
-        if (options.defaultPackage != null
-            && !options.defaultPackage.equals("")) {
+        if (s.indexOf(".") != -1) {
+            // s is already package qualified
+            return s;
+        } else if (options.defaultPackage != null
+                && !options.defaultPackage.equals("")) {
             return options.defaultPackage + "." + s;
-        } else {
+        } else {//options.defaultPackage seems to be never null, and this is never executed
             return s;
         }
+
     }
 
 

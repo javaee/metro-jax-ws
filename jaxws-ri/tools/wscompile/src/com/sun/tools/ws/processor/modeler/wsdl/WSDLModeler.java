@@ -2300,15 +2300,9 @@ public class WSDLModeler extends WSDLModelerBase {
         if (jaxwsCust != null && jaxwsCust.getClassName() != null) {
             CustomName name = jaxwsCust.getClassName();
             if (name != null && !name.equals(""))
-                serviceName = name.getName();
+                return makePackageQualified(name.getName());
         }
-        String serviceInterface = "";
-        String javaPackageName = options.defaultPackage;
-        serviceInterface = javaPackageName + ".";
-
-        serviceInterface
-                += JAXBRIContext.mangleNameToClassName(serviceName);
-        return serviceInterface;
+        return makePackageQualified(serviceName);
     }
 
     protected String getJavaNameOfSEI(Port port) {
