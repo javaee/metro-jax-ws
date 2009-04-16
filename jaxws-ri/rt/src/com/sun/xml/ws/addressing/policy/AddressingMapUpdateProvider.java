@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.addressing.policy;
 
+import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.policy.AssertionSet;
@@ -43,15 +44,14 @@ import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapExtender;
-import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapUpdateProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.sourcemodel.AssertionData;
-import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
+import com.sun.xml.ws.policy.subject.WsdlBindingSubject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
@@ -92,10 +92,11 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
     /**
      * Puts an addressing policy into the PolicyMap if the addressing feature was set.
      */
-    public void update(final PolicyMapExtender policyMapMutator, final PolicyMap policyMap, final SEIModel model, final WSBinding wsBinding)
+    public Collection<PolicySubject> update(final PolicyMap policyMap, final SEIModel model, final WSBinding wsBinding)
             throws PolicyException {
-        LOGGER.entering(policyMapMutator, policyMap, model, wsBinding);
+        LOGGER.entering(policyMap, model, wsBinding);
 
+        Collection<PolicySubject> subjects = new ArrayList<PolicySubject>();
         if (policyMap != null) {
             final AddressingFeature addressingFeature = wsBinding.getFeature(AddressingFeature.class);
             if (LOGGER.isLoggable(Level.FINEST)) {
@@ -103,28 +104,22 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
             }
             if ((addressingFeature != null) && addressingFeature.isEnabled()) {
                 //add wsam:Addrressing assertion if not exists.
-                addWsamAddressing(policyMapMutator, policyMap, model, addressingFeature);
+                addWsamAddressing(subjects, policyMap, model, addressingFeature);
             }
         } // endif policy map not null
-        LOGGER.exiting();
+        LOGGER.exiting(subjects);
+        return subjects;
     }
 
-    private void addWsamAddressing(PolicyMapExtender policyMapMutator, PolicyMap policyMap, SEIModel model, AddressingFeature addressingFeature) throws PolicyException {
-        final PolicyMapKey endpointKey = PolicyMap.createWsdlEndpointScopeKey(model.getServiceQName(), model.getPortName());
-        final Policy existingPolicy = policyMap.getEndpointEffectivePolicy(endpointKey);
-        if ((existingPolicy == null) || !existingPolicy.contains(W3CAddressingMetadataConstants.WSAM_ADDRESSING_ASSERTION)) {
-            final QName bindingName = model.getBoundPortTypeName();
-            final Policy addressingPolicy = createWsamAddressingPolicy(bindingName, addressingFeature);
-            final PolicySubject addressingPolicySubject = new PolicySubject(bindingName, addressingPolicy);
-            final PolicyMapKey aKey = PolicyMap.createWsdlEndpointScopeKey(model.getServiceQName(), model.getPortName());
-            policyMapMutator.putEndpointSubject(aKey, addressingPolicySubject);
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Added addressing policy with ID \"" + addressingPolicy.getIdOrName() + "\" to binding element \"" + bindingName + "\"");
-            }
-        } else {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Addressing policy exists already, doing nothing");
-            }
+    private void addWsamAddressing(Collection<PolicySubject> subjects, PolicyMap policyMap, SEIModel model, AddressingFeature addressingFeature)
+            throws PolicyException {
+        final QName bindingName = model.getBoundPortTypeName();
+        final WsdlBindingSubject wsdlSubject = WsdlBindingSubject.createBindingSubject(bindingName);
+        final Policy addressingPolicy = createWsamAddressingPolicy(bindingName, addressingFeature);
+        final PolicySubject addressingPolicySubject = new PolicySubject(wsdlSubject, addressingPolicy);
+        subjects.add(addressingPolicySubject);
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Added addressing policy with ID \"" + addressingPolicy.getIdOrName() + "\" to binding element \"" + bindingName + "\"");
         }
     }
 

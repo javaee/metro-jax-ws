@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,25 +40,31 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapExtender;
+import com.sun.xml.ws.policy.PolicySubject;
+import java.util.Collection;
 
 /**
  * The service provider implementing this interface will be discovered and called to extend created PolicyMap instance with additional policy
  * bindings. The call is performed directly after WSIT config file is parsed.
  *
  * @author Marek Potociar (marek.potociar at sun.com)
+ * @author Fabian Ritzmann
  */
 public interface PolicyMapUpdateProvider {
 
   /**
-   * A callback method that allows to retrieve policy related information from provided parameters and modify the associated policy map
-   * accordingly via provided policy map mutator object, which is associated with the policy map.
+   * A callback method that allows to retrieve policy related information from provided parameters
+   * return a collection of new policies that are added to the map.
    *
-   * @param policyMapMutator Allows to modify the policy map
-   * @param policyMap Modify the content of this map
+   * When new policies are returned, the caller may merge them with existing policies
+   * in the policy map.
+   *
+   * @param policyMap This map contains the policies that were already created
    * @param model The WSDL model of the service
    * @param wsBinding The binding of the service
+   * @return A collection of policies and the subject to which they are attached.
+   *   May return null or an empty collection.
    * @throws PolicyException Throw this exception if an error occurs
    */
-  void update(PolicyMapExtender policyMapMutator, PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException;
+  Collection<PolicySubject> update(PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException;
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.encoding.policy;
 
+import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SERIALIZATION_ASSERTION;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.policy.AssertionSet;
@@ -43,27 +44,27 @@ import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapExtender;
-import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.PolicySubject;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapUpdateProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.sourcemodel.AssertionData;
-import java.util.ArrayList;
-import javax.xml.ws.soap.MTOMFeature;
+import com.sun.xml.ws.policy.subject.WsdlBindingSubject;
 
-import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SERIALIZATION_ASSERTION;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import javax.xml.namespace.QName;
+import javax.xml.ws.soap.MTOMFeature;
 
 /**
  * Generate an MTOM policy if MTOM was enabled.
  *
  * @author Jakub Podlesak (japod at sun.com)
+ * @author Fabian Ritzmann
  */
 public class MtomMapUpdateProvider implements PolicyMapUpdateProvider{
     
-    private static final PolicyLogger logger = PolicyLogger.getLogger(MtomMapUpdateProvider.class);
+    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(MtomMapUpdateProvider.class);
     
     static class MtomAssertion extends PolicyAssertion {
         
@@ -87,31 +88,29 @@ public class MtomMapUpdateProvider implements PolicyMapUpdateProvider{
      * </ol>
      *
      */
-    public void update(PolicyMapExtender policyMapMutator, PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException {
-        logger.entering(policyMapMutator, policyMap, model, wsBinding);
-        
+    public Collection<PolicySubject> update(PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException {
+        LOGGER.entering(policyMap, model, wsBinding);
+
+        Collection<PolicySubject> subjects = new ArrayList<PolicySubject>();
         if (policyMap != null) {
             final MTOMFeature mtomFeature = wsBinding.getFeature(MTOMFeature.class);
-            if (logger.isLoggable(Level.FINEST)) {
-                logger.finest("mtomFeature = " + mtomFeature);
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.finest("mtomFeature = " + mtomFeature);
             }
             if ((mtomFeature != null) && mtomFeature.isEnabled()) {
-                final PolicyMapKey endpointKey = PolicyMap.createWsdlEndpointScopeKey(model.getServiceQName(), model.getPortName());
-                final Policy existingPolicy = policyMap.getEndpointEffectivePolicy(endpointKey);
-                if ((existingPolicy == null) || ! existingPolicy.contains(OPTIMIZED_MIME_SERIALIZATION_ASSERTION)) {
-                    final QName bindingName = model.getBoundPortTypeName();
-                    final Policy mtomPolicy = createMtomPolicy(bindingName);
-                    PolicySubject mtomPolicySubject = new PolicySubject(bindingName, mtomPolicy);
-                    PolicyMapKey aKey = PolicyMap.createWsdlEndpointScopeKey(model.getServiceQName(), model.getPortName());
-                    policyMapMutator.putEndpointSubject(aKey, mtomPolicySubject);
-                    logger.fine("Added MTOM policy with ID \"" + mtomPolicy.getIdOrName() + "\" to binding element \"" + bindingName + "\"");
-                } else {
-                    logger.fine("MTOM policy exists already, doing nothing");
+                final QName bindingName = model.getBoundPortTypeName();
+                final WsdlBindingSubject wsdlSubject = WsdlBindingSubject.createBindingSubject(bindingName);
+                final Policy mtomPolicy = createMtomPolicy(bindingName);
+                final PolicySubject mtomPolicySubject = new PolicySubject(wsdlSubject, mtomPolicy);
+                subjects.add(mtomPolicySubject);
+                if (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.fine("Added MTOM policy with ID \"" + mtomPolicy.getIdOrName() + "\" to binding element \"" + bindingName + "\"");
                 }
             }
         } // endif policy map not null
         
-        logger.exiting();
+        LOGGER.exiting(subjects);
+        return subjects;
     }
     
     
