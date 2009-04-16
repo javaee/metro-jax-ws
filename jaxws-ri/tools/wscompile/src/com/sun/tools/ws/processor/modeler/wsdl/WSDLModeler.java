@@ -2302,7 +2302,7 @@ public class WSDLModeler extends WSDLModelerBase {
             if (name != null && !name.equals(""))
                 return makePackageQualified(name.getName());
         }
-        return makePackageQualified(serviceName);
+        return makePackageQualified(JAXBRIContext.mangleNameToClassName(serviceName));
     }
 
     protected String getJavaNameOfSEI(Port port) {
