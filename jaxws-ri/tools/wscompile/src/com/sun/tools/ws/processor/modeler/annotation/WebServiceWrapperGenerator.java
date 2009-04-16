@@ -261,8 +261,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
                                  Names.stripQualifier(responseClassName) + GeneratorConstants.JAVA_SRC_SUFFIX);
             builder.getOptions().addGeneratedFile(file);
         }
-        ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
-        ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
+        //ArrayList<MemberInfo> reqMembers = new ArrayList<MemberInfo>();
+        //ArrayList<MemberInfo> resMembers = new ArrayList<MemberInfo>();
         WrapperInfo reqWrapperInfo = new WrapperInfo(requestClassName);
         //reqWrapperInfo.setMembers(reqMembers);
         WrapperInfo resWrapperInfo = null;
@@ -292,8 +292,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             writeXmlElementDeclaration(reqCls, reqName,reqNamespace);
             writeXmlElementDeclaration(resCls, resName, resNamespace);
 
-            APT_GENERATOR.collectWrapperBeanMembers(method, wrapped,
-                typeNamespace, reqMembers, resMembers);
+            List<MemberInfo> reqMembers = APT_GENERATOR.collectRequestBeanMembers(method, wrapped,
+                typeNamespace);
+            List<MemberInfo> resMembers = APT_GENERATOR.collectResponseBeanMembers(method, wrapped,
+                typeNamespace);
 
             // XmlType
             writeXmlTypeDeclaration(reqCls, reqName, reqNamespace, reqMembers);
@@ -345,7 +347,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return sortedMembers;
     }
 
-    private void writeMembers(JDefinedClass cls, ArrayList<MemberInfo> members) {
+    private void writeMembers(JDefinedClass cls, List<MemberInfo> members) {
         if (cls == null)
             return;
         for (MemberInfo memInfo : members) {
@@ -510,7 +512,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     }
 
     private void writeXmlTypeDeclaration(JDefinedClass cls, String typeName, String namespaceUri,
-                                         ArrayList<MemberInfo> members) {
+                                         List<MemberInfo> members) {
         if (cls == null)
             return;
         JAnnotationUse xmlTypeAnn = cls.annotate(cm.ref(XmlType.class));

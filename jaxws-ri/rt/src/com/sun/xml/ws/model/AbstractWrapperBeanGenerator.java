@@ -132,9 +132,58 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     protected abstract T getHolderValueType(T type);
     protected abstract boolean isVoidType(T type);
 
-    public void collectWrapperBeanMembers(M method, boolean wrapped,
-        String typeNamespace, List<A> requestMembers, List<A> responseMembers) {
+    public List<A> collectRequestBeanMembers(M method, boolean wrapped,
+        String typeNamespace) {
 
+        List<A> requestMembers = new ArrayList<A>();
+        int paramIndex = -1;
+
+        for (T param : nav.getMethodParameters(method)) {
+            paramIndex++;
+            List<Annotation> jaxbAnnotation = collectJAXBAnnotations(method, paramIndex);
+            WebParam.Mode mode = null;
+            T holderType = getHolderValueType(param);
+            WebParam webParam = annReader.getMethodParameterAnnotation(WebParam.class, method, paramIndex, null);
+            T paramType = getSafeType(param);
+            String paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
+            if (holderType != null) {
+                paramType = holderType;
+            }
+            String paramName =  "arg"+paramIndex;
+            if (webParam != null && webParam.header()) {
+                continue;
+            }
+            if (webParam != null) {
+                mode = webParam.mode();
+                if (webParam.name().length() > 0)
+                    paramName = webParam.name();
+                if (webParam.targetNamespace().length() > 0)
+                    paramNamespace = webParam.targetNamespace();
+            }
+
+            String propertyName = JAXBRIContext.mangleNameToVariableName(paramName);
+            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
+            //care of mangling java identifiers
+            propertyName = getJavaReservedVarialbeName(propertyName);
+
+            processXmlElement(jaxbAnnotation, paramName, paramNamespace, paramType);
+            A member = factory.createWrapperBeanMember(paramType, propertyName,
+                new QName(paramNamespace, paramName), jaxbAnnotation);
+            if (holderType != null) {
+                if (mode == null || mode.equals(WebParam.Mode.INOUT)) {
+                    requestMembers.add(member);
+                }
+            } else {
+                requestMembers.add(member);
+            }
+        }
+        return requestMembers;
+    }
+
+    public List<A> collectResponseBeanMembers(M method, boolean wrapped,
+        String typeNamespace) {
+
+        List<A> responseMembers = new ArrayList<A>();
         List<Annotation> jaxbRespAnnotations = collectJAXBAnnotations(method);
         String responseElementName = RETURN;
         String responseName = RETURN_VALUE;
@@ -199,13 +248,14 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
                 new QName(paramNamespace, paramName), jaxbAnnotation);
             if (holderType != null) {
                 if (mode == null || mode.equals(WebParam.Mode.INOUT)) {
-                    requestMembers.add(member);
+                    //requestMembers.add(member);
                 }
                 responseMembers.add(member);
             } else {
-                requestMembers.add(member);
+                //requestMembers.add(member);
             }
         }
+        return responseMembers;
     }
 
     private void processXmlElement(List<Annotation> jaxb, String elemName, String elemNS, T type) {

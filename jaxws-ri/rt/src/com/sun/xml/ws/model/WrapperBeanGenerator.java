@@ -269,10 +269,8 @@ public class WrapperBeanGenerator {
 
         LOGGER.fine("Request Wrapper Class : "+className);
 
-        List<Field> requestMembers = new ArrayList<Field>();
-        List<Field> responseMembers = new ArrayList<Field>();
-        RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
-                reqElemName.getNamespaceURI(), requestMembers, responseMembers);
+        List<Field> requestMembers = RUNTIME_GENERATOR.collectRequestBeanMembers(
+                method, true, reqElemName.getNamespaceURI());
 
         byte[] image;
         try {
@@ -290,10 +288,8 @@ public class WrapperBeanGenerator {
 
         LOGGER.fine("Response Wrapper Class : "+className);
 
-        List<Field> requestMembers = new ArrayList<Field>();
-        List<Field> responseMembers = new ArrayList<Field>();
-        RUNTIME_GENERATOR.collectWrapperBeanMembers(method, true,
-                resElemName.getNamespaceURI(), requestMembers, responseMembers);
+        List<Field> responseMembers = RUNTIME_GENERATOR.collectResponseBeanMembers(method, true,
+                resElemName.getNamespaceURI());
 
         byte[] image;
         try {
