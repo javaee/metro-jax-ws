@@ -1411,10 +1411,10 @@ public class WSDLModeler extends WSDLModelerBase {
         if (jaxwsBinding != null) {
             CustomName className = jaxwsBinding.getClassName();
             if (className != null) {
-                return className.getName();
+                return makePackageQualified(className.getName());
             }
         }
-        return portTypeFault.getMessage().getLocalPart();
+        return makePackageQualified(JAXBRIContext.mangleNameToClassName(portTypeFault.getMessage().getLocalPart()));
     }
 
     protected boolean setMessagePartsBinding(StyleAndUse styleAndUse) {
@@ -2460,8 +2460,7 @@ public class WSDLModeler extends WSDLModelerBase {
     protected boolean createJavaExceptionFromLiteralType(Fault fault, com.sun.tools.ws.processor.model.Port port, String operationName) {
         JAXBType faultType = (JAXBType) fault.getBlock().getType();
 
-        String exceptionName =
-                makePackageQualified(JAXBRIContext.mangleNameToClassName(fault.getName()));
+        String exceptionName = fault.getName();
 
         // use fault namespace attribute
         JAXBStructuredType jaxbStruct = new JAXBStructuredType(new QName(
