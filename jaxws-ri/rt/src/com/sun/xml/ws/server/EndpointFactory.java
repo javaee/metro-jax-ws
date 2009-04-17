@@ -68,7 +68,6 @@ import com.sun.xml.ws.wsdl.parser.RuntimeWSDLParser;
 import com.sun.xml.ws.wsdl.writer.WSDLGenerator;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyUtil;
-import org.glassfish.gmbal.ManagedObjectManager;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
@@ -113,8 +112,7 @@ public class EndpointFactory {
         @Nullable Container container, @Nullable WSBinding binding,
         @Nullable SDDocumentSource primaryWsdl,
         @Nullable Collection<? extends SDDocumentSource> metadata,
-        EntityResolver resolver, boolean isTransportSynchronous,
-        final @Nullable ManagedObjectManager managedObjectManager) {
+        EntityResolver resolver, boolean isTransportSynchronous) {
 
         if(implType ==null)
             throw new IllegalArgumentException();
@@ -228,7 +226,7 @@ public class EndpointFactory {
         }
         ServiceDefinitionImpl serviceDefiniton = (primaryDoc != null) ? new ServiceDefinitionImpl(docList, primaryDoc) : null;
 
-        return new WSEndpointImpl<T>(serviceName, portName, binding,container,seiModel,wsdlPort,implType, serviceDefiniton,terminal, isTransportSynchronous, policyMap, managedObjectManager);
+        return new WSEndpointImpl<T>(serviceName, portName, binding,container,seiModel,wsdlPort,implType, serviceDefiniton,terminal, isTransportSynchronous, policyMap);
     }
 
 
