@@ -51,7 +51,6 @@ import com.sun.xml.ws.encoding.ContentType;
 import com.sun.xml.ws.message.AbstractMessageImpl;
 import com.sun.xml.ws.message.EmptyMessageImpl;
 import com.sun.xml.ws.message.MimeAttachmentSet;
-import com.sun.xml.ws.message.source.PayloadSourceMessage;
 import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 import com.sun.xml.bind.api.Bridge;
@@ -83,7 +82,7 @@ public final class XMLMessage {
     private static final int FI_ENCODED_FLAG     = 16;      // 10000
 
 
-    /**
+    /*
      * Finds if the stream has some content or not
      *
      * @return null if there is no data
@@ -107,7 +106,7 @@ public final class XMLMessage {
     }
 
 
-    /**
+    /*
      * Construct a message given a content type and an input stream.
      */
     public static Message create(final String ct, InputStream in, WSBinding binding) {
@@ -158,7 +157,7 @@ public final class XMLMessage {
         return new FaultMessage(SOAPVersion.SOAP_11);
     }
 
-    /**
+    /*
      * Get the content type ID from the content type.
      */
     private static int getContentId(String ct) {    
@@ -177,7 +176,7 @@ public final class XMLMessage {
         return (getContentId(ct) & FI_ENCODED_FLAG) != 0;
     }
     
-    /**
+    /*
      * Verify a contentType.
      *
      * @return
@@ -258,26 +257,20 @@ public final class XMLMessage {
      *
      */
     private static class XmlContent extends AbstractMessageImpl implements MessageDataSource {
-        private final DataSource dataSource;
+        private final XmlDataSource dataSource;
         private boolean consumed;
         private Message delegate;
         private final HeaderList headerList;
 
         public XmlContent(String ct, InputStream in) {
             super(SOAPVersion.SOAP_11);
-            dataSource = createDataSource(ct, in);
+            dataSource = new XmlDataSource(ct, in);
             this.headerList = new HeaderList();
         }
 
         private Message getMessage() {
             if (delegate == null) {
-                assert !consumed;
-                InputStream in = null;
-                try {
-                    in = dataSource.getInputStream();
-                } catch(IOException ioe) {
-                    // shouldn't happen;
-                }
+                InputStream in = dataSource.getInputStream();
                 assert in != null;
                 delegate = Messages.createUsingPayload(new StreamSource(in), SOAPVersion.SOAP_11);
                 consumed = true;
@@ -286,11 +279,10 @@ public final class XMLMessage {
         }
 
         public boolean hasUnconsumedDataSource() {
-            return !consumed;
+            return !dataSource.consumed()&&!consumed;
         }
 
         public DataSource getDataSource() {
-            consumed = true;
             return dataSource;
         }
 
@@ -516,7 +508,7 @@ public final class XMLMessage {
             this.headerList = new HeaderList();
         }
 
-        /**
+        /*
          * Copy constructor.
          */
         private UnknownContent(UnknownContent that) {
@@ -612,22 +604,38 @@ public final class XMLMessage {
     }
     
     public static DataSource createDataSource(final String contentType, final InputStream is) {
-        return new DataSource() {
-            public InputStream getInputStream() {
-                return is;
-            }
+        return new XmlDataSource(contentType, is);
+    }
 
-            public OutputStream getOutputStream() {
-                return null;
-            }
+    private static class XmlDataSource implements DataSource {
+        private final String contentType;
+        private final InputStream is;
+        private boolean consumed;
 
-            public String getContentType() {
-                return contentType;
-            }
+        XmlDataSource(String contentType, final InputStream is) {
+            this.contentType = contentType;
+            this.is = is;
+        }
 
-            public String getName() {
-                return "";
-            }
-        };
-    }    
+        public boolean consumed() {
+            return consumed;
+        }
+
+        public InputStream getInputStream() {
+            consumed = !consumed;
+            return is;
+        }
+
+        public OutputStream getOutputStream() {
+            return null;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public String getName() {
+            return "";
+        }
+    }
 }
