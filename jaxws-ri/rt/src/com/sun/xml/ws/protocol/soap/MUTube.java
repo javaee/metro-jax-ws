@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.helper.AbstractFilterTubeImpl;
 import com.sun.xml.ws.message.DOMHeader;
+import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -149,8 +150,11 @@ abstract class MUTube extends AbstractFilterTubeImpl {
      */
     final SOAPFaultException createMUSOAPFaultException(Set<QName> notUnderstoodHeaders) {
         try {
-            SOAPFault fault = createMUSOAPFault();
-            setMUFaultString(fault, notUnderstoodHeaders);
+            SOAPFault fault = soapVersion.saajSoapFactory.createFault(
+                MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
+                soapVersion.faultCodeMustUnderstand);
+            fault.setFaultString("MustUnderstand headers:" +
+                notUnderstoodHeaders + " are not understood");
             return new SOAPFaultException(fault);
         } catch (SOAPException e) {
             throw new WebServiceException(e);
@@ -168,11 +172,13 @@ abstract class MUTube extends AbstractFilterTubeImpl {
 
     final Message createMUSOAPFaultMessage(Set<QName> notUnderstoodHeaders) {
         try {
-            SOAPFault fault = createMUSOAPFault();
+            String faultString = MUST_UNDERSTAND_FAULT_MESSAGE_STRING;
             if (soapVersion == SOAP_11) {
-                setMUFaultString(fault, notUnderstoodHeaders);
+                faultString = "MustUnderstand headers:" + notUnderstoodHeaders + " are not understood";
             }
-            Message muFaultMessage = Messages.create(fault);
+            Message  muFaultMessage = SOAPFaultBuilder.createSOAPFaultMessage(
+                    soapVersion,faultString,soapVersion.faultCodeMustUnderstand);
+
             if (soapVersion == SOAP_12) {
                 addHeader(muFaultMessage, notUnderstoodHeaders);
             }
@@ -180,11 +186,6 @@ abstract class MUTube extends AbstractFilterTubeImpl {
         } catch (SOAPException e) {
             throw new WebServiceException(e);
         }
-    }
-
-    private void setMUFaultString(SOAPFault fault, Set<QName> notUnderstoodHeaders) throws SOAPException {
-        fault.setFaultString("MustUnderstand headers:" +
-                notUnderstoodHeaders + " are not understood");
     }
 
     private static void addHeader(Message m, Set<QName> notUnderstoodHeaders) throws SOAPException {
@@ -195,11 +196,5 @@ abstract class MUTube extends AbstractFilterTubeImpl {
             Header header = new DOMHeader<Element>(soapEl);
             m.getHeaders().add(header);
         }
-    }
-
-    private SOAPFault createMUSOAPFault() throws SOAPException {
-        return soapVersion.saajSoapFactory.createFault(
-                MUST_UNDERSTAND_FAULT_MESSAGE_STRING,
-                soapVersion.faultCodeMustUnderstand);
     }
 }
