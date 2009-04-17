@@ -38,7 +38,7 @@
   </head> 
   <body>         
     <h1>JAX-WS/Tango Test Harness User Guide</h1> 
-    <div align="right">$Id: index.html,v 1.74 2009-03-27 20:53:10 kohsuke Exp $</div>      
+    <div align="right">$Id: index.html,v 1.75 2009-04-17 07:18:52 kohsuke Exp $</div>      
     <h2>Table of contents</h2> 
     <ol>             
       <li>
@@ -162,6 +162,10 @@
           <ol> </ol>    
           <li>
             <a href="#Specifying_verbatim_wsimport_options">Specifying verbatim wsimport options</a>
+          </li> 
+          <ol> </ol>    
+          <li>
+            <a href="#Specifying_test_specific_options">Specifying test specific options</a>
           </li> 
           <ol> </ol>  
         </ol>    
@@ -658,7 +662,24 @@ testdir/
    &lt;description&gt;this is a very useful test that tests stuff&lt;/description&gt;
    &lt;wsimport-client&gt;-abc -def -ghi&lt;/wsimport-client&gt;
 &lt;/despcriptor&gt;
-</pre>                   
+</pre>              
+    <a name="Specifying_test_specific_options"></a>
+    <h4>
+      <a name="Specifying_test_specific_options">
+        <a href="#Specifying_test_specific_options">2.2.3.</a>  Specifying test specific options
+      </a>
+    </h4>   
+    <p>If your test special configuration from the default harness behavior,
+      <tt>test-options</tt> is the place to specify those.
+      <pre>Supported Options are:
+    -noPackage : to not use the default harness behavior of specifying -p option to wsimport.</pre> 
+      <pre>
+&lt;descriptor&gt;
+   &lt;description&gt;this is a very useful test that tests stuff&lt;/description&gt;
+   &lt;test-options&gt;-noPackage&lt;/test-options&gt;
+&lt;/despcriptor&gt;
+</pre> 
+                      
     <a name="Client_Test_Scripts"></a>
     <h3>
       <a name="Client_Test_Scripts">
