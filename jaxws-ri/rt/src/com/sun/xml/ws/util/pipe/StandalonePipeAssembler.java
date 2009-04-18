@@ -34,9 +34,6 @@
  * holder.
  */
 
-/*
- * Copyright (c) 2006 Your Corporation. All Rights Reserved.
- */
 package com.sun.xml.ws.util.pipe;
 
 import com.sun.istack.NotNull;
