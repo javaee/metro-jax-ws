@@ -1,0 +1,6 @@
+<descriptor since="2.1.8" transport="http">
+  <description>
+    Test for Must understand Fault Messages
+  </description>
+  <service basedir="./server"/>
+</descriptor>
