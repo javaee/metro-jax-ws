@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.xml.ws</groupId>
+  <artifactId>jaxws-rt</artifactId>
+  <version>2.1.7</version>
+  <url>https://jax-ws.dev.java.net//</url>
+  <name>JAX-WS (JSR-224) Reference Implementation</name>
+  <description>
+        Open source Reference Implementation of JSR-224: Java API for XML Web Services
+  </description>
+  <organization>
+        <name>Sun Microsystems, Inc</name>
+        <url>http://www.sun.com/</url>
+  </organization>
+  <scm>
+        <connection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</connection>
+        <developerConnection>scm:cvs:pserver:cvs.dev.java.net:/cvs:jax-ws-sources</developerConnection>
+        <url>https://jax-ws-sources.dev.java.net/source/browse/jax-ws-sources/jaxws-ri/</url>
+  </scm>
+  <issueManagement>
+    <system>issueZilla</system>
+    <url>https://jax-ws.dev.java.net/servlets/ProjectIssues</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>JAX-WS RI Users List</name>
+      <post>users@jax-ws.dev.java.net</post>
+      <archive>https://jax-ws.dev.java.net/servlets/SummarizeList?listName=users</archive>
+    </mailingList>
+    <mailingList>
+      <name>JAX-WS Implementation Dev List</name>
+      <post>dev@jax-ws.dev.java.net</post>
+      <archive>https://jax-ws.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+    </mailingList>
+  </mailingLists>
+  <licenses>
+    <license>
+        <name>
+            Dual license consisting of the CDDL v1.0 and GPL v2
+        </name>
+        <url>https://glassfish.dev.java.net/public/CDDL+GPL.html</url>
+        <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.messaging.saaj</groupId>
+      <artifactId>saaj-impl</artifactId>
+      <version>1.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.stream.buffer</groupId>
+      <artifactId>streambuffer</artifactId>
+      <version>0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+      <version>3.2.3</version>
+    </dependency>
+<!-- If you want to use SJSXP StAX parser, uncomment this and comment
+     woodstox one
+    <dependency>
+      <groupId>com.sun.xml.stream</groupId>
+      <artifactId>sjsxp</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+-->
+    <dependency>
+      <groupId>org.jvnet.staxex</groupId>
+      <artifactId>stax-ex</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.org.apache.xml.internal</groupId>
+      <artifactId>resolver</artifactId>
+      <version>20050927</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet</groupId>
+      <artifactId>mimepull</artifactId>
+      <version>1.3</version>
+    </dependency>
+  </dependencies>
+</project>
