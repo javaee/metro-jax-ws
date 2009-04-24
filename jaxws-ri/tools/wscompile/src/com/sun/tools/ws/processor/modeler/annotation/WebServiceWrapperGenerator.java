@@ -98,7 +98,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     private final class APTWrapperBeanGenerator extends AbstractWrapperBeanGenerator<TypeMirror, TypeDeclaration, MethodDeclaration, MemberInfo> {
 
-        protected APTWrapperBeanGenerator(AnnotationReader<TypeMirror, ?, ?, MethodDeclaration> annReader, Navigator<TypeMirror, TypeDeclaration, ?, MethodDeclaration> nav, BeanMemberFactory<TypeMirror, MemberInfo> beanMemberFactory) {
+        protected APTWrapperBeanGenerator(AnnotationReader<TypeMirror, TypeDeclaration, ?, MethodDeclaration> annReader, Navigator<TypeMirror, TypeDeclaration, ?, MethodDeclaration> nav, BeanMemberFactory<TypeMirror, MemberInfo> beanMemberFactory) {
             super(annReader, nav, beanMemberFactory);
         }
 
@@ -337,17 +337,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         }
     }
 
-    private ArrayList<MemberInfo> sortMembers(ArrayList<MemberInfo> members) {
-        Map<String, MemberInfo> sortedMap = new java.util.TreeMap<String, MemberInfo>();
-        for (MemberInfo member : members) {
-            sortedMap.put(member.getParamName(), member);
-        }
-        ArrayList<MemberInfo> sortedMembers = new ArrayList<MemberInfo>();
-        sortedMembers.addAll(sortedMap.values());
-        return sortedMembers;
-    }
-
-    private void writeMembers(JDefinedClass cls, List<MemberInfo> members) {
+    private void writeMembers(JDefinedClass cls, Collection<MemberInfo> members) {
         if (cls == null)
             return;
         for (MemberInfo memInfo : members) {
@@ -419,16 +409,13 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         WebFault webFault = thrownDecl.getAnnotation(WebFault.class);
         String className = beanPackage+ exceptionName + BEAN;
 
-        TreeMap<String,MethodDeclaration> propertyToTypeMap = new TreeMap<String,MethodDeclaration>();
-
-        TypeModeler.collectExceptionProperties(thrownDecl,propertyToTypeMap);
-
-        boolean isWSDLException = isWSDLException(propertyToTypeMap, thrownDecl);
+        Collection<MemberInfo> members = APT_GENERATOR.collectExceptionBeanMembers(thrownDecl);
+        boolean isWSDLException = isWSDLException(members, thrownDecl);
         String namespace = typeNamespace;
         String name = exceptionName;
         FaultInfo faultInfo;
         if (isWSDLException) {
-            TypeMirror beanType =  getSafeType(propertyToTypeMap.get(FAULT_INFO).getReturnType());
+            TypeMirror beanType =  getFaultInfoMember(members).getParamType();
             faultInfo = new FaultInfo(TypeMonikerFactory.getTypeMoniker(beanType), true);
             namespace = webFault.targetNamespace().length()>0 ?
                                webFault.targetNamespace() : namespace;
@@ -454,15 +441,6 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             builder.onError(WebserviceapMessages.WEBSERVICEAP_METHOD_EXCEPTION_BEAN_NAME_NOT_UNIQUE(typeDecl.getQualifiedName(), thrownDecl.getQualifiedName()));
         }
 
-        ArrayList<MemberInfo> members = new ArrayList<MemberInfo>();
-        for (String key : propertyToTypeMap.keySet()) {
-            MethodDeclaration method = propertyToTypeMap.get(key);
-            TypeMirror erasureType =  getSafeType(method.getReturnType());
-            MemberInfo member = new MemberInfo(erasureType, key, null, Collections.<Annotation>emptyList());
-            members.add(member);
-        }
-        //faultInfo.setMembers(members);
-
         boolean canOverWriteBean = builder.canOverWriteClass(className);
         if (!canOverWriteBean) {
             builder.log("Class " + className + " exists. Not overwriting.");
@@ -482,8 +460,11 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         writeXmlElementDeclaration(cls, name, namespace);
 
         // XmlType Declaration
-        members = sortMembers(members);
-        writeXmlTypeDeclaration(cls, exceptionName, typeNamespace, members);
+        //members = sortMembers(members);
+        XmlType xmlType = thrownDecl.getAnnotation(XmlType.class);
+        String xmlTypeName = (xmlType != null && !xmlType.name().equals("##default")) ? xmlType.name() : exceptionName;
+        String xmlTypeNamespace = (xmlType != null && !xmlType.namespace().equals("##default")) ? xmlType.namespace() : typeNamespace;
+        writeXmlTypeDeclaration(cls, xmlTypeName, xmlTypeNamespace, members);
 
         writeMembers(cls, members);
 
@@ -491,11 +472,24 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
         return true;
     }
 
-    protected boolean isWSDLException(Map<String,MethodDeclaration> map, ClassDeclaration thrownDecl) {
+    protected boolean isWSDLException(Collection<MemberInfo> members, ClassDeclaration thrownDecl) {
         WebFault webFault = thrownDecl.getAnnotation(WebFault.class);
         if (webFault == null)
             return false;
-        return !(map.size() != 2 || map.get(FAULT_INFO) == null);
+        return !(members.size() != 2 || getFaultInfoMember(members) == null);
+    }
+
+    /*
+     * Returns the corresponding MemberInfo for getFaultInfo()
+     * method of an exception. Returns null, if that method is not there.
+     */
+    private MemberInfo getFaultInfoMember(Collection<MemberInfo> members) {
+        for(MemberInfo member : members) {
+            if (member.getParamName().equals(FAULT_INFO)) {
+                return member;
+            }
+        }
+        return null;
     }
 
     private void writeXmlElementDeclaration(JDefinedClass cls, String elementName, String namespaceUri) {
@@ -512,7 +506,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     }
 
     private void writeXmlTypeDeclaration(JDefinedClass cls, String typeName, String namespaceUri,
-                                         List<MemberInfo> members) {
+                                         Collection<MemberInfo> members) {
         if (cls == null)
             return;
         JAnnotationUse xmlTypeAnn = cls.annotate(cm.ref(XmlType.class));

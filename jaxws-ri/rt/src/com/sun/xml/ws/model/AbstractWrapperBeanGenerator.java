@@ -43,10 +43,7 @@ import com.sun.xml.ws.util.StringUtils;
 
 import javax.jws.WebParam;
 import javax.jws.WebResult;
-import javax.xml.bind.annotation.XmlAttachmentRef;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
@@ -88,11 +85,11 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         skipProperties.add("getStackTrace");
     }
 
-    private final AnnotationReader<T,?,?,M> annReader;
+    private final AnnotationReader<T,C,?,M> annReader;
     private final Navigator<T,C,?,M> nav;
     private final BeanMemberFactory<T,A> factory;
 
-    protected AbstractWrapperBeanGenerator(AnnotationReader<T,?,?,M> annReader,
+    protected AbstractWrapperBeanGenerator(AnnotationReader<T,C,?,M> annReader,
             Navigator<T,C,?,M> nav, BeanMemberFactory<T,A> factory) {
         this.annReader = annReader;
         this.nav = nav;
@@ -313,14 +310,32 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         }
     }
 
-    Collection<A> collectExceptionBeanMembers(C exception) {
-        Set<A> fields = new TreeSet<A>();
+    /**
+     *
+     * @param exception
+     * @return list of properties in the correct order for an exception bean
+     */
+    public Collection<A> collectExceptionBeanMembers(C exception) {
+        TreeMap<String, A> fields = new TreeMap<String, A>();
         getExceptionProperties(exception, fields);
-        return fields;
+
+        XmlType xmlType = annReader.getClassAnnotation(XmlType.class, exception, null);
+        if (xmlType != null) {
+            String[] propOrder = xmlType.propOrder();
+            if (propOrder.length > 0) {
+                List<A> list = new ArrayList<A>();
+                for(String prop : propOrder) {
+                    list.add(fields.get(prop));
+                }
+                return list;
+            }
+        }
+
+        return fields.values();
     }
 
 
-    private void getExceptionProperties(C exception, Set<A> fields) {
+    private void getExceptionProperties(C exception, TreeMap<String, A> fields) {
         C sc = nav.getSuperClass(exception);
         if (sc != null) {
             getExceptionProperties(sc, fields);
@@ -349,12 +364,12 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
                 continue;
             }
 
-            T returnType = nav.getReturnType(method);
+            T returnType = getSafeType(nav.getReturnType(method));
             if (nav.getMethodParameters(method).length == 0) {
                 String fieldName = name.startsWith("get")
                         ? StringUtils.decapitalize(name.substring(3))
                         : StringUtils.decapitalize(name.substring(2));
-                fields.add(factory.createWrapperBeanMember(returnType, fieldName, null, Collections.<Annotation>emptyList()));
+                fields.put(fieldName, factory.createWrapperBeanMember(returnType, fieldName, null, Collections.<Annotation>emptyList()));
             }
         }
 
