@@ -45,7 +45,6 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -69,7 +68,6 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     private static final Logger LOGGER = Logger.getLogger(AbstractWrapperBeanGenerator.class.getName());
 
     private static final String RETURN = "return";
-    private static final String RETURN_VALUE = "_return";
     private static final String EMTPY_NAMESPACE_ID = "";
 
     private static final Class[] jaxbAnns = new Class[] {
@@ -97,8 +95,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     }
 
     public static interface BeanMemberFactory<T,A> {
-        A createWrapperBeanMember(T paramType, String paramName,
-            QName elementName, List<Annotation> jaxbAnnotations);
+        A createWrapperBeanMember(T paramType, String paramName, List<Annotation> jaxbAnnotations);
     }
 
     // Collects the JAXB annotations on a method
@@ -129,129 +126,106 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     protected abstract T getHolderValueType(T type);
     protected abstract boolean isVoidType(T type);
 
-    public List<A> collectRequestBeanMembers(M method, boolean wrapped,
-        String typeNamespace) {
+    /**
+     * Computes request bean members for a method. Collects all IN and INOUT
+     * parameters as request bean fields. In this process, if a parameter
+     * has any known JAXB annotations they are collected as well.
+     * Special processing for @XmlElement annotation is done.
+     * 
+     * @param method SEI method for which request bean members are computed
+     * @return List of request bean members
+     */
+    public List<A> collectRequestBeanMembers(M method) {
 
         List<A> requestMembers = new ArrayList<A>();
         int paramIndex = -1;
 
         for (T param : nav.getMethodParameters(method)) {
             paramIndex++;
-            List<Annotation> jaxbAnnotation = collectJAXBAnnotations(method, paramIndex);
-            WebParam.Mode mode = null;
-            T holderType = getHolderValueType(param);
             WebParam webParam = annReader.getMethodParameterAnnotation(WebParam.class, method, paramIndex, null);
-            T paramType = getSafeType(param);
-            String paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
-            if (holderType != null) {
-                paramType = holderType;
-            }
-            String paramName =  "arg"+paramIndex;
-            if (webParam != null && webParam.header()) {
+            if (webParam != null && (webParam.header() || webParam.mode().equals(WebParam.Mode.OUT))) {
                 continue;
             }
-            if (webParam != null) {
-                mode = webParam.mode();
-                if (webParam.name().length() > 0)
-                    paramName = webParam.name();
-                if (webParam.targetNamespace().length() > 0)
-                    paramNamespace = webParam.targetNamespace();
+            T holderType = getHolderValueType(param);
+            if (holderType != null && webParam != null && webParam.mode().equals(WebParam.Mode.IN)) {
+                // Should we flag an error - holder cannot be IN part ??
+                continue;
             }
 
-            String propertyName = JAXBRIContext.mangleNameToVariableName(paramName);
-            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-            //care of mangling java identifiers
-            propertyName = getJavaReservedVarialbeName(propertyName);
+            T paramType = (holderType != null) ? holderType : getSafeType(param);
+            String paramName = (webParam != null && webParam.name().length() > 0)
+                    ? webParam.name() : "arg"+paramIndex;
+            String paramNamespace = (webParam != null && webParam.targetNamespace().length() > 0)
+                    ? webParam.targetNamespace() : EMTPY_NAMESPACE_ID;
 
+            // Collect JAXB annotations on a parameter
+            List<Annotation> jaxbAnnotation = collectJAXBAnnotations(method, paramIndex);
+
+            // If a parameter contains @XmlElement, process it.
             processXmlElement(jaxbAnnotation, paramName, paramNamespace, paramType);
-            A member = factory.createWrapperBeanMember(paramType, propertyName,
-                new QName(paramNamespace, paramName), jaxbAnnotation);
-            if (holderType != null) {
-                if (mode == null || mode.equals(WebParam.Mode.INOUT)) {
-                    requestMembers.add(member);
-                }
-            } else {
-                requestMembers.add(member);
-            }
+            A member = factory.createWrapperBeanMember(paramType,
+                    getPropertyName(paramName), jaxbAnnotation);
+            requestMembers.add(member);
         }
         return requestMembers;
     }
 
-    public List<A> collectResponseBeanMembers(M method, boolean wrapped,
-        String typeNamespace) {
+    /**
+     * Computes response bean members for a method. Collects all OUT and INOUT
+     * parameters as response bean fields. In this process, if a parameter
+     * has any known JAXB annotations they are collected as well.
+     * Special processing for @XmlElement annotation is done.
+     *
+     * @param method SEI method for which response bean members are computed
+     * @return List of response bean members
+     */
+    public List<A> collectResponseBeanMembers(M method) {
 
         List<A> responseMembers = new ArrayList<A>();
-        List<Annotation> jaxbRespAnnotations = collectJAXBAnnotations(method);
+
+        // return that need to be part response wrapper bean
         String responseElementName = RETURN;
-        String responseName = RETURN_VALUE;
-        String responseNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
+        String responseNamespace = EMTPY_NAMESPACE_ID;
         boolean isResultHeader = false;
         WebResult webResult = annReader.getMethodAnnotation(WebResult.class, method ,null);
         if (webResult != null) {
             if (webResult.name().length() > 0) {
                 responseElementName = webResult.name();
-                responseName = JAXBRIContext.mangleNameToVariableName(webResult.name());
-
-                //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-                //care of mangling java identifiers
-                responseName = getJavaReservedVarialbeName(responseName);
             }
-            responseNamespace = webResult.targetNamespace().length() > 1 ?
-                webResult.targetNamespace() :
-                responseNamespace;
+            if (webResult.targetNamespace().length() > 0) {
+                responseNamespace = webResult.targetNamespace();
+            }
             isResultHeader = webResult.header();
         }
-
         T returnType = getSafeType(nav.getReturnType(method));
-        // TODO shouldn't we use isVoidType(returnType) in the following ??
-        if (!isVoidType(nav.getReturnType(method)) && !isResultHeader) {
+        if (!isVoidType(returnType) && !isResultHeader) {
+            List<Annotation> jaxbRespAnnotations = collectJAXBAnnotations(method);
             processXmlElement(jaxbRespAnnotations, responseElementName, responseNamespace, returnType);
-            responseMembers.add(factory.createWrapperBeanMember(returnType, responseName,
-                new QName(responseNamespace, responseElementName), jaxbRespAnnotations));
+            responseMembers.add(factory.createWrapperBeanMember(returnType, getPropertyName(responseElementName), jaxbRespAnnotations));
         }
 
+        // Now parameters that need to be part response wrapper bean
         int paramIndex = -1;
-
         for (T param : nav.getMethodParameters(method)) {
             paramIndex++;
-            List<Annotation> jaxbAnnotation = collectJAXBAnnotations(method, paramIndex);
-            WebParam.Mode mode = null;
-            T holderType = getHolderValueType(param);
+
+            T paramType = getHolderValueType(param);
             WebParam webParam = annReader.getMethodParameterAnnotation(WebParam.class, method, paramIndex, null);
-            T paramType = getSafeType(param);
-            String paramNamespace = wrapped ? EMTPY_NAMESPACE_ID : typeNamespace;
-            if (holderType != null) {
-                paramType = holderType;
-            }
-            String paramName =  "arg"+paramIndex;
-            if (webParam != null && webParam.header()) {
-                continue;
-            }
-            if (webParam != null) {
-                mode = webParam.mode();
-                if (webParam.name().length() > 0)
-                    paramName = webParam.name();
-                if (webParam.targetNamespace().length() > 0)
-                    paramNamespace = webParam.targetNamespace();
+            if (paramType == null || (webParam != null && webParam.header())) {
+                continue;       // not a holder or a header - so don't add it
             }
 
-            String propertyName = JAXBRIContext.mangleNameToVariableName(paramName);
-            //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
-            //care of mangling java identifiers
-            propertyName = getJavaReservedVarialbeName(propertyName);
-
+            String paramName = (webParam != null && webParam.name().length() > 0)
+                    ? webParam.name() : "arg"+paramIndex;
+            String paramNamespace = (webParam != null && webParam.targetNamespace().length() > 0)
+                    ? webParam.targetNamespace() : EMTPY_NAMESPACE_ID;
+            List<Annotation> jaxbAnnotation = collectJAXBAnnotations(method, paramIndex);
             processXmlElement(jaxbAnnotation, paramName, paramNamespace, paramType);
-            A member = factory.createWrapperBeanMember(paramType, propertyName,
-                new QName(paramNamespace, paramName), jaxbAnnotation);
-            if (holderType != null) {
-                if (mode == null || mode.equals(WebParam.Mode.INOUT)) {
-                    //requestMembers.add(member);
-                }
-                responseMembers.add(member);
-            } else {
-                //requestMembers.add(member);
-            }
+            A member = factory.createWrapperBeanMember(paramType,
+                    getPropertyName(paramName), jaxbAnnotation);
+            responseMembers.add(member);
         }
+
         return responseMembers;
     }
 
@@ -311,7 +285,17 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     }
 
     /**
+     * Computes and sorts exception bean members for a given exception as per
+     * the 3.7 section of the spec. It takes all getter properties in the
+     * exception and its superclasses(except getCause, getLocalizedMessage,
+     * getStackTrace, getClass). The returned collection is sorted based
+     * on the property names.
      *
+     * <p>
+     * But if the exception has @XmlType its values are honored. Only the
+     * propOrder properties are considered. The returned collection is sorted
+     * as per the given propOrder.
+     * 
      * @param exception
      * @return list of properties in the correct order for an exception bean
      */
@@ -319,6 +303,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         TreeMap<String, A> fields = new TreeMap<String, A>();
         getExceptionProperties(exception, fields);
 
+        // Consider only the @XmlType(propOrder) properties
         XmlType xmlType = annReader.getClassAnnotation(XmlType.class, exception, null);
         if (xmlType != null) {
             String[] propOrder = xmlType.propOrder();
@@ -344,6 +329,7 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
 
         for (M method : methods) {
 /*
+            2.1 is doing the following:
             TODO implement these in Navigator
 
              if (!nav.isPublicMethod(method)
@@ -369,12 +355,23 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
                 String fieldName = name.startsWith("get")
                         ? StringUtils.decapitalize(name.substring(3))
                         : StringUtils.decapitalize(name.substring(2));
-                fields.put(fieldName, factory.createWrapperBeanMember(returnType, fieldName, null, Collections.<Annotation>emptyList()));
+                fields.put(fieldName, factory.createWrapperBeanMember(returnType, fieldName, Collections.<Annotation>emptyList()));
             }
         }
 
     }
 
+    /**
+     * Gets the property name by mangling using JAX-WS rules
+     * @param name to be mangled
+     * @return property name
+     */
+    private static String getPropertyName(String name) {
+        String propertyName = JAXBRIContext.mangleNameToVariableName(name);
+        //We wont have to do this if JAXBRIContext.mangleNameToVariableName() takes
+        //care of mangling java identifiers
+        return getJavaReservedVarialbeName(propertyName);
+    }
 
 
     //TODO MOVE Names.java to runtime (instead of doing the following)

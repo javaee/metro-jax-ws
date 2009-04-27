@@ -101,7 +101,7 @@ public class WrapperBeanGenerator {
 
     private static final class FieldFactory implements BeanMemberFactory<java.lang.reflect.Type, Field> {
         public Field createWrapperBeanMember(java.lang.reflect.Type paramType,
-                String paramName, QName elementName, List<Annotation> jaxb) {
+                String paramName, List<Annotation> jaxb) {
             return new Field(paramName, paramType, getASMType(paramType), jaxb);
         }
     }
@@ -270,7 +270,7 @@ public class WrapperBeanGenerator {
         LOGGER.fine("Request Wrapper Class : "+className);
 
         List<Field> requestMembers = RUNTIME_GENERATOR.collectRequestBeanMembers(
-                method, true, reqElemName.getNamespaceURI());
+                method);
 
         byte[] image;
         try {
@@ -288,8 +288,7 @@ public class WrapperBeanGenerator {
 
         LOGGER.fine("Response Wrapper Class : "+className);
 
-        List<Field> responseMembers = RUNTIME_GENERATOR.collectResponseBeanMembers(method, true,
-                resElemName.getNamespaceURI());
+        List<Field> responseMembers = RUNTIME_GENERATOR.collectResponseBeanMembers(method);
 
         byte[] image;
         try {

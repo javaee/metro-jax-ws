@@ -37,7 +37,6 @@ package com.sun.tools.ws.processor.modeler.annotation;
 
 import com.sun.mirror.type.TypeMirror;
 
-import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -48,13 +47,11 @@ import java.util.List;
 final class MemberInfo implements Comparable<MemberInfo> {
     private final TypeMirror paramType;
     private final String paramName;
-    private final QName elementName;
     private final List<Annotation> jaxbAnnotations;
 
-    public MemberInfo(TypeMirror paramType, String paramName, QName elementName, List<Annotation> jaxbAnnotations) {
+    public MemberInfo(TypeMirror paramType, String paramName, List<Annotation> jaxbAnnotations) {
         this.paramType = paramType;
         this.paramName = paramName;
-        this.elementName = elementName;
         this.jaxbAnnotations = jaxbAnnotations;
     }
 
@@ -68,10 +65,6 @@ final class MemberInfo implements Comparable<MemberInfo> {
 
     public String getParamName() {
         return paramName;
-    }
-
-    public QName getElementName() {
-        return elementName;
     }
 
     public int compareTo(MemberInfo member) {

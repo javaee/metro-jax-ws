@@ -118,8 +118,8 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
 
     private static final class FieldFactory implements AbstractWrapperBeanGenerator.BeanMemberFactory<TypeMirror, MemberInfo> {
         public MemberInfo createWrapperBeanMember(TypeMirror paramType,
-                String paramName, QName elementName, List<Annotation> jaxb) {
-            return new MemberInfo(paramType, paramName, elementName, jaxb);
+                String paramName, List<Annotation> jaxb) {
+            return new MemberInfo(paramType, paramName, jaxb);
         }
     }
 
@@ -292,10 +292,10 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
             writeXmlElementDeclaration(reqCls, reqName,reqNamespace);
             writeXmlElementDeclaration(resCls, resName, resNamespace);
 
-            List<MemberInfo> reqMembers = APT_GENERATOR.collectRequestBeanMembers(method, wrapped,
-                typeNamespace);
-            List<MemberInfo> resMembers = APT_GENERATOR.collectResponseBeanMembers(method, wrapped,
-                typeNamespace);
+            List<MemberInfo> reqMembers = APT_GENERATOR.collectRequestBeanMembers(
+                    method);
+            List<MemberInfo> resMembers = APT_GENERATOR.collectResponseBeanMembers(
+                    method);
 
             // XmlType
             writeXmlTypeDeclaration(reqCls, reqName, reqNamespace, reqMembers);
