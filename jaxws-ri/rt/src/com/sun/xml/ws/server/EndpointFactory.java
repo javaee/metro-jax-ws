@@ -285,10 +285,10 @@ public class EndpointFactory {
         WebServiceProvider wsProvider = clz.getAnnotation(WebServiceProvider.class);
         WebService ws = clz.getAnnotation(WebService.class);
         if (wsProvider == null && ws == null) {
-            throw new IllegalArgumentException(clz +" has neither @WebSerivce nor @WebServiceProvider annotation");
+            throw new IllegalArgumentException(clz +" has neither @WebService nor @WebServiceProvider annotation");
         }
         if (wsProvider != null && ws != null) {
-            throw new IllegalArgumentException(clz +" has both @WebSerivce and @WebServiceProvider annotations");
+            throw new IllegalArgumentException(clz +" has both @WebService and @WebServiceProvider annotations");
         }
         if (wsProvider != null) {
             if (Provider.class.isAssignableFrom(clz) || AsyncProvider.class.isAssignableFrom(clz)) {
