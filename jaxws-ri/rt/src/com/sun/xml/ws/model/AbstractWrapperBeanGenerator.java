@@ -123,7 +123,14 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
     }
 
     protected abstract T getSafeType(T type);
+
+    /**
+     * Returns Holder's value type.
+     *
+     * @return null if it not a Holder, otherwise return Holder's value type
+     */
     protected abstract T getHolderValueType(T type);
+
     protected abstract boolean isVoidType(T type);
 
     /**
@@ -307,10 +314,17 @@ public abstract class AbstractWrapperBeanGenerator<T,C,M,A extends Comparable> {
         XmlType xmlType = annReader.getClassAnnotation(XmlType.class, exception, null);
         if (xmlType != null) {
             String[] propOrder = xmlType.propOrder();
-            if (propOrder.length > 0) {
+            // If not the default order of properties, use that propOrder
+            if (propOrder.length > 0 && propOrder[0].length() != 0) {
                 List<A> list = new ArrayList<A>();
                 for(String prop : propOrder) {
-                    list.add(fields.get(prop));
+                    A a = fields.get(prop);
+                    if (a != null) {
+                        list.add(a);
+                    } else {
+                        throw new WebServiceException("Exception "+exception+
+                                " has @XmlType and its propOrder contains unknown property "+prop);
+                    }
                 }
                 return list;
             }
