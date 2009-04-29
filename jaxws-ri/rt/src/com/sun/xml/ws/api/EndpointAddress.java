@@ -98,6 +98,7 @@ public final class EndpointAddress {
     private URL url;
     private final URI uri;
     private final String stringForm;
+    private volatile boolean dontUseProxyMethod;
     /**
      * Pre-selected proxy.
      *
@@ -207,10 +208,17 @@ public final class EndpointAddress {
         if (url == null) {
             throw new WebServiceException("URI="+uri+" doesn't have the corresponding URL");
         }
-        if(proxy!=null)
-            return url.openConnection(proxy);
-        else
-            return url.openConnection();
+        if(proxy!=null && !dontUseProxyMethod) {
+            try {
+                return url.openConnection(proxy);
+            } catch(UnsupportedOperationException e) {
+                // Some OSGi and app server environments donot
+                // override URLStreamHandler.openConnection(URL, Proxy) as it
+                // is introduced in Java SE 5 API. Fallback to the other method.
+                dontUseProxyMethod = true;
+            }
+        }
+        return url.openConnection();
     }
 
     public String toString() {
