@@ -177,7 +177,7 @@ public final class Packet extends DistributedPropertySet {
     }
 
     /**
-     * Used by {@link #createResponse(Message)}.
+     * Used by {@link #createResponse(Message)} and {@link #copy(boolean)}.
      */
     private Packet(Packet that) {
         that.copySatelliteInto(this);
@@ -188,6 +188,11 @@ public final class Packet extends DistributedPropertySet {
         this.wasTransportSecure = that.wasTransportSecure;
         this.endpointAddress = that.endpointAddress;
         this.wsdlOperation = that.wsdlOperation;
+
+        this.acceptableMimeTypes = that.acceptableMimeTypes;
+        this.endpoint = that.endpoint;
+        this.webServiceContextDelegate = that.webServiceContextDelegate;
+        this.soapAction = that.soapAction;
         // copy other properties that need to be copied. is there any?
     }
 
