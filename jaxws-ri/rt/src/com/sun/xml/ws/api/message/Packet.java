@@ -702,6 +702,7 @@ public final class Packet extends DistributedPropertySet {
      */
     public Packet createClientResponse(Message msg) {
         Packet response = new Packet(this);
+        response.soapAction = null; // de-initializing 
         response.setMessage(msg);
         return response;
     }
