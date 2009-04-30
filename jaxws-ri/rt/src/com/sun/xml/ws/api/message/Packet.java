@@ -208,7 +208,7 @@ public final class Packet extends DistributedPropertySet {
         // but so far the implementation is usable for this purpose as well, so calling the copy constructor
         // to avoid code dupliation.
         Packet copy = new Packet(this);
-        if (copyMessage) {
+        if (copyMessage && this.message != null) {
             copy.message = this.message.copy(); 
         }
        
