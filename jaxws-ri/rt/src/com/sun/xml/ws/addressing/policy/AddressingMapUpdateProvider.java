@@ -134,19 +134,24 @@ public class AddressingMapUpdateProvider implements PolicyMapUpdateProvider {
         if (!af.isRequired()) {
             addressingData.setOptionalAttribute(true);
         }
-        AddressingFeature.Responses responses = af.getResponses();        
-        if (responses == AddressingFeature.Responses.ANONYMOUS) {
-            AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION);
-            PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
-            assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
-        } else if (responses == AddressingFeature.Responses.NON_ANONYMOUS) {
-            final AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION);
-            PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
-            assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
-        } else {
+        try {
+            AddressingFeature.Responses responses = af.getResponses();
+            if (responses == AddressingFeature.Responses.ANONYMOUS) {
+                AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_ANONYMOUS_NESTED_ASSERTION);
+                PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
+                assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
+            } else if (responses == AddressingFeature.Responses.NON_ANONYMOUS) {
+                final AssertionData nestedAsserData = AssertionData.createAssertionData(W3CAddressingMetadataConstants.WSAM_NONANONYMOUS_NESTED_ASSERTION);
+                PolicyAssertion nestedAsser = new AddressingAssertion(nestedAsserData, null);
+                assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(Collections.singleton(nestedAsser))));
+            } else {
+                assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(null)));
+            }
+        } catch (NoSuchMethodError e) {
+            //If JAX-WS 2.2 API is really required, it would been reported in @Addressing or wsam:Addressing processing
+            //Don't add any nested assertion to mimic the 2.1 behavior
             assertions.add(new AddressingAssertion(addressingData, AssertionSet.createAssertionSet(null)));
         }
-
         assertionSets.add(AssertionSet.createAssertionSet(assertions));
         return Policy.createPolicy(null, bindingName.getLocalPart() + "_WSAM_Addressing_Policy", assertionSets);
     }

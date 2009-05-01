@@ -47,6 +47,8 @@ import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
+import com.sun.xml.ws.resources.ModelerMessages;
+import com.sun.xml.bind.util.Which;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -56,6 +58,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.AddressingFeature;
+import javax.xml.ws.soap.Addressing;
 
 /**
  * This Policy extension configures the WSDLModel with AddressingFeature when Addressing assertions are present in the
@@ -119,12 +122,16 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
                             }
 
                             final WebServiceFeature feature;
-                            if(requiresAnonymousResponses) {
-                                feature  = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.ANONYMOUS);
-                            } else if(requiresNonAnonymousResponses){
-                                feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.NON_ANONYMOUS);
-                            } else {
-                                feature = new AddressingFeature(true, !assertion.isOptional());
+                            try {
+                                if (requiresAnonymousResponses) {
+                                    feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.ANONYMOUS);
+                                } else if (requiresNonAnonymousResponses) {
+                                    feature = new AddressingFeature(true, !assertion.isOptional(), AddressingFeature.Responses.NON_ANONYMOUS);
+                                } else {
+                                    feature = new AddressingFeature(true, !assertion.isOptional());
+                                }
+                            } catch (NoSuchMethodError e) {
+                                throw LOGGER.logSevereException(new PolicyException(ModelerMessages.RUNTIME_MODELER_ADDRESSING_RESPONSES_NOSUCHMETHOD(toJar(Which.which(AddressingFeature.class))), e));
                             }
                             if (LOGGER.isLoggable(Level.FINE)) {
                                 LOGGER.fine("Added addressing feature \"" + feature + "\" for element \"" + key + "\"");
@@ -139,4 +146,13 @@ public class AddressingModelConfiguratorProvider implements ModelConfiguratorPro
         return features;
     }
 
+    /**
+     * Given the URL String inside jar, returns the URL to the jar itself.
+     */
+    private static String toJar(String url) {
+        if(!url.startsWith("jar:"))
+            return url;
+        url = url.substring(4); // cut off jar:
+        return url.substring(0,url.lastIndexOf('!'));    // cut off everything after '!'
+    }
 }
