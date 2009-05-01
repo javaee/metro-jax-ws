@@ -97,6 +97,58 @@ public class W3CWsaServerTube extends WsaServerTube{
 
     @Override
     protected boolean isAnonymousRequired(@Nullable WSDLBoundOperation wbo) {
+        return getResponseRequirement(wbo) ==  WSDLBoundOperation.ANONYMOUS.required;
+    }
+
+    private WSDLBoundOperation.ANONYMOUS getResponseRequirement(@Nullable WSDLBoundOperation wbo) {
+        try {
+            if (af.getResponses() == AddressingFeature.Responses.ANONYMOUS) {
+                return WSDLBoundOperation.ANONYMOUS.required;
+            } else if (af.getResponses() == AddressingFeature.Responses.NON_ANONYMOUS) {
+                return WSDLBoundOperation.ANONYMOUS.prohibited;
+            }
+        } catch (NoSuchMethodError e) {
+            //Ignore error, defaut to optional
+        }
+        //wsaw wsdl binding case will have some value set on wbo
+        return wbo != null ? wbo.getAnonymous() : WSDLBoundOperation.ANONYMOUS.optional;
+    }
+
+    @Override
+    protected void checkAnonymousSemantics(WSDLBoundOperation wbo, WSEndpointReference replyTo, WSEndpointReference faultTo) {
+        String replyToValue = null;
+        String faultToValue = null;
+
+        if (replyTo != null)
+            replyToValue = replyTo.getAddress();
+
+        if (faultTo != null)
+            faultToValue = faultTo.getAddress();
+        WSDLBoundOperation.ANONYMOUS responseRequirement = getResponseRequirement(wbo);
+
+        switch (responseRequirement) {
+            case prohibited:
+                if (replyToValue != null && replyToValue.equals(addressingVersion.anonymousUri))
+                    throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
+
+                if (faultToValue != null && faultToValue.equals(addressingVersion.anonymousUri))
+                    throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED);
+                break;
+            case required:
+                if (replyToValue != null && !replyToValue.equals(addressingVersion.anonymousUri))
+                    throw new InvalidAddressingHeaderException(addressingVersion.replyToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
+
+                if (faultToValue != null && !faultToValue.equals(addressingVersion.anonymousUri))
+                    throw new InvalidAddressingHeaderException(addressingVersion.faultToTag, ONLY_ANONYMOUS_ADDRESS_SUPPORTED);
+                break;
+            default:
+                // ALL: no check
+        }
+    }
+
+    /*
+     @Override
+    protected boolean isAnonymousRequired(@Nullable WSDLBoundOperation wbo) {
         return getResponseRequirement(wbo) ==  AddressingFeature.Responses.ANONYMOUS;
     }
 
@@ -146,5 +198,5 @@ public class W3CWsaServerTube extends WsaServerTube{
                 // ALL: no check
         }
     }
-
+    */
 }
