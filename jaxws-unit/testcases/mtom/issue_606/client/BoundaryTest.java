@@ -30,6 +30,9 @@ public class BoundaryTest extends TestCase {
 
     public void testEcho() throws Exception {
         for(int i=0; i < 30000; i++) {
+            if (i%500 == 0) {
+                System.out.println("testEcho():"+i);
+            }
             byte[] expected = getBuf(i);
             byte[] got = proxy.echo("file", expected);
             verify(expected, got);
@@ -40,6 +43,9 @@ public class BoundaryTest extends TestCase {
         byte[] expected = new byte[0];
         String str = "";
         for(int i=0; i < 30000; i++) {
+            if (i%500 == 0) {
+                System.out.println("testEcho1():"+i);
+            }
             str += "a";
             byte[] got = proxy.echo(str, expected);
             verify(expected, got);
@@ -57,7 +63,9 @@ public class BoundaryTest extends TestCase {
     private static void verify(byte[] expected, byte[] got) {
         assertEquals(expected.length, got.length);
         for(int i=0; i < expected.length; i++) {
-            assertEquals(expected[i], got[i]);
+            if (expected[i] != got[i]) {   //assertEquals seems expensive
+                assertEquals(expected[i], got[i]);
+            }
         }
     }
 
