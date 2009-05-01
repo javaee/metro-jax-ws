@@ -46,6 +46,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLFeaturedObject;
 import com.sun.xml.ws.model.RuntimeModelerException;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.ModelerMessages;
+import com.sun.xml.bind.util.Which;
 
 import javax.xml.ws.RespectBinding;
 import javax.xml.ws.RespectBindingFeature;
@@ -108,7 +109,12 @@ public final class WebServiceFeatureList implements WSFeatureList {
                 continue;
             } else if (a instanceof Addressing) {
                 Addressing addAnn = (Addressing) a;
+                try {
                 ftr = new AddressingFeature(addAnn.enabled(), addAnn.required(),addAnn.responses());
+                } catch(NoSuchMethodError e) {
+                    //throw error. We can't default to Responses.ALL as we dont know if the user has not used 2.2 annotation with responses.
+                    throw new RuntimeModelerException(ModelerMessages.RUNTIME_MODELER_ADDRESSING_RESPONSES_NOSUCHMETHOD(toJar(Which.which(Addressing.class))));
+                }
             } else if (a instanceof MTOM) {
                 MTOM mtomAnn = (MTOM) a;
                 ftr = new MTOMFeature(mtomAnn.enabled(), mtomAnn.threshold());
@@ -129,6 +135,16 @@ public final class WebServiceFeatureList implements WSFeatureList {
             }
             add(ftr);
         }
+    }
+
+    /**
+     * Given the URL String inside jar, returns the URL to the jar itself.
+     */
+    private static String toJar(String url) {
+        if(!url.startsWith("jar:"))
+            return url;
+        url = url.substring(4); // cut off jar:
+        return url.substring(0,url.lastIndexOf('!'));    // cut off everything after '!'
     }
 
     private static WebServiceFeature getWebServiceFeatureBean(Annotation a) {
