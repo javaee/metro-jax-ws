@@ -1104,6 +1104,7 @@ public class RuntimeModeler {
             if (packageName.length() == 0)
                 beanPackage = JAXWS_PACKAGE_PD;
             String className = beanPackage+ name + BEAN;
+            String messageName = exception.getSimpleName();
             if (webFault != null) {
                 if (webFault.faultBean().length()>0)
                     className = webFault.faultBean();
@@ -1111,6 +1112,8 @@ public class RuntimeModeler {
                     name = webFault.name();
                 if (webFault.targetNamespace().length()>0)
                     namespace = webFault.targetNamespace();
+                if (webFault.messageName().length()>0)
+                    messageName = webFault.messageName();
             }
             if (faultInfoMethod == null)  {
                 exceptionBean = getExceptionBeanClass(className, exception, name, namespace);
@@ -1124,7 +1127,7 @@ public class RuntimeModeler {
             TypeReference typeRef = new TypeReference(faultName, exceptionBean, anns);
             CheckedExceptionImpl checkedException =
                 new CheckedExceptionImpl(javaMethod, exception, typeRef, exceptionType);
-            checkedException.setMessageName(exception.getSimpleName());
+            checkedException.setMessageName(messageName);
             for(FaultAction fa: faultActions) {
                 if(fa.className().equals(exception) && !fa.value().equals("")) {
                     checkedException.setFaultAction(fa.value());
