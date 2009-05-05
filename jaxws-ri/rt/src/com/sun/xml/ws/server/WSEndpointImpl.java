@@ -357,42 +357,41 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         if (!monitoring) {
             return null;
         }
-	try {
-	    // TBD: Decide final root name.
-	    // Most likely it will be "metro" when running inside GlassFish,
-	    // (under the AMX node), and "com.sun.metro" otherwise.
-	    final ManagedObjectManager managedObjectManager =
-		ManagedObjectManagerFactory.createStandalone("metro");
+        try {
+            // TBD: Decide final root name.
+            // Most likely it will be "metro" when running inside GlassFish,
+            // (under the AMX node), and "com.sun.metro" otherwise.
+            final ManagedObjectManager managedObjectManager =
+                ManagedObjectManagerFactory.createStandalone("metro");
 
-	    managedObjectManager.stripPrefix(
-		"com.sun.xml.ws.server",
-		"com.sun.xml.ws.rx.rm.runtime.sequence");
+            managedObjectManager.stripPrefix(
+                "com.sun.xml.ws.server",
+                "com.sun.xml.ws.rx.rm.runtime.sequence");
 
             // Defer so we can register "this" as root from
             // within constructor.
             // TBD: managedObjectManager.deferJMXRegistration();
 
-	    // TBD: We include the service+portName to uniquely identify
-	    // the managed objects under it (since there can be multiple
-	    // services in the container).
-	    // The existing format and Endpoint class below is temporary
-	    // and will change.
-	    managedObjectManager.createRoot(
-		this,
-		serviceName.toString().replace(':', '-')
-		+ portName.toString().replace(':', '-')
-		+ "-" 
-		+ String.valueOf(unique++)); // TBD: only append unique
-	                                     // if clash. Waiting for GMBAL RFE
-
-	    return managedObjectManager;
-	} catch (Throwable t) {
-	    // TBD: logging
-	    // After logging. we let the service start up anyway,
-	    // but it won't have monitoring.
-	    t.printStackTrace(System.out);
-	}
-	return null;
+            // TBD: We include the service+portName to uniquely identify
+            // the managed objects under it (since there can be multiple
+            // services in the container).
+            // The existing format and Endpoint class below is temporary
+            // and will change.
+            managedObjectManager.createRoot(
+                this,
+                serviceName.toString().replace(':', '-')
+                + portName.toString().replace(':', '-')
+                + "-" 
+                + String.valueOf(unique++)); // TBD: only append unique
+                                             // if clash. Waiting for GMBAL RFE
+            return managedObjectManager;
+        } catch (Throwable t) {
+            // TBD: logging
+            // After logging. we let the service start up anyway,
+            // but it won't have monitoring.
+            t.printStackTrace(System.out);
+        }
+        return null;
     }
 
     private static boolean monitoring;
