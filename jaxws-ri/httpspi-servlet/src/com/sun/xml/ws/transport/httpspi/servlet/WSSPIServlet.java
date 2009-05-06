@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.transport.http.servlet;
+package com.sun.xml.ws.transport.httpspi.servlet;
 
 import com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate;
 
@@ -48,11 +48,11 @@ import javax.servlet.http.HttpServletResponse;
  * The JAX-WS dispatcher servlet.
  *
  * <p>
- * It really just forwards processing to {@link WSServletDelegate}.
+ * It really just forwards processing to {@link com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate}.
  *
  * @author Jitendra Kotamraju
  */
-public class WSServlet extends HttpServlet {
+public class WSSPIServlet extends HttpServlet {
     private WSServletDelegate delegate = null;
 
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -61,7 +61,7 @@ public class WSServlet extends HttpServlet {
     }
 
     /**
-     * Gets the {@link WSServletDelegate} that we will be forwarding the requests to.
+     * Gets the {@link com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate} that we will be forwarding the requests to.
      *
      * @return
      *      null if the deployment have failed and we don't have the delegate.
@@ -98,7 +98,7 @@ public class WSServlet extends HttpServlet {
     }
 
     /**
-     * {@link WSServletDelegate}.
+     * {@link com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate}.
      */
     public static final String JAXWS_RI_RUNTIME_INFO =
         "com.sun.xml.ws.server.http.servletDelegate";

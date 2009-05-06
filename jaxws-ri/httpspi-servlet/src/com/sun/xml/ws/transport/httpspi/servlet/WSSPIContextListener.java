@@ -34,10 +34,7 @@
  * holder.
  */
 
-package com.sun.xml.ws.transport.http.servlet;
-
-
-import com.sun.xml.ws.transport.httpspi.servlet.*;
+package com.sun.xml.ws.transport.httpspi.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
@@ -53,7 +50,7 @@ import java.util.logging.Logger;
 
 /**
  * Parses {@code sun-jaxws.xml} and sets up
- * {@link EndpointAdapter}s for all deployed endpoints.
+ * {@link com.sun.xml.ws.transport.httpspi.servlet.EndpointAdapter}s for all deployed endpoints.
  *
  * <p>
  * This code is the entry point at the server side in the servlet deployment.
@@ -62,7 +59,7 @@ import java.util.logging.Logger;
  *
  * @author Jitendra Kotamraju
  */
-public final class WSServletContextListener
+public final class WSSPIContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
     private WSServletDelegate delegate;
@@ -109,17 +106,17 @@ public final class WSServletContextListener
 
             delegate = createDelegate(adapters, context);
 
-            context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
+            context.setAttribute(WSSPIServlet.JAXWS_RI_RUNTIME_INFO,delegate);
 
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "failed to parse runtime descriptor", e);
-            context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
+            context.removeAttribute(WSSPIServlet.JAXWS_RI_RUNTIME_INFO);
             throw new WebServiceException("failed to parse runtime descriptor", e);
         }
     }
 
     /**
-     * Creates {@link WSServletDelegate} that does the real work.
+     * Creates {@link com.sun.xml.ws.transport.httpspi.servlet.WSServletDelegate} that does the real work.
      */
     protected WSServletDelegate createDelegate(List<EndpointAdapter> adapters, ServletContext context) {
         return new WSServletDelegate(adapters,context);
@@ -128,6 +125,6 @@ public final class WSServletContextListener
     private static final String JAXWS_RI_RUNTIME = "/WEB-INF/sun-jaxws.xml";
 
     private static final Logger logger =
-        Logger.getLogger(WSServletContextListener.class.getName());
+        Logger.getLogger(WSSPIContextListener.class.getName());
 
 }

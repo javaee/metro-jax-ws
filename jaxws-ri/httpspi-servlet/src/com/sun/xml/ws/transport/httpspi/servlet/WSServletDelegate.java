@@ -52,12 +52,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Called by {@link WSServlet} to choose {@link EndpointAdapter}
+ * Called by {@link WSSPIServlet} to choose {@link EndpointAdapter}
  * and sends a request to it.
  *
  * <p>
  * One instance of this object is created, and then shared across
- * {@link WSServlet} instances (the container might deploy many of them,
+ * {@link WSSPIServlet} instances (the container might deploy many of them,
  * depending on how the user writes {@code web.xml}.)
  *
  * @author Jitendra Kotamraju
@@ -121,7 +121,7 @@ public class WSServletDelegate {
 
     /**
      * processes web service requests by finding the {@link EndpointAdapter}
-     * created by the {@link WSServletContextListener}
+     * created by the {@link WSSPIContextListener}
      *
      * @param request the HTTP request object
      * @param response the HTTP response object
