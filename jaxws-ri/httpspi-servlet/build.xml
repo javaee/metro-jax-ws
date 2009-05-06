@@ -45,7 +45,7 @@
   <target name="compile">
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="src"
-        destdir="${basedir}/build/classes"
+        destdir="${build.dir}/classes"
         debug="${compile.debug}"
         deprecation="${compile.deprecation}"
         optimize="${compile.optimize}"
@@ -56,6 +56,13 @@
         <pathelement path="../rt/build/classes" />
       </classpath>
     </javac>
+  </target>
+
+  <target name="jar">
+    <mkdir dir="${build.dir}/lib"/>
+    <jar jarfile="${build.dir}/lib/jaxws-httpspi-servlet.jar">
+      <fileset dir="${build.dir}/classes"/>
+    </jar>
   </target>
 
   <target name="clean">

@@ -99,6 +99,7 @@
         <ant dir="${basedir}/rt" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/rt-fi" target="compile" inheritrefs="true"/>
         <ant dir="${basedir}/servlet" target="compile" inheritrefs="true"/>
+        <ant dir="${basedir}/httpspi-servlet" target="compile" inheritrefs="true"/>
     </target>
 
     <path id="all-source-path">
@@ -106,6 +107,7 @@
         <pathelement path="${basedir}/rt/build/gen-src"/>
         <pathelement path="${basedir}/rt-fi/src"/>
         <pathelement path="${basedir}/servlet/src"/>
+        <pathelement path="${basedir}/httpspi-servlet/src"/>
         <pathelement path="${basedir}/tools/wscompile/src"/>
         <pathelement path="${basedir}/tools/wscompile/build/gen-src"/>
     </path>
@@ -177,6 +179,7 @@
             <fileset dir="${basedir}/servlet/build/classes"/>
             <fileset dir="${basedir}/rt/src" includes="**/*.xml"/>
         </jar>
+        <ant dir="${basedir}/httpspi-servlet" target="jar"/>        
     </target>
 
     <!-- runtime must be built before tools -->
@@ -246,6 +249,7 @@
         <ant dir="${basedir}/tools/resourcegen" target="clean"/>
         <ant dir="${basedir}/tools/wscompile" target="clean"/>
         <ant dir="${basedir}/servlet" target="clean"/>        
+        <ant dir="${basedir}/httpspi-servlet" target="clean"/>        
     </target>
 
     <!-- for now, this gets everything built -->
