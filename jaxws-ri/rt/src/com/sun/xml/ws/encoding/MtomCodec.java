@@ -54,6 +54,7 @@ import com.sun.xml.ws.util.xml.XMLStreamReaderFilter;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.streaming.MtomStreamWriter;
 import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
+import com.sun.xml.ws.server.UnsupportedMediaException;
 import org.jvnet.staxex.Base64Data;
 import org.jvnet.staxex.NamespaceContextEx;
 import org.jvnet.staxex.XMLStreamReaderEx;
@@ -74,6 +75,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -238,11 +240,21 @@ public class MtomCodec extends MimeCodec {
 
     @Override
     protected void decode(MimeMultipartParser mpp, Packet packet) throws IOException {
+        //TODO shouldn't we check for SOAP1.1/SOAP1.2 and throw
+        //TODO UnsupportedMediaException like StreamSOAPCodec
+        String charset = null;
+        String ct = mpp.getRootPart().getContentType();
+        if (ct != null) {
+            charset = new ContentTypeImpl(ct).getCharSet();
+        }
+        if (charset != null && !Charset.isSupported(charset)) {
+            throw new UnsupportedMediaException(charset);
+        }
+
         // we'd like to reuse those reader objects but unfortunately decoder may be reused
         // before the decoded message is completely used.
-
         XMLStreamReader mtomReader = new MtomXMLStreamReaderEx( mpp,
-            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), true)
+            XMLStreamReaderFactory.create(null, mpp.getRootPart().asInputStream(), charset, true)
         );
 
         packet.setMessage(codec.decode(mtomReader, new MimeAttachmentSet(mpp)));
