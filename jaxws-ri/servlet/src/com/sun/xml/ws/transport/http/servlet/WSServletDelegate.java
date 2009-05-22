@@ -47,13 +47,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.soap.MimeHeaders;
 import javax.xml.ws.Binding;
 import javax.xml.ws.http.HTTPBinding;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -228,19 +226,6 @@ public class WSServletDelegate {
         out.println(WsservletMessages.SERVLET_HTML_NOT_FOUND(message));
         out.println("</body>");
         out.println("</html>");
-    }
-
-    protected static MimeHeaders getHeaders(HttpServletRequest req) {
-        Enumeration enums = req.getHeaderNames();
-        MimeHeaders headers = new MimeHeaders();
-
-        while (enums.hasMoreElements()) {
-            String headerName = (String) enums.nextElement();
-            String headerValue = req.getHeader(headerName);
-            headers.addHeader(headerName, headerValue);
-        }
-
-        return headers;
     }
 
     private void registerEndpointUrlPattern(ServletAdapter a) {
