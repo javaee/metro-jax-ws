@@ -47,10 +47,7 @@
      <!-- Check if we are running JAVA SE 6 update release 3 or older -->
     <condition property="jdk6">
         <or>
-            <contains string="${java.version}" substring="1.6.0.0"/>
-            <contains string="${java.version}" substring="1.6.0_1"/>
-            <contains string="${java.version}" substring="1.6.0_2"/>
-            <contains string="${java.version}" substring="1.6.0_03"/>
+            <contains string="${java.version}" substring="1.6.0"/>
         </or>
     </condition>
 
@@ -59,8 +56,8 @@
         <echo/>
         <echo message="  The file 'jaxws-api.jar and jaxb-api.jar' must be installed"/>
         <echo message="  into ${java.home}/lib/endorsed for JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ to prevent"/>
-        <echo message="  conflicts between the JAX-WS 2.0 classes"/>
-        <echo message="  bundled with update release 3 or older and JAX-WS 2.1 bundled with JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@."/>
+        <echo message="  conflicts between the JAX-WS 2.1 classes"/>
+        <echo message="  bundled with JDK6 and JAX-WS 2.2 bundled with JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@."/>
         <echo message="  See http://java.sun.com/j2se/1.5.0/docs/guide/standards/ for more on endorsed standards override mechanism"/>
         <echo/>
         <echo message="  You must have write-permissions on the JDK 6 directory."/>
