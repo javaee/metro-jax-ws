@@ -322,18 +322,25 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".server.endpoint");
 
-    public <T extends EndpointReference> T getEndpointReference(Class<T> clazz, String address, String wsdlAddress, Element...referenceParameters) {
-        QName portType = null;
-        if(port != null) {
-            portType = port.getBinding().getPortTypeName();            
-        }
+    public <T extends EndpointReference> T getEndpointReference(Class<T>
+            clazz, String address, String wsdlAddress, Element... referenceParameters) {
         List<Element> refParams = null;
-        if(referenceParameters != null) {
+        if (referenceParameters != null) {
             refParams = Arrays.asList(referenceParameters);
         }
+        return getEndpointReference(clazz, address, wsdlAddress, null, refParams);
+    }
+
+    public <T extends EndpointReference> T getEndpointReference(Class<T>
+            clazz, String address, String wsdlAddress, List<Element> metadata, List<Element> referenceParameters) {
+        QName portType = null;
+        if (port != null) {
+            portType = port.getBinding().getPortTypeName();
+        }
+
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
-        return new WSEndpointReference(
-                    av, address, serviceName, portName, portType, null, wsdlAddress, refParams).toSpec(clazz);        
+        return new WSEndpointReference(av, address, serviceName, portName, portType,
+                metadata, wsdlAddress, referenceParameters).toSpec(clazz);
     }
 
     public @NotNull QName getPortName() {

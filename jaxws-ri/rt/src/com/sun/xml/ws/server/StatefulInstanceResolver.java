@@ -54,15 +54,20 @@ import com.sun.xml.ws.resources.ServerMessages;
 import com.sun.xml.ws.spi.ProviderImpl;
 import com.sun.xml.ws.util.xml.ContentHandlerToXMLStreamWriter;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.util.DOMUtil;
+import com.sun.xml.bind.marshaller.SAX2DOMEx;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.w3c.dom.Element;
+import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceContext;
@@ -71,13 +76,7 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -266,29 +265,30 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     }
 
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, @NotNull Packet currentRequest, T o, EPRRecipe recipe) {
-        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest,owner), o, recipe);
+        return export(adrsVer, currentRequest.webServiceContextDelegate.getEPRAddress(currentRequest,owner),
+                currentRequest.webServiceContextDelegate.getWSDLAddress(currentRequest,owner), o, recipe);
     }
 
     @NotNull
     public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o) {
-        return export(adrsVer,endpointAddress,o,null);
+        return export(adrsVer,endpointAddress,null,o,null);
     }
 
     @NotNull
-    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress, T o, EPRRecipe recipe) {
+    public <EPR extends EndpointReference> EPR export(Class<EPR> adrsVer, String endpointAddress,String wsdlAddress, T o, EPRRecipe recipe) {
         if(endpointAddress==null)
             throw new IllegalArgumentException("No address available");
 
         String key = reverseInstances.get(o);
 
-        if(key!=null) return createEPR(key, adrsVer, endpointAddress, recipe);
+        if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
 
         // not exported yet.
         synchronized(this) {
             // double check now in the synchronization block to
             // really make sure that we can export.
             key = reverseInstances.get(o);
-            if(key!=null) return createEPR(key, adrsVer, endpointAddress, recipe);
+            if(key!=null) return createEPR(key, adrsVer, endpointAddress,wsdlAddress, recipe);
 
             if(o!=null)
                 prepare(o);
@@ -300,12 +300,60 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
                 instance.restartTimer();
         }
 
-        return createEPR(key, adrsVer, endpointAddress, recipe);
+        return createEPR(key, adrsVer, endpointAddress, wsdlAddress,recipe);
     }
 
     /**
      * Creates an EPR that has the right key.
      */
+
+    private <EPR extends EndpointReference> EPR createEPR(String key,
+                                                          Class<EPR> eprClass, String address, String wsdlAddress, EPRRecipe recipe) {
+
+        List<Element> referenceParameters = new ArrayList<Element>();
+        List<Element> metadata = new ArrayList<Element>();
+
+        Document doc = DOMUtil.createDom();
+        Element cookie =
+                doc.createElementNS(COOKIE_TAG.getNamespaceURI(),
+                        COOKIE_TAG.getPrefix() + ":" + COOKIE_TAG.getLocalPart());
+        cookie.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:"
+                + COOKIE_TAG.getPrefix(), COOKIE_TAG.getNamespaceURI());
+        cookie.setTextContent(key);
+        referenceParameters.add(cookie);
+
+        if (recipe != null) {
+            for (Header h : recipe.getReferenceParameters()) {
+                doc = DOMUtil.createDom();
+                SAX2DOMEx s2d = new SAX2DOMEx(doc);
+                try {
+                    h.writeTo(s2d, XmlUtil.DRACONIAN_ERROR_HANDLER);
+                    referenceParameters.add((Element) doc.getLastChild());
+                } catch (SAXException e) {
+                    throw new WebServiceException("Unable to write EPR Reference parameters " + h, e);
+                }
+            }
+            Transformer t = XmlUtil.newTransformer();
+            for (Source s : recipe.getMetadata()) {
+                try {
+                    DOMResult r = new DOMResult();
+                    t.transform(s, r);
+                    Document d = (Document) r.getNode();
+                    metadata.add(d.getDocumentElement());
+                } catch (TransformerException e) {
+                    throw new IllegalArgumentException("Unable to write EPR metadata " + s, e);
+                }
+            }
+
+        }
+
+        return
+                eprClass.cast(((WSEndpointImpl) owner).getEndpointReference(eprClass, address, wsdlAddress,
+                        metadata, referenceParameters));
+    }
+
+
+    /*
     private <EPR extends EndpointReference> EPR createEPR(String key, Class<EPR> eprClass, String address, EPRRecipe recipe) {
         AddressingVersion adrsVer = AddressingVersion.fromSpecClass(eprClass);
 
@@ -357,7 +405,7 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
             throw new Error(e); // this must be a bug in our code
         }
     }
-
+    */
     public void unexport(@Nullable T o) {
         if(o==null)     return;
         String key = reverseInstances.get(o);
