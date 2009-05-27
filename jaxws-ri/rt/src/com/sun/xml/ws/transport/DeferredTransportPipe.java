@@ -77,8 +77,23 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
     public DeferredTransportPipe(ClassLoader classLoader, ClientTubeAssemblerContext context) {
         this.classLoader = classLoader;
         this.context = context;
+        //See if we can create the transport pipe from the available information.
+        try {
+            this.transport = TransportTubeFactory.create(classLoader, context);
+            this.address = context.getAddress();
+        } catch(Exception e) {
+            //No problem, transport will be initialized while processing the requests
+        }
     }
 
+    public DeferredTransportPipe(DeferredTransportPipe that, TubeCloner cloner) {
+        this.classLoader = that.classLoader;
+        this.context = that.context;
+        if(that.transport!=null) {
+            this.transport = ((PipeCloner)cloner).copy(that.transport);
+            this.address = that.address;
+       }
+    }
     public NextAction processException(@NotNull Throwable t) {
         return transport.processException(t);
     }
@@ -130,6 +145,8 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
     }
 
     public DeferredTransportPipe copy(TubeCloner cloner) {
+        return new DeferredTransportPipe(this,cloner);
+        /*
         DeferredTransportPipe copy = new DeferredTransportPipe(classLoader,context);
         cloner.add(this,copy);
 
@@ -142,5 +159,6 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
         }
 
         return copy;
+        */
     }
 }
