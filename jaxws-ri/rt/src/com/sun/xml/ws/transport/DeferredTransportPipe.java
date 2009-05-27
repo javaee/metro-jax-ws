@@ -87,6 +87,7 @@ public final class DeferredTransportPipe extends AbstractTubeImpl {
     }
 
     public DeferredTransportPipe(DeferredTransportPipe that, TubeCloner cloner) {
+        super(that,cloner);
         this.classLoader = that.classLoader;
         this.context = that.context;
         if(that.transport!=null) {
