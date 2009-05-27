@@ -145,6 +145,7 @@ public final class HeaderList extends ArrayList<Header> {
     private WSEndpointReference replyTo = null;
     private WSEndpointReference faultTo = null;
     private String messageId;
+    private String relatesTo;
 
     /**
      * Creates an empty {@link HeaderList}.
@@ -640,6 +641,34 @@ public final class HeaderList extends ArrayList<Header> {
         }
 
         return messageId;
+    }
+
+    /**
+     * Returns the value of WS-Addressing <code>RelatesTo</code> header. The <code>version</code>
+     * identifies the WS-Addressing version and the header returned is targeted at
+     * the current implicit role. Caches the value for subsequent invocation.
+     * Duplicate <code>RelatesTo</code> headers are detected earlier.
+     *
+     * @param av WS-Addressing version
+     * @param sv SOAP version
+     * @throws WebServiceException if either <code>av</code> or <code>sv</code> is null.
+     * @return Value of WS-Addressing RelatesTo header, null if no header is present
+     */
+    public String getRelatesTo(@NotNull AddressingVersion av, @NotNull SOAPVersion sv) {
+        if (relatesTo != null) {
+            return relatesTo;
+        }
+
+        if (av == null) {
+            throw new IllegalArgumentException(AddressingMessages.NULL_ADDRESSING_VERSION());
+        }
+
+        Header h = getFirstHeader(av.relatesToTag, true, sv);
+        if (h != null) {
+            relatesTo = h.getStringContent();
+        }
+
+        return relatesTo;
     }
 
     /**
