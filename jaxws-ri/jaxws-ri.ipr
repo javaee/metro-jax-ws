@@ -101,6 +101,9 @@
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
   </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
   </component>
@@ -121,6 +124,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
@@ -327,9 +331,13 @@
       </item>
     </group>
   </component>
+  <component name="ProjectDetails">
+    <option name="projectName" value="jaxws-ri" />
+  </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/httpspi-servlet/httpspi-servlet.iml" filepath="$PROJECT_DIR$/httpspi-servlet/httpspi-servlet.iml" group="transports" />
       <module fileurl="file://$PROJECT_DIR$/javadoc/javadoc.iml" filepath="$PROJECT_DIR$/javadoc/javadoc.iml" />
       <module fileurl="file://$PROJECT_DIR$/jaxws-ri.iml" filepath="$PROJECT_DIR$/jaxws-ri.iml" />
       <module fileurl="file://$PROJECT_DIR$/../jaxws-unit/jaxws-unit.iml" filepath="$PROJECT_DIR$/../jaxws-unit/jaxws-unit.iml" />
@@ -341,10 +349,10 @@
       <module fileurl="file://$PROJECT_DIR$/../test-rearch/test/test.iml" filepath="$PROJECT_DIR$/../test-rearch/test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/../test-rearch/testutil/testutil.iml" filepath="$PROJECT_DIR$/../test-rearch/testutil/testutil.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/wscompile/wscompile.iml" filepath="$PROJECT_DIR$/tools/wscompile/wscompile.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../wsit/wsit.iml" filepath="$PROJECT_DIR$/..it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../wsit/wsit.iml" filepath="$PROJECT_DIR$/../wsit/wsit.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="JDK1.5" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="JDK1.5" project-jdk-type="JavaSDK" />
   <component name="ResourceManagerContainer">
     <option name="myResourceBundles">
       <value>
@@ -361,7 +369,6 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="CVS" />
-    <mapping directory="/wsit" vcs="CVS" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
