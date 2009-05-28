@@ -59,7 +59,7 @@ import java.io.File;
  * @author Jitendra Kotamraju
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Documented
 @WebServiceFeatureAnnotation(id = StreamingAttachmentFeature.ID, bean = StreamingAttachmentFeature.class)
 public @interface StreamingAttachment {

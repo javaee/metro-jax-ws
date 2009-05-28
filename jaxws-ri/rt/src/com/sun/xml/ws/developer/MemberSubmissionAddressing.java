@@ -84,7 +84,7 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
  *
  * @since JAX-WS 2.1
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @WebServiceFeatureAnnotation(id= MemberSubmissionAddressingFeature.ID,bean=MemberSubmissionAddressingFeature.class)
@@ -107,7 +107,7 @@ public @interface MemberSubmissionAddressing {
      *
      * If Validation.LAX, then some WS-Adressing headers are not strictly checked.
      */
-    public enum Validation { LAX, STRICT };
+    public enum Validation { LAX, STRICT }
 
     Validation validation() default Validation.LAX;                   
 

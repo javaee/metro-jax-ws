@@ -66,7 +66,7 @@ import java.lang.annotation.Target;
  * @author Kohsuke Kawaguchi
  * @since 2.1.5
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @WebServiceFeatureAnnotation(id=UsesJAXBContextFeature.ID,bean=UsesJAXBContextFeature.class)
