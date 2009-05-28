@@ -404,7 +404,7 @@ public abstract class SOAPFaultBuilder {
         SOAP11Fault soap11Fault = new SOAP11Fault(faultCode, faultString, faultActor, detailNode);
         
         //Don't fill the stacktrace for Service specific exceptions.
-        if(ce != null) {
+        if(ce == null) {
             soap11Fault.captureStackTrace(e);
         }
         Message msg = JAXBMessage.create(JAXB_CONTEXT, soap11Fault, soapVersion);
@@ -498,7 +498,7 @@ public abstract class SOAPFaultBuilder {
         SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailNode);
 
         //Don't fill the stacktrace for Service specific exceptions.
-        if(ce != null) {
+        if(ce == null) {
             soap12Fault.captureStackTrace(e);
         }
         Message msg = JAXBMessage.create(JAXB_CONTEXT, soap12Fault, soapVersion);
