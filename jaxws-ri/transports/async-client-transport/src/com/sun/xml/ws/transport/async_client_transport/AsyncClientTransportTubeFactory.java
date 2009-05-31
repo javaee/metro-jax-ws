@@ -46,7 +46,7 @@ import com.sun.istack.NotNull;
  */
 public class AsyncClientTransportTubeFactory extends TransportTubeFactory {
     public Tube doCreate(@NotNull ClientTubeAssemblerContext context) {
-        if (!context.getBinding().isFeatureEnabled(AsyncClientTransportFeature.class)) {
+        if (context.getBinding().getAddressingVersion() == null ||!context.getBinding().isFeatureEnabled(AsyncClientTransportFeature.class)) {
             return null;
         }
         return new AsyncClientTransportTube(context);
