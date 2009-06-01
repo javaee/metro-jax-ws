@@ -84,6 +84,9 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
 
         if (seiModel != null) {
             for (JavaMethodImpl m : ((AbstractSEIModelImpl) seiModel).getJavaMethods()) {
+                if(m.getMEP().isAsync)
+                    continue;
+
                 String action = m.getInputAction();
                 QName payloadName = m.getRequestPayloadName();
                 if (payloadName == null)

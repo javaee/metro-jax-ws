@@ -82,6 +82,8 @@ final class PayloadQNameBasedOperationFinder extends WSDLOperationFinder {
         if (seiModel != null) {
             // Find if any payload QNames repeat for operations
             for (JavaMethodImpl m : ((AbstractSEIModelImpl) seiModel).getJavaMethods()) {
+                if(m.getMEP().isAsync)
+                    continue;
                 QName name = m.getRequestPayloadName();
                 if (name == null)
                     name = EMPTY_PAYLOAD;
