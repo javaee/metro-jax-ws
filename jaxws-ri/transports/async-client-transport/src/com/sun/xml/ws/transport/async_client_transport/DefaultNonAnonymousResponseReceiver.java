@@ -87,7 +87,7 @@ public class DefaultNonAnonymousResponseReceiver implements NonAnonymousResponse
         }
 
         public Message invoke(Message m) {
-            LOGGER.info("Message receieved by"+ this.getClass());
+            LOGGER.fine("Message receieved by"+ this.getClass());
             if (handler != null)
                 handler.onReceive(m);
             return null;

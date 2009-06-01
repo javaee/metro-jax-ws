@@ -124,7 +124,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
             setNonAnnonymousReplyTo(request.getMessage(), binding.getAddressingVersion(), nonAnonymousHeader);
             String msgId = getMessageId(request.getMessage());
             nonAnonHandler.addNonAnonymousResponseHandler(msgId, new ClientResponseHandler(request));
-            LOGGER.info("Sending request with message id" + msgId);
+            LOGGER.fine("Sending request with message id" + msgId);
             //requestSender.sendAsync(request, new SyncResponseHandler(msgId, nonAnonHandler));
             requestSender.send(request);
             return doSuspend();
@@ -177,7 +177,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
 
 
         public void onReceive(@NotNull Message msg) {
-            LOGGER.info("Client being resumed for processign message with id" + getRelatesTo(msg));
+            LOGGER.info("Client being resumed for processing message with id" + getRelatesTo(msg));
             try {
                 if (dump) {
                     System.out.println("Received message: ");
@@ -219,7 +219,7 @@ public class AsyncClientTransportTube extends AbstractFilterTubeImpl {
 
         public void onReceive(final @NotNull Message response) {
             String msgId = getRelatesTo(response);
-            LOGGER.info("Received message with id" + msgId);
+            LOGGER.fine("Received message with id" + msgId);
             if (msgId != null) {
                 final NonAnonymousResponseHandler handler = waiting.remove(msgId);
                 if (handler == null) {
