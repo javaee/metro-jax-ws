@@ -1,0 +1,6 @@
+<descriptor since="2.2" bugs="jax-ws-765">
+  <description>
+    Test for SOAPFaultException
+  </description>
+  <service basedir="./server"/>
+</descriptor>
