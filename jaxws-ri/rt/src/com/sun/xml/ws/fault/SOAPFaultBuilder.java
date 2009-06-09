@@ -431,6 +431,7 @@ public abstract class SOAPFaultBuilder {
         CodeType code = null;
         String faultString = null;
         String faultRole = null;
+        String faultNode = null;
         Throwable cause = e.getCause();
         if (e instanceof SOAPFaultException) {
             soapFaultException = (SOAPFaultException) e;
@@ -460,6 +461,7 @@ public abstract class SOAPFaultBuilder {
             }
             faultString = soapFaultException.getFault().getFaultString();
             faultRole = soapFaultException.getFault().getFaultActor();
+            faultNode = soapFaultException.getFault().getFaultNode();
         }
 
         if (faultCode == null) {
@@ -495,7 +497,7 @@ public abstract class SOAPFaultBuilder {
             }
         }
 
-        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, null, faultRole, detailNode);
+        SOAP12Fault soap12Fault = new SOAP12Fault(code, reason, faultNode, faultRole, detailNode);
 
         //Don't fill the stacktrace for Service specific exceptions.
         if(ce == null) {
