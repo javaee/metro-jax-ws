@@ -433,6 +433,14 @@
       </copy>
   <!--<delete dir="${build.home}/jaxb" /> -->
     </target>
+
+    <!-- Integrates 181 -->
+    <target name="integrate-181-hudson" depends="prepare"
+            description="integrate the last successful 181 Hudson build">
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
+    </target>
+
     <target name="integrate-policy-hudson"
             description="integrate the last successful policy-core Hudson build">
 
