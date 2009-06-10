@@ -1,4 +1,4 @@
-<descriptor since="2.2" bugs="jax-ws-765">
+<descriptor since="2.1.8" bugs="jax-ws-765">
   <description>
     Test for SOAPFaultException
   </description>
