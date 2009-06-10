@@ -1,0 +1,8 @@
+<descriptor since="2.1.5" transport="http" bugs="jax-ws-708">
+  <description>
+    Test for SOAPAction
+  </description>
+  <service basedir="./server">
+      <wsdl href="TestEndpointService.wsdl"/>
+  </service>
+</descriptor>
