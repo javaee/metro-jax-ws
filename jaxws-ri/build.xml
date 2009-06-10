@@ -411,7 +411,9 @@
     <property name="jar.suffix" value="${release.impl.version}" />
     <antcall target="push-to-maven-prepare"/>
     <echo>importing to CVS...</echo>
+<!--
     <cvs-import src="build/maven-repo" dest="jax-ws-sources/repo" cvsroot=":pserver:${user.name}@java-net-cvs:/cvs" />
+-->
   </target>
 
   <target name="push-snapshot-to-maven" depends="src.zip"
@@ -435,6 +437,13 @@
                  excludes="activation.jar, jsr173_1.0_api.jar, jaxb1-impl.jar" />
       </copy>
   <!--<delete dir="${build.home}/jaxb" /> -->
+    </target>
+
+    <!-- Integrates 181 -->
+    <target name="integrate-181-hudson" depends="prepare"
+            description="integrate the last successful 181 Hudson build">
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.jar" dest="lib/jsr181-api.jar"/>
+      <get src="http://kohsuke.sfbay.sun.com/hudson/job/jsr181/lastSuccessfulBuild/artifact/build/lib/jsr181-api.src.zip" dest="lib/jsr181-api.src.zip"/>
     </target>
 
   <target name="integrate-maven-repository-importer">
