@@ -63,7 +63,7 @@ public class SOAPActionTest extends TestCase {
             "      </S:Envelope>";
 
     public void testUnquotedSOAPAction1() throws Exception {
-       TestEndpoint port = new TestEndpointService().getTestEndpointPort();
+       TestEndpoint port = new TestEndpointService().getTestEndpointPort1();
         String address = (String) ((BindingProvider)port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
         HTTPResponseInfo rInfo =
             ClientServerTestUtil.sendPOSTRequest( address, s11_request,"text/xml","http://example.com/action/echo");
@@ -76,7 +76,7 @@ public class SOAPActionTest extends TestCase {
     }
 
     public void testUnquotedSOAPAction2() throws Exception {
-       TestEndpoint port = new TestEndpointService().getTestEndpointPort();
+       TestEndpoint port = new TestEndpointService().getTestEndpointPort1();
         String address = (String) ((BindingProvider)port).getRequestContext().get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
         HTTPResponseInfo rInfo =
             ClientServerTestUtil.sendPOSTRequest( address, s11_request,"text/xml","http://example.com/action/echo1");
@@ -88,6 +88,14 @@ public class SOAPActionTest extends TestCase {
         assertEquals("Hello1 Duke", e.getTextContent());
     }
 
+    public void testSOAP12Action() {
+        TestEndpoint port = new TestEndpointService().getTestEndpointPort2();
+        Echo input = new Echo();
+        input.setArg0("Duke");
+        EchoResponse response = port.echo(input);
+        assertEquals("Hello Duke",response.getReturn()); 
+
+    }
     private static final Source makeStreamSource(String msg) {
         byte[] bytes = msg.getBytes();
         ByteArrayInputStream sinputStream = new ByteArrayInputStream(bytes);

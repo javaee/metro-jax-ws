@@ -1,14 +1,16 @@
 package server.soapaction_dispatch.server;
 
 import javax.jws.WebService;
+import javax.xml.ws.BindingType;
 
 
 /**
  * @author Rama Pulavarthi
  */
-@WebService(portName = "TestEndpointPort1", targetNamespace = "http://server.soapaction_dispatch.server/", serviceName="TestEndpointService",
+@WebService(portName = "TestEndpointPort2", targetNamespace = "http://server.soapaction_dispatch.server/", serviceName="TestEndpointService",
         endpointInterface = "server.soapaction_dispatch.server.TestEndpoint")
-public class TestEndpointImpl {
+@BindingType("http://java.sun.com/xml/ns/jaxws/2003/05/soap/bindings/HTTP/")
+public class TestEndpoint2Impl {
     public EchoResponse echo(Echo e){
         EchoResponse r = new EchoResponse();
         r.setReturn("Hello "+ e.getArg0());
