@@ -121,7 +121,7 @@ import java.util.concurrent.Executor;
  */
 @ManagedObject
 @Description("Metro Web Service endpoint")
-@AMXMetadata(type="Service", pathPart="Service")
+@AMXMetadata(type="Service")
 public abstract class WSEndpoint<T> {
 
     /**
@@ -181,6 +181,8 @@ public abstract class WSEndpoint<T> {
      *      always same object. If no "real" {@link Container} instance
      *      is given, {@link Container#NONE} will be returned.
      */
+    @ManagedAttribute
+    @Description("Container")
     public abstract @NotNull Container getContainer();
 
     /**
@@ -195,7 +197,7 @@ public abstract class WSEndpoint<T> {
      *      Possibly null, but always the same value.
      */
     @ManagedAttribute
-    @Description("port")
+    @Description("Port")
     public abstract @Nullable WSDLPort getPort();
 
     /**
@@ -416,13 +418,21 @@ public abstract class WSEndpoint<T> {
      * @deprecated
      * Do not use this method as the PolicyMap API is not final yet and might change in next few months.
      */
-
+    @ManagedAttribute
+    @Description("Policy Map")
     public abstract PolicyMap getPolicyMap();
 
     /**
      * Get the ManagedObjectManager for this endpoint.
      */
-     public abstract @NotNull ManagedObjectManager getManagedObjectManager();
+    public abstract @NotNull ManagedObjectManager getManagedObjectManager();
+
+    /**
+     * This is only needed to expose info for monitoring.
+     */
+    @ManagedAttribute
+    @Description("Dispatch chain assembler context")
+    public abstract @NotNull ServerTubeAssemblerContext getAssemblerContext();
 
     /**
      * Creates an endpoint from deployment or programmatic configuration
@@ -504,7 +514,7 @@ public abstract class WSEndpoint<T> {
 	final WSEndpoint<T> endpoint = 
             EndpointFactory.createEndpoint(
                 implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous);
-        // TBD: endpoint.getManagedObjectManager().deferJMXRegistrationDone();
+        endpoint.getManagedObjectManager().resumeJMXRegistration();
         return endpoint;
     }
 
