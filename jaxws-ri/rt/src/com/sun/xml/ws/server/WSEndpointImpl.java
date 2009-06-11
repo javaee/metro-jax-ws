@@ -119,6 +119,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
     private final @Nullable ManagedObjectManager managedObjectManager;
+    private final @NotNull ServerTubeAssemblerContext context;
 
     /**
      * Set to true once we start shutting down this endpoint.
@@ -162,7 +163,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
         this.operationDispatcher = (port == null) ? null : new OperationDispatcher(port, binding, seiModel);
 
-        ServerTubeAssemblerContext context = new ServerPipeAssemblerContext(seiModel, port, this, terminalTube, isSynchronous);
+        context = new ServerPipeAssemblerContext(seiModel, port, this, terminalTube, isSynchronous);
         this.masterTubeline = assembler.createServer(context);
 
         Codec c = context.getCodec();
@@ -303,9 +304,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         }
 
         try {
-            if (managedObjectManager != null) {
-                managedObjectManager.close();
-            }
+            managedObjectManager.close();
         } catch (java.io.IOException e) {
             logger.log(Level.WARNING, "TBD", e);
         }
@@ -356,13 +355,17 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return serviceName;
     }
 
-    public @Nullable ManagedObjectManager getManagedObjectManager() {
-	    return managedObjectManager;
+    public @NotNull ManagedObjectManager getManagedObjectManager() {
+        return managedObjectManager;
+    }
+
+    public @NotNull ServerTubeAssemblerContext getAssemblerContext() {
+        return context;
     }
 
     private @Nullable ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
         if (!monitoring) {
-            return null;
+            return ManagedObjectManagerFactory.createNOOP();
         }
         try {
             // TBD: Decide final root name.
@@ -371,32 +374,29 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             final ManagedObjectManager managedObjectManager =
                 ManagedObjectManagerFactory.createStandalone("metro");
 
+            //managedObjectManager.setTypelibDebug(2);
+            //managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
+
             managedObjectManager.stripPrefix(
                 "com.sun.xml.ws.server",
                 "com.sun.xml.ws.rx.rm.runtime.sequence");
 
             // Defer so we can register "this" as root from
             // within constructor.
-            // TBD: managedObjectManager.deferJMXRegistration();
+            managedObjectManager.suspendJMXRegistration();
 
-            // TBD: We include the service+portName to uniquely identify
+            // We include the service+portName to uniquely identify
             // the managed objects under it (since there can be multiple
             // services in the container).
-            // The existing format and Endpoint class below is temporary
-            // and will change.
             managedObjectManager.createRoot(
                 this,
-                serviceName.toString().replace(':', '-')
-                + portName.toString().replace(':', '-')
-                + "-" 
+                serviceName.toString() + portName.toString() + "-" 
                 + String.valueOf(unique++)); // TBD: only append unique
                                              // if clash. Waiting for GMBAL RFE
             return managedObjectManager;
         } catch (Throwable t) {
-            // TBD: logging
-            // After logging. we let the service start up anyway,
-            // but it won't have monitoring.
-            t.printStackTrace(System.out);
+            // We let the service start up anyway, but it won't have monitoring.
+            logger.log(Level.WARNING, "TBD", t);
         }
         return null;
     }
@@ -408,7 +408,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         try {
             String name = System.getProperty("com.sun.xml.ws.monitoring");
             if (name != null && name.equalsIgnoreCase("true")) {
-                b = true;
+                b = false;
             }
         } catch (Exception e) {
         }
