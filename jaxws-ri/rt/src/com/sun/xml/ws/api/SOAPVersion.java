@@ -112,34 +112,23 @@ public enum SOAPVersion {
      * Either {@link SOAPBinding#SOAP11HTTP_BINDING} or
      *  {@link SOAPBinding#SOAP12HTTP_BINDING}
      */
-    public final String httpBindingId;
-
     @ManagedAttribute
-    private String httpBindingId() { return httpBindingId; }
+    public final String httpBindingId;
 
     /**
      * SOAP envelope namespace URI.
      */
     public final String nsUri;
 
-    @ManagedAttribute
-    private String nsUri() { return nsUri; }
-
     /**
      * Content-type. Either "text/xml" or "application/soap+xml".
      */
     public final String contentType;
 
-    @ManagedAttribute
-    private String contentType() { return contentType; }
-
     /**
      * SOAP MustUnderstand FaultCode for this SOAP version
      */
     public final QName faultCodeMustUnderstand;
-
-    @ManagedAttribute
-    private QName faultCodeMustUnderstand() { return faultCodeMustUnderstand; }
 
     /**
      * SAAJ {@link MessageFactory} for this SOAP version.
@@ -156,49 +145,30 @@ public enum SOAPVersion {
      */
     public final String implicitRole;
 
-    @ManagedAttribute
-    private String implicitRole() { return implicitRole; }
-
     /**
      * Singleton set that contains {@link #implicitRole}.
      */
     public final Set<String> implicitRoleSet;
-
-    @ManagedAttribute
-    private Set<String> implicitRoleSet() { return implicitRoleSet; }
 
     /**
      * This represents the roles required to be assumed by SOAP binding implementation.
      */
     public final Set<String> requiredRoles;
 
-    @ManagedAttribute
-    private Set<String> requiredRoles() { return requiredRoles; }
-
     /**
      * "role" (SOAP 1.2) or "actor" (SOAP 1.1)
      */
     public final String roleAttributeName;
-
-    @ManagedAttribute
-    private String roleAttributeName() { return roleAttributeName; }
 
     /**
      * "{nsUri}Client" or "{nsUri}Sender"
      */
     public final QName faultCodeClient;
 
-    @ManagedAttribute
-    private QName faultCodeClient() { return faultCodeClient; }
-
     /**
      * "{nsUri}Server" or "{nsUri}Receiver"
      */
     public final QName faultCodeServer;
-
-    @ManagedAttribute
-    private QName faultCodeServer() { return faultCodeServer; }
-
 
     private SOAPVersion(String httpBindingId, String nsUri, String contentType, String implicitRole, String roleAttributeName,
                         String saajFactoryString, QName faultCodeMustUnderstand, String faultCodeClientLocalName,
