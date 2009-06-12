@@ -374,8 +374,17 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             final ManagedObjectManager managedObjectManager =
                 ManagedObjectManagerFactory.createStandalone("metro");
 
-            //managedObjectManager.setTypelibDebug(2);
-            //managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
+            if (typelibDebug != -1) {
+                managedObjectManager.setTypelibDebug(typelibDebug);
+            }
+            if (registrationDebug.equals("FINE")) {
+                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.FINE);
+            } else if (registrationDebug.equals("NORMAL")) {
+                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
+            } else {
+                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NONE);
+            }
+            managedObjectManager.setRuntimeDebug(runtimeDebug);
 
             managedObjectManager.stripPrefix(
                 "com.sun.xml.ws.server",
@@ -402,17 +411,35 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     }
 
     private static boolean monitoring;
+    private static int     typelibDebug;
+    private static String  registrationDebug;
+    private static boolean runtimeDebug;
 
     static {
-        boolean b = false;
+        monitoring = true;
+        typelibDebug = -1;
+        registrationDebug = "NONE";
+        runtimeDebug = false;
         try {
-            String name = System.getProperty("com.sun.xml.ws.monitoring");
-            if (name != null && name.equalsIgnoreCase("true")) {
-                b = false;
+            Boolean b = Boolean.getBoolean("com.sun.xml.ws.monitoring");
+            if (b != null) {
+                monitoring = b;
+            }
+            Integer i = Integer.getInteger("com.sun.xml.ws.monitoring.typelibDebug");
+            if (i != null) {
+                typelibDebug = i;
+            }
+            String name = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
+            if (name != null) {
+                registrationDebug = name.toUpperCase();
+            }
+            b = Boolean.getBoolean("com.sun.xml.ws.monitoring.runtimeDebug");
+            if (b != null) {
+                runtimeDebug = b;
             }
         } catch (Exception e) {
+            logger.log(Level.WARNING, "TBD", e);
         }
-        monitoring = b;
     }
 
     // Necessary because same serviceName+portName can live in
