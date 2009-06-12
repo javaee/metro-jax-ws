@@ -1,0 +1,4 @@
+<descriptor since="2.1.8" bugs="jax-ws-770">
+  <description>Tests Dynamic mapping of exceptions from Java to WSDL</description>
+
+</descriptor>
