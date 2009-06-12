@@ -200,11 +200,17 @@ valid with Java EE 5 as well.
 		applciation servers - Glassfish v1/v2 or Sun One AS 9.0 UR1</li>
 	</ul>
 	</li>
-	<li>Install on Tomcat<ul>
-		<li>Copy lib/*.jar from the root of ${PRODUCT_SHORT_NAME} extracted bundle 
-		to $TOMCAT_HOME/shared/lib</li>
-	</ul>
-	</li>
+    <li>Install on Tomcat
+        <ul>
+            <li>Set CATALINA_HOME to your Tomcat installation.</li>
+            <li>Run 'ant -f tomcat.xml install', This essentially copies lib/*.jar from the root of ${PRODUCT_SHORT_NAME} extracted bundle
+                to $CATALINA_HOME/shared/lib</li>
+            <li>
+                If you are running on top of JDK6, run 'ant -f tomcat.xml install-api'
+            </li>
+
+        </ul>
+    </li>
 </ul>
 
 <p>If you intend to only invoke an already existing Web service, then
