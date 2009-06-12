@@ -399,7 +399,7 @@ public class WebServiceWrapperGenerator extends WebServiceVisitor {
     }
 
     private boolean generateExceptionBean(ClassDeclaration thrownDecl, String beanPackage) {
-        if (builder.isRemoteException(thrownDecl))
+        if (!builder.isServiceException(thrownDecl))
             return false;
 
         String exceptionName = ClassNameInfo.getName(thrownDecl.getQualifiedName());

@@ -730,7 +730,7 @@ public abstract class WebServiceVisitor extends SimpleDeclarationVisitor impleme
         ClassDeclaration exDecl;
         for (ReferenceType thrownType : method.getThrownTypes()) {
             exDecl = ((ClassType)thrownType).getDeclaration();
-            if (!builder.isRemoteException(exDecl)) {
+            if (builder.isServiceException(exDecl)) {
                 builder.onError(method.getPosition(), WebserviceapMessages.localizableWEBSERVICEAP_ONEWAY_OPERATION_CANNOT_DECLARE_EXCEPTIONS(typeDecl.getQualifiedName(), method.toString(), exDecl.getQualifiedName()));
                 valid = false;
             }                

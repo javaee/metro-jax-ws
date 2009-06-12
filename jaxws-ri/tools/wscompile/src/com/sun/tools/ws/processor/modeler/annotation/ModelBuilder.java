@@ -60,6 +60,14 @@ public interface ModelBuilder {
     public TypeMirror getHolderValueType(TypeMirror type);
     public boolean checkAndSetProcessed(TypeDeclaration typeDecl);
     public boolean isRemoteException(TypeDeclaration typeDecl);
+
+    /**
+     * Checks if the TypeDeclaration is a service specific exception
+     * @param typeDecl
+     * @return true if is not a service specifc excpetion as defined by JAX-WS specification
+     */
+    public boolean isServiceException(TypeDeclaration typeDecl);
+
     public boolean isRemote(TypeDeclaration typeDecl);
     public boolean canOverWriteClass(String className);
     public void setWrapperGenerated(boolean wrapperGenerated);

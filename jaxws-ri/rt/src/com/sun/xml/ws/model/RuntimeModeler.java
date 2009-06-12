@@ -120,6 +120,8 @@ public class RuntimeModeler {
     public static final String PORT                 = "Port";
     public static final Class HOLDER_CLASS = Holder.class;
     public static final Class<RemoteException> REMOTE_EXCEPTION_CLASS = RemoteException.class;
+    public static final Class<RuntimeException> RUNTIME_EXCEPTION_CLASS = RuntimeException.class;
+    public static final Class<Exception> EXCEPTION_CLASS = Exception.class;
 
     /**
      * creates an instance of RunTimeModeler given a <code>portClass</code> and <code>bindingId</code>
@@ -1091,8 +1093,13 @@ public class RuntimeModeler {
         if(actionAnn != null)
             faultActions = actionAnn.fault();
         for (Class<?> exception : method.getExceptionTypes()) {
-            if (REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception))
+
+            //Exclude RuntimeException, RemoteException and Error etc
+            if (!EXCEPTION_CLASS.isAssignableFrom(exception))
                 continue;
+            if (RUNTIME_EXCEPTION_CLASS.isAssignableFrom(exception) || REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception))
+                continue;
+            
             Class exceptionBean;
             Annotation[] anns;
             WebFault webFault = getPrivClassAnnotation(exception, WebFault.class);
