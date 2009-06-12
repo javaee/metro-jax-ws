@@ -410,32 +410,28 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return null;
     }
 
-    private static boolean monitoring;
-    private static int     typelibDebug;
-    private static String  registrationDebug;
-    private static boolean runtimeDebug;
+    private static boolean monitoring        = true;
+    private static int     typelibDebug      = -1;
+    private static String  registrationDebug = "NONE";
+    private static boolean runtimeDebug      = false;
 
     static {
-        monitoring = true;
-        typelibDebug = -1;
-        registrationDebug = "NONE";
-        runtimeDebug = false;
         try {
-            Boolean b = Boolean.getBoolean("com.sun.xml.ws.monitoring");
-            if (b != null) {
-                monitoring = b;
+            String s = System.getProperty("com.sun.xml.ws.monitoring");
+            if (s != null && s.toLowerCase().equals("false")) {
+                monitoring = false;
             }
             Integer i = Integer.getInteger("com.sun.xml.ws.monitoring.typelibDebug");
             if (i != null) {
                 typelibDebug = i;
             }
-            String name = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
-            if (name != null) {
-                registrationDebug = name.toUpperCase();
+            s = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
+            if (s != null) {
+                registrationDebug = s.toUpperCase();
             }
-            b = Boolean.getBoolean("com.sun.xml.ws.monitoring.runtimeDebug");
-            if (b != null) {
-                runtimeDebug = b;
+            s = System.getProperty("com.sun.xml.ws.monitoring.runtimeDebug");
+            if (s != null && s.toLowerCase().equals("true")) {
+                runtimeDebug = true;
             }
         } catch (Exception e) {
             logger.log(Level.WARNING, "TBD", e);
