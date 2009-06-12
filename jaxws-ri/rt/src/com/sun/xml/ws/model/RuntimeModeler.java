@@ -520,6 +520,19 @@ public class RuntimeModeler {
     }
 
     /**
+     * Returns true if an exception is service specific exception as per JAX-WS rules.
+     * @param exception
+     * @return
+     */
+    private boolean isServiceException(Class<?> exception) {
+        if (!EXCEPTION_CLASS.isAssignableFrom(exception))
+            return false;
+        if (RUNTIME_EXCEPTION_CLASS.isAssignableFrom(exception) || REMOTE_EXCEPTION_CLASS.isAssignableFrom(exception))
+            return false;
+        return true;
+    }
+
+    /**
      * creates the runtime model for a method on the <code>portClass</code>
      * @param method the method to model
      * @param webService the instance of the <code>WebService</code> annotation on the <code>portClass</code>
@@ -547,6 +560,18 @@ public class RuntimeModeler {
         if (usesWebMethod && webMethod == null) {
             return;
         }
+        String methodName = method.getName();
+        boolean isOneway = method.isAnnotationPresent(Oneway.class);
+
+        //Check that oneway methods don't thorw any checked exceptions
+        if (isOneway) {
+            for (Class<?> exception : method.getExceptionTypes()) {
+                if(isServiceException(exception)) {
+                       throw new RuntimeModelerException("runtime.modeler.oneway.operation.no.checked.exceptions",
+                            portClass.getCanonicalName(), methodName, exception.getName());
+                }
+            }
+        }
 
         JavaMethodImpl javaMethod;
         //Class implementorClass = portClass;
@@ -563,7 +588,7 @@ public class RuntimeModeler {
             }
         }
 
-        String methodName = method.getName();
+
 
         //set MEP -oneway, async, req/resp
         MEP mep = getMEP(method);
