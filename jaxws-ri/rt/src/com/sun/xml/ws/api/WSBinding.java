@@ -138,6 +138,6 @@ public interface WSBinding extends Binding {
     /**
      * Returns a list of features associated with {@link WSBinding}.
      */
-    //@ManagedAttribute
+    @ManagedAttribute
     @NotNull WSFeatureList getFeatures();
 }
