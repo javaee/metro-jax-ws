@@ -42,7 +42,7 @@ import javax.xml.ws.soap.Addressing;
 /**
  * @author Rama Pulavarthi
  */
-@WebService
+@WebService(portName="DefaultResponsesEndpoint")
 @Addressing
 public class DefaultResponsesEndpoint extends AddNumbersImpl{    
 }

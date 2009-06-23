@@ -43,7 +43,7 @@ import javax.xml.ws.soap.AddressingFeature;
 /**
  * @author Rama Pulavarthi
  */
-@WebService
+@WebService(portName="AnonymousResponsesEndpoint")
 @Addressing(responses= AddressingFeature.Responses.ANONYMOUS)
 public class AnonymousResponsesEndpoint extends AddNumbersImpl{
 

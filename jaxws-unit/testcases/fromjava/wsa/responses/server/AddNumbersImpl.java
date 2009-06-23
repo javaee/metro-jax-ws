@@ -44,7 +44,7 @@ import javax.jws.WebMethod;
 public class AddNumbersImpl {
 
     @WebMethod
-    public int addNumbersNoAction(int number1, int number2) throws AddNumbersException {
+    public int addNumbers(int number1, int number2) throws AddNumbersException {
         return doStuff(number1, number2);
     }
 

@@ -43,7 +43,7 @@ import javax.xml.ws.soap.AddressingFeature;
 /**
  * @author Rama Pulavarthi
  */
-@WebService
+@WebService(portName="AllResponsesEndpoint")
 @Addressing(responses= AddressingFeature.Responses.ALL)
 public class AllResponsesEndpoint extends AddNumbersImpl{
 }
