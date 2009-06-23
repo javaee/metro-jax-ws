@@ -36,13 +36,23 @@
 
 package fromjava.wsa.responses.server;
 
-import javax.jws.WebService;
-import javax.xml.ws.soap.Addressing;
+import javax.jws.WebMethod;
 
 /**
  * @author Rama Pulavarthi
  */
-@WebService
-@Addressing
-public class DefaultResponsesEndpoint extends AddNumbersImpl{    
+public class AddNumbersImpl {
+
+    @WebMethod
+    public int addNumbersNoAction(int number1, int number2) throws AddNumbersException {
+        return doStuff(number1, number2);
+    }
+
+    int doStuff(int number1, int number2) throws AddNumbersException {
+        if (number1 < 0 || number2 < 0) {
+            throw new AddNumbersException("Negative numbers can't be added!",
+                                          "Numbers: " + number1 + ", " + number2);
+                }
+        return number1 + number2;
+    }
 }

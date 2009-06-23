@@ -45,16 +45,5 @@ import javax.xml.ws.soap.AddressingFeature;
  */
 @WebService
 @Addressing(responses = AddressingFeature.Responses.NON_ANONYMOUS, required = true)
-public class NonAnonymousResponsesEndpoint {
-    public int addNumbersNoAction(int number1, int number2) throws AddNumbersException {
-        return doStuff(number1, number2);
-    }
-
-    int doStuff(int number1, int number2) throws AddNumbersException {
-        if (number1 < 0 || number2 < 0) {
-            throw new AddNumbersException("Negative numbers can't be added!",
-                                          "Numbers: " + number1 + ", " + number2);
-                }
-        return number1 + number2;
-    }
+public class NonAnonymousResponsesEndpoint extends AddNumbersImpl{
 }
