@@ -40,6 +40,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.management.EndpointCreationAttributes;
+import com.sun.xml.ws.api.management.ManagedEndpointFactory;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -52,6 +54,7 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.policy.PolicyMap;
+import com.sun.xml.ws.util.ServiceFinder;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
@@ -65,6 +68,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -515,6 +519,15 @@ public abstract class WSEndpoint<T> {
             EndpointFactory.createEndpoint(
                 implType,processHandlerAnnotation, invoker,serviceName,portName,container,binding,primaryWsdl,metadata,resolver,isTransportSynchronous);
         endpoint.getManagedObjectManager().resumeJMXRegistration();
+
+        final Iterator<ManagedEndpointFactory> managementFactories = ServiceFinder.find(ManagedEndpointFactory.class).iterator();
+        if (managementFactories.hasNext()) {
+            final ManagedEndpointFactory managementFactory = managementFactories.next();
+            final EndpointCreationAttributes attributes = new EndpointCreationAttributes(
+                    processHandlerAnnotation, invoker, resolver, isTransportSynchronous);
+            return managementFactory.createEndpoint(endpoint, attributes);
+        }
+
         return endpoint;
     }
 
