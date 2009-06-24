@@ -49,8 +49,8 @@ import com.sun.xml.ws.api.addressing.AddressingVersion;
 public class TestMessages {
     public static final AddressingVersion ADDRESSING_VERSION = AddressingVersion.W3C;
     public static final WsaW3CSOAPMessages MESSAGES = new WsaW3CSOAPMessages(ADDRESSING_VERSION);
-    public static final long PROVIDER_MAX_TIMEOUT = 200L;
-    public static final long CLIENT_MAX_TIMEOUT = 400L;
+    public static final long PROVIDER_MAX_TIMEOUT = 20L;
+    public static final long CLIENT_MAX_TIMEOUT = 40L;
 
     private static String ANONYMOUS_REPLY_TO_HEADER = "<ReplyTo xmlns=\"" + W3CAddressingConstants.WSA_NAMESPACE_NAME + "\">" +
             "<Address>" + W3CAddressingConstants.WSA_ANONYMOUS_ADDRESS + "</Address>" +
@@ -71,11 +71,11 @@ public class TestMessages {
             ANONYMOUS_FAULT_TO_HEADER +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String ANONYMOUS_FAULT_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -87,11 +87,11 @@ public class TestMessages {
             ANONYMOUS_FAULT_TO_HEADER +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String NON_ANONYMOUS_FAULT_TO_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -100,11 +100,11 @@ public class TestMessages {
             NON_ANONYMOUS_FAULT_TO_HEADER +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String NON_ANONYMOUS_FAULT_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -116,11 +116,27 @@ public class TestMessages {
             "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
+            "</S:Body></S:Envelope>";
+
+    static final String NON_ANONYMOUS_FAULT_TO_COMPLETE_FAULTY_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
+            "xmlns:wsa=\"" + W3CAddressingConstants.WSA_NAMESPACE_NAME + "\">\n" +
+            "<S:Header>\n" +
+            NON_ANONYMOUS_FAULT_TO_HEADER +
+            "<wsa:Action>%s</wsa:Action>" +
+            "<wsa:To>%s</wsa:To>" +
+            "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
+            "</S:Header>\n" +
+            "<S:Body>\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
+            "  <number1>10</number1>\n" +
+            "  <number2>-1</number2>\n" +
+            "  <testname>%s</testname>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String NON_ANONYMOUS_REPLY_TO_ANONYMOUS_FAULT_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -133,11 +149,11 @@ public class TestMessages {
             "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testcase>%s</testcase>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String ANONYMOUS_REPLY_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -149,11 +165,11 @@ public class TestMessages {
             "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
     static final String NON_ANONYMOUS_REPLY_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
@@ -165,11 +181,11 @@ public class TestMessages {
             "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
             "</S:Header>\n" +
             "<S:Body>\n" +
-            "<addNumbers xmlns=\"http://server.responses.wsa.fromjava/\">\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
             "  <number1>10</number1>\n" +
             "  <number2>10</number2>\n" +
             "  <testname>%s</testname>\n" +
-            "</addNumbers>\n" +
+            "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
 }

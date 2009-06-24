@@ -37,6 +37,7 @@
 package fromjava.wsa.responses.server;
 
 import javax.jws.WebMethod;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Rama Pulavarthi
@@ -44,7 +45,7 @@ import javax.jws.WebMethod;
 public class AddNumbersImpl {
 
     @WebMethod
-    public int addNumbers(int number1, int number2) throws AddNumbersException {
+    public int addNumbers(@XmlElement(name="number1")int number1, @XmlElement(name="number2")int number2) throws AddNumbersException {
         return doStuff(number1, number2);
     }
 
