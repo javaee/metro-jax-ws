@@ -139,6 +139,23 @@ public class TestMessages {
             "</ns1:addNumbers>\n" +
             "</S:Body></S:Envelope>";
 
+    static final String NON_ANONYMOUS_REPLY_TO_NON_ANONYMOUS_FAULT_TO_COMPLETE_FAULTY_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
+            "xmlns:wsa=\"" + W3CAddressingConstants.WSA_NAMESPACE_NAME + "\">\n" +
+            "<S:Header>\n" +
+            NON_ANONYMOUS_REPLY_TO_HEADER +
+            NON_ANONYMOUS_FAULT_TO_HEADER +
+            "<wsa:Action>%s</wsa:Action>" +
+            "<wsa:To>%s</wsa:To>" +
+            "<wsa:MessageID>uuid:" + UUID.randomUUID() + "</wsa:MessageID>" +
+            "</S:Header>\n" +
+            "<S:Body>\n" +
+            "<ns1:addNumbers xmlns:ns1=\"http://server.responses.wsa.fromjava/\">\n" +
+            "  <number1>10</number1>\n" +
+            "  <number2>-1</number2>\n" +
+            "  <testcase>%s</testcase>\n" +
+            "</ns1:addNumbers>\n" +
+            "</S:Body></S:Envelope>";
+
     static final String NON_ANONYMOUS_REPLY_TO_ANONYMOUS_FAULT_TO_COMPLETE_MESSAGE = "<S:Envelope xmlns:S=\"%s\" " +
             "xmlns:wsa=\"" + W3CAddressingConstants.WSA_NAMESPACE_NAME + "\">\n" +
             "<S:Header>\n" +
