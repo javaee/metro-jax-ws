@@ -1,0 +1,24 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsa="http://www.w3.org/2005/08/addressing"
+    xmlns:itypes="urn:test:importedtypes"
+    targetNamespace="urn:test:importedtypes">
+
+    <xsd:import namespace="http://www.w3.org/2005/08/addressing" schemaLocation="http://www.w3.org/2006/03/addressing/ws-addr.xsd"/>
+
+    <xsd:complexType name="ImportedResType">
+        <xsd:sequence>
+            <xsd:element name="importedepr" type="wsa:EndpointReferenceType"/>
+            <xsd:element name="importedsubepr" type="itypes:ImportedSubType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ImportedSubType">
+         <xsd:complexContent>
+              <xsd:extension base="wsa:EndpointReferenceType">
+                   <xsd:attribute name="updateType" type="xsd:anyURI" use="optional"/>
+              </xsd:extension>
+         </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>

@@ -5,21 +5,30 @@
         xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:types="urn:test:types"
+        xmlns:itypes="urn:test:importedtypes"
         xmlns:wsa="http://www.w3.org/2005/08/addressing"
         xmlns:tns="urn:test">
 
     <types>
-
         <xsd:schema
                 targetNamespace="urn:test:types"
                 attributeFormDefault="unqualified"
                 elementFormDefault="unqualified">
 
             <xsd:import namespace="http://www.w3.org/2005/08/addressing" schemaLocation="http://www.w3.org/2006/03/addressing/ws-addr.xsd"/>
+            <xsd:import namespace="urn:test:importedtypes" schemaLocation="hello.xsd"/>
 
-            <xsd:element name="Hello" type="types:EndpointUpdateType"/>
+            <xsd:element name="hello" type="types:ReqType" />
+            <xsd:element name="helloResponse" type="itypes:ImportedResType" />
 
-            <xsd:complexType name="EndpointUpdateType">
+            <xsd:complexType name="ReqType">
+                <xsd:sequence>
+                    <xsd:element name="epr" type="wsa:EndpointReferenceType"/>
+                    <xsd:element name="subepr" type="types:SubType"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="SubType">
                  <xsd:complexContent>
                       <xsd:extension base="wsa:EndpointReferenceType">
                            <xsd:attribute name="updateType" type="xsd:anyURI" use="optional"/>
@@ -27,23 +36,15 @@
                  </xsd:complexContent>
             </xsd:complexType>
 
-            <xsd:element name="HelloResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="argument" type="xsd:string"/>
-                        <xsd:element name="extra" type="xsd:string"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
         </xsd:schema>
     </types>
 
     <message name="HelloRequest">
-        <part name="parameters" element="types:Hello"/>
+        <part name="parameters" element="types:hello"/>
     </message>
 
     <message name="HelloResponse">
-        <part name="parameters" element="types:HelloResponse"/>
+        <part name="parameters" element="types:helloResponse"/>
     </message>
 
     <portType name="Hello">

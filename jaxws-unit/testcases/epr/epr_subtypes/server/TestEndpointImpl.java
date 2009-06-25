@@ -36,7 +36,9 @@
 package epr.epr_subtypes.server;
 
 import javax.jws.WebService;
+import javax.jws.WebParam;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.xml.ws.Holder;
 
 
 /**
@@ -47,8 +49,11 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 @WebService(endpointInterface = "epr.epr_subtypes.server.Hello")
 public class TestEndpointImpl implements Hello {
 
-    public HelloResponse hello(W3CEndpointReference epr) {
-        return new HelloResponse();
+    public void hello(W3CEndpointReference epr,
+                      W3CEndpointReference subepr,
+                      Holder<W3CEndpointReference> importedepr,
+                      Holder<ImportedSubType> importedsubepr) {
+
     }
 
 }
