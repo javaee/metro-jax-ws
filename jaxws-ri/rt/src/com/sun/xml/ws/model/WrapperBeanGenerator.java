@@ -317,12 +317,13 @@ public class WrapperBeanGenerator {
             }
         }
         if (t instanceof GenericArrayType) {
-            // TODO
+            return Type.getType(FieldSignature.vms(t));
         }
 
         if (t instanceof WildcardType) {
-            // TODO
+            return Type.getType(FieldSignature.vms(t));
         }
+
         if (t instanceof TypeVariable) {
             TypeVariable tv = (TypeVariable)t;
             if (tv.getBounds()[0] instanceof Class) {
@@ -330,8 +331,6 @@ public class WrapperBeanGenerator {
             }
         }
 
-        // covered all the cases
-        assert false;
         throw new IllegalArgumentException("Not creating ASM Type for type = "+t);
     }
 

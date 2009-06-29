@@ -41,6 +41,8 @@ import junit.framework.TestCase;
 import java.util.List;
 import java.util.HashMap;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 /**
  * VM signature test for wrapper bean fields
@@ -50,10 +52,11 @@ import java.lang.reflect.Field;
 public class FieldSignatureTest<K,V> extends TestCase {
 
     public void test() throws Exception {
+        assertEquals("B", FieldSignature.vms(byte.class));
+        assertEquals("[B", FieldSignature.vms(byte[].class));
         assertEquals("Ljava/lang/String;", FieldSignature.vms(String.class));
-        assertEquals("Lbyte;", FieldSignature.vms(byte.class));
-        assertEquals("L[Ljava/lang/Object;;", FieldSignature.vms((new Object[3]).getClass()));
-        assertEquals("L[[[[[[[I;", FieldSignature.vms((new int[3][4][5][6][7][8][9]).getClass()));
+        assertEquals("[Ljava/lang/Object;", FieldSignature.vms((new Object[3]).getClass()));
+        assertEquals("[[[[[[[I", FieldSignature.vms((new int[3][4][5][6][7][8][9]).getClass()));
     }
 
     public List<List<String>[]> type1;
@@ -78,6 +81,22 @@ public class FieldSignatureTest<K,V> extends TestCase {
     public void test4() throws Exception {
         Field f = FieldSignatureTest.class.getField("type4");
         assertEquals("Ljava/util/List<+Ljava/lang/Number;>;", FieldSignature.vms(f.getGenericType()));
+    }
+
+    public byte[] type5;
+    public void test5() throws Exception {
+        Field f = FieldSignatureTest.class.getField("type5");
+        assertEquals("[B", FieldSignature.vms(f.getGenericType()));
+    }
+
+    // Reflection API gives "GenericArrayType" for byte[] in this method
+    // see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5041784
+    public void mytest(byte[] a, List<String> list) {
+    }
+    public void test6() throws Exception {
+        Method[] ms = FieldSignatureTest.class.getMethods();
+        Method m = FieldSignatureTest.class.getMethod("mytest", byte[].class, List.class);
+        assertEquals("[B", FieldSignature.vms(m.getGenericParameterTypes()[0]));
     }
 
 // While creating wrapper bean fields, it doesn't create with TypeVariables
