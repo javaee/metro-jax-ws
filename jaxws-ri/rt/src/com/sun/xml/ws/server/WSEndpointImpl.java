@@ -56,19 +56,18 @@ import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
 import com.sun.xml.ws.api.pipe.TubelineAssembler;
 import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
-import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.EndpointAwareCodec;
-import com.sun.xml.ws.api.server.EndpointComponent;
-import com.sun.xml.ws.api.server.TransportBackChannel;
-import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.api.server.WebServiceContextDelegate;
+import com.sun.xml.ws.api.server.*;
 import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
+import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
+import com.sun.xml.ws.addressing.EPRSDDocumentFilter;
+import com.sun.xml.ws.addressing.WSEPRExtension;
+import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.w3c.dom.Element;
@@ -76,12 +75,11 @@ import org.w3c.dom.Element;
 import javax.annotation.PreDestroy;
 import javax.xml.namespace.QName;
 import javax.xml.ws.EndpointReference;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
+import javax.xml.stream.XMLStreamException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,6 +119,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @Nullable ManagedObjectManager managedObjectManager;
     private final @NotNull ServerTubeAssemblerContext context;
 
+    private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
     /**
      * Set to true once we start shutting down this endpoint.
      * Used to avoid running the clean up processing twice.
@@ -178,8 +177,44 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         terminalTube.setEndpoint(this);
         engine = new Engine(toString());
         wsdlProperties = (port==null) ? null : new WSDLProperties(port);
+
+        Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
+        try {
+            WSEndpointReference wsdlEpr = ((WSDLPortImpl) port).getEPR();
+            if (wsdlEpr != null) {
+                for (WSEndpointReference.EPRExtension extnEl : wsdlEpr.getEPRExtensions()) {
+                    eprExtensions.put(extnEl.getQName(), extnEl);
+                }
+            }
+
+            for (EndpointComponent ec : getComponentRegistry()) {
+                EndpointReferenceExtensionContributor spi = ec.getSPI(EndpointReferenceExtensionContributor.class);
+                if (spi != null) {
+                    WSEndpointReference.EPRExtension wsdlEPRExtn = eprExtensions.remove(spi.getQName());
+                    WSEndpointReference.EPRExtension endpointEprExtn = spi.getEPRExtension(wsdlEPRExtn);
+                    if (endpointEprExtn != null) {
+                        eprExtensions.put(endpointEprExtn.getQName(), endpointEprExtn);
+                    }
+                }
+            }
+
+
+            for (WSEndpointReference.EPRExtension extn : eprExtensions.values()) {
+                endpointReferenceExtensions.put(extn.getQName(), new WSEPRExtension(
+                        XMLStreamBuffer.createNewBufferFromXMLStreamReader(extn.readAsXMLStreamReader()),extn.getQName()));
+            }
+        } catch (XMLStreamException ex) {
+            throw new WebServiceException(ex);
+        }
+        if(!eprExtensions.isEmpty()) {
+            serviceDef.addFilter(new EPRSDDocumentFilter(this));
+        }
+
     }
 
+    public Collection<WSEndpointReference.EPRExtension> getEndpointReferenceExtensions() {
+        return endpointReferenceExtensions.values();
+    }
     /**
      * Nullable when there is no associated WSDL Model
      * @return
@@ -338,8 +373,9 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         }
 
         AddressingVersion av = AddressingVersion.fromSpecClass(clazz);
-        return new WSEndpointReference(av, address, serviceName, portName, portType,
-                metadata, wsdlAddress, referenceParameters).toSpec(clazz);
+        return new WSEndpointReference(
+                    av, address, serviceName, portName, portType, metadata, wsdlAddress, referenceParameters,endpointReferenceExtensions.values(), null).toSpec(clazz);
+
     }
 
     public @NotNull QName getPortName() {
@@ -399,7 +435,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             // services in the container).
             managedObjectManager.createRoot(
                 this,
-                serviceName.toString() + portName.toString() + "-" 
+                serviceName.toString() + portName.toString() + "-"
                 + String.valueOf(unique++)); // TBD: only append unique
                                              // if clash. Waiting for GMBAL RFE
             return managedObjectManager;

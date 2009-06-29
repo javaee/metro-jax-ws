@@ -47,6 +47,7 @@ import com.sun.xml.stream.buffer.stax.StreamReaderBufferProcessor;
 import com.sun.xml.stream.buffer.stax.StreamWriterBufferCreator;
 import com.sun.xml.ws.addressing.EndpointReferenceUtil;
 import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
+import com.sun.xml.ws.addressing.WSEPRExtension;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.addressing.v200408.MemberSubmissionAddressingConstants;
 import com.sun.xml.ws.api.message.Header;
@@ -61,6 +62,7 @@ import com.sun.xml.ws.streaming.XMLStreamReaderUtil;
 import com.sun.xml.ws.util.DOMUtil;
 import com.sun.xml.ws.util.xml.XMLStreamWriterFilter;
 import com.sun.xml.ws.util.xml.XmlUtil;
+import com.sun.xml.ws.util.xml.XMLStreamReaderToXMLStreamWriter;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.Element;
 import org.xml.sax.*;
@@ -244,6 +246,26 @@ public final class WSEndpointReference  implements WSDLExtension {
      * <p>
      * This version takes various information about metadata, and creates an EPR that has
      * the necessary embedded WSDL.
+     */
+    public WSEndpointReference(@NotNull AddressingVersion version,
+                               @NotNull String address,
+                               @Nullable QName service,
+                               @Nullable QName port,
+                               @Nullable QName portType,
+                               @Nullable List<Element> metadata,
+                               @Nullable String wsdlAddress,
+                               @Nullable List<Element> referenceParameters,
+                               @Nullable Collection<EPRExtension> extns,@Nullable Map<QName, String> attributes) {
+       this(createBufferFromData(version, address, referenceParameters, service, port, portType, metadata, wsdlAddress, null, extns, attributes),
+            version );
+    }
+
+    /**
+     * Creates an EPR from individual components.
+     *
+     * <p>
+     * This version takes various information about metadata, and creates an EPR that has
+     * the necessary embedded WSDL.
      * @since JAX-WS 2.2
      */
     public WSEndpointReference(@NotNull AddressingVersion version,
@@ -262,7 +284,7 @@ public final class WSEndpointReference  implements WSDLExtension {
     }
 
     private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
-                                                        List<Element> metadata, String wsdlAddress, String wsdlTargetNamespace, @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
+                                                            List<Element> metadata, String wsdlAddress, String wsdlTargetNamespace, @Nullable List<Element> elements, @Nullable Map<QName, String> attributes) {
 
         StreamWriterBufferCreator writer = new StreamWriterBufferCreator();
 
@@ -271,6 +293,60 @@ public final class WSEndpointReference  implements WSDLExtension {
             writer.writeStartElement(version.getPrefix(),"EndpointReference", version.nsUri);
             writer.writeNamespace(version.getPrefix(),version.nsUri);
 
+                writePartialEPRInfoset(writer, version, address, referenceParameters, service, port, portType,
+                        metadata,wsdlAddress, wsdlTargetNamespace, attributes);
+
+                //write extensibility elements in the EPR element
+                if (elements != null) {
+                    for (Element e : elements)
+                        DOMUtil.serializeNode(e, writer);
+                }
+
+                writer.writeEndElement();
+                writer.writeEndDocument();
+                writer.flush();
+
+                return writer.getXMLStreamBuffer();
+            } catch (XMLStreamException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        private static XMLStreamBuffer createBufferFromData(AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
+                                                            List<Element> metadata, String wsdlAddress, String wsdlTargetNamespace, @Nullable Collection<EPRExtension> extns, @Nullable Map<QName, String> attributes) {
+
+            StreamWriterBufferCreator writer = new StreamWriterBufferCreator();
+
+            try {
+                writer.writeStartDocument();
+                writer.writeStartElement(version.getPrefix(),"EndpointReference", version.nsUri);
+                writer.writeNamespace(version.getPrefix(),version.nsUri);
+
+                writePartialEPRInfoset(writer, version, address, referenceParameters, service, port, portType,
+                        metadata,wsdlAddress, wsdlTargetNamespace, attributes);
+
+                //write extensibility elements in the EPR element
+                if (extns != null) {
+                    for (EPRExtension e : extns) {
+                        XMLStreamReaderToXMLStreamWriter c = new XMLStreamReaderToXMLStreamWriter();
+                        XMLStreamReader r = e.readAsXMLStreamReader();
+                        c.bridge(r, writer);
+                        XMLStreamReaderFactory.recycle(r);
+                    }
+                }
+
+                writer.writeEndElement();
+                writer.writeEndDocument();
+                writer.flush();
+
+                return writer.getXMLStreamBuffer();
+            } catch (XMLStreamException e) {
+                throw new WebServiceException(e);
+            }
+        }
+
+        private static void writePartialEPRInfoset(StreamWriterBufferCreator writer, AddressingVersion version, String address, List<Element> referenceParameters, QName service, QName port, QName portType,
+                                                   List<Element> metadata, String wsdlAddress, String wsdlTargetNamespace, @Nullable Map<QName, String> attributes) throws XMLStreamException {
             //add extensibile attributes on the EPR element
             if (attributes != null) {
                 for (Map.Entry<QName, String> entry : attributes.entrySet()) {
@@ -279,59 +355,45 @@ public final class WSEndpointReference  implements WSDLExtension {
                 }
             }
 
-            writer.writeStartElement(version.getPrefix(),version.eprType.address, version.nsUri);
+            writer.writeStartElement(version.getPrefix(), version.eprType.address, version.nsUri);
             writer.writeCharacters(address);
             writer.writeEndElement();
-            if(referenceParameters != null) {
-                writer.writeStartElement(version.getPrefix(),version.eprType.referenceParameters, version.nsUri);
+            if (referenceParameters != null) {
+                writer.writeStartElement(version.getPrefix(), version.eprType.referenceParameters, version.nsUri);
                 for (Element e : referenceParameters)
                     DOMUtil.serializeNode(e, writer);
                 writer.writeEndElement();
             }
 
-            switch(version) {
-            case W3C:
-                writeW3CMetaData(writer, service, port, portType, metadata, wsdlAddress, wsdlTargetNamespace);
-                break;
+            switch (version) {
+                case W3C:
+                    writeW3CMetaData(writer, service, port, portType, metadata, wsdlAddress, wsdlTargetNamespace);
+                    break;
 
-            case MEMBER:
-                writeMSMetaData(writer, service, port, portType, metadata);
-                if (wsdlAddress != null) {
-                    //Inline the wsdl as extensibility element
-                    //Write mex:Metadata wrapper
-                    writer.writeStartElement(MemberSubmissionAddressingConstants.MEX_METADATA.getPrefix(),
-                            MemberSubmissionAddressingConstants.MEX_METADATA.getLocalPart(),
-                            MemberSubmissionAddressingConstants.MEX_METADATA.getNamespaceURI());
-                    writer.writeStartElement(MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getPrefix(),
-                            MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getLocalPart(),
-                            MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getNamespaceURI());
-                    writer.writeAttribute(MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_ATTRIBUTE,
-                            MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_VALUE);
+                case MEMBER:
+                    writeMSMetaData(writer, service, port, portType, metadata);
+                    if (wsdlAddress != null) {
+                        //Inline the wsdl as extensibility element
+                        //Write mex:Metadata wrapper
+                        writer.writeStartElement(MemberSubmissionAddressingConstants.MEX_METADATA.getPrefix(),
+                                MemberSubmissionAddressingConstants.MEX_METADATA.getLocalPart(),
+                                MemberSubmissionAddressingConstants.MEX_METADATA.getNamespaceURI());
+                        writer.writeStartElement(MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getPrefix(),
+                                MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getLocalPart(),
+                                MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getNamespaceURI());
+                        writer.writeAttribute(MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_ATTRIBUTE,
+                                MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_VALUE);
 
-                    writeWsdl(writer, service, wsdlAddress);
+                        writeWsdl(writer, service, wsdlAddress);
 
-                    writer.writeEndElement();
-                    writer.writeEndElement();
-                }
+                        writer.writeEndElement();
+                        writer.writeEndElement();
+                    }
 
-                break;
+                    break;
             }
-
-            //write extensibility elements in the EPR element
-            if (elements != null) {
-                for (Element e : elements)
-                    DOMUtil.serializeNode(e, writer);
-            }
-            
-            writer.writeEndElement();
-            writer.writeEndDocument();
-            writer.flush();
-
-            return writer.getXMLStreamBuffer();
-        } catch (XMLStreamException e) {
-            throw new WebServiceException(e);
         }
-    }
+
 
     private static void writeW3CMetaData(StreamWriterBufferCreator writer,
                                          QName service,
@@ -396,7 +458,7 @@ public final class WSEndpointReference  implements WSDLExtension {
     }
 
     /**
-     * @param writer the writer should be at the start of element. 
+     * @param writer the writer should be at the start of element.
      * @param service Namespace URI of servcie is used as targetNamespace of wsdl if wsdlTargetNamespace is not null
      * @param wsdlAddress  wsdl location
      * @param wsdlTargetNamespace  targetnamespace of wsdl to be put in wsdliLocation
@@ -868,7 +930,7 @@ public final class WSEndpointReference  implements WSDLExtension {
      * @return
      */
     public QName getName() {
-        return rootElement;  
+        return rootElement;
     }
 
     /**
@@ -902,34 +964,37 @@ public final class WSEndpointReference  implements WSDLExtension {
     private static final OutboundReferenceParameterHeader[] EMPTY_ARRAY = new OutboundReferenceParameterHeader[0];
 
     private Map<QName, EPRExtension> rootEprExtensions;
-    private static final Map<QName, EPRExtension> EMPTY_EXTENSIONS_MAP = new HashMap<QName, EPRExtension>();
 
     /**
      * Represents an extensibility element inside an EndpointReference
      */
-    public class EPRExtension {
-        XMLStreamBuffer xsb;
+    public static abstract class EPRExtension {
+        public abstract XMLStreamReader readAsXMLStreamReader() throws XMLStreamException;
 
-        private EPRExtension(XMLStreamBuffer xsb) {
-            this.xsb = xsb;
-
-        }
-
-        public XMLStreamReader readAsXMLStreamReader() throws XMLStreamException {
-            return xsb.readAsXMLStreamReader();
-        }
+        public abstract QName getQName();
     }
 
     /**
      * Returns the first extensibility element inside EPR root element with input QName.
      */
-    public @NotNull EPRExtension getEPRExtension(final QName extnQName) throws XMLStreamException {
+    public @Nullable
+    EPRExtension getEPRExtension(final QName extnQName) throws XMLStreamException {
         if (rootEprExtensions == null)
             parseEPRExtensions();
         return rootEprExtensions.get(extnQName);
     }
 
+    public @NotNull Collection<EPRExtension> getEPRExtensions() throws XMLStreamException {
+        if (rootEprExtensions == null)
+            parseEPRExtensions();
+        return rootEprExtensions.values();
+    }
+
     private void parseEPRExtensions() throws XMLStreamException {
+
+        rootEprExtensions = new HashMap<QName, EPRExtension>();
+
+
         StreamReaderBufferProcessor xsr = infoset.readAsXMLStreamReader();
 
         // parser should be either at the start element or the start document
@@ -943,7 +1008,6 @@ public final class WSEndpointReference  implements WSDLExtension {
                     version.nsUri, xsr.getNamespaceURI()));
 
         // since often EPR doesn't have extensions, create array lazily
-        Map<QName, EPRExtension> marks = null;
         XMLStreamBuffer mark;
         String localName;
         String ns;
@@ -955,18 +1019,12 @@ public final class WSEndpointReference  implements WSDLExtension {
                 //Not an extension -  SKIP
                 XMLStreamReaderUtil.skipElement(xsr);
             } else {
-                if (marks == null)
-                    marks = new HashMap<QName, EPRExtension>();
-                marks.put(new QName(ns, localName), new EPRExtension(mark));
+                QName qn = new QName(ns, localName);
+                rootEprExtensions.put(qn, new WSEPRExtension(mark,qn));
                 XMLStreamReaderUtil.skipElement(xsr);
             }
         }
         // hit to </EndpointReference> by now
-        if (marks == null) {
-            this.rootEprExtensions = EMPTY_EXTENSIONS_MAP;
-        } else {
-            this.rootEprExtensions = marks;
-        }
     }
 
     /**
@@ -990,7 +1048,7 @@ public final class WSEndpointReference  implements WSDLExtension {
         private @Nullable QName portTypeName; //interfaceName
         private @Nullable Source wsdlSource;
         private @Nullable String wsdliLocation;
-        
+
         public @Nullable QName getServiceName(){
             return serviceName;
         }
@@ -1006,7 +1064,7 @@ public final class WSEndpointReference  implements WSDLExtension {
         public @Nullable String getWsdliLocation(){
             return wsdliLocation;
         }
-       
+
         private Metadata() {
             try {
                 parseMetaData();
@@ -1070,7 +1128,7 @@ public final class WSEndpointReference  implements WSDLExtension {
                 if(wsdliLocation != null) {
                     String wsdlLocation = wsdliLocation.trim();
                     wsdlLocation = wsdlLocation.substring(wsdliLocation.lastIndexOf(" "));
-                    wsdlSource = new StreamSource(wsdlLocation);    
+                    wsdlSource = new StreamSource(wsdlLocation);
                 }
             } else if (version == AddressingVersion.MEMBER) {
                 do {
