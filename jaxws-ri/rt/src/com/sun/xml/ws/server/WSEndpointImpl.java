@@ -180,10 +180,13 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
         Map<QName, WSEndpointReference.EPRExtension> eprExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
         try {
-            WSEndpointReference wsdlEpr = ((WSDLPortImpl) port).getEPR();
-            if (wsdlEpr != null) {
-                for (WSEndpointReference.EPRExtension extnEl : wsdlEpr.getEPRExtensions()) {
-                    eprExtensions.put(extnEl.getQName(), extnEl);
+            if (port != null) {
+                //gather EPR extrensions from WSDL Model
+                WSEndpointReference wsdlEpr = ((WSDLPortImpl) port).getEPR();
+                if (wsdlEpr != null) {
+                    for (WSEndpointReference.EPRExtension extnEl : wsdlEpr.getEPRExtensions()) {
+                        eprExtensions.put(extnEl.getQName(), extnEl);
+                    }
                 }
             }
 
