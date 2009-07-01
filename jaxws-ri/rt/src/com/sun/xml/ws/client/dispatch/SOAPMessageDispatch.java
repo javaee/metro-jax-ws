@@ -39,8 +39,10 @@ package com.sun.xml.ws.client.dispatch;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.pipe.Tube;
+import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.binding.BindingImpl;
 import com.sun.xml.ws.client.WSServiceDelegate;
+import com.sun.xml.ws.client.PortInfo;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
 import com.sun.xml.ws.resources.DispatchMessages;
 import com.sun.xml.ws.transport.Headers;
@@ -66,8 +68,13 @@ import java.util.Iterator;
  * @version 1.0
  */
 public class SOAPMessageDispatch extends com.sun.xml.ws.client.dispatch.DispatchImpl<SOAPMessage> {
+    @Deprecated
     public SOAPMessageDispatch(QName port, Service.Mode mode, WSServiceDelegate owner, Tube pipe, BindingImpl binding, WSEndpointReference epr) {
         super(port, mode, owner, pipe, binding, epr);
+    }
+
+    public SOAPMessageDispatch(WSPortInfo portInfo, Service.Mode mode, BindingImpl binding, WSEndpointReference epr) {
+        super(portInfo, mode, binding, epr);
     }
 
     Packet createPacket(SOAPMessage arg) {

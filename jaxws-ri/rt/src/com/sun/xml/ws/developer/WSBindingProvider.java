@@ -38,7 +38,8 @@ package com.sun.xml.ws.developer;
 
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Headers;
-
+import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.client.WSPortInfo;
 import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -128,4 +129,22 @@ public interface WSBindingProvider extends BindingProvider, Closeable {
      * @param address Address of the service
      */
     void setAddress(String address);
+
+    /**
+     * Similar to {link BindingProvider#getEndpointReference(}, but returns WSEndpointReference that has more
+     * convenience methods
+     *
+     * @return WSEndpointReference of the target servcie endpoint
+     *
+     * @since JAX-WS 2.2
+     */
+    WSEndpointReference getWSEndpointReference();
+
+    /**
+     *
+     * @return WSPortInfo object that captures the port information for which the stub is created.
+     * @since JAX-WS 2.2 
+     */
+    WSPortInfo getPortInfo();
+    
 }

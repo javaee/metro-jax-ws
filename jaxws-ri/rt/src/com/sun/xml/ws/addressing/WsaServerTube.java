@@ -38,15 +38,14 @@ package com.sun.xml.ws.addressing;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
-import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_ANONYMOUS_ADDRESS_SUPPORTED;
-import static com.sun.xml.ws.addressing.W3CAddressingConstants.ONLY_NON_ANONYMOUS_ADDRESS_SUPPORTED;
 import com.sun.xml.ws.addressing.model.ActionNotSupportedException;
 import com.sun.xml.ws.addressing.model.InvalidAddressingHeaderException;
 import com.sun.xml.ws.api.EndpointAddress;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.WSService;
 import com.sun.xml.ws.api.client.WSPortInfo;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
+
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.api.message.Message;
@@ -57,6 +56,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.*;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.developer.JAXWSProperties;
+import com.sun.xml.ws.developer.WSBindingProvider;
 import com.sun.xml.ws.message.FaultDetailHeader;
 import com.sun.xml.ws.resources.AddressingMessages;
 import com.sun.xml.ws.binding.BindingImpl;
@@ -240,7 +240,7 @@ public class WsaServerTube extends WsaTube {
         // we need to assemble a pipeline to talk to this endpoint.
         // TODO: what to pass as WSService?
         Tube transport = TransportTubeFactory.create(Thread.currentThread().getContextClassLoader(),
-            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSPortInfo) null, binding,endpoint.getContainer(),((BindingImpl)binding).createCodec(),null));
+            new ClientTubeAssemblerContext(adrs, wsdlPort, (WSService) null, binding,endpoint.getContainer(),((BindingImpl)binding).createCodec(),null));
 
         packet.endpointAddress = adrs;
         String action = packet.getMessage().isFault() ?
