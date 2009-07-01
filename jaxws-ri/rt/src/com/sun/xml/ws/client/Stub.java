@@ -60,6 +60,8 @@ import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
+import com.sun.xml.ws.addressing.WSEPRExtension;
+import com.sun.xml.stream.buffer.XMLStreamBuffer;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -68,10 +70,8 @@ import javax.xml.ws.WebServiceException;
 import javax.xml.ws.RespectBindingFeature;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import javax.xml.stream.XMLStreamException;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
@@ -137,7 +137,6 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
     @Nullable private volatile Header[] userOutboundHeaders;
 
     private final @Nullable WSDLProperties wsdlProperties;
-
     protected OperationDispatcher operationDispatcher = null;
 
     /**
@@ -428,13 +427,29 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         String eprAddress = requestContext.getEndpointAddress().toString();
         QName portTypeName = null;
         String wsdlAddress = null;
+        List<WSEndpointReference.EPRExtension> wsdlEPRExtensions = new ArrayList<WSEndpointReference.EPRExtension>();
         if(wsdlPort!=null) {
             portTypeName = wsdlPort.getBinding().getPortTypeName();
             wsdlAddress = eprAddress +"?wsdl";
+
+            //gather EPRExtensions specified in WSDL.
+            try {
+                WSEndpointReference wsdlEpr = ((WSDLPortImpl) wsdlPort).getEPR();
+                if (wsdlEpr != null) {
+                    for (WSEndpointReference.EPRExtension extnEl : wsdlEpr.getEPRExtensions()) {
+                        wsdlEPRExtensions.add(new WSEPRExtension(
+                                XMLStreamBuffer.createNewBufferFromXMLStreamReader(extnEl.readAsXMLStreamReader()), extnEl.getQName()));
+                    }
+                }
+
+            } catch (XMLStreamException ex) {
+                throw new WebServiceException(ex);
+            }
         }
         AddressingVersion av = AddressingVersion.W3C;
         this.endpointReference =  new WSEndpointReference(
-                    av, eprAddress, getServiceName(), getPortName(), portTypeName, null, wsdlAddress, null);
+                    av, eprAddress, getServiceName(), getPortName(), portTypeName, null, wsdlAddress, null,wsdlEPRExtensions,null);
+        
         return this.endpointReference;
     }
 
