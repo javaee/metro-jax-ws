@@ -261,7 +261,8 @@ public class EndpointReferenceUtil {
                             continue;
 
                         Element elm = (Element) node;
-                        if (elm.getNamespaceURI().equals(AddressingVersion.W3C.wsdlNsUri) &&
+                        if ((elm.getNamespaceURI().equals(AddressingVersion.W3C.wsdlNsUri) ||
+                                elm.getNamespaceURI().equals(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME)) &&
                                 elm.getLocalName().equals(AddressingVersion.W3C.eprType.serviceName)) {
                             msEpr.serviceName = new MemberSubmissionEndpointReference.ServiceNameType();
                             msEpr.serviceName.portName = elm.getAttribute(AddressingVersion.W3C.eprType.portName);
@@ -282,7 +283,8 @@ public class EndpointReferenceUtil {
                                 msEpr.serviceName.name = new QName(null, name);
                             }
                             msEpr.serviceName.attributes = getAttributes(elm);
-                        } else if (elm.getNamespaceURI().equals(AddressingVersion.W3C.wsdlNsUri) &&
+                        } else if ((elm.getNamespaceURI().equals(AddressingVersion.W3C.wsdlNsUri) ||
+                                elm.getNamespaceURI().equals(W3CAddressingMetadataConstants.WSAM_NAMESPACE_NAME)) &&
                                 elm.getLocalName().equals(AddressingVersion.W3C.eprType.portTypeName)) {
                             msEpr.portTypeName = new MemberSubmissionEndpointReference.AttributedQName();
 
