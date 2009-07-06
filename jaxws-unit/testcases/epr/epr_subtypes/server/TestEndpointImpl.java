@@ -51,8 +51,10 @@ public class TestEndpointImpl implements Hello {
 
     public void hello(W3CEndpointReference epr,
                       W3CEndpointReference subepr,
+                      W3CEndpointReference subsubepr,
                       Holder<W3CEndpointReference> importedepr,
-                      Holder<ImportedSubType> importedsubepr) {
+                      Holder<W3CEndpointReference> importedsubepr,
+                      Holder<W3CEndpointReference> importedsubsubepr) {
 
     }
 

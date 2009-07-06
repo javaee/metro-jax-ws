@@ -6,7 +6,7 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:types="urn:test:types"
         xmlns:itypes="urn:test:importedtypes"
-        xmlns:wsa="http://www.w3.org/2005/08/addressing"
+        xmlns:ws="http://www.w3.org/2005/08/addressing"
         xmlns:tns="urn:test">
 
     <types>
@@ -23,15 +23,24 @@
 
             <xsd:complexType name="ReqType">
                 <xsd:sequence>
-                    <xsd:element name="epr" type="wsa:EndpointReferenceType"/>
+                    <xsd:element name="epr" type="ws:EndpointReferenceType"/>
                     <xsd:element name="subepr" type="types:SubType"/>
+                    <xsd:element name="subsubepr" type="types:SubSubType"/>
                 </xsd:sequence>
             </xsd:complexType>
 
             <xsd:complexType name="SubType">
                  <xsd:complexContent>
-                      <xsd:extension base="wsa:EndpointReferenceType">
+                      <xsd:extension base="ws:EndpointReferenceType">
                            <xsd:attribute name="updateType" type="xsd:anyURI" use="optional"/>
+                      </xsd:extension>
+                 </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="SubSubType">
+                 <xsd:complexContent>
+                      <xsd:extension base="types:SubType">
+                           <xsd:attribute name="updateSubType" type="xsd:anyURI" use="optional"/>
                       </xsd:extension>
                  </xsd:complexContent>
             </xsd:complexType>
