@@ -58,6 +58,7 @@ import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.AddressingFeature;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * 'Traits' object that absorbs differences of WS-Addressing versions.
@@ -433,9 +434,11 @@ public enum AddressingVersion {
 
         // create stock anonymous EPR
         try {
-            this.anonymousEpr = new WSEndpointReference(new ByteArrayInputStream(anonymousEprString.getBytes()),this);
+            this.anonymousEpr = new WSEndpointReference(new ByteArrayInputStream(anonymousEprString.getBytes("UTF-8")),this);
         } catch (XMLStreamException e) {
             throw new Error(e); // bug in our code as EPR should parse.
+        } catch (UnsupportedEncodingException e) {
+            throw new Error(e);
         }
         this.eprType = eprType;
     }
