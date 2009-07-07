@@ -138,7 +138,7 @@ public class EprExtensionsContributorTest extends TestCase {
      * @throws Exception
      */
 
-    public void xtestEprInPublishedWSDL() throws Exception {
+    public void testEprInPublishedWSDL() throws Exception {
         HelloService service = new HelloService();
         Hello hello = service.getHelloPort();
         WSDLPort wsdlModel =((WSBindingProvider) hello).getPortInfo().getPort();
