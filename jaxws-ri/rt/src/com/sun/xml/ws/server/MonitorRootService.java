@@ -68,6 +68,7 @@ import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
 import com.sun.xml.ws.util.Pool.TubePool;
+import com.sun.xml.ws.util.RuntimeVersion;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
 import com.sun.xml.ws.addressing.EPRSDDocumentFilter;
@@ -302,6 +303,16 @@ public final class MonitorRootService {
     public String seiModelTargetNamespace() {
         return endpoint.getSEIModel() != null ? 
                endpoint.getSEIModel().getTargetNamespace() : null;
+    }
+
+    //
+    // Items from RuntimeVersion
+    //
+
+    @ManagedAttribute
+    @Description("JAX-WS runtime version")
+    public String jaxwsRuntimeVersion() {
+        return RuntimeVersion.VERSION.toString();
     }
 }
 
