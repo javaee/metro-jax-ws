@@ -36,8 +36,6 @@
 
 package com.sun.xml.ws.util;
 
-import com.sun.xml.ws.util.RuntimeVersionMBean;
-
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -47,7 +45,7 @@ import java.io.IOException;
  * @author Kohsuke Kawaguchi
  * @author Jitendra Kotamraju
  */
-public final class RuntimeVersion implements RuntimeVersionMBean {
+public final class RuntimeVersion {
 
     public static final Version VERSION;
 

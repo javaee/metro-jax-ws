@@ -91,16 +91,6 @@ import java.util.logging.Logger;
  * @author Jitendra Kotamraju
  */
 public final class WSEndpointImpl<T> extends WSEndpoint<T> {
-    // Register JAX-WS JMX MBeans
-    static {
-        try {
-            JMXAgent.getDefault();
-        } catch (Throwable t) {
-            // Ignore for now by logging the stack trace
-            t.printStackTrace();
-        }
-    }
-
     private final @NotNull QName serviceName;
     private final @NotNull QName portName;
     private final WSBinding binding;
