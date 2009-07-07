@@ -55,12 +55,9 @@ import com.sun.xml.ws.server.EndpointFactory;
 import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.util.ServiceFinder;
-import org.glassfish.gmbal.AMXMetadata;
-import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedObject;
-import org.glassfish.gmbal.ManagedObjectManager;
 import org.xml.sax.EntityResolver;
+
+import org.glassfish.gmbal.ManagedObjectManager;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
@@ -123,9 +120,6 @@ import java.util.concurrent.Executor;
  *
  * @author Kohsuke Kawaguchi
  */
-@ManagedObject
-@Description("Metro Web Service endpoint")
-@AMXMetadata(type="Service")
 public abstract class WSEndpoint<T> {
 
     /**
@@ -142,8 +136,6 @@ public abstract class WSEndpoint<T> {
      *
      * @return same as wsdl:service QName if WSDL exists or generated
      */
-    @ManagedAttribute
-    @Description("Service Name")
     public abstract @NotNull QName getServiceName();
 
     /**
@@ -151,8 +143,6 @@ public abstract class WSEndpoint<T> {
      *
      * @return same as wsdl:port QName if WSDL exists or generated
      */
-    @ManagedAttribute
-    @Description("Port Name")
     public abstract @NotNull QName getPortName();
 
     /**
@@ -170,8 +160,6 @@ public abstract class WSEndpoint<T> {
      * @return
      *      always same object.
      */
-    @ManagedAttribute
-    @Description("Binding")
     public abstract @NotNull WSBinding getBinding();
 
     /**
@@ -185,8 +173,6 @@ public abstract class WSEndpoint<T> {
      *      always same object. If no "real" {@link Container} instance
      *      is given, {@link Container#NONE} will be returned.
      */
-    @ManagedAttribute
-    @Description("Container")
     public abstract @NotNull Container getContainer();
 
     /**
@@ -200,8 +186,6 @@ public abstract class WSEndpoint<T> {
      * @return
      *      Possibly null, but always the same value.
      */
-    @ManagedAttribute
-    @Description("Port")
     public abstract @Nullable WSDLPort getPort();
 
     /**
@@ -376,8 +360,6 @@ public abstract class WSEndpoint<T> {
      * @return
      *      Possibly null, but always the same value.
      */
-    @ManagedAttribute
-    @Description("Service Definition")
     public abstract @Nullable ServiceDefinition getServiceDefinition();
 
     /**
@@ -410,8 +392,6 @@ public abstract class WSEndpoint<T> {
      *      maybe null. See above for more discussion.
      *      Always the same value.
      */
-    @ManagedAttribute
-    @Description("SEI Model")
     public abstract @Nullable SEIModel getSEIModel();
 
     /**
@@ -422,8 +402,6 @@ public abstract class WSEndpoint<T> {
      * @deprecated
      * Do not use this method as the PolicyMap API is not final yet and might change in next few months.
      */
-    @ManagedAttribute
-    @Description("Policy Map")
     public abstract PolicyMap getPolicyMap();
 
     /**
@@ -434,8 +412,6 @@ public abstract class WSEndpoint<T> {
     /**
      * This is only needed to expose info for monitoring.
      */
-    @ManagedAttribute
-    @Description("Dispatch chain assembler context")
     public abstract @NotNull ServerTubeAssemblerContext getAssemblerContext();
 
     /**

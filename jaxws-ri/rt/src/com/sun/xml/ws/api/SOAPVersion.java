@@ -50,11 +50,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
-
-
 /**
  * Version of SOAP (1.1 and 1.2).
  *
@@ -83,7 +78,6 @@ import org.glassfish.gmbal.ManagedData;
  *
  * @author Kohsuke Kawaguchi
  */
-@ManagedData
 public enum SOAPVersion {
     SOAP_11(SOAPBinding.SOAP11HTTP_BINDING,
             com.sun.xml.ws.encoding.soap.SOAPConstants.URI_ENVELOPE,
@@ -112,7 +106,6 @@ public enum SOAPVersion {
      * Either {@link SOAPBinding#SOAP11HTTP_BINDING} or
      *  {@link SOAPBinding#SOAP12HTTP_BINDING}
      */
-    @ManagedAttribute
     public final String httpBindingId;
 
     /**

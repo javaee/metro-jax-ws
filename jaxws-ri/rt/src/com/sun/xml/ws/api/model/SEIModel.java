@@ -49,9 +49,6 @@ import javax.xml.ws.Provider;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
-
 /**
  * Represents abstraction of SEI.
  *
@@ -72,7 +69,6 @@ import org.glassfish.gmbal.ManagedData;
  *
  * @author Vivek Pandey
  */
-@ManagedData
 public interface SEIModel {
     Pool.Marshaller getMarshallerPool();
 
@@ -153,7 +149,6 @@ public interface SEIModel {
      *
      * @return wsdl location uri - always non-null
      */
-    @ManagedAttribute
     @NotNull String getWSDLLocation();
 
     /**
@@ -161,13 +156,11 @@ public interface SEIModel {
      *
      * @return wsdl:service@name value - always non-null
      */
-    @ManagedAttribute
     @NotNull QName getServiceQName();
 
     /**
      * Gets the {@link WSDLPort} that represents the port that this SEI binds to.
      */
-    @ManagedAttribute
     @NotNull WSDLPort getPort();
 
     /**
@@ -175,7 +168,6 @@ public interface SEIModel {
      *
      * @return wsdl:service/wsdl:port@name value, always non-null
      */
-    @ManagedAttribute
     @NotNull QName getPortName();
 
     /**
@@ -183,18 +175,15 @@ public interface SEIModel {
      *
      * @return
      */
-    @ManagedAttribute
     @NotNull QName getPortTypeName();
 
     /**
      *  Gives the wsdl:binding@name value
      */
-    @ManagedAttribute
     @NotNull QName getBoundPortTypeName();
 
     /**
      * Namespace of the wsd;:port associated with the {@link SEIModel)
      */
-    @ManagedAttribute
     @NotNull String getTargetNamespace();
 }

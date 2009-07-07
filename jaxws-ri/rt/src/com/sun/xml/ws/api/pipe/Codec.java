@@ -49,9 +49,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
-
 /**
  * Encodes a {@link Message} (its XML infoset and attachments) to a sequence of bytes.
  *
@@ -80,7 +77,6 @@ import org.glassfish.gmbal.ManagedData;
  * @author Kohsuke Kawaguchi
  * @see EndpointAwareCodec
  */
-@ManagedData
 public interface Codec {
 
     /**
@@ -96,7 +92,6 @@ public interface Codec {
      *      null if the MIME type can't be determined by the <code>Codec</code>
      *      implementation. Otherwise the MIME type is returned.
      */
-    @ManagedAttribute
     public String getMimeType();
     
     /**

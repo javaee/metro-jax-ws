@@ -56,9 +56,6 @@ import com.sun.xml.ws.protocol.soap.ServerMUTube;
 import com.sun.xml.ws.server.ServerSchemaValidationTube;
 import com.sun.xml.ws.util.pipe.DumpTube;
 
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
-
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.PrintStream;
 
@@ -69,7 +66,6 @@ import java.io.PrintStream;
  *
  * @author Jitendra Kotamraju
  */
-@ManagedData
 public class ServerTubeAssemblerContext {
 
     private final SEIModel seiModel;
@@ -134,7 +130,6 @@ public class ServerTubeAssemblerContext {
      *
      * @return always non-null terminal pipe
      */
-    @ManagedAttribute
     public @NotNull Tube getTerminalTube() {
          return terminal;
     }
@@ -145,7 +140,6 @@ public class ServerTubeAssemblerContext {
      * hint, since often synchronous versions are cheaper to execute than asycnhronous
      * versions.
      */
-    @ManagedAttribute
     public boolean isSynchronous() {
         return isSynchronous;
     }
@@ -244,7 +238,6 @@ public class ServerTubeAssemblerContext {
      * @return codec to be used for web service requests
      * @see {@link Codecs}
      */
-    @ManagedAttribute
     public @NotNull Codec getCodec() {
         return codec;
     }

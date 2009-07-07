@@ -427,10 +427,11 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
             // the managed objects under it (since there can be multiple
             // services in the container).
             managedObjectManager.createRoot(
-                this,
+                new MonitorRootService(this),
                 serviceName.toString() + portName.toString() + "-"
                 + String.valueOf(unique++)); // TBD: only append unique
                                              // if clash. Waiting for GMBAL RFE
+
             return managedObjectManager;
         } catch (Throwable t) {
             // We let the service start up anyway, but it won't have monitoring.
