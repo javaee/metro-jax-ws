@@ -45,7 +45,7 @@ import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicySubject;
-import com.sun.xml.ws.policy.jaxws.spi.PolicyMapUpdateProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.sourcemodel.AssertionData;
 import com.sun.xml.ws.policy.subject.WsdlBindingSubject;
@@ -62,7 +62,7 @@ import javax.xml.ws.soap.MTOMFeature;
  * @author Jakub Podlesak (japod at sun.com)
  * @author Fabian Ritzmann
  */
-public class MtomMapUpdateProvider implements PolicyMapUpdateProvider{
+public class MtomMapUpdateProvider implements PolicyMapConfigurator {
     
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(MtomMapUpdateProvider.class);
     

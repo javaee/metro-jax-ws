@@ -62,7 +62,7 @@ import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapExtender;
 import com.sun.xml.ws.policy.PolicyMerger;
 import com.sun.xml.ws.policy.PolicySubject;
-import com.sun.xml.ws.policy.jaxws.spi.PolicyMapUpdateProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
@@ -113,9 +113,9 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         try {
             this.seiModel = context.getModel();
 
-            final PolicyMapUpdateProvider[] policyMapUpdateProviders = PolicyUtils.ServiceProvider.load(PolicyMapUpdateProvider.class);
-            final PolicyMapExtender[] extenders = new PolicyMapExtender[policyMapUpdateProviders.length];
-            for (int i = 0; i < policyMapUpdateProviders.length; i++) {
+            final PolicyMapConfigurator[] policyMapConfigurators = PolicyUtils.ServiceProvider.load(PolicyMapConfigurator.class);
+            final PolicyMapExtender[] extenders = new PolicyMapExtender[policyMapConfigurators.length];
+            for (int i = 0; i < policyMapConfigurators.length; i++) {
                 extenders[i] = PolicyMapExtender.createPolicyMapExtender();
             }
             // Read policy config file
@@ -130,8 +130,8 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             final WSBinding binding = context.getBinding();
             try {
                 final Collection<PolicySubject> policySubjects = new LinkedList<PolicySubject>();
-                for (int i = 0; i < policyMapUpdateProviders.length; i++) {
-                    policySubjects.addAll(policyMapUpdateProviders[i].update(policyMap, seiModel, binding));
+                for (int i = 0; i < policyMapConfigurators.length; i++) {
+                    policySubjects.addAll(policyMapConfigurators[i].update(policyMap, seiModel, binding));
                     extenders[i].disconnect();
                 }
                 PolicyUtil.insertPolicies(policyMap, policySubjects, this.seiModel.getServiceQName(), this.seiModel.getPortName());

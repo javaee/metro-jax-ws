@@ -44,7 +44,7 @@ import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
-import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.addressing.W3CAddressingMetadataConstants;
 import com.sun.xml.ws.resources.ModelerMessages;
@@ -58,7 +58,6 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.AddressingFeature;
-import javax.xml.ws.soap.Addressing;
 
 /**
  * This Policy extension configures the WSDLModel with AddressingFeature when Addressing assertions are present in the
@@ -67,7 +66,7 @@ import javax.xml.ws.soap.Addressing;
  * @author japod
  * @author Rama Pulavarthi
  */
-public class AddressingModelConfiguratorProvider implements ModelConfiguratorProvider{
+public class AddressingModelConfiguratorProvider implements PolicyFeatureConfigurator {
 
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(AddressingModelConfiguratorProvider.class);
 

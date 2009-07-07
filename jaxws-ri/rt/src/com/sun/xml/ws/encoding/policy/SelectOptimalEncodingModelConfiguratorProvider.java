@@ -43,7 +43,8 @@ import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
-import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ import javax.xml.ws.WebServiceFeature;
  * @author Paul.Sandoz@Sun.Com
  * @author Fabian Ritzmann
  */
-public class SelectOptimalEncodingModelConfiguratorProvider implements ModelConfiguratorProvider{        
+public class SelectOptimalEncodingModelConfiguratorProvider implements PolicyFeatureConfigurator {
     public static final QName enabled = new QName("enabled");
     
     /**

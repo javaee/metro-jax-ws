@@ -36,30 +36,37 @@
 
 package com.sun.xml.ws.policy.jaxws.spi;
 
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapKey;
+import com.sun.xml.ws.policy.PolicySubject;
 import java.util.Collection;
-import javax.xml.ws.WebServiceFeature;
 
 /**
- * The service provider implementing this interface will be discovered and called to configure
- * wsdl model based on PolicyMap bound to it.
+ * The service provider implementing this interface will be discovered and called to extend created PolicyMap instance with additional policy
+ * bindings. The call is performed directly after WSIT config file is parsed.
  *
- * @author japod
+ * @since JAX-WS 2.2
+ * @author Marek Potociar (marek.potociar at sun.com)
  * @author Fabian Ritzmann
+ * @author Rama.Pulavarthi@sun.com
  */
-public interface ModelConfiguratorProvider {
+public interface PolicyMapConfigurator {
 
-    /**
-     * A callback method that allows to retrieve policy related information from provided PolicyMap
-     * and return a list of corresponding WebServiceFeatures.
-     *
-     * @param key Identifies the policy in the policy map
-     * @param policyMap Provides policies as a source of information on proper configuration
-     * @return A list of features that correspond to the policy identified by the policy map key. May be empty but not null.
-     * @throws PolicyException If an error occurred
-     */
-    public Collection<WebServiceFeature> getFeatures(PolicyMapKey key, PolicyMap policyMap) throws PolicyException;
-    
+  /**
+   * A callback method that allows to retrieve policy related information from provided parameters
+   * return a collection of new policies that are added to the map.
+   *
+   * When new policies are returned, the caller may merge them with existing policies
+   * in the policy map.
+   *
+   * @param policyMap This map contains the policies that were already created
+   * @param model The WSDL model of the service
+   * @param wsBinding The binding of the service
+   * @return A collection of policies and the subject to which they are attached.
+   *   May return null or an empty collection.
+   * @throws PolicyException Throw this exception if an error occurs
+   */
+  Collection<PolicySubject> update(PolicyMap policyMap, SEIModel model, WSBinding wsBinding) throws PolicyException;
 }

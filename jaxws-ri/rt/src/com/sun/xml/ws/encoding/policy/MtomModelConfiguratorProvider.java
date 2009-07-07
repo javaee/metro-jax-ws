@@ -42,7 +42,7 @@ import com.sun.xml.ws.policy.PolicyAssertion;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
-import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SE
  * @author japod
  * @author Fabian Ritzmann
  */
-public class MtomModelConfiguratorProvider implements ModelConfiguratorProvider{
+public class MtomModelConfiguratorProvider implements PolicyFeatureConfigurator {
     /**
      * Creates a new instance of MtomModelConfiguratorProvider
      */

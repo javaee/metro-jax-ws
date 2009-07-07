@@ -39,7 +39,7 @@ import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.policy.PolicyMap.ScopeType;
-import com.sun.xml.ws.policy.jaxws.spi.ModelConfiguratorProvider;
+import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
 import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import com.sun.xml.ws.policy.subject.PolicyMapKeyConverter;
@@ -61,7 +61,7 @@ public class PolicyUtil {
 
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(PolicyUtil.class);
     private static final PolicyMerger MERGER = PolicyMerger.getMerger();
-    private static ModelConfiguratorProvider[] configurators = PolicyUtils.ServiceProvider.load(ModelConfiguratorProvider.class);
+    private static PolicyFeatureConfigurator[] configurators = PolicyUtils.ServiceProvider.load(PolicyFeatureConfigurator.class);
 
     /**
      * Iterates through the ports in the WSDL model, for each policy in the policy
@@ -100,7 +100,7 @@ public class PolicyUtil {
         Collection<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
         try {
             final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName, portName);
-            for (ModelConfiguratorProvider configurator : configurators) {
+            for (PolicyFeatureConfigurator configurator : configurators) {
                 Collection<WebServiceFeature> additionalFeatures = configurator.getFeatures(key, policyMap);
                 if (additionalFeatures != null) {
                     features.addAll(additionalFeatures);
