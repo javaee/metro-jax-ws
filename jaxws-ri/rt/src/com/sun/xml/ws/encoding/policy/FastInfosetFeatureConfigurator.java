@@ -59,7 +59,7 @@ import javax.xml.ws.WebServiceFeature;
  * @author Paul.Sandoz@Sun.Com
  * @author Fabian Ritzmann
  */
-public class FastInfosetModelConfiguratorProvider implements PolicyFeatureConfigurator {
+public class FastInfosetFeatureConfigurator implements PolicyFeatureConfigurator {
         
     public static final QName enabled = new QName("enabled");
 

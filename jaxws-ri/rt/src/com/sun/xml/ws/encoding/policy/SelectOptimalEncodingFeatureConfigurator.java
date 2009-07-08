@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.encoding.policy;
 
+import com.sun.xml.ws.api.client.SelectOptimalEncodingFeature;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.Policy;
 import com.sun.xml.ws.policy.PolicyAssertion;
@@ -43,51 +44,50 @@ import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.policy.PolicyMapKey;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import javax.xml.namespace.QName;
+
+import static com.sun.xml.ws.encoding.policy.EncodingConstants.SELECT_OPTIMAL_ENCODING_ASSERTION;
 import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.soap.MTOMFeature;
-
-import static com.sun.xml.ws.encoding.policy.EncodingConstants.OPTIMIZED_MIME_SERIALIZATION_ASSERTION;
-
+        
 /**
+ * A configurator provider for FastInfoset policy assertions.
  *
- * @author japod
+ * @author Paul.Sandoz@Sun.Com
  * @author Fabian Ritzmann
  */
-public class MtomModelConfiguratorProvider implements PolicyFeatureConfigurator {
-    /**
-     * Creates a new instance of MtomModelConfiguratorProvider
-     */
-    public MtomModelConfiguratorProvider() {
-    }
+public class SelectOptimalEncodingFeatureConfigurator implements PolicyFeatureConfigurator {
+    public static final QName enabled = new QName("enabled");
     
     /**
-     * process Mtom policy assertions and if found and is not optional then mtom is enabled on the
-     * {@link WSDLBoundPortType}
+     * Process SelectOptimalEncoding policy assertions.
      *
-     * @param key Key that identifies the endpoint scope
-     * @param policyMap Must be non-null
-     * @throws PolicyException If retrieving the policy triggered an exception
+     * @param key Key that identifies the endpoint scope.
+     * @param policyMap The policy map.
+     * @throws PolicyException If retrieving the policy triggered an exception.
      */
     public Collection<WebServiceFeature> getFeatures(PolicyMapKey key, PolicyMap policyMap) throws PolicyException {
         final Collection<WebServiceFeature> features = new LinkedList<WebServiceFeature>();
         if ((key != null) && (policyMap != null)) {
             Policy policy = policyMap.getEndpointEffectivePolicy(key);
-            if (null!=policy && policy.contains(OPTIMIZED_MIME_SERIALIZATION_ASSERTION)) {
+            if (null!=policy && policy.contains(SELECT_OPTIMAL_ENCODING_ASSERTION)) {
                 Iterator <AssertionSet> assertions = policy.iterator();
                 while(assertions.hasNext()){
                     AssertionSet assertionSet = assertions.next();
                     Iterator<PolicyAssertion> policyAssertion = assertionSet.iterator();
                     while(policyAssertion.hasNext()){
                         PolicyAssertion assertion = policyAssertion.next();
-                        if(OPTIMIZED_MIME_SERIALIZATION_ASSERTION.equals(assertion.getName())){
-                            features.add(new MTOMFeature(true));
-                        } // end-if non optional mtom assertion found
-                    } // next assertion
-                } // next alternative
-            } // end-if policy contains mtom assertion
+                        if(SELECT_OPTIMAL_ENCODING_ASSERTION.equals(assertion.getName())){
+                            String value = assertion.getAttributeValue(enabled);
+                            boolean isSelectOptimalEncodingEnabled = value == null || Boolean.valueOf(value.trim());
+                            features.add(new SelectOptimalEncodingFeature(isSelectOptimalEncodingEnabled));
+                        }
+                    }
+                }
+            }
         }
         return features;
     }

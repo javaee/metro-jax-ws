@@ -62,9 +62,9 @@ import javax.xml.ws.soap.MTOMFeature;
  * @author Jakub Podlesak (japod at sun.com)
  * @author Fabian Ritzmann
  */
-public class MtomMapUpdateProvider implements PolicyMapConfigurator {
+public class MtomPolicyMapConfigurator implements PolicyMapConfigurator {
     
-    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(MtomMapUpdateProvider.class);
+    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(MtomPolicyMapConfigurator.class);
     
     static class MtomAssertion extends PolicyAssertion {
         

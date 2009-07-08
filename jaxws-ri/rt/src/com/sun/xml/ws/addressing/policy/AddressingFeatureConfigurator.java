@@ -66,17 +66,17 @@ import javax.xml.ws.soap.AddressingFeature;
  * @author japod
  * @author Rama Pulavarthi
  */
-public class AddressingModelConfiguratorProvider implements PolicyFeatureConfigurator {
+public class AddressingFeatureConfigurator implements PolicyFeatureConfigurator {
 
-    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(AddressingModelConfiguratorProvider.class);
+    private static final PolicyLogger LOGGER = PolicyLogger.getLogger(AddressingFeatureConfigurator.class);
 
     private static final QName[] ADDRESSING_ASSERTIONS = {
         new QName(AddressingVersion.MEMBER.policyNsUri, "UsingAddressing")};
 
     /**
-     * Creates a new instance of AddressingModelConfiguratorProvider
+     * Creates a new instance of AddressingFeatureConfigurator
      */
-    public AddressingModelConfiguratorProvider() {
+    public AddressingFeatureConfigurator() {
     }
 
     public Collection<WebServiceFeature> getFeatures(final PolicyMapKey key, final PolicyMap policyMap) throws PolicyException {
