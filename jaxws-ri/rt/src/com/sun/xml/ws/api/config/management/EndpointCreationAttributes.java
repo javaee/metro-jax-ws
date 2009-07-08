@@ -34,16 +34,46 @@
  * holder.
  */
 
-package com.sun.xml.ws.api.management;
+package com.sun.xml.ws.api.config.management;
 
-import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.Invoker;
+
+import org.xml.sax.EntityResolver;
 
 /**
  *
  * @author Fabian Ritzmann
  */
-public interface ManagedEndpointFactory {
+public class EndpointCreationAttributes {
 
-    public <T> WSEndpoint<T> createEndpoint(WSEndpoint<T> endpoint, EndpointCreationAttributes attributes);
+    private final boolean processHandlerAnnotation;
+    private final Invoker invoker;
+    private final EntityResolver entityResolver;
+    private final boolean isTransportSynchronous;
 
+    public EndpointCreationAttributes(final boolean processHandlerAnnotation,
+            final Invoker invoker,
+            final EntityResolver resolver,
+            final boolean isTransportSynchronous) {
+        this.processHandlerAnnotation = processHandlerAnnotation;
+        this.invoker = invoker;
+        this.entityResolver = resolver;
+        this.isTransportSynchronous = isTransportSynchronous;
+    }
+
+    public boolean isProcessHandlerAnnotation() {
+        return this.processHandlerAnnotation;
+    }
+
+    public Invoker getInvoker() {
+        return this.invoker;
+    }
+
+    public EntityResolver getEntityResolver() {
+        return this.entityResolver;
+    }
+
+    public boolean isTransportSynchronous() {
+        return this.isTransportSynchronous;
+    }
 }

@@ -40,8 +40,8 @@ import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.management.EndpointCreationAttributes;
-import com.sun.xml.ws.api.management.ManagedEndpointFactory;
+import com.sun.xml.ws.api.config.management.EndpointCreationAttributes;
+import com.sun.xml.ws.api.config.management.ManagedEndpointFactory;
 import com.sun.xml.ws.api.message.Message;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -358,7 +358,8 @@ public abstract class WSEndpoint<T> {
      * this method returns null.
      *
      * @return
-     *      Possibly null, but always the same value.
+     *      Possibly null, always the same value under ordinary circumstances but
+     *      may change if the endpoint is managed.
      */
     public abstract @Nullable ServiceDefinition getServiceDefinition();
 
