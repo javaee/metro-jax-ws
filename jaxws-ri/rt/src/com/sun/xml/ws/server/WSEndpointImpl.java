@@ -392,7 +392,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         return context;
     }
 
-    private @Nullable ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
+    private @NotNull ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
         if (!monitoring) {
             return ManagedObjectManagerFactory.createNOOP();
         }
