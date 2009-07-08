@@ -447,10 +447,19 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
     static {
         try {
-            String s = System.getProperty("com.sun.xml.ws.monitoring");
+            // You can control "endpoint" independently of "client" monitoring.
+            String s = System.getProperty("com.sun.xml.ws.monitoring.endpoint");
             if (s != null && s.toLowerCase().equals("false")) {
                 monitoring = false;
             }
+
+            // You can turn off both "endpoint" and "client" monitoring
+            // at once.
+            s = System.getProperty("com.sun.xml.ws.monitoring");
+            if (s != null && s.toLowerCase().equals("false")) {
+                monitoring = false;
+            }
+
             Integer i = Integer.getInteger("com.sun.xml.ws.monitoring.typelibDebug");
             if (i != null) {
                 typelibDebug = i;
