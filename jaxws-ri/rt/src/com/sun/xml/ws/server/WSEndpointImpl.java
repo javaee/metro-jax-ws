@@ -106,7 +106,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final @NotNull PolicyMap endpointPolicy;
     private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
-    private final @Nullable ManagedObjectManager managedObjectManager;
+    private final @NotNull ManagedObjectManager managedObjectManager;
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
