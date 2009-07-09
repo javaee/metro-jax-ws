@@ -434,10 +434,9 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
             return managedObjectManager;
         } catch (Throwable t) {
-            // We let the service start up anyway, but it won't have monitoring.
             logger.log(Level.WARNING, "TBD", t);
+            throw new WebServiceException(t);
         }
-        return null;
     }
 
     private static boolean monitoring        = true;
