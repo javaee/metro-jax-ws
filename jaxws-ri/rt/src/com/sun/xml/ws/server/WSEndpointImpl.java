@@ -69,7 +69,6 @@ import com.sun.xml.ws.addressing.EPRSDDocumentFilter;
 import com.sun.xml.ws.addressing.WSEPRExtension;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 import org.glassfish.gmbal.ManagedObjectManager;
-import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import org.w3c.dom.Element;
 
 import javax.annotation.PreDestroy;
@@ -393,96 +392,8 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     }
 
     private @NotNull ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
-        if (!monitoring) {
-            return ManagedObjectManagerFactory.createNOOP();
-        }
-        try {
-            // TBD: Decide final root name.
-            // Most likely it will be "metro" when running inside GlassFish,
-            // (under the AMX node), and "com.sun.metro" otherwise.
-            final ManagedObjectManager managedObjectManager =
-                ManagedObjectManagerFactory.createStandalone("metro");
-
-            if (typelibDebug != -1) {
-                managedObjectManager.setTypelibDebug(typelibDebug);
-            }
-            if (registrationDebug.equals("FINE")) {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.FINE);
-            } else if (registrationDebug.equals("NORMAL")) {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
-            } else {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NONE);
-            }
-            managedObjectManager.setRuntimeDebug(runtimeDebug);
-
-            managedObjectManager.stripPrefix(
-                "com.sun.xml.ws.server",
-                "com.sun.xml.ws.rx.rm.runtime.sequence");
-
-            // Defer so we can register "this" as root from
-            // within constructor.
-            managedObjectManager.suspendJMXRegistration();
-
-            // We include the service+portName to uniquely identify
-            // the managed objects under it (since there can be multiple
-            // services in the container).
-            managedObjectManager.createRoot(
-                new MonitorRootService(this),
-                serviceName.toString() + portName.toString() + "-"
-                + String.valueOf(unique++)); // TBD: only append unique
-                                             // if clash. Waiting for GMBAL RFE
-
-            return managedObjectManager;
-        } catch (Throwable t) {
-            logger.log(Level.WARNING, "TBD", t);
-            throw new WebServiceException(t);
-        }
+        return new MonitorRootService(this)
+            .createManagedObjectManager(serviceName, portName);
     }
-
-    private static boolean monitoring        = true;
-    private static int     typelibDebug      = -1;
-    private static String  registrationDebug = "NONE";
-    private static boolean runtimeDebug      = false;
-
-    static {
-        try {
-            // You can control "endpoint" independently of "client" monitoring.
-            String s = System.getProperty("com.sun.xml.ws.monitoring.endpoint");
-            if (s != null && s.toLowerCase().equals("false")) {
-                monitoring = false;
-            }
-
-            // You can turn off both "endpoint" and "client" monitoring
-            // at once.
-            s = System.getProperty("com.sun.xml.ws.monitoring");
-            if (s != null && s.toLowerCase().equals("false")) {
-                monitoring = false;
-            }
-
-            Integer i = Integer.getInteger("com.sun.xml.ws.monitoring.typelibDebug");
-            if (i != null) {
-                typelibDebug = i;
-            }
-            s = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
-            if (s != null) {
-                registrationDebug = s.toUpperCase();
-            }
-            s = System.getProperty("com.sun.xml.ws.monitoring.runtimeDebug");
-            if (s != null && s.toLowerCase().equals("true")) {
-                runtimeDebug = true;
-            }
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "TBD", e);
-        }
-    }
-
-    // Necessary because same serviceName+portName can live in
-    // different apps at different addresses.  We do not know the
-    // address until the first request comes in, which is after
-    // monitoring is setup.
-
-    // TBD: Add address field to Service class below and fill it
-    // in on first request.  That will make it easier for users.
-    private static long unique = 1;
 }
 
