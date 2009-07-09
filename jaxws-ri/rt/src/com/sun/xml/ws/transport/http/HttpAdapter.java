@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,6 @@ import com.sun.xml.ws.api.server.TransportBackChannel;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebServiceContextDelegate;
 import com.sun.xml.ws.resources.WsservletMessages;
-import com.sun.xml.ws.server.ServerRtException;
 import com.sun.xml.ws.server.UnsupportedMediaException;
 import com.sun.xml.ws.util.ByteArrayBuffer;
 
@@ -99,12 +98,19 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
      * Empty if the endpoint doesn't have {@link ServiceDefinition}.
      * Read-only.
      */
-    public final Map<String,SDDocument> wsdls;
+    private Map<String,SDDocument> wsdls;
 
     /**
      * Reverse map of {@link #wsdls}. Read-only.
      */
-    public final Map<SDDocument,String> revWsdls;
+    private Map<SDDocument,String> revWsdls;
+
+    /**
+     * A reference to the service definition from which the map of wsdls/revWsdls
+     * was created. This allows us to establish if the service definition documents
+     * have changed in the meantime.
+     */
+    private ServiceDefinition serviceDefinition = null;
 
     public final HttpAdapterList<? extends HttpAdapter> owner;
 
@@ -141,8 +147,25 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         this.owner = owner;
         this.urlPattern = urlPattern;
 
-        // fill in WSDL map
-        ServiceDefinition sdef = this.endpoint.getServiceDefinition();
+        initWSDLMap(endpoint.getServiceDefinition());
+    }
+
+    /**
+     * Return the last known service definition of the endpoint.
+     *
+     * @return The service definition of the endpoint
+     */
+    public ServiceDefinition getServiceDefinition() {
+        return this.serviceDefinition;
+    }
+    
+    /**
+     * Fill in WSDL map.
+     *
+     * @param sdef
+     */
+    public void initWSDLMap(ServiceDefinition sdef) {
+        this.serviceDefinition = sdef;
         if(sdef==null) {
             wsdls = Collections.emptyMap();
             revWsdls = Collections.emptyMap();
