@@ -36,6 +36,7 @@
 package com.sun.xml.ws.policy;
 
 import com.sun.xml.txw2.TypedXmlWriter;
+import com.sun.xml.ws.addressing.policy.AddressingPolicyMapConfigurator;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.policy.PolicyResolverFactory;
 import com.sun.xml.ws.api.policy.PolicyResolver;
@@ -55,16 +56,9 @@ import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
-import com.sun.xml.ws.policy.Policy;
-import com.sun.xml.ws.policy.PolicyConstants;
-import com.sun.xml.ws.policy.PolicyException;
-import com.sun.xml.ws.policy.PolicyMap;
-import com.sun.xml.ws.policy.PolicyMapExtender;
-import com.sun.xml.ws.policy.PolicyMerger;
-import com.sun.xml.ws.policy.PolicySubject;
+import com.sun.xml.ws.encoding.policy.MtomPolicyMapConfigurator;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
-import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelMarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
@@ -113,7 +107,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         try {
             this.seiModel = context.getModel();
 
-            final PolicyMapConfigurator[] policyMapConfigurators = PolicyUtils.ServiceProvider.load(PolicyMapConfigurator.class);
+            final PolicyMapConfigurator[] policyMapConfigurators = loadConfigurators();
             final PolicyMapExtender[] extenders = new PolicyMapExtender[policyMapConfigurators.length];
             for (int i = 0; i < policyMapConfigurators.length; i++) {
                 extenders[i] = PolicyMapExtender.createPolicyMapExtender();
@@ -451,4 +445,18 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
             }
         }
     }
+
+    private PolicyMapConfigurator[] loadConfigurators() {
+        final Collection<PolicyMapConfigurator> configurators = new LinkedList<PolicyMapConfigurator>();
+
+        // Add map configurators that are already built into JAX-WS
+        configurators.add(new AddressingPolicyMapConfigurator());
+        configurators.add(new MtomPolicyMapConfigurator());
+
+        // Dynamically discover remaining map configurators
+        PolicyUtil.addServiceProviders(configurators, PolicyMapConfigurator.class);
+        
+        return configurators.toArray(new PolicyMapConfigurator[configurators.size()]);
+    }
+
 }

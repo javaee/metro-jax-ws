@@ -35,22 +35,27 @@
  */
 package com.sun.xml.ws.policy;
 
+import com.sun.xml.ws.addressing.policy.AddressingFeatureConfigurator;
 import com.sun.xml.ws.api.model.wsdl.WSDLModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
+import com.sun.xml.ws.encoding.policy.FastInfosetFeatureConfigurator;
+import com.sun.xml.ws.encoding.policy.MtomFeatureConfigurator;
+import com.sun.xml.ws.encoding.policy.SelectOptimalEncodingFeatureConfigurator;
 import com.sun.xml.ws.policy.PolicyMap.ScopeType;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyFeatureConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
-import com.sun.xml.ws.policy.privateutil.PolicyUtils;
 import com.sun.xml.ws.policy.subject.PolicyMapKeyConverter;
 import com.sun.xml.ws.policy.subject.WsdlBindingSubject;
 
+import com.sun.xml.ws.util.ServiceFinder;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -61,7 +66,34 @@ public class PolicyUtil {
 
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(PolicyUtil.class);
     private static final PolicyMerger MERGER = PolicyMerger.getMerger();
-    private static PolicyFeatureConfigurator[] configurators = PolicyUtils.ServiceProvider.load(PolicyFeatureConfigurator.class);
+    private static final Collection<PolicyFeatureConfigurator> CONFIGURATORS =
+            new LinkedList<PolicyFeatureConfigurator>();
+
+    static {
+        // Add feature configurators that are already built into JAX-WS
+        CONFIGURATORS.add(new AddressingFeatureConfigurator());
+        CONFIGURATORS.add(new MtomFeatureConfigurator());
+        CONFIGURATORS.add(new FastInfosetFeatureConfigurator());
+        CONFIGURATORS.add(new SelectOptimalEncodingFeatureConfigurator());
+
+        // Dynamically discover remaining feature configurators
+        addServiceProviders(CONFIGURATORS, PolicyFeatureConfigurator.class);
+    }
+
+    /**
+     * Adds the dynamically discovered implementations for the given service class
+     * to the given collection.
+     *
+     * @param <T> The type of the service class.
+     * @param providers The discovered implementations are added to this collection.
+     * @param service The service interface.
+     */
+    public static <T> void addServiceProviders(Collection<T> providers, Class<T> service) {
+        final Iterator<T> foundProviders = ServiceFinder.find(service).iterator();
+        while (foundProviders.hasNext()) {
+            providers.add(foundProviders.next());
+        }
+    }
 
     /**
      * Iterates through the ports in the WSDL model, for each policy in the policy
@@ -100,7 +132,7 @@ public class PolicyUtil {
         Collection<WebServiceFeature> features = new ArrayList<WebServiceFeature>();
         try {
             final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName, portName);
-            for (PolicyFeatureConfigurator configurator : configurators) {
+            for (PolicyFeatureConfigurator configurator : CONFIGURATORS) {
                 Collection<WebServiceFeature> additionalFeatures = configurator.getFeatures(key, policyMap);
                 if (additionalFeatures != null) {
                     features.addAll(additionalFeatures);
