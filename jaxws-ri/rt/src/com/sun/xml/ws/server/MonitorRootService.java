@@ -364,8 +364,9 @@ public final class MonitorRootService {
 
             return managedObjectManager;
         } catch (Throwable t) {
-            logger.log(Level.WARNING, "TBD", t);
-            throw new WebServiceException(t);
+            logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
+            //throw new WebServiceException(t);
+            return ManagedObjectManagerFactory.createNOOP();
         }
     }
 
