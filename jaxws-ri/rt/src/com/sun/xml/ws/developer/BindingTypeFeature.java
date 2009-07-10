@@ -40,12 +40,16 @@ import com.sun.xml.ws.api.BindingID;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Using this feature, the application could override the binding used by
  * the runtime(usually determined from WSDL).
  *
  * @author Jitendra Kotamraju
  */
+@ManagedData
 public final class BindingTypeFeature extends WebServiceFeature {
 
     public static final String ID = "http://jax-ws.dev.java.net/features/binding";
@@ -56,10 +60,12 @@ public final class BindingTypeFeature extends WebServiceFeature {
         this.bindingId = bindingId;
     }
 
+    @ManagedAttribute
     public String getID() {
         return ID;
     }
 
+    @ManagedAttribute
     public String getBindingId() {
         return bindingId;
     }

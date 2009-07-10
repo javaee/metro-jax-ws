@@ -43,6 +43,9 @@ import javax.xml.ws.WebServiceFeature;
 
 import org.jvnet.mimepull.MIMEConfig;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Proxy needs to be created with this feature to configure StreamingAttachment
  * attachments behaviour.
@@ -60,6 +63,7 @@ import org.jvnet.mimepull.MIMEConfig;
  *
  * @author Jitendra Kotamraju
  */
+@ManagedData
 public final class StreamingAttachmentFeature extends WebServiceFeature {
     /**
      * Constant value identifying the {@link @StreamingAttachment} feature.
@@ -83,6 +87,7 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
         this.memoryThreshold = memoryThreshold;
     }
 
+    @ManagedAttribute
     public String getID() {
         return ID;
     }
@@ -93,6 +98,7 @@ public final class StreamingAttachmentFeature extends WebServiceFeature {
      *
      * @return
      */
+    @ManagedAttribute
     public MIMEConfig getConfig() {
         if (config == null) {
             config = new MIMEConfig();

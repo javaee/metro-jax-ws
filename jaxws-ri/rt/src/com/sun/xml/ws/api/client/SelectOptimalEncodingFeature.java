@@ -40,6 +40,9 @@ import com.sun.xml.ws.api.FeatureConstructor;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Client side feature to enable or disable the selection of the optimal 
  * encoding by the client when sending outbound messages.
@@ -66,6 +69,7 @@ import javax.xml.ws.WebServiceFeature;
  * removed.
  * @author Paul.Sandoz@Sun.Com
  */
+@ManagedData
 public class SelectOptimalEncodingFeature extends WebServiceFeature {
     /**
      * Constant value identifying the {@link SelectOptimalEncodingFeature}
@@ -94,6 +98,7 @@ public class SelectOptimalEncodingFeature extends WebServiceFeature {
     /**
      * {@inheritDoc}
      */
+    @ManagedAttribute
     public String getID() {
         return ID;
     }

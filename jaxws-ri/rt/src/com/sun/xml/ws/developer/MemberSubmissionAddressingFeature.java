@@ -40,12 +40,17 @@ import com.sun.xml.ws.api.FeatureConstructor;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
+
 /**
  * Addressing Feature representing MemberSubmission Version.
  *
  * @author Rama Pulavarthi
  */
 
+@ManagedData
 public class MemberSubmissionAddressingFeature extends WebServiceFeature {
     /**
      * Constant value identifying the MemberSubmissionAddressingFeature
@@ -110,11 +115,12 @@ public class MemberSubmissionAddressingFeature extends WebServiceFeature {
     }
 
 
-
+    @ManagedAttribute
     public String getID() {
         return ID;
     }
 
+    @ManagedAttribute
     public boolean isRequired() {
         return required;
     }
@@ -129,6 +135,7 @@ public class MemberSubmissionAddressingFeature extends WebServiceFeature {
         
     }
 
+    @ManagedAttribute
     public MemberSubmissionAddressing.Validation getValidation() {
         return validation;
     }

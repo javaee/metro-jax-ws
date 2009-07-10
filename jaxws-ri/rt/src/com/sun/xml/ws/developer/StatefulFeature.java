@@ -41,6 +41,10 @@ import com.sun.xml.ws.api.FeatureConstructor;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
+
 /**
  * Designates a stateful {@link WebService}.
  * A service class that has this feature on will behave as a stateful web service.
@@ -48,6 +52,7 @@ import javax.xml.ws.WebServiceFeature;
  * @since 2.1
  * @see StatefulWebServiceManager
  */
+@ManagedData
 public class StatefulFeature extends WebServiceFeature {
     /**
      * Constant value identifying the StatefulFeature
@@ -63,6 +68,7 @@ public class StatefulFeature extends WebServiceFeature {
         this.enabled = true;
     }
 
+    @ManagedAttribute
     public String getID() {
         return ID;
     }

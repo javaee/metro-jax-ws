@@ -41,6 +41,8 @@ import com.sun.xml.ws.server.DraconianValidationErrorHandler;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
 
 /**
  * {@link WebServiceFeature} for schema validation.
@@ -49,6 +51,7 @@ import javax.xml.ws.WebServiceFeature;
  * @author Jitendra Kotamraju
  * @see SchemaValidation
  */
+@ManagedData
 public class SchemaValidationFeature extends WebServiceFeature {
     /**
      * Constant value identifying the SchemaValidationFeature
@@ -71,6 +74,7 @@ public class SchemaValidationFeature extends WebServiceFeature {
         this.clazz = clazz;
     }
 
+    @ManagedAttribute
     public String getID() {
         return ID;
     }
@@ -80,6 +84,7 @@ public class SchemaValidationFeature extends WebServiceFeature {
      * for any invalid request and response message. If it is set to false, schema
      * validation messages are just logged.
      */
+    @ManagedAttribute
     public Class<? extends ValidationErrorHandler> getErrorHandler() {
         return clazz;
     }

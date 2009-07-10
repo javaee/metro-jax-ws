@@ -49,6 +49,9 @@ import javax.xml.bind.JAXBException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * A {@link WebServiceFeature} that instructs the JAX-WS runtime to use a specific {@link JAXBContextFactory}
  * instance of creating {@link JAXBContext}.
@@ -57,6 +60,7 @@ import java.util.List;
  * @since 2.1.5
  * @author Kohsuke Kawaguchi
  */
+@ManagedData
 public class UsesJAXBContextFeature extends WebServiceFeature {
     /**
      * Constant value identifying the {@link UsesJAXBContext} feature.
@@ -126,10 +130,12 @@ public class UsesJAXBContextFeature extends WebServiceFeature {
      * @return
      *      null if the default {@link JAXBContext} shall be used.
      */
+    @ManagedAttribute
     public @Nullable JAXBContextFactory getFactory() {
         return factory;
     }
 
+    @ManagedAttribute
     public String getID() {
         return ID;
     }

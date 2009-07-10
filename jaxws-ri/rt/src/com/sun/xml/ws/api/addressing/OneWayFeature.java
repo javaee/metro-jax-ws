@@ -40,6 +40,9 @@ import com.sun.xml.ws.api.FeatureConstructor;
 
 import javax.xml.ws.WebServiceFeature;
 
+import org.glassfish.gmbal.ManagedAttribute;
+import org.glassfish.gmbal.ManagedData;
+
 /**
  * Unsupported RI extension to work around an issue in WSIT.
  *
@@ -59,6 +62,7 @@ import javax.xml.ws.WebServiceFeature;
  *
  * @author Arun Gupta
  */
+@ManagedData
 public class OneWayFeature extends WebServiceFeature {
     /**
      * Constant value identifying the {@link OneWayFeature}
@@ -116,6 +120,7 @@ public class OneWayFeature extends WebServiceFeature {
     /**
      * {@inheritDoc}
      */
+    @ManagedAttribute
     public String getID() {
         return ID;
     }
@@ -125,6 +130,7 @@ public class OneWayFeature extends WebServiceFeature {
      *
      * @return address of the wsa:ReplyTo header
      */
+    @ManagedAttribute
     public WSEndpointReference getReplyTo() {
         return replyTo;
     }
@@ -143,6 +149,7 @@ public class OneWayFeature extends WebServiceFeature {
      *
      * @return address of the wsa:From header
      */
+    @ManagedAttribute
     public WSEndpointReference getFrom() {
         return from;
     }
@@ -161,6 +168,7 @@ public class OneWayFeature extends WebServiceFeature {
      *
      * @return address of the wsa:FaultTo header
      */
+    @ManagedAttribute
     public String getRelatesToID() {
         return relatesToID;
     }
