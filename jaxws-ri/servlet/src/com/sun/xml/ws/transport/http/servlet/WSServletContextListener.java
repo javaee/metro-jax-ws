@@ -38,6 +38,7 @@ package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.api.server.RIDeploymentProbeProvider;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.HttpAdapter;
@@ -110,6 +111,12 @@ public final class WSServletContextListener
             delegate = createDelegate(adapters, context);
 
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
+
+            // Emit deployment probe event for each endpoint
+            RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
+            for(ServletAdapter adapter : adapters) {
+                probe.deploy(adapter.getName(), adapter.getEndpoint());
+            }
             
         } catch (Throwable e) {
             logger.log(Level.SEVERE,

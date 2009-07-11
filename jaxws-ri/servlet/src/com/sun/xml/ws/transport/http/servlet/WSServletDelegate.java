@@ -41,6 +41,7 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.Localizer;
+import com.sun.xml.ws.api.server.RIDeploymentProbeProvider;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -105,12 +106,17 @@ public class WSServletDelegate {
             logger.info(WsservletMessages.SERVLET_INFO_DESTROY());
         }
 
+        // TODO Should we move this to context listener ?
+        RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
         for(ServletAdapter a : adapters) {
             try {
                 a.getEndpoint().dispose();
             } catch(Throwable e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
+
+            // Emit undeployment probe event for each endpoint
+            probe.undeploy(a.getName(), a.getEndpoint());
         }
     }
 
