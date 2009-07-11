@@ -41,10 +41,4 @@ public class RIDeploymentEndpointData extends EndpointData {
         return endpoint.getImplementationClass().getName();
     }
 
-    @ManagedAttribute
-    @Description("sun-jaxws.xml file")
-    public String getSunJaxwsXml() {
-        return null;
-    }
-
 }

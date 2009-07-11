@@ -105,19 +105,6 @@ public class WSServletDelegate {
         if (logger.isLoggable(Level.INFO)) {
             logger.info(WsservletMessages.SERVLET_INFO_DESTROY());
         }
-
-        // TODO Should we move this to context listener ?
-        RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
-        for(ServletAdapter a : adapters) {
-            try {
-                a.getEndpoint().dispose();
-            } catch(Throwable e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-
-            // Emit undeployment probe event for each endpoint
-            probe.undeploy(a.getName(), a.getEndpoint());
-        }
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response, ServletContext context)

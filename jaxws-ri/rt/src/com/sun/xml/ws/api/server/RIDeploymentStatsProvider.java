@@ -9,31 +9,27 @@ import org.glassfish.probe.provider.annotations.ProbeParam;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 /**
  * @author Jitendra Kotamraju
  */
 @ManagedObject
-@Description("Stats for  Web Services Stats deployed using RI deployment")
+@Description("Stats for Web Services deployed using RI deployment")
 public class RIDeploymentStatsProvider {
 
     private final ConcurrentHashMap<String, RIDeploymentEndpointData> endpoints =
             new ConcurrentHashMap<String, RIDeploymentEndpointData>();
-    private final Logger logger = Logger.getLogger(RIDeploymentStatsProvider.class.getName());
 
-    @ProbeListener("metro:jaxws:ri:deploy")
+    @ProbeListener("glassfish:webservices:ri:deploy")
     public void deploy(
-            @ProbeParam("name")String appName,
+            @ProbeParam("name")String name,
             @ProbeParam("endpoint")WSEndpoint endpoint) {
-        endpoints.put(appName, new RIDeploymentEndpointData(endpoint));
+        endpoints.put(name, new RIDeploymentEndpointData(endpoint));
     }
 
-    @ProbeListener("metro:jaxws:ri:undeploy")
-    public void undeploy(
-            @ProbeParam("name")String appName,
-            @ProbeParam("endpoint")WSEndpoint endpoint) {
-        endpoints.remove(appName);
+    @ProbeListener("glassfish:webservices:ri:undeploy")
+    public void undeploy(@ProbeParam("name")String name) {
+        endpoints.remove(name);
     }
 
     @ManagedAttribute

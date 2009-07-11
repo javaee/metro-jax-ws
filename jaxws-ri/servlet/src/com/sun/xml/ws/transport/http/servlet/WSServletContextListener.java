@@ -70,6 +70,7 @@ public final class WSServletContextListener
     implements ServletContextAttributeListener, ServletContextListener {
 
     private WSServletDelegate delegate;
+    private List<ServletAdapter> adapters;
 
     public void attributeAdded(ServletContextAttributeEvent event) {
     }
@@ -83,6 +84,20 @@ public final class WSServletContextListener
     public void contextDestroyed(ServletContextEvent event) {
         if (delegate != null) { // the deployment might have failed.
             delegate.destroy();
+        }
+
+        if (adapters != null) {
+            RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
+            for(ServletAdapter a : adapters) {
+                try {
+                    a.getEndpoint().dispose();
+                } catch(Throwable e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                // Emit undeployment probe event for each endpoint
+                probe.undeploy(a.getName());
+            }
         }
 
         if (logger.isLoggable(Level.INFO)) {
@@ -106,7 +121,7 @@ public final class WSServletContextListener
             URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
             if(sunJaxWsXml==null)
                 throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
-            List<ServletAdapter> adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
+            adapters = parser.parse(sunJaxWsXml.toExternalForm(), sunJaxWsXml.openStream());
 
             delegate = createDelegate(adapters, context);
 
