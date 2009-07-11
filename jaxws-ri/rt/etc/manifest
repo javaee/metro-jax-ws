@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Specification-Title: The Java API for XML Web Services
-Specification-Version: 2.0
+Specification-Version: 2.2
 Implementation-Title: JAX-WS Implementation
-Implementation-Version: 2.0
+Implementation-Version: 2.2
 Implementation-Vendor: Sun Microsystems Inc
 Implementation-Vendor-Id: com.sun
 Extension-Name: com.sun.xml.ws
 Class-Path: jaxws-api.jar jsr181-api.jar jsr250-api.jar saaj-api.jar saaj-impl.jar jsr173_api.jar sjsxp.jar woodstox.jar resolver.jar jaxb-api.jar jaxb-impl.jar activation.jar stax-ex.jar streambuffer.jar stax-utils.jar policy.jar
-
-
+probe-provider-class-names: com.sun.xml.ws.api.server.RIDeploymentProbeProvider
