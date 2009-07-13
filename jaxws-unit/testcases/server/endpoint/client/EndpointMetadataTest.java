@@ -241,12 +241,16 @@ public class EndpointMetadataTest extends TestCase {
 
     public boolean isGenerated(InputStream in) throws IOException {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
-        String str;
-        while ((str = rdr.readLine()) != null) {
-            if (str.indexOf("NOT_GENERATED") != -1) {
-                return false;
-            }
+        try {
+            String str;
+            while ((str = rdr.readLine()) != null) {
+                if (str.indexOf("NOT_GENERATED") != -1) {
+                    return false;
+                }
 
+            }
+        } finally {
+            rdr.close();
         }
         return true;
     }
