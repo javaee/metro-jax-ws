@@ -355,7 +355,7 @@ public final class JavaMethodImpl implements JavaMethod {
                 inputAction = wsdlOperation.getOperation().getInput().getAction();                
         } else if(!inputAction.equals(wsdlOperation.getOperation().getInput().getAction()))
                 //TODO input action might be from @Action or WebMethod(action)
-                LOGGER.warning("Input Action from WSDL definitions and @Action for operation .... did not match, and willc ause problems in dispatching the requests");
+                LOGGER.warning("Input Action from WSDL definitions and @Action for operation .... did not match, and will cause problems in dispatching the requests");
 
         if (!mep.isOneWay()) {
             if (outputAction.equals(""))
