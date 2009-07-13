@@ -37,37 +37,33 @@
 package com.sun.xml.ws.transport.http.server;
 
 import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.server.BoundEndpoint;
 import com.sun.xml.ws.api.server.Module;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.api.server.WebModule;
 import com.sun.xml.ws.transport.http.HttpAdapter;
-import com.sun.xml.ws.transport.http.WSHTTPConnection;
 
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 /**
- * {@link com.sun.xml.ws.transport.http.HttpAdapter} for servlets.
+ * {@link HttpAdapter} for Endpoint API.
  *
  * <p>
- * This is a thin wrapper around {@link com.sun.xml.ws.transport.http.HttpAdapter} with some description
- * specified in the deployment (in particular those information are related
- * to how a request is routed to a {@link ServerAdapter}.
+ * This is a thin wrapper around {@link HttpAdapter}
+ * with some description specified in the deployment (in particular those
+ * information are related to how a request is routed to a {@link ServerAdapter}.
  *
  * <p>
- * This class implements {@link com.sun.xml.ws.api.server.BoundEndpoint} and represent the
- * servlet-{@link com.sun.xml.ws.api.server.WSEndpoint} association for {@link }
+ * This class implements {@link BoundEndpoint} and represent the
+ * server-{@link WSEndpoint} association for Endpoint API's transport
  *
+ * @author Jitendra Kotamraju
  */
 public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
     final String name;
-
 
     protected ServerAdapter(String name, String urlPattern, WSEndpoint endpoint, ServerAdapterList owner) {
         super(endpoint, owner, urlPattern);
@@ -79,7 +75,6 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
         else {
             module.getBoundEndpoints().add(this);
         }
-
     }
 
     /**
@@ -109,18 +104,6 @@ public final class ServerAdapter extends HttpAdapter implements BoundEndpoint {
             // this is really a bug in the container implementation
             throw new WebServiceException("Unable to compute address for "+endpoint,e);
         }
-    }
-
-    /**
-     * Convenient method to return a port name from {@link com.sun.xml.ws.api.server.WSEndpoint}.
-     *
-     * @return
-     *      null if {@link com.sun.xml.ws.api.server.WSEndpoint} isn't tied to any paritcular port.
-     */
-    public QName getPortName() {
-        WSDLPort port = getEndpoint().getPort();
-        if(port==null)  return null;
-        else            return port.getName();
     }
 
     public void dispose() {

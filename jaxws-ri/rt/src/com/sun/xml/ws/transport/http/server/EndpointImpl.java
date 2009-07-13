@@ -114,6 +114,7 @@ public class EndpointImpl extends Endpoint {
     private @Nullable EndpointContext endpointContext;
     private @NotNull final Class<?> implClass;
     private final Invoker invoker;
+    private Container container;
 
 
     public EndpointImpl(@NotNull BindingID bindingId, @NotNull Object impl,
@@ -146,7 +147,7 @@ public class EndpointImpl extends Endpoint {
      * @deprecated This is a backdoor method. Don't use it unless you know what you are doing.
      */
     public EndpointImpl(WSEndpoint wse, Object serverContext) {
-        actualEndpoint = new HttpEndpoint(executor, getAdapter(wse, ""));
+        actualEndpoint = new HttpEndpoint(null, getAdapter(wse, ""));
         ((HttpEndpoint) actualEndpoint).publish(serverContext);
         binding = wse.getBinding();
         implementor = null; // this violates the semantics, but hey, this is a backdoor.
@@ -252,13 +253,13 @@ public class EndpointImpl extends Endpoint {
         } catch (Exception e) {
             throw new UnsupportedOperationException("Couldn't load light weight http server", e);
         }
-
+        container = getContainer();
         WSEndpoint wse = WSEndpoint.create(
                 implClass, true,
                 invoker,
                 getProperty(QName.class, Endpoint.WSDL_SERVICE),
                 getProperty(QName.class, Endpoint.WSDL_PORT),
-                null /* no container */,
+                container,
                 binding,
                 getPrimaryWsdl(),
                 buildDocList(),
@@ -367,6 +368,20 @@ public class EndpointImpl extends Endpoint {
             adapterList = new ServerAdapterList();
         }
         return adapterList.createAdapter("", urlPattern, endpoint);
+    }
+
+    /**
+     * Endpoints within a EndpointContext get the same container.
+     */
+    private Container getContainer() {
+        if (endpointContext != null) {
+            for(Endpoint e : endpointContext.getEndpoints()) {
+                if (e.isPublished() && e != this) {
+                    return ((EndpointImpl)e).container;
+                }
+            }
+        }
+        return new ServerContainer();
     }
 
     private static class InvokerImpl extends Invoker {
