@@ -125,7 +125,6 @@ public class EndpointMetadataTest extends TestCase {
         } catch (Exception e) {
             System.out.println("Expected error: " + e.getMessage());
             assertTrue(true);
-            return;
         }
     }
 
@@ -239,20 +238,23 @@ public class EndpointMetadataTest extends TestCase {
         }
     }
 
+    // read the whole document. Otherwise, endpoint.stop() would be
+    // done by this test and the server runtime throws an exception
+    // when it tries to send the rest of the doc
     public boolean isGenerated(InputStream in) throws IOException {
         BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
+        boolean generated = true;
         try {
             String str;
             while ((str = rdr.readLine()) != null) {
                 if (str.indexOf("NOT_GENERATED") != -1) {
-                    return false;
+                    generated = false;
                 }
-
             }
         } finally {
             rdr.close();
         }
-        return true;
+        return generated;
     }
 }
 
