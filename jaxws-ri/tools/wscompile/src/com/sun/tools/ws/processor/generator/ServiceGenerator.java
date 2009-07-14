@@ -233,6 +233,16 @@ public class ServiceGenerator extends GeneratorBase {
         writeGetWsdlLocation(cm.ref(URL.class), cls, urlField, exField);   
     }
 
+    /*
+    If the WSDL location a resource, it generates the following.
+    TODO if the resource is not found, should the exception be filled ?
+
+    for e.g.:
+    static {
+        EXAMPLESERVICE_WSDL_LOCATION = ExmapleService.class.getResource(...);
+        EXAMPLESERVICE_EXCEPTION = null;
+    }
+    */
     private void writeWSDLLocation(String className, JDefinedClass cls, JFieldVar urlField, JFieldVar exField) {
         JBlock staticBlock = cls.init();
         staticBlock.assign(urlField, JExpr.dotclass(cm.ref(className)).invoke("getResource").arg(wsdlLocation));
