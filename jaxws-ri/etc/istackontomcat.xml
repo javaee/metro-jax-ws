@@ -85,8 +85,8 @@
         <copy toDir="${java.home}/lib/endorsed" overwrite="true">
             <fileset dir="${basedir}/lib" includes="jaxws-api.jar, jaxb-api.jar"/>
         </copy>
-        <antcall target="install-api-on-tomcat6"/>
         <antcall target="install-api-on-tomcat5"/>
+        <antcall target="install-api-on-tomcat6"/>        
     </target>
 
     <target name="install-api-on-tomcat6" unless="tomcat5">
@@ -135,7 +135,7 @@
 
     <target name="help">
         <echo message="Usage:"/>
-        <echo message="  ant -f jaxwsri-on-tomcat.xml {install,uninstall}"/>
+        <echo message="  ant -f tomcat.xml {install,uninstall}"/>
         <echo/>
         <echo message="$CATALINA_HOME must be set to the installation directory of Tomcat."/>
         <echo/>
