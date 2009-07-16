@@ -77,6 +77,8 @@ import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import java.net.URL;
+import javax.management.ObjectName;
+
 
 import javax.annotation.PreDestroy;
 import javax.xml.namespace.QName;
@@ -84,6 +86,7 @@ import javax.xml.ws.EndpointReference;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 import javax.xml.stream.XMLStreamException;
+import javax.management.InstanceAlreadyExistsException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -321,52 +324,105 @@ public final class MonitorRootService {
         if (!monitoring) {
             return ManagedObjectManagerFactory.createNOOP();
         }
-        try {
-            // TBD: Decide final root name.
-            // Most likely it will be "metro" when running inside GlassFish,
-            // (under the AMX node), and "com.sun.metro" otherwise.
-            final ManagedObjectManager managedObjectManager =
-                ManagedObjectManagerFactory.createStandalone("metro");
+        return createMOMLoop(serviceName, portName, 0);
+    }
 
+    private @NotNull ManagedObjectManager createMOMLoop(final QName serviceName, final QName portName, int unique) {
+        // ***** FIX: change false to true once GMBAL bug fixed.
+        ManagedObjectManager mom = createMOM(false);
+        mom = initMOM(mom);
+        mom = createRoot(mom, serviceName, portName, unique);
+        return mom;
+    }
+
+    private @NotNull ManagedObjectManager createMOM(final boolean isFederated) {
+        final ManagedObjectManager mom;
+        try {
+            mom =
+                isFederated ?
+                ManagedObjectManagerFactory
+                    .createFederated(
+                        new ObjectName(
+                            "amx:pp=/mon,type=server-mon,name=server"))
+                :
+                ManagedObjectManagerFactory.createStandalone("com.sun.metro");
+        } catch (Throwable t) {
+            if (isFederated) {
+                logger.log(Level.WARNING, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
+                return createMOM(false);
+            } else {
+                logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
+                return ManagedObjectManagerFactory.createNOOP();
+            }
+        }
+        return mom;
+    }
+
+    private @NotNull ManagedObjectManager initMOM(final ManagedObjectManager mom) {
+        try {
             if (typelibDebug != -1) {
-                managedObjectManager.setTypelibDebug(typelibDebug);
+                mom.setTypelibDebug(typelibDebug);
             }
             if (registrationDebug.equals("FINE")) {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.FINE);
+                mom.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.FINE);
             } else if (registrationDebug.equals("NORMAL")) {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
+                mom.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NORMAL);
             } else {
-                managedObjectManager.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NONE);
+                mom.setRegistrationDebug(ManagedObjectManager.RegistrationDebugLevel.NONE);
             }
-            managedObjectManager.setRuntimeDebug(runtimeDebug);
+            mom.setRuntimeDebug(runtimeDebug);
 
-            managedObjectManager.stripPrefix(
+            mom.stripPrefix(
                 "com.sun.xml.ws.server",
                 "com.sun.xml.ws.rx.rm.runtime.sequence");
 
             // Add annotations to a standard class
-            managedObjectManager.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(ManagedData.class));
-            managedObjectManager.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(Description.class));
-            managedObjectManager.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(InheritedAttributes.class));
+            mom.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(ManagedData.class));
+            mom.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(Description.class));
+            mom.addAnnotation(javax.xml.ws.WebServiceFeature.class, DummyWebServiceFeature.class.getAnnotation(InheritedAttributes.class));
 
             // Defer so we can register "this" as root from
             // within constructor.
-            managedObjectManager.suspendJMXRegistration();
+            mom.suspendJMXRegistration();
 
-            // We include the service+portName to uniquely identify
-            // the managed objects under it (since there can be multiple
-            // services in the container).
-            managedObjectManager.createRoot(
-                this,
-                serviceName.toString() + portName.toString() + "-"
-                + String.valueOf(unique++)); // TBD: only append unique
-                                             // if clash. Waiting for GMBAL RFE
-
-            return managedObjectManager;
         } catch (Throwable t) {
+            // FIX: ?? do I need to mom.close() here?
+            // I tried it but got GMBAL errors.
             logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
-            //throw new WebServiceException(t);
             return ManagedObjectManagerFactory.createNOOP();
+        }
+        return mom;
+    }
+
+    private ManagedObjectManager createRoot(final ManagedObjectManager mom, final QName serviceName, final QName portName, int unique) {
+        final String rootName = 
+            serviceName.toString() + portName.toString() 
+            + (unique == 0 ? "" : "-" + String.valueOf(unique));
+        try {
+            // serviceName+portName identifies the managed objects under it.
+            // There can be multiple services in the container.
+            // The same serviceName+portName can live in different apps at
+            // different endpoint addresses.
+            // We do not know the endpoint address until the first request
+            // comes in, which is after monitoring is setup.
+            // In that case, make it unique.
+            mom.createRoot(this, rootName);
+            return mom;
+        } catch (Throwable t) {
+            if (t.getCause() instanceof InstanceAlreadyExistsException) {
+                final String basemsg ="duplicate rootname: " + rootName + " : ";
+                // ***** FIX: make this settable
+                if (unique > 3) {
+                    final String msg = basemsg + "Giving up.";
+                    logger.log(Level.WARNING, msg, t);
+                    return ManagedObjectManagerFactory.createNOOP();
+                }
+                final String msg = basemsg + "Will try to make unique";
+                logger.log(Level.WARNING, msg, t);
+                return createMOMLoop(serviceName, portName, ++unique);
+            } else {
+                return ManagedObjectManagerFactory.createNOOP();
+            }
         }
     }
 
@@ -406,18 +462,11 @@ public final class MonitorRootService {
             logger.log(Level.WARNING, "TBD", e);
         }
     }
-
-    // Necessary because same serviceName+portName can live in
-    // different apps at different addresses.  We do not know the
-    // address until the first request comes in, which is after
-    // monitoring is setup.
-
-    // TBD: Add address field to Service class below and fill it
-    // in on first request.  That will make it easier for users.
-    private static long unique = 1;
-
 }
 
+
+// This enables us to annotate the WebServiceFeature class even thought
+// we can't explicitly put the annotations in the class itself.
 @ManagedData
 @Description("WebServiceFeature")
 @InheritedAttributes({
