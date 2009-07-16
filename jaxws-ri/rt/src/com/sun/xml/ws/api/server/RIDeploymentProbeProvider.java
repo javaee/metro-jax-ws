@@ -1,8 +1,8 @@
 package com.sun.xml.ws.api.server;
 
-import org.glassfish.probe.provider.annotations.ProbeProvider;
-import org.glassfish.probe.provider.annotations.Probe;
-import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
 
 /**
  * sun-jaxws.xml deployment probe. A registered listener get to listen the emited
