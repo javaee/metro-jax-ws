@@ -290,7 +290,7 @@ public class RuntimeModeler {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
             if (generateWrapperBeans) {
-                logger.info("Dynamically creating request wrapper Class " + className);
+                logger.fine("Dynamically creating request wrapper Class " + className);
                 return WrapperBeanGenerator.createRequestWrapperBean(className, method, reqElemName, loader);
             }
             throw new RuntimeModelerException(e);
@@ -303,7 +303,7 @@ public class RuntimeModeler {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
             if (generateWrapperBeans) {
-                logger.info("Dynamically creating response wrapper bean Class " + className);
+                logger.fine("Dynamically creating response wrapper bean Class " + className);
                 return WrapperBeanGenerator.createResponseWrapperBean(className, method, resElemName, loader);
             }
             throw new RuntimeModelerException(e);
@@ -317,7 +317,7 @@ public class RuntimeModeler {
             return loader.loadClass(className);
         } catch (ClassNotFoundException e) {
             if (generateWrapperBeans) {
-                logger.info("Dynamically creating exception bean Class " + className);
+                logger.fine("Dynamically creating exception bean Class " + className);
                 return WrapperBeanGenerator.createExceptionBean(className, exception, targetNamespace, name, namespace, loader);
             }
             throw new RuntimeModelerException(e);
