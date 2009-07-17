@@ -67,6 +67,7 @@ import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.RuntimeVersion;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.InheritedAttribute;
@@ -320,6 +321,7 @@ public final class MonitorRootService {
     //
     // Service-side ManagedObjectManager creation
     //
+
     @NotNull ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
         if (!monitoring) {
             return ManagedObjectManagerFactory.createNOOP();
@@ -328,34 +330,44 @@ public final class MonitorRootService {
     }
 
     private @NotNull ManagedObjectManager createMOMLoop(final QName serviceName, final QName portName, int unique) {
-        // ***** FIX: change false to true once GMBAL bug fixed.
-        ManagedObjectManager mom = createMOM(false);
+        ManagedObjectManager mom = createMOM(isFederated());
         mom = initMOM(mom);
         mom = createRoot(mom, serviceName, portName, unique);
         return mom;
     }
 
-    private @NotNull ManagedObjectManager createMOM(final boolean isFederated) {
-        final ManagedObjectManager mom;
+    private ObjectName isFederated() {
         try {
-            mom =
+            final javax.management.MBeanServer mbeanServer = 
+                java.lang.management.ManagementFactory.getPlatformMBeanServer();
+            // FIX: get name from AMXGlassfish instead of hard-coded.
+            final ObjectName amxName =
+                // AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
+                new ObjectName("amx:pp=/mon,type=server-mon,name=server");
+            return mbeanServer.isRegistered(amxName) ? amxName : null;
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
+            return null;
+        }
+    }
+
+    private @NotNull ManagedObjectManager createMOM(ObjectName amxName) {
+        final boolean isFederated = amxName != null;
+        try {
+            return
                 isFederated ?
-                ManagedObjectManagerFactory
-                    .createFederated(
-                        new ObjectName(
-                            "amx:pp=/mon,type=server-mon,name=server"))
+                ManagedObjectManagerFactory.createFederated(amxName)
                 :
                 ManagedObjectManagerFactory.createStandalone("com.sun.metro");
         } catch (Throwable t) {
             if (isFederated) {
-                logger.log(Level.WARNING, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
-                return createMOM(false);
+                logger.log(Level.WARNING, "Problem while attempting to federate with GlassFish AMX monitoring..  Trying standalone.", t);
+                return createMOM(null);
             } else {
                 logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
                 return ManagedObjectManagerFactory.createNOOP();
             }
         }
-        return mom;
     }
 
     private @NotNull ManagedObjectManager initMOM(final ManagedObjectManager mom) {
