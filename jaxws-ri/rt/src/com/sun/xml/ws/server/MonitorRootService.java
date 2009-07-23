@@ -351,7 +351,7 @@ public final class MonitorRootService {
         }
     }
 
-    private @NotNull ManagedObjectManager createMOM(ObjectName amxName) {
+    private @NotNull ManagedObjectManager createMOM(final ObjectName amxName) {
         final boolean isFederated = amxName != null;
         try {
             return
@@ -398,8 +398,11 @@ public final class MonitorRootService {
             mom.suspendJMXRegistration();
 
         } catch (Throwable t) {
-            // FIX: ?? do I need to mom.close() here?
-            // I tried it but got GMBAL errors.
+            try {
+                mom.close();
+            } catch (java.io.IOException e) {
+                logger.log(Level.WARNING, "Ignoring exception caught when closing unused ManagedObjectManager", e);
+            }
             logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
             return ManagedObjectManagerFactory.createNOOP();
         }
@@ -422,9 +425,13 @@ public final class MonitorRootService {
             logger.log(Level.WARNING, "Monitoring rootname successfully set to: " + rootName);
             return mom;
         } catch (Throwable t) {
+            try {
+                mom.close();
+            } catch (java.io.IOException e) {
+                logger.log(Level.WARNING, "Ignoring exception caught when closing unused ManagedObjectManager", e);
+            }
             if (t.getCause() instanceof InstanceAlreadyExistsException) {
                 final String basemsg ="duplicate rootname: " + rootName + " : ";
-                // ***** FIX: make this settable
                 if (unique > maxUniqueEndpointRootNameRetries) {
                     final String msg = basemsg + "Giving up.";
                     logger.log(Level.WARNING, msg, t);
