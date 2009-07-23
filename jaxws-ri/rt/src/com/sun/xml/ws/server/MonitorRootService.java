@@ -419,12 +419,13 @@ public final class MonitorRootService {
             // comes in, which is after monitoring is setup.
             // In that case, make it unique.
             mom.createRoot(this, rootName);
+            logger.log(Level.WARNING, "Monitoring rootname successfully set to: " + rootName);
             return mom;
         } catch (Throwable t) {
             if (t.getCause() instanceof InstanceAlreadyExistsException) {
                 final String basemsg ="duplicate rootname: " + rootName + " : ";
                 // ***** FIX: make this settable
-                if (unique > 3) {
+                if (unique > maxUniqueEndpointRootNameRetries) {
                     final String msg = basemsg + "Giving up.";
                     logger.log(Level.WARNING, msg, t);
                     return ManagedObjectManagerFactory.createNOOP();
@@ -438,10 +439,11 @@ public final class MonitorRootService {
         }
     }
 
-    private static boolean monitoring        = true;
-    private static int     typelibDebug      = -1;
-    private static String  registrationDebug = "NONE";
-    private static boolean runtimeDebug      = false;
+    private static boolean monitoring                       = true;
+    private static int     typelibDebug                     = -1;
+    private static String  registrationDebug                = "NONE";
+    private static boolean runtimeDebug                     = false;
+    private static int     maxUniqueEndpointRootNameRetries = 100;
 
     static {
         try {
@@ -462,13 +464,20 @@ public final class MonitorRootService {
             if (i != null) {
                 typelibDebug = i;
             }
+
             s = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
             if (s != null) {
                 registrationDebug = s.toUpperCase();
             }
+
             s = System.getProperty("com.sun.xml.ws.monitoring.runtimeDebug");
             if (s != null && s.toLowerCase().equals("true")) {
                 runtimeDebug = true;
+            }
+
+            i = Integer.getInteger("com.sun.xml.ws.monitoring.maxUniqueEndpointRootNameRetries");
+            if (i != null) {
+                maxUniqueEndpointRootNameRetries = i;
             }
         } catch (Exception e) {
             logger.log(Level.WARNING, "TBD", e);
