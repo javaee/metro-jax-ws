@@ -62,6 +62,7 @@ import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.HandlerMessages;
 import com.sun.xml.ws.util.Pool;
+import com.sun.xml.ws.util.ServiceFinder;
 import com.sun.xml.ws.util.Pool.TubePool;
 import com.sun.xml.ws.policy.PolicyMap;
 import com.sun.xml.ws.wsdl.OperationDispatcher;
@@ -179,18 +180,14 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                 }
             }
 
-            for (EndpointComponent ec : getComponentRegistry()) {
-                EndpointReferenceExtensionContributor spi = ec.getSPI(EndpointReferenceExtensionContributor.class);
-                if (spi != null) {
-                    WSEndpointReference.EPRExtension wsdlEPRExtn = eprExtensions.remove(spi.getQName());
-                    WSEndpointReference.EPRExtension endpointEprExtn = spi.getEPRExtension(wsdlEPRExtn);
+            EndpointReferenceExtensionContributor[] eprExtnContributors = ServiceFinder.find(EndpointReferenceExtensionContributor.class).toArray();
+            for(EndpointReferenceExtensionContributor eprExtnContributor :eprExtnContributors) {
+                WSEndpointReference.EPRExtension wsdlEPRExtn = eprExtensions.remove(eprExtnContributor.getQName());
+                    WSEndpointReference.EPRExtension endpointEprExtn = eprExtnContributor.getEPRExtension(this,wsdlEPRExtn);
                     if (endpointEprExtn != null) {
                         eprExtensions.put(endpointEprExtn.getQName(), endpointEprExtn);
                     }
-                }
             }
-
-
             for (WSEndpointReference.EPRExtension extn : eprExtensions.values()) {
                 endpointReferenceExtensions.put(extn.getQName(), new WSEPRExtension(
                         XMLStreamBuffer.createNewBufferFromXMLStreamReader(extn.readAsXMLStreamReader()),extn.getQName()));

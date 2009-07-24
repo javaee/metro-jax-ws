@@ -37,6 +37,7 @@
 package com.sun.xml.ws.api.server;
 
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
+import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
 import com.sun.istack.Nullable;
 
 import javax.xml.namespace.QName;
@@ -45,7 +46,8 @@ import javax.xml.namespace.QName;
  * Implementations of this class can contribute properties associated with an Endpoint. The properties appear as
  * extensibility elements inside the EndpointReference of the endpoint. If any EPR extensibility elements are configured
  * for an endpoint, the EndpointReference is published inside the WSDL.
- *
+ * 
+ * @since JAX-WS 2.2
  * @author Rama Pulavarthi
  */
 public abstract class EndpointReferenceExtensionContributor {
@@ -56,7 +58,7 @@ public abstract class EndpointReferenceExtensionContributor {
      *
      * @return  EPRExtension that should be finally configured on an Endpoint.
      */
-    public abstract WSEndpointReference.EPRExtension getEPRExtension( @Nullable WSEndpointReference.EPRExtension extension );
+    public abstract WSEndpointReference.EPRExtension getEPRExtension(WSEndpoint endpoint, @Nullable WSEndpointReference.EPRExtension extension );
 
     /**
      *
