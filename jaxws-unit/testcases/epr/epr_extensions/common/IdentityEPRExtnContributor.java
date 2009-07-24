@@ -51,47 +51,33 @@ import java.io.ByteArrayInputStream;
 /**
  * @author Rama.Pulavarthi@sun.com
  */
-public class IdentityComponent implements EndpointComponent{
+public class IdentityEPRExtnContributor extends EndpointReferenceExtensionContributor {
     private String s = "<Identity xmlns=\"http://example.com/addressingidentity\">" +
-                "<KeyInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" +
-                    "<X509Data>" +
-                        "<X509Certificate>" +
-                            "1234567890" +
-                        "</X509Certificate>" +
-                    "</X509Data>" +
-                "</KeyInfo>" +
+            "<KeyInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" +
+            "<X509Data>" +
+            "<X509Certificate>" +
+            "1234567890" +
+            "</X509Certificate>" +
+            "</X509Data>" +
+            "</KeyInfo>" +
             "</Identity>";
 
-    public IdentityComponent(WSEndpoint e) {
-        //check PolicyMap
+    QName ID_QNAME = new QName("http://example.com/addressingidentity", "Identity");
+
+    public WSEndpointReference.EPRExtension getEPRExtension(WSEndpoint endpoint, @Nullable WSEndpointReference.EPRExtension extension) {
+        return new WSEndpointReference.EPRExtension() {
+            public XMLStreamReader readAsXMLStreamReader() throws XMLStreamException {
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(s.getBytes()));
+                return reader;
+            }
+
+            public QName getQName() {
+                return ID_QNAME;
+            }
+        };
     }
-    public <T> T getSPI(@NotNull Class<T> spiType) {
-        //if id policy enabled &&
-        if(spiType.isAssignableFrom(EndpointReferenceExtensionContributor.class) ) {
-            return (T) new IdentityEPRExtnContributor();
 
-        }
-        return null;
-    }
-
-    class IdentityEPRExtnContributor extends EndpointReferenceExtensionContributor {
-        QName ID_QNAME = new QName("http://example.com/addressingidentity","Identity");
-
-        public WSEndpointReference.EPRExtension getEPRExtension(@Nullable WSEndpointReference.EPRExtension extension) {
-            return new WSEndpointReference.EPRExtension() {
-                public XMLStreamReader readAsXMLStreamReader() throws XMLStreamException {
-                    XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(s.getBytes()));
-                    return reader;
-                }
-
-                public QName getQName() {
-                    return ID_QNAME;
-                }
-            };
-        }
-
-        public QName getQName() {
-            return ID_QNAME;
-        }
+    public QName getQName() {
+        return ID_QNAME;
     }
 }

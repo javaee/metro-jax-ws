@@ -48,7 +48,6 @@ public class MyTube extends AbstractFilterTubeImpl {
 
     public MyTube(ServerTubeAssemblerContext context, Tube next) {
         super(next);
-        context.getEndpoint().getComponentRegistry().add(new IdentityComponent(context.getEndpoint()));
     }
 
     protected MyTube(MyTube that, TubeCloner cloner) {
