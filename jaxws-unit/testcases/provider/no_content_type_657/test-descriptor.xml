@@ -1,4 +1,4 @@
-<descriptor since="2.1.3" transport="http">
+<descriptor since="2.1.7" transport="http">
   <description>HTTP PUT doesn't have any response</description>
 
   <service basedir="./server">
