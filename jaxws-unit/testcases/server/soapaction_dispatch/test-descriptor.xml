@@ -1,4 +1,4 @@
-<descriptor since="2.2" transport="http" bugs="jax-ws-708, jax-ws-768">
+<descriptor since="2.2" transport="http" bugs="jax-ws-708 jax-ws-768">
   <description>
     Test for SOAPAction based dispatching in SOAP 1.1 and SOAP 1.2
   </description>
