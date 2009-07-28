@@ -43,4 +43,10 @@ public class TestImpl {
     public String method6(String str) {
         return str;
     }
+
+    // Not a web method since it is excluded
+    @WebMethod(exclude=true)
+    public String method7(String str) {
+        return str;
+    }
 }
