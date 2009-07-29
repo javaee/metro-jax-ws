@@ -74,6 +74,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.ws.ProtocolException;
@@ -163,6 +164,11 @@ public abstract class Messages {
         } else if (payload instanceof StreamSource) {
             StreamSource ss = (StreamSource)payload;
             if (ss.getInputStream() == null && ss.getReader() == null && ss.getSystemId() == null) {
+                return new EmptyMessageImpl(ver);
+            }
+        } else if (payload instanceof SAXSource) {
+            SAXSource ss = (SAXSource)payload;
+            if (ss.getInputSource() == null && ss.getXMLReader() == null) {
                 return new EmptyMessageImpl(ver);
             }
         }
