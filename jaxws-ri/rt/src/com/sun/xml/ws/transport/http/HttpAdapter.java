@@ -460,7 +460,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                     // set the default one.
                     con.setStatus(WSHTTPConnection.ONEWAY);
                 }
-                
+
                 try {
                     con.getOutput().close(); // no payload
                 } catch (IOException e) {
@@ -544,7 +544,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
         }
 
         con.setStatus(HttpURLConnection.HTTP_OK);
-        con.setContentTypeResponseHeader("text/xml;charset=\"utf-8\"");
+        con.setContentTypeResponseHeader("text/xml;charset=utf-8");
 
         OutputStream os = con.getProtocol().contains("1.1") ? con.getOutput() : new Http10OutputStream(con);
 
@@ -586,7 +586,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     private void writeNotFoundErrorPage(WSHTTPConnection con, String message) throws IOException {
         con.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
-        con.setContentTypeResponseHeader("text/html; charset=\"utf-8\"");
+        con.setContentTypeResponseHeader("text/html; charset=utf-8");
 
         PrintWriter out = new PrintWriter(new OutputStreamWriter(con.getOutput(),"UTF-8"));
         out.println("<html>");
@@ -643,7 +643,7 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
         // standard browsable page
         con.setStatus(WSHTTPConnection.OK);
-        con.setContentTypeResponseHeader("text/html; charset=\"utf-8\"");
+        con.setContentTypeResponseHeader("text/html; charset=utf-8");
 
         PrintWriter out = new PrintWriter(new OutputStreamWriter(con.getOutput(),"UTF-8"));
         out.println("<html>");
