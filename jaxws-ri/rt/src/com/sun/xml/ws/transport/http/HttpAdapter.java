@@ -449,11 +449,14 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
 
     final class Oneway implements TransportBackChannel {
         WSHTTPConnection con;
+        boolean closed;
+
         Oneway(WSHTTPConnection con) {
             this.con = con;
         }
         public void close() {
-            if(!con.isClosed()) {
+            if (!closed) {
+                closed = true;
                 // close the response channel now
                 if (con.getStatus() == 0) {
                     // if the appliation didn't set the status code,
