@@ -1,4 +1,4 @@
-package com.sun.xml.ws.api.server;
+package com.sun.xml.ws.transport.http.servlet;
 
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 import org.glassfish.external.probe.provider.annotations.Probe;
@@ -11,15 +11,15 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  * @author Jitendra Kotamraju
  */
 @ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="ri")
-public class RIDeploymentProbeProvider {
+public class JAXWSRIDeploymentProbeProvider {
 
     @Probe(name="deploy")
-    public void deploy(@ProbeParam("name")String name, @ProbeParam("endpoint")WSEndpoint endpoint) {
+    public void deploy(@ProbeParam("adapter")ServletAdapter adpater) {
         // intentionally left empty.
     }
 
     @Probe(name="undeploy")
-    public void undeploy(@ProbeParam("name")String name) {
+    public void undeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         // intentionally left empty.
     }
     

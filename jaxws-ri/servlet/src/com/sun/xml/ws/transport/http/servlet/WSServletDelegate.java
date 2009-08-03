@@ -41,7 +41,6 @@ import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.util.exception.JAXWSExceptionBase;
 import com.sun.xml.ws.util.localization.Localizable;
 import com.sun.xml.ws.util.localization.Localizer;
-import com.sun.xml.ws.api.server.RIDeploymentProbeProvider;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

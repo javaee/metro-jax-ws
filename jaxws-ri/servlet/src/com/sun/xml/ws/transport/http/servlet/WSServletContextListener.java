@@ -38,7 +38,6 @@ package com.sun.xml.ws.transport.http.servlet;
 
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.Container;
-import com.sun.xml.ws.api.server.RIDeploymentProbeProvider;
 import com.sun.xml.ws.resources.WsservletMessages;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.HttpAdapter;
@@ -71,6 +70,7 @@ public final class WSServletContextListener
 
     private WSServletDelegate delegate;
     private List<ServletAdapter> adapters;
+    private final JAXWSRIDeploymentProbeProvider probe = new JAXWSRIDeploymentProbeProvider();
 
     public void attributeAdded(ServletContextAttributeEvent event) {
     }
@@ -87,7 +87,7 @@ public final class WSServletContextListener
         }
 
         if (adapters != null) {
-            RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
+
             for(ServletAdapter a : adapters) {
                 try {
                     a.getEndpoint().dispose();
@@ -96,7 +96,7 @@ public final class WSServletContextListener
                 }
 
                 // Emit undeployment probe event for each endpoint
-                probe.undeploy(a.getName());
+                probe.undeploy(a);
             }
         }
 
@@ -117,7 +117,7 @@ public final class WSServletContextListener
         try {
             // Parse the descriptor file and build endpoint infos
             DeploymentDescriptorParser<ServletAdapter> parser = new DeploymentDescriptorParser<ServletAdapter>(
-                classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList());
+                classLoader,new ServletResourceLoader(context), createContainer(context), new ServletAdapterList(context));
             URL sunJaxWsXml = context.getResource(JAXWS_RI_RUNTIME);
             if(sunJaxWsXml==null)
                 throw new WebServiceException(WsservletMessages.NO_SUNJAXWS_XML(JAXWS_RI_RUNTIME));
@@ -128,9 +128,8 @@ public final class WSServletContextListener
             context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,delegate);
 
             // Emit deployment probe event for each endpoint
-            RIDeploymentProbeProvider probe = new RIDeploymentProbeProvider();
             for(ServletAdapter adapter : adapters) {
-                probe.deploy(adapter.getName(), adapter.getEndpoint());
+                probe.deploy(adapter);
             }
             
         } catch (Throwable e) {

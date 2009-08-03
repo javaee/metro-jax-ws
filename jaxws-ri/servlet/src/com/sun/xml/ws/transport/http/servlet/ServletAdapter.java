@@ -71,7 +71,6 @@ import java.util.logging.Logger;
 public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     final String name;
 
-
     protected ServletAdapter(String name, String urlPattern, WSEndpoint endpoint, ServletAdapterList owner) {
         super(endpoint, owner, urlPattern);
         this.name = name;
@@ -83,6 +82,10 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
             module.getBoundEndpoints().add(this);
         }
 
+    }
+
+    public ServletContext getServletContext() {
+        return ((ServletAdapterList)owner).getServletContext();
     }
 
     /**
@@ -129,6 +132,11 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     /**
      * Version of {@link #handle(WSHTTPConnection)}
      * that takes convenient parameters for servlet.
+     *
+     * @param context Servlet Context
+     * @param request Servlet Request
+     * @param response Servlet Response
+     * @throws IOException when there is i/o error in handling request
      */
     public void handle(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws IOException {
         WSHTTPConnection connection = new ServletConnectionImpl(this,context,request,response);
@@ -136,6 +144,10 @@ public final class ServletAdapter extends HttpAdapter implements BoundEndpoint {
     }
 
     /**
+     * @param context Servlet Context
+     * @param request Servlet Request
+     * @param response Servlet Response
+     * @throws IOException when there is i/o error in handling request
      *
      * @deprecated
      *      Use {@link #handle(ServletContext, HttpServletRequest, HttpServletResponse)}
