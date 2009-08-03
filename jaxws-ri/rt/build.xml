@@ -99,7 +99,7 @@
 
 
 
-  <target name="test" description="rt-whitebox-tests">
+  <target name="test" description="rt-whitebox-tests" unless="from.source">
      <path id="test.classpath">
         <path refid="runtime.compile.classpath"/>
         <pathelement path="${build.dir}/classes" />
