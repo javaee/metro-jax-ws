@@ -191,6 +191,7 @@ public final class Packet extends DistributedPropertySet {
 
         this.acceptableMimeTypes = that.acceptableMimeTypes;
         this.endpoint = that.endpoint;
+        this.proxy = that.proxy;
         this.webServiceContextDelegate = that.webServiceContextDelegate;
         this.soapAction = that.soapAction;
         // copy other properties that need to be copied. is there any?
