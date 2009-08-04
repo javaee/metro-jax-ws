@@ -131,7 +131,7 @@ public final class MetadataFinder extends DOMForest{
                     inlinedSchemaElements.add((Element) schemas.item(i));
             }
         }
-        identifyRootWslds();
+        identifyRootWsdls();
     }
 
     /**
@@ -155,7 +155,7 @@ public final class MetadataFinder extends DOMForest{
     /**
      * Identifies WSDL documents from the {@link DOMForest}. Also identifies the root wsdl document.
      */
-    private void identifyRootWslds(){
+    private void identifyRootWsdls(){
         for(String location: rootDocuments){
             Document doc = get(location);
             if(doc!=null){
