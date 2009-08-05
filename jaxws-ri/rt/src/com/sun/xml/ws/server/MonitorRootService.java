@@ -326,10 +326,16 @@ public final class MonitorRootService {
         if (!monitoring) {
             return ManagedObjectManagerFactory.createNOOP();
         }
-        return createMOMLoop(serviceName, portName, 0);
+        String sname = serviceName.toString();
+        String pname = portName.toString() ;
+        if (sname.equals("") && pname.equals("")) {
+            sname = "urn:metro:";
+            pname = "provider";
+        }
+        return createMOMLoop(sname, pname, 0);
     }
 
-    private @NotNull ManagedObjectManager createMOMLoop(final QName serviceName, final QName portName, int unique) {
+    private @NotNull ManagedObjectManager createMOMLoop(final String serviceName, final String portName, final int unique) {
         ManagedObjectManager mom = createMOM(isFederated());
         mom = initMOM(mom);
         mom = createRoot(mom, serviceName, portName, unique);
@@ -409,7 +415,7 @@ public final class MonitorRootService {
         return mom;
     }
 
-    private ManagedObjectManager createRoot(final ManagedObjectManager mom, final QName serviceName, final QName portName, int unique) {
+    private ManagedObjectManager createRoot(final ManagedObjectManager mom, final String serviceName, final String portName, int unique) {
         final String rootName = 
             serviceName.toString() + portName.toString() 
             + (unique == 0 ? "" : "-" + String.valueOf(unique));
