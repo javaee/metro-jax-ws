@@ -329,8 +329,8 @@ public final class MonitorRootService {
         String sname = serviceName.toString();
         String pname = portName.toString() ;
         if (sname.equals("") && pname.equals("")) {
-            sname = "urn:metro:";
-            pname = "provider";
+            sname = "pro";
+            pname = "vider";
         }
         return createMOMLoop(sname, pname, 0);
     }
