@@ -1,4 +1,4 @@
-<descriptor since="2.2">
+<descriptor since="2.2" bugs="jax-ws-729">
     <description>customization test for fully qualified exception names</description>
     <service basedir="./server">
         <wsdl href="custom.wsdl"/>
