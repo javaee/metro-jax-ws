@@ -1,0 +1,9 @@
+<descriptor since="2.2">
+    <description>customization test for fully qualified exception names</description>
+    <service basedir="./server">
+        <wsdl href="custom.wsdl"/>
+    </service>
+    <client name="test3">
+        assertEquals("HelloWorld!", helloPort.foo("Hello", "World!"));
+    </client>
+</descriptor>
