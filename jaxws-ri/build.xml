@@ -226,7 +226,7 @@
     <mkdir dir="${dist20.home}/lib"/>
     <mkdir dir="${dist20.home}/docs"/>
     <mkdir dir="${dist20.home}/samples"/>
-
+    <!--
     <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackonsjsas.xml">
         <filterset begintoken="@@" endtoken="@@">
           <filter token="SPEC_VERSION"
@@ -237,8 +237,8 @@
                   value="${release.impl.version.suffix}"/>
         </filterset>
     </copy>
-
-      <copy tofile="${dist20.home}/tomcat.xml" file="${build.home}/../etc/istackontomcat.xml">
+    -->
+      <copy tofile="${dist20.home}/build.xml" file="${build.home}/../etc/istackontomcat.xml">
           <filterset begintoken="@@" endtoken="@@">
             <filter token="SPEC_VERSION"
                     value="${release.spec.version}" />
