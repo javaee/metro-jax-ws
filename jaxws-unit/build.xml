@@ -162,8 +162,6 @@
                 <arg path="${test}"/>
 
                 <arg line="${args}"/>
-                <jvmarg  value="-DproxyHost=webcache.sfbay.sun.com"/>
-                <jvmarg  value="-DproxyPort=8080"/>
                 <jvmarg  value="-Djava.endorsed.dirs=${endorsed.dir}"/>
 
                 <!--jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,address=8000" />
