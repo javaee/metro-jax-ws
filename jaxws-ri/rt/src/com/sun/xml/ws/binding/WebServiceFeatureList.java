@@ -73,15 +73,14 @@ import java.util.logging.Logger;
 public final class WebServiceFeatureList implements WSFeatureList {
     private Map<Class<? extends WebServiceFeature>, WebServiceFeature> wsfeatures =
             new HashMap<Class<? extends WebServiceFeature>, WebServiceFeature>();
+
     public WebServiceFeatureList() {
     }
 
     /**
      * Delegate to this parent if non-null.
      */
-    private
-    @Nullable
-    WSDLFeaturedObject parent;
+    private @Nullable WSDLFeaturedObject parent;
 
     public WebServiceFeatureList(@NotNull WebServiceFeature... features) {
         if (features != null)
@@ -98,42 +97,72 @@ public final class WebServiceFeatureList implements WSFeatureList {
     }
 
     /**
+     * Adds the corresponding features to the list for feature annotations(i.e
+     * which have {@link WebServiceFeatureAnnotation} meta annotation)
+     *
+     * @param annIt collection of annotations(that can have non-feature annotations)
+     */
+    public void parseAnnotations(Iterable<Annotation> annIt) {
+        for(Annotation ann : annIt) {
+            WebServiceFeature feature = getFeature(ann);
+            if (feature != null) {
+                add(feature);
+            }
+        }
+    }
+
+    /**
+     * Returns a corresponding feature for a feature annotation(i.e which has
+     * {@link WebServiceFeatureAnnotation} meta annotation)
+     * 
+     * @return corresponding feature for the annotation
+     *         null, if the annotation is nota feature annotation
+     */
+    public static WebServiceFeature getFeature(Annotation a) {
+        WebServiceFeature ftr;
+        if (!(a.annotationType().isAnnotationPresent(WebServiceFeatureAnnotation.class))) {
+            ftr = null;
+        } else if (a instanceof Addressing) {
+            Addressing addAnn = (Addressing) a;
+            try {
+                ftr = new AddressingFeature(addAnn.enabled(), addAnn.required(),addAnn.responses());
+            } catch(NoSuchMethodError e) {
+                //throw error. We can't default to Responses.ALL as we dont know if the user has not used 2.2 annotation with responses.
+                throw new RuntimeModelerException(ModelerMessages.RUNTIME_MODELER_ADDRESSING_RESPONSES_NOSUCHMETHOD(toJar(Which.which(Addressing.class))));
+            }
+        } else if (a instanceof MTOM) {
+            MTOM mtomAnn = (MTOM) a;
+            ftr = new MTOMFeature(mtomAnn.enabled(), mtomAnn.threshold());
+        } else if (a instanceof RespectBinding) {
+            RespectBinding rbAnn = (RespectBinding) a;
+            ftr = new RespectBindingFeature(rbAnn.enabled());
+        } else {
+            ftr = getWebServiceFeatureBean(a);
+        }
+        return ftr;
+    }
+
+    /**
      * Reads {@link WebServiceFeatureAnnotation feature annotations} on a class
      * and adds them to the list.
+     *
+     * @param endpointClass web service impl class
      */
     public void parseAnnotations(Class<?> endpointClass) {
         for (Annotation a : endpointClass.getAnnotations()) {
-            // TODO: this really needs generalization
-            WebServiceFeature ftr;
-            if (!(a.annotationType().isAnnotationPresent(WebServiceFeatureAnnotation.class))) {
-                continue;
-            } else if (a instanceof Addressing) {
-                Addressing addAnn = (Addressing) a;
-                try {
-                ftr = new AddressingFeature(addAnn.enabled(), addAnn.required(),addAnn.responses());
-                } catch(NoSuchMethodError e) {
-                    //throw error. We can't default to Responses.ALL as we dont know if the user has not used 2.2 annotation with responses.
-                    throw new RuntimeModelerException(ModelerMessages.RUNTIME_MODELER_ADDRESSING_RESPONSES_NOSUCHMETHOD(toJar(Which.which(Addressing.class))));
-                }
-            } else if (a instanceof MTOM) {
-                MTOM mtomAnn = (MTOM) a;
-                ftr = new MTOMFeature(mtomAnn.enabled(), mtomAnn.threshold());
-
-                // check conflict with @BindingType
-                BindingID bindingID = BindingID.parse(endpointClass);
-                MTOMFeature bindingMtomSetting = bindingID.createBuiltinFeatureList().get(MTOMFeature.class);
-                if (bindingMtomSetting != null && bindingMtomSetting.isEnabled() ^ ftr.isEnabled()) {
-                    throw new RuntimeModelerException(
+            WebServiceFeature ftr = getFeature(a);
+            if (ftr != null) {
+                if (ftr instanceof MTOMFeature) {
+                    // check conflict with @BindingType
+                    BindingID bindingID = BindingID.parse(endpointClass);
+                    MTOMFeature bindingMtomSetting = bindingID.createBuiltinFeatureList().get(MTOMFeature.class);
+                    if (bindingMtomSetting != null && bindingMtomSetting.isEnabled() ^ ftr.isEnabled()) {
+                        throw new RuntimeModelerException(
                             ModelerMessages.RUNTIME_MODELER_MTOM_CONFLICT(bindingID, ftr.isEnabled()));
+                    }
                 }
-
-            } else if (a instanceof RespectBinding) {
-                RespectBinding rbAnn = (RespectBinding) a;
-                ftr = new RespectBindingFeature(rbAnn.enabled());
-            } else {
-                ftr = getWebServiceFeatureBean(a);
+                add(ftr);
             }
-            add(ftr);
         }
     }
 
