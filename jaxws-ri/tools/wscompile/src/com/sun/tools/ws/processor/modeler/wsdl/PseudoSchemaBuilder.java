@@ -70,15 +70,16 @@ public class PseudoSchemaBuilder {
     private static final String w3ceprSchemaBinding = "<bindings\n" +
             "  xmlns=\"http://java.sun.com/xml/ns/jaxb\"\n" +
             "  xmlns:wsa=\"http://www.w3.org/2005/08/addressing\"\n" +
+            "  xmlns:xjc=\"http://java.sun.com/xml/ns/jaxb/xjc\"\n" +
             "  version=\"2.1\">\n" +
             "  \n" +
             "  <bindings scd=\"x-schema::wsa\" if-exists=\"true\">\n" +
             "    <schemaBindings map=\"false\" />\n" +
             "    <bindings scd=\"wsa:EndpointReference\">\n" +
-            "      <class ref=\"javax.xml.ws.wsaddressing.W3CEndpointReference\"/>\n" +
+            "      <class ref=\"javax.xml.ws.wsaddressing.W3CEndpointReference\" xjc:recursive=\"true\"/>\n" +
             "    </bindings>\n" +
             "    <bindings scd=\"~wsa:EndpointReferenceType\">\n" +
-            "      <class ref=\"javax.xml.ws.wsaddressing.W3CEndpointReference\"/>\n" +
+            "      <class ref=\"javax.xml.ws.wsaddressing.W3CEndpointReference\" xjc:recursive=\"true\"/>\n" +
             "    </bindings>\n" +
             "  </bindings>\n" +
             "</bindings>";
