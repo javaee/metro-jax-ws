@@ -175,7 +175,7 @@ valid with Java EE 5 as well.
     </li>
     <li>
         <p>Tested to work with 
-		<a href="https://glassfish.dev.java.net/downloads/v2ur2-b04.html">Glassfish V2 UR2</a> and Apache Tomcat 5.5.x</p>
+		<a href="https://glassfish.dev.java.net/downloads/v2.1-b60e.html">Glassfish V2.1</a> and Apache Tomcat 5.5.x</p>
     </li>
 </ul>
 </section>
@@ -183,21 +183,17 @@ valid with Java EE 5 as well.
 
 <p>The following applies to the JAX-WS standalone bundles.</p>
 
-<ul>
-	<li>Extract ${PRODUCT_NAME} bundle </li>
-	<li>Install on Glassfish v2<ul>
-	<li>If you want to use the ${PRODUCT_NAME} 
-	overriding the one with Glassfish v2 follow the instructions for installing 
-	it on top of Sun One Application Server 9.0 Update 1</li>
-</ul>
+    <ul>
+        <li>Extract ${PRODUCT_NAME} bundle</li>
+        <li>Install on Glassfish v2
+            <ul>
+                <li>If you want to use the ${PRODUCT_NAME}
+                    overriding the one with Glassfish v2, Download Metro bundle from https://metro.dev.java.net and
+                    follow the instructions in that bundle
+                </li>
+            </ul>
 
-	</li>
-	<li>Install on Sun One Application Server 9.0 Update 1<ul>
-		<li>Set AS_HOME to the installation directory of Glassfish</li>
-		<li>cd to the root directory of the extracted ${PRODUCT_SHORT_NAME} bundle</li>
-		<li>Set ${HOME} to the root directory of the extracted ${PRODUCT_SHORT_NAME} bundle</li>
-		<li>Invoke <code>'$ANT_HOME/bin/ant install'</code> to install ${PRODUCT_SHORT_NAME} jar on the 
-		applciation servers - Glassfish v1/v2 or Sun One AS 9.0 UR1</li>
+        </li>
 	</ul>
 	</li>
     <li>Install on Tomcat
