@@ -52,7 +52,7 @@
     </condition>
 
     <target name="glassfish-message">
-        <echo message="NOTE: This script installs/uninstalls JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ on Tomcat. To install and use JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ on Glassfish V2 or V3, Download Metro bundle from https://metro.dev.java.net"/>
+        <echo message="NOTE: This script installs/uninstalls JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ on Tomcat. To install and use JAX-WS RI @@IMPL_VERSION@@ @@IMPL_VERSION_SUFFIX@@ with Glassfish V2 or V3, Download Metro bundle from https://metro.dev.java.net"/>
         <echo/>
     </target>
     <target name="jdk6-message" if="jdk6">
