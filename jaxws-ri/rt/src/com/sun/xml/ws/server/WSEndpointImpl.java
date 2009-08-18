@@ -389,8 +389,18 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     }
 
     private @NotNull ManagedObjectManager createManagedObjectManager(final QName serviceName, final QName portName) {
-        return new MonitorRootService(this)
-            .createManagedObjectManager(serviceName, portName);
+        // serviceName + portName identifies the managed objects under it.
+        // There can be multiple services in the container.
+        // The same serviceName+portName can live in different apps at
+        // different endpoint addresses.
+        // We do not know the endpoint address until the first request
+        // comes in, which is after monitoring is setup.
+        // Monitoring will add -N, where N is unique in case of collisions.
+        String rootName = serviceName.toString() + portName.toString();
+        if (rootName.equals("")) {
+            rootName = "provider";
+        }
+        return new MonitorRootService(this).createManagedObjectManager(rootName);
     }
 }
 
