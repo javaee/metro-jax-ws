@@ -349,54 +349,19 @@ documentation/samples.
 
 </ol>
 
-<h2><a name="3.0"></a><font color="#280099">3.0 Installing ${PRODUCT_NAME} on Glassfish v2</font></h2>
-<ol>
+<h2><a name="3.0"></a><font color="#280099">3.0 Installing ${PRODUCT_NAME}</font></h2>
+<ul>
     <li>
-        Download
-        <a href="https://glassfish.dev.java.net/downloads/v2ur2-b04.html">Glassfish v2 UR2</a> and install it.
-    </li>
-
-    <li>
-        Set <code>AS_HOME</code> to
-        point to the Application Server installation directory.
-    </li>
-
-    <li>Make sure that the Application Server is configured for port 8080
-        (which is the default HTTP port for Glassfish installation) as samples
-        hardcoded with this port info. Otherwise, you need to change samples to use the correct port by replacing '8080" with your port in all the files included in the sample.
-    </li>
-
-    <li>
-        'cd ${'$'+HOME}' then invoke 'ant
-        install'. This will add ${PRODUCT_NAME} jars in the classpath-prefix
-        in domain.xml. This is required so
-        that Glassfish picks-up ${PRODUCT_NAME} jars.
-    </li>
-
-</ol>
-
-<h2><a name="4.0"></a><font color="#280099">4.0 Installing ${PRODUCT_NAME} on Tomcat</font></h2>
-
-<ol>
-    <li>
-        <font color="#000000">Set
-            CATALINA_HOME to your Tomcat installation.</font>
+        Follow the <a href="ReleaseNotes.html#Installation_Instructions">installation instructions</a> from Release Notes.  
     </li>
     <li>
-        Make sure that tomcat is configured for port 8080 as samples hardcoded with this
+        Make sure that your container is configured for port 8080 as samples are hardcoded with this
             port info. Otherwise, you need to change samples to use the correct port by replacing '8080" with your port in all the files included in the sample.
     </li>
-    <li>
-        Run 'ant -f tomcat.xml install'
-    </li>
-    <li>
-        If you are running on top of JDK6, run 'ant -f tomcat.xml install-api'
-    </li>
 
-</ol>
+</ul>
 
-
-<h2><a name="5.0"></a><font color="#280099">5.0 Running the sample</font></h2>
+<h2><a name="4.0"></a><font color="#280099">4.0 Running the sample</font></h2>
 
 <p>Each sample has a readme.txt in its directory that details the instructions specific to the sample. Each sample can be built, deployed and invoked using the
     <code>ANT_HOME/bin/ant</code> and <code>build.xml</code> ant script

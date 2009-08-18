@@ -199,10 +199,10 @@ valid with Java EE 5 as well.
     <li>Install on Tomcat
         <ul>
             <li>Set CATALINA_HOME to your Tomcat installation.</li>
-            <li>Run 'ant -f tomcat.xml install', This essentially copies lib/*.jar from the root of ${PRODUCT_SHORT_NAME} extracted bundle
+            <li>Run 'ant install', This essentially copies lib/*.jar from the root of ${PRODUCT_SHORT_NAME} extracted bundle
                 to $CATALINA_HOME/shared/lib</li>
             <li>
-                If you are running on top of JDK6, run 'ant -f tomcat.xml install-api'
+                If you are running on top of JDK6, run 'ant -f tomcat.xml install-api' or use ant -help fopr detailed information.
             </li>
 
         </ul>
