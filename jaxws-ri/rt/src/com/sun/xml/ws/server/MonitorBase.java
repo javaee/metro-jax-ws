@@ -178,6 +178,10 @@ public abstract class MonitorBase {
             }
             mom.setRuntimeDebug(runtimeDebug);
 
+            // Instead of GMBAL throwing an exception and logging
+            // duplicate name, just have it return null.
+            mom.suppressDuplicateRootReport(true);
+
             mom.stripPrefix(
                 "com.sun.xml.ws.server",
                 "com.sun.xml.ws.rx.rm.runtime.sequence");
@@ -206,29 +210,28 @@ public abstract class MonitorBase {
     private ManagedObjectManager createRoot(final ManagedObjectManager mom, final String rootName, int unique) {
         final String name = rootName + (unique == 0 ? "" : "-" + String.valueOf(unique));
         try {
-            mom.createRoot(this, name);
-            logger.log(Level.WARNING, "Monitoring rootname successfully set to: " + name);
-            return mom;
-        } catch (Throwable t) {
+            final Object ignored = mom.createRoot(this, name);
+            if (ignored != null) {
+                logger.log(Level.WARNING, "Monitoring rootname successfully set to: " + name);
+                return mom;
+            }
             try {
                 mom.close();
             } catch (java.io.IOException e) {
                 logger.log(Level.WARNING, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
-            if (t.getCause() instanceof InstanceAlreadyExistsException) {
-                final String basemsg ="duplicate monitoring rootname: " + name + " : ";
-                if (unique > maxUniqueEndpointRootNameRetries) {
-                    final String msg = basemsg + "Giving up.";
-                    logger.log(Level.WARNING, msg);
-                    return ManagedObjectManagerFactory.createNOOP();
-                }
-                final String msg = basemsg + "Will try to make unique";
+            final String basemsg ="duplicate monitoring rootname: " + name + " : ";
+            if (unique > maxUniqueEndpointRootNameRetries) {
+                final String msg = basemsg + "Giving up.";
                 logger.log(Level.WARNING, msg);
-                return createMOMLoop(rootName, ++unique);
-            } else {
-                logger.log(Level.WARNING, "Error while creating monitoring root with name: " + rootName, t);
                 return ManagedObjectManagerFactory.createNOOP();
             }
+            final String msg = basemsg + "Will try to make unique";
+            logger.log(Level.WARNING, msg);
+            return createMOMLoop(rootName, ++unique);
+        } catch (Throwable t) {
+            logger.log(Level.WARNING, "Error while creating monitoring root with name: " + rootName, t);
+            return ManagedObjectManagerFactory.createNOOP();
         }
     }
 
