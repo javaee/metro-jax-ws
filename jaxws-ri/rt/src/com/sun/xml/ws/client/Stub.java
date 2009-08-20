@@ -190,16 +190,9 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         else
             this.tubes = new TubePool(createPipeline(portInfo, binding));
 
-        /* TBD: Turn this on.  Remove try/catch.
-        try {
-            final String rootName = 
-                (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
-            new MonitorRootClient(this).createManagedObjectManager(rootName);
-        } catch (Throwable t) {
-            System.out.println("PROBLEM INITIALIZING CLIENT MONITORING");
-            t.printStackTrace(System.out);
-        }
-        */
+        final String rootName = 
+            (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
+        new MonitorRootClient(this).createManagedObjectManager(false, rootName);
     }
 
     /**
