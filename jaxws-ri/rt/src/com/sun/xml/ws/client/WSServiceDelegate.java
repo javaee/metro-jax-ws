@@ -136,6 +136,8 @@ public class WSServiceDelegate extends WSService {
      * For dynamically added ones we'll have {@link PortInfo}.
      */
     private final Map<QName, PortInfo> ports = new HashMap<QName, PortInfo>();
+    // For monitoring
+    Map<QName, PortInfo> getQNameToPortInfoMap() { return ports; }
 
     /**
      * Whenever we create {@link BindingProvider}, we use this to configure handlers.

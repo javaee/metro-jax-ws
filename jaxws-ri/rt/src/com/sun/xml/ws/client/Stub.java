@@ -74,6 +74,8 @@ import javax.xml.stream.XMLStreamException;
 import java.util.*;
 import java.util.concurrent.Executor;
 
+import org.glassfish.gmbal.ManagedObjectManager;
+
 /**
  * Base class for stubs, which accept method invocations from
  * client applications and pass the message to a {@link Tube}
@@ -138,6 +140,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     private final @Nullable WSDLProperties wsdlProperties;
     protected OperationDispatcher operationDispatcher = null;
+    private final @NotNull ManagedObjectManager managedObjectManager;
 
     /**
      * @param master                 The created stub will send messages to this pipe.
@@ -192,7 +195,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
         final String rootName = 
             (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
-        new MonitorRootClient(this).createManagedObjectManager(false, rootName);
+        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(false, rootName);
     }
 
     /**
@@ -397,6 +400,13 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
             Tube p = tubes.take();
             tubes = null;
             p.preDestroy();
+        }
+        if (managedObjectManager != null) {
+            try {
+                managedObjectManager.close();
+            } catch (java.io.IOException e) {
+                //logger.log(Level.WARNING, "TBD", e);
+            }
         }
     }
 

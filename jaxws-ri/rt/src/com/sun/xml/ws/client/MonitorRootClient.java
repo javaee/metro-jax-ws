@@ -36,37 +36,12 @@
 
 package com.sun.xml.ws.client;
 
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
-import com.sun.xml.ws.api.SOAPVersion;
-import com.sun.xml.ws.api.BindingID;
-import com.sun.xml.ws.api.WSFeatureList;
-import com.sun.xml.ws.api.WSBinding;
-import com.sun.xml.ws.api.EndpointAddress;
-import com.sun.xml.ws.api.addressing.AddressingVersion;
-import com.sun.xml.ws.api.addressing.WSEndpointReference;
-import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.model.SEIModel;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundPortType;
-import com.sun.xml.ws.api.model.wsdl.WSDLService;
-import com.sun.xml.ws.api.pipe.Codec;
-import com.sun.xml.ws.api.pipe.Engine;
-import com.sun.xml.ws.api.pipe.Fiber;
-import com.sun.xml.ws.api.pipe.FiberContextSwitchInterceptor;
-import com.sun.xml.ws.api.pipe.ServerPipeAssemblerContext;
-import com.sun.xml.ws.api.pipe.ServerTubeAssemblerContext;
-import com.sun.xml.ws.api.pipe.Tube;
-import com.sun.xml.ws.api.pipe.TubeCloner;
-import com.sun.xml.ws.api.pipe.TubelineAssembler;
-import com.sun.xml.ws.api.pipe.TubelineAssemblerFactory;
-import com.sun.xml.ws.api.server.*;
-import com.sun.xml.ws.fault.SOAPFaultBuilder;
-import com.sun.xml.ws.model.wsdl.WSDLProperties;
-import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
-import com.sun.xml.ws.resources.HandlerMessages;
-import com.sun.xml.ws.util.RuntimeVersion;
+import com.sun.xml.ws.api.server.Container;
+import com.sun.xml.ws.model.wsdl.WSDLServiceImpl;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.namespace.QName;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -78,21 +53,6 @@ import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
 import java.net.URL;
-import javax.management.ObjectName;
-
-
-import javax.annotation.PreDestroy;
-import javax.xml.namespace.QName;
-import javax.xml.ws.EndpointReference;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.Handler;
-import javax.xml.stream.XMLStreamException;
-import javax.management.InstanceAlreadyExistsException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Harold Carr
@@ -113,4 +73,28 @@ public final class MonitorRootClient extends com.sun.xml.ws.server.MonitorBase {
         com.sun.xml.ws.util.Constants.LoggingDomain + ".client.stub");
     */
 
+    //
+    // From WSServiceDelegate
+    //
+
+    @ManagedAttribute
+    private Container getContainer() { return stub.owner.getContainer(); }
+
+    @ManagedAttribute        
+    private Map<QName, PortInfo> getQNameToPortInfoMap() { return stub.owner.getQNameToPortInfoMap(); }
+
+    @ManagedAttribute
+    private QName getServiceName() { return stub.owner.getServiceName(); }
+        
+    @ManagedAttribute
+    private Class getServiceClass() { return stub.owner.getServiceClass(); }
+        
+    @ManagedAttribute
+    private URL getWSDLDocumentLocation() { return stub.owner.getWSDLDocumentLocation(); }
+
+    @ManagedAttribute
+    private WSDLServiceImpl getWSDLServide() { return stub.owner.getWsdlService(); }
+
+    
+        
 }
