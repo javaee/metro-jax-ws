@@ -166,25 +166,25 @@ public final class MonitorRootService extends MonitorBase {
 
     @ManagedAttribute
     @Description("Binding SOAP Version")
-    public String bindingSOAPVersionHttpBindingId() {
+    public String SOAPVersionHttpBindingId() {
         return endpoint.getBinding().getSOAPVersion().httpBindingId;
     }
 
     @ManagedAttribute
     @Description("Binding Addressing Version")
-    public AddressingVersion bindingAddressingVersion() {
+    public AddressingVersion addressingVersion() {
         return endpoint.getBinding().getAddressingVersion();
     }
 
     @ManagedAttribute
-    @Description("Binding Addressing Version")
+    @Description("Binding Identifier")
     public @NotNull BindingID bindingID() {
         return endpoint.getBinding().getBindingId();
     }
 
     @ManagedAttribute
     @Description("Binding features")
-    public @NotNull WSFeatureList bindingFeatures() {
+    public @NotNull WSFeatureList Features() {
         return endpoint.getBinding().getFeatures();
     }
 
@@ -193,17 +193,10 @@ public final class MonitorRootService extends MonitorBase {
     //
 
     @ManagedAttribute
-    @Description("WSDLPort name")
-    public QName wsdlPortName() {
-        return endpoint.getPort() != null ?
-               endpoint.getPort().getName() : null; 
-    }
-
-    @ManagedAttribute
     @Description("WSDLPort bound port type")
-    public WSDLBoundPortType wsdlBoundPortType() {
+    public QName wsdlPortTypeName() {
         return endpoint.getPort() != null ?
-               endpoint.getPort().getBinding() : null;
+               endpoint.getPort().getBinding().getPortTypeName() : null;
     }
 
     @ManagedAttribute
@@ -213,37 +206,9 @@ public final class MonitorRootService extends MonitorBase {
                endpoint.getPort().getAddress() : null;
     }
 
-    @ManagedAttribute
-    @Description("WSDLPort owner")
-    public WSDLService wsdlOwner() {
-        return endpoint.getPort() != null ?
-               endpoint.getPort().getOwner() : null;
-    }
-
     //
     // Items from ServiceDefinition
     //
-
-    @ManagedAttribute
-    @Description("Service Definition root name")
-    public QName serviceDefinitionRootName() {
-        return endpoint.getServiceDefinition() != null ?
-               endpoint.getServiceDefinition().getPrimary().getRootName() : null;
-    }
-
-    @ManagedAttribute
-    @Description("True if this document is WSDL")
-    public boolean serviceDefinitionIsWSDL() {
-        return endpoint.getServiceDefinition() != null ?
-               endpoint.getServiceDefinition().getPrimary().isWSDL() : null;
-    }
-
-    @ManagedAttribute
-    @Description("True if this document is schema")
-    public boolean serviceDefinitionIsSchema() {
-        return endpoint.getServiceDefinition() != null ?
-               endpoint.getServiceDefinition().getPrimary().isSchema() : null;
-    }
 
     @ManagedAttribute
     @Description("Documents referenced")
@@ -268,41 +233,6 @@ public final class MonitorRootService extends MonitorBase {
     public String seiModelWSDLLocation() {
         return endpoint.getSEIModel() != null ? 
                endpoint.getSEIModel().getWSDLLocation() : null;
-    }
-
-    @ManagedAttribute
-    @Description("SEI model service name")
-    public QName seiModelServiceName() {
-        return endpoint.getSEIModel() != null ? 
-               endpoint.getSEIModel().getServiceQName() : null;
-    }
-
-    @ManagedAttribute
-    @Description("SEI model port name")
-    public QName seiModelPortName() {
-        return endpoint.getSEIModel() != null ? 
-               endpoint.getSEIModel().getPortName() : null;
-    }
-
-    @ManagedAttribute
-    @Description("SEI model port type name")
-    public QName seiModelPortTypeName() {
-        return endpoint.getSEIModel() != null ? 
-               endpoint.getSEIModel().getPortTypeName() : null;
-    }
-
-    @ManagedAttribute
-    @Description("SEI model bound port type name")
-    public QName seiModelBoundPortTypeName() {
-        return endpoint.getSEIModel() != null ? 
-               endpoint.getSEIModel().getBoundPortTypeName() : null;
-    }
-
-    @ManagedAttribute
-    @Description("SEI model target namespace")
-    public String seiModelTargetNamespace() {
-        return endpoint.getSEIModel() != null ? 
-               endpoint.getSEIModel().getTargetNamespace() : null;
     }
 
     //

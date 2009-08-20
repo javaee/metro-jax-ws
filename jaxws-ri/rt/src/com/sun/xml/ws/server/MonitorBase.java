@@ -107,10 +107,17 @@ public abstract class MonitorBase {
     //
 
     @NotNull public ManagedObjectManager createManagedObjectManager(final boolean isEndpoint, final String rootName) {
-        if (!allMonitoring 
-            || (isEndpoint && !endpointMonitoring)
-            || (!isEndpoint && !clientMonitoring)) 
-        {
+        final String msg = " monitoring disabled. " + rootName + " will not be monitored";
+        if (!allMonitoring) {
+            logger.log(Level.WARNING, "All" + msg);
+            return ManagedObjectManagerFactory.createNOOP();
+        }
+        if (isEndpoint && !endpointMonitoring) {
+            logger.log(Level.WARNING, "Endpoint" + msg);
+            return ManagedObjectManagerFactory.createNOOP();
+        }
+        if (!isEndpoint && !clientMonitoring) {
+            logger.log(Level.WARNING, "Client" + msg);
             return ManagedObjectManagerFactory.createNOOP();
         }
         return createMOMLoop(rootName, 0);
