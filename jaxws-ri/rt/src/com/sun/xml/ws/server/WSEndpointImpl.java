@@ -400,7 +400,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         if (rootName.equals("")) {
             rootName = "provider";
         }
-        return new MonitorRootService(this).createManagedObjectManager(rootName);
+        return new MonitorRootService(this).createManagedObjectManager(true, rootName);
     }
 }
 
