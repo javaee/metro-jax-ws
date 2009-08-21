@@ -66,6 +66,7 @@ import com.sun.xml.ws.fault.SOAPFaultBuilder;
 import com.sun.xml.ws.model.wsdl.WSDLProperties;
 import com.sun.xml.ws.model.wsdl.WSDLPortImpl;
 import com.sun.xml.ws.resources.HandlerMessages;
+import com.sun.xml.ws.transport.http.HttpAdapter;
 import com.sun.xml.ws.util.RuntimeVersion;
 import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.AMXMetadata;
@@ -166,7 +167,7 @@ public final class MonitorRootService extends MonitorBase {
 
     @ManagedAttribute
     @Description("Binding SOAP Version")
-    public String SOAPVersionHttpBindingId() {
+    public String soapVersionHttpBindingId() {
         return endpoint.getBinding().getSOAPVersion().httpBindingId;
     }
 
@@ -184,7 +185,7 @@ public final class MonitorRootService extends MonitorBase {
 
     @ManagedAttribute
     @Description("Binding features")
-    public @NotNull WSFeatureList Features() {
+    public @NotNull WSFeatureList features() {
         return endpoint.getBinding().getFeatures();
     }
 
@@ -244,6 +245,20 @@ public final class MonitorRootService extends MonitorBase {
     public String jaxwsRuntimeVersion() {
         return RuntimeVersion.VERSION.toString();
     }
+
+    //
+    // Items from HttpAdapter
+    //
+
+    @ManagedAttribute
+    @Description("If true: show what goes across HTTP transport")
+    public boolean dumpHTTPMessages() { return HttpAdapter.dump; }
+
+
+    @ManagedAttribute
+    @Description("Show what goes across HTTP transport")
+    public void dumpHTTPMessages(final boolean x) { HttpAdapter.dump = x; }
+
 }
 
 // End of file.
