@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.developer;
 
+import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.Headers;
 import com.sun.xml.ws.api.addressing.WSEndpointReference;
@@ -48,6 +49,7 @@ import javax.xml.ws.Service;
 import javax.xml.ws.Service.Mode;
 import java.util.List;
 import java.io.Closeable;
+import org.glassfish.gmbal.ManagedObjectManager;
 
 /**
  * {@link BindingProvider} with JAX-WS RI's extension methods.
@@ -146,5 +148,9 @@ public interface WSBindingProvider extends BindingProvider, Closeable {
      * @since JAX-WS 2.2 
      */
     WSPortInfo getPortInfo();
-    
+
+    /**
+     * Get the ManagedObjectManager for this provider.
+     */
+    public @NotNull ManagedObjectManager getManagedObjectManager();
 }
