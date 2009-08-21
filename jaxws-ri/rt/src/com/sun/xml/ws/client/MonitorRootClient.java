@@ -81,19 +81,19 @@ public final class MonitorRootClient extends com.sun.xml.ws.server.MonitorBase {
     private Container getContainer() { return stub.owner.getContainer(); }
 
     @ManagedAttribute        
-    private Map<QName, PortInfo> getQNameToPortInfoMap() { return stub.owner.getQNameToPortInfoMap(); }
+    private Map<QName, PortInfo> qnameToPortInfoMap() { return stub.owner.getQNameToPortInfoMap(); }
 
     @ManagedAttribute
-    private QName getServiceName() { return stub.owner.getServiceName(); }
+    private QName serviceName() { return stub.owner.getServiceName(); }
         
     @ManagedAttribute
-    private Class getServiceClass() { return stub.owner.getServiceClass(); }
+    private Class serviceClass() { return stub.owner.getServiceClass(); }
         
     @ManagedAttribute
-    private URL getWSDLDocumentLocation() { return stub.owner.getWSDLDocumentLocation(); }
+    private URL wsdlDocumentLocation() { return stub.owner.getWSDLDocumentLocation(); }
 
     @ManagedAttribute
-    private WSDLServiceImpl getWSDLServide() { return stub.owner.getWsdlService(); }
+    private WSDLServiceImpl wsdlService() { return stub.owner.getWsdlService(); }
 
     
         
