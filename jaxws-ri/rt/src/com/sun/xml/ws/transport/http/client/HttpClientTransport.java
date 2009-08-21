@@ -89,6 +89,7 @@ final class HttpClientTransport {
 
     /*package*/ int statusCode;
     /*package*/ String statusMessage;
+    /*package*/ int contentLength;
     private final Map<String, List<String>> reqHeaders;
     private Map<String, List<String>> respHeaders = null;
 
@@ -208,6 +209,7 @@ final class HttpClientTransport {
         try {
             statusCode = httpConnection.getResponseCode();
             statusMessage = httpConnection.getResponseMessage();
+            contentLength = httpConnection.getContentLength();
         } catch(IOException ioe) {
             throw new WebServiceException(ioe);
         }

@@ -176,7 +176,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                 return request.createClientResponse(null);    // one way. no response given.
             }
 
-            checkStatusCode(response, con.statusCode, con.statusMessage, con.getHeaders()); // throws ClientTransportException
+            checkStatusCode(response, con); // throws ClientTransportException
 
             String contentType = con.getContentType();
             // TODO check if returned MIME type is the same as that which was sent
@@ -193,7 +193,9 @@ public class HttpTransportPipe extends AbstractTubeImpl {
         }
     }
 
-    private void checkStatusCode(InputStream in, int statusCode, String statusMessage, Map<String, List<String>> respHeaders) throws IOException {
+    private void checkStatusCode(InputStream in, HttpClientTransport con) throws IOException {
+        int statusCode = con.statusCode;
+        String statusMessage = con.statusMessage;
         // SOAP1.1 and SOAP1.2 differ here
         if (binding instanceof SOAPBinding) {
             if (binding.getSOAPVersion() == SOAPVersion.SOAP_12) {
@@ -204,11 +206,8 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                     }
                     throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
                 } else {
-                    Headers normalizedHeaders = new Headers();
-                    normalizedHeaders.putAll(respHeaders);
-                    String contentLength = normalizedHeaders.getFirst("Content-Length");
-                    // if there is no response message, throw ClientTransportException that captures error code. 
-                    if(contentLength == null || Integer.parseInt(contentLength) == 0) {
+                    // if there is no response message, throw ClientTransportException that captures error code.
+                    if(con.contentLength <= 0) {
                         throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
                     }
                     //there is some response message, so let it go
