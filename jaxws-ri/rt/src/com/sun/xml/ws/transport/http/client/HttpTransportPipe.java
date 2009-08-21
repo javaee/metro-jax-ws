@@ -225,7 +225,8 @@ public class HttpTransportPipe extends AbstractTubeImpl {
     }
 
     private boolean isErrorCode(int code) {              
-        if(code/100 == 5/*Server-side error*/ || code/100 == 4 /*client error*/ ) {
+        //if(code/100 == 5/*Server-side error*/ || code/100 == 4 /*client error*/ ) {
+        if(code == 500|| code == 400 ) {
             return true;
         }
         return false;
