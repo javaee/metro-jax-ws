@@ -196,6 +196,7 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         final String rootName = 
             (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
         managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(false, rootName);
+        managedObjectManager.resumeJMXRegistration();
     }
 
     /**
