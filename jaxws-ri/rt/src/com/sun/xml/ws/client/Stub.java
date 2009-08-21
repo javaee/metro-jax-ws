@@ -188,14 +188,20 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
         this.engine = new Engine(toString());
         this.endpointReference = epr;
         wsdlProperties = (wsdlPort==null) ? null : new WSDLProperties(wsdlPort);
+
+        // ManagedObjectManager must be created before the pipeline
+        // is constructed.
+        final String rootName = 
+            (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
+        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(false, rootName);
+
         if(master != null)
             this.tubes = new TubePool(master);
         else
             this.tubes = new TubePool(createPipeline(portInfo, binding));
 
-        final String rootName = 
-            (epr == null ? defaultEndPointAddress.toString() : epr.getAddress());
-        managedObjectManager = new MonitorRootClient(this).createManagedObjectManager(false, rootName);
+        // This needs to happen after createPipeline.
+        // TBD: Check if it needs to happen outside the Stub constructor.
         managedObjectManager.resumeJMXRegistration();
     }
 
@@ -477,6 +483,10 @@ public abstract class Stub implements WSBindingProvider, ResponseContextReceiver
 
     public final <T extends EndpointReference> T getEndpointReference(Class<T> clazz) {
         return getWSEndpointReference().toSpec(clazz);
+    }
+
+    public @NotNull ManagedObjectManager getManagedObjectManager() {
+        return managedObjectManager;
     }
 
 //
