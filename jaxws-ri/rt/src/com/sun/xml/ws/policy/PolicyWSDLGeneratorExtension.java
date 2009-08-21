@@ -54,12 +54,12 @@ import com.sun.xml.ws.api.model.wsdl.WSDLOutput;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.model.wsdl.WSDLPortType;
 import com.sun.xml.ws.api.model.wsdl.WSDLService;
+import com.sun.xml.ws.api.policy.ModelGenerator;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGeneratorExtension;
 import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
 import com.sun.xml.ws.encoding.policy.MtomPolicyMapConfigurator;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
-import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelMarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
@@ -150,7 +150,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                 LOGGER.fine(PolicyMessages.WSP_1009_NOT_MARSHALLING_ANY_POLICIES_POLICY_MAP_IS_NULL());
             } else {
                 subjects.addAll(policyMap.getPolicySubjects());
-                final PolicyModelGenerator generator = PolicyModelGenerator.getGenerator();
+                final ModelGenerator generator = ModelGenerator.getGenerator();
                 Set<String> policyIDsOrNamesWritten = new HashSet<String>();
                 for (PolicySubject subject : subjects) {
                     if (subject.getSubject() == null) {
@@ -331,6 +331,11 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
     /**
      * This method should only be invoked by interface methods that deal with WSDL binding because they
      * may use the QName of the WSDL binding element as PolicySubject instead of a WSDL object.
+     *
+     * @param xmlWriter A TypedXmlWriter.
+     * @param clazz The policy subject.
+     * @param scopeType The WSDL scope.
+     * @param bindingName The WSDL binding name.
      */
     private void selectAndProcessSubject(final TypedXmlWriter xmlWriter, final Class clazz, final ScopeType scopeType, final QName bindingName) {
         LOGGER.entering(xmlWriter, clazz, scopeType, bindingName);
@@ -432,7 +437,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         }
         if (policy != null) {
             if (null == policy.getIdOrName()) {
-                final PolicyModelGenerator generator = PolicyModelGenerator.getGenerator();
+                final ModelGenerator generator = ModelGenerator.getGenerator();
                 try {
                     final PolicySourceModel policyInfoset = generator.translate(policy);
                     marshaller.marshal(policyInfoset, writer);

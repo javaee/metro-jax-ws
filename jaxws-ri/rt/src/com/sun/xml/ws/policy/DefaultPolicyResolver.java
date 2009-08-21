@@ -37,7 +37,8 @@
 package com.sun.xml.ws.policy;
 
 import com.sun.xml.ws.api.policy.PolicyResolver;
-import com.sun.xml.ws.policy.spi.PolicyAssertionValidator;
+import com.sun.xml.ws.api.policy.ValidationProcessor;
+import com.sun.xml.ws.policy.spi.PolicyAssertionValidator.Fitness;
 import com.sun.xml.ws.resources.PolicyMessages;
 
 import javax.xml.ws.WebServiceException;
@@ -68,9 +69,8 @@ public class DefaultPolicyResolver implements PolicyResolver {
      *      PolicyMap that needs to be validated.
      */
     private void validateServerPolicyMap(PolicyMap policyMap) {
-        final AssertionValidationProcessor validationProcessor;
         try {
-            validationProcessor = AssertionValidationProcessor.getInstance();
+            final ValidationProcessor validationProcessor = ValidationProcessor.getInstance();
 
             for (Policy policy : policyMap) {
 
@@ -78,8 +78,8 @@ public class DefaultPolicyResolver implements PolicyResolver {
 
                 for (AssertionSet assertionSet : policy) {
                     for (PolicyAssertion assertion : assertionSet) {
-                        PolicyAssertionValidator.Fitness validationResult = validationProcessor.validateServerSide(assertion);
-                        if (validationResult != PolicyAssertionValidator.Fitness.SUPPORTED) {
+                        Fitness validationResult = validationProcessor.validateServerSide(assertion);
+                        if (validationResult != Fitness.SUPPORTED) {
                             throw new PolicyException(PolicyMessages.WSP_1015_SERVER_SIDE_ASSERTION_VALIDATION_FAILED(
                                     assertion.getName(),
                                     validationResult));

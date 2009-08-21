@@ -36,13 +36,14 @@
 
 package com.sun.xml.ws.policy;
 
+import com.sun.xml.ws.api.policy.ModelUnmarshaller;
 import com.sun.xml.ws.policy.PolicyException;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
-import com.sun.xml.ws.policy.sourcemodel.PolicyModelUnmarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.NamespaceVersion;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
 import com.sun.xml.ws.resources.PolicyMessages;
+
 import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
@@ -276,7 +277,7 @@ public class SafePolicyReader {
                    reader.next();
                }
            } while (XMLStreamConstants.END_DOCUMENT!=reader.getEventType() && depth>0);
-           policyRec.policyModel = PolicyModelUnmarshaller.getXmlUnmarshaller().unmarshalModel(
+           policyRec.policyModel = ModelUnmarshaller.getUnmarshaller().unmarshalModel(
                    new StringReader(elementCode.toString()));
            if (null != policyRec.policyModel.getPolicyId()) {
                policyRec.setUri(baseUrl + "#" + policyRec.policyModel.getPolicyId(), policyRec.policyModel.getPolicyId());
