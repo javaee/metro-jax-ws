@@ -36,6 +36,7 @@
 
 package com.sun.xml.ws.policy;
 
+import com.sun.xml.ws.api.policy.AlternativeSelector;
 import com.sun.xml.ws.api.policy.PolicyResolver;
 import com.sun.xml.ws.api.policy.ValidationProcessor;
 import com.sun.xml.ws.policy.spi.PolicyAssertionValidator.Fitness;
@@ -44,7 +45,11 @@ import com.sun.xml.ws.resources.PolicyMessages;
 import javax.xml.ws.WebServiceException;
 
 /**
+ * This default implementation runs the policy validators on the server side and
+ * selects a policy alternative on the client side.
+ *
  * @author Rama Pulavarthi
+ * @author Fabian Ritzmann
  */
 public class DefaultPolicyResolver implements PolicyResolver {
 
@@ -102,7 +107,7 @@ public class DefaultPolicyResolver implements PolicyResolver {
         final EffectivePolicyModifier modifier = EffectivePolicyModifier.createEffectivePolicyModifier();
         modifier.connect(policyMap);
         try {
-            EffectiveAlternativeSelector.doSelection(modifier);
+            AlternativeSelector.doSelection(modifier);
         } catch (PolicyException e) {
             throw new WebServiceException(e);
         }
