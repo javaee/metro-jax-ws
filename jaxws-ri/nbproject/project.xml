@@ -100,6 +100,9 @@
                 <action name="javadoc">
                     <target>javadocs</target>
                 </action>
+                <action name="test">
+                    <target>test</target>
+                </action>
             </ide-actions>
             <export>
                 <type>jar</type>
@@ -731,6 +734,11 @@
                 <location>build/lib/streambuffer.jar</location>
                 <build-target>main</build-target>
             </export>
+            <export>
+                <type>folder</type>
+                <location>rt/build/test-classes</location>
+                <build-target>main</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -771,10 +779,11 @@
                 </items>
                 <context-menu>
                     <ide-action name="build"/>
-                    <ide-action name="clean"/>
                     <ide-action name="rebuild"/>
-                    <ide-action name="compile.single"/>
+                    <ide-action name="clean"/>
                     <ide-action name="javadoc"/>
+                    <ide-action name="test"/>
+                    <ide-action name="compile.single"/>
                 </context-menu>
             </view>
             <subprojects/>
@@ -782,7 +791,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
             <compilation-unit>
                 <package-root>rt/src</package-root>
-                <classpath mode="compile">lib/activation.jar:lib/ant-junit.jar:lib/ant-launcher.jar:lib/ant-nodeps.jar:lib/ant-trax.jar:lib/ant.jar:lib/FastInfoset.jar:lib/gmbal.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
+                <classpath mode="compile">lib/activation.jar:lib/FastInfoset.jar:lib/gmbal.jar:lib/http.jar:lib/jaxb-api.jar:lib/jaxb-impl.jar:lib/jaxb-xjc.jar:lib/jaxws-api.jar:lib/jaxws-asm.jar:lib/jsr173_api.jar:lib/jsr181-api.jar:lib/jsr250-api.jar:lib/junit.jar:lib/mimepull.jar:lib/policy.jar:lib/resolver.jar:lib/saaj-api.jar:lib/saaj-impl-fast.jar_:lib/saaj-impl.jar:lib/servlet.jar:lib/sjsxp.jar:lib/stax-ex.jar:lib/streambuffer.jar:servlet/lib/servlet.jar</classpath>
                 <built-to>build/lib/activation.jar</built-to>
                 <built-to>build/lib/FastInfoset.jar</built-to>
                 <built-to>build/lib/http.jar</built-to>
@@ -944,8 +953,13 @@
             <compilation-unit>
                 <package-root>rt/test</package-root>
                 <unit-tests/>
+                <classpath mode="compile">rt/build/classes:lib/junit.jar:lib/saaj-api.jar:lib/jsr173_api.jar</classpath>
+                <built-to>rt/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
+        <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+            <module name="org-netbeans-modules-editor-indent"/>
+        </preferences>
     </configuration>
 </project>

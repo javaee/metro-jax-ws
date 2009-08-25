@@ -109,15 +109,18 @@
         </path>
 
         <javac srcdir="${basedir}/test"
-                 destdir="${build.dir}/test-classes"
-                 debug="${compile.debug}"
-                 optimize="${compile.optimize}">
+               destdir="${build.dir}/test-classes"
+               debug="${compile.debug}"
+               optimize="${compile.optimize}">
             <classpath refid="test.classpath"/>
         </javac>
 
-        <junit haltonfailure="yes">
+        <junit haltonfailure="yes"
+               showoutput="true">
             <classpath refid="test.classpath"/>
             <formatter type="xml"/>
+            <!-- This formatter allows NetBeans to display the test results -->
+            <formatter type="brief" usefile="false"/>
             <batchtest todir="${build.dir}/test-reports" haltonerror="false">
                 <fileset dir="${build.dir}/test-classes">
                     <include name="**/AllTests.class" />

@@ -728,7 +728,7 @@
 
 
 
-    <!-- fundbugs -->
+    <!-- findbugs -->
      <property name="findbugs.home" value="${basedir}/etc/findbugs/"/>
 
     <path id="findbugs.class">
@@ -778,6 +778,17 @@
             <class location="${build.home}/lib/jaxws-rt.jar"/>
             <class location="${build.home}/lib/jaxws-tools.jar"/>
         </findbugs>
+    </target>
+
+
+    <target name="test" description="Run the unit tests in all subprojects">
+        <subant target="test" inheritrefs="true">
+            <fileset dir="${basedir}">
+                <include name="rt/build.xml"/>
+                <!-- tools/wscompile has a test target but no tests -->
+                <!-- include name="tools/wscompile/build.xml"/      -->
+            </fileset>
+        </subant>
     </target>
 
 </project>
