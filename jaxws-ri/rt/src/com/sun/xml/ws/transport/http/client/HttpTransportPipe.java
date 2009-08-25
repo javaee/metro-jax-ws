@@ -205,7 +205,7 @@ public class HttpTransportPipe extends AbstractTubeImpl {
                         in.close();
                     }
                     throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
-                } else {
+                } else if(isErrorCode(statusCode)){
                     // if there is no response message, throw ClientTransportException that captures error code.
                     if(con.contentLength <= 0) {
                         throw new ClientTransportException(ClientMessages.localizableHTTP_STATUS_CODE(statusCode, statusMessage));
