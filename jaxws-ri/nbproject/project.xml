@@ -953,7 +953,7 @@
             <compilation-unit>
                 <package-root>rt/test</package-root>
                 <unit-tests/>
-                <classpath mode="compile">rt/build/classes:lib/junit.jar:lib/saaj-api.jar:lib/jsr173_api.jar</classpath>
+                <classpath mode="compile">rt/build/classes:lib/junit.jar:lib/saaj-api.jar:lib/jsr173_api.jar:lib/policy.jar</classpath>
                 <built-to>rt/build/test-classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
