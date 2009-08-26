@@ -44,9 +44,9 @@ import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
  *
  * @author Fabian Ritzmann
  */
-public class ModelGenerator extends PolicyModelGenerator {
+public abstract class ModelGenerator extends PolicyModelGenerator {
 
-    private static final ModelGenerator INSTANCE = new ModelGenerator();
+    private static final SourceModelCreator CREATOR = new SourceModelCreator();
 
     /**
      * This private constructor avoids direct instantiation from outside the class.
@@ -60,13 +60,20 @@ public class ModelGenerator extends PolicyModelGenerator {
      *
      * @return A ModelGenerator instance.
      */
-    public static ModelGenerator getGenerator() {
-        return INSTANCE;
+    public static PolicyModelGenerator getGenerator() {
+        return PolicyModelGenerator.getCompactGenerator(CREATOR);
     }
 
-    @Override
-    protected PolicySourceModel createSourceModel(Policy policy) {
-        return SourceModel.createSourceModel(policy.getNamespaceVersion(),
-                policy.getId(), policy.getName());
+
+    protected static class SourceModelCreator extends PolicySourceModelCreator {
+
+        @Override
+        protected PolicySourceModel create(Policy policy) {
+            return SourceModel.createPolicySourceModel(policy.getNamespaceVersion(),
+                                                       policy.getId(), policy.getName());
+
+        }
+
     }
+
 }

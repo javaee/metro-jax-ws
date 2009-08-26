@@ -60,6 +60,7 @@ import com.sun.xml.ws.api.wsdl.writer.WSDLGenExtnContext;
 import com.sun.xml.ws.encoding.policy.MtomPolicyMapConfigurator;
 import com.sun.xml.ws.policy.jaxws.spi.PolicyMapConfigurator;
 import com.sun.xml.ws.policy.privateutil.PolicyLogger;
+import com.sun.xml.ws.policy.sourcemodel.PolicyModelGenerator;
 import com.sun.xml.ws.policy.sourcemodel.PolicyModelMarshaller;
 import com.sun.xml.ws.policy.sourcemodel.PolicySourceModel;
 import com.sun.xml.ws.policy.sourcemodel.wspolicy.XmlToken;
@@ -150,7 +151,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
                 LOGGER.fine(PolicyMessages.WSP_1009_NOT_MARSHALLING_ANY_POLICIES_POLICY_MAP_IS_NULL());
             } else {
                 subjects.addAll(policyMap.getPolicySubjects());
-                final ModelGenerator generator = ModelGenerator.getGenerator();
+                final PolicyModelGenerator generator = ModelGenerator.getGenerator();
                 Set<String> policyIDsOrNamesWritten = new HashSet<String>();
                 for (PolicySubject subject : subjects) {
                     if (subject.getSubject() == null) {
@@ -437,7 +438,7 @@ public class PolicyWSDLGeneratorExtension extends WSDLGeneratorExtension {
         }
         if (policy != null) {
             if (null == policy.getIdOrName()) {
-                final ModelGenerator generator = ModelGenerator.getGenerator();
+                final PolicyModelGenerator generator = ModelGenerator.getGenerator();
                 try {
                     final PolicySourceModel policyInfoset = generator.translate(policy);
                     marshaller.marshal(policyInfoset, writer);
