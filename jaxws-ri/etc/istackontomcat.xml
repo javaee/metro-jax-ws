@@ -67,7 +67,7 @@
         <echo message="  You must have write-permissions on the JDK 6 directory."/>
         <echo message="  This is a concern when using a system-wide JDK installation."/>
         <echo/>
-        <echo message="  Invoke 'ant -f tomcat.xml install-api' to install only"/>
+        <echo message="  Invoke 'ant install-api' to install only"/>
         <echo message="  jaxws-api.jar and jaxb-api.jar into the 'endorsed' directory."/>
         <echo/>
     </target>
