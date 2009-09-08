@@ -108,10 +108,6 @@ public abstract class MonitorBase {
 
     @NotNull public ManagedObjectManager createManagedObjectManager(final boolean isEndpoint, final String rootName) {
         final String msg = " monitoring disabled. " + rootName + " will not be monitored";
-        if (!allMonitoring) {
-            logger.log(Level.WARNING, "All" + msg);
-            return ManagedObjectManagerFactory.createNOOP();
-        }
         if (isEndpoint && !endpointMonitoring) {
             logger.log(Level.WARNING, "Endpoint" + msg);
             return ManagedObjectManagerFactory.createNOOP();
@@ -235,50 +231,46 @@ public abstract class MonitorBase {
         }
     }
 
-    private static boolean allMonitoring                    = true;
-    private static boolean clientMonitoring                 = true;
+    private static boolean clientMonitoring                 = false;
     private static boolean endpointMonitoring               = true;
     private static int     typelibDebug                     = -1;
     private static String  registrationDebug                = "NONE";
     private static boolean runtimeDebug                     = false;
     private static int     maxUniqueEndpointRootNameRetries = 100;
+    private static final String monitorProperty = "com.sun.xml.ws.monitoring.";
 
     static {
         try {
-            // You can control "endpoint" independently of "client" monitoring.
-            String s = System.getProperty("com.sun.xml.ws.monitoring.endpoint");
+            String s = System.getProperty(monitorProperty + "endpoint");
             if (s != null && s.toLowerCase().equals("false")) {
                 endpointMonitoring = false;
             }
 
-            s = System.getProperty("com.sun.xml.ws.monitoring.client");
-            if (s != null && s.toLowerCase().equals("false")) {
-                clientMonitoring = false;
+            // Client monitoring is OFF by default because there is
+            // no standard stub.close() method.  Therefore people do
+            // not typically close a stub when they are done with it
+            // (even though the RI does provide a .close).
+            s = System.getProperty(monitorProperty + "client");
+            if (s != null && s.toLowerCase().equals("true")) {
+                clientMonitoring = true;
             }
 
-            // You can turn off both "endpoint" and "client" monitoring
-            // at once.
-            s = System.getProperty("com.sun.xml.ws.monitoring");
-            if (s != null && s.toLowerCase().equals("false")) {
-                allMonitoring = false;
-            }
-
-            Integer i = Integer.getInteger("com.sun.xml.ws.monitoring.typelibDebug");
+            Integer i = Integer.getInteger(monitorProperty + "typelibDebug");
             if (i != null) {
                 typelibDebug = i;
             }
 
-            s = System.getProperty("com.sun.xml.ws.monitoring.registrationDebug");
+            s = System.getProperty(monitorProperty + "registrationDebug");
             if (s != null) {
                 registrationDebug = s.toUpperCase();
             }
 
-            s = System.getProperty("com.sun.xml.ws.monitoring.runtimeDebug");
+            s = System.getProperty(monitorProperty + "runtimeDebug");
             if (s != null && s.toLowerCase().equals("true")) {
                 runtimeDebug = true;
             }
 
-            i = Integer.getInteger("com.sun.xml.ws.monitoring.maxUniqueEndpointRootNameRetries");
+            i = Integer.getInteger(monitorProperty + "maxUniqueEndpointRootNameRetries");
             if (i != null) {
                 maxUniqueEndpointRootNameRetries = i;
             }
