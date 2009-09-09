@@ -109,11 +109,11 @@ public abstract class MonitorBase {
     @NotNull public ManagedObjectManager createManagedObjectManager(final boolean isEndpoint, final String rootName) {
         final String msg = " monitoring disabled. " + rootName + " will not be monitored";
         if (isEndpoint && !endpointMonitoring) {
-            logger.log(Level.WARNING, "Endpoint" + msg);
+            logger.log(Level.INFO, "Endpoint" + msg);
             return ManagedObjectManagerFactory.createNOOP();
         }
         if (!isEndpoint && !clientMonitoring) {
-            logger.log(Level.WARNING, "Client" + msg);
+            logger.log(Level.INFO, "Client" + msg);
             return ManagedObjectManagerFactory.createNOOP();
         }
         return createMOMLoop(rootName, 0);
@@ -136,7 +136,7 @@ public abstract class MonitorBase {
                 new ObjectName("amx:pp=/mon,type=server-mon,name=server");
             return mbeanServer.isRegistered(amxName) ? amxName : null;
         } catch (Throwable t) {
-            logger.log(Level.WARNING, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
+            logger.log(Level.INFO, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
             return null;
         }
     }
@@ -151,10 +151,10 @@ public abstract class MonitorBase {
                 ManagedObjectManagerFactory.createStandalone("com.sun.metro");
         } catch (Throwable t) {
             if (isFederated) {
-                logger.log(Level.WARNING, "Problem while attempting to federate with GlassFish AMX monitoring..  Trying standalone.", t);
+                logger.log(Level.INFO, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
                 return createMOM(null);
             } else {
-                logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
+                logger.log(Level.WARNING, "Ignoring exception - starting up without monitoring", t);
                 return ManagedObjectManagerFactory.createNOOP();
             }
         }
@@ -195,9 +195,9 @@ public abstract class MonitorBase {
             try {
                 mom.close();
             } catch (java.io.IOException e) {
-                logger.log(Level.WARNING, "Ignoring exception caught when closing unused ManagedObjectManager", e);
+                logger.log(Level.CONFIG, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
-            logger.log(Level.WARNING, "TBD - Ignoring exception - starting up without monitoring", t);
+            logger.log(Level.WARNING, "Ignoring exception - starting up without monitoring", t);
             return ManagedObjectManagerFactory.createNOOP();
         }
         return mom;
@@ -208,22 +208,22 @@ public abstract class MonitorBase {
         try {
             final Object ignored = mom.createRoot(this, name);
             if (ignored != null) {
-                logger.log(Level.WARNING, "Monitoring rootname successfully set to: " + name);
+                logger.log(Level.INFO, "Monitoring rootname successfully set to: " + name);
                 return mom;
             }
             try {
                 mom.close();
             } catch (java.io.IOException e) {
-                logger.log(Level.WARNING, "Ignoring exception caught when closing unused ManagedObjectManager", e);
+                logger.log(Level.CONFIG, "Ignoring exception caught when closing unused ManagedObjectManager", e);
             }
             final String basemsg ="duplicate monitoring rootname: " + name + " : ";
             if (unique > maxUniqueEndpointRootNameRetries) {
                 final String msg = basemsg + "Giving up.";
-                logger.log(Level.WARNING, msg);
+                logger.log(Level.INFO, msg);
                 return ManagedObjectManagerFactory.createNOOP();
             }
             final String msg = basemsg + "Will try to make unique";
-            logger.log(Level.WARNING, msg);
+            logger.log(Level.CONFIG, msg);
             return createMOMLoop(rootName, ++unique);
         } catch (Throwable t) {
             logger.log(Level.WARNING, "Error while creating monitoring root with name: " + rootName, t);
@@ -275,7 +275,7 @@ public abstract class MonitorBase {
                 maxUniqueEndpointRootNameRetries = i;
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, "TBD", e);
+            logger.log(Level.WARNING, "Error while reading monitoring properties", e);
         }
     }
 }
