@@ -107,6 +107,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
     private final Pool<Tube> tubePool;
     private final OperationDispatcher operationDispatcher;
     private final @NotNull ManagedObjectManager managedObjectManager;
+    private       boolean managedObjectManagerClosed = false;
     private final @NotNull ServerTubeAssemblerContext context;
 
     private Map<QName, WSEndpointReference.EPRExtension> endpointReferenceExtensions = new HashMap<QName, WSEndpointReference.EPRExtension>();
@@ -326,15 +327,7 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
                 break;
             }
         }
-
-        try {
-            logger.log(Level.INFO, 
-                       "Closing monitoring root: " +
-                       managedObjectManager.getObjectName(managedObjectManager.getRoot()));
-            managedObjectManager.close();
-        } catch (java.io.IOException e) {
-            logger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
-        }
+        closeManagedObjectManager();
     }
 
     public ServiceDefinitionImpl getServiceDefinition() {
@@ -385,6 +378,21 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
 
     public @NotNull ManagedObjectManager getManagedObjectManager() {
         return managedObjectManager;
+    }
+
+    public void closeManagedObjectManager() {
+        if (managedObjectManagerClosed == true) {
+            return;
+        }
+        try {
+            logger.log(Level.INFO, 
+                       "Closing monitoring root: " +
+                       managedObjectManager.getObjectName(managedObjectManager.getRoot()));
+            managedObjectManager.close();
+            managedObjectManagerClosed = true;
+        } catch (java.io.IOException e) {
+            logger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
+        }
     }
 
     public @NotNull ServerTubeAssemblerContext getAssemblerContext() {

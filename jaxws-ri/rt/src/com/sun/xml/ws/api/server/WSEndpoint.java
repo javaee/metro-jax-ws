@@ -411,6 +411,16 @@ public abstract class WSEndpoint<T> {
     public abstract @NotNull ManagedObjectManager getManagedObjectManager();
 
     /**
+     * Close the ManagedObjectManager for this endpoint.
+     * This is used by the Web Service Configuration Management system so that it
+     * closes the MOM before it creates a new WSEndpoint.  Then it calls dispose
+     * on the existing endpoint and then installs the new endpoint.
+     * The call to dispose also calls closeManagedObjectManager, but is a noop
+     * if that method has already been called.
+     */
+    public abstract void closeManagedObjectManager();
+
+    /**
      * This is only needed to expose info for monitoring.
      */
     public abstract @NotNull ServerTubeAssemblerContext getAssemblerContext();
