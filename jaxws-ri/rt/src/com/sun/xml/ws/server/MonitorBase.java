@@ -109,11 +109,11 @@ public abstract class MonitorBase {
     @NotNull public ManagedObjectManager createManagedObjectManager(final boolean isEndpoint, final String rootName) {
         final String msg = " monitoring disabled. " + rootName + " will not be monitored";
         if (isEndpoint && !endpointMonitoring) {
-            logger.log(Level.INFO, "Endpoint" + msg);
+            logger.log(Level.CONFIG, "Endpoint" + msg);
             return ManagedObjectManagerFactory.createNOOP();
         }
         if (!isEndpoint && !clientMonitoring) {
-            logger.log(Level.INFO, "Client" + msg);
+            logger.log(Level.CONFIG, "Client" + msg);
             return ManagedObjectManagerFactory.createNOOP();
         }
         return createMOMLoop(rootName, 0);
@@ -136,7 +136,7 @@ public abstract class MonitorBase {
                 new ObjectName("amx:pp=/mon,type=server-mon,name=server");
             return mbeanServer.isRegistered(amxName) ? amxName : null;
         } catch (Throwable t) {
-            logger.log(Level.INFO, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
+            logger.log(Level.CONFIG, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
             return null;
         }
     }
@@ -151,7 +151,7 @@ public abstract class MonitorBase {
                 ManagedObjectManagerFactory.createStandalone("com.sun.metro");
         } catch (Throwable t) {
             if (isFederated) {
-                logger.log(Level.INFO, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
+                logger.log(Level.CONFIG, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
                 return createMOM(null);
             } else {
                 logger.log(Level.WARNING, "Ignoring exception - starting up without monitoring", t);

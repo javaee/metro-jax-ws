@@ -328,9 +328,12 @@ public final class WSEndpointImpl<T> extends WSEndpoint<T> {
         }
 
         try {
+            logger.log(Level.INFO, 
+                       "Closing monitoring root: " +
+                       managedObjectManager.getObjectName(managedObjectManager.getRoot()));
             managedObjectManager.close();
         } catch (java.io.IOException e) {
-            logger.log(Level.WARNING, "TBD", e);
+            logger.log(Level.WARNING, "Ignoring error when closing Managed Object Manager", e);
         }
     }
 
