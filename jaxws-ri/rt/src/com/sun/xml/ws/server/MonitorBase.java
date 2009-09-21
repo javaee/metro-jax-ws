@@ -102,6 +102,12 @@ public abstract class MonitorBase {
     private static final Logger logger = Logger.getLogger(
         com.sun.xml.ws.util.Constants.LoggingDomain + ".monitoring");
 
+    // FIX: get name from AMXGlassfish instead of hard-coded.
+    private static final String amxRootName =
+        // AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
+        "amx:pp=/mon,type=server-mon,name=server";
+    private static final String standaloneName = "com.sun.metro";
+
     //
     // Service-side ManagedObjectManager creation
     //
@@ -130,25 +136,22 @@ public abstract class MonitorBase {
         try {
             final javax.management.MBeanServer mbeanServer = 
                 java.lang.management.ManagementFactory.getPlatformMBeanServer();
-            // FIX: get name from AMXGlassfish instead of hard-coded.
-            final ObjectName amxName =
-                // AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
-                new ObjectName("amx:pp=/mon,type=server-mon,name=server");
-            return mbeanServer.isRegistered(amxName) ? amxName : null;
+            final ObjectName amxRoot = new ObjectName(amxRootName);
+            return mbeanServer.isRegistered(amxRoot) ? amxRoot : null;
         } catch (Throwable t) {
             logger.log(Level.CONFIG, "GlassFish AMX monitoring root not available.  Trying standalone.", t);
             return null;
         }
     }
 
-    private @NotNull ManagedObjectManager createMOM(final ObjectName amxName) {
-        final boolean isFederated = amxName != null;
+    private @NotNull ManagedObjectManager createMOM(final ObjectName amxRoot) {
+        final boolean isFederated = amxRoot != null;
         try {
             return
                 isFederated ?
-                ManagedObjectManagerFactory.createFederated(amxName)
+                ManagedObjectManagerFactory.createFederated(amxRoot)
                 :
-                ManagedObjectManagerFactory.createStandalone("com.sun.metro");
+                ManagedObjectManagerFactory.createStandalone(standaloneName);
         } catch (Throwable t) {
             if (isFederated) {
                 logger.log(Level.CONFIG, "Problem while attempting to federate with GlassFish AMX monitoring.  Trying standalone.", t);
