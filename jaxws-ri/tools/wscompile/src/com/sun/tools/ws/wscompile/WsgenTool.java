@@ -197,17 +197,21 @@ public class WsgenTool implements AnnotationProcessorFactory {
 
         boolean bootCP = useBootClasspath(EndpointReference.class) || useBootClasspath(XmlSeeAlso.class);
 
-        String[] args = new String[8 + (bootCP ? 1 :0)];
-        args[0] = "-d";
-        args[1] = options.destDir.getAbsolutePath();
-        args[2] = "-classpath";
-        args[3] = options.classpath;
-        args[4] = "-s";
-        args[5] = options.sourceDir.getAbsolutePath();
-        args[6] = "-XclassesAsDecls";
-        args[7] = endpoint;
+        String[] args = new String[8 + (bootCP ? 1 :0) + (options.nocompile?1:0)];
+        int i = 0;
+        args[i++] = "-d";
+        args[i++] = options.destDir.getAbsolutePath();
+        args[i++] = "-classpath";
+        args[i++] = options.classpath;
+        args[i++] = "-s";
+        args[i++] = options.sourceDir.getAbsolutePath();
+        args[i++] = "-XclassesAsDecls";
+        if(options.nocompile) {
+            args[i++] = "-nocompile";
+        }
+        args[i++] = endpoint;
         if (bootCP) {
-            args[8] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
+            args[i++] = "-Xbootclasspath/p:"+JavaCompilerHelper.getJarFile(EndpointReference.class)+File.pathSeparator+JavaCompilerHelper.getJarFile(XmlSeeAlso.class);
         }
 
         // Workaround for bug 6499165: issue with javac debug option

@@ -268,7 +268,18 @@ public class WsGen2 extends MatchingTask {
      public void setDebug(boolean debug) {
          this.debug = debug;
      }
-     
+
+    public boolean isXnocompile() {
+        return xnocompile;
+    }
+
+    public void setXnocompile(boolean xnocompile) {
+        this.xnocompile = xnocompile;
+    }
+
+    /** do not compile generated classes **/
+    private boolean xnocompile = false;
+
      /*************************  -wsdl option *************************/
      private boolean genWsdl = false;
 
@@ -424,6 +435,11 @@ public class WsGen2 extends MatchingTask {
         // keep option
         if (getKeep()) {
             cmd.createArgument().setValue("-keep");
+        }
+
+        //-Xnocompile option
+        if(isXnocompile()){
+            cmd.createArgument().setValue("-Xnocompile");
         }
 
         if (getGenwsdl()) {
