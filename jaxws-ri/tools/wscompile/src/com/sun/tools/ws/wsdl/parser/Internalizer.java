@@ -89,6 +89,10 @@ public class Internalizer {
     }
 
     public void transform() {
+        for (Element jaxwsBinding : forest.outerMostBindings) {
+            internalize(jaxwsBinding, jaxwsBinding);
+        }
+        /*
         Map<Element, Node> targetNodes = new HashMap<Element, Node>();
         for (Element jaxwsBinding : forest.outerMostBindings) {
             buildTargetNodeMap(jaxwsBinding, jaxwsBinding, targetNodes);
@@ -96,6 +100,7 @@ public class Internalizer {
         for (Element jaxwsBinding : forest.outerMostBindings) {
             move(jaxwsBinding, targetNodes);
         }
+        */
     }
 
     /**
@@ -116,11 +121,124 @@ public class Internalizer {
         }
     }
 
+    private void internalize(Element bindings, Node inheritedTarget) {
+        // start by the inherited target
+        Node target = inheritedTarget;
+
+        validate(bindings); // validate this node
+
+        // look for @wsdlLocation
+        if (isTopLevelBinding(bindings)) {
+            String wsdlLocation;
+            if (bindings.getAttributeNode("wsdlLocation") != null) {
+                wsdlLocation = bindings.getAttribute("wsdlLocation");
+
+                try {
+                    // absolutize this URI.
+                    // TODO: use the URI class
+                    // TODO: honor xml:base
+                    wsdlLocation = new URL(new URL(forest.getSystemId(bindings.getOwnerDocument())),
+                            wsdlLocation).toExternalForm();
+                } catch (MalformedURLException e) {
+                    wsdlLocation = JAXWSUtils.absolutize(JAXWSUtils.getFileOrURLName(wsdlLocation));
+                }
+            } else {
+                //the node does not have
+                wsdlLocation = forest.getFirstRootDocument();
+            }
+            target = forest.get(wsdlLocation);
+
+            if (target == null) {
+                reportError(bindings, WsdlMessages.INTERNALIZER_INCORRECT_SCHEMA_REFERENCE(wsdlLocation, EditDistance.findNearest(wsdlLocation, forest.listSystemIDs())));
+                return; // abort processing this <JAXWS:bindings>
+            }
+        }
+
+        //if the target node is xs:schema, declare the jaxb version on it as latter on it will be
+        //required by the inlined schema bindings
+
+        Element element = DOMUtil.getFirstElementChild(target);
+        if (element != null && element.getNamespaceURI().equals(Constants.NS_WSDL) && element.getLocalName().equals("definitions")) {
+            //get all schema elements
+            Element type = DOMUtils.getFirstChildElement(element, Constants.NS_WSDL, "types");
+            if (type != null) {
+                for (Element schemaElement : DOMUtils.getChildElements(type, Constants.NS_XSD, "schema")) {
+                    if (!schemaElement.hasAttributeNS(Constants.NS_XMLNS, "jaxb")) {
+                        schemaElement.setAttributeNS(Constants.NS_XMLNS, "xmlns:jaxb", JAXWSBindingsConstants.NS_JAXB_BINDINGS);
+                    }
+
+                    //add jaxb:bindings version info. Lets put it to 1.0, may need to change latter
+                    if (!schemaElement.hasAttributeNS(JAXWSBindingsConstants.NS_JAXB_BINDINGS, "version")) {
+                        schemaElement.setAttributeNS(JAXWSBindingsConstants.NS_JAXB_BINDINGS, "jaxb:version", JAXWSBindingsConstants.JAXB_BINDING_VERSION);
+                    }
+                }
+            }
+        }
+
+
+        NodeList targetNodes = null;
+        boolean hasNode = true;
+        boolean isToplevelBinding = isTopLevelBinding(bindings);
+        if ((isJAXWSBindings(bindings) || isJAXBBindings(bindings)) && bindings.getAttributeNode("node") != null) {
+            targetNodes = evaluateXPathMultiNode(bindings, target, bindings.getAttribute("node"), new NamespaceContextImpl(bindings));
+        } else
+        if (isJAXWSBindings(bindings) && (bindings.getAttributeNode("node") == null) && !isToplevelBinding) {
+            hasNode = false;
+        } else
+        if (isGlobalBinding(bindings) && !isWSDLDefinition(target) && isTopLevelBinding(bindings.getParentNode())) {
+            targetNodes = getWSDLDefintionNode(bindings, target);
+        }
+
+        //if target is null or empty it means the xpath evaluation has some problem,
+        // just return
+        if (targetNodes == null && hasNode && !isToplevelBinding)
+            return;
+
+
+        if (hasNode) {
+            if (targetNodes != null) {
+                for (int i = 0; i < targetNodes.getLength(); i++) {
+                    insertBinding(bindings, targetNodes.item(i));
+                    // look for child <JAXWS:bindings> and process them recursively
+                    Element[] children = getChildElements(bindings);
+                    for (Element child : children)
+                        internalize(child, targetNodes.item(i));
+                }
+            }
+        }
+        // look for child <JAXWS:bindings> and process them recursively
+        Element[] children = getChildElements(bindings);
+
+        for (Element child : children)
+            internalize(child, target);
+    }
+
+    /**
+     * Moves JAXWS customizations under their respective target nodes.
+     */
+    private void insertBinding(@NotNull Element bindings, @NotNull Node target) {
+        if ("bindings".equals(bindings.getLocalName())) {
+            Element[] children = DOMUtils.getChildElements(bindings);
+            for (Element item : children) {
+                if ("bindings".equals(item.getLocalName())) {
+                    //done
+                } else {
+                    moveUnder(item, (Element) target);
+
+                }
+            }
+        } else {
+            moveUnder(bindings, (Element) target);
+        }
+    }
+
+
     /**
      * Determines the target node of the "bindings" element
      * by using the inherited target node, then put
      * the result into the "result" map.
      */
+    /* TODO Remove this logic if there are no regressions with new internalization logic
     private void buildTargetNodeMap(Element bindings, Node inheritedTarget, Map<Element, Node> result) {
         // start by the inherited target
         Node target = inheritedTarget;
@@ -201,9 +319,9 @@ public class Internalizer {
         for (Element child : children)
             buildTargetNodeMap(child, target, result);
     }
-
-    private Node getWSDLDefintionNode(Node bindings, Node target) {
-        return evaluateXPathNode(bindings, target, "wsdl:definitions",
+    */
+    private NodeList getWSDLDefintionNode(Node bindings, Node target) {
+        return evaluateXPathMultiNode(bindings, target, "wsdl:definitions",
                 new NamespaceContext() {
                     public String getNamespaceURI(String prefix) {
                         return "http://schemas.xmlsoap.org/wsdl/";
@@ -292,6 +410,24 @@ public class Internalizer {
             return null; // abort
         }
         return rnode;
+    }
+
+    private NodeList evaluateXPathMultiNode(Node bindings, Node target, String expression, NamespaceContext namespaceContext) {
+        NodeList nlst;
+        try {
+            xpath.setNamespaceContext(namespaceContext);
+            nlst = (NodeList) xpath.evaluate(expression, target, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            reportError((Element) bindings, WsdlMessages.INTERNALIZER_X_PATH_EVALUATION_ERROR(e.getMessage()), e);
+            return null; // abort processing this <jaxb:bindings>
+        }
+
+        if (nlst.getLength() == 0) {
+            reportError((Element) bindings, WsdlMessages.INTERNALIZER_X_PATH_EVALUATES_TO_NO_TARGET(expression));
+            return null; // abort
+        }
+
+        return nlst;
     }
 
     /**
