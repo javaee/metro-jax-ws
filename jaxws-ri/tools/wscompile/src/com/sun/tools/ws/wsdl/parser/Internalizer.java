@@ -202,15 +202,19 @@ public class Internalizer {
                     // look for child <JAXWS:bindings> and process them recursively
                     Element[] children = getChildElements(bindings);
                     for (Element child : children)
-                        internalize(child, targetNodes.item(i));
+                        if("bindings".equals(child.getLocalName())) {
+                            internalize(child, targetNodes.item(i));
+                        }
                 }
             }
         }
-        // look for child <JAXWS:bindings> and process them recursively
-        Element[] children = getChildElements(bindings);
+        if (targetNodes == null) {
+            // look for child <JAXWS:bindings> and process them recursively
+            Element[] children = getChildElements(bindings);
 
-        for (Element child : children)
-            internalize(child, target);
+            for (Element child : children)
+                internalize(child, target);
+        }
     }
 
     /**
