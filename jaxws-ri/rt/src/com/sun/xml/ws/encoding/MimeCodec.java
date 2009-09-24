@@ -94,7 +94,6 @@ abstract class MimeCodec implements Codec {
     }
 
     public static final String MULTIPART_RELATED_MIME_TYPE = "multipart/related";
-    private static final byte[] newline = {'\r','\n'};
     
     private String boundary;
     private String messageContentType;
@@ -208,6 +207,7 @@ abstract class MimeCodec implements Codec {
     }
 
     public static void writeln(OutputStream out) throws IOException {
-        out.write(newline);
+        out.write('\r');
+        out.write('\n');
     }
 }

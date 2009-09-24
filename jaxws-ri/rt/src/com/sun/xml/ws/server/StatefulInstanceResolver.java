@@ -465,9 +465,9 @@ public final class StatefulInstanceResolver<T> extends AbstractMultiInstanceReso
     /**
      * Timer that controls the instance time out. Lazily created.
      */
-    private static volatile Timer timer;
+    private volatile Timer timer;
 
-    private static synchronized void startTimer() {
+    private synchronized void startTimer() {
         if(timer==null)
             timer = new Timer("JAX-WS stateful web service timeout timer");
     }

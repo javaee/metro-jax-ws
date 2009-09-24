@@ -312,10 +312,8 @@ public class MtomCodec extends MimeCodec {
                 //flush the underlying writer to write-out any cached data to the underlying
                 // stream before writing directly to it
                 //write out the xop reference
-                out.write(XOP_PREF);
-                encoded.set(bab.contentId);
+                encoded.set(XOP_PREF+bab.contentId+XOP_SUFF);
                 out.write(encoded.buf,0,encoded.len);
-                out.write(XOP_SUFF);
             } catch (IOException e) {
                 throw new WebServiceException(e);
             } catch (XMLStreamException e) {
@@ -572,17 +570,8 @@ public class MtomCodec extends MimeCodec {
         }
     }
 
-    private static final byte[] XOP_PREF = encode("<Include xmlns=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:");
-
-    private static byte[] encode(String str) {
-        try {
-            return str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new Error(e);
-        }
-    }
-
-    private static final byte[] XOP_SUFF = encode("\"/>");
+    private static final String XOP_PREF = "<Include xmlns=\"http://www.w3.org/2004/08/xop/include\" href=\"cid:";
+    private static final String XOP_SUFF = "\"/>";
     private static final String XOP_LOCALNAME = "Include";
     private static final String XOP_NAMESPACEURI = "http://www.w3.org/2004/08/xop/include";
 
