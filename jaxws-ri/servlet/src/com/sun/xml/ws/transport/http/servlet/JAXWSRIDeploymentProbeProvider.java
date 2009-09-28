@@ -10,7 +10,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  *
  * @author Jitendra Kotamraju
  */
-@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="ri")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="deployment-ri")
 public class JAXWSRIDeploymentProbeProvider {
 
     @Probe(name="deploy")
