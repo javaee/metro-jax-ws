@@ -127,22 +127,27 @@ public class PortInfo implements WSPortInfo {
      */
     public BindingImpl createBinding(WebServiceFeature[] webServiceFeatures, Class<?> portInterface) {
         WebServiceFeatureList r = new WebServiceFeatureList(webServiceFeatures);
-        if (portModel != null)
+
+        Iterable<WebServiceFeature> configFeatures;
+
+        //TODO incase of Dispatch, provide a way to User for complete control of the message processing by giving
+        // ability to turn off the WSDL/Policy based features and its associated tubes.
+
+        //Even in case of Dispatch, merge all features configured via WSDL/Policy or deployment configuration
+        if (portModel != null) {
             // could have merged features from this.policyMap, but some features are set in WSDLModel which are not there in PolicyMap
             // for ex: <wsaw:UsingAddressing> wsdl extn., and since the policyMap features are merged into WSDLModel anyway during postFinished(),
             // So, using here WsdlModel for merging is right.
 
             // merge features from WSDL
-            r.mergeFeatures(portModel, portInterface==null/*if dispatch, true*/, false);
-        else {
-            //Dispatch with out WSDL case.
-            for(WebServiceFeature f: PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName)){
-                r.add(f);
-            }
+            configFeatures = portModel.getFeatures();
+        } else {
+            configFeatures = PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName);
         }
+        r.mergeFeatures(portModel.getFeatures(), false);
+
         // merge features from interceptor
-        for( WebServiceFeature wsf : owner.serviceInterceptor.preCreateBinding(this,portInterface,r) )
-            r.add(wsf);
+        r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this,portInterface,r), false);
 
         BindingImpl bindingImpl = BindingImpl.create(bindingId, r.toArray());
         owner.getHandlerConfigurator().configureHandlers(this,bindingImpl);

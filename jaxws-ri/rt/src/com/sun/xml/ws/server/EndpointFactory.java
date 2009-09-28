@@ -179,19 +179,22 @@ public class EndpointFactory {
         PolicyMap policyMap = null;
         // create terminal pipe that invokes the application
         if (implType.getAnnotation(WebServiceProvider.class)!=null) {
-            //Provider case: Enable Addressing from WSDL only if it has RespectBindingFeature enabled
+            //TODO incase of Provider, provide a way to User for complete control of the message processing by giving
+            // ability to turn off the WSDL/Policy based features and its associated tubes.
+
+            //Even in case of Provider, merge all features configured via WSDL/Policy or deployment configuration
+            Iterable<WebServiceFeature> configFtrs;
             if(wsdlPort != null) {
                  policyMap = wsdlPort.getOwner().getParent().getPolicyMap();
                  //Merge features from WSDL and other policy configuration
-                 features.mergeFeatures(wsdlPort,true,true);
+                configFtrs = wsdlPort.getFeatures();
             } else {
                 //No WSDL, so try to merge features from Policy configuration
                 policyMap = PolicyResolverFactory.create().resolve(
                         new PolicyResolver.ServerContext(null, container, implType, false));
-                for(WebServiceFeature f: PolicyUtil.getPortScopedFeatures(policyMap,serviceName,portName)){
-                    features.add(f);
-                }
+                configFtrs = PolicyUtil.getPortScopedFeatures(policyMap,serviceName,portName);
             }
+            features.mergeFeatures(configFtrs, true);
             terminal = ProviderInvokerTube.create(implType,binding,invoker);
         } else {
             // Create runtime model for non Provider endpoints
@@ -212,7 +215,7 @@ public class EndpointFactory {
             // New Features might have been added in WSDL through Policy.
             //Merge features from WSDL and other policy configuration
             // This sets only the wsdl features that are not already set(enabled/disabled)
-            features.mergeFeatures(wsdlPort, false, true);
+            features.mergeFeatures(wsdlPort.getFeatures(), true);
             terminal= new SEIInvokerTube(seiModel,invoker,binding);
         }
 

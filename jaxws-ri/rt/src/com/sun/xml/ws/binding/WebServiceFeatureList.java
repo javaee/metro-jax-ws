@@ -262,51 +262,24 @@ public final class WebServiceFeatureList implements WSFeatureList {
     }
 
     /**
-     * Extracts features from {@link WSDLPortImpl#getFeatures()}.
-     * Extra features that are not already set on binding.
+     * Merges the extra features that are not already set on binding.
      * i.e, if a feature is set already on binding through someother API
      * the coresponding wsdlFeature is not set.
      *
-     * @param wsdlPort          WSDLPort model
-     * @param honorWsdlRequired If this is true add WSDL Feature only if wsd:Required=true
-     *                          In SEI case, it should be false
-     *                          In Provider case, it should be true
+     * @param features          Web Service features that need to be merged with already configured features.
      * @param reportConflicts   If true, checks if the feature setting in WSDL (wsdl extension or
      *                          policy configuration) colflicts with feature setting in Deployed Service and
      *                          logs warning if there are any conflicts.
      */
-    public void mergeFeatures(@NotNull WSDLPort wsdlPort, boolean honorWsdlRequired, boolean reportConflicts) {
-        if (honorWsdlRequired && !isEnabled(RespectBindingFeature.class))
-            return;
-        if (!honorWsdlRequired) {
-            addAll(wsdlPort.getFeatures());
-            return;
-        }
-        // Add only if isRequired returns true, when honorWsdlRequired is true
-        for (WebServiceFeature wsdlFtr : wsdlPort.getFeatures()) {
+    public void mergeFeatures(@NotNull Iterable<WebServiceFeature> features, boolean reportConflicts) {
+        for (WebServiceFeature wsdlFtr : features) {
             if (get(wsdlFtr.getClass()) == null) {
-                try {
-                    // if it is a WSDL Extension , it will have required attribute
-                    Method m = (wsdlFtr.getClass().getMethod("isRequired"));
-                    try {
-                        boolean required = (Boolean) m.invoke(wsdlFtr);
-                        if (required)
-                            add(wsdlFtr);
-                    } catch (IllegalAccessException e) {
-                        throw new WebServiceException(e);
-                    } catch (InvocationTargetException e) {
-                        throw new WebServiceException(e);
-                    }
-                } catch (NoSuchMethodException e) {
-                    // this wsdlFtr is not an WSDL extension, just add it
-                    add(wsdlFtr);
-                }
+                add(wsdlFtr);
             } else if (reportConflicts) {
                 if (isEnabled(wsdlFtr.getClass()) != wsdlFtr.isEnabled()) {
                     LOGGER.warning(ModelerMessages.RUNTIME_MODELER_FEATURE_CONFLICT(
                             get(wsdlFtr.getClass()), wsdlFtr));
                 }
-
             }
         }
     }
