@@ -330,7 +330,7 @@ public class EndpointReferenceUtil {
                                     + MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getLocalPart());
                     metadataEl.setAttribute(MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_ATTRIBUTE,
                             MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_VALUE);
-                    if (wsdlDefinitions == null && wsdlLocation != null) {
+                    if (wsdlDefinitions == null && wsdlLocation != null && !wsdlLocation.equals("")) {
                         wsdlLocation = wsdlLocation.trim();
                         String wsdlTns = wsdlLocation.substring(0, wsdlLocation.indexOf(' '));
                         wsdlLocation = wsdlLocation.substring(wsdlLocation.indexOf(' ') + 1);
