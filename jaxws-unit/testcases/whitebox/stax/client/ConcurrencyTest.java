@@ -50,10 +50,8 @@ public class ConcurrencyTest extends TestCase {
         public void run() {
             for(int req=0; req < PER_THREAD && e == null; req++) {
                 try {
-                    File file = File.createTempFile("jaxws-unit-stax", "xml");
-
-                    FileOutputStream fos = new FileOutputStream(file);
-                    XMLStreamWriter w = getWriter(fos);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    XMLStreamWriter w = getWriter(bos);
                     //System.out.println("Writer="+w+" Thread="+Thread.currentThread());
                     w.writeStartDocument();
                     w.writeStartElement("hello");
@@ -64,17 +62,15 @@ public class ConcurrencyTest extends TestCase {
                     w.writeEndElement();
                     w.writeEndDocument();
                     w.close();
-                    fos.close();
+                    bos.close();
 
-                    FileInputStream fis = new FileInputStream(file);
-                    XMLStreamReader r = getReader(fis);
+                    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+                    XMLStreamReader r = getReader(bis);
                     while (r.hasNext()) {
                         r.next();
                     }
                     r.close();
-                    fis.close();
-
-                    file.delete();
+                    bis.close();
                 } catch (Exception e) {
                     this.e = e;
                 }
