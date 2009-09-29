@@ -255,6 +255,9 @@ public class EndpointReferenceUtil {
                 } else if (child.getNamespaceURI().equals(AddressingVersion.W3C.nsUri) &&
                         child.getLocalName().equals(AddressingVersion.W3C.eprType.wsdlMetadata.getLocalPart())) {
                     NodeList metadata = child.getChildNodes();
+                    String wsdlLocation = child.getAttributeNS(W3CAddressingMetadataConstants.WSAM_WSDLI_ATTRIBUTE_NAMESPACE,
+                            W3CAddressingMetadataConstants.WSAM_WSDLI_ATTRIBUTE_LOCALNAME);
+                    Element wsdlDefinitions = null;
                     for (int j = 0; j < metadata.getLength(); j++) {
                         Node node = metadata.item(j);
                         if (node.getNodeType() != Node.ELEMENT_NODE)
@@ -306,18 +309,7 @@ public class EndpointReferenceUtil {
                             msEpr.portTypeName.attributes = getAttributes(elm);
                         } else if(elm.getNamespaceURI().equals(WSDLConstants.NS_WSDL) &&
                                 elm.getLocalName().equals(WSDLConstants.QNAME_DEFINITIONS.getLocalPart())) {
-                            Document doc = DOMUtil.createDom();
-                            Element mexEl = doc.createElementNS(MemberSubmissionAddressingConstants.MEX_METADATA.getNamespaceURI(),
-                                    MemberSubmissionAddressingConstants.MEX_METADATA.getPrefix()+":"
-                                            +MemberSubmissionAddressingConstants.MEX_METADATA.getLocalPart());
-                            Element metadataEl = doc.createElementNS(MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getNamespaceURI(),
-                                    MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getPrefix()+":"
-                                            +MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getLocalPart());
-                            metadataEl.setAttribute(MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_ATTRIBUTE,
-                                    MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_VALUE);
-                            metadataEl.appendChild(elm);
-                            mexEl.appendChild(metadataEl);
-
+                            wsdlDefinitions = elm;
                         } else {
                             //TODO : Revisit this
                             //its extensions in META-DATA and should be copied to extensions in MS EPR
@@ -327,6 +319,42 @@ public class EndpointReferenceUtil {
                             msEpr.elements.add(elm);
                         }
                     }
+
+
+                    Document doc = DOMUtil.createDom();
+                    Element mexEl = doc.createElementNS(MemberSubmissionAddressingConstants.MEX_METADATA.getNamespaceURI(),
+                            MemberSubmissionAddressingConstants.MEX_METADATA.getPrefix() + ":"
+                                    + MemberSubmissionAddressingConstants.MEX_METADATA.getLocalPart());
+                    Element metadataEl = doc.createElementNS(MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getNamespaceURI(),
+                            MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getPrefix() + ":"
+                                    + MemberSubmissionAddressingConstants.MEX_METADATA_SECTION.getLocalPart());
+                    metadataEl.setAttribute(MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_ATTRIBUTE,
+                            MemberSubmissionAddressingConstants.MEX_METADATA_DIALECT_VALUE);
+                    if (wsdlDefinitions == null && wsdlLocation != null) {
+                        wsdlLocation = wsdlLocation.trim();
+                        String wsdlTns = wsdlLocation.substring(0, wsdlLocation.indexOf(' '));
+                        wsdlLocation = wsdlLocation.substring(wsdlLocation.indexOf(' ') + 1);
+                        Element wsdlEl = doc.createElementNS(WSDLConstants.NS_WSDL,
+                                WSDLConstants.PREFIX_NS_WSDL + ":"
+                                        + WSDLConstants.QNAME_DEFINITIONS.getLocalPart());
+                        Element wsdlImportEl = doc.createElementNS(WSDLConstants.NS_WSDL,
+                                WSDLConstants.PREFIX_NS_WSDL + ":"
+                                        + WSDLConstants.QNAME_IMPORT.getLocalPart());
+                        wsdlImportEl.setAttribute("namespace", wsdlTns);
+                        wsdlImportEl.setAttribute("location", wsdlLocation);
+                        wsdlEl.appendChild(wsdlImportEl);
+                        metadataEl.appendChild(wsdlEl);
+                    } else if(wsdlDefinitions != null){
+                        metadataEl.appendChild(wsdlDefinitions);
+                    }
+                    mexEl.appendChild(metadataEl);
+
+                    if (msEpr.elements == null) {
+                        msEpr.elements = new ArrayList<Element>();
+                    }
+                    msEpr.elements.add(mexEl);
+
+
                 } else {
                     //its extensions
                     if (msEpr.elements == null) {
