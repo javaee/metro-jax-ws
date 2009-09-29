@@ -70,30 +70,41 @@ public class WSServlet extends HttpServlet {
         return (WSServletDelegate) servletConfig.getServletContext().getAttribute(JAXWS_RI_RUNTIME_INFO);
     }
 
+    @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response) throws ServletException {
         if (delegate != null) {
             delegate.doPost(request,response,getServletContext());
         }
     }
 
+    @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doGet(request,response,getServletContext());
         }
     }
-    
+
+    @Override
     protected void doPut( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doPut(request,response,getServletContext());
         }
     }
-        
+
+    @Override
     protected void doDelete( HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
         if (delegate != null) {
             delegate.doDelete(request,response,getServletContext());
+        }
+    }
+
+    @Override
+    protected void doHead( HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        if (delegate != null) {
+            delegate.doHead(request,response,getServletContext());
         }
     }
 

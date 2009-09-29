@@ -259,6 +259,24 @@ public class HttpAdapter extends Adapter<HttpAdapter.HttpToolkit> {
                 writeWebServicesHtmlPage(connection);
                 return;
             }
+        } else if (connection.getRequestMethod().equals("HEAD")) {
+            connection.getInput().close();
+            Binding binding = getEndpoint().getBinding();
+            if (isMetadataQuery(connection.getQueryString())) {
+                SDDocument doc = wsdls.get(connection.getQueryString());
+                connection.setStatus(doc!=null
+                        ? HttpURLConnection.HTTP_OK
+                        : HttpURLConnection.HTTP_NOT_FOUND);
+                connection.getOutput().close();
+                connection.close();
+                return;
+            } else if (!(binding instanceof HTTPBinding)) {
+                connection.setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+                connection.getOutput().close();
+                connection.close();
+                return;
+            }
+            // Let the endpoint handle for HTTPBinding
         }
 
         // normal request handling
