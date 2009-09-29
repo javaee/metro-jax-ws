@@ -1,5 +1,5 @@
 /*
- * $Id: HeadTest.java,v 1.1 2009-09-29 19:13:13 jitu Exp $
+ * $Id: HeadTest.java,v 1.2 2009-09-29 21:58:00 jitu Exp $
  */
 
 /*
@@ -53,6 +53,8 @@ public class HeadTest extends TestCase {
         HttpURLConnection conn =
             (HttpURLConnection) new URL(address).openConnection();
         conn.setRequestMethod("HEAD");
+        // lwhs is not working with keep-alive. Issue: 6886723
+        conn.setRequestProperty("Connection", "close");
         return conn.getResponseCode();
     }
 
