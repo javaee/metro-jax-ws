@@ -65,13 +65,13 @@ import javax.xml.ws.WebServiceException;
  * @author Fabian Ritzmann
  */
 public class ManagedServiceAssertion extends SimpleAssertion {
-
-    private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
-
     /**
      * The name of the ManagedService policy assertion.
      */
-    private static final QName MANAGED_SERVICE_QNAME = new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
+    public static final QName MANAGED_SERVICE_QNAME = new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
+
+    private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
+
     /**
      * The name of the id attribute of the ManagedService policy assertion.
      */
