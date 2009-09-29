@@ -144,7 +144,7 @@ public class PortInfo implements WSPortInfo {
         } else {
             configFeatures = PolicyUtil.getPortScopedFeatures(policyMap, owner.getServiceName(),portName);
         }
-        r.mergeFeatures(portModel.getFeatures(), false);
+        r.mergeFeatures(configFeatures, false);
 
         // merge features from interceptor
         r.mergeFeatures(owner.serviceInterceptor.preCreateBinding(this,portInterface,r), false);
