@@ -725,7 +725,13 @@ public final class HeaderList extends ArrayList<Header> {
         if (binding == null) {
             throw new IllegalArgumentException(AddressingMessages.NULL_BINDING());
         }
-
+        //See if WSA headers are already set by the user.
+        HeaderList hl = packet.getMessage().getHeaders();
+        String action = hl.getAction(binding.getAddressingVersion(), binding.getSOAPVersion());
+        if(action != null) {
+            //assume that all the WSA headers are set by the user
+            return;
+        }
         AddressingVersion addressingVersion = binding.getAddressingVersion();
         //seiModel is passed as null as it is not needed.
         WsaTubeHelper wsaHelper = addressingVersion.getWsaHelper(wsdlPort, null, binding);
