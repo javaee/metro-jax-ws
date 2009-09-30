@@ -71,6 +71,8 @@ public class ByteArrayBuffer extends OutputStream {
      */
     private int count;
 
+    private static final int CHUNK_SIZE = 4096;
+
     /**
      * Creates a new byte array output stream. The buffer capacity is
      * initially 32 bytes, though its size increases if necessary.
@@ -144,7 +146,18 @@ public class ByteArrayBuffer extends OutputStream {
     }
 
     public final void writeTo(OutputStream out) throws IOException {
-        out.write(buf, 0, count);
+        // Instead of writing out.write(buf, 0, count)
+        // Writing it in chunks that would help larger payloads
+        // Also if out is System.out on windows, it doesn't show on the console
+        // for larger data.
+        int remaining = count;
+        int off = 0;
+        while(remaining > 0) {
+            int chunk = (remaining > CHUNK_SIZE) ? CHUNK_SIZE : remaining;
+            out.write(buf, off, chunk);
+            remaining -= chunk;
+            off += chunk;
+        }
     }
 
     public final void reset() {
