@@ -11,6 +11,8 @@ import com.sun.xml.ws.api.pipe.Codec;
 import com.sun.xml.ws.api.pipe.Codecs;
 import com.sun.xml.ws.developer.MemberSubmissionAddressingFeature;
 import com.sun.xml.ws.message.saaj.SAAJMessage;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
@@ -21,7 +23,7 @@ import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPBinding;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
+import testutil.W3CAddressingConstants;
 private static final MemberSubmissionAddressingFeature MS_ADDRESSING_FEATURE = new MemberSubmissionAddressingFeature(true);
 private static final QName SERVICE_QNAME=new QName("http://example.com/","AddNumbersService");
 private static final QName PORT_QNAME=new QName("http://example.com/","AddNumbersPort");
@@ -86,7 +88,17 @@ String requestStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         Dispatch dispatch = createDispatchWithoutWSDL();
         Message message = createStreamMessage(requestStr);
         //Message message  = createSAAJMessage(requestStr);
+        try {
         dispatch.invoke(message);
+        }catch(SOAPFaultException e) {
+        SOAPFault f = e.getFault();
+        assertNotNull("Fault element is null", f);
+        QName faultcode = f.getFaultCodeAsQName();
+        assertEquals(SOAPConstants.SOAP_SENDER_FAULT, faultcode);
+        Iterator iter = f.getFaultSubcodes();
+        assertNotNull("Subcode iterator is null", iter);
+        assertEquals(iter.next(), W3CAddressingConstants.ACTION_NOT_SUPPORTED_QNAME);
+        }
 
     }
 
