@@ -41,11 +41,15 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
 
 /**
+ * Default {@link ValidationErrorHandler} that just rethrows SAXException
+ * in case of errors.
+ *
  * @author Jitendra Kotamraju
  */
 public class DraconianValidationErrorHandler extends ValidationErrorHandler {
+
     public void warning(SAXParseException e) throws SAXException {
-        throw e;
+        // noop
     }
 
     public void error(SAXParseException e) throws SAXException {
@@ -53,7 +57,7 @@ public class DraconianValidationErrorHandler extends ValidationErrorHandler {
     }
 
     public void fatalError(SAXParseException e) throws SAXException {
-        ; // noop
+        throw e;
     }
 
 }
