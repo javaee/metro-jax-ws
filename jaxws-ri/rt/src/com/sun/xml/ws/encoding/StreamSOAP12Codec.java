@@ -83,7 +83,7 @@ final class StreamSOAP12Codec extends StreamSOAPCodec {
         if (soapAction == null) {
             return defaultContentType;
         } else {
-            return new ContentTypeImpl(SOAP12_CONTENT_TYPE + ";action=\""+soapAction+"\"");
+            return new ContentTypeImpl(SOAP12_CONTENT_TYPE + ";action="+fixQuotesAroundSoapAction(soapAction));
         }
     }
 
