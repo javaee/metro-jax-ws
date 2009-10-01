@@ -150,7 +150,7 @@ public class ServerTubeAssemblerContext {
      */
     public @NotNull Tube createServerMUTube(@NotNull Tube next) {
         if (binding instanceof SOAPBinding)
-            return new ServerMUTube(binding,next);
+            return new ServerMUTube(this,next);
         else
             return next;
     }
