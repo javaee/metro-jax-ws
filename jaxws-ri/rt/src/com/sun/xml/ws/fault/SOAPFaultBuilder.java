@@ -181,10 +181,19 @@ public abstract class SOAPFaultBuilder {
      * @param soapVersion non-null
      */
     public static Message createSOAPFaultMessage(SOAPVersion soapVersion, CheckedExceptionImpl ceModel, Throwable ex) {
+        return createSOAPFaultMessage(soapVersion, ceModel, ex, null);
+    }
+
+    /**
+     * Create the Message with the specified faultCode
+     *
+     * @see #createSOAPFaultMessage(SOAPVersion, CheckedExceptionImpl, Throwable)
+     */
+    public static Message createSOAPFaultMessage(SOAPVersion soapVersion, CheckedExceptionImpl ceModel, Throwable ex, QName faultCode) {
         Object detail = getFaultDetail(ceModel, ex);
         if(soapVersion == SOAPVersion.SOAP_12)
-            return createSOAP12Fault(soapVersion, ex, detail, ceModel, null);
-        return createSOAP11Fault(soapVersion, ex, detail, ceModel, null);
+            return createSOAP12Fault(soapVersion, ex, detail, ceModel, faultCode);
+        return createSOAP11Fault(soapVersion, ex, detail, ceModel, faultCode);
     }
 
     /**

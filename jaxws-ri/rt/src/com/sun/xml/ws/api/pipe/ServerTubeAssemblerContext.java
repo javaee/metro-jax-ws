@@ -210,7 +210,7 @@ public class ServerTubeAssemblerContext {
      */
     public Tube createValidationTube(Tube next) {
         if (binding instanceof SOAPBinding && binding.isFeatureEnabled(SchemaValidationFeature.class) && wsdlModel!=null)
-            return new ServerSchemaValidationTube(endpoint, binding, next);
+            return new ServerSchemaValidationTube(endpoint, binding, seiModel, wsdlModel, next);
         else
             return next;
     }
