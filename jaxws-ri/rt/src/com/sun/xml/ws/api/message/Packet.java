@@ -856,7 +856,10 @@ public final class Packet extends DistributedPropertySet {
         String action = responsePacket.message.isFault() ?
                 wsaHelper.getFaultAction(this, responsePacket) :
                 wsaHelper.getOutputAction(this);
-
+        if(action == null) {
+            LOGGER.info("WSA headers are not added as value for wsa:Action cannot be resolved for this message");
+            return;
+        }
         populateAddressingHeaders(responsePacket, addressingVersion, binding.getSOAPVersion(), action);
     }
 
