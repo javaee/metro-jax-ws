@@ -75,11 +75,19 @@ public class ManagedServiceAssertion extends SimpleAssertion {
     /**
      * The name of the id attribute of the ManagedService policy assertion.
      */
-    private static final QName ID_ATTRIBUTE_QNAME = new QName("", "id");
+    private static final QName ID_ATTRIBUTE_QNAME = new QName("id");
     /**
      * The name of the start attribute of the ManagedService policy assertion.
      */
-    private static final QName START_ATTRIBUTE_QNAME = new QName("", "start");
+    private static final QName START_ATTRIBUTE_QNAME = new QName("start");
+    /**
+     * The name of the management attribute of the ManagedService policy assertion.
+     */
+    private static final QName MANAGEMENT_ATTRIBUTE_QNAME = new QName("management");
+    /**
+     * The name of the monitoring attribute of the ManagedService policy assertion.
+     */
+    private static final QName MONITORING_ATTRIBUTE_QNAME = new QName("monitoring");
 
     private static final QName COMMUNICATION_SERVER_IMPLEMENTATIONS_PARAMETER_QNAME = new QName(
             PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "CommunicationServerImplementations");
@@ -145,7 +153,7 @@ public class ManagedServiceAssertion extends SimpleAssertion {
         if (!MANAGED_SERVICE_QNAME.equals(data.getName())) {
             throw new AssertionCreationException(data, ManagementMessages.WSM_1002_EXPECTED_MANAGED_SERVICE_ASSERTION());
         }
-        if (!data.containsAttribute(ID_ATTRIBUTE_QNAME)) {
+        if (isManagementEnabled() && !data.containsAttribute(ID_ATTRIBUTE_QNAME)) {
             throw new AssertionCreationException(data, ManagementMessages.WSM_1003_MANAGED_SERVICE_MISSING_ID());
         }
     }
@@ -166,6 +174,46 @@ public class ManagedServiceAssertion extends SimpleAssertion {
      */
     public String getStart() {
         return this.getAttributeValue((START_ATTRIBUTE_QNAME));
+    }
+
+    /**
+     * Returns the value of the managment attribute. True if unset or set to "true"
+     * or "on". False otherwise.
+     *
+     * @return The value of the managment attribute.
+     */
+    public boolean isManagementEnabled() {
+        final String management = this.getAttributeValue(MANAGEMENT_ATTRIBUTE_QNAME);
+        boolean result = true;
+        if (management != null) {
+            if (management.trim().toLowerCase().equals("on")) {
+                result = true;
+            }
+            else {
+                result = Boolean.parseBoolean(management);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the value of the monitoring attribute. True if unset or set to "true"
+     * or "on". False otherwise.
+     *
+     * @return The value of the monitoring attribute.
+     */
+    public boolean isMonitoringEnabled() {
+        final String monitoring = this.getAttributeValue(MONITORING_ATTRIBUTE_QNAME);
+        boolean result = true;
+        if (monitoring != null) {
+            if (monitoring.trim().toLowerCase().equals("on")) {
+                result = true;
+            }
+            else {
+                result = Boolean.parseBoolean(monitoring);
+            }
+        }
+        return result;
     }
 
     /**
