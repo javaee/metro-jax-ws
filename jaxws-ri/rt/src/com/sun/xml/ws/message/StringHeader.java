@@ -69,9 +69,9 @@ public class StringHeader extends AbstractHeaderImpl {
      */
     protected final String value;
 
-    public StringHeader(QName name, String value) {
+    public StringHeader(@NotNull QName name, @NotNull String value) {
         assert name != null;
-
+        assert value != null;
         this.name = name;
         this.value = value;
     }
