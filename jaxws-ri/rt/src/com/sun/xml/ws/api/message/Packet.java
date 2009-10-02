@@ -84,6 +84,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Represents a container of a {@link Message}.
@@ -265,7 +266,7 @@ public final class Packet extends DistributedPropertySet {
             try {
                 wsdlOperation = opDispatcher.getWSDLOperationQName(this);
             } catch (DispatchException e) {
-                //TODO log exception.
+                LOGGER.info("Cannot resolve wsdl operation that this Packet is targeted for.");
             }
         }
         return wsdlOperation;
@@ -869,4 +870,6 @@ public final class Packet extends DistributedPropertySet {
     protected PropertyMap getPropertyMap() {
         return model;
     }
+
+    private static final Logger LOGGER = Logger.getLogger(Packet.class.getName());
 }
