@@ -222,7 +222,7 @@ public class EchoClientTest extends XMLTestCase {
         try {
             invoke(createDispatchWithWSDLWithAddressing(),
                    MESSAGES.getDuplicateActionMessage(),
-                   S11_NS,
+                   S11_NS,getAddress(),ECHO_IN_ACTION,
                    ECHO_IN_ACTION,
                    "test1143");
             fail("SOAPFaultException must be thrown");
