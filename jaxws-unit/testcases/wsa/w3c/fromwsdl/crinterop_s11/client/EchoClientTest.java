@@ -220,7 +220,7 @@ public class EchoClientTest extends XMLTestCase {
      */
     public void test1143() throws Exception {
         try {
-            invoke(createDispatchWithWSDLWithAddressing(),
+            invoke(createDispatchWithWSDLWithoutAddressing(),
                    MESSAGES.getDuplicateActionMessage(),
                    S11_NS,getAddress(),ECHO_IN_ACTION,
                    ECHO_IN_ACTION,
