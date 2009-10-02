@@ -163,7 +163,7 @@ public class ManagedServiceAssertion extends SimpleAssertion {
      *
      * @return The value of the id attribute.
      */
-    public String getID() {
+    public String getId() {
         return this.getAttributeValue((ID_ATTRIBUTE_QNAME));
     }
 

@@ -101,22 +101,22 @@ public class ManagedServiceAssertionTest extends TestCase {
     }
 
     /**
-     * Test of getID method, of class ManagedServiceAssertion.
+     * Test of getId method, of class ManagedServiceAssertion.
      * @throws AssertionCreationException
      */
-    public void testGetID() throws AssertionCreationException {
+    public void testGetId() throws AssertionCreationException {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
         attributes.put(ID_ATTRIBUTE_QNAME, "id1");
         final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
         String expResult = "id1";
-        String result = instance.getID();
+        String result = instance.getId();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getID method, of class ManagedServiceAssertion.
+     * Test of getId method, of class ManagedServiceAssertion.
      */
     public void testNoId() {
         final HashMap<QName, String> attributes = new HashMap<QName, String>();
@@ -131,7 +131,7 @@ public class ManagedServiceAssertionTest extends TestCase {
     }
 
     /**
-     * Test of getID method, of class ManagedServiceAssertion.
+     * Test of getId method, of class ManagedServiceAssertion.
      * @throws AssertionCreationException
      */
     public void testNoIdManagementDisabled() throws AssertionCreationException {
@@ -140,7 +140,7 @@ public class ManagedServiceAssertionTest extends TestCase {
         final AssertionData data = AssertionData.createAssertionData(MANAGED_SERVICE_QNAME,
                 null, attributes, false, false);
         ManagedServiceAssertion instance = new ManagedServiceAssertion(data, null);
-        String result = instance.getID();
+        String result = instance.getId();
         assertNull(result);
     }
 
