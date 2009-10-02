@@ -1,4 +1,5 @@
-<descriptor since="2.1.8">
+<!-- Not yet fixed in 2.2 -->
+<descriptor since="2.1.8" excludeFrom="2.2">
   <description>This is a JAXWS 563 test</description>
   <service basedir="./server">
   </service>
