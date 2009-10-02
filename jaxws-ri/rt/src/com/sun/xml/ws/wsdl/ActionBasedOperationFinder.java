@@ -161,6 +161,8 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
         if (opName != null)
             return opName;
 
+        //Seems like in Wstrust STS wsdls, the payload does not match what is specified in the wsdl leading to incorrect
+        //  wsdl operation resolution. Use just wsa:Action to dispatch as a last resort.
         //try just with wsa:Action
         opName = actionMap.get(action);
         if (opName != null)
