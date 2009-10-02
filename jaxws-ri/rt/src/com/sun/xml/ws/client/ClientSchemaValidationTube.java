@@ -37,9 +37,11 @@
 package com.sun.xml.ws.client;
 
 import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.pipe.Tube;
 import com.sun.xml.ws.api.pipe.TubeCloner;
+import com.sun.xml.ws.api.pipe.NextAction;
 import com.sun.xml.ws.api.pipe.helper.AbstractTubeImpl;
 import com.sun.xml.ws.api.server.SDDocument;
 import com.sun.xml.ws.api.server.SDDocumentSource;
@@ -170,6 +172,32 @@ public class ClientSchemaValidationTube extends AbstractSchemaValidationTube {
 
     public AbstractTubeImpl copy(TubeCloner cloner) {
         return new ClientSchemaValidationTube(this,cloner);
+    }
+
+    @Override
+    public NextAction processRequest(Packet request) {
+        if (isNoValidation() || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
+            return super.processRequest(request);
+        }
+        try {
+            doProcess(request);
+        } catch(SAXException se) {
+            throw new WebServiceException(se);
+        }
+        return super.processRequest(request);
+    }
+
+    @Override
+    public NextAction processResponse(Packet response) {
+        if (isNoValidation() || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
+            return super.processResponse(response);
+        }
+        try {
+            doProcess(response);
+        } catch(SAXException se) {
+            throw new WebServiceException(se);
+        }
+        return super.processResponse(response);
     }
 
 }

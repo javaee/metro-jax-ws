@@ -54,6 +54,7 @@ import com.sun.xml.ws.util.xml.XmlUtil;
 import com.sun.xml.ws.wsdl.parser.WSDLConstants;
 import org.w3c.dom.*;
 import org.xml.sax.helpers.NamespaceSupport;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -203,25 +204,26 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
         }
     }
 
-    @Override
-    public NextAction processRequest(Packet request) {
-        if (isNoValidation() || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
-            return super.processRequest(request);
-        }
-        doProcess(request);
-        return super.processRequest(request);
-    }
+//    @Override
+//    public NextAction processRequest(Packet request) {
+//        if (isNoValidation() || !request.getMessage().hasPayload() || request.getMessage().isFault()) {
+//            return super.processRequest(request);
+//        }
+//        doProcess(request);
+//        return super.processRequest(request);
+//    }
+//
+//    @Override
+//    public NextAction processResponse(Packet response) {
+//        if (isNoValidation() || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
+//            return super.processResponse(response);
+//        }
+//        doProcess(response);
+//        return super.processResponse(response);
+//    }
 
-    @Override
-    public NextAction processResponse(Packet response) {
-        if (isNoValidation() || response.getMessage() == null || !response.getMessage().hasPayload() || response.getMessage().isFault()) {
-            return super.processResponse(response);
-        }
-        doProcess(response);
-        return super.processResponse(response);
-    }
 
-    private void doProcess(Packet packet) {
+    protected void doProcess(Packet packet) throws SAXException {
         getValidator().reset();
         Class<? extends ValidationErrorHandler> handlerClass = feature.getErrorHandler();
         ValidationErrorHandler handler;
@@ -238,7 +240,7 @@ public abstract class AbstractSchemaValidationTube extends AbstractFilterTubeImp
             // Validator javadoc allows ONLY SAX, and DOM Sources
             // But the impl seems to handle all kinds.
             getValidator().validate(source);
-        } catch(Exception e) {
+        } catch(IOException e) {
             throw new WebServiceException(e);
         }
     }
