@@ -73,6 +73,8 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
     
     private static final Logger LOGGER = Logger.getLogger(ActionBasedOperationFinder.class.getName());
     private final Map<ActionBasedOperationSignature, QName> uniqueOpSignatureMap;
+    private final Map<String, QName> actionMap;
+
     private final @NotNull AddressingVersion av;
 
     public ActionBasedOperationFinder(WSDLPort wsdlModel, WSBinding binding, @Nullable SEIModel seiModel) {
@@ -81,6 +83,7 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
         assert binding.getAddressingVersion() != null;    // this dispatcher can be only used when addressing is on.
         av = binding.getAddressingVersion();
         uniqueOpSignatureMap = new HashMap<ActionBasedOperationSignature, QName>();
+        actionMap = new HashMap<String,QName>();
 
         if (seiModel != null) {
             for (JavaMethodImpl m : ((AbstractSEIModelImpl) seiModel).getJavaMethods()) {
@@ -103,6 +106,7 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
                                 uniqueOpSignatureMap.get(opSignature),m.getOperation().getName(),action,payloadName));
                     }
                     uniqueOpSignatureMap.put(opSignature, m.getOperation().getName());
+                    actionMap.put(action,m.getOperation().getName());
                 }
             }
         } else {
@@ -119,6 +123,7 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
 
                 }
                 uniqueOpSignatureMap.put(opSignature, wsdlOp.getName());
+                actionMap.put(action,wsdlOp.getName());
             }
         }
     }
@@ -153,6 +158,11 @@ final class ActionBasedOperationFinder extends WSDLOperationFinder {
         }
 
         QName opName = uniqueOpSignatureMap.get(new ActionBasedOperationSignature(action, payloadName));
+        if (opName != null)
+            return opName;
+
+        //try just with wsa:Action
+        opName = actionMap.get(action);
         if (opName != null)
             return opName;
 
