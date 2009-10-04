@@ -1267,18 +1267,20 @@ public class RuntimeModeler {
             for (Annotation annotation : pannotations[pos]) {
                 if (annotation.annotationType() == javax.jws.WebParam.class) {
                     javax.jws.WebParam webParam = (javax.jws.WebParam) annotation;
+                    paramMode = webParam.mode();
+                    if (isHolder && paramMode == Mode.IN)
+                        paramMode = Mode.INOUT;
                     isHeader = webParam.header();
                     if(isHeader)
                         paramName = "arg"+pos;
+                    if(paramMode == Mode.OUT && !isHeader) 
+                        paramName = operationName+RESPONSE;
                     if (webParam.name().length() > 0)
                         paramName = webParam.name();
                     partName = webParam.partName();
                     if (!webParam.targetNamespace().equals("")) {
                         requestNamespace = webParam.targetNamespace();
                     }
-                    paramMode = webParam.mode();
-                    if (isHolder && paramMode == Mode.IN)
-                        paramMode = Mode.INOUT;
                     break;
                 }
             }
@@ -1314,15 +1316,30 @@ public class RuntimeModeler {
     }
 
     private void validateDocBare(JavaMethodImpl javaMethod) {
+        {
         int numInBodyBindings = 0;
         for(Parameter param : javaMethod.getRequestParameters()){
-            if(param.getBinding().equals(ParameterBinding.BODY) && param.isIN()){
+            if(param.getBinding().equals(ParameterBinding.BODY) && (param.isIN() || param.isINOUT())){
                 numInBodyBindings++;
             }
             if(numInBodyBindings > 1){
                 throw new RuntimeModelerException(ModelerMessages.localizableNOT_A_VALID_BARE_METHOD(portClass.getName(), javaMethod.getMethod().getName()));
             }
         }
+        }
+
+        {
+        int numOutBodyBindings = 0;
+        for(Parameter param : javaMethod.getResponseParameters()){
+            if(param.getBinding().equals(ParameterBinding.BODY) && (param.isOUT() || param.isINOUT())){
+                numOutBodyBindings++;
+            }
+            if(numOutBodyBindings > 1){
+                throw new RuntimeModelerException(ModelerMessages.localizableNOT_A_VALID_BARE_METHOD(portClass.getName(), javaMethod.getMethod().getName()));
+            }
+        }
+        }
+
     }
 
     private Class getAsyncReturnType(Method method, Class returnType) {
