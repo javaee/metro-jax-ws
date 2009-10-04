@@ -18,6 +18,16 @@ import javax.xml.ws.*;
 @SOAPBinding(parameterStyle=ParameterStyle.BARE)
 public class EchoImpl {
 
+    public int add(NumbersRequest numRequest) {
+        if (numRequest.number1 != 10)
+            throw new WebServiceException("numRequest.number1 expected=10"+" got="+numRequest.number1);
+        if (numRequest.number2 != 20)
+            throw new WebServiceException("numRequest.number2 expected=10"+" got="+numRequest.number2);
+        if (numRequest.guess != 25)
+            throw new WebServiceException("numRequest.guess expected=25"+" got="+numRequest.guess);
+        return numRequest.number1+numRequest.number2;
+    }
+
     public void addNumbers(NumbersRequest numRequest,
                         @WebParam(mode=WebParam.Mode.OUT)
                         Holder<Integer> res) {

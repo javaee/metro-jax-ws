@@ -27,6 +27,30 @@ public class BareTest extends TestCase {
         port = service.getEchoPort();
     }
 
+    public void testAdd() throws Exception {
+        NumbersRequest numbersRequest = new NumbersRequest();
+        numbersRequest.number1 = 10;
+        numbersRequest.number2 = 20;
+        numbersRequest.guess = 25;
+        int sum = port.add(numbersRequest);
+        assertEquals(30, sum);
+    }
+
+    // check wsdl:part for add()
+    public void testAddParts() throws Exception {
+        List<Part> in = getParts("add");
+        assertEquals(1, in.size());
+        Part inPart = in.get(0);
+        assertEquals("add", inPart.partName);
+        assertEquals("tns:add", inPart.elementName);
+
+        List<Part> out = getParts("addResponse");
+        assertEquals(1, out.size());
+        Part outPart = out.get(0);
+        assertEquals("addResponse", outPart.partName);
+        assertEquals("tns:addResponse", outPart.elementName);
+    }
+
     public void testAddNumbers() throws Exception {
         NumbersRequest numbersRequest = new NumbersRequest();
         numbersRequest.number1 = 10;
