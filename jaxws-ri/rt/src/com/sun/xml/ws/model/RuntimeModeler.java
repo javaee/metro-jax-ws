@@ -1315,31 +1315,32 @@ public class RuntimeModeler {
         processExceptions(javaMethod, method);
     }
 
+    // Does a conservative check if there is only one BODY part for input
+    // and output message. We are not considering INOUT parameters at this
+    // time since binding information is not applied. Also, there isn't
+    // anyway to represent some cases in SEI. For example, a INOUT parameter
+    // could be bound to body for input message, header for OUTPUT message
+    // in wsdl:binding
     private void validateDocBare(JavaMethodImpl javaMethod) {
-        {
         int numInBodyBindings = 0;
         for(Parameter param : javaMethod.getRequestParameters()){
-            if(param.getBinding().equals(ParameterBinding.BODY) && (param.isIN() || param.isINOUT())){
+            if(param.getBinding().equals(ParameterBinding.BODY) && param.isIN()){
                 numInBodyBindings++;
             }
             if(numInBodyBindings > 1){
                 throw new RuntimeModelerException(ModelerMessages.localizableNOT_A_VALID_BARE_METHOD(portClass.getName(), javaMethod.getMethod().getName()));
             }
         }
-        }
 
-        {
         int numOutBodyBindings = 0;
         for(Parameter param : javaMethod.getResponseParameters()){
-            if(param.getBinding().equals(ParameterBinding.BODY) && (param.isOUT() || param.isINOUT())){
+            if(param.getBinding().equals(ParameterBinding.BODY) && param.isOUT()){
                 numOutBodyBindings++;
             }
             if(numOutBodyBindings > 1){
                 throw new RuntimeModelerException(ModelerMessages.localizableNOT_A_VALID_BARE_METHOD(portClass.getName(), javaMethod.getMethod().getName()));
             }
         }
-        }
-
     }
 
     private Class getAsyncReturnType(Method method, Class returnType) {
