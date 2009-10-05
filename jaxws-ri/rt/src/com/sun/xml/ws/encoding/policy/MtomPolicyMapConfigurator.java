@@ -65,13 +65,22 @@ import javax.xml.ws.soap.MTOMFeature;
 public class MtomPolicyMapConfigurator implements PolicyMapConfigurator {
     
     private static final PolicyLogger LOGGER = PolicyLogger.getLogger(MtomPolicyMapConfigurator.class);
-    
+
     static class MtomAssertion extends PolicyAssertion {
-        
-        private static final AssertionData mtomData = AssertionData.createAssertionData(OPTIMIZED_MIME_SERIALIZATION_ASSERTION);
-        
+
+        private static final AssertionData mtomData;
+        static {
+            mtomData= AssertionData.createAssertionData(OPTIMIZED_MIME_SERIALIZATION_ASSERTION);
+            //JAX-WS MTOMFeature does n't currently capture if MTOM is required/optional.
+            //JAX-WS accepts both normal messages and XOP encoded messages. Using wsp:Optional=true represents that behavior.
+            //Moreover, this allows interoperability with non-MTOM aware clients.
+            //See https://wsit.dev.java.net/issues/show_bug.cgi?id=1062
+            mtomData.setOptionalAttribute(true);
+        }
+
         MtomAssertion() {
             super(mtomData, null, null);
+
         }
     }
     
