@@ -37,6 +37,7 @@
 package com.sun.xml.ws.api.config.management.policy;
 
 import com.sun.istack.logging.Logger;
+import com.sun.xml.ws.api.client.WSPortInfo;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.policy.AssertionSet;
 import com.sun.xml.ws.policy.Policy;
@@ -68,7 +69,8 @@ public class ManagedServiceAssertion extends SimpleAssertion {
     /**
      * The name of the ManagedService policy assertion.
      */
-    public static final QName MANAGED_SERVICE_QNAME = new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
+    public static final QName MANAGED_SERVICE_QNAME =
+            new QName(PolicyConstants.SUN_MANAGEMENT_NAMESPACE, "ManagedService");
 
     private static final Logger LOGGER = Logger.getLogger(ManagedServiceAssertion.class);
 
@@ -112,28 +114,64 @@ public class ManagedServiceAssertion extends SimpleAssertion {
      */
     public static ManagedServiceAssertion getAssertion(WSEndpoint endpoint) throws WebServiceException {
         LOGGER.entering(endpoint);
+        // getPolicyMap is deprecated because it is only supposed to be used by Metro code
+        // and not by other clients.
+        @SuppressWarnings("deprecation")
+        final PolicyMap policyMap = endpoint.getPolicyMap();
+        final ManagedServiceAssertion assertion = getAssertion(policyMap,
+                endpoint.getServiceName(), endpoint.getPortName());
+        LOGGER.exiting(assertion);
+        return assertion;
+    }
+
+    /**
+     * Return ManagedService assertion if there is one associated with the client.
+     *
+     * @param portInfo The client PortInfo. Must not be null.
+     * @return The policy assertion if found. Null otherwise.
+     * @throws WebServiceException If computing the effective policy of the port failed.
+     */
+    public static ManagedServiceAssertion getAssertion(WSPortInfo portInfo) throws WebServiceException {
+        LOGGER.entering(portInfo);
+        // getPolicyMap is deprecated because it is only supposed to be used by Metro code
+        // and not by other clients.
+        @SuppressWarnings("deprecation")
+        final PolicyMap policyMap = portInfo.getPolicyMap();
+        final ManagedServiceAssertion assertion = getAssertion(policyMap,
+                portInfo.getServiceName(), portInfo.getPortName());
+        LOGGER.exiting(assertion);
+        return assertion;
+    }
+
+    /**
+     * Return ManagedService assertion if one can be found in the policy map under
+     * the given service and port name.
+     *
+     * @param policyMap The policy map. May be null.
+     * @param serviceName The WSDL service name. May not be null.
+     * @param portName The WSDL port name. May not be null.
+     * @return An instance of ManagedServiceAssertion or null.
+     * @throws WebServiceException If computing the effective policy of the endpoint scope failed.
+     */
+    public static ManagedServiceAssertion getAssertion(final PolicyMap policyMap, QName serviceName, QName portName)
+            throws WebServiceException {
         try {
             PolicyAssertion assertion = null;
-            // getPolicyMap is deprecated because it is only supposed to be used by Metro code
-            // and not by other clients.
-            @SuppressWarnings("deprecation")
-            final PolicyMap policyMap = endpoint.getPolicyMap();
             if (policyMap != null) {
-                final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(
-                        endpoint.getServiceName(), endpoint.getPortName());
+                final PolicyMapKey key = PolicyMap.createWsdlEndpointScopeKey(serviceName, portName);
                 final Policy policy = policyMap.getEndpointEffectivePolicy(key);
                 if (policy != null) {
                     final Iterator<AssertionSet> assertionSets = policy.iterator();
                     if (assertionSets.hasNext()) {
                         final AssertionSet assertionSet = assertionSets.next();
-                        final Iterator<PolicyAssertion> assertions = assertionSet.get(MANAGED_SERVICE_QNAME).iterator();
+                        final Iterator<PolicyAssertion> assertions = assertionSet.get
+                                (MANAGED_SERVICE_QNAME).iterator();
                         if (assertions.hasNext()) {
                             assertion = assertions.next();
                         }
                     }
                 }
             }
-            LOGGER.exiting(assertion);
             return assertion == null ? null : assertion.getImplementation(ManagedServiceAssertion.class);
         } catch (PolicyException ex) {
             throw LOGGER.logSevereException(new WebServiceException(ManagementMessages.WSM_1001_FAILED_ASSERTION(), ex));
@@ -231,7 +269,8 @@ public class ManagedServiceAssertion extends SimpleAssertion {
             if (COMMUNICATION_SERVER_IMPLEMENTATIONS_PARAMETER_QNAME.equals(parameter.getName())) {
                 final Iterator<PolicyAssertion> implementations = parameter.getParametersIterator();
                 if (!implementations.hasNext()) {
-                    throw LOGGER.logSevereException(new WebServiceException(ManagementMessages.WSM_1005_EXPECTED_COMMUNICATION_CHILD()));
+                    throw LOGGER.logSevereException(new WebServiceException(
+                            ManagementMessages.WSM_1005_EXPECTED_COMMUNICATION_CHILD()));
                 }
                 while (implementations.hasNext()) {
                     final PolicyAssertion implementation = implementations.next();
@@ -239,8 +278,9 @@ public class ManagedServiceAssertion extends SimpleAssertion {
                         result.add(getImplementation(implementation));
                     }
                     else {
-                        throw LOGGER.logSevereException(new WebServiceException(ManagementMessages.WSM_1004_EXPECTED_XML_TAG(
-                            COMMUNICATION_SERVER_IMPLEMENTATION_PARAMETER_QNAME, implementation.getName())));
+                        throw LOGGER.logSevereException(new WebServiceException(
+                                ManagementMessages.WSM_1004_EXPECTED_XML_TAG(
+                                COMMUNICATION_SERVER_IMPLEMENTATION_PARAMETER_QNAME, implementation.getName())));
                     }
                 }
             }
@@ -373,7 +413,8 @@ public class ManagedServiceAssertion extends SimpleAssertion {
                 return false;
             }
             final ImplementationRecord other = (ImplementationRecord) obj;
-            if ((this.implementation == null) ? (other.implementation != null) : !this.implementation.equals(other.implementation)) {
+            if ((this.implementation == null) ?
+                (other.implementation != null) : !this.implementation.equals(other.implementation)) {
                 return false;
             }
             if (this.parameters != other.parameters && (this.parameters == null || !this.parameters.equals(other.parameters))) {
